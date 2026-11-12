@@ -18,9 +18,10 @@ function closestOnSeg(px, py, ax, ay, bx, by) {
 }
 
 export class WalkMap {
-  /** boxes: [{ id, poly:[[x,y],...], enabled }] */
+  /** boxes: [{ id, poly:[[x,y],...], enabled, when }] — `when` (a condition, docs §8) is evaluated by the game
+   *  (Game.refreshWalkboxes) on room entry, after every flag change and when a blocking script ends. */
   constructor(boxes = []) {
-    this.boxes = boxes.map((b, i) => ({ id: b.id || ('box' + i), poly: b.poly, enabled: b.enabled !== false }));
+    this.boxes = boxes.map((b, i) => ({ id: b.id || ('box' + i), poly: b.poly, enabled: b.enabled !== false, when: b.when }));
     this.rebuild();
   }
   setEnabled(id, on) {

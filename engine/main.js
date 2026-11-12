@@ -109,7 +109,7 @@ function makeTestApi(game) {
     scene: async (name, ...args) => { await game.runScript(a => a.scene(name, ...args), { label: 'scene ' + name }); return idle(); },
     giveItem: (id) => { if (!game.state) return; if (!game.content.items[id]) { game.error('giveItem: item desconocido ' + id); return; } if (!game.state.inventory.includes(id)) game.state.inventory.push(id); },
     takeItem: (id) => { if (!game.state) return; const i = game.state.inventory.indexOf(id); if (i >= 0) game.state.inventory.splice(i, 1); },
-    setFlag: (k, v = true) => { if (game.state) game.state.flags[k] = v; },
+    setFlag: (k, v = true) => { if (game.state) { game.state.flags[k] = v; game.refreshWalkboxes(); } },
     getFlag: (k) => game.state && game.state.flags[k],
     /** Cierra el globo de texto que esté en pantalla (como un clic). Los tests lo usan para descartar avisos. */
     skipSpeech: () => game.skipSpeech(),

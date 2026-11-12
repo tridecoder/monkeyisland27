@@ -126,8 +126,8 @@ export function makeApi(game, ctx = {}) {
 
     // flags & state
     flag: (name) => { game.checkFlag(name, 'flag'); return game.state.flags[name]; },
-    setFlag: (name, value = true) => { game.checkFlag(name, 'setFlag'); game.state.flags[name] = value; if (game.room && game.room.def.dynamic) game.repaint(); return value; },
-    inc: (name, by = 1) => { game.checkFlag(name, 'inc'); game.state.flags[name] = (game.state.flags[name] || 0) + by; if (game.room && game.room.def.dynamic) game.repaint(); return game.state.flags[name]; },
+    setFlag: (name, value = true) => { game.checkFlag(name, 'setFlag'); game.state.flags[name] = value; game.refreshWalkboxes(); if (game.room && game.room.def.dynamic) game.repaint(); return value; },
+    inc: (name, by = 1) => { game.checkFlag(name, 'inc'); game.state.flags[name] = (game.state.flags[name] || 0) + by; game.refreshWalkboxes(); if (game.room && game.room.def.dynamic) game.repaint(); return game.state.flags[name]; },
     once: (key) => { const k = 'once:' + key; if (game.state.once[k]) return false; game.state.once[k] = true; return true; },
     cond: (c) => game.cond(c, api),
     getState: (id) => game.getObjState(id).state,
@@ -146,7 +146,7 @@ export function makeApi(game, ctx = {}) {
     },
     setWalkbox: (id, on) => {
       game.state.flags['walkbox:' + game.state.room + '.' + id] = !!on;
-      if (game.room) game.room.walk.setEnabled(id, on);
+      if (game.room) { const b = game.room.walk.boxes.find(b => b.id === id); if (b) b.when = undefined; game.room.walk.setEnabled(id, on); }
     },
     repaint: () => game.repaint(),
 

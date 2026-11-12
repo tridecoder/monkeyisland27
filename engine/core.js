@@ -286,9 +286,24 @@ export class Game {
     }
     return a.sprite;
   }
+  /** Conditional walkboxes: a walkbox with `when` (art `walkboxes: [{ id, poly, when: 'torno_abierto' }]`) is enabled
+   *  only while its condition holds. Re-evaluated on room entry, after every setFlag/inc and when a blocking script
+   *  ends. An explicit api.setWalkbox(id, on) for that box takes precedence. Cheap: rebuilds only on change. */
+  refreshWalkboxes(rt = this.room) {
+    if (!rt || !rt.walk || !this.state) return;
+    let changed = false;
+    for (const b of rt.walk.boxes) {
+      if (b.when == null) continue;
+      let on = false;
+      try { on = !!this.cond(b.when, this.condApi()); } catch (e) { this.error(`when del walkbox ${b.id} falló`, e); }
+      if (on !== b.enabled) { b.enabled = on; changed = true; }
+    }
+    if (changed) rt.walk.rebuild();
+  }
   /** Put actors whose placement in the current room has a `when` condition in / out of the room. */
   applyPresence() {
     if (!this.room || !this.state) return;
+    this.refreshWalkboxes();
     const rid = this.room.def.id;
     for (const p of asArray(this.room.def.actors)) {
       if (p.when == null) continue;
@@ -405,8 +420,9 @@ export class Game {
     rt.walk = new WalkMap(asArray(def.walkboxes).map(b => {
       const k = 'walkbox:' + id + '.' + (b.id || '');
       const on = this.state.flags[k];
-      return on === undefined ? b : { ...b, enabled: on };
+      return on === undefined ? b : { ...b, enabled: on, when: undefined };   // api.setWalkbox wins over `when`
     }));
+    this.refreshWalkboxes(rt);
     rt.ambient = asArray(def.ambient).map(a => ({ def: a, next: this.time + rand(...(a.every || [8000, 15000])), running: false }));
     this.room = rt;
     this.paintRoom();

@@ -118,6 +118,10 @@ export default {
   cuadro_plazas_n: 'int · A · vestibulo · +1 por Mirar cuadro_plazas · A',
   piel_platano_n: 'int · D · ecosistema · +1 por Mirar piel_platano · D',
 
+  // ---------------------------------------------------------------- ascensor con botonera (content/lib/ascensor.js)
+  ascensor_viajes_n: 'int · común (lib/ascensor.js) · +1 por viaje en ascensor · rotación de las frases del ascensor',
+  ascensor_negativas_n: 'int · común (lib/ascensor.js) · +1 por planta denegada · rotación de las negativas',
+
   // ---------------------------------------------------------------- réplicas del duelo (§6.3 + adenda 7.1)
   ...reps,
 };
