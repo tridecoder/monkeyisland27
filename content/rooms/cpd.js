@@ -3,18 +3,20 @@
 // Valentín Retícula), §3.2 (rejilla, monitor de Valentín), §4.7 (opciones nuevas de Paco y Rubén), MP1 paso 3
 // (alta de Herminia), §8.2/§8.4 (rumores B1, D2 y desmentido B).
 // Escena que registra (global): `revelacion_ruben` (§7.3; la lanza Tirar papel_continuo en el Acto III).
+// Valentín Retícula y su monitor ya NO están aquí: trabajan en la Pecera, junto a la bandeja de Diseño (pecera.js).
+// El ascensor usa la botonera común (../lib/ascensor.js): -1 · 0 · 1 · 2.
 // El arte y la geometría están en ./art/cpd.art.js (artista de fondos).
 // Estados que el arte puede dibujar (sprites por estado): `armario_27`: 'cerrado' | 'abierto' (Rubén dentro, desde
 // ruben_encontrado) | 'vacio' (desde ruben_libre). Flag que puede leer: paco_tickets (cifra del contador LED).
 import { buildRoom } from '../lib/room.js';
 import art from './art/cpd.art.js';
+import { ascensorObjeto } from '../lib/ascensor.js';
 
-const P = 'paco_ticket', R = 'ruben', V = 'valentin_reticula';
+const P = 'paco_ticket', R = 'ruben';
 const acto3 = (api) => !!api.flag('acto_3_iniciado');
 const miles = (n) => String(Math.round(n || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const say = (...lines) => async (api) => { await api.say(lines); };
 const paco = (...lines) => async (api) => { await api.sayAs(P, lines); };
-const val = (...lines) => async (api) => { await api.sayAs(V, lines); };
 const rub = (...lines) => async (api) => { await api.sayAs(R, lines); };
 const estadoArmario = (api) => (api.flag('ruben_libre') ? 'vacio' : api.flag('ruben_encontrado') ? 'abierto' : 'cerrado');
 
@@ -182,34 +184,6 @@ const rubenDialog = {
   },
 };
 
-const valentinDialog = {
-  actor: V, start: 'VR0',
-  onStart: async (api) => { await api.sayAs(V, 'Un segundo, que estoy dirigiendo.'); },
-  nodes: {
-    VR0: {
-      options: [
-        { text: '¿Qué está dirigiendo?', once: true,
-          reply: ['Una aventura gráfica sobre esta redacción. Nueve salas. Nueve verbos.', 'Ahora mismo, un becario me pregunta qué estoy dirigiendo.'],
-          lines: [['player', '...¿Ese soy yo?'], [V, 'Eres un sprite muy bien resuelto. El remolino, sobre todo.']] },
-        { text: '¿Por qué trabaja en el CPD?', once: true,
-          reply: ['Es la única luz calibrada del edificio.', 'Y aquí Desarrollo no baja. Bueno, Anselmo, a las tres.'] },
-        { text: 'Desarrollo dice que todo es culpa de Diseño.',                        // (se queda)
-          reply: ['Lo sé. Lo dicen a gritos. Yo lo entrego a las 18:29.', 'Diseño tiene la culpa de todo lo que Desarrollo no abre.'] },
-        { text: '¿Es verdad que le quieren fusionar con Infografía?', once: true,
-          reply: ['Tercera vez esta semana. No.', 'Infografía hace gráficos. Diseño hace que se entiendan. Son dos oficios.',
-            'Íñigo me lo propuso en una matriz. Se la devolví alineada.'] },
-        { text: '¿Algún consejo?',                                                       // (se queda)
-          reply: ['Si te atascas, llama a tu abuela. La diseñamos como sistema de pistas.', 'Y prueba cosas raras. Aquí todo lo raro está probado.'] },
-        { text: '¿Usted sabía lo del Titulator?', if: 'ruben_encontrado', once: true,
-          reply: ['En mi juego, el Titulator ya era un becario.', 'Una IA no pone las tildes con tanto cariño.'] },
-        { text: '¿Cómo va siempre tan bien vestido?',                                   // (se queda)
-          reply: 'Me visto como entrego: a tiempo y sin adornos de más.' },
-        { text: 'Me voy.', exit: true, reply: 'Sal por el ascensor. Lo he rediseñado. No se nota: eso es lo bueno.' },
-      ],
-    },
-  },
-};
-
 // adenda 3.2: la rejilla del falso suelo (rota con rejilla_n)
 const REJILLA = [
   () => ['(Planta 2) «Te escribo desde el más absoluto cariño». Maripaz.', '(¡GONG!)'],
@@ -231,14 +205,12 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'ascensor_cpd', name: 'ascensor', exit: { room: 'vestibulo' }, handlers: {
+    ascensorObjeto('ascensor_cpd', {
       mirar: 'El ascensor. Sube. Es lo único que sube aquí sin abrir ticket.',
-      usar: async (api) => { api.sfx('door'); await api.goto('vestibulo', 'cpd'); },
-      abrir: async (api) => { api.sfx('door'); await api.goto('vestibulo', 'cpd'); },
       cerrar: 'Se cierra solo. Lo programó Paco. Tiene número de ticket.',
       empujar: 'No. Si lo empujo, Paco me abre un ticket por «impulso no autorizado».',
       hablar: '«Subo». No contesta. Pero sube. Ya es más que la mayoría.',
-    } },
+    }),
     { id: 'armarios', name: 'armarios', handlers: {
       mirar: 'Cuarenta armarios iguales. Zumban en mi bemol.',
       abrir: 'Cerrados. Todos. Como las plazas de redactor.',
@@ -337,17 +309,6 @@ export default buildRoom({
       empujar: 'La caja no se mueve. Pesa como treinta jefes de Sistemas.',
     } },
     // ADENDA 3.2
-    { id: 'monitor_valentin', name: 'monitor de Valentín', handlers: {
-      mirar: say('En su monitor, una aventura gráfica. Es esta sala. En pequeño.', 'Hay un becario mirando un monitor. Me saludo. Me devuelvo el saludo.'),
-      usar: async (api) => {
-        await api.sayAs(V, 'No toques, que estoy en el clímax.');
-        await api.say('¿Y cómo acaba?');
-        await api.sayAs(V, 'Con un empujón. Con educación.');
-      },
-      coger: 'Es la única pantalla calibrada del edificio. No se toca. Se respeta.',
-      empujar: 'Si la muevo dos píxeles, Valentín lo nota. Y yo también, en pequeño.',
-      hablar: 'Le hablo al becario del monitor. Me contesta lo mismo. Con más resolución.',
-    } },
     { id: 'rejilla_cpd', name: 'rejilla', handlers: {
       mirar: say('Una rejilla del falso suelo. Por aquí suben las voces del edificio.', 'Paco lo sabe todo. No es intuición: es fontanería.'),
       usar: async (api) => {
@@ -390,19 +351,9 @@ export default buildRoom({
       empujar: 'No. Bastante empujado está. Lleva cuatro meses en un armario.',
       tirar: 'No puedo sacarlo a tirones. Sin baja, Íñigo le factura las horas de sol.',
     } },
-    { id: V, handlers: {
-      mirar: say('Valentín Retícula, director de Diseño y Producto.', 'El único de Diseño que queda. Va mejor vestido que el edificio entero.'),
-      hablar: async (api) => { await api.dialog('valentin'); },
-      'dar:cafe': val('Gracias. Lo dejo en la esquina superior derecha. Ahí no molesta.'),
-      'dar:ficha_pagina_7': val('Buena ficha. Le subiría un punto el interlineado. Por lo demás, perfecta.'),
-      'dar:pieza_opa': val('Buen titular. Cabe en una línea. Eso también es diseño.'),
-      'dar:*': val('Gracias. Lo coloco donde no estorbe. Eso es casi todo mi trabajo.'),
-      empujar: 'No. Está dirigiendo. Si le empujo, me salgo del encuadre.',
-      tirar: 'No le tiro de la americana. Es de buen corte. Hasta yo lo noto.',
-    } },
   ],
 
-  dialogs: { paco: pacoDialog, ruben: rubenDialog, valentin: valentinDialog },
+  dialogs: { paco: pacoDialog, ruben: rubenDialog },
   duels: {},
   scenes: { revelacion_ruben: revelacionRuben },
   defaults: {},

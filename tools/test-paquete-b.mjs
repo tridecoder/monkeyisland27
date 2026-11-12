@@ -106,7 +106,31 @@ try {
   await hablar('coro_desarrollo');
   must(!(await state()).dialog.some(o => o.includes('En 2017')), 'CO_BANDEJA: la opción 6 no desaparece');
   await closeDialog(); await idle();
-  ok('coro: CO_BANDEJA una vez');
+  must(await logHas('Ya lo sé.'), 'CO_BANDEJA: Valentín no contesta «Ya lo sé.» desde su mesa');
+  ok('coro: CO_BANDEJA una vez (y Valentín, a dos metros, «Ya lo sé.»)');
+
+  // ------------------------------------------------------------ cameo: Valentín Retícula, ahora en la Pecera junto a Diseño
+  must((await roomOf('valentin_reticula')) === 'pecera', 'Valentín no está en la Pecera');
+  must(!(await G(() => Object.keys(__game.game.content.rooms.cpd.layout).includes('valentin_reticula'))), 'Valentín sigue en el arte del CPD');
+  await clearLog();
+  await hablar('valentin_reticula');
+  must((await state()).dialog, 'Valentín: Hablar no abre su diálogo');
+  await opcion('¿Qué está dirigiendo?');
+  await opcion('¿Por qué trabaja aquí, al lado de Desarrollo?');
+  await opcion('Desarrollo dice que todo es culpa de Diseño.');
+  await opcion('¿Es verdad que le quieren fusionar con Infografía?');
+  must(!(await state()).dialog.some(o => o.includes('Titulator')), 'Valentín: la opción del Titulator sale sin ruben_encontrado');
+  must(!(await state()).dialog.some(o => o.includes('pantalla tumbaba')), 'Valentín: la opción del CMS sale sin cms_vivo');
+  await opcion('¿Algún consejo?');
+  await opcion('Me voy.');
+  await verb('usar', 'monitor_valentin'); await verb('mirar', 'monitor_valentin'); await verb('mirar', 'valentin_reticula');
+  for (const l of ['Eres un sprite muy bien resuelto.', 'La bandeja está a dos metros.', 'Es aislamiento por diseño.', 'Lo dicen a dos metros.',
+    'Se la devolví alineada.', 'Lo he rediseñado.', 'Con un empujón. Con educación.', 'Es esta Redacción. En pequeño.', 'Va mejor vestido que la planta entera.']) must(await logHas(l), `Valentín: falta «${l}»`);
+  const vb = await G(() => { const g = __game.game, a = g.actors.valentin_reticula, b = g.actorBox(a); const others = Object.values(g.actors).filter(o => o.room === 'pecera' && o.visible && o.id !== a.id && o.id !== 'bruno').map(o => [o.id, g.actorBox(o)]);
+    return { x: a.x, y: a.y, overl: others.filter(([, o]) => o.x < b.x + b.w && b.x < o.x + o.w).map(([id]) => id), hs: g.roomObjects().filter(o => o.hotspot !== false && o.w && o.x < b.x + b.w && b.x < o.x + o.w && o.y + o.h > b.y + b.h * 0.3).map(o => o.id) }; });
+  must(!vb.overl.length, `Valentín se solapa con ${vb.overl.join(', ')}`);
+  must(!vb.hs.length, `Valentín tapa/está tapado por hotspots: ${vb.hs.join(', ')}`);
+  ok('cameo en la Pecera: diálogo de Valentín (nuevo «aquí, al lado de Desarrollo»), monitor con la Pecera en miniatura, sin solapes');
 
   // ------------------------------------------------------------ Yoli y Nerea sin CMS + rumor C2
   await setFlag('rumor_teodoro_n', 1);

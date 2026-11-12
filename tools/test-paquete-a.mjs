@@ -43,6 +43,8 @@ const opts = () => G(() => __game.currentDialogOptions());
 const shot = async (name, always = false) => { if (lento || always) await page.screenshot({ path: path.join(here, 'shots', `paqA-${name}.png`) }); };
 async function hablar(id) { await verb('hablar', id); await idle(); }
 async function opcion(t) { await chooseByText(t); await idle(); }
+/** Ascensor con botonera: Usar el ascensor de la sala y pulsar la planta (texto del botón). */
+async function ascensor(id, planta) { await verb('usar', id); must(!!(await opts()), `${id}: no abre la botonera`); await opcion(planta); }
 async function expectFlags(obj, ctx) {
   for (const [k, v] of Object.entries(obj)) { const got = await flag(k); must(v === false ? !got : got === v, `${ctx}: flag ${k} = ${JSON.stringify(got)}, se esperaba ${JSON.stringify(v)}`); }
 }
@@ -79,12 +81,22 @@ try {
   await verb('ir', 'ascensor_vestibulo');
   must((await state()).room === 'vestibulo', 'el ascensor deja pasar sin torno_abierto');
   await expectLog(['El ascensor está al otro lado del torno. Como todo lo bueno.'], 'bloqueo del ascensor');
+  must(!(await opts()), 'sin torno_abierto el ascensor del vestíbulo no debe abrir la botonera');
+  // geografía física: sin torno abierto, no hay camino del lado de la calle al ascensor ni a la escalera
+  const geo = await G(() => {
+    const g = __game.game, w = g.room.walk, L = g.room.def.layout, p = g.player;
+    const reach = (pt) => { const path = w.findPath([p.x, p.y], pt); const e = path[path.length - 1] || [p.x, p.y]; return Math.hypot(e[0] - pt[0], e[1] - pt[1]) < 3; };
+    const inBox = (id) => { const b = w.boxes.find(b => b.id === id); let ins = false; const P = b.poly; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { if ((P[i][1] > p.y) !== (P[j][1] > p.y) && p.x < (P[j][0] - P[i][0]) * (p.y - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0]) ins = !ins; } return ins; };
+    return { lift: reach(L.ascensor_vestibulo.walkTo), stairs: reach(L.vestibulo_a_redaccion.walkTo), x: p.x, y: p.y, street: inBox('entrada'), inner: inBox('interior'), gate: w.boxes.find(b => b.id === 'paso_torno').enabled };
+  });
+  must(!geo.lift && !geo.stairs && !geo.gate, `vestíbulo: con el torno cerrado se puede llegar al interior (${JSON.stringify(geo)})`);
+  must(geo.street && !geo.inner, `vestíbulo: Bruno ha cruzado la línea de tornos sin abrirla (${JSON.stringify(geo)})`);
   await verb('usar', 'torno', 'tarjeta_becario');
   await expectLog(['Consto en la web. 4.112 veces.'], 'P01 sin foto');
   await verb('usar', 'organigrama', 'tarjeta_becario');
   await expectLog(['Se cae. Ni mi foto quiere estar en el organigrama.'], 'P01 sin chicle');
   await expectFlags({ torno_abierto: false, foto_en_organigrama: false }, 'bloqueos');
-  ok('Bloqueos: torno y ascensor cerrados; tarjeta sin foto y sin chicle no cambian flags');
+  ok('Bloqueos: torno y ascensor cerrados (sin camino físico al interior); tarjeta sin foto y sin chicle no cambian flags');
 
   // ------------------------------------------------------------ Mirar del organigrama (1.ª / siguientes)
   await clearLog();
@@ -153,8 +165,10 @@ try {
 
   // ------------------------------------------------------------ CPD: contador, P05a, Paco sin CMS
   await clearLog();
-  await verb('ir', 'ascensor_vestibulo');
+  must(await G(() => __game.game.room.walk.boxes.find(b => b.id === 'paso_torno').enabled), 'torno_abierto: el carril del torno no se abre');
+  await ascensor('ascensor_vestibulo', 'Planta -1');
   must((await state()).room === 'cpd', 'el ascensor no baja al CPD con torno_abierto');
+  must((await roomOf('valentin_reticula')) !== 'cpd', 'Valentín sigue en el CPD (debe estar en la Pecera)');
   await expectFlags({ paco_tickets: 48212 }, 'contador (48.211 + 1)');
   await verb('mirar', 'contador_tickets');
   await expectLog(['TICKETS ABIERTOS: 48.212.'], 'contador');
@@ -204,17 +218,8 @@ try {
     'Gervasio se va a vivir al garaje'], 'Paco P1');
   ok('Paco P1: manual_fax, rep_12, alta de Herminia (MP1), Tadeo, wifi, rumor D2, contador +318');
 
-  // ------------------------------------------------------------ Valentín, monitor, rejilla, ventilador, varios
+  // ------------------------------------------------------------ rejilla, ventilador, varios (Valentín: test-paquete-b, Pecera)
   await clearLog();
-  await hablar('valentin_reticula');
-  await opcion('¿Qué está dirigiendo?');
-  await opcion('¿Es verdad que le quieren fusionar con Infografía?');
-  must(!(await opts()).some(o => o.includes('Titulator')), 'Valentín: la opción del Titulator sale sin ruben_encontrado');
-  await opcion('¿Algún consejo?');
-  await opcion('Me voy.');
-  await verb('usar', 'monitor_valentin'); await verb('mirar', 'valentin_reticula'); await verb('dar', 'valentin_reticula', 'cafe');
-  await expectLog(['Eres un sprite muy bien resuelto.', 'Se la devolví alineada.', 'Lo he rediseñado.', 'Con un empujón. Con educación.',
-    'Va mejor vestido que el edificio entero.', 'esquina superior derecha'], 'Valentín');
   for (let i = 0; i < 7; i++) await verb('usar', 'rejilla_cpd');
   await expectFlags({ rejilla_n: 7 }, 'rejilla');
   await expectLog(['Maripaz.', 'Original. Duplicado.', 'Amarillo, facturación.', 'También narra para el sótano.', 'Y alguien mastica.', 'Alguien más saluda a Gertrudis.'], 'rejilla');
@@ -225,7 +230,7 @@ try {
   await expectLog(['Igual es la nómina.'], 'papel continuo antes del Acto III');
   await verb('abrir', 'armario_27');
   await expectLog(['SE ENFRÍA EL MODELO', 'que me factura.'], 'armario 27');
-  ok('CPD: Valentín (4.6b), monitor, rejilla ×7, profecía, papel continuo bloqueado, armario 27');
+  ok('CPD: rejilla ×7, profecía, papel continuo bloqueado, armario 27 (sin Valentín ni su monitor)');
 
   // ------------------------------------------------------------ 7.3 revelación de Rubén (P13)
   await setFlag('acto_2_iniciado'); await setFlag('acto_3_iniciado'); await setFlag('vio_borde_perforado'); await setFlag('rumor_atun_n', 3);
@@ -250,9 +255,7 @@ try {
   must(!(await logHas('Es atún. Del de máquina.')), 'el desmentido B se repite');
   await verb('tirar', 'papel_continuo');
   await expectLog(['Ahora Rubén me abre él.'], 'papel continuo tras P13');
-  await hablar('valentin_reticula'); await opcion('¿Usted sabía lo del Titulator?'); await closeDialog();
-  await expectLog(['Una IA no pone las tildes con tanto cariño.'], 'Valentín tras Rubén');
-  ok('7.3 revelación: ruben_encontrado, Rubén en el armario, R0 (rep_13, Tadeo, desmentido B una vez), Valentín');
+  ok('7.3 revelación: ruben_encontrado, Rubén en el armario, R0 (rep_13, Tadeo, desmentido B una vez)');
   await shot('03-revelacion');
 
   // ------------------------------------------------------------ P14c: la baja de Rubén
@@ -271,7 +274,7 @@ try {
   // ------------------------------------------------------------ vestíbulo, Acto III: desmentido D, cuadro 5, Ibex III
   await setFlag('rumor_plaza_n', 3);
   await clearLog();
-  await verb('ir', 'ascensor_cpd');
+  await ascensor('ascensor_cpd', 'Planta 0');
   must((await state()).room === 'vestibulo', 'el ascensor del CPD no sube');
   must((await logHas('¡Prórroga!')) || (await logHas('¡El Robledal pide la hora!')), 'Ibex del Acto III: falta la línea de Celestino');
   await hablar('celestino');
@@ -283,6 +286,53 @@ try {
   await verb('ir', 'torno');
   must((await state()).room === 'pecera', 'el torno abierto no lleva a la Pecera');
   ok('Acto III: Ibex de prórroga, desmentido D, plaza 9, torno → Pecera');
+
+  // ------------------------------------------------------------ ASCENSOR con botonera: todas las rutas en los dos sentidos
+  const FLOORS = { cpd: ['ascensor_cpd', 'Planta -1'], vestibulo: ['ascensor_vestibulo', 'Planta 0'], pecera: ['ascensor_pecera', 'Planta 1'], ecosistema: ['ascensor_ecosistema', 'Planta 2'] };
+  for (const from of Object.keys(FLOORS)) for (const to of Object.keys(FLOORS)) {
+    if (from === to) continue;
+    await goto(from, 'ascensor');
+    await verb('usar', FLOORS[from][0]);
+    const o = await opts();
+    must(o && o.length === 5, `${from}: la botonera no tiene 4 plantas + quedarse (${JSON.stringify(o)})`);
+    must(o.some(x => x.startsWith(FLOORS[from][1]) && x.endsWith('(aquí)')), `${from}: la planta actual no sale marcada (aquí)`);
+    const t0 = await flag('paco_tickets');
+    await clearLog();
+    await opcion(FLOORS[to][1]);
+    st = await state();
+    must(st.room === to, `ascensor ${from} → ${to}: acabo en ${st.room}`);
+    const L = await G(r => __game.game.content.rooms[r].art.entries.ascensor, to);
+    must(Math.abs(st.player.x - L[0]) < 2, `ascensor ${from} → ${to}: no salgo por la puerta del ascensor`);
+    if (to === 'cpd') must((await flag('paco_tickets')) === t0 + 1, 'ascensor → CPD: el onEnter del CPD no suma el ticket');
+    if (to === 'ecosistema') must(await logHas('¡Gracias! ¡Eso es contenido!'), 'ascensor → planta 2: no salta el ¡FLASH! de Borja (onEnter)');
+    must(await G(() => __game.log.some(l => l.who === 'narrador' && /ticket|Diseño|ascensor|wifi|Ibex|reunión|garaje|Tadeo|organigrama|escalera|gong/i.test(l.text))), `ascensor ${from} → ${to}: sin frase de viaje`);
+  }
+  // cancelar: se queda
+  await goto('pecera', 'ascensor');
+  await verb('usar', 'ascensor_pecera'); await opcion('Nada, me quedo en esta planta.');
+  must((await state()).room === 'pecera', 'ascensor: «quedarse» me ha movido');
+  ok('Ascensor: 12 trayectos (-1, 0, 1, 2 en los dos sentidos), planta actual en gris, llegada por su puerta, onEnter, cancelar');
+  // bloqueo: sin torno_abierto solo deja bajar al vestíbulo (mismas condiciones que las rutas antiguas)
+  await setFlag('torno_abierto', false);
+  for (const [to, line] of [['cpd', 'solo personal de Sistemas'], ['ecosistema', 'se requiere acreditación']]) {
+    await clearLog();
+    await verb('usar', 'ascensor_pecera'); await opcion(FLOORS[to][1]);
+    must((await state()).room === 'pecera' && (await logHas(line)), `bloqueo del ascensor hacia ${to}: no contesta «${line}»`);
+  }
+  await verb('usar', 'ascensor_pecera'); await opcion('Planta 0');
+  must((await state()).room === 'vestibulo', 'sin torno_abierto, el ascensor no deja bajar al vestíbulo');
+  must(!(await G(() => __game.game.room.walk.boxes.find(b => b.id === 'paso_torno').enabled)), 'sin torno_abierto el carril del torno sigue abierto');
+  await setFlag('torno_abierto', true);
+  ok('Ascensor: sin torno_abierto, -1 y 2 contestan con una negativa; 0 siempre');
+  // la escena 7.2 también salta llegando a la Pecera en ascensor
+  await G(() => __game.newGame()); await idle();
+  await setFlag('torno_abierto', true);
+  await goto('cpd', 'ascensor');
+  await clearLog();
+  await ascensor('ascensor_cpd', 'Planta 1');
+  must((await state()).room === 'pecera' && (await flag('inigo_presentado')) === true, 'ascensor → Pecera (1.ª vez): no salta la escena 7.2');
+  must(await G(() => __game.log.some(l => l.who === 'inigo_sinergia')), 'ascensor → Pecera: Íñigo no habla en la 7.2');
+  ok('Ascensor: la 1.ª llegada a la Pecera por el ascensor dispara la presentación del villano (7.2)');
 
   // ------------------------------------------------------------ 7.5 final (modo rápido: de principio a fin, créditos, poscréditos e impresora
   // incluidos; el juego acaba en el título y la partida terminada queda en state().finished)

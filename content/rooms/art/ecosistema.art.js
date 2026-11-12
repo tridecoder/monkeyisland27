@@ -16,6 +16,7 @@ const layout = {
   photocall: { rect: [38, 22, 56, 76], walkTo: [66, 114], face: 'up' },
   aro_luz: { rect: [108, 36, 24, 62], walkTo: [120, 112], face: 'up' },
   pizarra_sinergia: { rect: [192, 24, 44, 36], walkTo: [208, 112], face: 'up' },
+  ascensor_ecosistema: { rect: [142, 34, 40, 52], walkTo: [162, 120], face: 'up' },
   pufs: { rect: [136, 86, 36, 17], walkTo: [154, 116], face: 'up' },
   album_borja_hotspot: { rect: [150, 80, 13, 7], walkTo: [156, 116], face: 'up', priority: 1, draw: (g) => drawAlbum(g, 150, 80) },
   cajas_lanyards: { rect: [174, 76, 20, 24], walkTo: [186, 114], face: 'up' },
@@ -170,9 +171,30 @@ function drawRingLight(g) {
   rect(g, cx - 1, cy + 28, 3, 4, PAL.metal[2]);
 }
 
+/** Ascensor de la planta 2 (botonera común, content/lib/ascensor.js), donde antes había una ventana. Marketing le ha
+ *  puesto los pufs delante y un vinilo de «ESPACIO DE ENCUENTRO» en las puertas. */
 function drawWindow(g) {
-  cityWindow(g, 142, 30, 44, 42, { sky: 'night', seed: 31, mullions: true, frame: PAL.metal });
-  glow(g, 164, 51, 34, 26, PAL.night[5], 0.08, 4);
+  const x = 144, y = 36, w = 36, h = 62;
+  dropShadow(g, x, y, w, h, 2, 2, 0.45);
+  rect(g, x - 3, y - 3, w + 6, h + 3, PAL.paper[2]); frameRect(g, x - 3, y - 3, w + 6, h + 3, PAL.ink[2]);
+  rect(g, x, y, w, h, PAL.metal[2]);
+  rect(g, x + 5, y + 2, 26, 7, PAL.ink[0]); frameRect(g, x + 5, y + 2, 26, 7, PAL.metal[4]);
+  ['-1', '0', '1', '2'].forEach((t, i) => cap(g, t, x + 7 + i * 6, y + 3, i === 3 ? PAL.crt[5] : PAL.metal[3]));
+  const dx = x + 3, dy = y + 11, dw = w - 6, dh = h - 11;
+  paint(g, dx, dy, dw, dh, (xx, yy) => {
+    const fx = (xx - dx) / dw, base = fx < 0.5 ? fx * 2 : (1 - fx) * 2;
+    return ditherPick(xx, yy, [PAL.metal[3], PAL.metal[4], PAL.metal[5], PAL.metal[6]], 0.3 + base * 0.45 - (yy - dy) / dh * 0.15 + (hash2(xx, yy >> 2, 2) < 0.15 ? 0.12 : 0));
+  });
+  vline(g, dx + (dw >> 1) - 1, dy, dh, PAL.ink[0]); vline(g, dx + (dw >> 1), dy, dh, PAL.ink[1]);
+  vline(g, dx, dy, dh, PAL.ink[1]); vline(g, dx + dw - 1, dy, dh, PAL.ink[1]);
+  // vinilo Memphis en las puertas: círculo y triángulo de colores (Marketing no deja nada sin «activar»)
+  ellipse(g, dx + 7, dy + 14, 3, 3, PAL.dusk[5]); poly(g, [[dx + 19, dy + 17], [dx + 25, dy + 17], [dx + 22, dy + 11]], PAL.teal[5]);
+  for (let i = 0; i < 6; i++) px(g, dx + 4 + i * 4, dy + 24 + (i & 1), CORAL[1]);
+  // botonera de llamada
+  const px0 = x + w + 4, py0 = y + 20;
+  bevel(g, px0, py0, 5, 13, PAL.metal[4], PAL.metal[6], PAL.metal[1]);
+  ellipse(g, px0 + 2.5, py0 + 4, 1.5, 1.5, PAL.gold[6]); ellipse(g, px0 + 2.5, py0 + 9, 1.5, 1.5, PAL.white);
+  glow(g, x + w / 2, y + 30, 26, 26, PAL.light, 0.06, 4);
 }
 
 function drawNeon(g) {
@@ -320,7 +342,7 @@ export default {
   width: 320,
   scale: { yFar: 100, far: 0.86, yNear: 142, near: 1.0 },
   walkboxes: [{ id: 'suelo', poly: [[10, 104], [312, 104], [318, 142], [2, 142]] }],
-  entries: { pecera: [26, 116, 'right'], administracion: [306, 116, 'left'] },
+  entries: { pecera: [26, 116, 'right'], administracion: [306, 116, 'left'], ascensor: [162, 122, 'down'] },
   layout,
   draw(g) {
     drawCeiling(g);
@@ -344,12 +366,6 @@ export default {
     vignette(g, W, 144, 0.45);
   },
   animate(g, view, t) {
-    for (let i = 0; i < 12; i++) {
-      const x = 143 + ((i * 17 + 5) % 42), sp = 0.035 + (i % 4) * 0.012;
-      const y = 31 + ((t * sp + i * 29) % 40);
-      px(g, x, Math.floor(y), PAL.night[7]); px(g, x, Math.floor(y) - 1, PAL.night[5]);
-    }
-    for (let i = 0; i < 3; i++) { const x = 146 + i * 14, y = 34 + ((t / 90 + i * 17) % 34); px(g, x, Math.floor(y), PAL.night[6]); }
     const on = (Math.sin(t / 240) + Math.sin(t / 73)) > -1.7;
     if (!on) { rect(g, 94, 18, 54, 10, PAL.ink[1]); cap(g, 'ECOSISTEMA', 121, 20, PAL.metal[2], { align: 'center' }); }
     if ((t % 1400) < 700) rect(g, 288, 72, 3, 1, PAL.red[6]);

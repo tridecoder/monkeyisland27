@@ -53,7 +53,7 @@ function drawFax(g, x, y, papel, t) {
   else { hline(g, x + 16, y + 9, 7, PAL.crt[5]); hline(g, x + 16, y + 10, 4, PAL.crt[4]); }
   for (let i = 0; i < 5; i++) rect(g, x + 15 + i * 2, y + 13, 1, 1, i % 2 ? PAL.metal[1] : B[1]);
   const blink = !papel && ((t || 0) % 1200) < 600;
-  rect(g, x + 22, y + 14, 2, 1, papel ? PAL.crt[5] : blink ? '#ff4a3a' : PAL.red[1]);
+  rect(g, x + 22, y + 14, 2, 1, papel ? PAL.crt[5] : blink ? '#FF7E6A' : PAL.red[1]);
   if (!papel && blink) glow(g, x + 23, y + 14, 6, 4, '#ff5a40', 0.18, 3);
   rect(g, x + 2, y + 13, 11, 2, PAL.ink[1]);
   if (papel) {

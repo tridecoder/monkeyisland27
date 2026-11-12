@@ -3,7 +3,7 @@
 //   'B'                      Bruno
 //   'D1' 'D2' 'D3' 'CORO'    el coro de Desarrollo (presencia sin sprite): el texto sale encima del hotspot
 //                            `coro_desarrollo` con su prefijo «DEV 1: …» / «CORO: …» (adenda 1.7), color #7FFFD4
-//   'H'                      Herminia: rótulo en la pantalla del portátil de Leoncio (#00C2A8)
+//   'H'                      Herminia: rótulo en la pantalla del portátil de Leoncio (#FF8C3C; antes #3CE0C6, como Leoncio: se confundían)
 //   'T'                      Titulator: titular en el portátil de Íñigo (Pajarera, #B6FF4D)
 //   'narr'                   rótulo de narrador
 //   'sfx'                    efecto de sonido (el texto es el nombre del sfx)

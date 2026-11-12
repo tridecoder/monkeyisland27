@@ -14,8 +14,10 @@ import art from './art/pecera.art.js';
 import dialogos from './pecera.dialogos.js';
 import escenas from './pecera.escenas.js';
 import { talk, seq, num } from './pecera.voces.js';
+import { ascensorObjeto } from '../lib/ascensor.js';
 
-const Y = 'yoli_tendencias', N = 'nerea_backlog', L = 'leoncio_quesitos', A = 'anselmo_monolito', R = 'ruben';
+const Y = 'yoli_tendencias', N = 'nerea_backlog', L = 'leoncio_quesitos', A = 'anselmo_monolito', R = 'ruben', V = 'valentin_reticula';
+const val = (...lines) => async (api) => { await api.sayAs(V, lines); };
 
 // ------------------------------------------------------------------ rumores (adenda §8): una versión, una vez, al empezar
 // a Hablar, cuando su contador está en el paso anterior; como mucho un rumor por conversación (prioridad A, B, C, D).
@@ -47,7 +49,13 @@ const DISCUSIONES = [
   [['D1', '¿Quién ha tocado mi silla?'], ['D2', 'Tu silla gira. Se ha tocado sola.'], ['D1', '¡Fallo de diseño!'], ['CORO', '¡DISEÑO!']],
   [['D2', '¡Se ha ido todo el mundo!'], ['D1', '¡Diseño se fue a las seis y media!'], ['D2', '¡Con todo entregado! ¡Provocadores!']],
   [['D1', 'Internet está mal hecho.'], ['D2', 'Desde el principio.'], ['D3', '...Sí.']],
-  [['D1', '¡Diseño sigue en el edificio!'], ['D2', '¡Su director! ¡En el CPD!'], ['D1', '¡Pues que arregle el CMS!'], ['D3', 'No.']],
+  [['D1', '¡Diseño sigue en el edificio!'], ['D2', '¡Su director! ¡A dos metros!'], ['D1', '...Pues que arregle el CMS.'], ['D2', 'Más bajo, que te oye.'], ['D3', 'No.']],
+  // Valentín trabaja a dos metros, junto a la bandeja de Diseño: el coro baja la voz, culpa a Diseño... y él ni levanta la vista
+  [['D2', '¡Esto es culpa de Dis...!'], ['D1', '¡Chsss! Que está ahí.'], ['D2', '...de Dirección. Culpa de Dirección.']],
+  [['D1', '¡Diseño tiene la culpa!'], [V, 'Está en la bandeja.'], ['D1', '...'], ['D3', 'No.']],
+  [['D1', '¿Quién ha puesto este margen de ocho píxeles?'], ['D2', 'Diseño.'], ['D1', '...Queda bien.'], ['D2', 'No se lo digas.']],
+  [['CORO', '¡Diseño!'], ['D3', 'Ni nos mira.'], ['D1', 'Nunca mira.'], ['D2', 'Es que lo entregó todo.']],
+  [['D2', '¿Le abrimos una incidencia a Diseño?'], ['D1', '¿Con qué? Lo tiene todo en la bandeja.'], ['D2', 'Pues a la bandeja.']],
 ];
 let discusionN = 0;
 
@@ -87,6 +95,13 @@ export default buildRoom({
       abrir: async (api) => api.goto('office', 'pecera'), usar: async (api) => api.goto('office', 'pecera'),
       hablar: '¡Buenas noches, Gertrudis! No contesta. Habrá que decírselo a la cara.',
     } },
+    ascensorObjeto('ascensor_pecera', {
+      mirar: 'El ascensor. Lo rediseñó Valentín. No se nota nada: eso es lo bueno.',
+      cerrar: 'Se cierra solo. Con un margen de ocho píxeles exactos.',
+      empujar: 'No se empuja. Se llama. Como a Paco, pero contesta.',
+      tirar: 'Tiro de la puerta. Nada. Va por botonera, como los adultos.',
+      hablar: '«¿Sube o baja?». Hace «tin». Es la conversación más clara de la planta.',
+    }),
     { id: 'pecera_a_ecosistema', name: 'escalera a la planta 2', exit: { room: 'ecosistema' }, handlers: {
       mirar: 'Escalera a la planta 2. La moqueta engorda dos centímetros: ahí está el dinero.',
       usar: async (api) => api.goto('ecosistema', 'pecera'),
@@ -162,7 +177,7 @@ export default buildRoom({
       usar: 'Dibujo un quesito. Herminia lo corrige desde la pantalla. Me lo merezco.',
       empujar: 'Está inclinada desde 2024. Si la enderezo, Leoncio me pide el gráfico.',
     } },
-    { id: 'herminia_portatil', name: 'Herminia', color: '#00C2A8', handlers: {
+    { id: 'herminia_portatil', name: 'Herminia', color: '#FF8C3C', handlers: {
       mirar: seq([['B', 'Herminia. Un portátil que hace infografías sola. Con nuestra tipografía.'], ['B', 'Delante, dos sillas vacías con chaqueta. Mirándola.']]),
       usar: async (api) => api.sayAs(L, 'No la toques. Está en racha desde 2024.'),
       hablar: 'Le digo hola. Me contesta con un gráfico de barras: "hola", 100 %.',
@@ -290,18 +305,27 @@ export default buildRoom({
       'usar:cafe': seq([['B', 'Le sirvo un poco de café.'], ['D3', '...No.'], ['B', 'Pero se lo bebe.']]),
     } },
     { id: 'bandeja_diseno', name: 'bandeja de Diseño y Producto', handlers: {
-      mirar: seq([['B', 'Una bandeja: "ENTREGAS DE DISEÑO Y PRODUCTO". Llena hasta arriba.'], ['B', 'Todo con fecha y a su hora. Desde este lado no la abre nadie.']]),
+      mirar: seq([['B', 'Una bandeja: "ENTREGAS DE DISEÑO Y PRODUCTO". Llena hasta arriba.'], ['B', 'Todo con fecha y a su hora. Desde Desarrollo no la abre nadie.']]),
       abrir: async (api) => {
         if (!api.flag('bandeja_diseno_abierta')) {
           api.sfx('paper');
           await api.say(['Arriba: "Entregado a las 18:29. Todo en la carpeta. Buen fin de semana".', 'Al fondo, de 2017: "La pantalla de Dirección tumbará el CMS".',
             'Sello de Desarrollo: "LEÍDO (PERO NO)".']);
           api.setFlag('bandeja_diseno_abierta', true);
-        } else await api.say('Diseño se fue a las seis y media. Con todo entregado. Como la gente sana.');
+        } else await api.say(['Diseño se fue a las seis y media. Con todo entregado.', 'Menos su director, que está ahí al lado. Ni levanta la vista.']);
       },
       coger: async (api) => api.sayAs(N, 'Déjala. Es lo único ordenado del rincón. Y no es nuestro.'),
       cerrar: 'Ya está cerrada. Es una bandeja: lo suyo es que alguien la abra.',
       'usar:pieza_opa': 'No. Si la dejo aquí, la leen en 2033. Con sello de LEÍDO (PERO NO).',
+    } },
+    // ADENDA 3.2 (trasladado del CPD): el puesto de Valentín, junto a la bandeja de Diseño
+    { id: 'monitor_valentin', name: 'monitor de Valentín', when: '!lector_derribado', handlers: {
+      mirar: seq([['B', 'En su monitor, una aventura gráfica. Es esta Redacción. En pequeño.'], ['B', 'Hay un becario mirando un monitor. Me saludo. Me devuelvo el saludo.']]),
+      usar: seq([[V, 'No toques, que estoy en el clímax.'], ['B', '¿Y cómo acaba?'], [V, 'Con un empujón. Con educación.']]),
+      coger: 'Es la única pantalla calibrada de la planta. No se toca. Se respeta.',
+      empujar: 'Si la muevo dos píxeles, Valentín lo nota. Y yo también, en pequeño.',
+      hablar: 'Le hablo al becario del monitor. Me contesta lo mismo. Con más resolución.',
+      'usar:cafe': val('Ni una gota cerca del monitor. Está calibrado. Yo también.'),
     } },
     { id: 'kanban', name: 'tablero kanban', handlers: {
       mirar: async (api) => {
@@ -379,6 +403,20 @@ export default buildRoom({
       'dar:ticket_n1': async (api) => api.sayAs(R, 'Guárdalo tú. Si lo toco, me vuelvo a dar de alta.'),
     },
       murmurs: ['AMANECER DETECTADO. LO QUE PASÓ DESPUÉS... Perdón. Aún no ha salido.', '¿El sol también va con ticket?'] },
+    // cameo (adenda 1.9 / 4.6b): Valentín Retícula trabaja aquí, a dos metros del coro de Desarrollo. No está en el
+    // epílogo ni en los poscréditos (sábado 6:00: Diseño ya lo había entregado todo). En la escena 7.2 está, lejos (x 712).
+    { id: V, when: '!lector_derribado', handlers: {
+      mirar: seq([['B', 'Valentín Retícula, director de Diseño y Producto.'], ['B', 'El único de Diseño que queda. Va mejor vestido que la planta entera.']]),
+      hablar: async (api) => api.dialog('valentin'),
+      'dar:cafe': val('Gracias. Lo dejo en la esquina superior derecha. Ahí no molesta.'),
+      'dar:ficha_pagina_7': val('Buena ficha. Le subiría un punto el interlineado. Por lo demás, perfecta.'),
+      'dar:pieza_opa': val('Buen titular. Cabe en una línea. Eso también es diseño.'),
+      'dar:*': val('Gracias. Lo coloco donde no estorbe. Eso es casi todo mi trabajo.'),
+      empujar: 'No. Está dirigiendo. Si le empujo, me salgo del encuadre.',
+      tirar: 'No le tiro de la americana. Es de buen corte. Hasta yo lo noto.',
+    },
+      murmurs: ['Margen superior, ocho. Inferior, ocho. Paz.', '«¡Diseño!». Sí, hola. Está en la bandeja.',
+        'Lo entregué a las 18:29. Lo demás es literatura.'] },
     // solo durante la escena 7.2: la escena lo coloca con api.placeActor (art.layout.inigo_sinergia.at)
     { id: 'inigo_sinergia', when: () => false, handlers: {} },
     { id: L, when: '!lector_derribado', handlers: {

@@ -376,9 +376,9 @@ export default buildRoom({
       empujar: async (api) => { api.sfx('door'); await api.goto('catacumba'); },
     } },
     // ADENDA §3.5 · Secretaría de Redacción (Custodia Precinto, presencia sin sprite)
-    { id: 'custodia_precinto', name: 'Secretaría de Redacción', color: '#C04E7A', defaultVerb: 'hablar',
+    { id: 'custodia_precinto', name: 'Secretaría de Redacción', color: '#FF94BE', defaultVerb: 'hablar',
       murmurs: ['Ochenta y tres bolis. Los tengo contados. Los que faltan.', 'Siguiente.', 'Las paredes no oyen. Oigo yo.', '...Buenas noches.'],
-      murmurColor: '#C04E7A',
+      murmurColor: '#FF94BE',
       handlers: {
         mirar: async (api) => { await api.say(['La Secretaría de Redacción. Bajo la persiana, dos manos. Y una llave.', 'Nadie le ha visto la cara desde 2012. Se le oye la mirada.']); },
         hablar: hablarCustodia,

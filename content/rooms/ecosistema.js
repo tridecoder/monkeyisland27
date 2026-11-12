@@ -6,6 +6,7 @@ import { buildRoom } from '../lib/room.js';
 import art from './art/ecosistema.art.js';
 import dialogos, { abrirDueloMaripaz } from './ecosistema.dialogos.js';
 import { flash, gong, SFX, rota } from '../escenas/planta_noble.js';
+import { ascensorObjeto } from '../lib/ascensor.js';
 
 const BORJA = 'borja_engagement', MARIPAZ = 'maripaz_remitido';
 const sayB = (api, t) => api.sayAs(BORJA, t);
@@ -117,6 +118,13 @@ export default buildRoom({
       usar: async (api) => { api.sfx('door'); await api.goto('pecera', 'ecosistema'); },
       empujar: 'Empujar una escalera es bajar sin decidirlo. Aquí se decide todo en Q3.',
     } },
+    ascensorObjeto('ascensor_ecosistema', {
+      mirar: async (api) => api.say(['El ascensor. Marketing le ha puesto pufs delante.', 'Para que la gente no se vaya. Que se «ubique».']),
+      cerrar: 'Se cierra solo. Es lo único de la planta que no pide feedback.',
+      empujar: 'No se empuja. Se activa. Lo dice el vinilo.',
+      tirar: 'Tiro de la puerta. Borja me hace una foto: «Bruno abriendo caminos».',
+      hablar: '«¿Bajas?». Hace «tin». Maripaz me lo factura como conversación.',
+    }),
     { id: 'photocall', name: 'photocall', handlers: {
       mirar: 'Treinta logos y un hueco en medio: «Espacio premium para tu cara».',
       usar: async (api) => {

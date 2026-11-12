@@ -66,7 +66,16 @@ if (content) {
       for (const f of d.finishers || []) if (f.object && !items[f.object]) err(`duelo ${did} (${id}): el remate pide un objeto inexistente ${f.object}`);
     }
   }
-  for (const [rid, r] of Object.entries(rooms)) if (rid !== content.game.startRoom && !Object.values(rooms).some(o => (o.objects || []).some(x => x.exit && x.exit.room === rid))) warn(`sala ${rid}: ninguna salida lleva a ella`);
+  // ascensor con botonera (content/lib/ascensor.js): cada sala con un objeto `ascensor` es una planta; une con todas
+  const { PLANTAS } = await import(pathToFileURL(path.join(C, 'lib', 'ascensor.js')).href);
+  const liftRooms = Object.entries(rooms).filter(([, r]) => (r.objects || []).some(o => o.ascensor)).map(([rid]) => rid);
+  for (const p of PLANTAS) {
+    if (!rooms[p.room]) { err(`ascensor: la planta ${p.n} apunta a una sala inexistente (${p.room})`); continue; }
+    if (!(rooms[p.room].objects || []).some(o => o.id === p.obj && o.ascensor)) err(`ascensor: la sala ${p.room} no tiene el objeto ${p.obj} (ascensorObjeto)`);
+    if (!(rooms[p.room].entries || {}).ascensor) err(`ascensor: la sala ${p.room} no tiene la entrada 'ascensor' en su arte`);
+  }
+  const reachedBy = (rid) => Object.values(rooms).some(o => (o.objects || []).some(x => x.exit && x.exit.room === rid)) || (liftRooms.includes(rid) && liftRooms.length > 1);
+  for (const [rid] of Object.entries(rooms)) if (rid !== content.game.startRoom && !reachedBy(rid)) warn(`sala ${rid}: ninguna salida lleva a ella`);
   if (!rooms[content.game.startRoom]) err('game.startRoom desconocida: ' + content.game.startRoom);
 
   // ---------------------------------------------------------------- 3. static scan of the sources

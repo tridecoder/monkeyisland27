@@ -83,8 +83,60 @@ async function auditCurrentRoom(tag) {
       if (tot && !mine) out.push(`${tag} ${def.id}: «${t.id}» TAPADO entero por ${Object.keys(who).join(', ') || '¿nada?'}`);
       else if (tot && mine / tot < 0.12 && tot > 40) out.push(`${tag} ${def.id}: «${t.id}» casi tapado (${Math.round(100 * mine / tot)} % clicable; lo tapan ${Object.keys(who).join(', ')})`);
     }
+    // 3) PNJ reconocibles (problema 4 del director): cabeza, hombros y torso (el 60 % superior del sprite) a la vista,
+    //    y una zona de clic propia generosa. Se pinta la sala de verdad con el PNJ convertido en silueta magenta y se
+    //    cuentan los píxeles que sobreviven a muebles, mostradores, cristales y primer plano.
+    const VIS_MIN = 0.8, CLICK_MIN = 0.6, CLICK_PX = 120;
+    const cv = document.createElement('canvas'); cv.width = 320; cv.height = 144;
+    const sc = document.createElement('canvas'); sc.width = 320; sc.height = 144;
+    const cg = cv.getContext('2d'), sg = sc.getContext('2d');
+    const origDraw = g.drawActor;
+    const npcs = Object.values(g.actors).filter(a => a.room === def.id && a.visible && a.id !== g.G.player && a.def.hotspot !== false);
+    const vis = [];
+    for (const a of npcs) {
+      g.camX = Math.max(0, Math.min(W - 320, a.x - 160));
+      const cam = Math.round(g.camX);
+      const b = g.actorBox(a);
+      let tint = '#ff00ff';
+      const silhouette = (ctx) => {
+        sg.setTransform(1, 0, 0, 1, 0, 0); sg.globalCompositeOperation = 'source-over'; sg.clearRect(0, 0, 320, 144);
+        sg.setTransform(ctx.getTransform()); origDraw.call(g, sg, a);
+        sg.setTransform(1, 0, 0, 1, 0, 0); sg.globalCompositeOperation = 'source-in'; sg.fillStyle = tint; sg.fillRect(0, 0, 320, 144);
+        sg.globalCompositeOperation = 'source-over';
+        ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(sc, 0, 0); ctx.restore();
+      };
+      const shadow = g.drawActor;
+      g.drawActor = (ctx, x) => (x === a ? silhouette(ctx) : origDraw.call(g, ctx, x));
+      const shake = g.shakeUntil; g.shakeUntil = 0;
+      // dos pasadas (silueta magenta / cian): donde difieren, el PNJ se ve (aunque haya un cristal o una penumbra encima)
+      const pass = (c) => { tint = c; cg.setTransform(1, 0, 0, 1, 0, 0); cg.clearRect(0, 0, 320, 144); g.renderRoom(cg); return cg.getImageData(0, 0, 320, 144).data; };
+      let scene, scene2;
+      try { scene = pass('#ff00ff'); scene2 = pass('#00ffff'); } finally { g.drawActor = shadow; g.shakeUntil = shake; tint = '#ff00ff'; }
+      // referencia: la silueta sola
+      cg.setTransform(1, 0, 0, 1, 0, 0); cg.clearRect(0, 0, 320, 144); cg.translate(-cam, 0); silhouette(cg); cg.setTransform(1, 0, 0, 1, 0, 0);
+      const alone = cg.getImageData(0, 0, 320, 144).data;
+      const y0 = Math.max(0, Math.floor(b.y)), y1 = Math.min(144, Math.floor(b.y + (b.h - 2) * 0.6));
+      let tot = 0, seen = 0;
+      for (let y = y0; y < y1; y++) for (let x = 0; x < 320; x++) {
+        const i = (y * 320 + x) * 4;
+        if (alone[i + 3] < 128) continue;
+        tot++;
+        if (Math.abs(scene[i] - scene2[i]) + Math.abs(scene[i + 1] - scene2[i + 1]) > 150) seen++;
+      }
+      // zona de clic propia: píxeles de su caja donde un clic elige a este PNJ
+      let box = 0, mine = 0;
+      for (let y = Math.ceil(b.y); y < Math.min(144, b.y + b.h); y++) for (let x = Math.ceil(b.x); x < b.x + b.w; x++) {
+        if (x < 0 || x >= W) continue;
+        box++;
+        const t = g.pickAt(x - cam, y); if (t && t.id === a.id) mine++;
+      }
+      const fv = tot ? seen / tot : 0, fc = box ? mine / box : 0;
+      vis.push(`${a.id} ${Math.round(fv * 100)}%/${mine}px`);
+      if (fv < VIS_MIN) out.push(`${tag} ${def.id}: PNJ «${a.id}» medio escondido: solo se ve el ${Math.round(fv * 100)} % de cabeza y torso (mín. ${VIS_MIN * 100} %)`);
+      if (fc < CLICK_MIN || mine < CLICK_PX) out.push(`${tag} ${def.id}: PNJ «${a.id}» con poca zona de clic propia (${mine} px, ${Math.round(fc * 100)} % de su caja)`);
+    }
     g.camX = camSave;
-    return { n: targets.length, issues: out };
+    return { n: targets.length, issues: out, vis };
   }, tag);
 }
 const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'administracion', 'cpd'];
@@ -102,9 +154,10 @@ async function auditAllRooms(tag) {
     await G(() => __game.waitIdle());
     const r = await auditCurrentRoom(tag);
     n += r.n; issues.push(...r.issues);
+    if (args.vis) console.log(`    ${tag} ${room}: ${r.vis.join(' · ')}`);
   }
   await G(() => __game.load('geo'));
-  ok(!issues.length, `${tag}: ${n} hotspots/PNJ en 9 salas — suelo, alcance desde cada entrada y cobertura${issues.length ? '\n      ' + issues.join('\n      ') : ''}`);
+  ok(!issues.length, `${tag}: ${n} hotspots/PNJ en 9 salas — suelo, alcance desde cada entrada, cobertura y PNJ visibles/clicables${issues.length ? '\n      ' + issues.join('\n      ') : ''}`);
 }
 
 // ================================================================== RATÓN REAL
@@ -239,18 +292,21 @@ async function travelMouse(to) {
     const next = await G((to) => {
       const g = __game.game, rooms = g.content.rooms, from = g.state.room;
       if (from === to) return null;
+      const lifts = Object.entries(rooms).map(([rid, r]) => [rid, (r.objects || []).find(o => o.ascensor)]).filter(([, o]) => o);
+      const edges = (r0) => { const out = []; for (const o of rooms[r0].objects || []) { if (o.exit) out.push([o.exit.room, o.id, null]); if (o.ascensor) for (const [rid, lo] of lifts) if (rid !== r0) out.push([rid, o.id, lo.ascensor.label]); } return out; };
       const prev = { [from]: null }, q = [from];
-      while (q.length) { const r0 = q.shift(); for (const o of rooms[r0].objects || []) if (o.exit && !(o.exit.room in prev)) { prev[o.exit.room] = [r0, o.id]; q.push(o.exit.room); } }
+      while (q.length) { const r0 = q.shift(); for (const [d, id, label] of edges(r0)) if (!(d in prev)) { prev[d] = [r0, id, label]; q.push(d); } }
       let r1 = to; while (prev[r1] && prev[r1][0] !== from) r1 = prev[r1][0];
-      return prev[r1] ? prev[r1][1] : 'NO';
+      return prev[r1] ? { id: prev[r1][1], label: prev[r1][2] } : 'NO';
     }, to);
     if (next === null) return;
     if (next === 'NO') fail(`sin camino a ${to}`);
     const before = (await state()).room;
     await settle();
-    await clickTarget(next);          // sin verbo: «Ir a»
+    await clickTarget(next.id);          // sin verbo: «Ir a»
     await settle();
-    if ((await state()).room === before) fail(`la salida ${next} de ${before} no me ha llevado a ninguna parte`);
+    if (next.label) await chooseOption(next.label);   // el ascensor: botonera con clic real
+    if ((await state()).room === before) fail(`la salida ${next.id} de ${before} no me ha llevado a ninguna parte`);
   }
 }
 async function duelMouse(seq) {
@@ -302,11 +358,25 @@ try {
     await settle();
     ok(!!(await state()).dialog, 'clic derecho en Celestino abre su diálogo (verbo por defecto: Hablar)');
     await closeDialogMouse();
+    // geografía del vestíbulo: con el torno cerrado, el ascensor y la escalera están al otro lado (clics reales)
+    const inner = async () => G(() => { const g = __game.game, p = g.player, b = g.room.walk.boxes.find(b => b.id === 'interior'); const P = b.poly; let ins = false;
+      for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > p.y) !== (P[j][1] > p.y) && p.x < (P[j][0] - P[i][0]) * (p.y - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0]) ins = !ins; return ins; });
+    await vclick(290, 128); await settle(); await wait(2500);
+    ok(!(await inner()), 'clic real en la moqueta de detrás de los tornos: Bruno se queda del lado de la calle');
+    await clickTarget('ascensor_vestibulo'); await settle();
+    ok(!(await inner()) && !(await G(() => __game.currentDialogOptions())) && (await state()).room === 'vestibulo', 'clic real en el ascensor antes de abrir el torno: no llega, no hay botonera');
+    await clickTarget('vestibulo_a_redaccion'); await settle();
+    ok(!(await inner()) && (await state()).room === 'vestibulo', 'clic real en la escalera de la Redacción antes de abrir el torno: no llega');
     for (const s of STEPS.filter(s => s.n >= 2 && s.n <= 16)) {
       for (const a of s.acc) await runMouse(a);
       await settle();
       await R.check(s.esp);
       ok(true, `${String(s.n).padStart(2)} [${s.sala}] ${s.txt}`);
+      if (s.n === 7) {                   // torno abierto: ahora sí se llega al ascensor andando (clic real)
+        await clickTarget('ascensor_vestibulo'); await settle();
+        ok(await inner() && !!(await G(() => __game.currentDialogOptions())), 'torno abierto: clic real en el ascensor → Bruno cruza el carril y se abre la botonera');
+        await chooseOption('Nada, me quedo en esta planta.');
+      }
       if (args.lento) await page.screenshot({ path: path.join(here, 'shots', `raton-${String(s.n).padStart(2, '0')}.png`) });
     }
     // clic derecho sobre una salida = Ir a

@@ -11,6 +11,14 @@ const TITULATOR = '#B6FF4D';
 async function presentacionVillano(api) {
   await api.cutscene(async (api) => {
     // (La Pecera. La pantalla gigante marca 3.418 y baja. Yoli se echa colirio.)
+    // Si Bruno ha llegado en ascensor (al otro extremo de la sala), cruza la planta en un fundido: la escena es la misma.
+    if (api.actorPos(api.player).x > 300) {
+      await api.fadeOut(250);
+      api.placeActor(api.player, 'pecera', 186, 120, 'left');
+      api.cameraFollow();
+      api.game.snapCamera();
+      await api.fadeIn(250);
+    }
     await api.walkTo(150, 120);
     api.face('right');
     await api.anim(Y, 'reach', 700);

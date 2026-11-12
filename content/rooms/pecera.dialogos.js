@@ -195,6 +195,39 @@ export default {
     },
   },
 
+  // ---------------------------------------------------------------- adenda 4.6b · cameo de Valentín Retícula
+  // Trabaja en la Pecera, junto a la bandeja de Diseño, a dos metros del coro que culpa a Diseño de todo.
+  valentin: {
+    actor: 'valentin_reticula', start: 'VR0',
+    onStart: async (api) => { await api.sayAs('valentin_reticula', 'Un segundo, que estoy dirigiendo.'); },
+    nodes: {
+      VR0: {
+        options: [
+          { text: '¿Qué está dirigiendo?', once: true,
+            reply: ['Una aventura gráfica sobre esta redacción. Nueve salas. Nueve verbos.', 'Ahora mismo, un becario me pregunta qué estoy dirigiendo.'],
+            lines: [['player', '...¿Ese soy yo?'], ['valentin_reticula', 'Eres un sprite muy bien resuelto. El remolino, sobre todo.']] },
+          { text: '¿Por qué trabaja aquí, al lado de Desarrollo?', once: true,
+            reply: ['Porque aquí se entrega. La bandeja está a dos metros.', 'Y desde aquí oigo en directo de qué tengo la culpa.'],
+            lines: [['player', '¿Y no le molesta?'], ['valentin_reticula', 'Llevo cascos. Sin música. Es aislamiento por diseño.']] },
+          { text: 'Desarrollo dice que todo es culpa de Diseño.',                       // (se queda)
+            reply: ['Lo sé. Lo dicen a dos metros. Yo lo entrego a las 18:29.', 'Diseño tiene la culpa de todo lo que Desarrollo no abre.'] },
+          { text: '¿Sabía que la pantalla tumbaba el CMS?', once: true, if: 'cms_vivo',
+            reply: ['Desde 2017. Está en la bandeja. Primera hoja.', 'Con una flecha roja. De dos píxeles de grosor. Para que se viera.'] },
+          { text: '¿Es verdad que le quieren fusionar con Infografía?', once: true,
+            reply: ['Tercera vez esta semana. No.', 'Infografía hace gráficos. Diseño hace que se entiendan. Son dos oficios.',
+              'Íñigo me lo propuso en una matriz. Se la devolví alineada.'] },
+          { text: '¿Algún consejo?',                                                     // (se queda)
+            reply: ['Si te atascas, llama a tu abuela. La diseñamos como sistema de pistas.', 'Y prueba cosas raras. Aquí todo lo raro está probado.'] },
+          { text: '¿Usted sabía lo del Titulator?', if: 'ruben_encontrado', once: true,
+            reply: ['En mi juego, el Titulator ya era un becario.', 'Una IA no pone las tildes con tanto cariño.'] },
+          { text: '¿Cómo va siempre tan bien vestido?',                                  // (se queda)
+            reply: 'Me visto como entrego: a tiempo y sin adornos de más.' },
+          { text: 'Me voy.', exit: true, reply: 'Sal por el ascensor. Lo he rediseñado. No se nota: eso es lo bueno.' },
+        ],
+      },
+    },
+  },
+
   // ---------------------------------------------------------------- adenda 4.3 coro de Desarrollo
   coro: {
     actor: 'coro_desarrollo', start: 'CO0',
@@ -223,7 +256,7 @@ export default {
             do: async (api) => {
               if (!api.flag('foto_en_organigrama')) {
                 await talk(api, [['D2', 'Diseño y Producto. Se fueron a las seis y media. Menos su director.'],
-                  ['D1', 'Con todo entregado. Qué poca vergüenza.'], ['D3', 'No.']]);
+                  ['D1', 'Que está ahí mismo. Con todo entregado. Qué poca vergüenza.'], ['D3', 'No.']]);
               } else {
                 await talk(api, [['D2', 'Se fueron. Pero en el organigrama les queda uno. El de VACANTE.'], ['B', 'Vacante soy yo.'],
                   ['D1', 'Pues has roto el CMS.'], ['B', 'Llevo aquí diez minutos.'], ['D2', 'Suficiente para Diseño.']]);
@@ -243,7 +276,7 @@ export default {
           await api.wait(900);
           await talk(api, [['D2', '...Lo entregaron a su hora.'], [N, 'Lo tengo en HECHO (PERO NO). Desde 2017. Lo moví yo.'],
             [A, 'Eso no pasó por Desarrollo.'], [N, 'Sí pasó. Por la bandeja.'], ['D3', '...Perdón.'],
-            ['CORO', 'Perdón, Diseño.'], ['D1', 'No se lo digáis. Ya se han ido.']]);
+            ['CORO', 'Perdón, Diseño.'], ['D1', 'No se lo digáis. Que no se entere.'], ['valentin_reticula', 'Ya lo sé.']]);
           api.setState('semaforo_ruido', 'rojo');
           return 'exit';
         },

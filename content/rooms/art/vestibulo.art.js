@@ -238,7 +238,7 @@ function wings(g, a, b, open, tint = PAL.teal[6]) {
   const leaf = (y0, y1) => {
     const x0 = BX(y0), x1 = BX(y1);
     const pts = [[x0, y0 - 28], [x1, y1 - 28], [x1, y1 - 7], [x0, y0 - 7]];
-    tintPoly(g, pts, tint, 0.42);
+    tintPoly(g, pts, tint, 0.55);
     tintPoly(g, [[x0 + 0.5, y0 - 27], [x0 + 1.5, y0 - 27], [x0 + 1.5, y0 - 18], [x0 + 0.5, y0 - 18]], '#ffffff', 0.4);
     line(g, Math.round(x0), y0 - 28, Math.round(x1), y1 - 28, PAL.teal[7]);
     line(g, Math.round(x0), y0 - 7, Math.round(x1), y1 - 7, PAL.teal[3]);
@@ -261,6 +261,7 @@ function backGlass(g) {
 
 function drawBankBack(g) {
   backGlass(g);
+  for (const [d, c] of [[0, PAL.metal[7]], [1, PAL.metal[3]]]) line(g, Math.round(BX(97)), 97 - 46 + d, Math.round(BX(101)), 101 - 30 + d, c);
   cabinet(g, BANK[0]);
 }
 
@@ -365,7 +366,7 @@ function paintBackground(g, dawn) {
 function logo(g) {
   const t = 'elContable.es';
   const tw = measureText(t);
-  const x = Math.round(270 - tw / 2), y = 19;
+  const x = Math.round(268 - tw / 2), y = 19;
   label(g, t, x + 1, y + 2, PAL.ink[0], { bold: true });
   label(g, t, x, y + 1, PAL.metal[3], { bold: true });
   label(g, t, x, y, PAL.metal[7], { bold: true });
@@ -373,13 +374,13 @@ function logo(g) {
   for (const s of ['el', 'elC', 'elCont', 'elContab', 'elContable.']) px(g, cx(s) + 1, y + 10, PAL.gold[5]);
   px(g, x + 2, y + 9, PAL.ink[0]); // agujero sin tornillo en la primera «e»
   px(g, x + 2, y + 10, PAL.wood[0]);
-  hline(g, 226, 33, 88, PAL.wood[0]); hline(g, 226, 34, 88, PAL.wood[5]);   // repisa
-  rect(g, x + 5, 32, 1, 1, PAL.metal[6]); // el tornillo, en la repisa
+  hline(g, x - 4, 31, tw + 8, PAL.wood[0]); hline(g, x - 4, 32, tw + 8, PAL.wood[5]);   // repisa
+  rect(g, x + 5, 30, 1, 1, PAL.metal[6]); // el tornillo, en la repisa
 }
 
 // ------------------------------------------------------------------ altavoz del Ibex con bufanda
 function altavoz(g) {
-  const x = 201, y = 32;
+  const x = 199, y = 26;
   ditherOverlay(g, x + 1, y + 2, 13, 11, PAL.ink[0], 0.5);
   bevel(g, x, y, 13, 11, PAL.metal[5], PAL.metal[7], PAL.metal[2]);
   for (let i = 0; i < 2; i++) for (let j = 0; j < 4; j++) px(g, x + 3 + j * 2, y + 3 + i * 2, PAL.metal[2]);
@@ -393,20 +394,18 @@ function altavoz(g) {
 
 // ------------------------------------------------------------------ cartel colgado sobre los tornos
 function hangingSign(g) {
-  const x = 186, y = 42;
-  vline(g, x + 6, 15, y - 15, PAL.metal[3]); vline(g, x + 34, 15, y - 15, PAL.metal[3]);
-  ditherOverlay(g, x + 2, y + 2, 42, 11, PAL.ink[0], 0.5);
-  bevel(g, x, y, 42, 11, PAL.ink[2], PAL.metal[3], PAL.ink[0]);
-  micro(g, 'ACCESO', x + 3, y + 3, PAL.paper[7]);
-  micro(g, 'REDACC.', x + 3, y + 3, PAL.paper[7]);
-  rect(g, x + 1, y + 1, 40, 9, PAL.ink[1]);
+  const x = 202, y = 49, w = 46;
+  vline(g, x + 5, 15, y - 15, PAL.metal[3]); vline(g, x + w - 6, 15, y - 15, PAL.metal[3]);
+  ditherOverlay(g, x + 2, y + 2, w, 18, PAL.ink[0], 0.5);
+  bevel(g, x, y, w, 18, PAL.ink[2], PAL.metal[3], PAL.ink[0]);
+  rect(g, x + 1, y + 1, w - 2, 16, '#0c2a1c');
   micro(g, 'REDACCIÓN', x + 3, y + 3, PAL.paper[7]);
-  for (let k = 0; k < 3; k++) vline(g, x + 39 - k, y + 3 + k, 5 - k * 2, PAL.gold[6]);   // flecha →
-  hline(g, x + 35, y + 5, 3, PAL.gold[6]);
+  micro(g, 'ASCENSOR', x + 3, y + 10, PAL.paper[7]);
+  for (const ay of [y + 5, y + 12]) { hline(g, x + 39, ay, 3, PAL.gold[6]); vline(g, x + 42, ay - 2, 5, PAL.gold[6]); vline(g, x + 43, ay - 1, 3, PAL.gold[6]); px(g, x + 44, ay, PAL.gold[6]); }
 }
 
 // ------------------------------------------------------------------ mostrador de seguridad de Celestino (junto a los tornos)
-const CX0 = 156, CW = 50, CY = 74;
+const CX0 = 156, CW = 50, CY = 79;   // mostrador bajo: Celestino se ve de cintura para arriba (problema 4)
 function drawCounter(g) {
   const x = CX0, y = CY, w = CW;
   shadowEllipse(g, x + w / 2, 102, w / 2 + 6, 3, 0.75);
@@ -429,7 +428,7 @@ function drawCounter(g) {
 function counterTop(g) {
   const y = CY;
   // buzón de sugerencias (izquierda)
-  const bx = 158, by = 62;
+  const bx = 158, by = CY - 12;
   ditherOverlay(g, bx + 1, by + 2, 14, 12, PAL.ink[0], 0.45);
   bevel(g, bx, by, 13, 12, PAL.red[3], PAL.red[5], PAL.red[1]);
   rect(g, bx + 2, by + 3, 9, 1, PAL.ink[0]);
@@ -484,22 +483,22 @@ function elevator(g) {
 
 // ------------------------------------------------------------------ escalera a la Redacción (planta 1)
 function stairs(g) {
-  const x = 282, y = 24, w = 36, h = 74;
+  const x = 282, y = 38, w = 36, h = 60;
   rect(g, x - 2, y - 2, w + 4, h + 2, PAL.wood[0]);
   gradV(g, x, y, w, h, [PAL.ink[1], PAL.ink[2], PAL.metal[1]]);
   // peldaños que suben hacia la derecha (de 98 a 40)
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 7; i++) {
     const sx = x + i * 4, sy = y + h - 4 - i * 7;
     rect(g, sx, sy, w - i * 4, 3, PAL.red[3]); hline(g, sx, sy, w - i * 4, PAL.red[5]);
     rect(g, sx, sy + 3, w - i * 4, 4, PAL.wood[2]); hline(g, sx, sy + 3, w - i * 4, PAL.wood[4]);
     hline(g, sx, sy + 7, w - i * 4, PAL.ink[0]);
   }
   // pasamanos de latón
-  line(g, x + 2, y + h - 22, x + 34, y + 10, PAL.gold[3], 2); line(g, x + 2, y + h - 24, x + 34, y + 8, PAL.gold[6]);
-  for (const [bx, by] of [[x + 4, y + h - 24], [x + 18, y + h - 38], [x + 32, y + 12]]) vline(g, bx, by, 14, PAL.gold[3]);
-  glow(g, x + 28, y + 12, 16, 16, PAL.gold[5], 0.25, 4);
-  // cartel: REDACCIÓN · 1
-  const sx = 284, sy = 26;
+  line(g, x + 2, y + h - 22, x + 34, y + 4, PAL.gold[3], 2); line(g, x + 2, y + h - 24, x + 34, y + 2, PAL.gold[6]);
+  for (const [bx, by] of [[x + 4, y + h - 24], [x + 18, y + h - 33], [x + 32, y + 6]]) vline(g, bx, by, 12, PAL.gold[3]);
+  glow(g, x + 28, y + 10, 16, 14, PAL.gold[5], 0.25, 4);
+  // cartel: REDACCIÓN · 1 (sobre el arranque de la escalera)
+  const sx = 284, sy = 64;
   rect(g, sx, sy, 32, 12, PAL.crt[2]); frameRect(g, sx, sy, 32, 12, PAL.crt[4]);
   micro(g, 'REDAC.', sx + 2, sy + 2, PAL.crt[6]); micro(g, '1', sx + 27, sy + 2, PAL.gold[6]);
   for (let k = 0; k < 3; k++) hline(g, sx + 26 - k, sy + 8 + k, 1 + k * 2, PAL.gold[6]);   // flecha ↑
@@ -528,6 +527,8 @@ function drawTorno(g, view, t) {
 /** Carril de delante (fuera de servicio, siempre cerrado) + bancada delantera. Decorativo, delante de casi todo. */
 function drawBancadaDelantera(g) {
   wings(g, BANK[1], BANK[2], false, PAL.teal[5]);
+  // pasamanos de acero que une las bancadas: la línea de tornos se lee de la pared al borde de la pantalla
+  for (const [d, c] of [[0, PAL.metal[7]], [1, PAL.metal[3]]]) line(g, Math.round(BX(118)), 118 - 30 + d, Math.round(BX(150)), 150 - 30 + d, c);
   const ym = (BANK[1].y + BANK[2].y - BANK[2].d) / 2;
   // cinta de FUERA DE SERVICIO cruzando el carril
   const x0 = Math.round(BX(ym)) - 9;
@@ -537,7 +538,7 @@ function drawBancadaDelantera(g) {
   cabinet(g, BANK[2]);
 }
 function drawIbex(g, view, t) {
-  const x = 166, y = 24, w = 32, h = 23;
+  const x = 162, y = 22, w = 32, h = 23;
   rect(g, x + 14, y + h, 4, 3, PAL.metal[2]);
   ditherOverlay(g, x + 1, y + 2, w, h, PAL.ink[0], 0.5);
   bevel(g, x - 2, y - 2, w + 4, h + 4, PAL.ink[2], PAL.metal[3], PAL.ink[0]);
@@ -608,12 +609,12 @@ const layout = {
     },
   },
   planta_plastico: { rect: [134, 56, 18, 46], walkTo: [143, 109], face: 'up', priority: 1, draw: (g, v, t) => drawFicus(g, v, t) },
-  pantalla_ibex: { rect: [164, 22, 36, 28], walkTo: [181, 112], face: 'up', draw: (g, v, t) => drawIbex(g, v, t) },
-  altavoz_ibex: { rect: [200, 29, 15, 16], walkTo: [200, 110], face: 'up', priority: 1 },
-  buzon_sugerencias: { rect: [157, 60, 15, 14], walkTo: [165, 111], face: 'up', priority: 1 },
+  pantalla_ibex: { rect: [160, 20, 36, 28], walkTo: [181, 112], face: 'up', draw: (g, v, t) => drawIbex(g, v, t) },
+  altavoz_ibex: { rect: [198, 23, 15, 18], walkTo: [198, 110], face: 'up', priority: 1 },
+  buzon_sugerencias: { rect: [157, 65, 15, 14], walkTo: [165, 111], face: 'up', priority: 1 },
   radio_celestino: {
-    rect: [191, 62, 15, 12], walkTo: [198, 111], face: 'up', priority: 1,
-    layer: 'sorted', zy: 102, prop: true,     // el mostrador tapa las piernas de Celestino: se pinta siempre
+    rect: [191, 67, 15, 12], walkTo: [198, 111], face: 'up', priority: 1,
+    layer: 'sorted', zy: 104, prop: true,     // el mostrador tapa las piernas de Celestino: se pinta siempre
     draw: (g) => { drawCounter(g); counterTop(g); },
   },
   // la línea de tornos: el hotspot cubre el carril de Bruno y la bancada central; Bruno se acerca por el lado de la calle
@@ -622,9 +623,9 @@ const layout = {
     layer: 'sorted', zy: 124, draw: (g, v, t) => drawTorno(g, v, t),
   },
   torno_bancada: { rect: [226, 108, 36, 36], layer: 'sorted', zy: 145, prop: true, draw: (g) => drawBancadaDelantera(g) },
-  logo_pared: { rect: [226, 14, 88, 20], walkTo: [204, 108], face: 'right' },
+  logo_pared: { rect: [228, 14, 80, 20], walkTo: [204, 108], face: 'right' },
   ascensor_vestibulo: { rect: [234, 36, 38, 62], walkTo: [253, 109], face: 'up' },
-  vestibulo_a_redaccion: { rect: [280, 22, 38, 76], walkTo: [300, 109], face: 'right' },
+  vestibulo_a_redaccion: { rect: [280, 36, 38, 62], walkTo: [300, 109], face: 'right' },
   celestino: { at: [181, 99, 'down'], walkTo: [181, 112], face: 'up' },
   evaristo_salvedad: { at: [196, 113, 'left'], walkTo: [186, 118], face: 'right' },
 };

@@ -152,10 +152,10 @@ export default {
     murmurs: ['Treinta años en este mostrador. El mostrador, cuarenta.', 'Si me preguntan por el Ibex, digo que va.'],
   },
   yoli_tendencias: {
-    name: 'Yoli', color: '#FF4FA3', speed: 70,
+    name: 'Yoli', color: '#FF78B8', speed: 70,
     doll: {
-      skin: '#f0c4a0', hair: '#3a2018', hairStyle: 'highponytail', hairStreak: '#ff4fa3', glasses: 'thick', glassesColor: '#1a1418',
-      shirt: '#4a5a80', emblem: '#ff4fa3', pants: '#2a2a3a', shoes: '#f0f0f0', prop: 'eyedrops', build: 'slim', height: 0.97,
+      skin: '#f0c4a0', hair: '#3a2018', hairStyle: 'highponytail', hairStreak: '#FF78B8', glasses: 'thick', glassesColor: '#1a1418',
+      shirt: '#4a5a80', emblem: '#FF78B8', pants: '#2a2a3a', shoes: '#f0f0f0', prop: 'eyedrops', build: 'slim', height: 0.97,
     },
     murmurs: ['Precio café hoy, precio café 2026, precio café por qué...', 'Si baja otra vez, me pongo colirio en el alma.',
       'Busco "el Contable" y salen gestorías. Nos ganan en SEO.', 'Hacen más ruido que mi gráfica cuando baja.'],
@@ -180,7 +180,7 @@ export default {
     murmurs: ['CUERPO 9. INTERLINEADO 10. CORAZÓN 12.', 'GOYITA, ¿ME OYES? TÚ AGUANTA.'],
   },
   aurora_galerada: {
-    name: 'Aurora', color: '#E04848', speed: 48,
+    name: 'Aurora', color: '#FF8A7A', speed: 48,
     doll: {
       skin: '#f0c8a8', hair: '#a8a8b0', hairStyle: 'bun', hairPencil: '#d02020', glasses: 'half', glassesColor: '#6a5040',
       glassesChain: '#d0b060', shirt: '#e8e0d8', jacket: '#7a2234', skirt: '#4a3a40', shoes: '#2a1a20', height: 0.92, build: 'slim',
@@ -188,7 +188,7 @@ export default {
     murmurs: ['«Detrás mío». Ha dicho «detrás mío». En esta planta.', 'Una tilde. Solo pido una tilde.'],
   },
   gervasio_acta: {
-    name: 'Gervasio', color: '#8FA8C8', speed: 52,
+    name: 'Gervasio', color: '#AEC6E6', speed: 52,
     doll: {
       skin: '#e0a888', hair: '#3a3030', hairStyle: 'combover', shirt: '#e0e4ec', jacket: '#4a4c56', tie: '#7a1f2c',
       pocketItem: '#202028', pocketKind: 'phones', prop: 'folder', propColor: '#c8a868',
@@ -197,7 +197,7 @@ export default {
     murmurs: ['Eso, en todo caso, lo hablamos.', 'Diecinueve años. Ni un marrón. Ni uno.', 'Hoy me han preguntado tres veces por mi salud. Debo de estar fatal.'],
   },
   begona_triplicado: {
-    name: 'Begoña', color: '#A884E0', speed: 46,
+    name: 'Begoña', color: '#C0A2F6', speed: 46,
     doll: {
       skin: '#eab894', hair: '#8a3a22', hairStyle: 'bouffant', glasses: 'thick', glassesColor: '#c82020', shirt: '#cdb8e0',
       armbands: '#34343e', prop: 'stamps', skirt: '#3a3448', shoes: '#2a1a24', lipstick: '#b03040', earrings: '#e0c050', height: 0.95,
@@ -213,7 +213,7 @@ export default {
     murmurs: ['Sí, el photocall en el baño también.', 'Esto es contenido. Aquello es contenido. ¿Tú eres contenido?'],
   },
   maripaz_remitido: {
-    name: 'Maripaz', color: '#FF8C5A', speed: 56,
+    name: 'Maripaz', color: '#FF8A60', speed: 56,
     doll: {
       skin: '#f0c098', hair: '#f0d070', hairStyle: 'mane', shirt: '#fff0e8', jacket: '#ff7a52', skirt: '#ff7a52',
       headset: '#2a2a30', bracelets: '#e8c040', earrings: '#e8c040', lipstick: '#d04060', prop: 'mallet', propColor: '#b03028',
@@ -222,7 +222,7 @@ export default {
     murmurs: ['Te pongo un «ofrecido por» tan pequeño que solo lo verá el supervisor.', '¿Y una portada desplegable con olor a chorizo? Piénsalo.'],
   },
   paco_ticket: {
-    name: 'Paco', color: '#6FA8FF', speed: 50,
+    name: 'Paco', color: '#92C0FF', speed: 50,
     doll: {
       skin: '#ecdccc', hair: '#4a3a2a', hairStyle: 'short', beard: 'long', glasses: 'square', glassesColor: '#2a2a2a',
       glassesTape: '#f4f4f4', shirt: '#74767e', emblem: '#c8ccd8', keys: '#b8bcc4', pants: '#3a3a44', shoes: '#2a2a2a',
@@ -272,10 +272,10 @@ export default {
     // Jefe de Infografía (pecera, 180-260 px). Delantal de dibujante con manchas de rotulador de colores, compás en el
     // bolsillo del pecho, carpeta de cartulinas bajo el brazo y un quesito de cartulina prendido como una medalla.
     // Sus rótulos (Herminia) salen en el mismo color.
-    name: 'Leoncio', color: '#00C2A8', speed: 56,
+    name: 'Leoncio', color: '#3CE0C6', speed: 56,
     doll: {
       skin: '#e4b894', hair: '#4a3a30', hairStyle: 'short', shirt: '#f2e6d0', vest: '#e8dfc6', crumbs: '#e0508c',
-      emblem: '#00c2a8', pocketItem: '#c8ccd4', pocketKind: 'ruler', prop: 'folder', propColor: '#e8d49a',
+      emblem: '#3CE0C6', pocketItem: '#c8ccd4', pocketKind: 'ruler', prop: 'folder', propColor: '#e8d49a',
       sleeves: 'short', pants: '#4e5a48', shoes: '#3a2e26', height: 0.99,
     },
     murmurs: ['Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.', 'Cuarenta y un pósits. Cuarenta y un «NO». Es una serie muy estable.', 'Si la cinta avanza otro palmo, me piden pasaporte para el Office.'],
@@ -283,7 +283,7 @@ export default {
   anselmo_monolito: {
     // Director de Desarrollo (pecera, 560-610 px). Chaleco acolchado gris con muchos bolsillos, un rollo de cinta de
     // carrocero colgado del cinturón como una pistolera (`keys`, color cinta), un archivador bajo el brazo.
-    name: 'Anselmo', color: '#D96CFF', speed: 54,
+    name: 'Anselmo', color: '#E496FF', speed: 54,
     doll: {
       skin: '#dcae88', hair: '#2e2830', hairStyle: 'short', shirt: '#b4503c', vest: '#8c9098', keys: '#e8d8a0',
       prop: 'folder', propColor: '#2f4f86', pants: '#5c5c46', shoes: '#34281c', height: 1.02, build: 'normal',
@@ -294,10 +294,10 @@ export default {
     // Director de Controlling y Financiero (administracion; epílogo, vestibulo). Chaqueta de punto gris perla abrochada,
     // corbata con estampado de comas diminutas, lupa colgada de un cordón, lápiz bicolor y un inalámbrico en la mano.
     // En globos: EVARISTO. En el clímax solo suena por el teléfono de conferencias (sin sprite).
-    name: 'Evaristo', color: '#B5A642', speed: 46,
+    name: 'Evaristo', color: '#F0F0A8', speed: 46,
     doll: {
       skin: '#e8c4a4', hair: '#b4b6bc', hairStyle: 'parted', shirt: '#f4f2ea', jacket: '#b9bcc4', tie: '#33427a', tieDots: '#f2ecc4',
-      loupe: '#b5a642', pencil: true, pencilColor: '#c03030', prop: 'phone', propColor: '#f0f0f2',
+      loupe: '#F0F0A8', pencil: true, pencilColor: '#c03030', prop: 'phone', propColor: '#f0f0f2',
       pants: '#54545e', shoes: '#2e2420', height: 0.97, build: 'slim',
     },
     murmurs: ['Coma. Coma. Punto y coma. Esto es un punto y coma disfrazado.', 'Cláusula 12... sigue ahí. Bien. Buenas noches, cláusula 12.', '(al teléfono) No, no es urgente. Solo es importante. No es lo mismo.', 'Plaza 3, sucesión en disputa. Esto no es un garaje. Es una herencia.'],
@@ -306,7 +306,7 @@ export default {
     // Cameo: director de Diseño y Producto (cpd, mesa plegable entre los armarios 24 y 25). Alto, sin barba, con gafas,
     // atlético sin llegar a muy musculado; moderno y muy bien vestido: americana de buen corte verde botella, camiseta
     // blanca lisa, pantalón negro pitillo, zapatillas blancas y reloj. Prendas y colores a confirmar por el retratado.
-    name: 'Valentín', color: '#E0E0FF', speed: 62,
+    name: 'Valentín', color: '#C0E8FF', speed: 62,
     doll: {
       skin: '#eac4a2', hair: '#2c2422', hairStyle: 'short', glasses: 'round', glassesColor: '#0a0a10',
       shirt: '#f8f8fa', jacket: '#2f7058', pants: '#202028', shoes: '#f6f6f6', bracelets: '#c4c8d0',
@@ -319,9 +319,9 @@ export default {
   // Son actores solo para tener nombre y color al hablar (`api.sayAs`): NUNCA se colocan en una sala (el hotspot que
   // las representa es un objeto de la sala con el mismo id, o un objeto cercano). Para que el texto salga encima de
   // su objeto usa `api.sayFrom('<objeto>', texto)`, que toma el `color` del objeto (declarado igual en el stub).
-  custodia_precinto: { name: 'Custodia', color: '#C04E7A', hotspot: false, presence: 'manos bajo una persiana metálica (office)', doll: {} },
+  custodia_precinto: { name: 'Custodia', color: '#FF94BE', hotspot: false, presence: 'manos bajo una persiana metálica (office)', doll: {} },
   tadeo_adjunto: { name: 'Tadeo', color: '#FFCC99', hotspot: false, presence: 'portátil (ecosistema) y móvil (avisos RV:)', doll: {} },
-  herminia: { name: 'Herminia', color: '#00C2A8', hotspot: false, presence: 'rótulos en el portátil de Leoncio (pecera)', doll: {} },
+  herminia: { name: 'Herminia', color: '#FF8C3C', hotspot: false, presence: 'rótulos en el portátil de Leoncio (pecera)', doll: {} },
   coro_desarrollo: { name: 'CORO', color: '#7FFFD4', hotspot: false, presence: 'los tres devs, a la vez', doll: {} },
   dev_1: { name: 'DEV 1', color: '#7FFFD4', hotspot: false, presence: 'del coro: indignado', doll: {} },
   dev_2: { name: 'DEV 2', color: '#7FFFD4', hotspot: false, presence: 'del coro: más indignado', doll: {} },
@@ -335,9 +335,9 @@ export default {
     murmurs: ['PRECALENTANDO RENCOR...', 'LIMPIEZA AUTOMÁTICA: NADIE ME LIMPIA.'],
   },
   lector_medio: {
-    // El Lector Medio (§2.14): solo reproduce su grabación (#CCCCCC): «A mí lo que me interesa es la economía. Y ahorrar.»
+    // El Lector Medio (§2.14): solo reproduce su grabación (#E8C8A8; antes #CCCCCC, que se confundía con Gervasio): «A mí lo que me interesa es la economía. Y ahorrar.»
     // Variantes automáticas: con la chaqueta de Ramírez (chaqueta_en_lector) y caído (lector_derribado).
-    name: 'Lector Medio', color: '#CCCCCC', defaultVerb: 'mirar', speed: 1,
+    name: 'Lector Medio', color: '#E8C8A8', defaultVerb: 'mirar', speed: 1,
     sprite: lectorBase,
     // su grabación, como murmullo (calla en cuanto lo derriban)
     murmurs: (v) => (v.flag('lector_derribado') ? null : ['A mí lo que me interesa es la economía. Y ahorrar.']),

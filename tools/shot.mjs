@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Screenshot a room for art review: node tools/shot.mjs <roomId> [entry] [--debug] [--x=<roomX>] [--out=file.png] [--scale=3]
+// Screenshot a room for art review: node tools/shot.mjs <roomId> [entry] [--debug] [--x=<roomX>] [--y=<roomY>] [--out=file.png] [--scale=3]
+//   [--flags=a,b=3,c] (set flags before the shot: name or name=JSON) [--verb=hablar:obj] (do a verb first, shot mid-dialog)
 // Saves to tools/shots/room-<roomId>.png by default. Prints content errors, exits 1 if any.
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -28,7 +29,10 @@ await page.goto(`http://localhost:${server.address().port}/${q}`);
 await page.waitForFunction(() => window.__game && __game.state().mode === 'play', null, { timeout: 10000 });
 await page.evaluate(() => { __game.skipText(true); return __game.waitIdle(); });
 await page.evaluate(() => __game.skipText(false));
+if (flags.flags) await page.evaluate(list => { for (const kv of String(list).split(',')) { const [k, v] = kv.split('='); __game.setFlag(k, v === undefined ? true : JSON.parse(v)); } const g = __game.game; g.applyPresence(); g.repaint(); }, flags.flags);
+if (flags.verb) { const [v, o] = String(flags.verb).split(':'); await page.evaluate(([v, o]) => { __game.doVerb(v, o); }, [v, o]); await page.waitForTimeout(Number(flags.wait || 2500)); }
 if (flags.x !== undefined) await page.evaluate(x => { const g = __game.game; g.player.x = Number(x); g.snapCamera(); }, flags.x);
+if (flags.y !== undefined) await page.evaluate(y => { __game.game.player.y = Number(y); }, flags.y);
 await page.waitForTimeout(400);
 await page.screenshot({ path: out });
 console.log('Guardado:', out);

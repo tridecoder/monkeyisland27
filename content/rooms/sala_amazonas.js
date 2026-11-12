@@ -66,7 +66,7 @@ export default buildRoom({
       hablar: 'Le pregunto cuándo termina el orden del día. Me mira como un pósit.',
       empujar: 'Empujo la puerta de al lado. Estaba abierta. Nadie lo había comprobado.',
     } },
-    { id: 'proyector', name: 'proyector', when: 'acto_3_iniciado', state: 'diapo_247', color: '#E8E8FF', handlers: {
+    { id: 'proyector', name: 'proyector', when: 'acto_3_iniciado', state: 'diapo_247', color: '#B4E4FF', handlers: {
       mirar: async (api) => {
         if (api.getState('proyector') === 'diapo_248') await api.say('Diapositiva 248: «El viaje continúa». Ya no la mira nadie.');
         else await api.say('Diapositiva 247 de 400: «Sinergias exponenciales: el viaje». No hay vuelta.');
@@ -107,7 +107,7 @@ export default buildRoom({
       abrir: 'Abrir uno es asumir un gasto. Mejor me deshidrato con dignidad.',
       empujar: async (api) => { api.sfx(SFX.botellines); await api.say('Los alineo. Catorce en fila. Parecen un Consejo.'); },
     } },
-    { id: 'figurantes_mercados', name: 'redactores de Mercados', when: '!reunion_terminada', color: '#c8c4d8',
+    { id: 'figurantes_mercados', name: 'redactores de Mercados', when: '!reunion_terminada', color: '#E0CCA4',
       murmurs: ['¿Sigue siendo marzo?', 'Yo propongo una reunión para ver el punto tres.', 'Entramos cinco minutitos. En marzo.',
         '¿Me veis la pantalla? ...¿Hola? ¿Me veis?', 'Que alguien pida sala para salir de la sala.'],
       handlers: {

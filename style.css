@@ -3,18 +3,37 @@ html, body {
   height: 100%;
   background: #000;
   overflow: hidden;
-  touch-action: none;
+  overscroll-behavior: none;          /* sin rebote elástico */
+  touch-action: none;                 /* sin zoom por doble toque ni pellizco */
   -webkit-user-select: none;
   user-select: none;
+  -webkit-touch-callout: none;        /* sin menú al mantener pulsado */
+  -webkit-text-size-adjust: 100%;
 }
+body { position: fixed; inset: 0; }
+/* zonas seguras (notch, barra de inicio): el lienzo se calcula dentro del relleno (core.js resize) */
 #stage {
   position: fixed;
   inset: 0;
+  box-sizing: border-box;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: #000;
 }
+#rotate-hint {
+  margin-top: 14px;
+  padding: 6px 12px;
+  color: #c4aae6;
+  font: 14px/1.2 system-ui, -apple-system, sans-serif;
+  border: 1px solid #2a2444;
+  border-radius: 6px;
+  background: #0c0a16;
+  pointer-events: none;
+}
+#rotate-hint[hidden] { display: none; }
 #screen {
   display: block;
   image-rendering: pixelated;
@@ -22,6 +41,9 @@ html, body {
   cursor: none;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .fatal {
   position: fixed; left: 8px; top: 8px; right: 8px;

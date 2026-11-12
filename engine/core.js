@@ -3,6 +3,7 @@ import { WalkMap } from './walk.js';
 import { getFrame, paperDoll } from './sprites.js';
 import { AudioSystem } from './audio.js';
 import { drawText, wrap, measure, LINE_H } from './font.js';
+import { toggleFullscreen, updateRotateHint } from './fullscreen.js';
 import { shadowEllipse, PAL } from './draw.js';
 import { makeApi } from './script.js';
 import { runDialog } from './dialog.js';
@@ -80,6 +81,9 @@ export function normalizeContent(mod) {
   };
 }
 
+/** Banda translúcida bajo el texto hablado (game.speechBacking la sustituye; null la quita). La comprueba tools/contrast.mjs. */
+export const SPEECH_BACKING = { color: '#06050c', alpha: 0.8 };
+
 export class Game {
   constructor(canvas, contentModule, opts = {}) {
     this.display = canvas;
@@ -134,7 +138,12 @@ export class Game {
     this.validate();
     this.bindInput();
     this.resize();
-    window.addEventListener('resize', () => this.resize());
+    const rs = () => { this.resize(); clearTimeout(this.rsT); this.rsT = setTimeout(() => this.resize(), 250); };   // iOS da el tamaño final un poco después
+    window.addEventListener('resize', rs);
+    window.addEventListener('orientationchange', rs);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', rs);
+    document.addEventListener('fullscreenchange', rs);
+    document.addEventListener('webkitfullscreenchange', rs);
     this.last = performance.now();
     requestAnimationFrame(ts => this.frame(ts));
     window.addEventListener('error', e => this.error('Error no capturado: ' + e.message, e.error));
@@ -980,6 +989,7 @@ export class Game {
       UI.drawPanel(this, g);
     }
     if (this.menu) Screens.drawMenu(this, g);
+    if (this.iosHelp) Screens.drawIosHelp(this, g);
     this.debug.draw(g);
     if (this.toast && this.realTime < this.toast.until && this.debug.on) {
       const lines = wrap(this.toast.text, 300);
@@ -1107,22 +1117,45 @@ export class Game {
       let top = bottom - sp.lines.length * LINE_H;
       const minTop = this.hud ? Math.max(2, this.hudTop) : 2;
       if (top < minTop) top = minTop;
+      // legibilidad (problema 5): bajo cada línea, una banda oscura translúcida pegada al texto (el contorno negro de
+      // 8 vecinos sigue ahí). Así el texto de color se lee sobre fondos claros (planta 2 lila) y oscuros (CPD).
+      const SB = this.G.speechBacking === undefined ? SPEECH_BACKING : this.G.speechBacking;
+      if (SB) {
+        g.save(); g.globalAlpha = SB.alpha; g.fillStyle = SB.color;
+        sp.lines.forEach((l, i) => { const lw = measure(l) + 6; g.fillRect(Math.round(cx - lw / 2), top + i * LINE_H - 2, lw, LINE_H + 1); });
+        g.restore();
+      }
       sp.lines.forEach((l, i) => drawText(g, l, cx, top + i * LINE_H, sp.color, { align: 'center' }));
     }
   }
 
   // ------------------------------------------------------------------ input
+  /** Tamaño del lienzo: la mayor escala nítida que cabe en el área útil (descontando las zonas seguras del notch y la
+   *  barra de inicio, que el CSS pone como relleno de #stage). En escritorio y pantallas de 1x, escala entera; en
+   *  pantallas táctiles de alta densidad (iPhone), ocupa todo el alto/ancho disponible con píxeles «nearest» (a 3x de
+   *  densidad la diferencia entre 5 y 6 píxeles físicos no se ve, y la escala entera dejaba un 15 % de pantalla negra). */
   resize() {
     const dpr = window.devicePixelRatio || 1;
-    const W = window.innerWidth, H = window.innerHeight;
+    const stage = this.display.parentElement;
+    let W = window.innerWidth, H = window.innerHeight;
+    if (window.visualViewport) { W = Math.min(W, window.visualViewport.width); H = Math.min(H, window.visualViewport.height); }
+    if (stage && window.getComputedStyle) {
+      const cs = window.getComputedStyle(stage);
+      W -= (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      H -= (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+    }
+    W = Math.max(1, W); H = Math.max(1, H);
     const devW = W * dpr, devH = H * dpr;
-    let s = Math.floor(Math.min(devW / SCREEN_W, devH / SCREEN_H));
+    const fit = Math.min(devW / SCREEN_W, devH / SCREEN_H);
+    const coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    let s = Math.floor(fit);
     let cw, ch;
-    if (s >= 1) { cw = SCREEN_W * s; ch = SCREEN_H * s; }
-    else { const f = Math.min(devW / SCREEN_W, devH / SCREEN_H); cw = Math.floor(SCREEN_W * f); ch = Math.floor(SCREEN_H * f); }
-    this.display.width = cw; this.display.height = ch;
+    if (s >= 1 && !(coarse && dpr >= 2 && s / fit < 0.97)) { cw = SCREEN_W * s; ch = SCREEN_H * s; }
+    else { cw = Math.floor(SCREEN_W * fit); ch = Math.floor(SCREEN_H * fit); }
+    if (this.display.width !== cw || this.display.height !== ch) { this.display.width = cw; this.display.height = ch; }
     this.display.style.width = (cw / dpr) + 'px';
     this.display.style.height = (ch / dpr) + 'px';
+    updateRotateHint();
   }
   toVirtual(e) {
     const r = this.display.getBoundingClientRect();
@@ -1179,6 +1212,7 @@ export class Game {
       }
       if (e.key === '.' || e.key === 'Enter') { if (this.busy) this.skipSpeech(); return; }
       if (e.key === 'F5') { e.preventDefault(); if (this.mode === 'play') this.toggleMenu(); return; }
+      if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) { toggleFullscreen(this); return; }
       if (this.choice && /^[1-9]$/.test(e.key)) { const i = +e.key - 1; if (i < this.choice.options.length && !this.choice.disabled.has(i)) this.choice.resolve(i); return; }
       if (this.itemPick && (e.key === 'Backspace')) { this.itemPick.resolve(null); return; }
       this.debug.key(e);
@@ -1216,6 +1250,7 @@ export class Game {
     }
   }
   click(x, y, button) {
+    if (this.iosHelp) { if (this.realTime - this.iosHelp.at > 300) this.iosHelp = null; return; }   // el panel de ayuda del iPhone se cierra con un toque
     if (this.menu) { Screens.menuClick(this, x, y); return; }
     if (this.mode === 'title') { Screens.titleClick(this, x, y); return; }
     if (this.mode === 'ending') { Screens.endingClick(this, x, y); return; }

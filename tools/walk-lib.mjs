@@ -4,7 +4,7 @@
 // cierra su globo (como un clic) en cuanto `state().aviso` es true, de modo que el test los acepta y sigue.
 export class StepFail extends Error {}
 export const fail = (msg) => { throw new StepFail(msg); };
-export const FAREWELLS = ['nada, celestino', 'nada, aurora', 'nada. me iba', 'nada, ya me voy', 'nada, solo miraba', 'me voy', 'ahora vuelvo', 'lo pienso y vuelvo', 'gracias, begoña', 'prometo cuidarlo', 'nada'];
+export const FAREWELLS = ['nada, me quedo en esta planta', 'nada, celestino', 'nada, aurora', 'nada. me iba', 'nada, ya me voy', 'nada, solo miraba', 'me voy', 'ahora vuelvo', 'lo pienso y vuelvo', 'gracias, begoña', 'prometo cuidarlo', 'nada'];
 export function createRunner(page) {
   const G = (fn, arg) => page.evaluate(fn, arg);
   const state = () => G(() => __game.state());
@@ -35,17 +35,32 @@ async function travel(to) {
     const g = __game.game, rooms = g.content.rooms;
     const from = g.state.room;
     if (from === to) return { ok: true, path: [] };
-    // BFS over `exit:` hotspots
+    // BFS over `exit:` hotspots + the lift (objects with `ascensor`: one edge to every other floor, via its panel)
+    const lifts = Object.entries(rooms).map(([rid, r]) => [rid, (r.objects || []).find(o => o.ascensor)]).filter(([, o]) => o);
+    const edges = (r0) => {
+      const out = [];
+      for (const o of rooms[r0].objects || []) {
+        if (o.exit) out.push([o.exit.room, o.id, null]);
+        if (o.ascensor) for (const [rid, lo] of lifts) if (rid !== r0) out.push([rid, o.id, lo.ascensor.label]);
+      }
+      return out;
+    };
     const prev = { [from]: null }; const q = [from];
     while (q.length) {
       const r0 = q.shift();
-      for (const o of rooms[r0].objects || []) if (o.exit && !(o.exit.room in prev)) { prev[o.exit.room] = [r0, o.id]; q.push(o.exit.room); }
+      for (const [dest, id, label] of edges(r0)) if (!(dest in prev)) { prev[dest] = [r0, id, label]; q.push(dest); }
     }
     if (!(to in prev)) return { ok: false, msg: `no hay camino de salidas de ${from} a ${to}` };
     const path = []; for (let r1 = to; prev[r1]; r1 = prev[r1][0]) path.unshift(prev[r1]);
-    for (const [r0, exit] of path) {
+    for (const [r0, exit, label] of path) {
       if (g.state.room !== r0) return { ok: false, msg: `esperaba estar en ${r0} y estoy en ${g.state.room}` };
-      await __game.doVerb('ir', exit);
+      if (label) {
+        await __game.doVerb('usar', exit);
+        const opts = __game.currentDialogOptions() || [];
+        const k = opts.findIndex(o => o === label);
+        if (k < 0) return { ok: false, msg: `el ascensor de ${r0} no ofrece «${label}» (${JSON.stringify(opts)})` };
+        await __game.chooseDialog(k);
+      } else await __game.doVerb('ir', exit);
       if (__game.currentDialogOptions()) return { ok: true, dialog: true, path };
       if (g.state.room === r0) return { ok: false, msg: `la salida ${exit} de ${r0} no lleva a ninguna parte (¿bloqueada?)` };
     }

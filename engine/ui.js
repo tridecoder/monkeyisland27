@@ -13,12 +13,14 @@ export const LAYOUT = {
   iconW: 28, iconH: 18,
 };
 
-const COL = {
+// Colores del panel. Legibilidad (problema 5, tools/contrast.mjs): todo texto ≥ 4.5:1 sobre el fondo del panel, incluidas
+// las opciones deshabilitadas (gris neutro, legible pero distinto del azul de las opciones normales).
+export const COL = {
   bg: ['#06050b', '#0c0a16', '#121022'],
   border: '#2a2444',
-  verb: '#5d7fae', verbHover: '#cfe4ff', verbDefault: '#f2d468', verbSel: '#ffffff',
-  sentence: '#b89ad8', sentenceVerb: '#e8d8ff',
-  opt: '#7e9ed6', optHover: '#ffe27a', optDisabled: '#3e3c58',
+  verb: '#86a8dc', verbHover: '#dcecff', verbDefault: '#f2d468', verbSel: '#ffffff', verbOff: '#8a86ac',
+  sentence: '#c4aae6', sentenceVerb: '#eee2ff',
+  opt: '#94b6ee', optHover: '#ffe27a', optDisabled: '#8e8a9e',
   cell: '#15122a', cellLine: '#252040', cellHover: '#2a2448',
 };
 
@@ -90,7 +92,7 @@ function panelBg(g) {
 }
 
 function arrow(g, x, y, w, h, up, enabled, hover) {
-  const c = !enabled ? '#2a2640' : hover ? COL.verbHover : COL.verb;
+  const c = !enabled ? COL.verbOff : hover ? COL.verbHover : COL.verb;
   rect(g, x, y, w, h, hover && enabled ? '#1c1834' : '#100e1e');
   hline(g, x, y, w, '#26203c'); vline(g, x, y, h, '#26203c');
   const cx = x + (w >> 1), cy = y + (h >> 1);
@@ -113,7 +115,7 @@ export function drawPanel(game, g) {
   drawText(g, sent, 160, L.sentenceY, game.ui.sentence ? COL.sentenceVerb : COL.sentence, { align: 'center' });
   // menu icon
   const mh = hit && hit.type === 'menu';
-  for (let i = 0; i < 3; i++) rect(g, L.menuX + 2, L.menuY + 2 + i * 3, 9, 1, mh ? COL.verbHover : '#3e3a5c');
+  for (let i = 0; i < 3; i++) rect(g, L.menuX + 2, L.menuY + 2 + i * 3, 9, 1, mh ? COL.verbHover : COL.verbOff);
   // verbs
   const hov = game.ui.hover;
   const defVerb = !game.busy && hov && !game.ui.verb ? game.defaultVerbFor(hov) : null;

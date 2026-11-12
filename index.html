@@ -2,14 +2,24 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
+  <!-- web app instalable (iPhone: Compartir → Añadir a pantalla de inicio; se abre sin barras del navegador) -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Fe de erratas">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <title>FE DE ERRATAS</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main id="stage">
     <canvas id="screen" width="320" height="200" aria-label="Pantalla del juego"></canvas>
+    <div id="rotate-hint" hidden>↻ Gira el móvil para jugar en grande</div>
   </main>
   <noscript>Este juego necesita JavaScript.</noscript>
   <script type="module" src="engine/main.js"></script>

@@ -1,8 +1,9 @@
 // Title screen, pause/save/load menu, ending credits.
 import { drawText, measure, wrap, LINE_H } from './font.js';
 import { rect, ditherOverlay, frameRect, gradV, PAL, hline } from './draw.js';
+import { toggleFullscreen, fullscreenLabel, isStandalone } from './fullscreen.js';
 
-const C = { item: '#8fb0e0', hover: '#ffe27a', dis: '#4a4868', title: '#f4e6c0', box: '#0e0c1a', boxLine: '#4a4070' };
+export const C = { item: '#9cbcec', hover: '#ffe27a', dis: '#8e8a9e', title: '#f4e6c0', box: '#0e0c1a', boxLine: '#4a4070', faint: '#a49ec4' };
 
 // ------------------------------------------------------------- generic menu
 function layoutItems(items, cx, y0, lh = 13) {
@@ -33,6 +34,7 @@ function titleItems(game) {
   const items = [{ label: game.G.title && game.G.title.newGame || 'Nueva partida', act: 'new' }];
   if (game.slotInfo('auto')) items.push({ label: 'Continuar', act: 'continue' });
   items.push({ label: 'Cargar partida', act: 'load', enabled: [1, 2, 3].some(s => game.slotInfo(s)) });
+  if (!isStandalone()) items.push({ label: fullscreenLabel(), act: 'fullscreen' });
   return items;
 }
 export function drawTitle(game, g) {
@@ -46,7 +48,7 @@ export function drawTitle(game, g) {
   const lay = layoutItems(titleItems(game), 160, y0, 12);
   game.titleLayout = lay;
   drawItems(g, game, lay);
-  if (T.footer) drawText(g, T.footer, 160, 187, '#6a6488', { align: 'center' });
+  if (T.footer) drawText(g, T.footer, 160, 187, C.faint, { align: 'center' });
 }
 export function titleClick(game, x, y) {
   game.audio.unlock();
@@ -57,6 +59,7 @@ export function titleClick(game, x, y) {
   if (it.act === 'new') game.newGame();
   else if (it.act === 'continue') game.load('auto');
   else if (it.act === 'load') game.titleSub = 'load';
+  else if (it.act === 'fullscreen') toggleFullscreen(game);
 }
 export function goTitle(game) {
   game.resetRuntime();
@@ -131,6 +134,7 @@ function menuItems(game) {
   // decorative difficulty selector (game.difficulty = ['Normal', ...]); changes nothing
   const dif = game.G.difficulty;
   if (dif && dif.length) items.push({ label: `Dificultad: ${dif[(s.difficulty || 0) % dif.length]}`, act: 'difficulty' });
+  items.push({ label: fullscreenLabel(), act: 'fullscreen', enabled: !isStandalone() });
   items.push({ label: 'Salir al título', act: 'quit' });
   return items;
 }
@@ -176,8 +180,31 @@ export function menuClick(game, x, y) {
     case 'speed': { const i = SPEEDS.findIndex(x => Math.abs(x[0] - s.textSpeed) < 0.01); s.textSpeed = SPEEDS[(i + 1) % SPEEDS.length][0]; game.saveSettings(); break; }
     case 'music': s.music = Math.round(((s.music + 0.2) > 1.01 ? 0 : s.music + 0.2) * 10) / 10; game.saveSettings(); break;
     case 'sfx': s.sfx = Math.round(((s.sfx + 0.2) > 1.01 ? 0 : s.sfx + 0.2) * 10) / 10; game.saveSettings(); game.audio.sfx('pickup'); break;
+    case 'fullscreen': toggleFullscreen(game); break;
     case 'quit': if (game.G.quitConfirm) m.page = 'quit'; else { game.menu = null; goTitle(game); } break;
   }
+}
+
+// ------------------------------------------------------------- iPhone: cómo jugar a pantalla completa
+/** Panel que sale al pulsar «Pantalla completa» en el Safari del iPhone (no tiene Fullscreen API): instalar la web app. */
+export function drawIosHelp(game, g) {
+  g.save(); g.globalAlpha = 0.75; rect(g, 0, 0, 320, 200, '#04030a'); g.restore();
+  const x = 24, y = 22, w = 272, h = 152;
+  rect(g, x, y, w, h, C.box); frameRect(g, x, y, w, h, C.boxLine); frameRect(g, x + 2, y + 2, w - 4, h - 4, '#241e3a');
+  drawText(g, 'Pantalla completa en el iPhone', 160, y + 8, C.title, { align: 'center', bold: true });
+  hline(g, x + 20, y + 21, w - 40, '#2a2444');
+  const L = [
+    ['El Safari del iPhone no deja poner', C.item], ['un juego a pantalla completa. Pero se puede', C.item], ['instalar como una app:', C.item], ['', ''],
+    ['1. Toca Compartir (el cuadrado con la flecha).', '#eee2ff'], ['2. Elige «Añadir a pantalla de inicio».', '#eee2ff'],
+    ['3. Abre FE DE ERRATAS desde su icono', '#eee2ff'], ['   con el móvil en horizontal.', '#eee2ff'], ['', ''],
+    ['Se juega sin barras y se guarda la partida.', C.faint],
+  ];
+  L.forEach(([t, c], i) => { if (t) drawText(g, t, x + 14, y + 28 + i * 10, c); });
+  // icono de Compartir dibujado: cuadrado con flecha hacia arriba
+  const sx = x + w - 30, sy = y + 66;
+  frameRect(g, sx, sy + 4, 11, 10, '#9cbcec'); rect(g, sx + 4, sy + 4, 3, 1, C.box);
+  rect(g, sx + 5, sy - 2, 1, 10, '#ffe27a'); rect(g, sx + 3, sy, 5, 1, '#ffe27a'); rect(g, sx + 4, sy - 1, 3, 1, '#ffe27a');
+  drawText(g, '[ Entendido ]', 160, y + h - 14, C.hover, { align: 'center' });
 }
 
 // ------------------------------------------------------------- ending / credits
@@ -240,7 +267,7 @@ export function drawEnding(game, g) {
   try { if (e.def.overlay) e.def.overlay(g, e.t); } catch (err) { game.error('ending.overlay falló', err); e.def.overlay = null; }
   if (e.doneAt) {
     if (e.def.theEnd !== false) drawText(g, e.def.theEnd || 'FIN', 160, 92, '#f2d468', { align: 'center', scale: 2 });
-    if (!e.keep && e.t - e.doneAt > 1200) drawText(g, 'Haz clic para volver al título', 160, 180, '#6a6488', { align: 'center' });
+    if (!e.keep && e.t - e.doneAt > 1200) drawText(g, 'Haz clic para volver al título', 160, 180, C.faint, { align: 'center' });
   }
 }
 export function endingClick(game) {

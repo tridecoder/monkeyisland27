@@ -198,7 +198,7 @@ async function heroeDeLaComa(api) {
   await sayG(api, 'El que llama. De mis tres móviles, uno es para no cogerle.');
   await sayEv(api, 'Les anuncié un correo. Lo envío ahora. Con todos en copia.');
   for (let i = 0; i < 4; i++) { api.sfx(SFX.plin); await api.wait(160); }
-  api.notice('De: Evaristo Salvedad · Asunto: Una coma', { color: '#B5A642', ms: 2600 });
+  api.notice('De: Evaristo Salvedad · Asunto: Una coma', { color: '#F0F0A8', ms: 2600 });
   await api.say(['«Contrato Optimal Brains. Cláusula 4: 48,000 euros al mes.»',
     '«Cláusula 12: punto de miles y coma decimal. Son 48 euros.»']);
   await sayI(api, '¡Es formato internacional! ¡Lo entiende todo el mundo!');

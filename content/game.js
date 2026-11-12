@@ -94,7 +94,7 @@ const callLine = async (api, who, text) => {
 };
 const llamada = (cond, guion) => ({ cond, run: async (api) => {
   api.sfx('phone'); api.shake(350, 1);
-  api.notice('Llamada entrante: EVARISTO (CONTROLLING)', { color: '#B5A642', ms: 2200 });
+  api.notice('Llamada entrante: EVARISTO (CONTROLLING)', { color: '#F0F0A8', ms: 2200 });
   await api.wait(700);
   for (const [who, text] of (typeof guion === 'function' ? guion(api) : guion)) {
     if (who === 'E') await callLine(api, EV, text);
@@ -274,7 +274,7 @@ export default {
   // ---------------------------------------------------------------- §8.6 cuarta pared
   idle: { ms: 60000, run: async (api) => { await api.say('Tranquilo. Yo también me quedo así en las reuniones.'); } },
   saveMessages: ['Guardando... (original)', 'Guardando... (duplicado)', 'Guardando... (triplicado)'],
-  saveFirstLine: { text: 'BEGOÑA: «Por triplicado, como debe ser.»', color: '#A884E0' },
+  saveFirstLine: { text: 'BEGOÑA: «Por triplicado, como debe ser.»', color: '#C0A2F6' },
   difficulty: ['Normal', 'Difícil', 'Cierre en viernes'],
   quitConfirm: { text: '¿Seguro que quiere salir?', yes: 'Sí', no: 'Lo hablamos' },
 

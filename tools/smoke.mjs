@@ -58,7 +58,8 @@ const ROUTE = [
   ['office_a_pecera', 'pecera'], ['pecera_a_pajarera', 'pajarera'], ['puerta_sala', 'sala_amazonas'], ['sala_a_pajarera', 'pajarera'],
   ['pajarera_a_pecera', 'pecera'], ['pecera_a_ecosistema', 'ecosistema'], ['ecosistema_a_administracion', 'administracion'],
   ['administracion_a_ecosistema', 'ecosistema'], ['ecosistema_a_pecera', 'pecera'], ['pecera_a_vestibulo', 'vestibulo'],
-  ['ascensor_vestibulo', 'cpd'], ['ascensor_cpd', 'vestibulo'],
+  ['ascensor_vestibulo', 'cpd', 'Planta -1'], ['ascensor_cpd', 'pecera', 'Planta 1'], ['ascensor_pecera', 'ecosistema', 'Planta 2'],
+  ['ascensor_ecosistema', 'vestibulo', 'Planta 0'],
 ];
 
 // test duel: uses Celestino (in the vestíbulo) and test data (deck R05, R03 + a finisher that wants manual_fax)
@@ -99,7 +100,7 @@ try {
 
   step('Ratón: caminar y pasar por encima de Celestino');
   const before = (await state()).player;
-  await clickVirtual(200, 130);
+  await clickVirtual(90, 130);
   await wait(1600);
   const after = (await state()).player;
   ok(Math.abs(after.x - before.x) > 20, `el jugador camina (${before.x},${before.y}) → (${after.x},${after.y})`);
@@ -137,8 +138,14 @@ try {
   await G(() => __game.doVerb('ir', 'torno'));
   ok(!(await G(() => __game.log.some(l => l.who === 'inigo_sinergia' && /Optimal Brains/.test(l.text)))), 'la 7.2 no se repite en la segunda entrada');
   const seen = new Set(['vestibulo', 'pecera']);
-  for (const [exit, room] of ROUTE.slice(1)) {
+  for (const [exit, room, floor] of ROUTE.slice(1)) {
     await G(e => __game.doVerb('ir', e), exit);
+    if (floor) {                                   // el ascensor abre su botonera: la planta actual sale en gris
+      const opts = await G(() => __game.currentDialogOptions());
+      ok(!!opts && opts.some(o => o.endsWith('(aquí)')) && opts.some(o => o.startsWith('Nada, me quedo')), `botonera del ${exit}: plantas, la actual en gris y «quedarse»`);
+      await chooseText(floor);
+      await G(() => __game.waitIdle());
+    }
     const st = await state();
     ok(st.room === room, `${exit} → ${room}`);
     if (!seen.has(room)) {

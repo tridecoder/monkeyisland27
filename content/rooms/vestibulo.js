@@ -14,7 +14,7 @@ import { finalScenes } from '../escenas/final.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
 
 const C = 'celestino';
-const LED = '#FF4A3A';
+const LED = '#FF7E6A';
 const acto = (api) => (api.flag('acto_3_iniciado') ? 3 : api.flag('acto_2_iniciado') ? 2 : 1);
 const enEpilogo = (api) => !!api.flag('lector_derribado');
 const say = (...lines) => async (api) => { await api.say(lines); };

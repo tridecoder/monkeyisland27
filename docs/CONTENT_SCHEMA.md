@@ -253,7 +253,7 @@ Logic keys (in `content/rooms/<id>.js`):
   defaultVerb: 'mirar',            // right-click verb (default: 'ir' for exits, else 'mirar')
   color: '#D9CFA6',                // text colour when the object "speaks" (api.sayFrom)
   murmurs: ['¿Sigue siendo marzo?'],   // optional §8.5 murmurs (hover 0.7 s / 20 s idle in the room)
-  murmurColor: '#c8c4d8',
+  murmurColor: '#E0CCA4',
   desc: 'Texto de Mirar.',         // = handlers.mirar
   pickup: 'planillo',              // = handlers.coger: reach anim, give item, hide object, sfx
   pickupText: '...',
@@ -291,10 +291,10 @@ appears above them in their colour: `gertrudis` (LCD `#39FF14`, custom sprite, `
 `lector_medio` (the Lector Medio, a marketing buyer-persona cardboard standee: stock-photo smile, blue jumper, folded
 newspaper, chest card «LECTOR MEDIO · 43 años…», taped speaker; recording colour `#CCCCCC`; variants `chaqueta` when
 `chaqueta_en_lector`, `caido` when `lector_derribado`, chosen automatically).
-**Addendum cast** (adenda §1/§11.2): sprite characters `leoncio_quesitos` (`#00C2A8`), `anselmo_monolito` (`#D96CFF`),
-`evaristo_salvedad` (`#B5A642`) and the cameo `valentin_reticula` (`#E0E0FF`). **Sprite-less presences** only give a
+**Addendum cast** (adenda §1/§11.2): sprite characters `leoncio_quesitos` (`#3CE0C6`), `anselmo_monolito` (`#E496FF`),
+`evaristo_salvedad` (`#F0F0A8`) and the cameo `valentin_reticula` (`#C0E8FF`). **Sprite-less presences** only give a
 speaking name/colour to `api.sayAs` (flag `presence` in the definition, `hotspot: false`, never placed in a room):
-`custodia_precinto` (`#C04E7A`), `tadeo_adjunto` (`#FFCC99`), `herminia` (`#00C2A8`), `coro_desarrollo` (CORO), `dev_1`,
+`custodia_precinto` (`#FF94BE`), `tadeo_adjunto` (`#FFCC99`), `herminia` (`#FF8C3C`), `coro_desarrollo` (CORO), `dev_1`,
 `dev_2`, `dev_3` (`#7FFFD4`; the balloon text carries the prefix «DEV 1: …»), `altavoz_ibex` (ALTAVOZ, `#CCCCCC`). The
 hotspot that represents a presence is an **object** of the room with the same id (e.g. `office.custodia_precinto`) whose
 `color` is declared in the stub, so `api.sayFrom('custodia_precinto', '…')` draws the text above it in its colour.

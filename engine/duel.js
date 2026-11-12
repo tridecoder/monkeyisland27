@@ -200,8 +200,8 @@ function fit(text, maxW) {
 function drawHud(g, game, S) {
   const fax = S.style === 'fax';
   const C = fax
-    ? { bg: '#e8dfc6', bar: '#b4a68a', barText: '#3a3020', label: '#6e6454', text: '#2a2218', line: '#92856e', edge: '#4e463c', assign: '#952a24', win: '#1e5a2a' }
-    : { bg: '#141a30', bar: '#2c5098', barText: '#e8f0ff', label: '#7e90c0', text: '#e8ecf8', line: '#26305c', edge: '#06080f', assign: '#f2d468', win: '#9cf0a4' };
+    ? { bg: '#e8dfc6', bar: '#b4a68a', barText: '#3a3020', label: '#564c3e', text: '#2a2218', line: '#92856e', edge: '#4e463c', assign: '#952a24', win: '#1e5a2a' }
+    : { bg: '#141a30', bar: '#2c5098', barText: '#e8f0ff', label: '#94a6d4', text: '#e8ecf8', line: '#26305c', edge: '#06080f', assign: '#f2d468', win: '#9cf0a4' };
   const x = 6, y = 2, w = 308;
   // long subjects (D1 «…web (…», many «RE:») wrap to two lines instead of being cut; the window grows by one row
   const subjW = w - measure('Asunto:') - 12;
