@@ -1,0 +1,226 @@
+// Title screen, pause/save/load menu, ending credits.
+import { drawText, measure, wrap, LINE_H } from './font.js';
+import { rect, ditherOverlay, frameRect, gradV, PAL, hline } from './draw.js';
+
+const C = { item: '#8fb0e0', hover: '#ffe27a', dis: '#4a4868', title: '#f4e6c0', box: '#0e0c1a', boxLine: '#4a4070' };
+
+// ------------------------------------------------------------- generic menu
+function layoutItems(items, cx, y0, lh = 13) {
+  return items.map((it, i) => {
+    const w = measure(it.label, { bold: !!it.bold });
+    return { ...it, x: Math.round(cx - w / 2), y: y0 + i * lh, w, h: lh };
+  });
+}
+function drawItems(g, game, lay) {
+  const m = game.mouse;
+  for (const it of lay) {
+    const hov = it.enabled !== false && m.inside && !m.touch && m.x >= it.x - 4 && m.x < it.x + it.w + 4 && m.y >= it.y && m.y < it.y + it.h;
+    const col = it.enabled === false ? C.dis : hov ? C.hover : (it.color || C.item);
+    drawText(g, it.label, it.x, it.y, col, { bold: !!it.bold });
+  }
+}
+function hitItems(lay, x, y) {
+  return lay.find(it => it.enabled !== false && x >= it.x - 4 && x < it.x + it.w + 4 && y >= it.y && y < it.y + it.h);
+}
+function fmtDate(ts) {
+  const d = new Date(ts);
+  const p = n => String(n).padStart(2, '0');
+  return `${p(d.getDate())}/${p(d.getMonth() + 1)} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+// ------------------------------------------------------------- title
+function titleItems(game) {
+  const items = [{ label: game.G.title && game.G.title.newGame || 'Nueva partida', act: 'new' }];
+  if (game.slotInfo('auto')) items.push({ label: 'Continuar', act: 'continue' });
+  items.push({ label: 'Cargar partida', act: 'load', enabled: [1, 2, 3].some(s => game.slotInfo(s)) });
+  return items;
+}
+export function drawTitle(game, g) {
+  const T = game.G.title || {};
+  try {
+    if (T.draw) T.draw(g, game.realTime);
+    else { gradV(g, 0, 0, 320, 200, [PAL.night[0], PAL.night[2], PAL.dusk[3]]); drawText(g, T.text || game.G.name || 'Aventura', 160, 60, C.title, { align: 'center', scale: 2 }); }
+  } catch (e) { game.error('title.draw falló', e); T.draw = null; }
+  if (game.titleSub === 'load') { drawSlotPicker(game, g, 'load'); return; }
+  const y0 = T.menuY ?? 150;
+  const lay = layoutItems(titleItems(game), 160, y0, 12);
+  game.titleLayout = lay;
+  drawItems(g, game, lay);
+  if (T.footer) drawText(g, T.footer, 160, 187, '#6a6488', { align: 'center' });
+}
+export function titleClick(game, x, y) {
+  game.audio.unlock();
+  if (game.titleSub === 'load') { slotPickerClick(game, x, y, 'load'); return; }
+  const it = hitItems(game.titleLayout || [], x, y);
+  if (!it) return;
+  game.audio.sfx('select');
+  if (it.act === 'new') game.newGame();
+  else if (it.act === 'continue') game.load('auto');
+  else if (it.act === 'load') game.titleSub = 'load';
+}
+export function goTitle(game) {
+  game.resetRuntime();
+  game.mode = 'title';
+  game.titleSub = null;
+  game.state = null;
+  const T = game.G.title || {};
+  game.audio.play(T.music || null, 1);
+}
+
+// ------------------------------------------------------------- slot picker (title + menu)
+function slotItems(game, kind) {
+  const items = [];
+  const slots = kind === 'load' ? ['auto', 1, 2, 3] : [1, 2, 3];
+  for (const s of slots) {
+    const inf = game.slotInfo(s);
+    const name = s === 'auto' ? 'Autoguardado' : 'Ranura ' + s;
+    items.push({ label: inf ? `${name}: ${inf.roomName} (${fmtDate(inf.date)})` : `${name}: vacía`, slot: s, enabled: kind === 'save' || !!inf });
+  }
+  items.push({ label: 'Volver', act: 'back' });
+  return items;
+}
+function drawBox(g, x, y, w, h) {
+  g.save(); g.globalAlpha = 0.6; rect(g, 0, 0, 320, 200, '#04030a'); g.restore();
+  rect(g, x, y, w, h, C.box);
+  frameRect(g, x, y, w, h, C.boxLine);
+  frameRect(g, x + 2, y + 2, w - 4, h - 4, '#241e3a');
+}
+function drawSlotPicker(game, g, kind) {
+  drawBox(g, 20, 40, 280, 110);
+  drawText(g, kind === 'save' ? 'Guardar partida' : 'Cargar partida', 160, 47, C.title, { align: 'center', bold: true });
+  const lay = layoutItems(slotItems(game, kind), 160, 66, 14);
+  game.slotLayout = lay;
+  drawItems(g, game, lay);
+}
+function slotPickerClick(game, x, y, kind) {
+  const it = hitItems(game.slotLayout || [], x, y);
+  if (!it) return;
+  game.audio.sfx('select');
+  if (it.act === 'back') { if (game.menu) game.menu.page = 'main'; else game.titleSub = null; return; }
+  if (kind === 'save') {
+    game.save(it.slot); game.menu.page = 'main';
+    // optional gag (game.saveMessages, game.saveFirstLine): messages shown one after another
+    const seq = (game.G.saveMessages || []).map((t, i) => ({ text: t, at: game.realTime + i * 450 }));
+    let tEnd = game.realTime + seq.length * 450;
+    if (game.G.saveFirstLine && !game.settings.savedOnce) {
+      seq.push({ text: game.G.saveFirstLine.text, color: game.G.saveFirstLine.color, at: tEnd, ms: 2600 }); tEnd += 2600;
+      game.settings.savedOnce = true; game.saveSettings();
+    }
+    seq.push({ text: 'Partida guardada.', at: tEnd });
+    game.menu.msg = null; game.menu.msgSeq = seq;
+    return;
+  }
+  game.titleSub = null;
+  game.menu = null;
+  game.load(it.slot);
+}
+
+// ------------------------------------------------------------- pause menu
+const SPEEDS = [[1.6, 'Lenta'], [1, 'Normal'], [0.6, 'Rápida']];
+function menuItems(game) {
+  const s = game.settings;
+  const sp = SPEEDS.reduce((b, x) => Math.abs(x[0] - s.textSpeed) < Math.abs(b[0] - s.textSpeed) ? x : b)[1];
+  const items = [
+    { label: 'Continuar', act: 'resume' },
+    { label: 'Guardar partida', act: 'save', enabled: !game.busy },
+    { label: 'Cargar partida', act: 'load', enabled: !game.busy },
+    { label: `Velocidad del texto: ${sp}`, act: 'speed' },
+    { label: `Música: ${Math.round(s.music * 100)}%`, act: 'music' },
+    { label: `Efectos: ${Math.round(s.sfx * 100)}%`, act: 'sfx' },
+  ];
+  // decorative difficulty selector (game.difficulty = ['Normal', ...]); changes nothing
+  const dif = game.G.difficulty;
+  if (dif && dif.length) items.push({ label: `Dificultad: ${dif[(s.difficulty || 0) % dif.length]}`, act: 'difficulty' });
+  items.push({ label: 'Salir al título', act: 'quit' });
+  return items;
+}
+export function drawMenu(game, g) {
+  const m = game.menu;
+  if (m.page === 'save' || m.page === 'load') { drawSlotPicker(game, g, m.page); return; }
+  if (m.page === 'quit') {
+    const Q = game.G.quitConfirm || {};
+    drawBox(g, 40, 62, 240, 66);
+    wrap(Q.text || '¿Salir al título?', 220).forEach((l, i) => drawText(g, l, 160, 72 + i * 11, C.title, { align: 'center' }));
+    const lay = [{ label: '[ ' + (Q.yes || 'Sí') + ' ]', act: 'yes' }, { label: '[ ' + (Q.no || 'No') + ' ]', act: 'no' }]
+      .map((it, i) => { const w = measure(it.label); return { ...it, x: Math.round(i ? 196 - w / 2 : 124 - w / 2), y: 104, w, h: 12 }; });
+    m.layout = lay;
+    drawItems(g, game, lay);
+    return;
+  }
+  const items = menuItems(game);
+  const bh = 30 + items.length * 13 + 6;
+  drawBox(g, 60, 24, 200, bh);
+  drawText(g, 'Pausa', 160, 30, C.title, { align: 'center', bold: true });
+  hline(g, 80, 44, 160, '#2a2444');
+  const lay = layoutItems(items, 160, 49, 13);
+  m.layout = lay;
+  drawItems(g, game, lay);
+  let msg = m.msg, col = '#9cf0a4';
+  if (m.msgSeq) { const cur = m.msgSeq.filter(x => x.at <= game.realTime).pop(); if (cur) { msg = cur.text; col = cur.color || col; } }
+  if (msg) wrap(msg, 300).forEach((l, i) => drawText(g, l, 160, 24 + bh + 4 + i * 11, col, { align: 'center' }));
+}
+export function menuClick(game, x, y) {
+  const m = game.menu;
+  if (m.page === 'save' || m.page === 'load') { slotPickerClick(game, x, y, m.page); return; }
+  const it = hitItems(m.layout || [], x, y);
+  if (!it) return;
+  game.audio.sfx('select');
+  const s = game.settings;
+  m.msg = null; m.msgSeq = null;
+  if (m.page === 'quit') { if (it.act === 'yes') { game.menu = null; goTitle(game); } else m.page = 'main'; return; }
+  switch (it.act) {
+    case 'difficulty': s.difficulty = ((s.difficulty || 0) + 1) % game.G.difficulty.length; game.saveSettings(); break;
+    case 'resume': game.toggleMenu(); break;
+    case 'save': m.page = 'save'; break;
+    case 'load': m.page = 'load'; break;
+    case 'speed': { const i = SPEEDS.findIndex(x => Math.abs(x[0] - s.textSpeed) < 0.01); s.textSpeed = SPEEDS[(i + 1) % SPEEDS.length][0]; game.saveSettings(); break; }
+    case 'music': s.music = Math.round(((s.music + 0.2) > 1.01 ? 0 : s.music + 0.2) * 10) / 10; game.saveSettings(); break;
+    case 'sfx': s.sfx = Math.round(((s.sfx + 0.2) > 1.01 ? 0 : s.sfx + 0.2) * 10) / 10; game.saveSettings(); game.audio.sfx('pickup'); break;
+    case 'quit': if (game.G.quitConfirm) m.page = 'quit'; else { game.menu = null; goTitle(game); } break;
+  }
+}
+
+// ------------------------------------------------------------- ending / credits
+export function startEnding(game, opts = {}) {
+  return new Promise(resolve => {
+    const E = { ...(game.G.ending || {}), ...opts };
+    game.ending = { def: E, t: 0, resolve, lines: [] };
+    for (const c of E.credits || game.G.credits || []) {
+      if (typeof c === 'string') game.ending.lines.push(...(c ? wrap(c, 280).map(t => ({ t, col: '#d8d0f0' })) : [{ t: '', col: '' }]));
+      else game.ending.lines.push(...wrap(c.text, 280).map(t => ({ t, col: c.color || (c.title ? '#f2d468' : '#d8d0f0'), bold: !!c.title })));
+    }
+    game.mode = 'ending';
+    if (E.music !== undefined) game.audio.play(E.music, 1.5);
+    if (game.fast) { finishEnding(game); }
+  });
+}
+export function updateEnding(game, dt) { if (game.ending) game.ending.t += dt * 1000; }
+function finishEnding(game) {
+  const e = game.ending; if (!e) return;
+  game.ending = null;
+  goTitle(game);
+  e.resolve();
+}
+export function drawEnding(game, g) {
+  const e = game.ending; if (!e) return;
+  try { if (e.def.draw) e.def.draw(g, e.t); else gradV(g, 0, 0, 320, 200, [PAL.ink[0], PAL.night[1], PAL.night[2]]); }
+  catch (err) { game.error('ending.draw falló', err); e.def.draw = null; }
+  const speed = e.def.speed || 14; // px per second
+  const y0 = 200 - e.t / 1000 * speed + (e.def.startY ?? 0);
+  e.lines.forEach((l, i) => {
+    const y = Math.round(y0 + i * (LINE_H + 2));
+    if (y < -12 || y > 200) return;
+    drawText(g, l.t, 160, y, l.col, { align: 'center', bold: l.bold });
+  });
+  const endY = y0 + e.lines.length * (LINE_H + 2);
+  if (endY < (e.def.holdY ?? 90)) {
+    if (e.def.theEnd !== false) drawText(g, e.def.theEnd || 'FIN', 160, 92, '#f2d468', { align: 'center', scale: 2 });
+    if (!e.doneAt) e.doneAt = e.t;
+    if (e.t - e.doneAt > 1200) drawText(g, 'Haz clic para volver al título', 160, 180, '#6a6488', { align: 'center' });
+  }
+}
+export function endingClick(game) {
+  const e = game.ending; if (!e) return;
+  if (e.doneAt && e.t - e.doneAt > 1200) finishEnding(game);
+  else e.t += 4000; // fast-forward
+}
