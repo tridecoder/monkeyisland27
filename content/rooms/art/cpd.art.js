@@ -363,7 +363,7 @@ const layout = {
   rejilla_cpd: { rect: [94, 120, 40, 18], walkTo: [114, 114], face: 'down', draw: (g) => drawRejilla(g) },
   paco_ticket: { at: [281, 100, 'down'], walkTo: [270, 113], face: 'up' },
   ruben: { at: [186, 101, 'down'], walkTo: [204, 112], face: 'left' },
-  valentin_reticula: { at: [128, 108, 'left'], walkTo: [146, 113], face: 'left' },
+  valentin_reticula: { at: [128, 108, 'down'], walkTo: [152, 113], face: 'left' },
 };
 
 export default {

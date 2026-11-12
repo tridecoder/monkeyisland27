@@ -308,8 +308,8 @@ export default {
     // blanca lisa, pantalón negro pitillo, zapatillas blancas y reloj. Prendas y colores a confirmar por el retratado.
     name: 'Valentín', color: '#E0E0FF', speed: 62,
     doll: {
-      skin: '#eac4a2', hair: '#2c2422', hairStyle: 'short', glasses: 'round', glassesColor: '#17171f',
-      shirt: '#f8f8fa', jacket: '#274c44', pants: '#202028', shoes: '#f6f6f6', bracelets: '#c4c8d0',
+      skin: '#eac4a2', hair: '#2c2422', hairStyle: 'short', glasses: 'round', glassesColor: '#0a0a10',
+      shirt: '#f8f8fa', jacket: '#2f7058', pants: '#202028', shoes: '#f6f6f6', bracelets: '#c4c8d0',
       height: 1.13, build: 'athletic',
     },
     murmurs: ['Esto, dos píxeles a la izquierda. Ahora sí.', 'Nota para el lunes: abrirle la bandeja a Desarrollo. Con cariño.', '(al monitor) Venga, becario. Que tú puedes.'],
