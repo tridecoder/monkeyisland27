@@ -11,6 +11,7 @@
 import { buildRoom } from '../lib/room.js';
 import art from './art/vestibulo.art.js';
 import { finalScenes } from '../escenas/final.js';
+import { ascensorObjeto } from '../lib/ascensor.js';
 
 const C = 'celestino';
 const LED = '#FF4A3A';
@@ -86,15 +87,25 @@ async function intro(api) {
 }
 
 // ------------------------------------------------------------------ salidas
+// GEOGRAFÍA (ver la cabecera del arte): calle y mostrador | línea de tornos | vestíbulo interior con ascensor y escalera.
+// Cruzar el torno abierto = pasar por el carril, cruzar el vestíbulo interior y subir la escalera a la Redacción.
 async function cruzarTorno(api) {
+  api.sfx('click');
+  await api.walkTo(246, 112);                       // por el carril de atrás, ya al otro lado
+  await subirRedaccion(api);
+}
+async function subirRedaccion(api) {
+  if (!api.flag('torno_abierto')) { await api.say('La escalera está al otro lado del torno. Y el torno, de su lado.'); return; }
+  await api.walkTo('vestibulo_a_redaccion');
   api.sfx('door');
   await api.goto('pecera', 'vestibulo');
 }
-async function bajarAscensor(api) {
-  if (!api.flag('torno_abierto')) { await api.say('El ascensor está al otro lado del torno. Como todo lo bueno.'); return; }
-  api.sfx('door');
-  await api.goto('cpd', 'vestibulo');
-}
+// el ascensor está detrás de los tornos: sin torno_abierto, Bruno se queda en la línea y no hay botonera
+const ascensorBloqueado = async (api) => {
+  if (api.flag('torno_abierto')) return false;
+  await api.say('El ascensor está al otro lado del torno. Como todo lo bueno.');
+  return true;
+};
 
 // ------------------------------------------------------------------ Celestino (árbol 7.7.1 + adenda)
 const celestinoDialog = {
@@ -263,14 +274,26 @@ export default buildRoom({
       hablar: 'Le pregunto por el Ibex. Me contesta en diferido.',
       cerrar: 'Si la apago, Celestino me narra a mí. Prefiero el Ibex.',
     } },
-    { id: 'ascensor_vestibulo', name: 'ascensor', exit: { room: 'cpd' }, handlers: {
-      ir: bajarAscensor, usar: bajarAscensor, abrir: bajarAscensor,
-      mirar: 'Botones: 2, 1, 0 y -1. El -1 está gastadísimo: Sistemas no sube nunca.',
+    ascensorObjeto('ascensor_vestibulo', {
+      mirar: async (api) => api.say(api.flag('torno_abierto')
+        ? 'Botones: 2, 1, 0 y -1. El -1 está gastadísimo: Sistemas no sube nunca.'
+        : ['El ascensor. Detrás de los tornos, con su moqueta y su logo.', 'Desde aquí se ve. Como la plantilla fija.']),
       cerrar: 'Se cierra solo. Es lo único automático del edificio. Bueno, y Gertrudis.',
       empujar: 'Si empujo el ascensor, me lo cobra Sistemas como horas extra.',
       tirar: 'Tiro de la puerta. No cede. Va con cita previa, como Paco.',
       hablar: '¿Baja? Hace «tin». Es lo más amable que me han dicho hoy.',
+    }, ascensorBloqueado),
+    // la escalera del vestíbulo interior (detrás de los tornos): sube a la Redacción, como el torno abierto
+    { id: 'vestibulo_a_redaccion', name: 'escalera a la Redacción', exit: { room: 'pecera' }, handlers: {
+      ir: subirRedaccion, usar: subirRedaccion,
+      mirar: async (api) => api.say(api.flag('torno_abierto')
+        ? 'La escalera a la Redacción. Moqueta roja: aquí ya se nota que constas.'
+        : 'La escalera a la Redacción. Al otro lado de los tornos. A seis años y un torno.'),
+      empujar: 'Una escalera no se empuja. Se sube. Si te deja el torno.',
+      hablar: '«¿Hay alguien arriba?». Contesta un teclado. Eso es que sí.',
     } },
+    // bancada delantera de tornos, carril fuera de servicio (decorado: tapa a quien pase detrás)
+    { id: 'torno_bancada', name: 'torno', hotspot: false },
     { id: 'planta_plastico', name: 'ficus', handlers: {
       mirar: async (api) => {
         if (api.flag('planta_oyo')) await api.say('Juraría que tiene una hoja girada hacia mí. La de la oreja.');
