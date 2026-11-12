@@ -314,7 +314,7 @@ const dueloTeodoro = {
   maxMisses: 3,
   style: 'fax',
   say: async (api, line) => { await api.sayFrom('fax', PREFIJO + line); },
-  intro: ['¿Tú? ¿El de la web? ¿En mi página? Te lo pongo por escrito, chaval.'],
+  intro: ['¿Tú? ¿El de la web? ¿En mi página?', 'Te lo pongo por escrito, chaval.'],
   hurt: ['Hum. Cabe.', 'Eso, en mis tiempos, era una portada.'],
   taunt: ['Treinta y ocho caracteres de nada.', 'Eso, en papel, es un ladrillo.'],
   finishers: [

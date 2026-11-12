@@ -371,7 +371,7 @@ export default buildRoom({
   ambient: [],
 
   async onEnter(api) {
-    if (!api.flag('intro_vista') || enEpilogo(api)) return;           // intro (la lanza game.onStart) y epílogo: nada aquí
+    if (!api.flag('intro_vista') || enEpilogo(api) || api.restoring) return;   // al cargar partida no cuenta como entrada           // intro (la lanza game.onStart) y epílogo: nada aquí
     // §1.4 G3 / §8.4: una línea del Ibex cada vez que Bruno entra; rotan dentro de cada acto
     const n = api.inc('celestino_ibex_n');
     await api.sayAs(C, ibexLine(api, n));

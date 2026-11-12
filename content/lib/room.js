@@ -14,7 +14,7 @@ import { drawText, measure } from '../../engine/font.js';
 export const roomWarnings = [];
 
 // keys an art `layout` entry may give to an OBJECT (everything else about the object is logic)
-const ART_OBJ_KEYS = ['walkTo', 'face', 'walk', 'priority', 'layer', 'zy', 'cache', 'cachePad', 'draw'];
+const ART_OBJ_KEYS = ['walkTo', 'face', 'walk', 'priority', 'layer', 'zy', 'cache', 'cachePad', 'draw', 'prop'];
 
 const toPoint = (at) => (Array.isArray(at) ? { x: at[0], y: at[1], dir: at[2] || 'down' } : at ? { x: at.x, y: at.y, dir: at.dir || 'down' } : null);
 

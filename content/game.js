@@ -1,7 +1,7 @@
 // FE DE ERRATAS — definición global del juego. ARCHIVO COMPARTIDO: no lo edita ningún autor de sala.
 // Título, sala inicial, respuestas por defecto (§8.2), pistas de la abuela (§5.6), cuarta pared (§8.6),
 // aviso de réplica aprendida (§5.5), avisos comunes de la adenda §2 (llamadas de Evaristo, «RV:» de Tadeo), música y
-// créditos (esqueleto; el texto final lo cierra el paquete A).
+// fondo de los créditos (la lista está en content/escenas/final.js).
 // Hora de juego (biblia v2): viernes, de las 18:30 al cierre de las 21:00; los relojes del edificio, parados en las 20:59.
 import { PAL, rect, px, hline, vline, gradV, glow, rng, ditherPick, frameRect, line, ditherOverlay, vignette } from '../engine/draw.js';
 import { drawText, measure } from '../engine/font.js';
@@ -240,9 +240,12 @@ function endingDraw(g, t) {
   frontPage(g, t, { x0: 40, y0: 40 - off, w: 240, h: 200, credits: true });
   frontPage(g, t, { x0: 40, y0: 254 - off, w: 240, h: 200, credits: true });
   g.save(); g.globalAlpha = 0.72; rect(g, 0, 0, 320, 200, PAL.ink[0]); g.restore();
-  // Gertrudis' LCD in a corner (§7.5)
+}
+/** Gertrudis' LCD in a corner (§7.5), drawn OVER the scrolling text (ending.overlay); the text stops at y 18 (topY). */
+function endingOverlay(g) {
   const msg = 'E-00: HOY SÍ. DISFRUTADLO, QUE NO SE REPITE.';
   const mw = measure(msg) + 8;
+  rect(g, 0, 0, 320, 17, PAL.ink[0]);
   rect(g, 316 - mw, 3, mw, 12, '#06140a'); frameRect(g, 315 - mw, 2, mw + 2, 14, PAL.metal[3]);
   drawText(g, msg, 320 - mw, 3, '#39ff14', { outline: null });
 }
@@ -284,28 +287,7 @@ export default {
 
   music,
 
-  // ---------------------------------------------------------------- créditos (esqueleto; §7.5, paquete A)
-  credits: [
-    { text: 'FE DE ERRATAS', title: true },
-    'En la edición de ayer, donde decía «inteligencia artificial»',
-    'debía decir «Rubén».',
-    'Donde decía «Por Bruno Pellejo»',
-    'debía decir «Por Bruno Pellejo».',
-    'Lamentamos el acierto.',
-    '', '',
-    { text: 'Guion', title: true }, 'Asignado a: el equipo de guion',
-    '',
-    { text: 'Duelos', title: true }, 'Asignado a: quien no se escaqueó',
-    '',
-    { text: 'Motor y pegamento', title: true }, 'Asignado a: Sistemas (ticket nº 2)',
-    '',
-    { text: 'Fondos', title: true }, 'Asignado a: tres artistas con tipómetro',
-    '',
-    { text: 'Música', title: true }, 'Asignado a: un secuenciador de onda cuadrada',
-    '', '',
-    'Ninguna rotativa fue apagada durante el desarrollo de este juego.',
-    '',
-    'Gracias por jugar. Abrígate.',
-  ],
-  ending: { music: 'm_creditos', speed: 14, draw: endingDraw, theEnd: 'FIN' },
+  // ---------------------------------------------------------------- créditos (§7.5): la lista y el poscréditos están en
+  // content/escenas/final.js (api.credits + api.ending); aquí solo el fondo común y el LCD de Gertrudis.
+  ending: { music: 'm_creditos', speed: 14, draw: endingDraw, overlay: endingOverlay, topY: 18, theEnd: 'FIN' },
 };

@@ -54,7 +54,7 @@ async function cerrarPortatil(api) {
   } else {
     await api.say('Lo cierro. Silencio. Toda la planta suspira.');
     api.sfx(SFX.plin);
-    await api.say(['(¡PLIN!) Ahora reenvía desde la impresora de la tercera.', 'Pantalla de la impresora: «ATASCO EN BANDEJA DE SALIDA».']);
+    await api.say(['Ahora reenvía desde la impresora de la tercera.', 'Pantalla de la impresora: «ATASCO EN BANDEJA DE SALIDA».']);
     api.setFlag('ecosistema_portatil_cerrado', true);
   }
 }
@@ -293,7 +293,8 @@ export default buildRoom({
   ambient: [],
 
   async onEnter(api) {
-    // §3.7 ambiente: ¡FLASH! al entrar (cada vez). §8.7: la primera vez que entra en el Acto I.
+    // §3.7 ambiente: ¡FLASH! al entrar (cada vez). §8.7: la primera vez que entra en el Acto I. Cargar partida no es entrar.
+    if (api.restoring) return;
     await flash(api);
     await sayB(api, '¡Gracias! ¡Eso es contenido!');
     if (!api.flag('acto_2_iniciado') && api.once('ecosistema_entrada_1830')) {

@@ -61,14 +61,14 @@ const X = [
   { n: '—35', tras: 35, sala: 'catacumba', txt: 'Control: T0 llevó antes el desmentido C de Teodoro', acc: [], esp: { flags: { rumor_teodoro_n: 3 } } },
   { n: 'X22', tras: 36, sala: 'administracion', txt: 'Hablar evaristo_salvedad → «Aurora dice que su coma está bien.»', acc: [['ir', 'administracion'], V('hablar', 'evaristo_salvedad'), O('Aurora dice que su coma está bien.'), SALIR], esp: { flags: ['correo_evaristo_listo'] } },
   { n: '—37', tras: 37, sala: 'catacumba', txt: 'Control: al entrar en la catacumba salió L3', acc: [], esp: { flags: { evaristo_llamadas: 3 } } },
-  { n: 'X23', tras: 37, sala: 'office', txt: 'Dar boli_muerto a custodia_precinto → «Para apuntar lo que me digan. Sin grabadora.»', acc: [['ir', 'office'], ['dar', 'boli_muerto', 'custodia_precinto'], O('Para apuntar lo que me digan. Sin grabadora.'), SALIR], esp: { flags: ['custodia_ablandada'], notiene: ['boli_muerto'] } },
+  { n: 'X23', tras: 37, sala: 'office', txt: 'Dar boli_muerto a custodia_precinto → «Para apuntar lo que me digan. Sin grabadora.» (al entrar en el Office sale L4)', acc: [['ir', 'office'], ['dar', 'boli_muerto', 'custodia_precinto'], O('Para apuntar lo que me digan. Sin grabadora.'), SALIR], esp: { flags: { custodia_ablandada: true, evaristo_llamadas: 4 }, notiene: ['boli_muerto'] } },
   { n: 'X24', tras: 37, sala: 'office', txt: 'Hablar custodia_precinto → «¿Dónde está...?» → «¿Dónde está el Titulator?» → «Ya está.»', acc: [V('hablar', 'custodia_precinto'), O('¿Dónde está...?'), O('¿Dónde está el Titulator?'), O('Ya está.'), SALIR], esp: {} },
-  { n: '—38', tras: 37, sala: 'cpd', txt: 'Control: al entrar en el CPD salió L4 (sin Rubén)', acc: [['ir', 'cpd']], esp: { flags: { evaristo_llamadas: 4 } } },
+  { n: '—38', tras: 37, sala: 'cpd', txt: 'Control: L4 (sin Rubén) salió al entrar en el Office de X23; L5 al pasar hacia el CPD', acc: [['ir', 'cpd']], esp: { flags: { evaristo_llamadas: 5 } } },
   { n: 'X23b', tras: 37, sala: 'cpd', txt: 'Hablar paco_ticket → (rumor D2) → «Me voy.» (antes de Tirar, paso 38)', acc: [V('hablar', 'paco_ticket'), SALIR], esp: { flags: { rumor_plaza_n: 2 } } },
   { n: '—39', tras: 39, sala: 'cpd', txt: 'Control: R0 llevó antes el desmentido B de Rubén', acc: [], esp: {} },
   { n: 'X25b', tras: 40, sala: 'pecera', txt: 'Hablar nerea_backlog → (rumor D3) → «Nada, ya me voy.» (antes del paso 41)', acc: [['ir', 'pecera'], V('hablar', 'nerea_backlog'), SALIR], esp: { flags: { rumor_plaza_n: 3 } } },
   { n: 'X25', tras: 41, sala: 'pecera', txt: 'Hablar yoli_tendencias → (rumor A4) → «Me voy.»', acc: [V('hablar', 'yoli_tendencias'), SALIR], esp: { flags: { rumor_firma_n: 4 } } },
-  { n: '—42', tras: 42, sala: 'cpd', txt: 'Control: L5 y RV5 salieron en los pasos 40-42', acc: [], esp: { flags: { evaristo_llamadas: 5, tadeo_rv_n: 5 } } },
+  { n: '—42', tras: 42, sala: 'cpd', txt: 'Control: L1-L5 y RV1-RV5 ya han salido (RV5 en una entrada de los pasos 37-42)', acc: [], esp: { flags: { evaristo_llamadas: 5, tadeo_rv_n: 5 } } },
   { n: 'X26', tras: 42, sala: 'vestibulo', txt: 'Hablar celestino → (desmentido D) → «Nada, Celestino.»', acc: [['ir', 'vestibulo'], V('hablar', 'celestino'), SALIR], esp: {} },
 ];
 const hasta = args.hasta ?? null;

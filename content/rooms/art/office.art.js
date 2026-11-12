@@ -374,8 +374,10 @@ const layout = {
   custodia_precinto: { rect: [136, 30, 52, 24], walkTo: [150, 108], face: 'up', priority: 1, draw: (g, v, t) => drawCustodia(g, v, t) },
   cartel_material: { rect: [138, 8, 48, 21], walkTo: [150, 108], face: 'up' },
   timbre_secretaria: { rect: [156, 40, 14, 12], walkTo: [164, 108], face: 'up', priority: 2 },
-  gertrudis: { at: [162, 94, 'down'], walkTo: [162, 110], face: 'up' },
-  gervasio_acta: { at: [176, 108, 'up'], walkTo: [198, 113], face: 'left' },
+  // Bruno le habla desde un lado (nunca delante: taparía el LCD); Gervasio, Acto III, plantado delante-derecha de
+  // Gertrudis, mirándola, sin tapar el display.
+  gertrudis: { at: [162, 94, 'down'], walkTo: [136, 110], face: 'right' },
+  gervasio_acta: { at: [188, 108, 'left'], walkTo: [210, 114], face: 'left' },
 };
 
 export default {

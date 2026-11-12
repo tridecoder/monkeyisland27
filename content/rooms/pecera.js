@@ -413,6 +413,8 @@ export default buildRoom({
 
   async onEnter(api) {
     // biblia 7.2: primera entrada con torno_abierto → presentación del villano (desde onEnter, para que no salgan avisos)
+    // epílogo y poscréditos (lector_derribado): la escena final coloca a la gente ella misma; aquí no se hace nada
+    if (api.flag('lector_derribado') || api.flag('juego_terminado')) return;
     if (api.flag('torno_abierto') && !api.flag('inigo_presentado')) await api.scene('presentacion_villano');
   },
 }, art);

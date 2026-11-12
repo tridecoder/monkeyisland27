@@ -2,7 +2,7 @@
 // Smoke test de FE DE ERRATAS: sirve el juego y lo recorre con Playwright (clics reales + window.__game):
 // título, intro, ratón, las 9 salas por sus salidas, inventario (los 19 objetos), combinación común, pistas,
 // un duelo de prueba completo (fallo, comodín, acierto, remate con objeto equivocado y correcto), derrota,
-// retirada, guardar/cargar, menú de pausa, créditos, depuración y táctil.
+// retirada, guardar/cargar, menú de pausa, créditos (api.credits / api.ending), depuración y táctil.
 // Capturas en tools/shots/. Falla si hay errores de consola. Uso: node tools/smoke.mjs
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -108,23 +108,36 @@ try {
   ok((await state()).sentence === 'Ir a Celestino', 'frase «Ir a Celestino» al pasar el ratón');
   await shot('03-vestibulo-hover');
 
-  step('Ratón: Mirar + clic en el organigrama (respuesta por defecto §8.2, en orden)');
-  await clickClient(await G(() => __game.verbPos('mirar')));
+  step('Ratón: Abrir + clic en el organigrama (respuesta por defecto §8.2: rotan EN ORDEN, sin handler propio)');
+  await clickClient(await G(() => __game.verbPos('abrir')));
   await clickClient(await G(() => __game.screenPos('organigrama')));
   ok(await waitFor(() => __game.state().speaking.length > 0), 'Bruno habla');
   await wait(400);
   await shot('04-texto-hablado');
   await fast(true); await G(() => __game.waitIdle());
-  ok(await G(() => __game.log.some(l => l.text.startsWith('Es exactamente lo que parece'))), 'primera respuesta por defecto de Mirar');
-  await G(() => __game.doVerb('mirar', 'logo_pared'));
-  ok(await G(() => __game.log.some(l => l.text.startsWith('Lo miro con intensidad'))), 'la segunda Mirar rota a la 2.ª respuesta');
+  const DEF_ABRIR = await G(() => ['No se abre. Como las plazas de redactor.', 'Cerrado. Como el plazo. Como el cierre. Como mi futuro.']);
+  ok(await G(t => __game.log.some(l => l.who === 'bruno' && l.text === t), DEF_ABRIR[0]), 'primera respuesta por defecto de Abrir (organigrama)');
+  await G(() => __game.doVerb('abrir', 'logo_pared'));
+  ok(await G(t => __game.log.some(l => l.who === 'bruno' && l.text === t), DEF_ABRIR[1]), 'Abrir el logo rota a la 2.ª respuesta por defecto');
   await G(() => __game.doVerb('mirar', 'bruno'));
   ok(await G(() => __game.log.some(l => l.text.startsWith('Soy yo. Joven'))), 'Mirar a Bruno (cuarta pared §8.6)');
 
   // ---------------------------------------------------------------- the 9 rooms
-  step('Recorrido por las 9 salas (stubs) por sus salidas');
-  const seen = new Set(['vestibulo']);
-  for (const [exit, room] of ROUTE) {
+  step('Recorrido por las 9 salas por sus salidas (juego real)');
+  await G(() => __game.doVerb('ir', 'torno'));
+  ok((await state()).room === 'vestibulo', 'el torno está cerrado sin torno_abierto (P01)');
+  await G(() => __game.setFlag('torno_abierto', true));
+  await G(() => __game.clearLog());
+  await G(() => __game.doVerb('ir', 'torno'));
+  let st7 = await state();
+  ok(st7.room === 'pecera' && st7.flags.inigo_presentado === true, 'primera entrada en la Pecera con torno_abierto: escena 7.2 → inigo_presentado');
+  ok(await G(() => __game.log.some(l => l.who === 'inigo_sinergia')), 'en la 7.2 habla Íñigo');
+  await G(() => __game.doVerb('ir', 'pecera_a_vestibulo'));
+  await G(() => __game.clearLog());
+  await G(() => __game.doVerb('ir', 'torno'));
+  ok(!(await G(() => __game.log.some(l => l.who === 'inigo_sinergia' && /Optimal Brains/.test(l.text)))), 'la 7.2 no se repite en la segunda entrada');
+  const seen = new Set(['vestibulo', 'pecera']);
+  for (const [exit, room] of ROUTE.slice(1)) {
     await G(e => __game.doVerb('ir', e), exit);
     const st = await state();
     ok(st.room === room, `${exit} → ${room}`);
@@ -147,6 +160,7 @@ try {
   });
   ok(presence.a.includes('inigo_sinergia') && presence.a.includes('lector_medio'), 'Pajarera (Actos I-II): Íñigo y el Lector Medio');
   ok(presence.b.includes('inigo_sinergia') && presence.b.includes('lector_medio') && presence.b.includes('gervasio_acta'), 'Sala Amazonas (Acto III, `when`): Íñigo, Lector Medio y Gervasio');
+  await G(() => __game.newGame());          // partida limpia (modo rápido) para el resto de pruebas
 
   // ---------------------------------------------------------------- inventory
   step('Inventario: los 19 objetos (18 de la biblia + boli_muerto; give-all de depuración)');
@@ -344,13 +358,20 @@ try {
   ok((await state()).mode === 'play', '«Lo hablamos» cancela');
   await page.keyboard.press('Escape');
 
-  step('Créditos (esqueleto)');
-  G(() => __game.game.runScript(api => api.ending(), { label: 'créditos' }));
+  step('Créditos dentro de la partida (api.credits) y final (api.ending)');
+  const roomBefore = (await state()).room;
+  G(() => __game.game.runScript(async api => { await api.credits({ credits: [{ text: 'PRUEBA', title: true }, 'Asignado a: el smoke test', ''] }); api.setFlag('cpd_prueba', 'tras-creditos'); }, { label: 'créditos (keep)' }));
   ok(await waitFor(() => __game.state().mode === 'ending'), 'pantalla de créditos');
-  await wait(3500);
+  await wait(2500);
   await shot('12-creditos');
-  for (let i = 0; i < 12 && (await state()).mode === 'ending'; i++) { await clickVirtual(160, 100); await wait(400); }
-  ok(await waitFor(() => __game.state().mode === 'title', null, 8000), 'vuelve al título');
+  await G(() => { __game.game.ending.t = 60000; });
+  ok(await waitFor(() => __game.state().mode === 'play' && __game.state().flags.cpd_prueba === 'tras-creditos', null, 8000), 'api.credits vuelve sola a la partida (el script sigue)');
+  ok((await state()).room === roomBefore, 'misma sala tras los créditos');
+  G(() => __game.game.runScript(api => api.ending({ credits: ['FIN de prueba'] }), { label: 'final' }));
+  ok(await waitFor(() => __game.state().mode === 'ending'), 'api.ending: pantalla final');
+  for (let i = 0; i < 14 && (await state()).mode === 'ending'; i++) { await clickVirtual(160, 100); await wait(400); }
+  ok(await waitFor(() => __game.state().mode === 'title', null, 8000), 'api.ending vuelve al título con un clic al acabar');
+  ok(await G(() => !!__game.state().finished && __game.state().finished.room === 'catacumba'), 'la partida terminada queda en state().finished');
 
   step('Robustez: errores de contenido no bloquean');
   expectErrors = true;

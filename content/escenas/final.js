@@ -9,8 +9,9 @@
 // `juego_terminado` → créditos (recuadro de la fe de erratas, «Asignado a:» + 9.8d, plano de Aurora en la Catacumba,
 // LCD de Gertrudis, hilo de Tadeo en la esquina) → poscréditos (Ramírez en la Pecera) → la impresora: «BANDEJA 2
 // INSTALADA» → FIN → título.
-// En modo rápido de pruebas (`__game.skipText(true)`) la escena termina en `juego_terminado` SIN créditos, para que
-// el walkthrough pueda comprobar el estado (los créditos devuelven al título y borran la partida).
+// Los créditos van con `api.credits()` (vuelven solos a la partida para el poscréditos) y la última imagen con
+// `api.ending()` (clic → título). En modo rápido de pruebas (`__game.skipText(true)`) todo se resuelve al instante, de
+// principio a fin; el estado de la partida terminada queda en `__game.state().finished`.
 import { PAL, rect, hline, vline, frameRect, gradV, ellipse, line, ditherOverlay, glow } from '../../engine/draw.js';
 import { drawText, measure, wrap, LINE_H } from '../../engine/font.js';
 import game from '../game.js';
@@ -44,18 +45,19 @@ function periodicoHud(g) {
 async function final(api) {
   const G = api.game;
   const L = vestArt.layout || {};
+  const EP = vestArt.epilogo;
   await api.cutscene(async () => {
     await api.fadeOut(700);
     api.music('m_final', 2);
     await api.narrate('Sábado, 6:00.');
-    // --- reparto del amanecer en el vestíbulo (posiciones de reserva si el arte no las da)
+    // --- reparto del amanecer en el vestíbulo (sitios del arte: vestArt.epilogo)
     await api.goto('vestibulo', 'inicio');
     await api.fadeOut(0);
-    const pc = at(L, C, [232, 104, 'down']);
+    const pc = at(L, C, [224, 98, 'down']);
     api.placeActor(C, 'vestibulo', pc[0], pc[1], 'down');
-    const pr = at(L, R, [34, 114, 'left']);
-    api.placeActor(R, 'vestibulo', pr[0], pr[1], pr[2] || 'left'); api.show(R);
-    api.placeActor('bruno', 'vestibulo', 116, 122, 'left'); api.show('bruno');
+    const pr = EP.ruben;
+    api.placeActor(R, 'vestibulo', pr[0], pr[1], pr[2]); api.show(R);
+    api.placeActor('bruno', 'vestibulo', EP.bruno[0], EP.bruno[1], EP.bruno[2]); api.show('bruno');
     await api.fadeIn(900);
     await api.wait(400);
     await api.sayAs(R, '¿Sigue gobernando el mismo?');
@@ -64,28 +66,29 @@ async function final(api) {
     api.faceActor(R, C);
     await api.sayAs(R, 'Sí.');
     // Íñigo con su caja (sale del ascensor)
-    api.placeActor(I, 'vestibulo', 278, 112, 'left'); api.show(I);
+    const ei = EP.inigo_sinergia, eg = EP.gervasio_acta;
+    api.placeActor(I, 'vestibulo', ei.from[0], ei.from[1], ei.from[2]); api.show(I);
     api.sfx('door');
-    await api.walkActor(I, 176, 116);
+    await api.walkActor(I, ei.at[0], ei.at[1]);
     await api.sayAs(C, '¿Íñigo? ¿El becario de marzo del 98? ¡Te dejaste la taza!');
     api.faceActor(I, C);
     api.sfx('pickup');
     await api.anim(C, 'reach', 500);
     await api.sayAs(I, '...Me la quedo.');
-    api.placeActor(GV, 'vestibulo', 280, 114, 'left'); api.show(GV);
+    api.placeActor(GV, 'vestibulo', eg.from[0], eg.from[1], eg.from[2]); api.show(GV);
     api.sfx('door');
-    await api.walkActor(GV, 216, 118);
+    await api.walkActor(GV, eg.at[0], eg.at[1]);
     await api.sayAs(GV, 'Íñigo. Hay una beca en Mercados. Lo hablamos.');
     api.faceActor(I, GV);
     await api.sayAs(I, '¿Cuándo?');
     await api.sayAs(GV, 'Ahora. Lo estamos hablando, ¿no?');
-    api.background(async (b) => { await b.walkActor(I, 14, 116); b.hide(I); });
-    await api.walkActor(GV, 30, 122);
+    api.background(async (b) => { await b.walkActor(I, EP.salida[0], EP.salida[1]); b.hide(I); });
+    await api.walkActor(GV, eg.salida[0], eg.salida[1]);
     api.hide(GV);
     // el fardo de periódicos
     api.sfx('drop');
     await api.sayAs(C, 'Ha llegado la furgoneta del polígono. Recién salidos.');
-    await api.walkTo(206, 118); api.face('up');
+    await api.walkTo(EP.periodicos[0], EP.periodicos[1]); api.face('up');
     await api.anim('bruno', 'reach', 400);
     api.sfx('paper');
     G.hud = periodicoHud;
@@ -157,7 +160,7 @@ async function final(api) {
     if (api.flag('infografia_integrada')) {                                // adenda 9.8c
       await api.sayAs(Y, ['La infografía de la opa: permanencia, más de un 40 %.', 'Firmada por dos departamentos. Bueno, firmada no. Reclamada.']);
     }
-    const coro = async (t) => { await api.sayFrom('coro_desarrollo', t, { color: CORO }); };
+    const coro = async (t) => { await api.sayFrom('pecera.coro_desarrollo', t, { color: CORO }); };
     await coro('DEV 1: La web ha publicado la opa a las 00:01. Sin un fallo.');
     await coro('DEV 2: Ni uno.');
     await coro('DEV 1: ¿Y a quién se lo damos?');
@@ -171,7 +174,6 @@ async function final(api) {
     await api.fadeOut(1200);
   });
   api.setFlag('juego_terminado', true);
-  if (G.fast) return;                         // pruebas en modo rápido: sin créditos (ver cabecera)
   await creditosYPoscreditos(api);
 }
 
@@ -281,13 +283,22 @@ function creditsDraw(api) {
         try { planoAurora(g, 92, py, 136, ph, 1 - (py + ph) / (200 + ph)); } catch (err) { /* decorativo */ }
       }
     }
-    // hilo de Tadeo en la esquina (opuesta al LCD de Gertrudis) cuando ya no queda texto abajo
+  };
+}
+/** Por encima del texto: el LCD de Gertrudis (game.ending.overlay) y el hilo de Tadeo en la esquina opuesta, que
+ *  entra cuando ya no queda texto abajo. */
+function creditsOverlay(api) {
+  const G = api.game, base = game.ending && game.ending.overlay;
+  return (g, t) => {
+    if (base) base(g, t);
+    const e = G.ending; if (!e) return;
+    const y0 = 200 - t / 1000 * (e.def.speed || 14) + (e.def.startY ?? 0);
     const lastY = y0 + (e.lines.length - 5) * LH;
     if (lastY < 112) {
       const rows = [];
       for (const [de, txt] of HILO) { rows.push([de, '#FFCC99']); for (const w of wrap(txt, 196)) rows.push(['  ' + w, '#e8dcc8']); }
       const bh = rows.length * 10 + 6, bx = 4, byy = 196 - bh;
-      g.save(); g.globalAlpha = 0.8; rect(g, bx, byy, 212, bh, '#0c0a14'); g.restore();
+      g.save(); g.globalAlpha = 0.9; rect(g, bx, byy, 212, bh, '#0c0a14'); g.restore();
       frameRect(g, bx, byy, 212, bh, '#5a4a3a');
       rows.forEach(([s, col], i) => drawText(g, s, bx + 4, byy + 3 + i * 10, col, { outline: null }));
     }
@@ -317,19 +328,14 @@ function impresoraDraw(g, t) {
   if (t > 6200) drawText(g, 'FIN', 160, 34, '#f2d468', { align: 'center', scale: 2 });
 }
 
-/** Créditos + poscréditos + última imagen. El motor (`api.ending`) siempre vuelve al título al acabar; para meter el
- *  poscréditos dentro del juego, cuando el texto de los créditos ha salido de pantalla se vuelve a la sala
- *  (petición al motor en el informe del paquete A: un `api.credits()` que no vuelva al título). */
+/** Créditos + poscréditos + última imagen. `api.credits()` muestra los créditos y, cuando el texto ha salido de
+ *  pantalla, vuelve sola a la partida (misma sala, modo 'play') para el poscréditos; `api.ending()` cierra el juego. */
 async function creditosYPoscreditos(api) {
   const G = api.game;
-  const list = creditos(api);
-  api.ending({ credits: list, draw: creditsDraw(api), theEnd: false, holdY: -14, music: 'm_creditos' });
-  for (let guard = 0; guard < 6000 && G.ending && !G.ending.doneAt; guard++) await api.wait(50);
-  if (!G.ending || !G.state) return;
+  await api.credits({ credits: creditos(api), draw: creditsDraw(api), overlay: creditsOverlay(api), theEnd: false, holdY: -14, holdMs: 600, music: 'm_creditos' });
+  if (!G.state) return;
   // ---- poscréditos: la Pecera, vacía
-  G.fadeLevel = 1;
-  G.ending = null;
-  G.mode = 'play';
+  await api.fadeOut(0);
   api.music(null, 1);
   await api.cutscene(async () => {
     const Lp = (G.content.rooms.pecera && G.content.rooms.pecera.layout) || {};
@@ -355,7 +361,7 @@ async function creditosYPoscreditos(api) {
   });
   // ---- última imagen: la impresora de la tercera
   api.sfx('machine');
-  await api.ending({ credits: [], draw: impresoraDraw, theEnd: false, holdY: 60 });
+  await api.ending({ credits: [], draw: impresoraDraw, overlay: null, topY: 0, theEnd: false, holdY: 60 });
 }
 
 export const finalScenes = { final, epilogo: final };

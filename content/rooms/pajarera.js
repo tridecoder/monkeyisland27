@@ -147,12 +147,13 @@ export default buildRoom({
       hablar: async (api) => (acto3(api) ? api.say('Le hablo a un atril vacío. Es como escribir a Dirección.') : api.say('Le pregunto quién le escribe los titulares. Parpadea. En mayúsculas.')),
       coger: async (api) => (acto3(api) ? api.say('Se lo ha llevado Íñigo. Con cuidado de que no se enfríe.') : api.sayAs(I, 'No se coge. Se licencia. Cuarenta y ocho mil al mes.')),
     } },
-    { id: 'mesa_direccion', name: 'mesa de Dirección', handlers: {
+    { id: 'mesa_direccion', name: 'mesa grande', handlers: {
       mirar: seq([['B', 'Una mesa enorme. Encima, un informe: "Lo que quiere el Lector Medio".'], ['B', 'Lo abro. Está en blanco. Se nota que lo ha validado.']]),
       coger: '¿El informe en blanco? Es lo único validado de esta planta. Se queda.',
       abrir: 'El cajón tiene llave. Como todo lo que decide algo.',
       usar: 'No me siento ahí. Esa mesa tiene más cargos que yo.',
-      'usar:pieza_opa': 'Si la dejo en la mesa de Dirección, la validan. En blanco.',
+      'usar:pieza_opa': 'Si la dejo en esta mesa, la validan. En blanco.',
+      hablar: 'El cartelito dice «RESERVADO». Desde 2015. Para una reunión que nunca empieza.',
     } },
     { id: 'perchero', name: 'perchero', handlers: {
       mirar: seq([['B', 'El perchero de la Pajarera. Vacío.'], ['B', 'Colgar algo aquí le quitaría autoridad a la chaqueta.']]),

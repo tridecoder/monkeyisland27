@@ -23,7 +23,23 @@ const PARED = [
   '«Yunque, una unidad. Motivo: un yunque no es material de oficina».',
 ];
 
-const hablarEvaristo = async (api) => api.dialog('evaristo');
+// adenda 3.8: «al Usar la puerta, sale a la puerta». Bruno se aparta a un lado, Evaristo sale de pie a la puerta de
+// cristal (posición `puerta` del arte), se habla, y vuelve a su despacho (posición `despacho`).
+const posEv = (k) => art.layout.evaristo_salvedad.positions[k];
+const hablarEvaristo = async (api) => {
+  const here = api.actorPos(EV);
+  if (!here || here.room !== 'administracion') return api.dialog('evaristo');
+  const P = posEv('puerta'), D = posEv('despacho');
+  await api.walkTo(P.walkTo[0], P.walkTo[1]);
+  api.sfx('door');
+  api.placeActor(EV, 'administracion', P.at[0], P.at[1], P.at[2]);
+  api.face('right');
+  try { await api.dialog('evaristo'); }
+  finally {
+    api.sfx('doorClose');
+    api.placeActor(EV, 'administracion', D.at[0], D.at[1], D.at[2]);
+  }
+};
 
 export default buildRoom({
   id: 'administracion',

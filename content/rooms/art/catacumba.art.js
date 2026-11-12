@@ -33,7 +33,7 @@ const layout = {
   libro_estilo: { rect: [256, 72, 28, 13], walkTo: [270, 114], face: 'up' },
   bolis_aurora: { rect: [285, 66, 15, 22], walkTo: [292, 114], face: 'up', priority: 1 },
   corrector_aurora: { rect: [256, 85, 28, 5], walkTo: [276, 116], face: 'up', priority: 2 },
-  teodoro_cuerpodoce: { at: [166, 104, 'left'], walkTo: [182, 114], face: 'left' },
+  teodoro_cuerpodoce: { at: [166, 104, 'left'], walkTo: [190, 114], face: 'left' },
   aurora_galerada: { at: [238, 106, 'right'], walkTo: [222, 114], face: 'right' },
 };
 

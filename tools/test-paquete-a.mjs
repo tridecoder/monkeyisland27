@@ -284,15 +284,19 @@ try {
   must((await state()).room === 'pecera', 'el torno abierto no lleva a la Pecera');
   ok('Acto III: Ibex de prórroga, desmentido D, plaza 9, torno → Pecera');
 
-  // ------------------------------------------------------------ 7.5 final (modo rápido: sin créditos, estado conservado)
+  // ------------------------------------------------------------ 7.5 final (modo rápido: de principio a fin, créditos, poscréditos e impresora
+  // incluidos; el juego acaba en el título y la partida terminada queda en state().finished)
   for (const f of ['duelo_inigo_ganado', 'lector_derribado', 'correo_evaristo_listo', 'infografia_integrada', 'sala_abierta', 'pagina_cerrada']) await setFlag(f);
   await setFlag('rumor_firma_n', 4);
   await goto('sala_amazonas', 'pajarera');
   await clearLog();
   await G(() => __game.scene('final'));
   st = await state();
-  must(st.flags.juego_terminado === true && st.mode === 'play', `7.5: juego_terminado sin estado (modo ${st.mode})`);
-  must(st.room === 'pecera', '7.5: el final no acaba en la Pecera');
+  must(st.mode === 'title' && st.finished, `7.5: el final en modo rápido no llega al título (modo ${st.mode})`);
+  st = { ...st, ...st.finished };
+  must(st.flags.juego_terminado === true, '7.5: juego_terminado sin estado');
+  must(st.room === 'pecera', '7.5: el final (poscréditos) no acaba en la Pecera');
+  await expectLog(['¿Me he perdido algo?', 'TODA LA REDACCIÓN: «No.»'], '7.5 (poscréditos en modo rápido)');
   must(st.objects['vestibulo.cuadro_plazas'] && st.objects['vestibulo.cuadro_plazas'].state === 'tachado', '8bis.2: el cuadro no queda tachado');
   await expectLog(['Sábado, 6:00.', '¿Sigue gobernando el mismo?', '¿El becario de marzo del 98?', 'Lo estamos hablando, ¿no?',
     'Hidrovoltia lanza una opa sobre Banco Robledal', 'Por Bruno Pellejo', 'Con las dos eles.', '¡Eso es opa, árbitro!',
@@ -310,7 +314,7 @@ try {
   for (const f of ['torno_abierto', 'duelo_inigo_ganado', 'lector_derribado', 'ruben_libre']) await setFlag(f);
   await clearLog();
   await G(() => __game.scene('final'));
-  must(await flag('juego_terminado'), '7.5 sin extras: falta juego_terminado');
+  must(await G(() => !!(__game.state().finished && __game.state().finished.flags.juego_terminado)), '7.5 sin extras: falta juego_terminado');
   must(!(await logHas('sin adjunto')) && !(await logHas('eres el dueño')) && !(await logHas('más de un 40 %')), '7.5 sin extras: salen insertos condicionados');
   await expectLog(['ES TUYA, CHAVAL.', 'CORO: Enhorabuena, Diseño.'], '7.5 sin extras');
   ok('7.5 final (versión mínima): sin 9.8a/9.8b/infografía; 8bis.2 y el coro siempre');

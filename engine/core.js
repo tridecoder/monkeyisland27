@@ -313,6 +313,7 @@ export class Game {
   /** Start a new game. opts: { room, entry, skipIntro } (room/entry override the start room, e.g. for previews). */
   async newGame(opts = {}) {
     this.resetRuntime();
+    this.finished = null;
     this.state = this.initialState();
     this.buildActors();
     this.log.length = 0;
@@ -432,7 +433,10 @@ export class Game {
     // partida y cuando la entrada ya ha lanzado una escena / diálogo / duelo / cinemática (`sceneTicks` cambió).
     this.entryN = (this.entryN || 0) + 1;
     const ticks = this.sceneTicks = this.sceneTicks || 0;
-    if (def.onEnter) await this.runScript(def.onEnter, { label: id + '.onEnter' });
+    // api.restoring is true inside onEnter when the entry comes from loading a save (per-entry gags can skip it)
+    this.restoring = !!opts.restore;
+    try { if (def.onEnter) await this.runScript(def.onEnter, { label: id + '.onEnter' }); }
+    finally { this.restoring = false; }
     if (this.G.afterEnter && !opts.restore && this.state && this.sceneTicks === ticks && !this.cutscene && !this.inDialog) {
       await this.runScript((api) => this.G.afterEnter(api, { room: id, entryN: this.entryN }), { label: id + '.afterEnter' });
     }
@@ -880,7 +884,7 @@ export class Game {
         try { ok = !am.def.if || this.cond(am.def.if, makeApi(this, {})); } catch (e) { ok = false; }
         if (!ok) continue;
         am.running = true;
-        this.runScript(am.def.run, { blocking: false, label: 'ambient ' + this.room.def.id }).then(() => { am.running = false; });
+        this.runScript(am.def.run, { blocking: false, label: 'ambient ' + this.room.def.id, ambientRoom: this.room.def.id }).then(() => { am.running = false; });
       }
       if (this.room.def.update) { try { this.room.def.update(makeApi(this, { label: 'update' }), dt); } catch (e) { this.error('update() falló', e); this.room.def.update = null; } }
       this.updateIdle(dt);
@@ -904,8 +908,9 @@ export class Game {
     M.stillMs += dt * 1000;
     if (M.stillMs > (this.G.murmurAfterMs || 20000)) {
       M.stillMs = 0;
-      const cands = Object.values(this.actors).filter(a => a.room === this.room.def.id && a.visible && a.id !== this.G.player && this.murmurLines(a.def).length)
-        .map(a => this.actorTarget(a))
+      // the room placement may carry its own murmurs (actorTarget merges definition + placement)
+      const cands = Object.values(this.actors).filter(a => a.room === this.room.def.id && a.visible && a.id !== this.G.player)
+        .map(a => this.actorTarget(a)).filter(t => this.murmurLines(t.def).length)
         .concat(this.roomObjects().filter(o => o.murmurs && this.getObjState(o.id).visible).map(o => this.objectTarget(o)));
       if (cands.length) this.playMurmur(cands[Math.floor(Math.random() * cands.length)]);
     }
@@ -989,7 +994,10 @@ export class Game {
     for (const o of objs) {
       if (!o.draw) continue;
       const st = this.getObjState(o.id);
-      if (!st.visible) continue;
+      // `prop: true` (art key): the drawing is FURNITURE that hides actors' legs (a counter, a desk, a table): it is
+      // painted even while its hotspot is hidden / its `when` is false (then it is just not clickable). The draw
+      // function gets view.visible === false and may skip the small, takeable part.
+      if (!st.visible && !o.prop) continue;
       const layer = o.layer || 'back';
       const fn = () => this.drawObject(g, o, st);
       if (layer === 'back') safe(fn, `draw() de ${o.id}`);

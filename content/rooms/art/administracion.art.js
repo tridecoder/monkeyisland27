@@ -18,7 +18,7 @@ const layout = {
   pared_rechazadas: { rect: [82, 5, 80, 36], walkTo: [120, 112], face: 'up' },
   cartel_recorte: { rect: [82, 42, 80, 40], walkTo: [122, 112], face: 'up' },
   ventanilla: {
-    rect: [160, 34, 66, 66], walkTo: [193, 114], face: 'up', layer: 'sorted', zy: 100, cache: true, cachePad: 8,
+    rect: [160, 34, 66, 66], walkTo: [193, 114], face: 'up', layer: 'sorted', zy: 100, prop: true, cache: true, cachePad: 8,
     draw: (g) => drawBoothFront(g),
   },
   sellos: { rect: [168, 73, 22, 11], walkTo: [178, 114], face: 'up', priority: 1, layer: 'sorted', zy: 98, cache: true, cachePad: 4, draw: (g) => drawSellos(g, 168, 73) },
@@ -28,7 +28,9 @@ const layout = {
   coma_enmarcada: { rect: [250, 32, 14, 14], walkTo: [254, 114], face: 'up', priority: 1 },
   archivador_ejemplares: { rect: [276, 38, 42, 60], walkTo: [296, 112], face: 'up' },
   begona_triplicado: { at: [193, 96, 'down'], walkTo: [193, 114], face: 'up' },
-  evaristo_salvedad: { at: [252, 97, 'down'], walkTo: [240, 115], face: 'right' },
+  // dentro de su despacho (leyendo con lupa); `puerta`: sale a la puerta de cristal cuando se le llama (adenda 3.8)
+  evaristo_salvedad: { at: [252, 97, 'down'], walkTo: [240, 115], face: 'right',
+    positions: { despacho: { at: [252, 97, 'down'] }, puerta: { at: [237, 106, 'left'], walkTo: [216, 114], face: 'right' } } },
 };
 
 // ------------------------------------------------------------ objetos

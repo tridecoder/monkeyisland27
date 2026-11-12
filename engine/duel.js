@@ -8,7 +8,7 @@
 //    a wrong object only gets a line (not a miss); retiring = defeat without punishment
 //  - nothing is learned in a duel; points always restart from 0
 //  - HUD = mail window: De / Para / Asunto (RE: RE: ...) / Asignado a:
-import { drawText, measure } from './font.js';
+import { drawText, measure, wrap } from './font.js';
 import { rect, hline, vline, frameRect } from './draw.js';
 
 const asArray = x => x == null ? [] : Array.isArray(x) ? x : [x];
@@ -70,7 +70,7 @@ export async function runDuel(game, api, idOrDef) {
     const known = deck.filter(p => flags[pairs.get(p).flag]).length;
     if (T.notReady && known < Math.min(target, deck.length)) await say('player', T.notReady);
     await sayList(opp.intro);
-    game.hud = hud; game.hudTop = 50;
+    game.hud = hud; game.hudTop = 50;   // drawHud adjusts it to the window height
     let guard = 0;
     while (guard++ < 300) {
       // ---- finisher pending?
@@ -202,7 +202,14 @@ function drawHud(g, game, S) {
   const C = fax
     ? { bg: '#e8dfc6', bar: '#b4a68a', barText: '#3a3020', label: '#6e6454', text: '#2a2218', line: '#92856e', edge: '#4e463c', assign: '#952a24', win: '#1e5a2a' }
     : { bg: '#141a30', bar: '#2c5098', barText: '#e8f0ff', label: '#7e90c0', text: '#e8ecf8', line: '#26305c', edge: '#06080f', assign: '#f2d468', win: '#9cf0a4' };
-  const x = 6, y = 2, w = 308, h = 45;
+  const x = 6, y = 2, w = 308;
+  // long subjects (D1 «…web (…», many «RE:») wrap to two lines instead of being cut; the window grows by one row
+  const subjW = w - measure('Asunto:') - 12;
+  let subj = wrap(subjectText(S), subjW);
+  if (subj.length > 2) subj = [subj[0], fit(subj.slice(1).join(' '), subjW)];
+  const extra = (subj.length - 1) * 9;
+  const h = 45 + extra;
+  game.hudTop = y + h + 3;
   g.save(); g.globalAlpha = fax ? 0.97 : 0.93; rect(g, x, y, w, h, C.bg); g.restore();
   frameRect(g, x - 1, y - 1, w + 2, h + 2, C.edge);
   rect(g, x, y, w, 9, C.bar);
@@ -216,26 +223,32 @@ function drawHud(g, game, S) {
   };
   const para = 'Para: ' + S.to + (S.cc ? '   CC: ' + S.cc : '');
   row(y + 8, 'De:', S.from + '   ' + para);
-  row(y + 19, 'Asunto:', subjectText(S));
-  hline(g, x + 3, y + 31, w - 6, C.line);
-  drawText(g, 'Asignado a:', x + 4, y + 32, C.label, { outline: null });
+  row(y + 19, 'Asunto:', subj[0]);
+  if (subj[1]) drawText(g, subj[1], x + 8 + measure('Asunto:'), y + 28, C.text, { outline: null });
+  const yb = y + extra;
+  hline(g, x + 3, yb + 31, w - 6, C.line);
+  drawText(g, 'Asignado a:', x + 4, yb + 32, C.label, { outline: null });
   const lw = measure('Asignado a:') + 5;
   const won = S.result === 'won';
-  drawText(g, S.assigned, x + 4 + lw, y + 32, won ? C.win : C.assign, { outline: fax ? null : '#000000', bold: true });
+  drawText(g, S.assigned, x + 4 + lw, yb + 32, won ? C.win : C.assign, { outline: fax ? null : '#000000', bold: true });
   // hits as "+1" stamps, misses as small crosses, right-aligned
   let rx = x + w - 6;
   for (let i = 0; i < 3; i++) {
     const on = i < S.misses;
-    rx -= 6; rect(g, rx, y + 36, 5, 5, on ? (fax ? '#952a24' : '#e86040') : C.line);
-    if (on) { rect(g, rx + 1, y + 38, 3, 1, C.bg); }
+    rx -= 6; rect(g, rx, yb + 36, 5, 5, on ? (fax ? '#952a24' : '#e86040') : C.line);
+    if (on) { rect(g, rx + 1, yb + 38, 3, 1, C.bg); }
   }
   rx -= 6;
-  for (let i = 0; i < S.hits; i++) { const tw = measure('+1'); rx -= tw + 3; drawText(g, '+1', rx, y + 32, C.win, { outline: fax ? null : '#000000' }); }
+  for (let i = 0; i < S.hits; i++) { const tw = measure('+1'); rx -= tw + 3; drawText(g, '+1', rx, yb + 32, C.win, { outline: fax ? null : '#000000' }); }
   if (S.thread && game.realTime < S.thread.until) {
+    // the reply-all thread line (cameos, «+1»): up to two lines under the window
     const t = S.thread.from + ' ' + S.thread.text;
-    const tw = Math.min(300, measure(t) + 8);
-    g.save(); g.globalAlpha = 0.85; rect(g, 160 - tw / 2, y + h + 1, tw, 11, fax ? '#d2c6a8' : '#0c1020'); g.restore();
-    drawText(g, fit(t, 296), 160, y + h + 1, fax ? '#2a2218' : '#9cf0a4', { align: 'center', outline: null });
+    let tl = wrap(t, 290);
+    if (tl.length > 2) tl = [tl[0], fit(tl.slice(1).join(' '), 290)];
+    const tw = Math.min(300, Math.max(...tl.map(l => measure(l))) + 8);
+    g.save(); g.globalAlpha = 0.85; rect(g, 160 - tw / 2, y + h + 1, tw, 11 * tl.length, fax ? '#d2c6a8' : '#0c1020'); g.restore();
+    tl.forEach((l, i) => drawText(g, l, 160, y + h + 1 + i * 10, fax ? '#2a2218' : '#9cf0a4', { align: 'center', outline: null }));
+    game.hudTop = y + h + 3 + 11 * tl.length;
   }
   void vline;
 }

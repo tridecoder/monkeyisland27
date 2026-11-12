@@ -351,7 +351,7 @@ const layout = {
   orden_del_dia: { rect: [102, 14, 126, 46], walkTo: [162, 108], face: 'up', draw: drawOrden },
   planillo_mesa: { rect: [98, 82, 24, 10], walkTo: [108, 116], face: 'up', priority: 1, layer: 'sorted', zy: 104, draw: drawPlanillo },
   minicruasanes: { rect: [126, 83, 30, 11], walkTo: [140, 116], face: 'up' },
-  botellines: { rect: [174, 80, 60, 15], walkTo: [204, 116], face: 'up', layer: 'sorted', zy: 103, draw: drawTable },
+  botellines: { rect: [174, 80, 60, 15], walkTo: [204, 116], face: 'up', layer: 'sorted', zy: 103, prop: true, draw: drawTable },
   figurantes_mercados: { rect: [222, 58, 66, 38], walkTo: [256, 114], face: 'up', priority: 1, draw: drawFigurantes },
   // ADENDA
   tele_amazonas: { rect: [286, 22, 34, 42], walkTo: [304, 112], face: 'up', draw: drawTele },

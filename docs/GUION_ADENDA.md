@@ -1289,12 +1289,12 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 | — | paso 35 | catacumba | (T0 lleva antes el desmentido C de Teodoro al hablarle; luego «Quiero firmar en tu página 7.») | rumor C cerrado (sin cambio de contador) |
 | X22 | tras el paso 36 | administracion | Hablar evaristo_salvedad → «Aurora dice que su coma está bien.» | `correo_evaristo_listo` |
 | — | paso 37 | catacumba | (al entrar, L3; en 7.3a sale la línea 9.3) | `evaristo_llamadas`=3 |
-| X23 | tras el paso 37 | office | Dar boli_muerto a custodia_precinto → «Para apuntar lo que me digan. Sin grabadora.» | `custodia_ablandada`; −`boli_muerto` |
+| X23 | tras el paso 37 | office | (al entrar en el Office sale L4, versión sin Rubén) Dar boli_muerto a custodia_precinto → «Para apuntar lo que me digan. Sin grabadora.» | `custodia_ablandada`; −`boli_muerto`; `evaristo_llamadas`=4 |
 | X24 | | office | Hablar custodia_precinto → «¿Dónde está...?» → «¿Dónde está el Titulator?» → «Ya está.» | sin flags |
-| — | paso 38 | cpd | (al entrar, L4 en su versión sin Rubén) | `evaristo_llamadas`=4 |
+| — | paso 38 | cpd | (L5 sale en una de las salas por las que se pasa camino del CPD: las llamadas saltan en cada entrada, también de paso) | `evaristo_llamadas`=5 |
 | X23b | antes de Tirar (paso 38) | cpd | Hablar paco_ticket → (rumor D2) → «Me voy.» | `rumor_plaza_n`=2 |
 | — | paso 39 | cpd | (R0 lleva antes el desmentido B de Rubén) | sin flags |
-| — | pasos 40-42 | | (L5 y RV5 salen en dos de estas entradas) | `evaristo_llamadas`=5, `tadeo_rv_n`=5 |
+| — | pasos 40-42 | | (RV5 ya ha salido en alguna entrada sin llamada pendiente) | `evaristo_llamadas`=5, `tadeo_rv_n`=5 |
 | X25 | tras el paso 41 | pecera | Hablar yoli_tendencias → (rumor A4 al empezar) → «Me voy.» | `rumor_firma_n`=4 |
 | X25b | antes del paso 41 | pecera | Hablar nerea_backlog → (rumor D3) → «Nada, ya me voy.» | `rumor_plaza_n`=3 |
 | X26 | tras el paso 42 | vestibulo | (ascensor desde el CPD) Hablar celestino → (desmentido D) → «Nada, Celestino.» | rumor D cerrado |
@@ -1306,7 +1306,7 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 - **Los tres micro-puzles se resuelven:** MP1 en X7, X8, X10, X12 (con `cms_vivo` desde el paso 22); MP2 en X19, X21, X22 (con `evaristo_convoco` desde la primera entrada tras el paso 16 y `acto_2_iniciado`); MP3 en X6, X20, X23.
 - **Objeto nuevo:** `boli_muerto` se consigue (X20) antes de usarse (X23) y se usa una vez. Ningún objeto del juego principal entra ni sale en los pasos X.
 - **Flags nuevos sin huérfanos:** todos los de 6.2 tienen quien los pone y quien los lee (los contadores de rotación los lee su propio hotspot).
-- **Avisos:** con el orden del 5.4 hay entradas de sobra para que salgan L1-L5 (L1 en el paso 10; L2 en la primera entrada tras el 16; L3 en el 37; L4 en el 38; L5 en una entrada entre el 40 y el 44) y RV1-RV5 (las entradas sin llamada pendiente). Ninguno sale en escenas, duelos ni en la Sala del clímax.
+- **Avisos:** con el orden del 5.4 hay entradas de sobra para que salgan L1-L5 (L1 en el paso 10; L2 en la primera entrada tras el 16; L3 en el 37; L4 en la primera entrada posterior —el Office de X23, o el CPD del 38 sin extras—; L5 en la siguiente entrada, de paso hacia el CPD con extras o entre el 40 y el 44 sin ellos) y RV1-RV5 (las entradas sin llamada pendiente). Ninguno sale en escenas, duelos ni en la Sala del clímax.
 - **Rumores:** con la tabla 12.2, las cuatro cadenas llegan al final (A en X25, B en el paso 39, C en el paso 35, D en X26). X25b va antes del paso 41 (Dar el álbum no es Hablar; el rumor sale al Hablar). Si el jugador se salta un eslabón, la cadena espera y solo se pierde el remate opcional.
 - **Sin callejones:** MP2 se reinicia sin coste; en MP3 el muerto no se gasta hasta CU_DA y Custodia lo devuelve si Bruno sale; MP1 no gasta nada.
 - **Sprites:** 4 PNJ nuevos con sprite (tope cumplido); el cameo cuenta.

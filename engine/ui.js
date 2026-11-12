@@ -181,7 +181,7 @@ function choiceLayout(game) {
   const L = LAYOUT;
   const lines = [];
   ch.options.forEach((o, i) => {
-    wrap(o, 296).forEach((l, k) => lines.push({ opt: i, text: (k ? '  ' : '') + l }));
+    wrap(o, 288).forEach((l, k) => lines.push({ opt: i, text: (k ? '  ' : '') + l }));   // 288: never under the scroll arrows (x ≥ 304)
   });
   ch.layout = lines;
   ch.maxScroll = Math.max(0, lines.length - L.optLines);

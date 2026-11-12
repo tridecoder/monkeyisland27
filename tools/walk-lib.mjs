@@ -4,6 +4,7 @@
 // cierra su globo (como un clic) en cuanto `state().aviso` es true, de modo que el test los acepta y sigue.
 export class StepFail extends Error {}
 export const fail = (msg) => { throw new StepFail(msg); };
+export const FAREWELLS = ['nada, celestino', 'nada, aurora', 'nada. me iba', 'nada, ya me voy', 'nada, solo miraba', 'me voy', 'ahora vuelvo', 'lo pienso y vuelvo', 'gracias, begoña', 'prometo cuidarlo', 'nada'];
 export function createRunner(page) {
   const G = (fn, arg) => page.evaluate(fn, arg);
   const state = () => G(() => __game.state());
@@ -17,7 +18,6 @@ async function chooseByText(want) {
   if (i < 0) fail(`no existe la opción «${want}». Opciones: ${JSON.stringify(opts)}`);
   await G(i => __game.chooseDialog(i), i);
 }
-const FAREWELLS = ['nada, celestino', 'nada, aurora', 'nada. me iba', 'nada, ya me voy', 'nada, solo miraba', 'me voy', 'ahora vuelvo', 'lo pienso y vuelvo', 'gracias, begoña', 'prometo cuidarlo', 'nada'];
 async function closeDialog() {
   for (let k = 0; k < 6; k++) {
     const st = await state();
@@ -105,7 +105,9 @@ async function run(a) {
   fail('acción desconocida ' + JSON.stringify(a));
 }
 async function check(esp) {
-  const st = await state();
+  let st = await state();
+  // tras el final (api.ending) el juego vuelve al título: se comprueba la partida terminada (__game.state().finished)
+  if (st.mode === 'title' && st.finished) st = { ...st, ...st.finished };
   const errs = [];
   if (esp.sala && st.room !== esp.sala) errs.push(`sala: ${st.room}, se esperaba ${esp.sala}`);
   const flags = Array.isArray(esp.flags) ? Object.fromEntries(esp.flags.map(f => [f, true])) : (esp.flags || {});

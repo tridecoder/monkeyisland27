@@ -9,7 +9,7 @@ export const STEPS = [
   { n: 6, sala: 'vestibulo', txt: 'Usar tarjeta_becario con organigrama', acc: [['usar', 'tarjeta_becario', 'organigrama']], esp: { flags: ['foto_en_organigrama'] } },
   { n: 7, sala: 'vestibulo', txt: 'Usar tarjeta_becario con torno', acc: [['usar', 'tarjeta_becario', 'torno']], esp: { flags: ['torno_abierto'] } },
   { n: 8, sala: 'pecera', txt: '(entrar) → escena 7.2', acc: [['ir', 'pecera']], esp: { flags: ['inigo_presentado'] } },
-  { n: 9, sala: 'pecera', txt: 'Coger chaqueta_ramirez_hotspot', acc: [['verbo', 'coger', 'chaqueta_ramirez_hotspot']], esp: { tiene: ['chaqueta_ramirez', 'sobre_azucar'], flags: ['chaqueta_cogida'] } },
+  { n: 9, sala: 'pecera', txt: 'Coger chaqueta_ramirez_hotspot', acc: [['ir', 'pecera'], ['verbo', 'coger', 'chaqueta_ramirez_hotspot']], esp: { tiene: ['chaqueta_ramirez', 'sobre_azucar'], flags: ['chaqueta_cogida'] } },
   { n: 10, sala: 'pajarera', txt: 'Usar chaqueta_ramirez con lector_medio', acc: [['ir', 'pajarera'], ['usar', 'chaqueta_ramirez', 'lector_medio']], esp: { flags: ['chaqueta_en_lector', 'silla_libre'], notiene: ['chaqueta_ramirez'] } },
   { n: 11, sala: 'pajarera', txt: 'Mirar ordenador_gervasio', acc: [['verbo', 'mirar', 'ordenador_gervasio']], esp: { flags: ['rep_07'] } },
   { n: 12, sala: 'pajarera', txt: 'Mirar pantalla_titulator ×3', acc: [['verbo', 'mirar', 'pantalla_titulator'], ['verbo', 'mirar', 'pantalla_titulator'], ['verbo', 'mirar', 'pantalla_titulator']], esp: { flags: ['vio_armario_27'] } },

@@ -494,7 +494,7 @@ const layout = {
   buzon_sugerencias: { rect: [194, 58, 15, 14], walkTo: [202, 110], face: 'up', priority: 1 },
   radio_celestino: {
     rect: [239, 60, 17, 12], walkTo: [244, 110], face: 'up', priority: 1,
-    layer: 'sorted', zy: 100,
+    layer: 'sorted', zy: 100, prop: true,     // el mostrador tapa las piernas de Celestino: se pinta siempre
     draw: (g) => { drawCounter(g); counterTop(g); },
   },
   ascensor_vestibulo: { rect: [258, 24, 40, 74], walkTo: [276, 108], face: 'up' },
@@ -503,8 +503,22 @@ const layout = {
   evaristo_salvedad: { at: [196, 114, 'left'], walkTo: [212, 116], face: 'left' },
 };
 
+// Epílogo (§7.5, sábado 6:00): sitios del reparto del amanecer (los usa content/escenas/final.js). Rubén junto al
+// organigrama mirando la luz de la calle; Íñigo y Gervasio salen del ascensor (`from`) y se paran ante el mostrador;
+// Íñigo se va por la puerta de la calle (`salida`). Bruno espera entre el torno y el organigrama; el fardo de periódicos
+// llega junto al torno.
+const epilogo = {
+  ruben: [64, 116, 'right'],
+  bruno: [112, 124, 'left'],
+  inigo_sinergia: { from: [278, 110, 'left'], at: [176, 118, 'left'] },
+  gervasio_acta: { from: [280, 112, 'left'], at: [214, 121, 'left'], salida: [30, 124] },
+  salida: [10, 118],
+  periodicos: [204, 119],
+};
+
 export default {
   room: 'vestibulo',
+  epilogo,
   width: W,
   scale: { yFar: 100, far: 0.86, yNear: 142, near: 1.0 },
   walkboxes: [{ id: 'suelo', poly: [[6, 104], [314, 104], [318, 142], [2, 142]] }],

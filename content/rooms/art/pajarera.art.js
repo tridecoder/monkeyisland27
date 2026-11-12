@@ -1,11 +1,12 @@
 // SALA `pajarera` — ARTE Y GEOMETRÍA. Dueño: artista de fondos. Biblia: §3.5; adenda §3.4 y §11.3.
 // Despacho de cristal de Dirección, persianas a media altura desde 2015. A la izquierda, la puerta de cristal (se intuye la
 // Pecera); pared de pósits; pizarra con la matriz 2x2; sofá blanco de cuero; el atril del Titulator; la mesa enorme
-// (el Lector Medio, actor, de pie DETRÁS); perchero vacío; mesa de Gervasio con tres móviles; puerta de la Sala Amazonas
-// con su pantallita de estado y la hoja de reservas.
+// (sin placa: un cartelito de mesa «RESERVADO» y un cuenco de caramelos corporativos); el Lector Medio, actor, es un
+// expositor de Marketing aparcado junto al sofá, ante la pared de pósits (nunca detrás de la mesa); perchero vacío; mesa
+// de Gervasio con tres móviles; puerta de la Sala Amazonas con su pantallita de estado y la hoja de reservas.
 //
 // Objetos con estado/animación: pantalla_titulator (rota titulares, animada), puerta_sala (pantallita: reunion_terminada /
-// acto_3_iniciado), hoja_reservas (folio impreso del Acto III encima), mesa_direccion (ordenada por z con el Lector Medio).
+// acto_3_iniciado), hoja_reservas (folio impreso del Acto III encima), mesa_direccion (capa 'sorted').
 import {
   PAL, rect, hline, vline, frameRect, px, line, poly, ellipse, paint, bevel, ditherOverlay, gradV, gradH, noise,
   glow, lightCone, shadowEllipse, ditherPick, hash2, rng, fadeRows, vignette, wall, wainscot, baseboard, floorPlanks, rug,
@@ -137,15 +138,18 @@ function mesaDireccion(g) {
   rect(g, x, y + 9, 3, 18, Wd[2]); rect(g, x + w - 3, y + 9, 3, 18, Wd[1]);
   frameRect(g, x + 5, y + 11, w - 10, 13, Wd[2]); hline(g, x + 6, y + 23, w - 12, Wd[5]);
   frameRect(g, x + 8, y + 13, w - 16, 9, Wd[3]);
-  // placa DIRECCIÓN (latón)
-  bevel(g, x + (w >> 1) - 20, y + 14, 40, 7, PAL.gold[4], PAL.gold[6], PAL.gold[2]);
-  tiny(g, 'DIRECCIÓN', x + (w >> 1), y + 15, PAL.ink[1], { align: 'center' });
+  // cartelito de mesa «RESERVADO» (de los de restaurante: la mesa está reservada para una reunión que nunca empieza)
+  const cx = x + 17, cy = y - 7;
+  poly(g, [[cx, cy + 7], [cx + 3, cy], [cx + 38, cy], [cx + 41, cy + 7]], PAL.paper[6]);
+  hline(g, cx + 3, cy, 35, PAL.paper[7]); hline(g, cx, cy + 7, 42, PAL.paper[2]);
+  tiny(g, 'RESERVADO', cx + 21, cy + 1, PAL.red[3], { align: 'center' });
   // informe encima: «Lo que quiere el Lector Medio»
-  rect(g, x + 26, y + 1, 14, 5, PAL.paper[7]); hline(g, x + 26, y + 5, 14, PAL.paper[3]); rect(g, x + 28, y + 2, 7, 1, PAL.blue[4]);
+  rect(g, x + 46, y + 1, 14, 5, PAL.paper[7]); hline(g, x + 46, y + 5, 14, PAL.paper[3]); rect(g, x + 48, y + 2, 7, 1, PAL.blue[4]);
+  // cuenco de caramelos corporativos (envoltorios con el logo de la consultora)
+  ellipse(g, x + 24, y + 4, 5, 2, PAL.metal[5]); hline(g, x + 20, y + 5, 9, PAL.metal[2]);
+  for (const [dx, c] of [[-3, PAL.red[4]], [0, PAL.blue[5]], [3, PAL.gold[5]], [-1, PAL.teal[5]], [2, PAL.red[5]]]) px(g, x + 24 + dx, y + 2 + (dx & 1), c);
   // lámpara de banquero
   rect(g, x + 8, y + 2, 6, 3, PAL.crt[2]); rect(g, x + 10, y - 5, 2, 7, PAL.gold[3]); rect(g, x + 7, y - 7, 8, 3, PAL.crt[3]); hline(g, x + 7, y - 7, 8, PAL.crt[5]);
-  // bandeja de entrada vacía
-  rect(g, x + 48, y + 2, 9, 3, PAL.metal[4]); hline(g, x + 48, y + 2, 9, PAL.metal[7]);
   // patas
   rect(g, x + 2, y + 27, 3, 4, Wd[1]); rect(g, x + w - 5, y + 27, 3, 4, Wd[1]);
 }
@@ -341,13 +345,13 @@ const layout = {
   matriz_2x2: { rect: [88, 18, 64, 50], walkTo: [126, 108], face: 'up' },
   sofa: { rect: [84, 70, 62, 30], walkTo: [100, 113], face: 'up' },
   pantalla_titulator: { rect: [146, 60, 24, 24], walkTo: [158, 110], face: 'up', draw: drawTitulator, priority: 1 },
-  mesa_direccion: { rect: [162, 66, 68, 36], walkTo: [196, 114], face: 'up', layer: 'sorted', zy: 100, cache: true, cachePad: 12, draw: drawMesa },
+  mesa_direccion: { rect: [162, 66, 68, 36], walkTo: [196, 114], face: 'up', layer: 'sorted', zy: 100, prop: true, cache: true, cachePad: 12, draw: drawMesa },
   perchero: { rect: [224, 36, 20, 62], walkTo: [232, 110], face: 'up', priority: 1 },
   ordenador_gervasio: { rect: [244, 58, 40, 26], walkTo: [262, 111], face: 'up' },
   puerta_sala: { rect: [279, 14, 42, 84], walkTo: [298, 108], face: 'right', draw: drawPuertaSala },
   hoja_reservas: { rect: [286, 42, 22, 30], walkTo: [296, 110], face: 'up', priority: 1, draw: drawHoja },
   posit_evaristo: { rect: [133, 51, 12, 11], walkTo: [140, 108], face: 'up', priority: 2 },
-  lector_medio: { at: [196, 92, 'down'], walkTo: [196, 114], face: 'up' },
+  lector_medio: { at: [70, 102, 'right'], walkTo: [86, 114], face: 'left' },
   inigo_sinergia: { at: [116, 101, 'down'], walkTo: [100, 114], face: 'right' },
   gervasio_acta: { at: [262, 104, 'left'], walkTo: [278, 112], face: 'left' },
 };

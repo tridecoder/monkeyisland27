@@ -8,9 +8,11 @@ export function makeApi(game, ctx = {}) {
   const P = () => game.G.player;
   const actorOr = id => { const a = game.actors[id]; if (!a) game.error('Actor desconocido: ' + id); return a; };
 
+  // an ambient script (room `ambient`) falls silent as soon as the player leaves its room
+  const gone = () => !!(ctx.ambientRoom && (!game.state || game.state.room !== ctx.ambientRoom));
   const sayLines = async (who, text, opts) => {
     const lines = Array.isArray(text) ? text : [text];
-    for (const l of lines) await game.speak(who, l, { blocking, ...(opts || {}) });
+    for (const l of lines) { if (gone()) return; await game.speak(who, l, { blocking, ...(opts || {}) }); }
   };
 
   const resolvePoint = (target, y) => {
@@ -37,6 +39,8 @@ export function makeApi(game, ctx = {}) {
     get player() { return P(); },
     get flags() { return game.state.flags; },
     get skipping() { return game.instant; },
+    /** true inside a room's onEnter when the game is being restored from a save (not a real entry). */
+    get restoring() { return !!game.restoring; },
 
     // speech
     say: (text, opts) => sayLines(P(), text, opts),
@@ -44,13 +48,14 @@ export function makeApi(game, ctx = {}) {
     narrate: (text, opts) => sayLines(null, text, { narrator: true, ...(opts || {}) }),
     /** A room object "speaks" (LCD, fax, torno LED...): text above the object, in opts.color or the object's `color`. */
     sayFrom: async (objId, text, opts = {}) => {
+      if (gone()) return;
       const f = game.findObjectDef(objId);
       if (!f) { game.error('sayFrom: objeto desconocido ' + objId); return; }
       const d = f.def;
       const cx = d.poly ? d.poly.reduce((s, p) => s + p[0], 0) / d.poly.length : d.x + d.w / 2;
       const top = d.poly ? Math.min(...d.poly.map(p => p[1])) : d.y;
       const lines = Array.isArray(text) ? text : [text];
-      for (const l of lines) await game.speak(null, l, { blocking, at: [cx, top - 2], color: opts.color || d.color || '#e8e8e8', who: d.id, ...opts });
+      for (const l of lines) { if (gone()) return; await game.speak(null, l, { blocking, at: [cx, top - 2], color: opts.color || d.color || '#e8e8e8', who: d.id, ...opts }); }
     },
     sayRandom: (lines) => sayLines(P(), pick(lines)),
 
@@ -186,6 +191,8 @@ export function makeApi(game, ctx = {}) {
       finally { game.cutscene = Math.max(0, game.cutscene - 1); if (!game.cutscene) game.skipCut = false; }
     },
     ending: (opts) => game.screens.startEnding(game, opts),
+    /** Credits inside the game: resolves by itself when the text has scrolled away and the game stays in 'play'. */
+    credits: (opts) => game.screens.startEnding(game, opts, true),
     run: (fn) => game.runScript(fn, { ...ctx, label: (ctx.label || '') + '>run' }),
     background: (fn) => { game.runScript(fn, { blocking: false, label: 'background' }); },
     defaultResponse: async () => {

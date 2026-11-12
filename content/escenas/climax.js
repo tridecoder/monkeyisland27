@@ -16,6 +16,7 @@ const sayEv = (api, t) => api.sayAs(EV, t);
 const PUERTA = [30, 118];
 const SITIO_RUBEN = [266, 122];      // «con la cara pegada a la ventana»
 const SITIO_BEGONA = [112, 124];
+const SITIO_TRAS_EMPUJON = [186, 120];   // Bruno, tras el ¡PLOF!: a un lado, sin tapar al Lector Medio caído
 
 export const DECK_D4 = ['R10', 'R12', 'R13', 'R05', 'R01', 'R07', 'R15', 'R16'];
 export const PUNTOS_D4 = 4;          // 2 + remate A + 2 + remate B
@@ -129,7 +130,10 @@ export async function climaxEmpujon(api) {
     api.sfx(SFX.plof); api.shake(450, 2);
     api.setFlag('lector_derribado', true);                         // el sprite cae de cara (variante `caido`)
     api.sfx(SFX.botellines);
-    await api.wait(900);
+    // Bruno da un paso atrás para que se vea al Lector Medio en el suelo (estaba justo delante)
+    await api.walkTo(SITIO_TRAS_EMPUJON[0], SITIO_TRAS_EMPUJON[1]);
+    api.face(LECTOR);
+    await api.wait(500);
     await api.sayAs(LECTOR, 'A mí lo que me interesa es la economía. Y ahorrar.');
     await sayG(api, 'Lo que diga el Lector Medio.');
     await api.wait(1200);                                          // (silencio)

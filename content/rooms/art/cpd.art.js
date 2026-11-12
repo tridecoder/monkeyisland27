@@ -353,12 +353,12 @@ const layout = {
   contador_tickets: { rect: [238, 34, 68, 19], walkTo: [272, 112], face: 'up', draw: (g, v) => drawContador(g, v) },
   registro_tickets: {
     rect: [239, 62, 34, 14], walkTo: [254, 112], face: 'up', priority: 1,
-    layer: 'sorted', zy: 103, draw: (g, v, t) => drawPacoDesk(g, v, t),
+    layer: 'sorted', zy: 103, prop: true, draw: (g, v, t) => drawPacoDesk(g, v, t),
   },
   cementerio_ratones: { rect: [299, 86, 19, 18], walkTo: [306, 112], face: 'up', draw: (g) => drawCaja(g) },
   monitor_valentin: {
     rect: [73, 48, 25, 25], walkTo: [86, 109], face: 'up', priority: 1,
-    layer: 'sorted', zy: 103, draw: (g, v, t) => drawMonitorValentin(g, v, t),
+    layer: 'sorted', zy: 103, prop: true, draw: (g, v, t) => drawMonitorValentin(g, v, t),
   },
   rejilla_cpd: { rect: [94, 120, 40, 18], walkTo: [114, 114], face: 'down', draw: (g) => drawRejilla(g) },
   paco_ticket: { at: [281, 100, 'down'], walkTo: [270, 113], face: 'up' },

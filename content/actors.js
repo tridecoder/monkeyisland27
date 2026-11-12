@@ -157,7 +157,8 @@ export default {
       skin: '#f0c4a0', hair: '#3a2018', hairStyle: 'highponytail', hairStreak: '#ff4fa3', glasses: 'thick', glassesColor: '#1a1418',
       shirt: '#4a5a80', emblem: '#ff4fa3', pants: '#2a2a3a', shoes: '#f0f0f0', prop: 'eyedrops', build: 'slim', height: 0.97,
     },
-    murmurs: ['Precio café hoy, precio café 2026, precio café por qué...', 'Si baja otra vez, me pongo colirio en el alma.'],
+    murmurs: ['Precio café hoy, precio café 2026, precio café por qué...', 'Si baja otra vez, me pongo colirio en el alma.',
+      'Busco "el Contable" y salen gestorías. Nos ganan en SEO.', 'Hacen más ruido que mi gráfica cuando baja.'],
   },
   nerea_backlog: {
     name: 'Nerea', color: '#7FE08A', speed: 60,
@@ -165,7 +166,8 @@ export default {
       skin: '#e0aa84', hair: '#2e1c14', hairStyle: 'curlybun', hairPencil: '#e8c040', shirt: '#ece4d4', vest: '#d4a020',
       sleeveNotes: '#f0e050', pencil: true, pencilColor: '#3070d0', pants: '#4a3a32', shoes: '#2a1a14', height: 1.0,
     },
-    murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.'],
+    murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.',
+      'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.'],
   },
   teodoro_cuerpodoce: {
     // No habla: sus líneas salen del fax (prefijo «TEODORO (fax):», §3.4). Solo habla en voz alta al teléfono rojo.
@@ -192,7 +194,7 @@ export default {
       pocketItem: '#202028', pocketKind: 'phones', prop: 'folder', propColor: '#c8a868',
       pants: '#4a4c56', shoes: '#1a1a1e', build: 'heavy', belly: true, height: 1.0,
     },
-    murmurs: ['Eso, en todo caso, lo hablamos.', 'Diecinueve años. Ni un marrón. Ni uno.'],
+    murmurs: ['Eso, en todo caso, lo hablamos.', 'Diecinueve años. Ni un marrón. Ni uno.', 'Hoy me han preguntado tres veces por mi salud. Debo de estar fatal.'],
   },
   begona_triplicado: {
     name: 'Begoña', color: '#A884E0', speed: 46,
@@ -234,7 +236,8 @@ export default {
       skin: '#e8b890', hair: '#1a1410', hairStyle: 'parted', shirt: '#f4f6fa', jacket: '#1c2a52', pants: '#1c2a52',
       shoes: '#ffffff', prop: 'postits', build: 'slim', height: 1.05,
     },
-    murmurs: ['Esto en verde. Esto en rosa. Esto en azul, que es excusa.', 'Diapositiva 248: «El viaje continúa».'],
+    murmurs: ['Esto en verde. Esto en rosa. Esto en azul, que es excusa.', 'Diapositiva 248: «El viaje continúa».',
+      '¿Y esto el Lector Medio lo entiende? Perfecto: asiente.'],
   },
   ruben: {
     name: 'Rubén', color: '#B6FF4D', speed: 58,
@@ -336,6 +339,8 @@ export default {
     // Variantes automáticas: con la chaqueta de Ramírez (chaqueta_en_lector) y caído (lector_derribado).
     name: 'Lector Medio', color: '#CCCCCC', defaultVerb: 'mirar', speed: 1,
     sprite: lectorBase,
+    // su grabación, como murmullo (calla en cuanto lo derriban)
+    murmurs: (v) => (v.flag('lector_derribado') ? null : ['A mí lo que me interesa es la economía. Y ahorrar.']),
     variants: {
       chaqueta: { sprite: lectorChaqueta },
       caido: { sprite: lectorCaido },

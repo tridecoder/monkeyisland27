@@ -29,7 +29,10 @@ async function revelacionRuben(api) {
     api.setState('armario_27', 'abierto');
     const at = (art.layout.ruben && art.layout.ruben.at) || [127, 100, 'down'];
     api.placeActor(R, 'cpd', at[0], at[1], at[2] || 'down'); api.show(R);
-    await api.wait(500);
+    // Bruno da un paso atrás (estaba delante del armario y taparía a Rubén) y le mira
+    const wt = (art.layout.ruben && art.layout.ruben.walkTo) || [204, 112];
+    await api.walkTo(wt[0] + 4, wt[1] + 2);
+    await api.wait(300);
     api.face(R);
     await api.sayAs(R, 'BECARIO DETECTADO. LO QUE PASÓ DESPUÉS TE SORPRENDERÁ.');
     await api.say('...¿Tú eres el Titulator?');
@@ -408,7 +411,7 @@ export default buildRoom({
   async onEnter(api) {
     // §3.9: el contador empieza en 48.211 y suma +1 por entrada; +318 la primera vez que se entra tras cms_vivo
     if (!api.flag('paco_tickets')) api.setFlag('paco_tickets', 48211);
-    api.inc('paco_tickets');
+    if (!api.restoring) api.inc('paco_tickets');              // cargar partida no es una entrada
     if (api.flag('cms_vivo') && !api.flag('cpd_cms_sumado')) { api.inc('paco_tickets', 318); api.setFlag('cpd_cms_sumado', true); }
     const st = estadoArmario(api);
     if (api.getState('armario_27') !== st) api.setState('armario_27', st);

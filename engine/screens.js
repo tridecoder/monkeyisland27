@@ -181,42 +181,66 @@ export function menuClick(game, x, y) {
 }
 
 // ------------------------------------------------------------- ending / credits
-export function startEnding(game, opts = {}) {
+// Two flavours share the same scrolling screen:
+//   api.ending(opts)  → the game is over: when the player clicks at the end it returns to the title (the finished
+//                       game's state is kept in game.finished for tests: __game.state().finished).
+//   api.credits(opts) → credits INSIDE the game (keep: true): when the text has scrolled away (+ opts.holdMs, default
+//                       1200 ms) it resolves by itself and the game goes back to 'play' in the same room, so a script
+//                       can carry on (post-credits scene). A click fast-forwards.
+// In fast mode (tests, __game.skipText(true)) both resolve at once.
+// opts: { credits: [...], draw(g, t) background, overlay(g, t) drawn OVER the text, speed (px/s), startY, holdY,
+//         theEnd ('FIN' | false), music, topY (lines above this y are not drawn; default 0), holdMs }
+export function startEnding(game, opts = {}, keep = false) {
   return new Promise(resolve => {
     const E = { ...(game.G.ending || {}), ...opts };
-    game.ending = { def: E, t: 0, resolve, lines: [] };
+    game.ending = { def: E, t: 0, resolve, lines: [], keep, prevMode: game.mode };
     for (const c of E.credits || game.G.credits || []) {
-      if (typeof c === 'string') game.ending.lines.push(...(c ? wrap(c, 280).map(t => ({ t, col: '#d8d0f0' })) : [{ t: '', col: '' }]));
-      else game.ending.lines.push(...wrap(c.text, 280).map(t => ({ t, col: c.color || (c.title ? '#f2d468' : '#d8d0f0'), bold: !!c.title })));
+      if (typeof c === 'string') game.ending.lines.push(...(c ? wrap(c, E.textW || 280).map(t => ({ t, col: '#d8d0f0' })) : [{ t: '', col: '' }]));
+      else game.ending.lines.push(...wrap(c.text, E.textW || 280).map(t => ({ t, col: c.color || (c.title ? '#f2d468' : '#d8d0f0'), bold: !!c.title })));
     }
     game.mode = 'ending';
     if (E.music !== undefined) game.audio.play(E.music, 1.5);
     if (game.fast) { finishEnding(game); }
   });
 }
-export function updateEnding(game, dt) { if (game.ending) game.ending.t += dt * 1000; }
+function endingDone(e) {
+  const speed = e.def.speed || 14;
+  const y0 = 200 - e.t / 1000 * speed + (e.def.startY ?? 0);
+  const endY = y0 + e.lines.length * (LINE_H + 2);
+  if (endY < (e.def.holdY ?? 90) && !e.doneAt) e.doneAt = e.t;
+  return { y0, endY };
+}
+export function updateEnding(game, dt) {
+  const e = game.ending; if (!e) return;
+  e.t += dt * 1000;
+  endingDone(e);
+  if (e.keep && e.doneAt && e.t - e.doneAt > (e.def.holdMs ?? 1200)) finishEnding(game);
+}
 function finishEnding(game) {
   const e = game.ending; if (!e) return;
   game.ending = null;
-  goTitle(game);
+  if (e.keep) { game.mode = e.prevMode === 'ending' ? 'play' : (e.prevMode || 'play'); game.ui.hover = null; }
+  else {
+    try { game.finished = game.state ? JSON.parse(JSON.stringify(game.state)) : null; } catch (err) { game.finished = null; }
+    goTitle(game);
+  }
   e.resolve();
 }
 export function drawEnding(game, g) {
   const e = game.ending; if (!e) return;
   try { if (e.def.draw) e.def.draw(g, e.t); else gradV(g, 0, 0, 320, 200, [PAL.ink[0], PAL.night[1], PAL.night[2]]); }
   catch (err) { game.error('ending.draw falló', err); e.def.draw = null; }
-  const speed = e.def.speed || 14; // px per second
-  const y0 = 200 - e.t / 1000 * speed + (e.def.startY ?? 0);
+  const { y0 } = endingDone(e);
+  const topY = e.def.topY ?? 0;
   e.lines.forEach((l, i) => {
     const y = Math.round(y0 + i * (LINE_H + 2));
-    if (y < -12 || y > 200) return;
+    if (y < Math.max(-12, topY) || y > 200) return;
     drawText(g, l.t, 160, y, l.col, { align: 'center', bold: l.bold });
   });
-  const endY = y0 + e.lines.length * (LINE_H + 2);
-  if (endY < (e.def.holdY ?? 90)) {
+  try { if (e.def.overlay) e.def.overlay(g, e.t); } catch (err) { game.error('ending.overlay falló', err); e.def.overlay = null; }
+  if (e.doneAt) {
     if (e.def.theEnd !== false) drawText(g, e.def.theEnd || 'FIN', 160, 92, '#f2d468', { align: 'center', scale: 2 });
-    if (!e.doneAt) e.doneAt = e.t;
-    if (e.t - e.doneAt > 1200) drawText(g, 'Haz clic para volver al título', 160, 180, '#6a6488', { align: 'center' });
+    if (!e.keep && e.t - e.doneAt > 1200) drawText(g, 'Haz clic para volver al título', 160, 180, '#6a6488', { align: 'center' });
   }
 }
 export function endingClick(game) {
