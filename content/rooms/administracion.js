@@ -1,4 +1,4 @@
-// SALA `administracion` — LÓGICA. Dueño: paquete D · «Planta noble y Consejo» (biblia §9.1). Biblia: §3.8, §7.6.2
+// SALA `administracion` — LÓGICA. Dueño: paquete D · «Planta noble y Dirección» (biblia §9.1). Biblia: §3.8, §7.6.2
 // (Begoña), P08 (la peor nota de gasto), P11 (recorte del 26 %). Adenda: §3.8 (despacho de Controlling), §4.6 (don
 // Evaristo Salvedad, MP2), §4.7 y §8bis (opciones de Begoña, yunque), §4.8 (combinaciones), murmullos.
 // El arte y la geometría están en ./art/administracion.art.js (artista de fondos). Árboles en ./administracion.dialogos.js.
@@ -160,7 +160,7 @@ export default buildRoom({
         'dar:copias_rechazadas': async (api) => { await sayBe(api, 'Eso es suyo. Para su archivo personal. Yo ya tengo el original.'); },
         'dar:fotocopia_nota_direccion': async (api) => { await sayBe(api, 'Quédesela y estúdiela. Por las dos caras, como se la he dado.'); },
         'dar:planillo': async (api) => { await sayBe(api, 'Eso es de maqueta. Aquí solo maquetamos rechazos.'); },
-        'dar:acta_consejo': async (api) => { await sayBe(api, '¿Un acta de Gervasio? La sello para que conste que existe.'); sello(api); },
+        'dar:acta_reunion': async (api) => { await sayBe(api, '¿Un acta de Gervasio? La sello para que conste que existe.'); sello(api); },
         'dar:ficha_pagina_7': async (api) => { await sayBe(api, 'Tres casillas. Bien. Pero ninguna dice «importe».'); },
         'usar:movil': async (api) => { await sayBe(api, 'Aquí no se hacen fotos. Se hacen fotocopias.'); },
         empujar: 'A Begoña no se la empuja. Se la tramita.',
@@ -177,7 +177,7 @@ export default buildRoom({
           await sayEv(api, '...Es broma. Es lo único que sé hacer de broma.');
         },
         'dar:ticket_n1': async (api) => { await sayEv(api, '«Asignado a: Titulator 3000». ¿Facturamos a un ticket? Lo apunto.'); },
-        'dar:acta_consejo': async (api) => { await sayEv(api, 'Dos faltas y ninguna coma. Casi es poesía. Mala, pero poesía.'); },
+        'dar:acta_reunion': async (api) => { await sayEv(api, 'Dos faltas y ninguna coma. Casi es poesía. Mala, pero poesía.'); },
         'dar:cafe': async (api) => { await sayEv(api, 'Gracias. ¿Lleva ticket? No lo digo yo. Lo diría Begoña.'); },
         'dar:tarjeta_becario': async (api) => { await sayEv(api, '«Pellizco». Se lo corrijo a lápiz. Rojo el error, azul usted.'); },
         'dar:boli_muerto': async (api) => { await sayEv(api, 'Sin tinta. Ni para una coma. Lo siento por él.'); },

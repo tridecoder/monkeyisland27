@@ -77,11 +77,11 @@ export default buildRoom({
   duels: {
     ejemplo: {
       actor: 'gervasio_acta',
-      subject: 'Redactar el acta del último Consejo',     // el motor añade los «RE: »
+      subject: 'Redactar el acta de la última Reunión de Dirección',     // el motor añade los «RE: »
       assigned: 'Vacante (becario)',                      // «Asignado a:» inicial
       deck: ['R07', 'R01', 'R14', 'R03', 'R05'],          // orden fijo (§6.4)
       winScore: 3,                                        // sin remates: gana a 3 aciertos; 3 fallos = derrota
-      intro: ['Ah, Vacante. El acta del Consejo hay que redactarla.', 'Te lo pongo por escrito.'],
+      intro: ['Ah, Vacante. El acta de la reunión hay que redactarla.', 'Te lo pongo por escrito.'],
       hurt: ['Eso habría que hablarlo.', 'Lo hablamos. Bueno, no.'],   // rotan en orden
       taunt: ['Lo hablamos. O no.', 'Eso lo coges tú, que tienes la agenda limpia.'],
       defeatLines: ['Asignada a ti. El acta, digo. Tráemela mañana. Lo hablamos.'],

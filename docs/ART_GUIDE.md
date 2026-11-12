@@ -50,7 +50,7 @@ const layout = {
   gervasio_acta: { at: [84, 106, 'right'], positions: { preside: { at: [84, 106, 'right'] }, rincon: { at: [296, 110, 'left'] } } },
 };
 export default {
-  room: '<id>', width: 320,                 // pecera: 640 (scrolls)
+  room: '<id>', width: 320,                 // pecera: 800 (scrolls)
   scale: { yFar: 100, far: 0.86, yNear: 142, near: 1.0 },
   walkboxes: [{ id: 'suelo', poly: [...] }],
   entries: { office: [28, 118, 'right'] },  // one per room you can come FROM, named after it
@@ -68,7 +68,13 @@ export default {
 - NPC positions: the people are drawn by the engine; you only give `at` (feet, direction) and, if the writer uses
   named positions (`pos`), the `positions` map. Gertrudis (coffee machine) and the cardboard Lector Medio are actors too:
   place them with `at` like a person (their feet = the base of the machine / the cut-out).
-- Walkboxes the writer toggles (`api.setWalkbox(id, on)`) need the agreed `id`.
+- Walkboxes the writer toggles (`api.setWalkbox(id, on)`) need the agreed `id`. A walkbox may also carry `when`
+  (`{ id: 'paso_torno', when: 'torno_abierto', poly }`): the engine enables it only while the condition holds. Use it
+  to make barriers physical (the vestíbulo turnstiles: `entrada` | `paso_torno` | `interior`).
+- Barriers that run front-to-back (the turnstile line) must be split into `layer: 'sorted'` pieces with their own `zy`
+  so people in front of / behind each piece are occluded correctly (see `torno`, `torno_bancada` in the vestíbulo).
+- Talkable NPCs must stay readable: head, shoulders and torso visible (≥ 80 %, checked by `tools/play-mouse.mjs`):
+  keep counters/desks low in front of them, and give dark-clad NPCs a lighter backdrop (Paco's partition in the CPD).
 
 ## 1. Canvas & coordinates
 - Screen 320×200. The room viewport is **320×144** (y 0–143). Rooms can be wider (`width`), the camera scrolls.
@@ -229,7 +235,7 @@ automatically.
    van con `sprites` por estado o con `draw` que lee `view.flag(...)` — pregunta al autor los nombres de los estados.
 5. PNJ: `at` (pies) donde la biblia los sitúa; `walkTo` para hablarles; `positions` si el autor usa varias.
 6. `walkboxes` que no metan los pies en muebles; `entries` con una por cada sala vecina (§3.0, nombradas como esa sala);
-   `scale` para que un personaje al fondo mida ≈0,85 y delante ≈1,0. `pecera` mide 640 de ancho.
+   `scale` para que un personaje al fondo mida ≈0,85 y delante ≈1,0. `pecera` mide 800 de ancho (640 + la zona de Diseño y Producto con el ascensor).
 7. Oclusores (columnas, mostradores, plantas) en `foreground` o como entradas con `layer: 'sorted'` y `zy`.
 8. Comprueba: `node tools/shot.mjs <sala> --debug` (y sin `--debug`), `node tools/check.mjs` sin errores, sin errores de
    consola; la sala se lee a 1× (prueba del guiño); nada importante bajo los 45 px superiores.

@@ -129,7 +129,7 @@ async function duels() {
     if (s.n === 1) continue;
     if (s.n === 29) { await R.travel('ecosistema'); await R.run(['dar', 'planillo', 'maripaz_remitido']); await loseDuel('D1 Maripaz'); }
     if (s.n === 35) { await R.travel('catacumba'); await R.run(['verbo', 'hablar', 'teodoro_cuerpodoce']); await R.run(['opcion', 'Quiero firmar en tu página 7.']); await loseDuel('D2 Teodoro'); }
-    if (s.n === 43) { await R.travel('office'); await R.run(['verbo', 'hablar', 'gervasio_acta']); await R.run(['opcion', 'Necesito el acta del último Consejo.']); await loseDuel('D3 Gervasio'); }
+    if (s.n === 43) { await R.travel('office'); await R.run(['verbo', 'hablar', 'gervasio_acta']); await R.run(['opcion', 'Necesito el acta de la última reunión.']); await loseDuel('D3 Gervasio'); }
     if (s.n === 45) {
       await loseDuel('D4 Íñigo');
       await R.run(['verbo', 'hablar', 'inigo_sinergia']);

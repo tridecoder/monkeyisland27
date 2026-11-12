@@ -85,7 +85,7 @@ export default {
         options: [
           { text: 'Aquí tiene. Un sobre de azúcar. Es casi un ticket.', if: 'has:sobre_azucar', goto: 'B_INSULTO' },
           { text: 'Mi palabra de honor.', reply: 'La palabra de honor dejó de ser moneda de curso legal con la peseta.' },
-          { text: 'Una foto mental. ¿Se la describo?', reply: 'Las fotos mentales solo se aceptan a consejeros.' },
+          { text: 'Una foto mental. ¿Se la describo?', reply: 'Las fotos mentales solo se aceptan con NIF. Y por triplicado.' },
           { text: '¿Usted cree en los tickets, Begoña? Pero de verdad.', reply: 'Yo no creo en los tickets, niño. Los tickets creen en mí.' },
           { text: 'Lo busco y vuelvo.', if: '!has:sobre_azucar', exit: true, reply: 'Aquí estaré. A las 19:07.' },
         ],
@@ -109,10 +109,10 @@ export default {
         onEnter: async (api) => {
           api.sfx('open');
           await api.wait(600);
-          await sayBe(api, ['Esto. Esto es una nota de gasto. Del Consejo.', 'Concepto claro. Importe con céntimos. NIF. Firma.',
-            '«Comida Hidrovoltia. 312,00 euros. Gervasio, por el Consejo.»']);
-          await api.say('¿El Consejo come?');
-          await sayBe(api, ['El Consejo no come. Come Gervasio en su nombre.', 'Te la fotocopio, para que aprendas. Por las dos caras: yo todo así.']);
+          await sayBe(api, ['Esto. Esto es una nota de gasto. Como Dios manda.', 'Concepto claro. Importe con céntimos. NIF. Firma.',
+            '«Comida de trabajo con Hidrovoltia. 312,00 euros. Firmado: Gervasio.»']);
+          await api.say('¿Gervasio come con Hidrovoltia?');
+          await sayBe(api, ['Gervasio come con quien haga falta. Y lo justifica. Es su gran talento.', 'Te la fotocopio, para que aprendas. Por las dos caras: yo todo así.']);
           api.sfx('machine');
           api.give('fotocopia_nota_direccion');
           await sayBe(api, 'Y la tuya, por triplicado.');

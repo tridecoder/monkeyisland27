@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Test del PAQUETE D («Planta noble y Consejo»): ecosistema, administracion, sala_amazonas, duelos D1 y D4, clímax 7.4.
+// Test del PAQUETE D («Planta noble y Dirección»): ecosistema, administracion, sala_amazonas, duelos D1 y D4, clímax 7.4.
 //   node tools/test-paquete-d.mjs            (modo rápido)
 //   node tools/test-paquete-d.mjs --shots    además guarda capturas en tools/shots/paquete-d-*.png
 // Simula con setFlag/giveItem lo que viene de otros paquetes y juega la parte D de principio a fin vía window.__game.
@@ -119,7 +119,9 @@ try {
   step('Ecosistema: ambiente, portátil de Tadeo, rumores, plátano');
   await G(() => __game.clearLog());
   await G(() => __game.gotoRoom('ecosistema'));
-  ok(await logHas('¡Gracias! ¡Eso es contenido!') >= 1, '¡FLASH! de Borja al entrar');
+  ok(await logHas('¡Acreditado! Empezamos en cinco minutos.') >= 1, '¡FLASH! del photocall de Eventos al entrar (lo celebra Pilar, no Borja)');
+  ok(!(await G(() => __game.log.some(l => l.who === 'borja_engagement'))), 'Borja ya no es el del flash al entrar');
+  ok(!(await G(() => JSON.stringify(__game.game.content.actors.borja_engagement.doll)).then(d => /camera|badges/.test(d))), 'Borja (Marketing) sin cámara ni acreditaciones');
   await verb('mirar', 'portatil_tadeo'); await verb('mirar', 'portatil_tadeo');
   ok((await flag('portatil_tadeo_n')) === 2 && (await flag('rep_15')) === true, 'Mirar portátil ×2 → portatil_tadeo_n=2, rep_15 (X16)');
   for (let i = 0; i < 8; i++) await verb('mirar', 'portatil_tadeo');
@@ -137,7 +139,7 @@ try {
   await verb('mirar', 'piel_platano'); await verb('coger', 'piel_platano');
   ok((await flag('piel_platano_n')) === 1 && await logHas('inversión a largo plazo') === 1, 'piel de plátano (8bis)');
   await verb('usar', 'gong');
-  ok(await logHas('lo facturo') >= 1, 'gong + Maripaz');
+  ok(await logHas('yo facturo') >= 1 && await logHas('¡Ese gong es de Eventos!') >= 1, 'gong de Eventos (Pilar) + Maripaz factura');
   await give('copias_rechazadas');
   await verb('usar', 'impresora_tercera', 'copias_rechazadas');
   ok(await logHas('es de principios') === 1, 'Usar copias con la impresora (8.1)');
@@ -145,6 +147,17 @@ try {
   await setFlags({ rumor_teodoro_n: 2 });
   await verb('hablar', 'maripaz_remitido');
   ok((await flag('rumor_teodoro_n')) === 3, 'rumor C3 de Maripaz');
+  await setFlags({ rumor_teodoro_n: 2 });
+  await R.closeDialog();
+  await verb('hablar', 'pilar_escaleta');
+  ok((await flag('rumor_teodoro_n')) === 3 && await logHas('acreditación vitalicia') === 1, 'rumor C3 también lo cuenta Pilar (Eventos)');
+  for (const o of ['¿Qué evento hay hoy?', '¿Para qué es el photocall?', '¿Cuántas sillas hay?', '¿Por qué hay que acreditarse?', '¿Hay catering?', '¿Qué es esa cinta en la muñeca?']) await choose(o);
+  ok(await logHas('a cinco minutos de empezar') >= 1 && await logHas('Ciento doce') >= 1 && await logHas('Tres personas juntas ya son un evento') === 1
+    && await logHas('Croquetas a las 21:05') >= 1 && await logHas('Cinta americana') === 1, 'árbol de Pilar Escaleta (Eventos): 6 opciones');
+  await choose('Me voy.');
+  await verb('mirar', 'pilar_escaleta'); await verb('dar', 'pilar_escaleta', 'cafe');
+  ok(await logHas('Pilar Escaleta, de Eventos') === 1 && await logHas('Con catering, una pausa') === 1, 'Mirar / Dar a Pilar');
+  await verb('hablar', 'maripaz_remitido');
   ok((await opts()).includes('La página 7 está pendiente desde marzo.'), 'opción M0-2 con el planillo');
   await choose('Me voy.');
   await shot('ecosistema');
@@ -174,19 +187,23 @@ try {
   await verb('dar', 'maripaz_remitido', 'ficha_pagina_7');
   ok(await logHas('Firmar dos veces es un contrato') === 1, 'Dar ficha con hueco (8.1)');
 
-  step('P14a: el álbum de Borja');
-  await verb('coger', 'album_borja_hotspot');
+  step('P14a: el álbum de Eventos (lo presta Pilar; Borja dice «descopear»)');
+  await verb('coger', 'album_eventos_hotspot');
   ok(await logHas('Pídemelo con un motivo') === 1, 'Coger álbum sin ruben_encontrado');
-  await verb('hablar', 'borja_engagement');
+  await verb('hablar', 'pilar_escaleta');
   ok(!(await opts()).includes('¿Me prestas el álbum?'), 'sin ruben_encontrado no se pide el álbum');
   await R.closeDialog();
   await setFlags({ ruben_encontrado: true, acto_3_iniciado: true });
   await verb('hablar', 'borja_engagement');
   await choose('¿Me prestas el álbum?');
+  ok(await logHas('El álbum es de Eventos') === 1 && !(await state()).inventory.includes('album_eventos'), 'Borja remite a Eventos');
+  await R.closeDialog();
+  await verb('hablar', 'pilar_escaleta');
+  await choose('¿Me prestas el álbum?');
   await R.closeDialog();
   st = await state();
-  ok(st.inventory.includes('album_borja') && st.flags.oyo_descopear, 'Borja presta el álbum → album_borja, oyo_descopear');
-  ok(!(await G(() => __game.objects().some(o => o.id === 'album_borja_hotspot' && o.visible))), 'el álbum ya no está en el puf');
+  ok(st.inventory.includes('album_eventos') && st.flags.oyo_descopear && await logHas('hemos descopeado la ética del Q3') === 1, 'Pilar presta el álbum de Eventos; Borja suelta «descopear» → album_eventos, oyo_descopear');
+  ok(!(await G(() => __game.objects().some(o => o.id === 'album_eventos_hotspot' && o.visible))), 'el álbum ya no está en el puf');
   await verb('cerrar', 'portatil_tadeo');
   ok((await flag('ecosistema_portatil_cerrado')) === true && await logHas('ATASCO EN BANDEJA DE SALIDA') === 1, 'Cerrar portátil en el Acto III: reenvía la impresora');
   await setFlags({ acto_3_iniciado: false, ruben_encontrado: false });
@@ -266,7 +283,7 @@ try {
   await choose('Aurora dice que su coma está bien.');
   await G(() => __game.waitIdle());
   ok((await flag('correo_evaristo_listo')) === true, 'MP2 paso 3 → correo_evaristo_listo (X22)');
-  await give('acta_consejo'); await verb('dar', 'evaristo_salvedad', 'acta_consejo');
+  await give('acta_reunion'); await verb('dar', 'evaristo_salvedad', 'acta_reunion');
   ok(await logHas('Casi es poesía') === 1, 'combinación de la adenda 4.8');
   await verb('empujar', 'puerta_controlling');
   ok(await logHas('Se le espera.') === 1, 'Empujar la puerta de Controlling');
@@ -277,7 +294,7 @@ try {
   step('Clímax 7.4 sin el correo de Evaristo; remates con objeto equivocado y correcto');
   await fresh();
   await setFlags({ ...ACTO3, ...D4_REPS });
-  await give('ticket_n1', 'acta_consejo');
+  await give('ticket_n1', 'acta_reunion');
   await G(() => __game.clearLog());
   await enterClimax();
   st = await state();
@@ -290,7 +307,7 @@ try {
   await reply('R10'); await reply('R12');
   ok((await state()).duel.phase === 'finisher', 'a 2 puntos: REMATE A');
   await shot('duelo-d4-remate');
-  await finisher('acta_consejo');
+  await finisher('acta_reunion');
   ok(await logHas('Un acta. Muy analógico. Luego la leemos.') === 1 && (await state()).duel.phase === 'finisher', 'acta en el remate A: línea propia, no es fallo');
   await finisher('movil');
   ok(await logHas('te facturo los derechos de imagen') === 1, 'móvil en el remate (duelo.js)');
@@ -302,7 +319,7 @@ try {
   await finisher('ticket_n1');
   ok(await logHas('Eso ya me lo has enseñado. No escala dos veces.') === 1, 'ticket en el remate B: línea propia');
   ok((await state()).duel.misses === 0, 'los objetos equivocados no cuentan como fallo');
-  await finisher('acta_consejo');
+  await finisher('acta_reunion');
   await G(() => __game.waitIdle());
   st = await state();
   ok(!st.duel && st.flags.duelo_inigo_ganado && st.lastDuel.result === 'won', 'D4 ganado → duelo_inigo_ganado');
@@ -328,7 +345,7 @@ try {
   step('Clímax: perder D4, reintentar hablando con Íñigo, retirarse del hilo');
   await fresh();
   await setFlags({ ...ACTO3, ...D4_REPS });
-  await give('ticket_n1', 'acta_consejo');
+  await give('ticket_n1', 'acta_reunion');
   await enterClimax();
   for (let i = 0; i < 3; i++) await pickWeak();
   await G(() => __game.waitIdle());
@@ -355,10 +372,10 @@ try {
   step('Clímax con el correo de Evaristo (versión A, refuerzo opcional)');
   await fresh();
   await setFlags({ ...ACTO3, ...D4_REPS, evaristo_convoco: true, evaristo_escuchado: true, coma_bendecida: true, correo_evaristo_listo: true });
-  await give('ticket_n1', 'acta_consejo');
+  await give('ticket_n1', 'acta_reunion');
   await G(() => __game.clearLog());
   await enterClimax();
-  await R.playDuel(['R10', 'R12', { objeto: 'ticket_n1' }, 'R13', 'R05', { objeto: 'acta_consejo' }]);
+  await R.playDuel(['R10', 'R12', { objeto: 'ticket_n1' }, 'R13', 'R05', { objeto: 'acta_reunion' }]);
   await G(() => __game.waitIdle());
   ok((await flag('duelo_inigo_ganado')) === true, 'walkthrough §5.4 paso 45');
   ok(await logHas('«RV: Resumen IA: todos de acuerdo»!!') >= 0, 'cameo de Tadeo (motor)');

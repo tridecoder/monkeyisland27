@@ -20,8 +20,22 @@ Hace falta servirlo por HTTP (son módulos ES); vale cualquier servidor estátic
 funciona tal cual desde una subcarpeta (por ejemplo, GitHub Pages: basta publicar la raíz del repositorio; el fichero
 `.nojekyll` evita que Jekyll toque nada).
 
+## Jugar en el iPhone (pantalla completa, en horizontal)
+
+El Safari del iPhone no deja poner una web a pantalla completa, pero el juego se instala como una app y así se abre sin
+barras del navegador:
+
+1. Abre el juego en **Safari**.
+2. Toca **Compartir** (el cuadrado con la flecha hacia arriba) y elige **«Añadir a pantalla de inicio»**.
+3. Abre **Fe de erratas** desde el icono nuevo, con el móvil **en horizontal**.
+
+La partida se guarda igual (autoguardado al cambiar de sala). En el iPad, Android y el ordenador basta con la opción
+**«Pantalla completa»** del título o del menú de pausa (o la tecla **F**). En vertical se puede jugar, pero sale un aviso
+para girar el móvil: en horizontal el juego ocupa todo el alto.
+
 ## Controles
 
+- **F**: pantalla completa (ordenador).
 - **Clic izquierdo** en el suelo: andar. Sobre un objeto o persona: «Ir a».
 - **Verbo + objeto**: clic en un verbo y luego en el objeto, la persona o el icono del inventario.
   «Usar» y «Dar» con un objeto del inventario: verbo → objeto → destino.
@@ -44,6 +58,8 @@ Necesitan Node 18+ y `playwright` (con Chromium) accesible para Node.
 | `node tools/test-paquete-{a,b,c,d}.mjs` | pruebas detalladas por grupo de salas |
 | `node tools/play-mouse.mjs` | Acto I y un duelo **solo con ratón real** + auditoría de geometría de todos los hotspots |
 | `node tools/fuzz.mjs` | guardar/cargar en cada acto, perder cada duelo, y Dar/Usar todo con todo (sin callejones) |
+| `node tools/contrast.mjs` | legibilidad: contraste de los colores de cada personaje sobre los fondos reales, del panel, los menús y el duelo |
+| `node tools/make-icons.mjs` | regenera los iconos de la web app (`icons/`) con el propio código de dibujo del juego |
 | `node tools/text-audit.mjs` | auditoría de textos (longitud, signos de apertura, nombres, horas) |
 | `node tools/music-check.mjs` | comprueba las pistas de música |
 | `node tools/review.mjs` | hojas de contactos para revisión visual (todas las salas por acto y los momentos clave) |

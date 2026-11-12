@@ -326,9 +326,9 @@ function drawHoja(g, view) {
   postit(g, x + 9, y + 10, POSTIT.y, { w: 5, h: 5, lines: false }); postit(g, x - 1, y + 14, POSTIT.p, { w: 5, h: 5, lines: false });
   postit(g, x + 3, y + 6, POSTIT.b, { w: 5, h: 5, lines: false });
   if (a3) {
-    // folio impreso grande pegado encima: «CONSEJO · ÍÑIGO · HASTA 2031»
+    // folio impreso grande pegado encima: «REUNIÓN · ÍÑIGO · HASTA 2031»
     rect(g, x - 3, y + 2, 21, 17, PAL.white); frameRect(g, x - 3, y + 2, 21, 17, PAL.paper[2]);
-    tiny(g, 'CONSEJO', x + 7, y + 4, PAL.ink[0], { align: 'center' });
+    tiny(g, 'REUNIÓN', x + 7, y + 4, PAL.ink[0], { align: 'center' });
     tiny(g, 'INIGO', x + 7, y + 10, PAL.red[3], { align: 'center' });
     tiny(g, '2031', x + 7, y + 15, PAL.ink[0], { align: 'center' });
     rect(g, x - 3, y + 1, 5, 2, PAL.paper[4]); rect(g, x + 13, y + 1, 5, 2, PAL.paper[4]);

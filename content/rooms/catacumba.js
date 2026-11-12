@@ -90,7 +90,7 @@ async function escenaActo3a(api) {
     await api.walkActor('inigo_sinergia', 66, 118);
     await api.sayAs('inigo_sinergia', [
       'Qué bonito. Una página. Lástima que no se vaya a imprimir.',
-      'El Consejo se reúne ahora en la Sala Amazonas.',
+      'La Reunión de Dirección es ahora, en la Sala Amazonas.',
       'A las nueve aprueba el Plan Cero Papel. Y la Goyita, al desguace.',
     ]);
     await fax(api, 'Lo que está cerrado no se abre.');
@@ -190,8 +190,8 @@ const dialogoAurora = {
           do: async (api) => { await aurora(api, ['Con una fuente se hace un rumor. Con dos, una noticia.', 'Con tres, un libro. No te pases.']); } },
         { text: '¿Y ahora qué?', if: ['casilla_fuente', '!pieza_escrita'],
           do: async (api) => { await aurora(api, ['Ahora escríbela. En tu ordenador, fuera del CMS.', 'Ahí dentro vive el Titulator. Y sin adjetivos.']); } },
-        { text: 'Íñigo dice que el Consejo va a apagar la rotativa.', if: 'acto_3_iniciado',
-          do: async (api) => { await aurora(api, ['El Consejo no decide nada sin acta.', 'Y Gervasio no ha escrito un acta en su vida.']); } },
+        { text: 'Íñigo dice que en la reunión van a apagar la rotativa.', if: 'acto_3_iniciado',
+          do: async (api) => { await aurora(api, ['Esa reunión no decide nada sin acta.', 'Y Gervasio no ha escrito un acta en su vida.']); } },
         { text: '¿Qué le parecen los verbos de abajo?',
           do: async (api) => { await aurora(api, 'Nueve verbos y ni un subjuntivo. Así no se cierra un periódico.'); } },
         // adenda 4.7 (MP2, paso 2)
@@ -525,7 +525,7 @@ export default buildRoom({
         },
         'dar:mensaje_fp': async (api) => { await fax(api, 'Las fuentes, a Aurora. Yo solo mido.'); },
         'dar:fotocopia_nota_direccion': async (api) => { await fax(api, 'Las fuentes, a Aurora. Yo solo mido.'); },
-        'dar:acta_consejo': async (api) => { await fax(api, 'Dos líneas. Cabe en un faldón. Y sobra.'); },
+        'dar:acta_reunion': async (api) => { await fax(api, 'Dos líneas. Cabe en un faldón. Y sobra.'); },
         'dar:tarjeta_becario': async (api) => { await fax(api, '"Pellizco". Once con espacios. Mal medido y peor escrito.'); },
         'dar:*': async (api) => { await fax(api, 'Eso no se faxea.'); },
         empujar: 'No se empuja a un jefe de cierre. Se le entrega a tiempo.',
@@ -545,7 +545,7 @@ export default buildRoom({
         'dar:fotocopia_nota_direccion': darFuente,
         'dar:mensaje_fp': darFuente,
         'dar:pieza_opa': async (api) => { await aurora(api, 'Tiene un adjetivo. Lo dejo. Hoy estoy de buenas.'); },
-        'dar:acta_consejo': async (api) => { await aurora(api, 'Dos faltas en dos líneas. Para ser la primera acta, prometedora.'); },
+        'dar:acta_reunion': async (api) => { await aurora(api, 'Dos faltas en dos líneas. Para ser la primera acta, prometedora.'); },
         'dar:ficha_pagina_7': async (api) => { await aurora(api, 'La ficha es tuya. No la arrugues, que la rotativa lo nota.'); },
         'dar:boli_muerto': async (api) => { await aurora(api, 'No me lo devuelvas. A los muertos no se les corrige.'); },
         'dar:*': async (api) => {

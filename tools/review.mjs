@@ -202,7 +202,7 @@ try {
   if (!solo || solo === 'momentos') {
     await playTo(42);
     await R.travel('office');
-    await capture('m07-duelo-D3', () => { __game.doVerb('hablar', 'gervasio_acta'); }, { max: 14, choose: ['Necesito el acta del último Consejo.'] });
+    await capture('m07-duelo-D3', () => { __game.doVerb('hablar', 'gervasio_acta'); }, { max: 14, choose: ['Necesito el acta de la última reunión.'] });
     done = 43; await R.closeDialog().catch(() => {});
     await R.travel('pajarera');
     await capture('m08-climax-7.4', () => { __game.doVerb('usar', 'puerta_sala'); }, { max: 40 });

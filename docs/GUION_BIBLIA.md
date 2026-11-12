@@ -11,7 +11,7 @@
 | Versión | Cambios |
 |---|---|
 | v1 | Biblia original. |
-| v2 | **Reloj real:** la partida va del viernes a las **18:30** al cierre de las **21:00** (antes 19:00-23:59); el Plan Cero Papel se aprueba a las 21:00; relojes parados en las **20:59** (antes 21:47); ventanilla de Begoña de **19:00 a 19:15**, siempre «a las 19:07» (antes 22:00-22:15 y 22:07; los «ocho minutos» se mantienen); el fax está atascado **desde las seis** (antes, las siete); la radio de Celestino retransmite la bolsa de las cinco y media (el Ibex cierra a las 17:30). Epílogo de las 6:00 y web a las 00:01, sin cambios. **Gag oficial «la redacción de las 18:30»** (1.4b y 8.7). **Cifras de años recontadas** para 2026: Teodoro, 29 años en el edificio (antes 27); ticket nº 3, nueve años esperando (antes siete). **El medio pasa a llamarse elContable.es** (ya no hay ningún nombre real; gags en 8.8). **Fuera el director de cartón pluma:** su función mecánica la cumple **el Lector Medio**, el *buyer persona* de cartón de Marketing que la consultora ha ascendido a autoridad. La segunda fuente de la opa pasa a ser **una comida del Consejo firmada por Gervasio**. |
+| v2 | **Reloj real:** la partida va del viernes a las **18:30** al cierre de las **21:00** (antes 19:00-23:59); el Plan Cero Papel se aprueba a las 21:00; relojes parados en las **20:59** (antes 21:47); ventanilla de Begoña de **19:00 a 19:15**, siempre «a las 19:07» (antes 22:00-22:15 y 22:07; los «ocho minutos» se mantienen); el fax está atascado **desde las seis** (antes, las siete); la radio de Celestino retransmite la bolsa de las cinco y media (el Ibex cierra a las 17:30). Epílogo de las 6:00 y web a las 00:01, sin cambios. **Gag oficial «la redacción de las 18:30»** (1.4b y 8.7). **Cifras de años recontadas** para 2026: Teodoro, 29 años en el edificio (antes 27); ticket nº 3, nueve años esperando (antes siete). **El medio pasa a llamarse elContable.es** (ya no hay ningún nombre real; gags en 8.8). **Fuera el director de cartón pluma:** su función mecánica la cumple **el Lector Medio**, el *buyer persona* de cartón de Marketing que la consultora ha ascendido a autoridad. La segunda fuente de la opa pasa a ser **una comida de trabajo firmada por Gervasio**. |
 | v2.1 | (Integración) §3.5: la mesa grande de la Pajarera ya no lleva placa «DIRECCIÓN» (lleva un cartelito «RESERVADO»), y el Lector Medio se coloca junto al sofá, no detrás de la mesa, para que nunca se lea como «el que manda es un cartón». La franja «DIRECCIÓN» del cristal (nombre de la planta) se mantiene. Adenda §12: tabla de avisos ajustada (L4/L5 saltan también en las salas de paso). |
 
 **Tabla de renombrados (v2).** Única excepción a «no se renombra nada»: el código usa los antiguos y hay que sustituirlos tal cual.
@@ -57,14 +57,14 @@ Un becario web con seis años de prácticas tiene una noche de cierre para que m
 
 ### 1.2 Sinopsis por actos (45-75 min)
 
-**ACTO I — «Vacante» (≈12 min).** Viernes, 18:30: la redacción está medio vacía y el cierre es a las 21:00. La abuela Remedios llama a Bruno: ya ha dicho en el pueblo que mañana sale «en el de papel, en el de verdad, el que mancha». El torno del vestíbulo no reconoce a Bruno («USUARIO NO CONSTA EN ORGANIGRAMA») y él entra pegando su foto en la casilla VACANTE del organigrama; desde ese momento todo el edificio le llama **Vacante**. En la Pecera (redacción web) irrumpe **Íñigo Sinergia**, de Optimal Brains & Partners, con el **Titulator 3000**: a las 21:00, con el cierre, el Consejo aprobará el **Plan Cero Papel** y la rotativa se apagará para siempre. Bruno libera una silla (la chaqueta de Ramírez, que bajó a desayunar en 2019, acaba vistiendo al **Lector Medio**, el lector de cartón pluma al que todo el mundo consulta), consigue que Gertrudis, la cafetera, le dé café a cambio de unas buenas noches, y con ese café ablanda a Aurora, la correctora. Aurora le da la **Ficha de la página 7**: para firmar en papel hay que rellenar tres casillas de maquetación, **HUECO, FUENTE y FIRMA**.
+**ACTO I — «Vacante» (≈12 min).** Viernes, 18:30: la redacción está medio vacía y el cierre es a las 21:00. La abuela Remedios llama a Bruno: ya ha dicho en el pueblo que mañana sale «en el de papel, en el de verdad, el que mancha». El torno del vestíbulo no reconoce a Bruno («USUARIO NO CONSTA EN ORGANIGRAMA») y él entra pegando su foto en la casilla VACANTE del organigrama; desde ese momento todo el edificio le llama **Vacante**. En la Pecera (redacción web) irrumpe **Íñigo Sinergia**, de Optimal Brains & Partners, con el **Titulator 3000**: a las 21:00, con el cierre, la Reunión de Dirección aprueba el **Plan Cero Papel** y la rotativa se apagará para siempre. Bruno libera una silla (la chaqueta de Ramírez, que bajó a desayunar en 2019, acaba vistiendo al **Lector Medio**, el lector de cartón pluma al que todo el mundo consulta), consigue que Gertrudis, la cafetera, le dé café a cambio de unas buenas noches, y con ese café ablanda a Aurora, la correctora. Aurora le da la **Ficha de la página 7**: para firmar en papel hay que rellenar tres casillas de maquetación, **HUECO, FUENTE y FIRMA**.
 
 **ACTO II — «Hueco, fuente, firma» (≈30-40 min, tres ramas en cualquier orden, con cruces).**
 - **HUECO:** la página 7 (impar, cara, se ve mucho) está vendida a Colchones Siestatón «pendiente de confirmar desde marzo». Bruno disuelve la reunión infinita de la Sala Amazonas preguntando por los siguientes pasos, se lleva el planillo de maqueta y gana a Maripaz (Comercial) un hilo de «Responder a Todos» para que sea ella quien llame al cliente un viernes por la noche.
-- **FUENTE:** Bruno presenta a Begoña (Administración) la peor nota de gasto de la historia, justificada con un sobre de azúcar. Indignada, Begoña le enseña «una bien hecha»: la comida del Consejo con Hidrovoltia, firmada por Gervasio, y se la fotocopia por las dos caras. En el reverso, a boli: «OPA ROBLEDAL — jueves — NO PUBL.». Con las copias rechazadas de su nota, Bruno da papel al fax de la Catacumba, que escupe un fax atascado desde las seis firmado por **F.P.**: la OPA de Hidrovoltia sobre Banco Robledal es verdad. Dos fuentes: Aurora sella. Bruno escribe la pieza: 31 líneas para un faldón de 23. Begoña aplica el **recorte estándar del 26 %**, por abajo, sin leer. Cuadra.
+- **FUENTE:** Bruno presenta a Begoña (Administración) la peor nota de gasto de la historia, justificada con un sobre de azúcar. Indignada, Begoña le enseña «una bien hecha»: la comida de trabajo con Hidrovoltia, firmada por Gervasio, y se la fotocopia por las dos caras. En el reverso, a boli: «OPA ROBLEDAL — jueves — NO PUBL.». Con las copias rechazadas de su nota, Bruno da papel al fax de la Catacumba, que escupe un fax atascado desde las seis firmado por **F.P.**: la OPA de Hidrovoltia sobre Banco Robledal es verdad. Dos fuentes: Aurora sella. Bruno escribe la pieza: 31 líneas para un faldón de 23. Begoña aplica el **recorte estándar del 26 %**, por abajo, sin leer. Cuadra.
 - **FIRMA:** Teodoro Cuerpodoce, jefe de cierre, no habla con la web: solo escribe faxes, aunque esté a dos metros. Bruno arregla el CMS (lo tumbaba la pantalla de métricas, que lo consulta cada segundo), Paco (Sistemas) le da el manual del fax, y gana a Teodoro un duelo por fax rematándolo con la **respuesta automática**: «Estoy fuera de la oficina hasta que el papel deje de existir». Teodoro, emocionado, escribe bien el nombre de Bruno por primera vez y sella la firma.
 
-**ACTO III — «Cierre» (≈15-20 min).** Con la página cerrada, Íñigo se encierra con el «Consejo» en la Sala Amazonas: OCUPADO – hasta 2031. Bruno sigue el papel continuo del fax de F.P. hasta el armario 27 del CPD y descubre la verdad: el Titulator es **Rubén**, el becario del verano pasado, al que nadie dio de baja; la consultora factura 48.000 € al mes en «licencia de IA» y a él le paga en bocadillos de máquina. Rubén es también F.P. Para sacarlo hay que «descopear» su baja del tablero de Desarrollo con las fotos de Borja, en las que siempre sale al fondo yendo al baño, y que Paco cierre por fin el **ticket nº 1**. Bruno gana a Gervasio el marrón de redactar el acta del último Consejo (la primera en 19 años: «1. Pedir más café. 2. Ninguno más.») y entra en la Sala. Duelo final por correo con toda la empresa en copia: Íñigo cae con el ticket nº 1, con el acta y, por último, cuando Bruno **empuja al Lector Medio**, el cartón pluma que llevaba tres semanas «validando» 400 diapositivas: era el único dato del plan.
+**ACTO III — «Cierre» (≈15-20 min).** Con la página cerrada, Íñigo se encierra con la «Reunión de Dirección» en la Sala Amazonas: OCUPADO – hasta 2031. Bruno sigue el papel continuo del fax de F.P. hasta el armario 27 del CPD y descubre la verdad: el Titulator es **Rubén**, el becario del verano pasado, al que nadie dio de baja; la consultora factura 48.000 € al mes en «licencia de IA» y a él le paga en bocadillos de máquina. Rubén es también F.P. Para sacarlo hay que «descopear» su baja del tablero de Desarrollo con el álbum de Eventos, en cuyas fotos siempre sale al fondo yendo al baño, y que Paco cierre por fin el **ticket nº 1**. Bruno gana a Gervasio el marrón de redactar el acta de la última Reunión de Dirección (la primera en 19 años: «1. Pedir más café. 2. Ninguno más.») y entra en la Sala. Duelo final por correo con toda la empresa en copia: Íñigo cae con el ticket nº 1, con el acta y, por último, cuando Bruno **empuja al Lector Medio**, el cartón pluma que llevaba tres semanas «validando» 400 diapositivas: era el único dato del plan.
 
 **EPÍLOGO (6:00).** La rotativa del polígono tira. La página 7 dice «Por Bruno Pellejo», bien escrito por primera vez en la historia. Bruno llama a la abuela: dejó el papel en 2011 porque le manchaba el sofá; le lee todo en el móvil y le pone un corazoncito, hasta a lo del Euríbor. Yoli lo confirma: una lectora, 47 minutos de permanencia, comenta «abrígate» en todo. Créditos sobre la fe de erratas del día siguiente: **«Lamentamos el acierto.»**
 
@@ -146,6 +146,7 @@ La partida empieza un viernes a las 18:30 y **a esa hora ya se ha ido casi todo 
 | Jefes | Gervasio Acta |
 | Administración | Begoña Triplicado |
 | Marketing | Borja Engagement |
+| Eventos | Pilar Escaleta (adenda §13) |
 | Sistemas | Paco Ticket |
 | Desarrollo | Nerea Backlog |
 | Comercial | Maripaz Remitido |
@@ -228,16 +229,16 @@ La partida empieza un viernes a las 18:30 y **a esa hora ya se ha ido casi todo 
 - **Quiere:** que alguien escriba bien una sola cosa en esta casa. Cuando pasa, se desmaya.
 
 ### 2.6 `gervasio_acta` — Gervasio Acta
-- **Departamento / sala:** Jefes, adjunto a Dirección y secretario del Consejo · `sala_amazonas` (Actos I-II, hasta `reunion_terminada`), `pajarera` (Acto II tras la reunión), `office` (Acto III) y `sala_amazonas` (clímax).
+- **Departamento / sala:** Jefes, adjunto a Dirección y secretario de la Reunión de Dirección · `sala_amazonas` (Actos I-II, hasta `reunion_terminada`), `pajarera` (Acto II tras la reunión), `office` (Acto III) y `sala_amazonas` (clímax).
 - **Aspecto:** cincuenta y tantos, calvo con cortinilla, traje gris marengo, corbata granate, tres móviles en el bolsillo de la chaqueta y una carpeta vacía bajo el brazo. **Color: `#8FA8C8`**.
-- **Voz/tic:** lleva 19 años sin quedarse un marrón. Toda conversación con él acaba en «Lo hablamos». Es el secretario del Consejo y nunca ha escrito un acta.
+- **Voz/tic:** lleva 19 años sin quedarse un marrón. Toda conversación con él acaba en «Lo hablamos». Es el secretario de la Reunión de Dirección y nunca ha escrito un acta.
 - **Muestras:**
   - «Eso lo coges tú, que tienes la agenda más limpia. Y la conciencia.»
   - «Lo que diga el Lector Medio.»
   - «Diecinueve años sin un marrón. Y ahora me toca el acta.»
   - «Lo hablamos.»
-- **Sabe:** que el último Consejo solo acordó pedir café. Su carpeta de Enviados (réplica `rep_07`) está abierta en su ordenador.
-- **Da:** `planillo` (indirectamente: la reunión se disuelve). `acta_consejo` (al perder el duelo). Acceso a la Sala en el Acto III.
+- **Sabe:** que la última Reunión de Dirección solo acordó pedir café. Su carpeta de Enviados (réplica `rep_07`) está abierta en su ordenador.
+- **Da:** `planillo` (indirectamente: la reunión se disuelve). `acta_reunion` (al perder el duelo). Acceso a la Sala en el Acto III.
 - **Quiere:** no coger nada. Nunca.
 
 ### 2.7 `begona_triplicado` — Begoña Triplicado
@@ -254,16 +255,16 @@ La partida empieza un viernes a las 18:30 y **a esa hora ya se ha ido casi todo 
 - **Quiere:** que alguien haga un trámite mal **a propósito**, para poder enseñarle cómo se hace.
 
 ### 2.8 `borja_engagement` — Borja Engagement
-- **Departamento / sala:** Marketing (Event Manager & Brand Experience Lead) · `ecosistema`.
-- **Aspecto:** treinta y tantos, tupé engominado, americana azul eléctrico con zapatillas blancas, nueve acreditaciones de eventos colgadas del cuello, cámara réflex con flash. **Color: `#4FD8E8`**.
-- **Voz/tic:** saca una foto con flash cada vez que alguien entra («¡Gracias! ¡Eso es contenido!»). Todo lo que no sale en el photocall no ha ocurrido.
+- **Departamento / sala:** Marketing (Brand Experience Lead) · `ecosistema`. *(Revisión de dirección: el photocall, la cámara, el flash y las acreditaciones son de **Eventos**, Pilar Escaleta: adenda §13.)*
+- **Aspecto:** treinta y tantos, tupé engominado, americana azul eléctrico con zapatillas blancas y el móvil en la mano como si fuera un micro (sin cámara ni acreditaciones). **Color: `#4FD8E8`**.
+- **Voz/tic:** flipado de manual: todo es «contenido», «engagement», «en vertical». El ¡FLASH! al entrar en la planta es del photocall de Eventos y lo celebra Pilar (adenda §13).
 - **Muestras:**
   - «Lo que no está en el photocall no ha ocurrido.»
   - «No es un evento, es una experiencia de marca con canapé.»
   - «Hemos descopeado la ética del Q3. Por si te sirve.»
   - «¿Mi álbum? Es contenido. Te lo presto si lo compartes.»
 - **Sabe:** nada útil, y sin embargo tiene la prueba más importante del juego: en el fondo de todas sus fotos sale Rubén yendo al baño. Dice la palabra «descopear».
-- **Da:** `album_borja` y el flag `oyo_descopear` (Acto III).
+- **Da:** `album_eventos` y el flag `oyo_descopear` (Acto III).
 - **Quiere:** contenido. De lo que sea.
 
 ### 2.9 `maripaz_remitido` — Maripaz Remitido
@@ -320,7 +321,7 @@ La partida empieza un viernes a las 18:30 y **a esa hora ya se ha ido casi todo 
 
 ### 2.13 `abuela_remedios` — Abuela Remedios (solo teléfono)
 - **Departamento / sala:** fuera de pantalla. Se oye al **Usar `movil`** (sistema de pistas), en la intro y en el epílogo. Si el artista hace retrato para la llamada: ochenta y pocos, moño blanco, bata de flores, móvil con funda de purpurina. **Color: `#FFC2D9`**.
-- **Voz/tic:** corta a Bruno a mitad de frase para darle consejos que no ha pedido. Siempre se despide con «Abrígate».
+- **Voz/tic:** corta a Bruno a mitad de frase para darle recomendaciones que no ha pedido. Siempre se despide con «Abrígate».
 - **Muestras:**
   - «¿Has comido? Se te nota en la voz que no has comido.»
   - «En el de papel, digo. En el de verdad. El que mancha.»
@@ -361,6 +362,9 @@ La partida empieza un viernes a las 18:30 y **a esa hora ya se ha ido casi todo 
 flowchart LR
   vestibulo -- torno (torno_abierto) --- pecera
   vestibulo -- ascensor (torno_abierto) --- cpd
+  pecera -- ascensor --- cpd
+  pecera -- ascensor --- ecosistema
+  vestibulo -- ascensor (torno_abierto) --- ecosistema
   pecera --- office
   office --- catacumba
   pecera --- pajarera
@@ -371,15 +375,17 @@ flowchart LR
 
 | Sala | Tamaño | Salidas (hotspot de salida → destino) | Bloqueos |
 |---|---|---|---|
-| `vestibulo` | 320×144 | `torno` → `pecera`; `ascensor_vestibulo` → `cpd` | Ambas exigen `torno_abierto`. |
-| `pecera` | **640×144 (scroll)** | `pecera_a_vestibulo` → `vestibulo`; `pecera_a_office` → `office`; `pecera_a_pajarera` → `pajarera`; `pecera_a_ecosistema` → `ecosistema` | Ninguno. |
+| `vestibulo` | 320×144 | `torno` y `vestibulo_a_redaccion` (escalera, detrás de los tornos) → `pecera`; `ascensor_vestibulo` → botonera | Todo exige `torno_abierto`: el ascensor y la escalera están físicamente **detrás de la línea de tornos** (adenda §14.1). |
+| `pecera` | **800×144 (scroll)** | `pecera_a_vestibulo` → `vestibulo`; `pecera_a_office` → `office`; `pecera_a_pajarera` → `pajarera`; `pecera_a_ecosistema` → `ecosistema`; `ascensor_pecera` → botonera | Ninguno. |
 | `office` | 320×144 | `office_a_pecera` → `pecera`; `office_a_catacumba` → `catacumba` | Ninguno. |
 | `catacumba` | 320×144 | `catacumba_a_office` → `office` | Ninguno. |
-| `pajarera` | 320×144 | `pajarera_a_pecera` → `pecera`; `puerta_sala` → `sala_amazonas` | `puerta_sala` en el Acto III exige `sala_abierta` y `ruben_libre` (y llevar `acta_consejo` y `ticket_n1`). |
+| `pajarera` | 320×144 | `pajarera_a_pecera` → `pecera`; `puerta_sala` → `sala_amazonas` | `puerta_sala` en el Acto III exige `sala_abierta` y `ruben_libre` (y llevar `acta_reunion` y `ticket_n1`). |
 | `sala_amazonas` | 320×144 | `sala_a_pajarera` → `pajarera` | En el Acto III, al entrar empieza el clímax: no se puede salir hasta ganar. |
-| `ecosistema` | 320×144 | `ecosistema_a_pecera` → `pecera`; `ecosistema_a_administracion` → `administracion` | Ninguno. |
+| `ecosistema` | 320×144 | `ecosistema_a_pecera` → `pecera`; `ecosistema_a_administracion` → `administracion`; `ascensor_ecosistema` → botonera | Ninguno. |
 | `administracion` | 320×144 | `administracion_a_ecosistema` → `ecosistema` | Ninguno. |
-| `cpd` | 320×144 | `ascensor_cpd` → `vestibulo` | Ninguno. |
+| `cpd` | 320×144 | `ascensor_cpd` → botonera (-1, 0, 1, 2) | Ninguno. |
+
+**El ascensor** (adenda §14.2) une las cuatro plantas con una botonera: cada planta obedece la misma condición que la ruta antigua a esa sala (-1, 1 y 2: `torno_abierto`; 0: siempre).
 
 **Mirar de los hotspots de salida** (los implementa el paquete de la sala donde están):
 
@@ -418,7 +424,7 @@ flowchart LR
 
 ### 3.1 `vestibulo` — Vestíbulo y torno
 
-**Fondo (320×144):** noche. A la izquierda, puertas de cristal a la calle con el naranja de las farolas y lluvia fina. En la pared izquierda, un **organigrama** enorme enmarcado: un árbol de treinta casillas con fotos diminutas; abajo del todo, una casilla con borde discontinuo que pone **VACANTE** y no tiene foto. En el centro, un **torno** de cristal de dos hojas con una pantallita LED roja. Encima, el logo del medio en letras metálicas (a la «e» le falta un tornillo). A la derecha, el **mostrador** de Celestino: un monitor con el Ibex en verde y rojo, una radio de bolsillo y un buzón de sugerencias con polvo. Al fondo derecha, el **ascensor** de acero con su botonera (2, 1, 0, −1) y, a su lado, un ficus **de plástico**. Suelo de mármol gastado justo en la línea del torno.
+**Fondo (320×144):** noche. A la izquierda, puertas de cristal a la calle con el naranja de las farolas y lluvia fina. En la pared izquierda, un **organigrama** enorme enmarcado: un árbol de treinta casillas con fotos diminutas; abajo del todo, una casilla con borde discontinuo que pone **VACANTE** y no tiene foto. Junto al cuadro de llaves, un ficus **de plástico** y el **mostrador de seguridad** de Celestino, pegado a los tornos: un monitor con el Ibex en verde y rojo, una radio de bolsillo y un buzón de sugerencias con polvo. **La línea de tornos** cruza la sala en diagonal, del fondo al borde de la pantalla: tres bancadas de acero con alas de cristal (el carril de atrás, con su pantallita LED roja, es el de Bruno; el de delante, FUERA DE SERVICIO) y un cartel colgado «REDACCIÓN → / ASCENSOR →». **Detrás de los tornos**, el vestíbulo interior: pared de nogal con el logo del medio en letras metálicas (a la «e» le falta un tornillo), moqueta roja, el **ascensor** de acero con su botonera (2, 1, 0, −1) y la **escalera a la Redacción**. Suelo de mármol gastado justo delante del carril del torno. *(Revisión de dirección: el ascensor tenía que verse **al otro lado** del torno; sin `torno_abierto` no se puede andar al interior. Adenda §14.1.)*
 
 **PNJ:** `celestino` (tras el mostrador).
 **Ambiente:** cada vez que Bruno entra, Celestino suelta una línea del Ibex (G3, sección 8.4).
@@ -440,11 +446,13 @@ flowchart LR
 
 ### 3.2 `pecera` — La Pecera (Redacción Web y rincón de Desarrollo)
 
-**Fondo (640×144, scroll horizontal):** de izquierda a derecha.
+**Fondo (800×144, scroll horizontal):** de izquierda a derecha.
 - **0-80 px:** puerta de cristal de vuelta al vestíbulo (se ve el torno al otro lado).
 - **80-260 px:** filas de mesas con monitores dobles llenos de gráficas, casi todas **vacías**: sillas con la chaqueta colgada y pantallas encendidas sin nadie (1.4b); dos figurantes al fondo tecleando. En la pared, una **pantalla gigante** «LECTORES CONCURRENTES: 3.418» con una línea roja que baja. Debajo, en el zócalo, una regleta y un **enchufe** con cinta de carrocero: «NO DESENCHUFAR – PANTALLA DE DIRECCIÓN».
 - **260-420 px:** la mesa de **Yoli** (tres monitores, un colirio, pósit «KEYWORD DEL DÍA»); al lado, la **mesa de Bruno** (monitor viejo con un pósit «Bruno Pellizco», **sin silla**); pegada a ella, la mesa vacía de Ramírez con **la única silla libre**, que tiene colgada una **chaqueta beige**. Una taza abandonada en una mesa. Al fondo, en el centro, la **puerta de cristal de la Pajarera** (se ven las persianas a media altura) y la puerta con letrero «OFFICE».
-- **420-640 px:** **rincón de Desarrollo**: la mesa de Nerea; una **pizarra kanban** con ruedas (columnas POR HACER · EN CURSO · BLOQUEADO · HECHO · HECHO (PERO NO)), con un pósit amarillísimo y viejo en la última columna; un **calendario de papel** de «Ferretería Hermanos Tornillo» en la pared; al fondo, la **ventana** con la ciudad de noche; en el extremo derecho, una **escalera** que sube con el cartel «PLANTA 2 – COMERCIAL · MARKETING · ADMINISTRACIÓN».
+- **420-600 px:** **rincón de Desarrollo**: la mesa de Nerea; una **pizarra kanban** con ruedas (columnas POR HACER · EN CURSO · BLOQUEADO · HECHO · HECHO (PERO NO)), con un pósit amarillísimo y viejo en la última columna; un **calendario de papel** de «Ferretería Hermanos Tornillo» en la pared; al fondo, la **ventana** con la ciudad de noche; en el extremo derecho, una **escalera** que sube con el cartel «PLANTA 2 – COMERCIAL · MARKETING · ADMINISTRACIÓN».
+
+- **600-800 px (ampliación):** **Diseño y Producto**: la bandeja de entregas, el puesto de **Valentín Retícula** (cameo, adenda §1.9) a dos metros del coro de Desarrollo, el **ascensor** y la escalera a la planta 2 («MARKETING · EVENTOS · COMERCIAL · ADMINISTRACIÓN»).
 
 **PNJ:** `yoli_tendencias`, `nerea_backlog`; `ruben` junto a la ventana cuando `ruben_libre`.
 **Escena:** la primera entrada con `torno_abierto` dispara la presentación del villano (7.2).
@@ -463,7 +471,7 @@ flowchart LR
 | `taza_abandonada` | «Una taza con costra de café de la crisis de la deuda. Debería cotizar.» | **Coger:** «Es de alguien. O de algo que ahora vive en ella.» |
 | `figurantes_web` | «Dos redactores. Teclean desde las tres. Uno escribe "pensiones" en bucle.» | **Hablar:** «Ni me miran. Están en directo desde 2020.» |
 | `yoli_tendencias` (PNJ) | «Yoli, audiencias. Le tiembla el párpado al ritmo de la gráfica.» | **Hablar:** árbol 7.7.2. |
-| `nerea_backlog` (PNJ) | «Nerea, Desarrollo. Mueve pósits con precisión de cirujana.» | **Hablar:** árbol 7.6.3. · **Dar `album_borja`:** entra en el nodo N_ALBUM del árbol. |
+| `nerea_backlog` (PNJ) | «Nerea, Desarrollo. Mueve pósits con precisión de cirujana.» | **Hablar:** árbol 7.6.3. · **Dar `album_eventos`:** entra en el nodo N_ALBUM del árbol. |
 | `ruben` (PNJ, si `ruben_libre`) | «Rubén mira por la ventana. Espera al sol como quien espera una nómina.» | **Hablar:** «Estoy esperando a que salga el sol. Me han dicho que existe.» |
 
 ---
@@ -546,9 +554,9 @@ flowchart LR
 | `orden_del_dia` | «ORDEN DEL DÍA: 1. Previsión. 2. Previsión de la previsión. 3. Siguientes pasos.» // «El punto 3 lleva sin tocarse desde marzo. Nadie se atreve.» · Tras `reunion_terminada`: «Todo tachado. Hasta "Siguientes pasos". Alguien lloraba.» | — |
 | `cartel_salida` | «"SALIDA: AL TERMINAR EL ORDEN DEL DÍA". La puerta está abierta y nadie sale.» | — |
 | `minicruasanes` | «Ochenta mini-cruasanes para cuarenta periodistas.» // «Las matemáticas nunca fallan: no llegan.» | **Coger:** «Queda medio. Es de Mercados: lo tienen en cartera.» |
-| `figurantes_mercados` | «Tres redactores de Mercados. Aquí desde marzo. Uno tiene barba de consejero.» | **Hablar:** «Me miran como a un dividendo. Con esperanza y sin fe.» |
+| `figurantes_mercados` | «Tres redactores de Mercados. Aquí desde marzo. Uno tiene barba de comité.» | **Hablar:** «Me miran como a un dividendo. Con esperanza y sin fe.» |
 | `planillo_mesa` (solo con `reunion_terminada` y sin `planillo`) | «El planillo de maqueta. Alguien lo ha soltado al huir.» | **Coger** → `planillo`. |
-| `botellines` | «Catorce botellines sin abrir. En un Consejo nadie bebe: se nota que se piensa.» | **Coger:** «Si abro uno, me lo imputan como gasto de representación.» |
+| `botellines` | «Catorce botellines sin abrir. Aquí nadie bebe: se nota que se piensa.» | **Coger:** «Si abro uno, me lo imputan como gasto de representación.» |
 | `proyector` (Acto III) | «Diapositiva 247 de 400: "Sinergias exponenciales: el viaje". No hay vuelta.» | — |
 | `lector_medio` (Acto III) | «En la cabecera, el Lector Medio, con la chaqueta de Ramírez. Asiente.» | **Empujar** solo con `duelo_inigo_ganado` → **final de P16** (7.4). Antes: «Todavía no. Primero, por escrito.» |
 | `gervasio_acta` (PNJ, Actos I-II) | «Gervasio preside. Lleva en el punto 3 desde marzo.» | **Hablar:** árbol 7.7.6 (nodo Reunión) → P06. |
@@ -558,23 +566,24 @@ flowchart LR
 
 ### 3.7 `ecosistema` — El Ecosistema (Marketing y Comercial)
 
-**Fondo (320×144):** planta diáfana con moqueta más gruesa que en Redacción. A la izquierda, la escalera que baja a la Pecera. Un **photocall** con treinta logos y un hueco en medio: «ESPACIO PREMIUM PARA TU CARA»; delante, un **aro de luz**. **Pufs** de colores; sobre uno, el **álbum** de fotos de Borja. En el centro-derecha, la mesa de **Maripaz** con un **gong** enorme, auricular de diadema y, enmarcado, el **lema** «TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO». Una **pizarra** con «SINERGIA» escrito en tres colores. **Cajas** de lanyards y tazas con logo. A la derecha, el pasillo hacia Administración y, en él, **la impresora de la tercera** con su pantalla «ATASCO EN BANDEJA 2».
+**Fondo (320×144):** planta diáfana con moqueta más gruesa que en Redacción. A la izquierda, la escalera que baja a la Pecera. Un **photocall** con treinta logos y un hueco en medio: «ESPACIO PREMIUM PARA TU CARA»; delante, un **aro de luz**. **Pufs** de colores (Marketing los ha puesto delante del **ascensor**); sobre uno, el **álbum** de Eventos. En el centro-derecha, la mesa de **Maripaz** con un **gong** enorme, auricular de diadema y, enmarcado, el **lema** «TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO». Una **pizarra** con «SINERGIA» escrito en tres colores. **Cajas** de lanyards y tazas con logo. A la derecha, el pasillo hacia Administración y, en él, **la impresora de la tercera** con su pantalla «ATASCO EN BANDEJA 2».
 
-**PNJ:** `borja_engagement` (junto al photocall), `maripaz_remitido` (en su mesa).
-**Ambiente:** al entrar, ¡FLASH! BORJA: «¡Gracias! ¡Eso es contenido!» (cada vez).
+**PNJ:** `pilar_escaleta` (Eventos, en la alfombra del photocall: adenda §13), `borja_engagement` (Marketing, junto al aro de luz), `maripaz_remitido` (en su mesa).
+**Ambiente:** al entrar, ¡FLASH! del photocall de Eventos y PILAR acredita al que llega (cada vez; rota: adenda §13.1).
 
 | id | Mirar | Interacciones especiales |
 |---|---|---|
-| `photocall` | «Treinta logos y un hueco en medio: "Espacio premium para tu cara".» | **Usar:** Bruno se pone. ¡FLASH! BORJA: «¡Eso es contenido!» |
+| `photocall` | «Treinta logos y un hueco en medio: "Espacio premium para tu cara".» | **Usar:** Bruno se pone. ¡FLASH! PILAR: «¡Foto de acreditación! Ya constas en un evento.» |
 | `aro_luz` | «Un aro de luz. Te pone cara de haber dormido. Mentira institucional.» | — |
-| `album_borja_hotspot` | «El álbum de eventos de Borja. En todas las fotos sale al fondo un chico pálido.» // «Siempre yendo al baño. Con un táper. Borja lo llama "el extra".» | **Coger** sin `ruben_encontrado`: BORJA: «¡Eh! Eso es contenido. Pídemelo con un motivo.» · Con `ruben_encontrado`: «Mejor se lo pido. Borja es de los que denuncian a un puf.» |
+| `album_eventos_hotspot` | «El álbum de Eventos. En todas las fotos sale al fondo un chico pálido.» // «Siempre yendo al baño. Con un táper. Pilar lo llama "el extra".» | **Coger** sin `ruben_encontrado`: PILAR: «¡Eh! Ese álbum está acreditado. Pídemelo con un motivo.» · Con `ruben_encontrado`: «Mejor se lo pido a Pilar. Lo tiene acreditado. Con foto.» |
 | `gong` | «Un gong. Suena por cada venta. Y por cada promesa de venta.» | **Usar/Empujar:** «¡GOOONG! La planta entera aplaude: creen que he vendido algo.» // MARIPAZ: «¡Ese gong es mío, cariño! Bueno, da igual: lo facturo.» |
 | `lema_enmarcado` | «"TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO."» | — |
 | `pizarra_sinergia` | «Pone SINERGIA en tres colores. Si la miras fijamente, aparece un velero.» | — |
 | `impresora_tercera` | «Pantalla: "ATASCO EN BANDEJA 2". No tiene bandeja 2.» // «Empiezo a dudar de la bandeja 1.» | **Abrir:** «Dentro hay un folio de 2016 que pone "PRUEBA". Superada.» · **Usar** cualquier papel: «"ATASCO EN BANDEJA 2". Le da igual lo que le dé.» |
-| `cajas_lanyards` | «Lanyards para acreditar dos veces a la ONU.» | **Coger:** «Si me pongo uno más, Borja me cobra la entrada.» |
+| `cajas_lanyards` | «Lanyards de Eventos. Para acreditar dos veces a la ONU.» | **Coger:** «Si me pongo uno más, Pilar me cuenta como asistente.» |
 | `pufs` | «Pufs. Aquí nadie se sienta: se "ubica".» | **Usar:** «Me ubico. Me hundo. Me desubico.» |
-| `borja_engagement` (PNJ) | «Borja Engagement. Nueve acreditaciones al cuello y ningún evento hoy.» | **Hablar:** árbol 7.7.8. |
+| `borja_engagement` (PNJ) | «Borja Engagement, Marketing. Habla al móvil como a un micro. Aunque no grabe.» | **Hablar:** árbol 7.7.8 (revisado en la adenda §13.3). |
+| `pilar_escaleta` (PNJ) | «Pilar Escaleta, de Eventos. Cascos, walkie, escaleta y seis acreditaciones.» | **Hablar:** árbol `pilar` (adenda §13.2; presta el álbum, P14a). |
 | `maripaz_remitido` (PNJ) | «Maripaz, Comercial. Lleva el mazo del gong como otros el bolso.» | **Hablar:** árbol 7.7.9. · **Dar `planillo`:** P07 (abre el duelo D1). |
 
 ---
@@ -639,14 +648,14 @@ flowchart LR
 | 8 | `ficha_pagina_7` | Ficha de la página 7 | Aurora, a cambio de un café (P03) | «Ficha de la página 7. HUECO [ ] · FUENTE [ ] · FIRMA [ ].» (cada casilla sale como [✓] si su flag está puesto) // «Sin las tres, Teodoro no cierra.» · Las tres: «Tres casillas llenas. Es lo más parecido a un contrato que he tenido.» | Maripaz (P07), Aurora (P10a) y Teodoro (P12) la sellan sin que salga del inventario. Dar a `teodoro_cuerpodoce` con las tres casillas y la pieza recortada = cierre (P12). **Se gasta en el cierre.** |
 | 9 | `planillo` | Planillo de maqueta | Coger `planillo_mesa` en la Sala Amazonas (P06) | «Planillo. Página 7: COLCHONES SIESTATÓN. Faldón, 23 líneas.» // «"Pendiente de confirmar desde marzo".» | Dar a `maripaz_remitido` (P07). **Se gasta** al ganar el duelo. |
 | 10 | `copias_rechazadas` | Duplicado y triplicado | Begoña (P08) | «Duplicado y triplicado de mi nota de gasto. Sello: RECHAZADA. Dos veces.» | Usar con `fax` (P09). **Se gasta.** |
-| 11 | `fotocopia_nota_direccion` | Fotocopia de la nota del Consejo | Begoña (P08) | «Fotocopia de la nota del Consejo: "Comida Hidrovoltia. 312,00 €".» // «Por detrás, a boli: "OPA ROBLEDAL — jueves — NO PUBL." Begoña no mira reversos.» | Dar a `aurora_galerada` junto con `mensaje_fp` (P10a). **Se gasta.** |
+| 11 | `fotocopia_nota_direccion` | Fotocopia de la nota de Gervasio | Begoña (P08) | «Nota de gasto de Gervasio: "Comida de trabajo, Hidrovoltia. 312,00 €".» // «Por detrás, a boli: "OPA ROBLEDAL — jueves — NO PUBL." Begoña no mira reversos.» | Dar a `aurora_galerada` junto con `mensaje_fp` (P10a). **Se gasta.** |
 | 12 | `mensaje_fp` | Fax de F.P. | Sale del `fax` al darle papel (P09) | «Fax de F.P.: "La opa de Hidrovoltia sobre Banco Robledal es verdad".» // «"Falta la segunda fuente: mira los gastos de Dirección. — F.P."» // «Borde perforado. Esto no viene de un fax: viene de una matricial.» → `vio_borde_perforado` | Dar a `aurora_galerada` junto con la fotocopia (P10a). **Se gasta.** |
 | 13 | `manual_fax` | Manual del fax | Paco, con `cms_vivo` (árbol 7.6.4) | «Manual del fax de la Catacumba. Página 9: "Respuesta automática".» // «Las demás páginas son fotos del fax. Posando.» | **[Usar objeto]** en el remate del duelo D2 (P12). No se gasta. |
 | 14 | `pieza_opa` | Mi exclusiva | `ordenador_bruno` (P10b) | Sin `pieza_recortada`: «Mi exclusiva. Treinta y una líneas. El faldón tiene veintitrés.» · Con: «Veintitrés líneas exactas. Begoña ha quitado la conclusión.» // «Y una coma que le caía mal.» | Dar a `begona_triplicado` (P11). Dar a `teodoro_cuerpodoce` junto con la ficha (P12). **Se gasta en el cierre.** |
-| 15 | `album_borja` | Álbum de Borja | Borja, con `ruben_encontrado` (árbol 7.7.8) | «En todas las fotos, al fondo, Rubén. Cena de Navidad, presentación, photocall.» // «Siempre yendo al baño. Siempre con un táper.» | Dar a `nerea_backlog` (P14). **Se gasta** («Se lo devuelvo yo a Borja. Es contenido.»). |
+| 15 | `album_eventos` | Álbum de Eventos | Pilar (Eventos), con `ruben_encontrado` (adenda §13.2) | «En todas las fotos, al fondo, Rubén. Cena de Navidad, presentación, photocall.» // «Siempre yendo al baño. Siempre con un táper.» | Dar a `nerea_backlog` (P14). **Se gasta** («Se lo devuelvo yo a Pilar. Con acuse de recibo.»). |
 | 16 | `posit_baja_ruben` | Pósit «Baja becario Rubén» | Nerea, al descopear (P14) | «"Baja becario Rubén". Descopeado. Es el pósit más importante de mi vida.» | Dar a `paco_ticket` (P14). **Se gasta.** |
 | 17 | `ticket_n1` | Ticket nº 1 | Paco, al cerrar la baja (P14) | «Ticket nº 1: "Alta becario Rubén". Asignado a: Titulator 3000.» // «Estado: CERRADO. El primer ticket que cierra Paco en su vida.» | **[Usar objeto]** en el remate A del duelo D4 (P16). |
-| 18 | `acta_consejo` | Acta del último Consejo | Gervasio, al perder el duelo D3 (P15) | «Acta del último Consejo: "1. Pedir más café. 2. Ninguno más".» // «La primera acta en diecinueve años. Tiene dos faltas. Aurora lloraría.» | **[Usar objeto]** en el remate B del duelo D4 (P16). |
+| 18 | `acta_reunion` | Acta de la reunión | Gervasio, al perder el duelo D3 (P15) | «Acta de la última Reunión de Dirección: "1. Pedir más café. 2. Nada más".» // «La primera acta en diecinueve años. Tiene dos faltas. Aurora lloraría.» | **[Usar objeto]** en el remate B del duelo D4 (P16). |
 
 ---
 
@@ -738,19 +747,19 @@ flowchart LR
 
 **P14 · Descopear a Rubén** — `ecosistema` + `pecera` + `cpd`
 - **Precondiciones:** `ruben_encontrado`.
-- **Acciones:** (a) Hablar `borja_engagement` → «¿Me prestas el álbum?» → `album_borja`, `oyo_descopear`. (b) **Dar `album_borja` a `nerea_backlog`** → opción **«¿Y si... lo descopeamos?»** → `posit_baja_ruben`, `posit_descopeado`. (c) **Dar `posit_baja_ruben` a `paco_ticket`** → `ticket_n1`, `ruben_libre`.
+- **Acciones:** (a) Hablar `pilar_escaleta` (Eventos) → «¿Me prestas el álbum?» → `album_eventos`, `oyo_descopear`. (b) **Dar `album_eventos` a `nerea_backlog`** → opción **«¿Y si... lo descopeamos?»** → `posit_baja_ruben`, `posit_descopeado`. (c) **Dar `posit_baja_ruben` a `paco_ticket`** → `ticket_n1`, `ruben_libre`.
 - **Resultado:** se gastan álbum y pósit; Rubén sale del armario y se va a la ventana de la Pecera.
-- **Pista justa:** RUBÉN: «Nerea no mueve un pósit sin pruebas de que el becario existió.» // «Nadie me ha hecho nunca una foto. Bueno, el de Marketing. Pero salgo al fondo.» NEREA: «Un pósit solo sale hecho o muerto.» BORJA, al prestar el álbum: «Hemos descopeado la ética del Q3.»
+- **Pista justa:** RUBÉN: «Nerea no mueve un pósit sin pruebas de que el becario existió.» // «Nadie me ha hecho nunca una foto. Bueno, la de Eventos. Pero salgo al fondo.» NEREA: «Un pósit solo sale hecho o muerto.» BORJA, cuando Pilar presta el álbum: «Hemos descopeado la ética del Q3.»
 
 **P15 · El acta: duelo con Gervasio** — `office`
 - **Precondiciones:** `acto_3_iniciado`.
-- **Acción:** Hablar `gervasio_acta` (en el Office) → «Necesito el acta del último Consejo.» → duelo **D3**. Ganarlo.
-- **Resultado:** `duelo_gervasio_ganado`; `acta_consejo`; `sala_abierta`.
-- **Pista justa:** AURORA (Acto III): «El Consejo no decide nada sin acta. Y Gervasio no ha escrito un acta en su vida.» GERVASIO: «Diecinueve años sin un marrón.»
+- **Acción:** Hablar `gervasio_acta` (en el Office) → «Necesito el acta de la última reunión.» → duelo **D3**. Ganarlo.
+- **Resultado:** `duelo_gervasio_ganado`; `acta_reunion`; `sala_abierta`.
+- **Pista justa:** AURORA (Acto III): «Esa reunión no decide nada sin acta. Y Gervasio no ha escrito un acta en su vida.» GERVASIO: «Diecinueve años sin un marrón.»
 
-**P16 · El Consejo: duelo final y empujón** — `pajarera` + `sala_amazonas`
-- **Precondiciones:** `sala_abierta`, `ruben_libre`, `acta_consejo`, `ticket_n1`.
-- **Acciones:** (a) **Usar `puerta_sala`** → escena 7.4 → duelo **D4**: remate A **[Usar objeto] `ticket_n1`**, remate B **[Usar objeto] `acta_consejo`**. (b) **Empujar `lector_medio`**.
+**P16 · La Reunión de Dirección: duelo final y empujón** — `pajarera` + `sala_amazonas`
+- **Precondiciones:** `sala_abierta`, `ruben_libre`, `acta_reunion`, `ticket_n1`.
+- **Acciones:** (a) **Usar `puerta_sala`** → escena 7.4 → duelo **D4**: remate A **[Usar objeto] `ticket_n1`**, remate B **[Usar objeto] `acta_reunion`**. (b) **Empujar `lector_medio`**.
 - **Resultado:** `duelo_inigo_ganado`; `lector_derribado`; escena final y epílogo (7.5); `juego_terminado`.
 - **Pista justa:** el Lector Medio se ha mirado toda la noche («Aquí se le consulta todo»; «Asiente»). Tras el duelo, ÍÑIGO: «¡El Lector Medio lleva tres semanas asintiendo a mis diapositivas!» Empujarlo antes: «Todavía no. Primero, por escrito.»
 
@@ -830,12 +839,12 @@ Formato: `VERBO objeto [con/a objeto]`. Las elecciones de diálogo van entre com
 | 37 | catacumba | Dar ficha_pagina_7 a teodoro_cuerpodoce | `pagina_cerrada`, `acto_3_iniciado`; −`ficha_pagina_7`, −`pieza_opa`; escena 7.3a |
 | 38 | cpd | Tirar papel_continuo | `ruben_encontrado`; escena 7.3 |
 | 39 | cpd | Hablar ruben → «¿Escribiste tú los discursos de Íñigo?» | `rep_13` |
-| 40 | ecosistema | Hablar borja_engagement → «¿Me prestas el álbum?» | `album_borja`, `oyo_descopear` |
-| 41 | pecera | Dar album_borja a nerea_backlog → «¿Y si... lo descopeamos?» | `posit_baja_ruben`, `posit_descopeado`; −`album_borja` |
+| 40 | ecosistema | Hablar pilar_escaleta → «¿Me prestas el álbum?» | `album_eventos`, `oyo_descopear` |
+| 41 | pecera | Dar album_eventos a nerea_backlog → «¿Y si... lo descopeamos?» | `posit_baja_ruben`, `posit_descopeado`; −`album_eventos` |
 | 42 | cpd | Dar posit_baja_ruben a paco_ticket | `ticket_n1`, `ruben_libre`; −`posit_baja_ruben` |
-| 43 | office | Hablar gervasio_acta → «Necesito el acta del último Consejo.» → duelo D3: R07 → «A ti te consta. A mí me consta que hablabas tú.» · R01 → «Lo leímos todos. Por eso no contestó nadie.» · R14 → «O en un correo de una línea. Este. De nada.» | `duelo_gervasio_ganado`, `acta_consejo`, `sala_abierta` |
+| 43 | office | Hablar gervasio_acta → «Necesito el acta de la última reunión.» → duelo D3: R07 → «A ti te consta. A mí me consta que hablabas tú.» · R01 → «Lo leímos todos. Por eso no contestó nadie.» · R14 → «O en un correo de una línea. Este. De nada.» | `duelo_gervasio_ganado`, `acta_reunion`, `sala_abierta` |
 | 44 | pajarera | Usar puerta_sala | Escena 7.4 (entrada) |
-| 45 | sala_amazonas | Duelo D4: R10 → «O sea, que no sabéis qué hacer, pero en tabla dinámica.» · R12 → «Las pongo, pero el coche es de empresa y no pasa la ITV.» · REMATE A → [Usar objeto] ticket_n1 · R13 → «Claro. Y la carta de despido es una newsletter personalizada.» · R05 → «Tranquilo: de aquí no sale ni el wifi.» · REMATE B → [Usar objeto] acta_consejo | `duelo_inigo_ganado` |
+| 45 | sala_amazonas | Duelo D4: R10 → «O sea, que no sabéis qué hacer, pero en tabla dinámica.» · R12 → «Las pongo, pero el coche es de empresa y no pasa la ITV.» · REMATE A → [Usar objeto] ticket_n1 · R13 → «Claro. Y la carta de despido es una newsletter personalizada.» · R05 → «Tranquilo: de aquí no sale ni el wifi.» · REMATE B → [Usar objeto] acta_reunion | `duelo_inigo_ganado` |
 | 46 | sala_amazonas | Empujar lector_medio | `lector_derribado`; escenas 7.4 (final) y 7.5 → `juego_terminado` |
 
 **Variante de orden válida (para el test de no linealidad):** los pasos 21-26 (CMS y Paco) pueden ir antes del 9; los pasos 30-34 (FUENTE) pueden ir antes del 27-29 (HUECO); el 36 puede ir antes del 35; el 43 puede ir antes del 38. El test debe probar al menos el orden de la tabla y el orden «FUENTE → FIRMA → HUECO».
@@ -881,8 +890,8 @@ Todos booleanos salvo los marcados `int`. **Paquete** = quién lo implementa (se
 | `acto_3_iniciado` | bool | C · catacumba · P12b | A (`papel_continuo`, `armario_27`) · B (`puerta_sala` OCUPADO; Pajarera vacía) · C (Gervasio en el Office; Aurora A6) · D (Sala del clímax) · pistas |
 | `vio_armario_27` | bool | B · pajarera · 3.ª Mirar a `pantalla_titulator` | B (Íñigo I4) · pistas |
 | `titulator_mirar_n` | int | B · pajarera · +1 por Mirar | B |
-| `ruben_encontrado` | bool | A · cpd · P13 | A · D (Borja ofrece el álbum; `album_borja_hotspot`) · B (Nerea N4) · pistas |
-| `oyo_descopear` | bool | D · ecosistema · Borja B2 | B (opción «¿Y si... lo descopeamos?» de Nerea) |
+| `ruben_encontrado` | bool | A · cpd · P13 | A · D (Pilar presta el álbum; `album_eventos_hotspot`) · B (Nerea N4) · pistas |
+| `oyo_descopear` | bool | D · ecosistema · Pilar «¿Me prestas el álbum?» (Borja dice «descopear») | B (opción «¿Y si... lo descopeamos?» de Nerea) |
 | `posit_descopeado` | bool | B · pecera · P14b | B (Mirar kanban) |
 | `ruben_libre` | bool | A · cpd · P14c | B (Rubén en la Pecera; `puerta_sala`) · A (armario vacío) · D (escena 7.4) · pistas |
 | `duelo_gervasio_ganado` | bool | C · office · fin D3 | C |
@@ -989,8 +998,8 @@ Tras cada chisme con réplica, Bruno: «Me lo apunto.»
 |---|---|---|---|---|---|---|---|---|
 | **D1** | `maripaz_remitido` | ecosistema | Acto II (P07) | «RE: Llamar a Colchones Siestatón para pasarlos a la web (viernes, 19:07)» | «B. Pollejo» | R08, R04, R11, R14 | 3 puntos | — |
 | **D2** | `teodoro_cuerpodoce` (por fax) | catacumba | Acto II (P12), con `fax_con_papel` | «RE: Firma de la web en papel. Asignado a: quien se atreva» | «EL DE LA WEB» | R06, R02, R03, R09 | 3 puntos → **remate** | T: `manual_fax` |
-| **D3** | `gervasio_acta` | office | Acto III (P15) | «RE: Redactar el acta del último Consejo» | «Vacante (becario)» | R07, R01, R14, R03, R05 | 3 puntos | — |
-| **D4** | `inigo_sinergia` | sala_amazonas | Acto III (P16) | «RE: Plan Cero Papel – Llamar a la rotativa para apagarla» | «Vacante (perfil ideal)» | R10, R12, R13, R05, R01, R07 | 2 puntos → **remate A** → 2 puntos más → **remate B** | A: `ticket_n1` · B: `acta_consejo` |
+| **D3** | `gervasio_acta` | office | Acto III (P15) | «RE: Redactar el acta de la última Reunión de Dirección» | «Vacante (becario)» | R07, R01, R14, R03, R05 | 3 puntos | — |
+| **D4** | `inigo_sinergia` | sala_amazonas | Acto III (P16) | «RE: Plan Cero Papel – Llamar a la rotativa para apagarla» | «Vacante (perfil ideal)» | R10, R12, R13, R05, R01, R07 | 2 puntos → **remate A** → 2 puntos más → **remate B** | A: `ticket_n1` · B: `acta_reunion` |
 
 En D4 los fallos se acumulan durante todo el duelo (incluidas ambas fases): tres fallos en total = derrota y se vuelve a empezar desde 0 puntos.
 
@@ -1014,10 +1023,10 @@ En D4 los fallos se acumulan durante todo el duelo (incluidas ambas fases): tres
 - Si gana Teodoro: «Lo que está cerrado no se abre. Vuelve cuando sepas escribir.»
 
 **D3 · Gervasio**
-- Intro: «Ah, Vacante. El acta del Consejo hay que redactarla. Te lo pongo por escrito.»
+- Intro: «Ah, Vacante. El acta de la reunión hay que redactarla. Te lo pongo por escrito.»
 - `hurt`: «Eso habría que hablarlo.» · «Lo hablamos. Bueno, no.»
 - `taunt`: «Lo hablamos. O no.» · «Eso lo coges tú, que tienes la agenda limpia.»
-- Si pierde Gervasio: «Diecinueve años sin un marrón. Y ahora me toca el acta.» // (escribe, despacio, con la lengua fuera) // «Acuerdos del último Consejo: uno, pedir más café. Dos, ninguno más.» // «Toma. Entra tú. Yo voy a ver si esta máquina me saluda.» → `acta_consejo`, `sala_abierta`, `duelo_gervasio_ganado`.
+- Si pierde Gervasio: «Diecinueve años sin un marrón. Y ahora me toca el acta.» // (escribe, despacio, con la lengua fuera) // «Acuerdos de la última reunión: uno, pedir más café. Dos, ninguno más.» // «Toma. Entra tú. Yo voy a ver si esta máquina me saluda.» → `acta_reunion`, `sala_abierta`, `duelo_gervasio_ganado`.
 - Si gana Gervasio: «Asignada a ti. El acta, digo. Tráemela mañana. Lo hablamos.»
 
 **D4 · Íñigo** (con toda la empresa en copia)
@@ -1026,8 +1035,8 @@ En D4 los fallos se acumulan durante todo el duelo (incluidas ambas fases): tres
 - `taunt`: «Ese input no escala.» · «Rosa. Emociones. Siguiente.»
 - **REMATE A** (al llegar a 2 puntos): «El Titulator es una inversión de 48.000 € al mes. Perfectamente auditada.»
   - [Usar `ticket_n1`]: BRUNO: «¿Auditada por quién? Para Sistemas, tu IA es un becario. Alta: julio.» // (se abre la puerta. Entra Rubén, con una capucha y un táper vacío) // RUBÉN: «Hola. Soy la inversión.» // ÍÑIGO: «...Eso es una alucinación.» // RUBÉN: «No. Es un becario. Es más barato, pero se nota.» → sigue el duelo.
-- **REMATE B** (al llegar a 4 puntos): «Esto ya lo ha decidido el Consejo.»
-  - [Usar `acta_consejo`]: BRUNO: «Acta del último Consejo. Acuerdos: uno, pedir más café. Dos, ninguno más.» // GERVASIO (desde el rincón): «Es la única que hay. Las demás no las escribí.» → `duelo_inigo_ganado` → sigue la escena 7.4 (final).
+- **REMATE B** (al llegar a 4 puntos): «Esto ya lo ha decidido la Reunión de Dirección.»
+  - [Usar `acta_reunion`]: BRUNO: «Acta de la última reunión. Acuerdos: uno, pedir más café. Dos, ninguno más.» // GERVASIO (desde el rincón): «Es la única que hay. Las demás no las escribí.» → `duelo_inigo_ganado` → sigue la escena 7.4 (final).
 - Si gana Íñigo: «Asignado a Vacante. Llama tú a la rotativa. Es un perfil ideal para despedir.» // BRUNO: «Ni hablar. Lo vuelvo a intentar.» (el duelo vuelve a empezar: Íñigo regresa a la diapositiva 247)
 
 ### 6.6 Respuestas flojas (siempre en el menú, siempre fallan)
@@ -1048,7 +1057,7 @@ En D4 los fallos se acumulan durante todo el duelo (incluidas ambas fases): tres
 | `tarjeta_becario` | «Una tarjeta sin foto. Como tu firma.» | «Sin foto no estás en mi matriz. Ah, sí: en "Ideal".» |
 | `libreta_replicas` | «Ya te he leído las réplicas. No caben.» | «Bonito cuaderno. Low-cost.» |
 | `ticket_n1` (en el remate B) | — | «Eso ya me lo has enseñado. No escala dos veces.» |
-| `acta_consejo` (en el remate A) | — | «Un acta. Muy analógico. Luego la leemos.» |
+| `acta_reunion` (en el remate A) | — | «Un acta. Muy analógico. Luego la leemos.» |
 | `manual_fax` (en D4) | — | «¿Un manual? Yo no leo manuales: los facturo.» |
 | cualquier otro | «Eso no se faxea.» | «Ese input no escala.» |
 
@@ -1114,7 +1123,7 @@ YOLI: Eso es despedir con diapositivas.
 ÍÑIGO: Esta tarde lleva trescientos titulares. La redacción humana, cero.
 YOLI: ¡Porque se nos ha caído el CMS!
 ÍÑIGO: Exacto. El Titulator no necesita CMS. Ni silla. Ni convenio.
-ÍÑIGO: A las nueve, con el cierre, el Consejo aprobará el Plan Cero Papel.
+ÍÑIGO: A las nueve, con el cierre, la Reunión de Dirección aprueba el Plan Cero Papel.
 ÍÑIGO: Sin edición impresa. Sin rotativa. Sin costes. Solo clics.
 ÍÑIGO: No os despido: os desapalanco del organigrama.
 BRUNO: ¿Sin papel? Pero si mañana firmo yo en papel.
@@ -1141,7 +1150,7 @@ TEODORO: Goyita. Página 7 cerrada. Esta noche firma un chaval.
 AURORA: (se quita las gafas) Ha hablado. En voz alta. Desde 1996 no...
 (Se abre la puerta. Entra Íñigo con dos pósits azules.)
 ÍÑIGO: Qué bonito. Una página. Lástima que no se vaya a imprimir.
-ÍÑIGO: El Consejo se reúne ahora en la Sala Amazonas.
+ÍÑIGO: La Reunión de Dirección es ahora, en la Sala Amazonas.
 ÍÑIGO: A las nueve aprueba el Plan Cero Papel. Y la Goyita, al desguace.
 TEODORO (fax): Lo que está cerrado no se abre.
 ÍÑIGO: Lo que está cerrado se reimagina. (sale)
@@ -1183,7 +1192,7 @@ RUBÉN: No puedo. Mi baja es un pósit en el tablero de Nerea. Desde julio.
 RUBÉN: Si salgo sin baja, Íñigo me factura las horas de sol.
 RUBÉN: Y Nerea no mueve un pósit sin pruebas de que el becario existió.
 RUBÉN: Nadie me ha hecho nunca una foto.
-RUBÉN: (pausa) Bueno. El de Marketing. Pero salgo al fondo. Yendo al baño.
+RUBÉN: (pausa) Bueno. La de Eventos. Pero salgo al fondo. Yendo al baño.
 RUBÉN: ¿Me traes un táper, ya que vas?
 (→ ruben_encontrado. Rubén se queda asomado al armario: Hablar abre su árbol, 7.7.10.)
 ```
@@ -1196,7 +1205,7 @@ RUBÉN: ¿Me traes un táper, ya que vas?
  En la cabecera, el Lector Medio con la chaqueta de Ramírez. Íñigo, de pie.
  Gervasio en un rincón, con un café que no le han servido.)
 ÍÑIGO: ...y en la fase 3, el papel pasa a ser un recuerdo de marca.
-ÍÑIGO: (sin girarse) ¿Vacante? Esto es un Consejo. Los becarios no tienen voz.
+ÍÑIGO: (sin girarse) ¿Vacante? Esto es una Reunión de Dirección. Los becarios no tienen voz.
 BRUNO: Pero tienen correo.
 (Bruno saca el móvil.)
 BRUNO: Respondo a todos.
@@ -1359,8 +1368,8 @@ Formato: `[NODO] condición` · opciones numeradas · `→` salto · `{efecto}`.
   6. [casilla_fuente Y !pieza_escrita] «¿Y ahora qué?» (se queda)
      AURORA: Ahora escríbela. En tu ordenador, fuera del CMS.
      AURORA: Ahí dentro vive el Titulator. Y sin adjetivos.  → A_MENU
-  7. [acto_3_iniciado] «Íñigo dice que el Consejo va a apagar la rotativa.» (se queda)
-     AURORA: El Consejo no decide nada sin acta.
+  7. [acto_3_iniciado] «Íñigo dice que en la reunión van a apagar la rotativa.» (se queda)
+     AURORA: Esa reunión no decide nada sin acta.
      AURORA: Y Gervasio no ha escrito un acta en su vida.  → A_MENU
   8. «¿Qué le parecen los verbos de abajo?» (se queda)
      AURORA: Nueve verbos y ni un subjuntivo. Así no se cierra un periódico.  → A_MENU
@@ -1428,7 +1437,7 @@ Formato: `[NODO] condición` · opciones numeradas · `→` salto · `{efecto}`.
   2. «Mi palabra de honor.» (se queda)
      BEGOÑA: La palabra de honor dejó de ser moneda de curso legal con la peseta.  → B_JUST
   3. «Una foto mental. ¿Se la describo?» (se queda)
-     BEGOÑA: Las fotos mentales solo se aceptan a consejeros.  → B_JUST
+     BEGOÑA: Las fotos mentales solo se aceptan con NIF. Y por triplicado.  → B_JUST
   4. «¿Usted cree en los tickets, Begoña? Pero de verdad.» (se queda)
      BEGOÑA: Yo no creo en los tickets, niño. Los tickets creen en mí.  → B_JUST
   5. [!sobre_azucar] «Lo busco y vuelvo.»
@@ -1449,11 +1458,11 @@ Formato: `[NODO] condición` · opciones numeradas · `→` salto · `{efecto}`.
 
 [B_EJEMPLAR]
   (Begoña se levanta. Abre el archivador "EJEMPLARES". Saca una hoja como un Picasso.)
-  BEGOÑA: Esto. Esto es una nota de gasto. Del Consejo.
+  BEGOÑA: Esto. Esto es una nota de gasto. Como Dios manda.
   BEGOÑA: Concepto claro. Importe con céntimos. NIF. Firma.
-  BEGOÑA: "Comida Hidrovoltia. 312,00 euros. Gervasio, por el Consejo."
-  BRUNO: ¿El Consejo come?
-  BEGOÑA: El Consejo no come. Come Gervasio en su nombre.
+  BEGOÑA: "Comida de trabajo con Hidrovoltia. 312,00 euros. Firmado: Gervasio."
+  BRUNO: ¿Gervasio come con Hidrovoltia?
+  BEGOÑA: Gervasio come con quien haga falta. Y lo justifica. Es su gran talento.
   BEGOÑA: Te la fotocopio, para que aprendas. Por las dos caras: yo todo así.
   {+fotocopia_nota_direccion}
   BEGOÑA: Y la tuya, por triplicado.
@@ -1501,16 +1510,16 @@ Formato: `[NODO] condición` · opciones numeradas · `→` salto · `{efecto}`.
      NEREA: Le contesté: "Dame el contexto y lo pongo en el subtítulo".
      NEREA: "Que ahí no lo lee nadie". No hemos vuelto a comer juntas.
      NEREA: Bueno, ella no come. Mide.  {rep_09}  → N0
-  4. [ruben_encontrado Y !album_borja Y !posit_descopeado] «Necesito la baja de Rubén.»
+  4. [ruben_encontrado Y !album_eventos Y !posit_descopeado] «Necesito la baja de Rubén.»
      NEREA: ¿Rubén? (busca) Ah. "Baja becario Rubén". Por Hacer. Desde julio.
      NEREA: Un pósit solo sale del tablero de dos formas: hecho o muerto.
      NEREA: Y para darlo por hecho necesito pruebas de que el becario existió.
      NEREA: No sale en ninguna foto, ninguna acta, ningún sitio. Es como tú.  → N0
-  5. [lleva album_borja] «Mira este álbum.»  → N_ALBUM
+  5. [lleva album_eventos] «Mira este álbum.»  → N_ALBUM
   6. «Nada, ya me voy.»
      NEREA: Cierra la puerta al salir. No hay puerta. Ciérrala igual.  → FIN
 
-[N_ALBUM] (también al Dar album_borja)
+[N_ALBUM] (también al Dar album_eventos)
   NEREA: (hojea) Al fondo... en todas. Un chico pálido. Con un táper.
   NEREA: En la cena de Navidad, yendo al baño. En el photocall, yendo al baño.
   NEREA: Existió. Existe. Va mucho al baño.
@@ -1528,8 +1537,8 @@ Formato: `[NODO] condición` · opciones numeradas · `→` salto · `{efecto}`.
   NEREA: Nadie... nadie se había atrevido a decirlo en voz alta.
   NEREA: Descopear. Es lo más bonito que me han dicho delante del tablero.
   (Despega el pósit con dos dedos, como quien retira una medalla.)
-  {+posit_baja_ruben, −album_borja, posit_descopeado}
-  NEREA: El álbum se lo devuelvo yo a Borja. Es contenido.
+  {+posit_baja_ruben, −album_eventos, posit_descopeado}
+  NEREA: El álbum se lo devuelvo yo a Pilar. Con acuse de recibo.
   1. «Prometo cuidarlo.»
      NEREA: No lo cuides. Llévaselo a Paco. Es lo que Rubén habría querido.  → FIN
   2. «¿Le digo algo a la familia?»
@@ -1725,7 +1734,7 @@ Dar ficha_pagina_7 (en este orden de comprobación):
   GERVASIO: Esta máquina no me reconoce. Diecinueve años y no me reconoce.
   1. «¿Ha probado a darle las buenas noches?»
      GERVASIO: ¿A una máquina? Yo no saludo a lo que no está en el organigrama.  → GV_OFFICE
-  2. «Necesito el acta del último Consejo.»  → duelo D3
+  2. «Necesito el acta de la última reunión.»  → duelo D3
   3. «Me voy.»
      GERVASIO: Lo hablamos.  → FIN
 ```
@@ -1742,27 +1751,28 @@ Dar ficha_pagina_7 (en este orden de comprobación):
   4. [vio_armario_27] «¿Qué es eso del armario 27?»
      ÍÑIGO: Alucinaciones. Es normal en modelos tan avanzados.
      ÍÑIGO: Lo estamos analizando con todas las opciones.  → I0
-  5. «¿Y si el Consejo dice que no?» (se queda)
+  5. «¿Y si en la Reunión de Dirección dicen que no?» (se queda)
      ÍÑIGO: El Lector Medio nunca dice que no. Lleva tres semanas asintiendo.  → I0
   6. «Me voy.»
      ÍÑIGO: Te tengo en la matriz.  → FIN
 ```
 
-#### 7.7.8 `borja_engagement` (ecosistema)
+#### 7.7.8 `borja_engagement` (ecosistema) — revisado (adenda §13.3: Marketing, sin cámara)
 ```
-[BJ0] (¡FLASH!) BORJA: ¡Gracias! ¡Eso es contenido!
-  1. «¿Para qué es el photocall?» (se queda)
-     BORJA: Lo que no está en el photocall no ha ocurrido.  → BJ0
+[BJ0] BORJA: ¡Bruno! ¡Justo hablábamos de tu marca personal!
+  1. «¿Qué hace Marketing?» (se queda)
+     BORJA: ¡Engagement! Que la gente quiera lo que ya tiene.
+     BORJA: Pero en vertical. Y con un emoji de fuego.  → BJ0
   2. «¿Qué evento hay hoy?»
-     BORJA: Ninguno. Pero lo estamos montando. Es una experiencia de marca con canapé.  → BJ0
+     BORJA: ¡Eso es de Eventos! Yo solo lo cuento. Antes de que pase.  → BJ0
   3. [ruben_encontrado Y !oyo_descopear] «¿Me prestas el álbum?»
-     BORJA: ¿Mi álbum? Es contenido. Te lo presto si lo compartes.
-     BORJA: Por cierto: hemos descopeado la ética del Q3. Por si te sirve.
-     BRUNO (al jugador): Descopear. Me lo apunto.
-     {+album_borja, oyo_descopear}  → FIN
+     BORJA: El álbum es de Eventos. Yo solo lo viralizo.
+     BORJA: Pídeselo a Pilar. Con acreditación, que se pone tensa.  → BJ0
   4. «Me voy.»
-     (¡FLASH!) BORJA: ¡Salida de escena! ¡Contenido!  → FIN
+     BORJA: ¡Salida de escena! ¡Eso es un cierre de embudo!  → FIN
 ```
+**P14a** se hace ahora con **Pilar Escaleta** (Eventos), árbol `pilar` de la adenda §13.2: «¿Me prestas el álbum?» → `album_eventos`
+y `oyo_descopear` (Borja, desde su sitio: «¡Compártelo! Por cierto: hemos descopeado la ética del Q3.»).
 
 #### 7.7.9 `maripaz_remitido` (ecosistema)
 ```
@@ -1827,9 +1837,9 @@ Todo lo de esta sección está aprobado: se puede usar tal cual. Lo que no esté
 | Dar `pieza_opa` a `aurora_galerada` | AURORA: «Tiene un adjetivo. Lo dejo. Hoy estoy de buenas.» | C |
 | Usar `manual_fax` con `impresora_tercera` | «El manual es del fax. La impresora no se deja ayudar por un fax.» | D |
 | Dar `manual_fax` a `teodoro_cuerpodoce` (fuera del duelo) | TEODORO (fax): «Ese manual lo escribí yo. Hay una errata en la página 9. Déjala.» | C |
-| Dar `album_borja` a `yoli_tendencias` | YOLI: «¿Fotos de eventos? Eso no lo ve nadie.» // «Bueno. Uno. El del fondo.» | B |
+| Dar `album_eventos` a `yoli_tendencias` | YOLI: «¿Fotos de eventos? Eso no lo ve nadie.» // «Bueno. Uno. El del fondo.» | B |
 | Dar `ticket_n1` a `begona_triplicado` | BEGOÑA: «Un ticket cerrado. Lo sello por emoción. (¡SELLO!) Sigue cerrado.» | D |
-| Dar `acta_consejo` a `aurora_galerada` | AURORA: «Dos faltas en dos líneas. Para ser la primera acta, prometedora.» | C |
+| Dar `acta_reunion` a `aurora_galerada` | AURORA: «Dos faltas en dos líneas. Para ser la primera acta, prometedora.» | C |
 | Usar `movil` con `pantalla_titulator` | «No le hago fotos. Luego me titula: "BECARIO FOTOGRAFÍA UNA IA. LA IA, INCÓMODA".» | B |
 | Usar `sobre_azucar` con `cafe` | «Echarle azúcar al café de Gertrudis es corregirla. No me atrevo.» | común (A) |
 | Usar `tarjeta_becario` con `gertrudis` | LCD: «NO ACEPTO TARJETAS. NI SOBORNOS. SOLO MODALES.» | C |
@@ -1964,9 +1974,9 @@ Cada autor implementa **sus salas completas** (fondo descrito, hotspots, Mirar, 
 | Paquete | Salas | PNJ / objetos con carácter | Puzles | Duelos | Escenas | Además (común) |
 |---|---|---|---|---|---|---|
 | **A · «Puerta, sótano y común»** | `vestibulo`, `cpd` | `celestino`, `paco_ticket`, `ruben` (en el CPD), `abuela_remedios` | P01, P05a (registro), P13, P14c | — | 7.1 Intro, 7.3 Revelación de Rubén, **7.5 Final + créditos + poscréditos** (vestíbulo y el tramo de la Pecera) | Inventario completo (sección 4: ids, nombres, Mirar con estados), respuestas por defecto (8.2), pistas de la abuela (5.6), datos comunes del duelo (6.3 parejas, 6.6 flojas y comodín, 6.7 «cualquier otro»), cuarta pared (8.6), aviso «Réplica apuntada» |
-| **B · «La web y el poder»** | `pecera` (640 px), `pajarera` | `yoli_tendencias`, `nerea_backlog`, `inigo_sinergia` (Actos I-II), `gervasio_acta` (nodo Pajarera), `lector_medio` (Pajarera), `ruben` (en la Pecera, tras `ruben_libre`) | P04, P05b (enchufe), P10b (escribir), P14b (descopear) | — | 7.2 Presentación del villano | Rotación del Titulator (8.3) |
+| **B · «La web y el poder»** | `pecera` (800 px), `pajarera` | `yoli_tendencias`, `nerea_backlog`, `inigo_sinergia` (Actos I-II), `gervasio_acta` (nodo Pajarera), `lector_medio` (Pajarera), `ruben` (en la Pecera, tras `ruben_libre`) | P04, P05b (enchufe), P10b (escribir), P14b (descopear) | — | 7.2 Presentación del villano | Rotación del Titulator (8.3) |
 | **C · «El papel y el café»** | `office`, `catacumba` | `gertrudis`, `aurora_galerada`, `teodoro_cuerpodoce`, `gervasio_acta` (nodo Office) | P02, P03, P09, P10a, P12, P15 | **D2** Teodoro, **D3** Gervasio | 7.3a Inicio del Acto III | Chismes y errores de Gertrudis (6.3, 7.7.3) |
-| **D · «Planta noble y Consejo»** | `ecosistema`, `administracion`, `sala_amazonas` | `borja_engagement`, `maripaz_remitido`, `begona_triplicado`, `gervasio_acta` (nodo Reunión y clímax), `inigo_sinergia` y `lector_medio` (Acto III en la Sala) | P06, P07, P08, P11, P14a (álbum), P16 | **D1** Maripaz, **D4** Íñigo | 7.4 Clímax (entrada, duelo, empujón, Begoña con la factura, «Goyita, tira») | — |
+| **D · «Planta noble y Dirección»** | `ecosistema`, `administracion`, `sala_amazonas` | `pilar_escaleta`, `borja_engagement`, `maripaz_remitido`, `begona_triplicado`, `gervasio_acta` (nodo Reunión y clímax), `inigo_sinergia` y `lector_medio` (Acto III en la Sala) | P06, P07, P08, P11, P14a (álbum), P16 | **D1** Maripaz, **D4** Íñigo | 7.4 Clímax (entrada, duelo, empujón, Begoña con la factura, «Goyita, tira») | — |
 
 **Carga estimada:** A ≈ 2 salas + común + final; B ≈ 2 salas (una doble) + villano; C ≈ 2 salas + 6 puzles + 2 duelos; D ≈ 3 salas + 6 puzles + 2 duelos + clímax.
 
@@ -1983,10 +1993,10 @@ Cada autor implementa **sus salas completas** (fondo descrito, hotspots, Mirar, 
 | `mensaje_fp` | C (fax, P09) | C (Aurora, P10a); A (su Mirar, inventario común) |
 | `manual_fax` | A (Paco) | C (remate de D2) |
 | `pieza_opa` | B (ordenador, P10b) | D (Begoña, P11) → C (Teodoro, P12) |
-| `album_borja` | D (Borja, P14a) | B (Nerea, P14b) |
+| `album_eventos` | D (Pilar, P14a) | B (Nerea, P14b) |
 | `posit_baja_ruben` | B (Nerea, P14b) | A (Paco, P14c) |
 | `ticket_n1` | A (Paco, P14c) | D (remate A de D4) |
-| `acta_consejo` | C (Gervasio, D3) | D (remate B de D4) |
+| `acta_reunion` | C (Gervasio, D3) | D (remate B de D4) |
 | `cafe` | C (Gertrudis) | C (Aurora); B/A/D solo en combinaciones tontas (8.1) |
 
 **Flags que cruzan** (pone → lee):
@@ -2009,7 +2019,7 @@ Cada autor implementa **sus salas completas** (fondo descrito, hotspots, Mirar, 
 | `casilla_firma` | C | A (Mirar ficha) |
 | `acto_3_iniciado` | C | A (papel continuo), B (Pajarera vacía, puerta OCUPADO), D (Sala del clímax) |
 | `vio_armario_27` | B | pistas (A) |
-| `ruben_encontrado` | A | D (Borja), B (Nerea) |
+| `ruben_encontrado` | A | D (Pilar, álbum), B (Nerea) |
 | `oyo_descopear` | D | B (Nerea) |
 | `ruben_libre` | A | B (Rubén en la Pecera, `puerta_sala`), D (escena 7.4) |
 | `sala_abierta` | C | B (`puerta_sala`) |
@@ -2033,7 +2043,7 @@ Se ha simulado el walkthrough 5.4 con un modelo de estado (inventario + flags + 
 
 - **Cada objeto que se usa se ha conseguido antes**, y **los 15 objetos no iniciales se usan al menos una vez** (ninguno sobra).
 - **Ningún flag huérfano:** todos los flags de la tabla 5.5 tienen quien los pone y quien los lee (los marcados como opcionales solo los lee una línea opcional o las pistas).
-- **Los cuatro duelos se ganan** con las réplicas aprendidas antes de cada uno (D1: R08, R04, R11 · D2: R06, R02, R03 + `manual_fax` · D3: R07, R01, R14 · D4: R10, R12, `ticket_n1`, R13, R05, `acta_consejo`). En el orden alternativo, `rep_07` se puede aprender también en el Acto III (Gervasio está en el Office), así que leer su ordenador tarde no bloquea nada.
+- **Los cuatro duelos se ganan** con las réplicas aprendidas antes de cada uno (D1: R08, R04, R11 · D2: R06, R02, R03 + `manual_fax` · D3: R07, R01, R14 · D4: R10, R12, `ticket_n1`, R13, R05, `acta_reunion`). En el orden alternativo, `rep_07` se puede aprender también en el Acto III (Gervasio está en el Office), así que leer su ordenador tarde no bloquea nada.
 - **Sin callejones:** el café es infinito; perder un duelo no gasta nada; todo remate permite [Retirarse del hilo]; cada puerta bloqueada dice qué falta.
 - **Cifras comprobadas:** «Bruno Pellejo» = 13; «Hidrovoltia lanza una opa sobre Banco Robledal» = 46; 31 × 0,74 = 22,94 → 23; el titular de los áridos = 87. **v2:** ventanilla 19:15 − 19:07 = 8 minutos; 1997 → 2026 = 29 años (Teodoro); ticket nº 3, 2017 → 2026 = 9 años; 1996 → 2026 = 30 años (Aurora); 2014 → 2026 = 12 años.
 

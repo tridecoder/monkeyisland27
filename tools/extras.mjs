@@ -50,7 +50,7 @@ const X = [
   { n: 'X14', tras: 26, sala: 'pecera', txt: 'Hablar nerea_backlog → (rumor B2) → «Nada, ya me voy.»', acc: [V('hablar', 'nerea_backlog'), SALIR], esp: { flags: { rumor_atun_n: 2 } } },
   { n: 'X15', tras: 26, sala: 'pajarera', txt: 'Hablar inigo_sinergia → (rumor B3) → «Me voy.»', acc: [['ir', 'pajarera'], V('hablar', 'inigo_sinergia'), SALIR], esp: { flags: { rumor_atun_n: 3 } } },
   { n: 'X16', tras: 28, sala: 'ecosistema', txt: 'Mirar portatil_tadeo ×2', acc: [['ir', 'ecosistema'], V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo')], esp: { flags: { portatil_tadeo_n: 2, rep_15: true } } },
-  { n: 'X17', tras: 28, sala: 'ecosistema', txt: 'Hablar borja_engagement → (rumor A3 tras el ¡FLASH!) → «Me voy.»', acc: [V('hablar', 'borja_engagement'), SALIR], esp: { flags: { rumor_firma_n: 3 } } },
+  { n: 'X17', tras: 28, sala: 'ecosistema', txt: 'Hablar borja_engagement → (rumor A3) → «Me voy.»', acc: [V('hablar', 'borja_engagement'), SALIR], esp: { flags: { rumor_firma_n: 3 } } },
   { n: 'X17b', tras: 28, sala: 'ecosistema', txt: 'Hablar borja_engagement → (rumor D1) · Mirar piel_platano', acc: [V('hablar', 'borja_engagement'), SALIR, V('mirar', 'piel_platano')], esp: { flags: { rumor_plaza_n: 1, piel_platano_n: 1 } } },
   { n: '—29', tras: 28, sala: 'ecosistema', txt: 'Hablar maripaz_remitido → rumor C3 → «Me voy.» (antes de Dar planillo)', acc: [V('hablar', 'maripaz_remitido'), SALIR], esp: { flags: { rumor_teodoro_n: 3 } } },
   { n: 'X18', tras: 30, sala: 'administracion', txt: 'Usar puerta_controlling → «¿Algún cotilleo?»', acc: [['ir', 'administracion'], V('usar', 'puerta_controlling'), O('¿Algún cotilleo?'), SALIR], esp: { flags: ['rep_16'] } },

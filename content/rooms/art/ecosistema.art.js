@@ -18,7 +18,7 @@ const layout = {
   pizarra_sinergia: { rect: [192, 24, 44, 36], walkTo: [208, 112], face: 'up' },
   ascensor_ecosistema: { rect: [142, 34, 40, 52], walkTo: [162, 120], face: 'up' },
   pufs: { rect: [136, 86, 36, 17], walkTo: [154, 116], face: 'up' },
-  album_borja_hotspot: { rect: [150, 80, 13, 7], walkTo: [156, 116], face: 'up', priority: 1, draw: (g) => drawAlbum(g, 150, 80) },
+  album_eventos_hotspot: { rect: [150, 80, 13, 7], walkTo: [156, 116], face: 'up', priority: 1, draw: (g) => drawAlbum(g, 150, 80) },
   cajas_lanyards: { rect: [174, 76, 20, 24], walkTo: [186, 114], face: 'up' },
   gong: { rect: [234, 38, 26, 62], walkTo: [248, 112], face: 'up' },
   lema_enmarcado: { rect: [260, 24, 44, 22], walkTo: [284, 112], face: 'up' },
@@ -27,6 +27,8 @@ const layout = {
   portatil_tadeo: { rect: [198, 62, 26, 22], walkTo: [210, 112], face: 'up', draw: (g, v, t) => drawPortatil(g, 198, 62, t) },
   piel_platano: { rect: [292, 106, 14, 8], walkTo: [284, 122], face: 'up', priority: 1, draw: (g) => drawPlatano(g, 292, 106) },
   borja_engagement: { at: [104, 108, 'right'], walkTo: [88, 116], face: 'right' },
+  // EVENTOS: Pilar Escaleta, delante de su photocall, en la alfombra roja (problema 8)
+  pilar_escaleta: { at: [62, 124, 'right'], walkTo: [86, 127], face: 'left' },
   maripaz_remitido: { at: [272, 106, 'down'], walkTo: [256, 116], face: 'right' },
 };
 

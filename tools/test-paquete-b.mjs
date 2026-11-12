@@ -121,7 +121,7 @@ try {
   await opcion('¿Es verdad que le quieren fusionar con Infografía?');
   must(!(await state()).dialog.some(o => o.includes('Titulator')), 'Valentín: la opción del Titulator sale sin ruben_encontrado');
   must(!(await state()).dialog.some(o => o.includes('pantalla tumbaba')), 'Valentín: la opción del CMS sale sin cms_vivo');
-  await opcion('¿Algún consejo?');
+  await opcion('¿Algún truco?');
   await opcion('Me voy.');
   await verb('usar', 'monitor_valentin'); await verb('mirar', 'monitor_valentin'); await verb('mirar', 'valentin_reticula');
   for (const l of ['Eres un sprite muy bien resuelto.', 'La bandeja está a dos metros.', 'Es aislamiento por diseño.', 'Lo dicen a dos metros.',
@@ -253,19 +253,19 @@ try {
   // ------------------------------------------------------------ Acto III
   await setFlag('acto_3_iniciado'); await setFlag('ruben_encontrado');
   await R.travel('pecera'); await idle();
-  await give('album_borja'); await setFlag('oyo_descopear');
+  await give('album_eventos'); await setFlag('oyo_descopear');
   await setFlag('rumor_plaza_n', 2);
   await hablar('nerea_backlog');
   await expectFlags({ rumor_plaza_n: 3 }, 'rumor D3 (Nerea)');
   await closeDialog(); await idle();
-  await verb('dar', 'nerea_backlog', 'album_borja');
+  await verb('dar', 'nerea_backlog', 'album_eventos');
   await opcion('¿Y si... lo descopeamos?');
   await expectFlags({ posit_descopeado: true }, 'P14b');
-  await expectInv(['posit_baja_ruben'], ['album_borja'], 'P14b');
+  await expectInv(['posit_baja_ruben'], ['album_eventos'], 'P14b');
   await closeDialog(); await idle();
   await clearLog(); await verb('mirar', 'kanban');
   must(await logHas('Descopeado con amor'), 'kanban tras posit_descopeado');
-  ok('P14b Dar album_borja a Nerea → «¿Y si... lo descopeamos?» → posit_baja_ruben, posit_descopeado; rumor D3');
+  ok('P14b Dar album_eventos a Nerea → «¿Y si... lo descopeamos?» → posit_baja_ruben, posit_descopeado; rumor D3');
   await setFlag('ruben_libre'); await G(() => __game.takeItem('posit_baja_ruben')); await give('ticket_n1');
   await R.travel('pajarera'); await R.travel('pecera'); await idle();
   must((await roomOf('ruben')) === 'pecera', 'Rubén no está en la ventana con ruben_libre');
@@ -286,7 +286,7 @@ try {
   await setFlag('ruben_libre', false);
   await verb('usar', 'puerta_sala'); await idle();
   must((await state()).room === 'pajarera', 'puerta_sala sin sala_abierta deja pasar');
-  await setFlag('sala_abierta'); await give('acta_consejo');
+  await setFlag('sala_abierta'); await give('acta_reunion');
   await clearLog(); await verb('usar', 'puerta_sala'); await idle();
   must((await state()).room === 'pajarera' && await logHas('Íñigo me desapalanca'), 'puerta_sala sin Rubén');
   await setFlag('ruben_libre'); await give('ticket_n1');

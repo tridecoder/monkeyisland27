@@ -149,6 +149,11 @@ function organigrama(g) {
   microCenter(g, 'PRODUCTO', cx, y + 47, PAL.ink[0]);
   vline(g, cx, y + 53, 1, PAL.metal[4]);
   vacanteSlot(g, x + 16, y + 54, false);
+  // pósit añadido a mano, con cinta americana: «+ EVENTOS» (el organigrama se imprimió antes de que existieran)
+  ditherOverlay(g, x + 27, y + 27, 31, 9, PAL.ink[0], 0.4);
+  rect(g, x + 26, y + 26, 31, 9, '#f6e27a'); hline(g, x + 26, y + 34, 31, '#c8b450');
+  rect(g, x + 24, y + 25, 5, 2, PAL.metal[4]); rect(g, x + 54, y + 25, 5, 2, PAL.metal[4]);
+  micro(g, '+EVENTOS', x + 27, y + 28, PAL.red[2]);
 }
 function vacanteSlot(g, vx, vy, foto) {
   rect(g, vx, vy, 24, 11, PAL.paper[7]);

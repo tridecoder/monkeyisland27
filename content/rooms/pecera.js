@@ -51,7 +51,7 @@ const DISCUSIONES = [
   [['D1', 'Internet está mal hecho.'], ['D2', 'Desde el principio.'], ['D3', '...Sí.']],
   [['D1', '¡Diseño sigue en el edificio!'], ['D2', '¡Su director! ¡A dos metros!'], ['D1', '...Pues que arregle el CMS.'], ['D2', 'Más bajo, que te oye.'], ['D3', 'No.']],
   // Valentín trabaja a dos metros, junto a la bandeja de Diseño: el coro baja la voz, culpa a Diseño... y él ni levanta la vista
-  [['D2', '¡Esto es culpa de Dis...!'], ['D1', '¡Chsss! Que está ahí.'], ['D2', '...de Dirección. Culpa de Dirección.']],
+  [['D2', '¡Esto es culpa de Dis...!'], ['D1', '¡Chsss! Que está ahí.'], ['D2', '...de Discover. Culpa de Discover.']],
   [['D1', '¡Diseño tiene la culpa!'], [V, 'Está en la bandeja.'], ['D1', '...'], ['D3', 'No.']],
   [['D1', '¿Quién ha puesto este margen de ocho píxeles?'], ['D2', 'Diseño.'], ['D1', '...Queda bien.'], ['D2', 'No se lo digas.']],
   [['CORO', '¡Diseño!'], ['D3', 'Ni nos mira.'], ['D1', 'Nunca mira.'], ['D2', 'Es que lo entregó todo.']],
@@ -129,7 +129,7 @@ export default buildRoom({
         if (api.inc('pecera_sillas_n') === 1) await api.say(['Sillas vacías con chaqueta. Se fueron a las seis y media.', 'La chaqueta ficha por ellos.']);
         else await api.say('Las pantallas siguen encendidas. Sin nadie. Como la web.');
       },
-      usar: 'Son de Mercados. Una silla no cambia de sección sin Consejo.',
+      usar: 'Son de Mercados. Una silla no cambia de sección sin reunión previa.',
       coger: 'Esa chaqueta está fichando. Si la quito, a su dueño le ponen falta.',
       empujar: 'Giran. Las chaquetas, no. Tienen más arraigo que yo.',
       'usar:chaqueta_ramirez': 'Una chaqueta más no se notaría. Ese es el problema: busco que se note.',
@@ -375,7 +375,7 @@ export default buildRoom({
       'dar:cafe': async (api) => api.sayAs(Y, '¿Café? Llevo cuatro. El quinto lo mido.'),
       'dar:ficha_pagina_7': seq([[Y, '¿Una ficha de papel? ¿Tiene keyword?'], ['B', 'Tiene casillas.'], [Y, 'Qué vintage.']]),
       'dar:pieza_opa': async (api) => api.sayAs(Y, '¿Sin número en el titular? ¿Sin "lo que nadie te cuenta"? Valiente.'),
-      'dar:album_borja': async (api) => api.sayAs(Y, ['¿Fotos de eventos? Eso no lo ve nadie.', 'Bueno. Uno. El del fondo.']),
+      'dar:album_eventos': async (api) => api.sayAs(Y, ['¿Fotos de eventos? Eso no lo ve nadie.', 'Bueno. Uno. El del fondo.']),
     },
       murmurs: ['Precio café hoy, precio café 2026, precio café por qué...', 'Si baja otra vez, me pongo colirio en el alma.',
         'Busco "el Contable" y salen gestorías. Nos ganan en SEO.', 'Hacen más ruido que mi gráfica cuando baja.'] },
@@ -387,7 +387,7 @@ export default buildRoom({
         await api.sayAs(N, ['Si vienes a pedirme algo, está en el tablero.', 'Si no está en el tablero, no existe.']);
         await api.dialog('nerea');
       },
-      'dar:album_borja': async (api) => api.dialog('nerea', 'N_ALBUM_INTRO'),     // P14b
+      'dar:album_eventos': async (api) => api.dialog('nerea', 'N_ALBUM_INTRO'),     // P14b
     },
       murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.',
         'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.'] },
@@ -425,7 +425,7 @@ export default buildRoom({
       'dar:pieza_opa': async (api) => api.sayAs(L, ['Herminia la lee en un segundo. Ya tiene infografía. Papel, web, redes.', 'No la publico: no está integrada. Pero existe.']),
       'dar:planillo': async (api) => api.sayAs(L, 'Herminia lo pone en tarta: 100 % Siestatón. Desde marzo.'),
       'dar:ficha_pagina_7': async (api) => api.sayAs(L, 'Tres casillas. Herminia lo pinta como un semáforo. Estás en ámbar.'),
-      'dar:acta_consejo': async (api) => api.sayAs(L, 'En tarta: 50 % café, 50 % nada. El gráfico más honesto del año.'),
+      'dar:acta_reunion': async (api) => api.sayAs(L, 'En tarta: 50 % café, 50 % nada. El gráfico más honesto del año.'),
       'dar:cafe': async (api) => api.sayAs(L, 'Gracias. Herminia dice que es mi quinto. Me lo ha puesto en barras.'),
       empujar: 'No. Está dibujando algo en el aire. Si lo empujo, se le sale del eje.',
     } },

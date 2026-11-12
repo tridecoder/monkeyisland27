@@ -2,7 +2,7 @@
 // Pajarera), 7.7.7, 8.3 (rotación del Titulator); adenda §3.4, 4.7 (Íñigo), 8.2 (rumor B paso 3), 8bis, 9.9.
 // El arte y la geometría están en ./art/pajarera.art.js (artista de fondos). Ids = claves de `layout` del arte.
 // Actos I-II: Íñigo (sofá) y el Lector Medio; Gervasio en su mesa con `reunion_terminada`. Acto III: vacía.
-// `puerta_sala`: Actos I-II, libre. Acto III: exige sala_abierta + ruben_libre + acta_consejo + ticket_n1; entonces entra
+// `puerta_sala`: Actos I-II, libre. Acto III: exige sala_abierta + ruben_libre + acta_reunion + ticket_n1; entonces entra
 // en la Sala Amazonas, cuyo onEnter (paquete D) lanza el clímax 7.4.
 import { buildRoom } from '../lib/room.js';
 import art from './art/pajarera.art.js';
@@ -39,7 +39,7 @@ const GENERICOS = [
 
 async function mirarTitulator(api) {
   if (acto3(api)) {
-    await api.say(['El atril está vacío. Íñigo se ha llevado el Titulator al Consejo.', 'Sin titulares, la Pajarera parece un despacho.']);
+    await api.say(['El atril está vacío. Íñigo se ha llevado el Titulator a la reunión.', 'Sin titulares, la Pajarera parece un despacho.']);
     return;
   }
   const n = api.inc('titulator_mirar_n');
@@ -68,7 +68,7 @@ async function mirarTitulator(api) {
 // ------------------------------------------------------------------ puerta de la Sala Amazonas (biblia 3.5)
 async function entrarSala(api) {
   if (!acto3(api)) { api.sfx('door'); await api.goto('sala_amazonas', 'pajarera'); return; }
-  if (!api.flag('sala_abierta') || !api.has('acta_consejo')) {
+  if (!api.flag('sala_abierta') || !api.has('acta_reunion')) {
     await api.say('OCUPADO hasta 2031. Llamar a esta puerta es pedir una prórroga.');
     return;
   }
@@ -180,7 +180,7 @@ export default buildRoom({
     { id: 'hoja_reservas', name: 'hoja de reservas', handlers: {
       mirar: async (api) => {
         const n = api.inc('hoja_reservas_n');
-        if (acto3(api)) { await api.say(['"Consejo · Íñigo · hasta 2031". Pegado encima de lo de Ramírez.', 'Ha pisado la reserva de un hombre que no está. Eso es nivel.']); return; }
+        if (acto3(api)) { await api.say(['"Reunión · Íñigo · hasta 2031". Pegado encima de lo de Ramírez.', 'Ha pisado la reserva de un hombre que no está. Eso es nivel.']); return; }
         if (api.flag('reunion_terminada') && api.once('pajarera_reservas_libre')) { await api.say('La pantallita dice LIBRE. La hoja sigue diciendo Ramírez.'); return; }
         const ROT = [
           '"Viernes, 20:59 · Seguimiento · Org.: Ramírez · recurrente".',
@@ -261,7 +261,7 @@ export default buildRoom({
             { text: '¿El Titulator escribe solo?', once: true, reply: 'Es generativo, autónomo y escalable. Y no pide vacaciones.' },
             { text: '¿Qué es eso del armario 27?', once: true, if: 'vio_armario_27',
               reply: ['Alucinaciones. Es normal en modelos tan avanzados.', 'Lo estamos analizando con todas las opciones.'] },
-            { text: '¿Y si el Consejo dice que no?', reply: 'El Lector Medio nunca dice que no. Lleva tres semanas asintiendo.' },
+            { text: '¿Y si en la Reunión de Dirección dicen que no?', reply: 'El Lector Medio nunca dice que no. Lleva tres semanas asintiendo.' },
             { text: '¿Conoces a Herminia?', once: true,
               reply: ['La herramienta de Infografía. Gratis. No escala.', 'Lo que no se factura no existe. Es como un pósit sin color.'] },
             { text: '¿Y el de Controlling?', once: true,

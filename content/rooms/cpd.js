@@ -58,7 +58,7 @@ async function revelacionRuben(api) {
       'Si salgo sin baja, Íñigo me factura las horas de sol.', 'Y Nerea no mueve un pósit sin pruebas de que el becario existió.',
       'Nadie me ha hecho nunca una foto.']);
     await api.wait(700);
-    await api.sayAs(R, ['Bueno. El de Marketing. Pero salgo al fondo. Yendo al baño.', '¿Me traes un táper, ya que vas?']);
+    await api.sayAs(R, ['Bueno. La de Eventos. Pero salgo al fondo. Yendo al baño.', '¿Me traes un táper, ya que vas?']);
   });
   api.setFlag('ruben_encontrado', true);
   api.setState('armario_27', 'abierto');
@@ -335,7 +335,7 @@ export default buildRoom({
         'dar:manual_fax': paco('Ese manual ya es tuyo. Las devoluciones van por ticket. Y tardan.'),
         'dar:ticket_n1': paco('Quédatelo. Yo ya tengo el recuerdo. Y una foto mental.'),
         'dar:tarjeta_becario': paco('«Pellizco». Te abro un ticket: «Nombre mal escrito». Ponte a la cola.'),
-        'dar:album_borja': paco('Fotos de eventos. Yo no salgo en ninguna. Lo tengo por ticket.'),
+        'dar:album_eventos': paco('Fotos de eventos. Yo no salgo en ninguna. Lo tengo por ticket.'),
         'dar:*': paco('¿Viene con número de ticket? Pues no lo veo.'),
         empujar: 'A Paco no se le empuja. Se le abre un ticket. Y se espera.',
         tirar: 'Le tiro del forro polar. Me mira como a una impresora sin driver.',
@@ -345,7 +345,7 @@ export default buildRoom({
       mirar: 'Rubén, alias Titulator 3000. Sudadera, ojeras y migas de bocadillo de máquina.',
       hablar: async (api) => { await api.dialog('ruben'); },
       'dar:cafe': rub('¿Café? Gracias. Pero lo que necesito es un táper. Y la baja.'),
-      'dar:album_borja': rub('Ahí salgo. Al fondo. Siempre al fondo. Es mi encuadre.'),
+      'dar:album_eventos': rub('Ahí salgo. Al fondo. Siempre al fondo. Es mi encuadre.'),
       'dar:posit_baja_ruben': rub('Eso no es para mí. Es para Paco. Yo solo soy el que se va.'),
       'dar:*': rub('¿ES UN TÁPER? ...No. Pues gracias igual.'),
       empujar: 'No. Bastante empujado está. Lleva cuatro meses en un armario.',

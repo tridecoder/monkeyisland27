@@ -52,7 +52,7 @@ async function presentacionVillano(api) {
       [I, 'Esta tarde lleva trescientos titulares. La redacción humana, cero.'],
       [Y, '¡Porque se nos ha caído el CMS!'],
       [I, 'Exacto. El Titulator no necesita CMS. Ni silla. Ni convenio.'],
-      [I, 'A las nueve, con el cierre, el Consejo aprobará el Plan Cero Papel.'],
+      [I, 'A las nueve, con el cierre, la Reunión de Dirección aprueba el Plan Cero Papel.'],
       [I, 'Sin edición impresa. Sin rotativa. Sin costes. Solo clics.'],
       [I, 'No os despido: os desapalanco del organigrama.'],
       ['B', '¿Sin papel? Pero si mañana firmo yo en papel.'],

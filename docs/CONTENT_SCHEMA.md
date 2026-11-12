@@ -8,7 +8,7 @@ Authoritative reference for writing content on this engine. Everything here matc
   punctuation. `“”` become `"`, `’` becomes `'`, `…` becomes `...`. Unknown characters render as `?`.
 - Plain ES modules, no build step. Import with **relative** paths (`'../lib/room.js'` from `content/rooms/`,
   `'../../engine/draw.js'` from `content/rooms/`, `'../../../engine/draw.js'` from `content/rooms/art/`).
-- Screen 320×200. Room viewport 320×144 (y 0–143); UI panel y 144–199. Rooms may be wider than 320 (`pecera` is 640).
+- Screen 320×200. Room viewport 320×144 (y 0–143); UI panel y 144–199. Rooms may be wider than 320 (`pecera` is 800).
 - Bible rules that the tools enforce: ids in `snake_case` without accents; **no spoken line over 80 characters**
   (`tools/check.mjs` warns); a bible ` // ` means two separate lines (two balloons); stage directions in brackets
   are never shown as text.
@@ -147,7 +147,7 @@ const layout = {
 };
 export default {
   room: '<id>',
-  width: 320,                       // 640 for pecera
+  width: 320,                       // 800 for pecera
   scale: { yFar: 100, far: 0.86, yNear: 142, near: 1.0 },   // or a number, or (y) => scale
   walkboxes: [{ id: 'suelo', poly: [[4, 104], [316, 104], [318, 142], [2, 142]] }],
   entries: { pecera: [160, 108, 'down'], cpd: [278, 112, 'down'] },   // named after the room you come FROM
@@ -191,8 +191,27 @@ Art may **read** flags (`view.flag('cms_vivo')`, `view.state`), never change the
   the player is idle; their speech cannot be skipped.
 - `walkboxes` can be toggled from the logic with `api.setWalkbox(id, on)` — the art must give the box that `id`
   (agree on the name in the room's logic header comment).
+- **Conditional walkboxes:** a walkbox may carry `when` (a condition, §8): `{ id: 'paso_torno', when: 'torno_abierto',
+  poly: [...] }`. The engine enables it only while the condition holds, re-evaluating on room entry (and load), after
+  every `setFlag`/`inc` and whenever a blocking script ends (`Game.refreshWalkboxes`, cheap: rebuilds only on change).
+  An explicit `api.setWalkbox(id, on)` for the same box wins over its `when`. Use it to make a barrier physical: in the
+  `vestibulo`, the street side (`entrada`) and the inner lobby with the lift (`interior`) only connect through the
+  turnstile lane (`paso_torno`), so before `torno_abierto` Bruno cannot walk to the lift at all (an unreachable
+  approach point makes him walk to the closest reachable spot, then the handler answers). `?debug=1` draws disabled
+  walkboxes in red.
 
 ---
+
+### 2.5 The lift (`content/lib/ascensor.js`)
+One lift with a floor panel joins four rooms: -1 `cpd`, 0 `vestibulo`, 1 `pecera`, 2 `ecosistema` (`PLANTAS`). Each of
+those rooms declares its lift object with `ascensorObjeto(id, extraHandlers, bloqueo?)` (Ir a / Usar / Abrir →
+`usarAscensor(api)`: `api.choose` with the four floors, the current one greyed «(aquí)», plus «Nada, me quedo en esta
+planta.»), and its art has the entry `ascensor` (where Bruno appears). `plantaPermitida(api, room)` applies the same
+condition as the old route to that room (-1, 1, 2: `torno_abierto`; 0: always); a refused floor answers with a line
+and does not travel. A ride: door sfx, fade, a cabin `hud` with the floor counter, one rotating lift line (narrator,
+`ascensor_viajes_n`), then `api.goto(room, 'ascensor')`: the destination's `onEnter` and the automatic notices run as
+for any entry. Lift objects carry `ascensor: { planta, label }` (no `exit`): `tools/check.mjs` and the test travel helpers
+(`walk-lib.mjs`, `play-mouse.mjs`) add lift edges to the exit graph and pick the floor by its label.
 
 ## 3. game.js (shared)
 
@@ -234,7 +253,14 @@ when the entry already ran a scene / dialog / duel / cutscene (the engine counts
 
 Other game-level options the engine understands: `narratorColor`, `noWalkVerbs`, `autosave`, `verbs`, `walkVerb`,
 `prepUsar`, `prepDar`, `playerHotspot` (default true: the player sprite is clickable if its actor has `handlers`),
-`murmurAfterMs` (default 20000).
+`murmurAfterMs` (default 20000), `speechBacking` (`{ color, alpha }` of the dark band drawn under every spoken line,
+default `SPEECH_BACKING` in `engine/core.js`, 80 %; `null` removes it; checked by `tools/contrast.mjs`).
+
+**Screen & mobile** (`engine/fullscreen.js`): «Pantalla completa» in the title and pause menus and the **F** key use the
+Fullscreen API (+ `screen.orientation.lock('landscape')`); on iPhone Safari (no Fullscreen API) the option shows a panel
+explaining how to install the web app (`manifest.webmanifest`, apple-mobile-web-app metas, `icons/`). The canvas fits
+the safe area (`viewport-fit=cover` + `env(safe-area-inset-*)` padding on `#stage`), integer scale on desktop, full-height
+nearest-neighbour scale on high-density touch screens; a non-blocking «gira el móvil» hint shows in portrait.
 
 ---
 
@@ -291,7 +317,7 @@ appears above them in their colour: `gertrudis` (LCD `#39FF14`, custom sprite, `
 `lector_medio` (the Lector Medio, a marketing buyer-persona cardboard standee: stock-photo smile, blue jumper, folded
 newspaper, chest card «LECTOR MEDIO · 43 años…», taped speaker; recording colour `#CCCCCC`; variants `chaqueta` when
 `chaqueta_en_lector`, `caido` when `lector_derribado`, chosen automatically).
-**Addendum cast** (adenda §1/§11.2): sprite characters `leoncio_quesitos` (`#3CE0C6`), `anselmo_monolito` (`#E496FF`),
+**Addendum cast** (adenda §1/§11.2/§13): sprite characters `pilar_escaleta` (Eventos, `#A8F07A`), `leoncio_quesitos` (`#3CE0C6`), `anselmo_monolito` (`#E496FF`),
 `evaristo_salvedad` (`#F0F0A8`) and the cameo `valentin_reticula` (`#C0E8FF`). **Sprite-less presences** only give a
 speaking name/colour to `api.sayAs` (flag `presence` in the definition, `hotspot: false`, never placed in a room):
 `custodia_precinto` (`#FF94BE`), `tadeo_adjunto` (`#FFCC99`), `herminia` (`#FF8C3C`), `coro_desarrollo` (CORO), `dev_1`,
@@ -544,9 +570,9 @@ duels: {
     wrongObjectKey: 'inigo',                 // which column of duelo.js wrongObject to use (default: duel id)
     finishers: [
       { atScore: 2, text: 'El Titulator es una inversión de 48.000 € al mes. Perfectamente auditada.', object: 'ticket_n1',
-        wrongObject: { acta_consejo: 'Un acta. Muy analógico. Luego la leemos.' },
+        wrongObject: { acta_reunion: 'Un acta. Muy analógico. Luego la leemos.' },
         script: async (api, duel) => { /* Rubén enters... */ } },          // duel continues (not the last)
-      { atScore: 4, text: 'Esto ya lo ha decidido el Consejo.', object: 'acta_consejo',
+      { atScore: 4, text: 'Esto ya lo ha decidido la Reunión de Dirección.', object: 'acta_reunion',
         wrongObject: { ticket_n1: 'Eso ya me lo has enseñado. No escala dos veces.' },
         script: async (api, duel) => { /* ... */ } },                       // last one: Bruno wins
     ],
@@ -574,7 +600,7 @@ Mirar `mensaje_fp` → `vio_borde_perforado`, **Usar chicle con tarjeta_becario*
 is used up), «Usar sobre_azucar con café» (§8.1). Everything else involving an item is a handler on the room object or
 NPC (§6). Ids: `tarjeta_becario`, `libreta_replicas`, `movil`, `chicle`, `cafe`, `chaqueta_ramirez`, `sobre_azucar`,
 `ficha_pagina_7`, `planillo`, `copias_rechazadas`, `fotocopia_nota_direccion`, `mensaje_fp`, `manual_fax`,
-`pieza_opa`, `album_borja`, `posit_baja_ruben`, `ticket_n1`, `acta_consejo`.
+`pieza_opa`, `album_eventos`, `posit_baja_ruben`, `ticket_n1`, `acta_reunion`.
 
 Item definition keys: `name` (string or `(view) => string`), `icon(g, x, y, view, variant)` (28×18 box, outlined
 automatically), `iconKey(view) => string` (icon variant, part of the cache key: tarjeta without photo, ficha's ticks,
@@ -625,13 +651,15 @@ game by itself; `api.ending(opts)` ends the game (a click fast-forwards; at the 
 | command | what |
 |---|---|
 | `node tools/serve.mjs 8080` | static server → `http://localhost:8080/` |
-| `node tools/shot.mjs <room> [entry] [--debug] [--x=<roomX>] [--scale=3]` | screenshot of a room → `tools/shots/room-<room>[-debug].png`; prints content errors and **buildRoom warnings** (exit 1 if any) |
+| `node tools/shot.mjs <room> [entry] [--debug] [--x=<roomX>] [--y=<roomY>] [--flags=a,b=1] [--verb=hablar:id] [--scale=3]` | screenshot of a room → `tools/shots/room-<room>[-debug].png`; prints content errors and **buildRoom warnings** (exit 1 if any) |
 | `node tools/check.mjs` | static check: imports, logic/art ids, files, exits/entries, undeclared flags, unknown items/actors/replies, duel decks; warnings for lines > 80 chars. **Must pass before you hand over** |
 | `node tools/smoke.mjs` | full UI smoke test (title, 9 rooms, inventory, sample duel, save/load, menu, credits, debug, touch) |
 | `node tools/walkthrough.mjs [--alt] [--hasta=N] [--lento]` | bible §5.4 step by step (data in the file); stops at the first failing step and says why. Fails while rooms are unfinished: expected |
 | `node tools/extras.mjs [--hasta=X10] [--lento]` | walkthrough 5.4 + the «extras» X1…X26 of addendum §12 interleaved (data in the file; fails at the first unimplemented X step: expected). Shares `walk-data.mjs` / `walk-lib.mjs` with the walkthrough; both **dismiss the automatic notices** and keep going |
-| `node tools/play-mouse.mjs [--solo=raton\|geometria]` | Act I + duel D1 with REAL mouse events only, and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, and is not fully covered by another hotspot |
+| `node tools/play-mouse.mjs [--solo=raton\|geometria] [--vis]` | Act I + duel D1 with REAL mouse events only (incl. the vestíbulo barrier: the lift is unreachable before `torno_abierto`, reachable after; the lift panel by clicks), and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, is not fully covered by another hotspot, and every talkable NPC shows ≥ 80 % of head+torso (silhouette render) with ≥ 120 px of own click area (`--vis` prints the figures) |
 | `node tools/fuzz.mjs [--solo=guardar\|duelos\|objetos]` | save/load in every act and play on to the end; lose every duel once; Dar/Usar every item on every NPC and hotspot (no exceptions, no stuck dialogs, list of consumed items) |
+| `node tools/contrast.mjs [--todo]` | legibility: WCAG contrast of every speaker colour against its outline and against the real background of every room under the speech band (`SPEECH_BACKING`), same-room speakers distinguishable, and all UI / menu / duel text colours ≥ 4.5:1 |
+| `node tools/make-icons.mjs` | regenerates the web-app icons `icons/icon-{180,192,512}.png` from the game's own drawing code (the only image files in the project) |
 | `node tools/text-audit.mjs` | every line said in a full game + all 9 verbs on everything: > 80 chars, balloons over 3 rows, missing ¿ ¡, names, clock times |
 | `node tools/review.mjs [--solo=salas\|momentos]` | contact sheets for visual review → `tools/shots/review/` |
 | `node tools/actors.mjs` | cast contact sheet → `tools/shots/actores.png` (sprite-less presences as colour cards) |

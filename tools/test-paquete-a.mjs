@@ -304,7 +304,7 @@ try {
     const L = await G(r => __game.game.content.rooms[r].art.entries.ascensor, to);
     must(Math.abs(st.player.x - L[0]) < 2, `ascensor ${from} → ${to}: no salgo por la puerta del ascensor`);
     if (to === 'cpd') must((await flag('paco_tickets')) === t0 + 1, 'ascensor → CPD: el onEnter del CPD no suma el ticket');
-    if (to === 'ecosistema') must(await logHas('¡Gracias! ¡Eso es contenido!'), 'ascensor → planta 2: no salta el ¡FLASH! de Borja (onEnter)');
+    if (to === 'ecosistema') must(await G(() => __game.log.some(l => l.who === 'pilar_escaleta')), 'ascensor → planta 2: no salta el ¡FLASH! de Eventos (onEnter)');
     must(await G(() => __game.log.some(l => l.who === 'narrador' && /ticket|Diseño|ascensor|wifi|Ibex|reunión|garaje|Tadeo|organigrama|escalera|gong/i.test(l.text))), `ascensor ${from} → ${to}: sin frase de viaje`);
   }
   // cancelar: se queda

@@ -197,6 +197,8 @@ function creditos(api) {
     ...Array(PLANO_N).fill(''),                                               // hueco: plano de la Catacumba (Aurora)
     ...asig('Infografía', 'Asignado a: Herminia.', f('infografia_integrada') ? '(becaria de Desarrollo, alta en 40 segundos)' : 'Integración: pendiente de revisión (marzo).'),
     ...asig('Diseño y Producto', 'Asignado a: Diseño y Producto. Entregado a las 18:29.'),
+    ...asig('Eventos', 'Asignado a: Pilar Escaleta. Empezamos en cinco minutos.'),
+    ...asig('Marketing', 'Asignado a: Borja Engagement (en vertical).'),
     ...asig('Errores', 'Asignado a: Diseño (que no fue).'),
     ...asig('Controlling', f('correo_evaristo_listo') ? 'Asignado a: el único que leyó hasta el final.' : 'Asignado a: un correo que nadie quiso oír.'),
     ...asig('Material', 'Asignado a: Custodia Precinto. Devuélvanle el boli.'),

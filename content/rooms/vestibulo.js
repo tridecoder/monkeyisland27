@@ -305,7 +305,7 @@ export default buildRoom({
       },
       coger: 'No. Es la única que ha sobrevivido a todos los ERE.',
       'dar:cafe': 'No bebe. Por eso dura tanto.',
-      'dar:*': 'No acepta nada. Ni regalos ni consejos. Por eso sigue en plantilla.',
+      'dar:*': 'No acepta nada. Ni regalos ni sugerencias. Por eso sigue en plantilla.',
       empujar: async (api) => {
         const n = api.inc('planta_empujada_n');
         api.sfx('whoosh');

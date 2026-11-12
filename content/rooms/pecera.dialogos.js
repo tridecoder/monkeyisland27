@@ -42,17 +42,17 @@ export default {
             reply: ['Me dijo que mi dato de tráfico estaba "sacado de contexto".', 'Le contesté: "Dame el contexto y lo pongo en el subtítulo".',
               '"Que ahí no lo lee nadie". No hemos vuelto a comer juntas.', 'Bueno, ella no come. Mide.'],
             do: async (api) => { api.learnReply('rep_09'); } },
-          { text: 'Necesito la baja de Rubén.', once: true, if: ['ruben_encontrado', '!has:album_borja', '!posit_descopeado'],
+          { text: 'Necesito la baja de Rubén.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!posit_descopeado'],
             reply: ['¿Rubén?', 'Ah. "Baja becario Rubén". Por Hacer. Desde julio.', 'Un pósit solo sale del tablero de dos formas: hecho o muerto.',
               'Y para darlo por hecho necesito pruebas de que el becario existió.', 'No sale en ninguna foto, ninguna acta, ningún sitio. Es como tú.'] },
-          { text: 'Mira este álbum.', if: 'has:album_borja', goto: 'N_ALBUM_INTRO' },
+          { text: 'Mira este álbum.', if: 'has:album_eventos', goto: 'N_ALBUM_INTRO' },
           // adenda 4.7 (se queda)
           { text: '¿Por qué está bloqueado lo de Herminia?',
             reply: ['Lo bloquea Anselmo. Y a Anselmo lo bloquea Anselmo.', 'Es la dependencia más estable del tablero.'] },
           { text: 'Nada, ya me voy.', exit: true, reply: 'Cierra la puerta al salir. No hay puerta. Ciérrala igual.' },
         ],
       },
-      // N_ALBUM (también al Dar album_borja): las líneas de entrada van en un nodo puente para no repetirlas
+      // N_ALBUM (también al Dar album_eventos): las líneas de entrada van en un nodo puente para no repetirlas
       N_ALBUM_INTRO: {
         onEnter: async (api) => {
           await api.sayAs(N, ['Al fondo... en todas. Un chico pálido. Con un táper.', 'En la cena de Navidad, yendo al baño. En el photocall, yendo al baño.',
@@ -78,10 +78,10 @@ export default {
           await api.anim(N, 'reach', 700);
           api.sfx('paper');
           api.give('posit_baja_ruben');
-          api.take('album_borja');
+          api.take('album_eventos');
           api.setFlag('posit_descopeado', true);
           api.repaint();
-          await api.sayAs(N, 'El álbum se lo devuelvo yo a Borja. Es contenido.');
+          await api.sayAs(N, 'El álbum se lo devuelvo yo a Pilar. Con acuse de recibo.');
         },
         options: [
           { text: 'Prometo cuidarlo.', exit: true, reply: 'No lo cuides. Llévaselo a Paco. Es lo que Rubén habría querido.' },
@@ -216,7 +216,7 @@ export default {
           { text: '¿Es verdad que le quieren fusionar con Infografía?', once: true,
             reply: ['Tercera vez esta semana. No.', 'Infografía hace gráficos. Diseño hace que se entiendan. Son dos oficios.',
               'Íñigo me lo propuso en una matriz. Se la devolví alineada.'] },
-          { text: '¿Algún consejo?',                                                     // (se queda)
+          { text: '¿Algún truco?',                                                     // (se queda)
             reply: ['Si te atascas, llama a tu abuela. La diseñamos como sistema de pistas.', 'Y prueba cosas raras. Aquí todo lo raro está probado.'] },
           { text: '¿Usted sabía lo del Titulator?', if: 'ruben_encontrado', once: true,
             reply: ['En mi juego, el Titulator ya era un becario.', 'Una IA no pone las tildes con tanto cariño.'] },

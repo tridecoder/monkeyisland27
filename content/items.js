@@ -136,7 +136,7 @@ const icons = {
     textLines(g, 8, 6, 12, k === 'recortada' ? 4 : 6, P.paper[2], 2, 1);
     if (k === 'recortada') { for (let xx = 4; xx < 25; xx += 2) px(g, xx, 15, P.red[4]); line(g, 21, 13, 25, 17, P.metal[5]); line(g, 25, 13, 21, 17, P.metal[5]); }
   },
-  album_borja(g) {
+  album_eventos(g) {
     rect(g, 3, 2, 22, 15, '#1e5adc'); hline(g, 3, 2, 22, '#4a80f0'); vline(g, 24, 3, 14, '#123a90'); hline(g, 4, 16, 21, '#123a90');
     vline(g, 13, 2, 15, '#123a90');
     rect(g, 5, 4, 7, 5, P.paper[6]); rect(g, 6, 5, 5, 3, P.dusk[4]); px(g, 10, 7, '#d4dcb4');
@@ -156,7 +156,7 @@ const icons = {
     textLines(g, 9, 9, 9, 2, P.paper[2], 2);
     stamp(g, 9, 12, 10, 5, P.leaf[4]);
   },
-  acta_consejo(g) {
+  acta_reunion(g) {
     sheet(g, 3, 0, 22, 18);
     drawText(g, 'ACTA', 5, -1, P.ink[2], { outline: null });
     line(g, 7, 10, 18, 10, P.blue[3]); line(g, 7, 13, 14, 13, P.blue[3]);
@@ -257,8 +257,8 @@ export default {
     handlers: { mirar: 'Duplicado y triplicado de mi nota de gasto. Sello: RECHAZADA. Dos veces.' },
   },
   fotocopia_nota_direccion: {
-    name: 'fotocopia de la nota de Dirección', icon: icons.fotocopia_nota_direccion,
-    handlers: { mirar: say(['Fotocopia de la nota de Dirección: «Comida Hidrovoltia. 312,00 €».', 'Por detrás, a boli: «OPA ROBLEDAL — jueves — NO PUBL.» Begoña no mira reversos.']) },
+    name: 'fotocopia de la nota de Gervasio', icon: icons.fotocopia_nota_direccion,
+    handlers: { mirar: say(['Nota de gasto de Gervasio: «Comida de trabajo, Hidrovoltia. 312,00 €».', 'Por detrás, a boli: «OPA ROBLEDAL — jueves — NO PUBL.» Begoña no mira reversos.']) },
   },
   mensaje_fp: {
     name: 'fax de F.P.', icon: icons.mensaje_fp,
@@ -284,8 +284,8 @@ export default {
       },
     },
   },
-  album_borja: {
-    name: 'álbum de Borja', icon: icons.album_borja,
+  album_eventos: {
+    name: 'álbum de Eventos', icon: icons.album_eventos,
     handlers: { mirar: say(['En todas las fotos, al fondo, Rubén. Cena de Navidad, presentación, photocall.', 'Siempre yendo al baño. Siempre con un táper.']) },
   },
   posit_baja_ruben: {
@@ -296,9 +296,9 @@ export default {
     name: 'ticket nº 1', icon: icons.ticket_n1,
     handlers: { mirar: say(['Ticket nº 1: «Alta becario Rubén». Asignado a: Titulator 3000.', 'Estado: CERRADO. El primer ticket que cierra Paco en su vida.']) },
   },
-  acta_consejo: {
-    name: 'acta del último Consejo', icon: icons.acta_consejo,
-    handlers: { mirar: say(['Acta del último Consejo: «1. Pedir más café. 2. Ninguno más».', 'La primera acta en diecinueve años. Tiene dos faltas. Aurora lloraría.']) },
+  acta_reunion: {
+    name: 'acta de la reunión', icon: icons.acta_reunion,
+    handlers: { mirar: say(['Acta de la última Reunión de Dirección: «1. Pedir más café. 2. Ninguno más».', 'La primera acta en diecinueve años. Tiene dos faltas. Aurora lloraría.']) },
   },
   boli_muerto: {
     // adenda 6.1 (#19): se consigue en la Catacumba (Coger bolis_aurora, MP3) y se gasta al Dar a custodia_precinto.

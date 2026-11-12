@@ -1,4 +1,4 @@
-// PAQUETE D · «Planta noble y Consejo» — utilidades comunes de MIS salas (ecosistema, administracion, sala_amazonas).
+// PAQUETE D · «Planta noble y Dirección» — utilidades comunes de MIS salas (ecosistema, administracion, sala_amazonas).
 // Dueño: paquete D. Solo efectos de puesta en escena (sonidos inline y destellos); no pone flags.
 
 // ---- sonidos inline (api.sfx acepta definiciones; ver engine/audio.js)
@@ -25,7 +25,7 @@ function overlay(api, paint) {
   return () => { g.hud = prev; };
 }
 
-/** ¡FLASH! de la cámara de Borja: chasquido y destello blanco de un instante. */
+/** ¡FLASH! del photocall de Eventos (Pilar Escaleta): chasquido y destello blanco de un instante. */
 export async function flash(api) {
   api.sfx(SFX.flash);
   if (api.skipping) return;

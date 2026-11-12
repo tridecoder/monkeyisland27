@@ -1,4 +1,4 @@
-// SALA `ecosistema` — LÓGICA. Dueño: paquete D · «Planta noble y Consejo» (biblia §9.1). Biblia: §3.7, §7.7.8, §7.7.9,
+// SALA `ecosistema` — LÓGICA. Dueño: paquete D · «Planta noble y Dirección» (biblia §9.1). Biblia: §3.7, §7.7.8, §7.7.9,
 // §6.4-6.5 (duelo D1, Maripaz), P07, P14a. Adenda: §3.7 (portátil de Tadeo), §4.5 (su asistente), §8bis (piel de plátano),
 // rumores A3 / C3 / D1 (§8), murmullos y combinaciones (§4.8).
 // El arte y la geometría están en ./art/ecosistema.art.js (artista de fondos). Árboles en ./ecosistema.dialogos.js.
@@ -8,8 +8,9 @@ import dialogos, { abrirDueloMaripaz } from './ecosistema.dialogos.js';
 import { flash, gong, SFX, rota } from '../escenas/planta_noble.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
 
-const BORJA = 'borja_engagement', MARIPAZ = 'maripaz_remitido';
+const BORJA = 'borja_engagement', MARIPAZ = 'maripaz_remitido', PILAR = 'pilar_escaleta';
 const sayB = (api, t) => api.sayAs(BORJA, t);
+const sayP = (api, t) => api.sayAs(PILAR, t);
 const sayM = (api, t) => api.sayAs(MARIPAZ, t);
 const tadeo = (api, t) => api.sayFrom('portatil_tadeo', t);
 const acto = (api) => (api.flag('acto_3_iniciado') ? 3 : api.flag('acto_2_iniciado') ? 2 : 1);
@@ -65,12 +66,17 @@ async function golpeGong(api) {
   gong(api);
   if (n === 0) {
     await api.say('¡GOOONG! La planta entera aplaude: creen que he vendido algo.');
-    await sayM(api, '¡Ese gong es mío, cariño! Bueno, da igual: lo facturo.');
+    await sayP(api, '¡Ese gong es de Eventos! ¡Y aún faltan cinco minutos!');
+    await sayM(api, 'Si suena, cariño, yo facturo. Es el acuerdo.');
   } else {
     await api.say('¡GOOONG! Esta vez aplaude menos gente. El mercado se satura.');
     await sayM(api, 'Otro, cariño. A la tercera te hago una factura proforma.');
   }
 }
+
+// ¡FLASH! al entrar: lo dispara el photocall de Eventos y Pilar acredita al que llega (rota en orden)
+const ENTRADAS = ['¡Acreditado! Empezamos en cinco minutos.', '¡Foto de entrada hecha! Cinco minutos y empezamos.',
+  'Uno más. Ya sois tres. Eso es un evento. ¡Acreditación!', '¡Flash! Para el álbum. Y para el seguro.'];
 
 // ---- duelo D1 (biblia §6.4-6.5)
 const duelMaripaz = {
@@ -99,7 +105,7 @@ const duelMaripaz = {
 };
 
 // «Usar cualquier papel» con la impresora (§3.7)
-const PAPELES = ['fotocopia_nota_direccion', 'mensaje_fp', 'pieza_opa', 'ficha_pagina_7', 'posit_baja_ruben', 'ticket_n1', 'acta_consejo', 'album_borja'];
+const PAPELES = ['fotocopia_nota_direccion', 'mensaje_fp', 'pieza_opa', 'ficha_pagina_7', 'posit_baja_ruben', 'ticket_n1', 'acta_reunion', 'album_eventos'];
 const impresoraPapel = Object.fromEntries(PAPELES.map(i => ['usar:' + i, '«ATASCO EN BANDEJA 2». Le da igual lo que le dé.']));
 
 export default buildRoom({
@@ -110,6 +116,8 @@ export default buildRoom({
     ecosistema_portatil_cerrado: 'bool · D · Cerrar portátil de Tadeo (Acto III) · D (Mirar portátil, impresora)',
     ecosistema_gong_n: 'int · D · ecosistema · +1 por Usar/Empujar gong · D',
     ecosistema_pufs_n: 'int · D · ecosistema · +1 por Usar pufs · D',
+    ecosistema_entradas_n: 'int · D · ecosistema · +1 por entrada (rota la frase de Pilar con el ¡FLASH!)',
+    ecosistema_sillas_n: 'int · D · ecosistema · +1 por «¿Cuántas sillas hay?» (Pilar)',
   },
 
   objects: [
@@ -122,7 +130,7 @@ export default buildRoom({
       mirar: async (api) => api.say(['El ascensor. Marketing le ha puesto pufs delante.', 'Para que la gente no se vaya. Que se «ubique».']),
       cerrar: 'Se cierra solo. Es lo único de la planta que no pide feedback.',
       empujar: 'No se empuja. Se activa. Lo dice el vinilo.',
-      tirar: 'Tiro de la puerta. Borja me hace una foto: «Bruno abriendo caminos».',
+      tirar: 'Tiro de la puerta. Borja lo cuenta en vertical: «Bruno abriendo caminos».',
       hablar: '«¿Bajas?». Hace «tin». Maripaz me lo factura como conversación.',
     }),
     { id: 'photocall', name: 'photocall', handlers: {
@@ -130,15 +138,15 @@ export default buildRoom({
       usar: async (api) => {
         await api.say('Me pongo en el hueco.');
         await flash(api);
-        await sayB(api, '¡Eso es contenido!');
+        await sayP(api, '¡Foto de acreditación! Ya constas en un evento.');
       },
-      coger: '¿Me llevo el photocall? Sin él, Borja dejaría de existir.',
+      coger: '¿Me llevo el photocall? Sin él, Eventos dejaría de existir.',
       empujar: 'Si se cae el photocall, la planta 2 no ha ocurrido nunca.',
       hablar: 'Le hablo al photocall. Treinta logos me escuchan. Ninguno paga.',
       'usar:tarjeta_becario': async (api) => {
         await api.say('Pongo mi tarjeta en el hueco. «Bruno Pellizco», premium.');
         await flash(api);
-        await sayB(api, '¡Un becario patrocinado! ¡Contenido!');
+        await sayP(api, '«Pellizco», acreditado. Con foto. Acceso: hasta el canapé.');
       },
     } },
     { id: 'aro_luz', name: 'aro de luz', handlers: {
@@ -165,30 +173,30 @@ export default buildRoom({
       empujar: 'Rueda hasta el photocall. Hasta el puf tiene más visibilidad que yo.',
       tirar: 'Tiro. Suspira. Es el único de la planta que se queja con razón.',
     } },
-    { id: 'album_borja_hotspot', name: 'álbum de Borja', when: '!oyo_descopear', handlers: {
+    { id: 'album_eventos_hotspot', name: 'álbum de Eventos', when: '!oyo_descopear', handlers: {
       mirar: async (api) => {
-        await api.say(['El álbum de eventos de Borja. En todas las fotos sale al fondo un chico pálido.',
-          'Siempre yendo al baño. Con un táper. Borja lo llama «el extra».']);
+        await api.say(['El álbum de Eventos. En todas las fotos sale al fondo un chico pálido.',
+          'Siempre yendo al baño. Con un táper. Pilar lo llama «el extra».']);
       },
       coger: async (api) => {
-        if (api.flag('ruben_encontrado')) await api.say('Mejor se lo pido. Borja es de los que denuncian a un puf.');
-        else await sayB(api, '¡Eh! Eso es contenido. Pídemelo con un motivo.');
+        if (api.flag('ruben_encontrado')) await api.say('Mejor se lo pido a Pilar. Lo tiene acreditado. Con foto.');
+        else await sayP(api, '¡Eh! Ese álbum está acreditado. Pídemelo con un motivo.');
       },
       abrir: 'Lo abro por la cena de Navidad. Al fondo, el chico pálido. Con táper.',
       usar: 'Paso páginas. Photocall, canapé, chico pálido. Photocall, canapé, chico.',
     } },
     { id: 'cajas_lanyards', name: 'cajas de lanyards', handlers: {
-      mirar: 'Lanyards para acreditar dos veces a la ONU.',
-      coger: 'Si me pongo uno más, Borja me cobra la entrada.',
+      mirar: 'Lanyards de Eventos. Para acreditar dos veces a la ONU.',
+      coger: 'Si me pongo uno más, Pilar me cuenta como asistente.',
       abrir: 'Dentro, más lanyards. Y debajo, tazas con logo. Es un ecosistema.',
       usar: 'Me acredito a mí mismo. Me lo deniego. Tengo criterio.',
       empujar: 'No se mueven. Pesan más que mi currículum. Literalmente.',
     } },
     { id: 'gong', name: 'gong', handlers: {
-      mirar: 'Un gong. Suena por cada venta. Y por cada promesa de venta.',
+      mirar: 'El gong de Eventos: suena para empezar. Maripaz lo usa por cada venta.',
       usar: golpeGong,
       empujar: golpeGong,
-      coger: async (api) => { await sayM(api, 'Ese gong no se mueve de mi mesa, cariño. Está facturado.'); },
+      coger: async (api) => { await sayP(api, 'El gong no se mueve. Tiene la marca de cinta en el suelo.'); },
       hablar: 'Le digo algo bonito al gong. No suena. Solo suena por dinero.',
       tirar: 'Se balancea. Maripaz me mira como a un cliente moroso.',
     } },
@@ -252,22 +260,41 @@ export default buildRoom({
 
   actors: [
     { id: BORJA,
-      murmurs: ['Sí, el photocall en el baño también. La marca empieza donde empieza.',
+      murmurs: ['Hay que hablarle al lector de tú. Y en vertical. Y con un emoji.',
         'Esto es contenido. Aquello es contenido. ¿Tú eres contenido?',
-        'Tadeo y yo hacemos sinergia. Él reenvía. Yo fotografío lo que reenvía.',
-        'Si alguien deja su plaza, el photocall del pésame lo pongo yo.',
-        '¡Valentín no sale en el photocall! ¡El photocall sale en Valentín!'],
+        'Tadeo y yo hacemos sinergia. Él reenvía. Yo lo convierto en hilo.',
+        'Si alguien deja su plaza, el post del pésame lo escribo yo.',
+        '¡Valentín no necesita filtro! ¡El filtro necesita a Valentín!'],
       handlers: {
-        mirar: 'Borja Engagement. Nueve acreditaciones al cuello y ningún evento hoy.',
+        mirar: 'Borja Engagement, Marketing. Habla al móvil como a un micro. Aunque no grabe.',
         hablar: async (api) => api.dialog('borja'),
-        coger: async (api) => { await flash(api); await sayB(api, '¡Me has cogido del brazo! ¡Foto de alianza!'); },
-        empujar: async (api) => { await flash(api); await sayB(api, '¡Contacto físico! ¡Eso es engagement!'); },
-        'dar:cafe': async (api) => { await flash(api); await sayB(api, '¡Café en mano! ¡Bodegón corporativo! Quédatelo, que sales mejor.'); },
-        'dar:album_borja': async (api) => { await sayB(api, '¡No me lo devuelvas sin compartirlo! El contenido no vuelve: se viraliza.'); },
-        'dar:tarjeta_becario': async (api) => { await sayB(api, '¿«Pellizco»? Te hago una acreditación mejor. Pone «Contenido».'); },
-        'dar:ficha_pagina_7': async (api) => { await sayB(api, '¿Una ficha? Ponle un photocall. Si no, no la firma nadie.'); },
-        'usar:movil': async (api) => { await flash(api); await sayB(api, '¡Selfi de vuelta! ¡Me has fotografiado fotografiando!'); },
-        'dar:*': async (api) => { await flash(api); await sayB(api, '¡Gracias! Lo subo. Luego te lo devuelvo, si no se viraliza.'); },
+        coger: async (api) => { await sayB(api, '¡Me has cogido del brazo! ¡Eso es una alianza estratégica!'); },
+        empujar: async (api) => { await sayB(api, '¡Contacto físico! ¡Eso es engagement orgánico!'); },
+        'dar:cafe': async (api) => { await sayB(api, '¡Café en mano! ¡Eso es un post! Quédatelo, que tú conviertes mejor.'); },
+        'dar:album_eventos': async (api) => { await sayB(api, '¡No lo devuelvas sin compartirlo! El contenido no vuelve: se viraliza.'); },
+        'dar:tarjeta_becario': async (api) => { await sayB(api, '¿«Pellizco»? ¡Eso es un naming! Te lo registro como marca.'); },
+        'dar:ficha_pagina_7': async (api) => { await sayB(api, '¿Una ficha? Hazle un carrusel. Si no, no la firma nadie.'); },
+        'usar:movil': async (api) => { await sayB(api, '¡Me grabas! ¡Eso es contenido generado por becario!'); },
+        'dar:*': async (api) => { await sayB(api, '¡Gracias! Lo subo. Luego te lo devuelvo, si no se viraliza.'); },
+      } },
+    // EVENTOS (problema 8): Pilar Escaleta, en la alfombra roja de su photocall
+    { id: PILAR,
+      murmurs: ['Cinco minutos. Siempre cinco minutos. Es mi zona horaria.', 'Ciento diez, ciento once, ciento doce... ¿Quién se ha sentado?',
+        'Cinta en el suelo, cinta en el cable, cinta en el alma.', 'Tres en el ascensor. Eso ya es un evento. Sin acreditar.',
+        'Si no hay croquetas, no es un evento. Es una reunión.', 'Aquí Eventos, cambio. Sí, a cinco minutos. Cambio y corto.'],
+      handlers: {
+        mirar: async (api) => api.say(['Pilar Escaleta, de Eventos. Cascos, walkie, escaleta y seis acreditaciones.',
+          'En la muñeca, un rollo de cinta americana. Por si hay que acreditar algo.']),
+        hablar: async (api) => api.dialog('pilar'),
+        'dar:cafe': async (api) => { await sayP(api, 'Café sin catering es un café. Con catering, una pausa. Apuntado.'); },
+        'dar:tarjeta_becario': async (api) => { await sayP(api, '«Pellizco». Te la repito bien: «Bruno. Acceso: hasta el canapé».'); },
+        'dar:ficha_pagina_7': async (api) => { await sayP(api, '¿Una ficha con tres casillas? ¡Eso es una escaleta! Me encanta.'); },
+        'dar:album_eventos': async (api) => { await sayP(api, 'Quédatelo hasta que acabes. Lo tengo apuntado: «Bruno, álbum, 19:40».'); },
+        'usar:movil': async (api) => { await sayP(api, '¡Sin fotos sin acreditación! ...Bueno, una. Salgo mejor de perfil.'); },
+        'dar:*': async (api) => { await sayP(api, 'Gracias. Lo acredito y lo pongo en la mesa de bienvenida.'); },
+        empujar: 'No. Está contando sillas. Si la empujo, empieza otra vez.',
+        coger: 'A Pilar no se la coge. Se la avisa con cinco minutos.',
+        tirar: 'Le tiro del cable de los cascos. Me mira como a un micro que acopla.',
       } },
     { id: MARIPAZ,
       murmurs: ['Te pongo un «ofrecido por» tan pequeño que solo lo verá el supervisor.',
@@ -301,10 +328,11 @@ export default buildRoom({
   ambient: [],
 
   async onEnter(api) {
-    // §3.7 ambiente: ¡FLASH! al entrar (cada vez). §8.7: la primera vez que entra en el Acto I. Cargar partida no es entrar.
+    // §3.7 ambiente: ¡FLASH! al entrar (cada vez): ahora es el flash del photocall de EVENTOS (problema 8), y lo celebra
+    // Pilar, no Borja. §8.7: la primera vez que entra en el Acto I. Cargar partida no es entrar.
     if (api.restoring) return;
     await flash(api);
-    await sayB(api, '¡Gracias! ¡Eso es contenido!');
+    await sayP(api, ENTRADAS[(api.inc('ecosistema_entradas_n') - 1) % ENTRADAS.length]);
     if (!api.flag('acto_2_iniciado') && api.once('ecosistema_entrada_1830')) {
       await api.say('La planta 2 a las seis y media: moqueta, pufs y nadie. Bueno, un gong.');
     }

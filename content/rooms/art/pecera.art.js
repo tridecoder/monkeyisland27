@@ -254,14 +254,15 @@ function drawStairs(g) {
   glow(g, x + 30, y + 14, 18, 20, PAL.gold[5], 0.28);
   line(g, x, y + h - 14, x + 32, y + 24, PAL.gold[3], 2); line(g, x, y + h - 16, x + 32, y + 22, PAL.gold[6]);
   vline(g, x + 2, y + h - 14, 12, PAL.gold[3]); vline(g, x + 16, y + 48, 14, PAL.gold[3]); vline(g, x + 28, y + 30, 12, PAL.gold[3]);
-  const sx = 582 + DX - 4, sy = 14;
-  rect(g, sx, sy, 56, 30, PAL.blue[1]); frameRect(g, sx, sy, 56, 30, PAL.blue[4]);
+  const sx = 582 + DX - 4, sy = 3;          // colgado del techo: no tapa el ascensor
+  rect(g, sx, sy, 56, 36, PAL.blue[1]); frameRect(g, sx, sy, 56, 36, PAL.blue[4]);
   hline(g, sx + 1, sy + 1, 54, PAL.blue[5]);
   tiny(g, 'PLANTA 2', sx + 22, sy + 4, PAL.paper[7], { align: 'center' });
   poly(g, [[sx + 46, sy + 3], [sx + 51, sy + 9], [sx + 41, sy + 9]], PAL.gold[5]); rect(g, sx + 45, sy + 9, 3, 4, PAL.gold[5]);
-  tiny(g, 'COMERCIAL', sx + 28, sy + 11, PAL.gold[6], { align: 'center' });
-  tiny(g, 'MARKETING', sx + 28, sy + 17, PAL.gold[6], { align: 'center' });
-  tiny(g, 'ADMINISTRACIÓN', sx + 28, sy + 24, PAL.gold[6], { align: 'center' });
+  tiny(g, 'MARKETING', sx + 28, sy + 11, PAL.gold[6], { align: 'center' });
+  tiny(g, 'EVENTOS', sx + 28, sy + 17, PAL.gold[6], { align: 'center' });
+  tiny(g, 'COMERCIAL', sx + 28, sy + 23, PAL.gold[6], { align: 'center' });
+  tiny(g, 'ADMINISTRACIÓN', sx + 28, sy + 30, PAL.gold[6], { align: 'center' });
 }
 
 // ------------------------------------------------------------------ Diseño y Producto (ampliación 600-760)

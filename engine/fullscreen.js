@@ -15,6 +15,9 @@ export function isIPhone() { return /iPhone|iPod/.test(navigator.userAgent || ''
 export function isStandalone() {
   try {
     if (navigator.standalone) return true;
+    // (display-mode: fullscreen) también es cierto en la pantalla completa del navegador: eso no es «instalada»
+    const d = document;
+    if (d.fullscreenElement || d.webkitFullscreenElement) return false;
     return ['fullscreen', 'standalone'].some(m => window.matchMedia && window.matchMedia(`(display-mode: ${m})`).matches);
   } catch (e) { return false; }
 }

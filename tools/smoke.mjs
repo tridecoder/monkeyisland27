@@ -418,6 +418,83 @@ try {
   const spoke = await tpage.waitForFunction(() => __game.log.some(l => l.who === 'bruno'), null, { timeout: 8000 }).then(() => true, () => false);
   ok(spoke, 'en táctil, «Mirar» + tocar el organigrama funciona');
   await tctx.close();
+
+  // ---------------------------------------------------------------- móvil (problema 6): iPhone vertical/horizontal,
+  // instalada (standalone) o en Safari, escritorio y pantalla completa en Chromium
+  step('Móvil: iPhone 13 en vertical y en horizontal, en Safari y como app instalada; escritorio; pantalla completa');
+  const { devices } = require('playwright');
+  const IP = devices['iPhone 13'];
+  const standaloneInit = () => {
+    Object.defineProperty(navigator, 'standalone', { get: () => true });
+    const mm = window.matchMedia.bind(window);
+    window.matchMedia = (q) => (/display-mode:\s*(fullscreen|standalone)/.test(q) ? { matches: true, media: q, addEventListener() {}, removeEventListener() {} } : mm(q));
+  };
+  for (const [tag, orient, standalone] of [['iphone-vertical', 'portrait', false], ['iphone-horizontal', 'landscape', false], ['iphone-horizontal-app', 'landscape', true], ['iphone-vertical-app', 'portrait', true]]) {
+    const vpo = orient === 'portrait' ? IP.viewport : { width: IP.viewport.height, height: IP.viewport.width };
+    const ctx = await browser.newContext({ ...IP, viewport: vpo, screen: vpo });
+    if (standalone) await ctx.addInitScript(standaloneInit);
+    const pg = await ctx.newPage();
+    pg.on('pageerror', e => consoleErrors.push(`pageerror (${tag}): ` + e.message));
+    pg.on('console', m => { if (m.type() === 'error') consoleErrors.push(`(${tag}) ` + m.text()); });
+    await pg.goto(base);
+    await pg.waitForFunction(() => window.__game && __game.state().mode === 'title');
+    await pg.waitForTimeout(500);
+    const m = await pg.evaluate(() => {
+      const r = document.getElementById('screen').getBoundingClientRect();
+      const hint = document.getElementById('rotate-hint');
+      return { w: r.width, h: r.height, left: r.left, top: r.top, iw: innerWidth, ih: innerHeight, scrollW: document.documentElement.scrollWidth, scrollH: document.documentElement.scrollHeight,
+        hint: !hint.hidden, items: __game.game.titleLayout.map(i => i.label), meta: !!document.querySelector('meta[name=apple-mobile-web-app-capable]'), manifest: !!document.querySelector('link[rel=manifest]'),
+        vp: document.querySelector('meta[name=viewport]').content };
+    });
+    ok(m.scrollW <= m.iw + 1 && m.scrollH <= m.ih + 1, `${tag}: sin desplazamiento de página (${m.scrollW}x${m.scrollH} en ${m.iw}x${m.ih})`);
+    if (orient === 'landscape') ok(m.h >= m.ih * 0.97 && m.w <= m.iw, `${tag}: el lienzo llena el alto (${Math.round(m.w)}x${Math.round(m.h)} en ${m.iw}x${m.ih})`);
+    else ok(m.w >= m.iw * 0.97, `${tag}: en vertical, el lienzo ocupa el ancho (${Math.round(m.w)} de ${m.iw})`);
+    ok(m.hint === (orient === 'portrait'), `${tag}: pista «gira el móvil» ${orient === 'portrait' ? 'visible' : 'oculta'}`);
+    ok(m.meta && m.manifest && /viewport-fit=cover/.test(m.vp), `${tag}: metas de web app, manifest y viewport-fit=cover`);
+    const hasFs = m.items.some(l => /Pantalla completa/.test(l));
+    ok(standalone ? !hasFs : hasFs, `${tag}: opción «Pantalla completa» en el título ${standalone ? 'oculta (ya es app)' : 'visible'}`);
+    if (!standalone) {
+      const it = await pg.evaluate(() => { const it = __game.game.titleLayout.find(i => /Pantalla completa/.test(i.label)); return __game.virtualToClient(it.x + 6, it.y + 5); });
+      await pg.touchscreen.tap(it.x, it.y);
+      await pg.waitForTimeout(300);
+      ok(await pg.evaluate(() => !!__game.game.iosHelp), `${tag}: en el Safari del iPhone, «Pantalla completa» explica cómo instalarla`);
+      await pg.screenshot({ path: path.join(shots, `movil-${tag}-ayuda.png`) });
+      await pg.waitForTimeout(400);
+      await pg.touchscreen.tap(it.x, it.y);
+      ok(await pg.evaluate(() => !__game.game.iosHelp), `${tag}: el panel de ayuda se cierra con un toque`);
+    }
+    // a jugar: verbos y objetos con toques, objetivos táctiles de tamaño cómodo
+    await pg.goto(base + '?room=vestibulo');
+    await pg.waitForFunction(() => window.__game && __game.state().mode === 'play' && !__game.state().busy);
+    const tgt = await pg.evaluate(() => { const r = document.getElementById('screen').getBoundingClientRect(); const k = r.height / 200; return { verbW: 50 * k, verbH: 14 * k, cellW: 34 * k, cellH: 21 * k, optH: 10 * k }; });
+    if (orient === 'landscape') ok(tgt.verbW >= 44 && tgt.verbH >= 26 && tgt.cellH >= 40, `${tag}: objetivos táctiles: verbo ${Math.round(tgt.verbW)}x${Math.round(tgt.verbH)} pt, casilla ${Math.round(tgt.cellW)}x${Math.round(tgt.cellH)} pt, opción ${Math.round(tgt.optH)} pt de alto`);
+    const vp2 = await pg.evaluate(() => __game.verbPos('mirar'));
+    await pg.touchscreen.tap(vp2.x, vp2.y);
+    const op = await pg.evaluate(() => __game.screenPos('organigrama'));
+    await pg.touchscreen.tap(op.x, op.y);
+    ok(await pg.waitForFunction(() => __game.log.some(l => l.who === 'bruno'), null, { timeout: 8000 }).then(() => true, () => false), `${tag}: «Mirar» + tocar el organigrama`);
+    await pg.waitForTimeout(300);
+    await pg.screenshot({ path: path.join(shots, `movil-${tag}.png`) });
+    console.log(`  📷 movil-${tag}.png`);
+    await ctx.close();
+  }
+  // escritorio: escala entera nítida; tecla F = pantalla completa (Fullscreen API) y otra vez para salir
+  const dctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  const dp = await dctx.newPage();
+  await dp.goto(base);
+  await dp.waitForFunction(() => window.__game && __game.state().mode === 'title');
+  const dm = await dp.evaluate(() => { const c = document.getElementById('screen'); return { cw: c.width, ch: c.height, label: __game.game.titleLayout.map(i => i.label) }; });
+  ok(dm.cw % 320 === 0 && dm.ch % 200 === 0, `escritorio: escala entera (${dm.cw}x${dm.ch})`);
+  await dp.mouse.click(10, 10);
+  await dp.keyboard.press('f');
+  await dp.waitForTimeout(500);
+  const fsOn = await dp.evaluate(() => !!document.fullscreenElement);
+  ok(fsOn, 'escritorio (Chromium): tecla F → pantalla completa (Fullscreen API)');
+  await dp.screenshot({ path: path.join(shots, 'movil-escritorio-pantalla-completa.png') });
+  await dp.keyboard.press('f');
+  await dp.waitForTimeout(400);
+  ok(!(await dp.evaluate(() => !!document.fullscreenElement)), 'escritorio: tecla F otra vez → sale de pantalla completa');
+  await dctx.close();
 } catch (e) {
   failures++;
   console.error('\nERROR:', e);

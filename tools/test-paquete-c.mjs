@@ -266,7 +266,7 @@ try {
   const inigo = await G(() => __game.game.actors.inigo_sinergia.room);
   ok(inigo !== 'catacumba', 'Íñigo sale de la Catacumba al acabar la escena');
   await R.run(['verbo', 'hablar', 'aurora_galerada']);
-  ok((await opts()).includes('Íñigo dice que el Consejo va a apagar la rotativa.'), 'Aurora, opción del Acto III');
+  ok((await opts()).includes('Íñigo dice que en la reunión van a apagar la rotativa.'), 'Aurora, opción del Acto III');
   await close();
 
   // ------------------------------------------------------------ D3 · Gervasio en el Office
@@ -279,19 +279,19 @@ try {
   await verb('hablar', 'gertrudis'); await choose('Nada, solo miraba.'); await idle();
   ok(await logHas('E-27: AYÚDAME. NO ES UN ERROR.'), 'Gertrudis en el Acto III: E-27');
   await setFlags({ rep_07: true, rep_05: true });
-  await verb('hablar', 'gervasio_acta'); await choose('Necesito el acta del último Consejo.');
+  await verb('hablar', 'gervasio_acta'); await choose('Necesito el acta de la última reunión.');
   st = await waitDuelChoice();
   ok(st.duel.id === 'gervasio' && st.duel.attack === 'R07' && st.duel.assigned === 'Vacante (becario)', 'D3 abre: R07, «Asignado a: Vacante (becario)»');
   await shot('duelo-gervasio');
   await duelCorrect(1); await duelWeak(3); await idle();
   st = await state();
-  ok(st.lastDuel.result === 'lost' && !st.flags.duelo_gervasio_ganado && !(st.inventory.includes('acta_consejo')), 'D3 perdido: sin acta, sin castigo');
+  ok(st.lastDuel.result === 'lost' && !st.flags.duelo_gervasio_ganado && !(st.inventory.includes('acta_reunion')), 'D3 perdido: sin acta, sin castigo');
   ok(await logHas('Asignada a ti. El acta, digo. Tráemela mañana. Lo hablamos.'), 'línea de victoria de Gervasio');
   await close().catch(() => {});
-  await R.run(['verbo', 'hablar', 'gervasio_acta']); await R.run(['opcion', 'Necesito el acta del último Consejo.']);
+  await R.run(['verbo', 'hablar', 'gervasio_acta']); await R.run(['opcion', 'Necesito el acta de la última reunión.']);
   await R.run(['duelo', ['R07', 'R01', 'R14']]); await R.run(['cerrar']); await idle();
-  await R.check({ flags: ['duelo_gervasio_ganado', 'sala_abierta'], tiene: ['acta_consejo'] });
-  ok(await logHas('Acuerdos del último Consejo: uno, pedir más café. Dos, ninguno más.'), 'paso 43: duelo_gervasio_ganado, sala_abierta, acta_consejo');
+  await R.check({ flags: ['duelo_gervasio_ganado', 'sala_abierta'], tiene: ['acta_reunion'] });
+  ok(await logHas('Acuerdos de la última reunión: uno, pedir más café. Dos, ninguno más.'), 'paso 43: duelo_gervasio_ganado, sala_abierta, acta_reunion');
   await clearLog();
   await verb('hablar', 'gervasio_acta');
   ok(!(await opts()) && await logHas('Estoy esperando a que la máquina me salude.'), 'Gervasio tras perder el duelo');

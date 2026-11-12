@@ -19,7 +19,7 @@ import { drawText } from '../../engine/font.js';
 export const ASCENSOR_COLOR = '#9FD8FF';
 
 export const PLANTAS = [
-  { n: 2, room: 'ecosistema', obj: 'ascensor_ecosistema', label: 'Planta 2 · Marketing, Comercial y Administración' },
+  { n: 2, room: 'ecosistema', obj: 'ascensor_ecosistema', label: 'Planta 2 · Marketing · Eventos · Comercial · Administración' },
   { n: 1, room: 'pecera', obj: 'ascensor_pecera', label: 'Planta 1 · Redacción' },
   { n: 0, room: 'vestibulo', obj: 'ascensor_vestibulo', label: 'Planta 0 · Vestíbulo' },
   { n: -1, room: 'cpd', obj: 'ascensor_cpd', label: 'Planta -1 · Sistemas y CPD' },
@@ -49,7 +49,7 @@ export const FRASES = [
 export const NEGATIVAS = {
   cpd: 'Planta -1: solo personal de Sistemas. Abra un ticket desde el torno.',
   pecera: 'Planta 1: usuario no consta en organigrama. Pruebe a constar.',
-  ecosistema: 'Planta 2: se requiere acreditación. Borja tiene nueve. Usted, ninguna.',
+  ecosistema: 'Planta 2: se requiere acreditación. Pilar tiene seis. Usted, ninguna.',
 };
 
 /** Cabina vista por dentro mientras el ascensor viaja: puertas de acero cerradas e indicador que cuenta plantas. */

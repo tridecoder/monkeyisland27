@@ -43,7 +43,7 @@ export const duelInigo = {
   taunt: ['Ese input no escala.', 'Rosa. Emociones. Siguiente.'],
   finishers: [
     { atScore: 2, text: 'El Titulator es una inversión de 48.000 € al mes. Perfectamente auditada.', object: 'ticket_n1',
-      wrongObject: { acta_consejo: 'Un acta. Muy analógico. Luego la leemos.' },
+      wrongObject: { acta_reunion: 'Un acta. Muy analógico. Luego la leemos.' },
       script: async (api, duel) => {
         await api.say('¿Auditada por quién? Para Sistemas, tu IA es un becario. Alta: julio.');
         if (!enSala(api, RUBEN)) {
@@ -59,10 +59,10 @@ export const duelInigo = {
         await sayI(api, '...Eso es una alucinación.');
         await sayR(api, 'No. Es un becario. Es más barato, pero se nota.');
       } },
-    { atScore: 4, text: 'Esto ya lo ha decidido el Consejo.', object: 'acta_consejo',
+    { atScore: 4, text: 'Esto ya lo ha decidido la Reunión de Dirección.', object: 'acta_reunion',
       wrongObject: { ticket_n1: 'Eso ya me lo has enseñado. No escala dos veces.' },
       script: async (api) => {
-        await api.say('Acta del último Consejo. Acuerdos: uno, pedir más café. Dos, ninguno más.');
+        await api.say('Acta de la última reunión. Acuerdos: uno, pedir más café. Dos, ninguno más.');
         await sayG(api, 'Es la única que hay. Las demás no las escribí.');
       } },
   ],
@@ -98,7 +98,7 @@ export async function climaxEntrada(api) {
       await sayI(api, ['Siguiente.', 'Perfecto. Como veis, la 247 tiene mucho recorrido.']);
       await api.say(['El proyector se colgó en la 247 hace tres semanas.', 'Él cree que avanza. El Lector Medio cree que asiente.']);
       await sayI(api, ['...y en la fase 3, el papel pasa a ser un recuerdo de marca.',
-        '¿Vacante? Esto es un Consejo. Los becarios no tienen voz.']);
+        '¿Vacante? Esto es una Reunión de Dirección. Los becarios no tienen voz.']);
       await api.say('Pero tienen correo.');
       await api.anim('bruno', 'reach', 500);
       await api.say('Respondo a todos.');

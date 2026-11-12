@@ -77,7 +77,7 @@ export default {
       manual_fax: '¿Un manual? Yo no leo manuales: los facturo.',
       boli_muerto: '¿Un boli? Yo firmo con el dedo. En la tableta.',            // adenda 7.5
       '*': 'Ese input no escala.',
-      // «ticket_n1 en el remate B» y «acta_consejo en el remate A» van en el `wrongObject` de cada remate (paquete D)
+      // «ticket_n1 en el remate B» y «acta_reunion en el remate A» van en el `wrongObject` de cada remate (paquete D)
     },
   },
 

@@ -1,4 +1,4 @@
-// SALA `sala_amazonas` — LÓGICA. Dueño: paquete D · «Planta noble y Consejo» (biblia §9.1). Biblia: §3.6, §7.7.6 (nodo
+// SALA `sala_amazonas` — LÓGICA. Dueño: paquete D · «Planta noble y Dirección» (biblia §9.1). Biblia: §3.6, §7.7.6 (nodo
 // Reunión de Gervasio), §7.7.4 (Lector Medio), P06 (la reunión infinita), P16 y clímax §7.4 (en ../escenas/climax.js).
 // Adenda: §3.9 (tele, caja de cables, carteles), §4.7 (opción nueva de Gervasio), §9.4-9.7 (insertos del clímax), murmullos.
 // El arte y la geometría están en ./art/sala_amazonas.art.js (artista de fondos).
@@ -57,7 +57,7 @@ export default buildRoom({
       ir: salir,
       usar: salir,
       abrir: 'Ya está abierta. Nadie sale. Es un hecho cultural.',
-      cerrar: 'Si la cierro, esto se convierte en un Consejo de verdad. No me atrevo.',
+      cerrar: 'Si la cierro, esto se convierte en una reunión de verdad. No me atrevo.',
       mirar: 'La puerta. Abierta. Nadie la usa: el orden del día no lo permite.',
     } },
     { id: 'cartel_salida', name: 'cartel de salida', handlers: {
@@ -102,16 +102,16 @@ export default buildRoom({
       empujar: 'Acerco la bandeja a Mercados. Ni la miran. Están en el punto 3.',
     } },
     { id: 'botellines', name: 'botellines', handlers: {
-      mirar: 'Catorce botellines sin abrir. En un Consejo nadie bebe: se nota que se piensa.',
+      mirar: 'Catorce botellines sin abrir. Aquí nadie bebe: se nota que se piensa.',
       coger: 'Si abro uno, me lo imputan como gasto de representación.',
       abrir: 'Abrir uno es asumir un gasto. Mejor me deshidrato con dignidad.',
-      empujar: async (api) => { api.sfx(SFX.botellines); await api.say('Los alineo. Catorce en fila. Parecen un Consejo.'); },
+      empujar: async (api) => { api.sfx(SFX.botellines); await api.say('Los alineo. Catorce en fila. Parecen un comité.'); },
     } },
     { id: 'figurantes_mercados', name: 'redactores de Mercados', when: '!reunion_terminada', color: '#E0CCA4',
       murmurs: ['¿Sigue siendo marzo?', 'Yo propongo una reunión para ver el punto tres.', 'Entramos cinco minutitos. En marzo.',
         '¿Me veis la pantalla? ...¿Hola? ¿Me veis?', 'Que alguien pida sala para salir de la sala.'],
       handlers: {
-        mirar: 'Tres redactores de Mercados. Aquí desde marzo. Uno tiene barba de consejero.',
+        mirar: 'Tres redactores de Mercados. Aquí desde marzo. Uno tiene barba de comité.',
         hablar: 'Me miran como a un dividendo. Con esperanza y sin fe.',
         empujar: 'No reaccionan. Están en modo «a la espera de resultados».',
         coger: 'No se cogen. Cotizan. Y a la baja desde marzo.',
@@ -161,7 +161,7 @@ export default buildRoom({
         },
         'dar:planillo': async (api) => { await sayG(api, 'Eso lo coges tú. Ah, que ya lo tienes. Pues eso.'); },
         'dar:cafe': async (api) => { await sayG(api, '¿Un café? ¿A mí? Esto no estaba en el orden del día. Lo hablamos.'); },
-        'dar:acta_consejo': async (api) => { await sayG(api, 'No, no. El acta es tuya. Yo ya cumplí. Por primera vez.'); },
+        'dar:acta_reunion': async (api) => { await sayG(api, 'No, no. El acta es tuya. Yo ya cumplí. Por primera vez.'); },
         'dar:*': async (api) => { await sayG(api, 'Eso lo coges tú, que tienes la agenda más limpia.'); },
         empujar: 'Gervasio no se mueve. Diecinueve años esquivando marrones dan estabilidad.',
       } },
@@ -198,13 +198,13 @@ export default buildRoom({
         hablar: async (api) => {
           if (api.flag('lector_derribado')) { await sayI(api, '«Prescindible. Caro.» Lo pone mi propia matriz.'); return; }
           if (api.flag('duelo_inigo_ganado')) { await sayI(api, 'Ni un gesto en contra. Ni una pregunta. El mejor lector que he tenido.'); return; }
-          if (!climaxActivo(api)) { await sayI(api, '¿Vacante? Esto es un Consejo. Los becarios no tienen voz.'); return; }
+          if (!climaxActivo(api)) { await sayI(api, '¿Vacante? Esto es una Reunión de Dirección. Los becarios no tienen voz.'); return; }
           await climaxReintento(api);
         },
         'dar:cafe': async (api) => { await sayI(api, 'Yo solo tomo agua con gas y sinergias.'); },
         'dar:tarjeta_becario': async (api) => { await sayI(api, 'Perfecto. Con esto te doy de baja más rápido.'); },
         'dar:ticket_n1': async (api) => { await sayI(api, 'Eso, por escrito. Si no está en el hilo, no escala.'); },
-        'dar:acta_consejo': async (api) => { await sayI(api, 'Eso, por escrito. Si no está en el hilo, no escala.'); },
+        'dar:acta_reunion': async (api) => { await sayI(api, 'Eso, por escrito. Si no está en el hilo, no escala.'); },
         'dar:*': async (api) => { await sayI(api, 'Ese input no escala.'); },
         empujar: 'A un consultor no se le empuja. Se le factura. Y eso ya lo hace él.',
       } },

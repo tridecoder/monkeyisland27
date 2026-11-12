@@ -241,7 +241,7 @@ const dialogoGervasio = {
       options: [
         { text: '¿Ha probado a darle las buenas noches?', once: true,
           reply: '¿A una máquina? Yo no saludo a lo que no está en el organigrama.' },
-        { text: 'Necesito el acta del último Consejo.', do: async (api) => { await api.duel('gervasio'); return 'exit'; } },
+        { text: 'Necesito el acta de la última reunión.', do: async (api) => { await api.duel('gervasio'); return 'exit'; } },
         { text: 'Me voy.', exit: true, reply: 'Lo hablamos.' },
       ],
     },
@@ -261,13 +261,13 @@ async function hablarGervasio(api) {
 const dueloGervasio = {
   actor: GV,
   from: 'Gervasio Acta',
-  subject: 'Redactar el acta del último Consejo',
+  subject: 'Redactar el acta de la última Reunión de Dirección',
   assigned: 'Vacante (becario)',
   assignedWin: 'Gervasio Acta',
   deck: ['R07', 'R01', 'R14', 'R03', 'R05'],
   winScore: 3,
   maxMisses: 3,
-  intro: ['Ah, Vacante. El acta del Consejo hay que redactarla. Te lo pongo por escrito.'],
+  intro: ['Ah, Vacante. El acta de la reunión hay que redactarla. Te lo pongo por escrito.'],
   hurt: ['Eso habría que hablarlo.', 'Lo hablamos. Bueno, no.'],
   taunt: ['Lo hablamos. O no.', 'Eso lo coges tú, que tienes la agenda limpia.'],
   defeatLines: ['Asignada a ti. El acta, digo. Tráemela mañana. Lo hablamos.'],
@@ -277,8 +277,8 @@ const dueloGervasio = {
     api.sfx('paper');
     await api.anim(GV, 'reach', 900);
     await api.anim(GV, 'reach', 900);
-    await gv(api, ['Acuerdos del último Consejo: uno, pedir más café. Dos, ninguno más.', 'Toma. Entra tú. Yo voy a ver si esta máquina me saluda.']);
-    api.give('acta_consejo');
+    await gv(api, ['Acuerdos de la última reunión: uno, pedir más café. Dos, ninguno más.', 'Toma. Entra tú. Yo voy a ver si esta máquina me saluda.']);
+    api.give('acta_reunion');
     api.sfx('pickup');
     api.setFlag('duelo_gervasio_ganado', true);
     api.setFlag('sala_abierta', true);
@@ -451,7 +451,7 @@ export default buildRoom({
         mirar: 'Gervasio, delante de Gertrudis. Ella no le sirve. Él no la saluda.',
         hablar: hablarGervasio,
         'dar:cafe': async (api) => { await gv(api, '¿Café? Eso lo coges tú. Yo espero a que la máquina me lo ofrezca.'); },
-        'dar:acta_consejo': async (api) => { await gv(api, 'Eso ya no es mío. Lo he delegado. En ti. Lo hablamos.'); },
+        'dar:acta_reunion': async (api) => { await gv(api, 'Eso ya no es mío. Lo he delegado. En ti. Lo hablamos.'); },
         'dar:ticket_n1': async (api) => { await gv(api, 'Un ticket. Eso es de Sistemas. Lo hablamos con Sistemas.'); },
         'dar:*': async (api) => { await gv(api, 'Eso lo coges tú, que tienes la agenda más limpia.'); },
         empujar: 'Diecinueve años sin moverse de su sitio. No voy a ser yo quien empiece.',

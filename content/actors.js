@@ -204,13 +204,26 @@ export default {
     },
     murmurs: ['Original. Duplicado. Triplicado. Original. Duplicado...', 'Las 19:07. Qué rápido pasa la tarde. No pasa.'],
   },
+  // Marketing (problema 8 del director): sin cámara ni acreditaciones (eso es de Eventos). Flipado de manual: móvil en
+  // la mano como si fuera un micro, tupé, americana eléctrica y zapatillas blancas.
   borja_engagement: {
     name: 'Borja', color: '#4FD8E8', speed: 72,
     doll: {
-      skin: '#e8b890', hair: '#2a1810', hairStyle: 'quiff', shirt: '#f2f2f2', jacket: '#1e5adc', badge: '#e03030', badges: 9,
-      prop: 'camera', pants: '#2a3048', shoes: '#ffffff', build: 'slim', height: 1.04,
+      skin: '#e8b890', hair: '#2a1810', hairStyle: 'quiff', shirt: '#f2f2f2', jacket: '#1e5adc',
+      prop: 'phone', propColor: '#202024', pants: '#2a3048', shoes: '#ffffff', build: 'slim', height: 1.04,
     },
-    murmurs: ['Sí, el photocall en el baño también.', 'Esto es contenido. Aquello es contenido. ¿Tú eres contenido?'],
+    murmurs: ['Esto es contenido. Aquello es contenido. ¿Tú eres contenido?', 'Si no está en vertical, no ha pasado.'],
+  },
+  // EVENTOS (problema 8): Pilar Escaleta. Negro de equipo técnico, cascos con micro, walkie al cinto, la escaleta en
+  // una carpeta, seis acreditaciones al cuello y cinta americana en la muñeca. Todo está «a cinco minutos de empezar».
+  pilar_escaleta: {
+    name: 'Pilar', color: '#A8F07A', speed: 80,
+    doll: {
+      skin: '#d8a07a', hair: '#3a2418', hairStyle: 'highponytail', shirt: '#26242c', headset: '#18181c',
+      badge: '#ffcc00', badges: 6, prop: 'folder', propColor: '#d8d8d0', pocketItem: '#2a2a30', pocketKind: 'radio',
+      armbands: '#a8a8b4', pants: '#1c1c22', shoes: '#3a3a44', build: 'athletic', height: 0.98,
+    },
+    murmurs: ['Cinco minutos. Siempre cinco minutos. Es mi zona horaria.'],
   },
   maripaz_remitido: {
     name: 'Maripaz', color: '#FF8A60', speed: 56,
