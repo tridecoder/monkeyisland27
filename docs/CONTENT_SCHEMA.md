@@ -263,7 +263,8 @@ Logic keys (in `content/rooms/<id>.js`):
 }
 ```
 Art keys (in `layout[id]`): `rect` / `poly`, `walkTo`, `face`, `walk`, `priority`, `layer` (`'back'` | `'sorted'` |
-`'front'`), `zy`, `cache`, `cachePad`, `draw(g, view, t)` or `sprites: { <state>: fn, default: fn }`.
+`'front'`), `zy`, `cache`, `cachePad`, `draw(g, view, t)` or `sprites: { <state>: fn, default: fn }`, `prop: true` (the drawing is furniture that hides actors' legs —
+a counter, a desk—: it is painted even while the hotspot is hidden or its `when` is false; `view.visible` tells).
 
 **Exits and locks.** Keep `exit: { room }` on every exit hotspot (the walkthrough's travel and `check.mjs` read the
 exit graph). Put the lock in `handlers.ir`, which runs before the `exit` shortcut:
@@ -395,7 +396,7 @@ time. Blocking scripts lock input; errors are caught and logged (`[motor] Error 
 
 ### Context
 `api.room`, `api.verb`, `api.obj` / `api.target`, `api.item`, `api.player`, `api.flags` (prefer `flag`/`setFlag`),
-`api.skipping` (cutscene being skipped / test fast mode), `api.comboFails`, `api.game` (raw engine, avoid).
+`api.skipping` (cutscene being skipped / test fast mode), `api.restoring` (true inside `onEnter` when a save is being loaded: skip per-entry gags and counters), `api.comboFails`, `api.game` (raw engine, avoid).
 
 ### Speech
 | | |
@@ -442,7 +443,8 @@ time, saved), `api.cond(c)`, `api.getState(objId)`, `api.setState(objId, v)`, `a
 | `const i = await api.choose(['a', { text: 'b', disabled: true }])` | options in the panel; disabled = grey, not selectable |
 | `await api.scene(name, ...args)` | run a named scene registered by any room (`scenes`) or game.js. A missing scene only warns (stubs) |
 | `await api.cutscene(async (api) => {})` | skippable with Esc |
-| `await api.ending(opts?)` | credits; resolves when back at the title |
+| `await api.credits(opts?)` | credits INSIDE the game: scrolls `opts.credits`, resolves by itself when the text is gone and the game stays in `'play'` (same room), so the script can go on (post-credits). Instant in fast mode |
+| `await api.ending(opts?)` | the end: credits/last image; a click at the end returns to the title. The finished game's state stays in `__game.state().finished` |
 | `api.background(fn)`, `await api.run(fn)`, `await api.defaultResponse()` | |
 | `api.random(arr)`, `api.pick(arr)`, `api.log(...)` | |
 
@@ -610,10 +612,11 @@ paper typewriter phone coin beep computer machine pour drink hit whoosh good bad
 
 ## 14. Title, ending & credits
 
-Title screen, credits background and the credits list are in `content/game.js` (shared; the final credits text is
-package A's job: describe it in your report). `api.ending()` shows the credits (`game.ending`: music `m_creditos`,
-newspaper background, Gertrudis' LCD «E-00: HOY SÍ...», «FIN»); a click fast-forwards; at the end a click returns to
-the title. Credits entries: `'text'`, `''` (blank), `{ text, title: true }`, `{ text, color }`.
+Title screen and the common credits background are in `content/game.js` (`game.ending`: music `m_creditos`, newspaper
+background `draw`, Gertrudis' LCD as `overlay` — drawn over the text —, `topY`); the credits list, the post-credits
+scene and the last image are in `content/escenas/final.js`. `api.credits(opts)` scrolls the list and returns to the
+game by itself; `api.ending(opts)` ends the game (a click fast-forwards; at the end a click returns to the title).
+`opts`: `credits`, `draw(g, t)`, `overlay(g, t)`, `speed`, `startY`, `holdY`, `holdMs`, `topY`, `textW`, `theEnd`, `music`. Credits entries: `'text'`, `''` (blank), `{ text, title: true }`, `{ text, color }`.
 
 ---
 
@@ -627,6 +630,10 @@ the title. Credits entries: `'text'`, `''` (blank), `{ text, title: true }`, `{ 
 | `node tools/smoke.mjs` | full UI smoke test (title, 9 rooms, inventory, sample duel, save/load, menu, credits, debug, touch) |
 | `node tools/walkthrough.mjs [--alt] [--hasta=N] [--lento]` | bible §5.4 step by step (data in the file); stops at the first failing step and says why. Fails while rooms are unfinished: expected |
 | `node tools/extras.mjs [--hasta=X10] [--lento]` | walkthrough 5.4 + the «extras» X1…X26 of addendum §12 interleaved (data in the file; fails at the first unimplemented X step: expected). Shares `walk-data.mjs` / `walk-lib.mjs` with the walkthrough; both **dismiss the automatic notices** and keep going |
+| `node tools/play-mouse.mjs [--solo=raton\|geometria]` | Act I + duel D1 with REAL mouse events only, and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, and is not fully covered by another hotspot |
+| `node tools/fuzz.mjs [--solo=guardar\|duelos\|objetos]` | save/load in every act and play on to the end; lose every duel once; Dar/Usar every item on every NPC and hotspot (no exceptions, no stuck dialogs, list of consumed items) |
+| `node tools/text-audit.mjs` | every line said in a full game + all 9 verbs on everything: > 80 chars, balloons over 3 rows, missing ¿ ¡, names, clock times |
+| `node tools/review.mjs [--solo=salas\|momentos]` | contact sheets for visual review → `tools/shots/review/` |
 | `node tools/actors.mjs` | cast contact sheet → `tools/shots/actores.png` (sprite-less presences as colour cards) |
 
 URL parameters: `?debug=1` (walkboxes, hotspots with ids, actor boxes, coordinates, console: `goto sala [entrada]`,
@@ -637,7 +644,7 @@ JS with `g` = engine; F2 overlay, F3 console) · `?room=<id>&entry=<entry>` (new
 `window.__game`: `state()` → `{ mode, room, busy, cutscene, inventory, flags, objects, actors, player, dialog,
 dialogDisabled, pickItem, duel: { id, opponent, phase ('intro'|'reply'|'finisher'|'pick'|'end'), attack, options,
 correctIndex, correctItem, hits, misses, subject, assigned } | null, lastDuel, learnedReplies, notices, sentence,
-hover, camX, music, menu, speaking, aviso }` · `newGame()` · `gotoRoom(id, entry?)` · `doVerb(verb, objId, itemId?)` ·
+hover, camX, music, menu, speaking, aviso, finished }` · `newGame()` · `gotoRoom(id, entry?)` · `doVerb(verb, objId, itemId?)` ·
 `currentDialogOptions()` · `chooseDialog(i)` · `chooseText(substr)` · `chooseItem(id|null)` (duel inventory picker) ·
 `giveAll()` · `scene(name)` · `waitIdle()` · `skipText(true)` · `skipSpeech()` (close the current balloon, like a click) · `log` · `clearLog()` · `giveItem/takeItem/setFlag/getFlag`
 · `save(slot)` / `load(slot)` · `skipCutscene()` · `errors` · `objects()` · `screenPos(id)`, `verbPos(verb)`,

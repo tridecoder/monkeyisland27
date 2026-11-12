@@ -32,7 +32,8 @@ let pass = 0, failN = 0;
 const ok = (c, msg) => { if (c) { pass++; console.log('  ✓ ' + msg); } else { failN++; console.log('  ✗ ' + msg); } };
 const step = (t) => console.log('\n' + t);
 const logHas = (t) => G(t => __game.log.filter(l => String(l.text).includes(t)).length, t);
-const flag = (k) => G(k => __game.getFlag(k), k);
+// tras el final (api.ending) el juego está en el título: la partida terminada queda en state().finished
+const flag = (k) => G(k => { const f = __game.state().finished; return __game.game.state ? __game.getFlag(k) : (f ? f.flags[k] : undefined); }, k);
 const setFlags = (o) => G(o => { for (const [k, v] of Object.entries(o)) __game.setFlag(k, v); }, o);
 const give = (...ids) => G(ids => ids.forEach(i => __game.giveItem(i)), ids);
 const verb = (v, t, i) => G(([v, t, i]) => __game.doVerb(v, t, i || null), [v, t, i]);
@@ -313,6 +314,7 @@ try {
   await verb('empujar', 'lector_medio');
   await G(() => __game.waitIdle());
   st = await state();
+  if (st.mode === 'title' && st.finished) st = { ...st, ...st.finished };
   ok(st.flags.lector_derribado === true, 'Empujar lector_medio → lector_derribado');
   ok(await logHas('...¿Y quién ha validado la fase 1?') === 1 && await logHas('EL VIAJE CONTINÚA') === 1, 'empujón + inserto 9.5 (diapositiva 248)');
   ok(await logHas('Al lado del ministro.') === 1, 'Begoña rechaza la factura');
