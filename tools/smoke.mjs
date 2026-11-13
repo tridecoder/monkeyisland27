@@ -120,7 +120,7 @@ try {
   await wait(400);
   await shot('04-texto-hablado');
   await fast(true); await G(() => __game.waitIdle());
-  const DEF_ABRIR = await G(() => ['No se abre. Como las plazas de redactor.', 'Cerrado. Como el plazo. Como el cierre. Como mi futuro.']);
+  const DEF_ABRIR = await G(() => ['No se abre. Lo apunto como «acceso restringido». Suena a ascenso.', 'Cerrado. Hay una pegatina: «No forzar». Me ha convencido.']);
   ok(await G(t => __game.log.some(l => l.who === 'bruno' && l.text === t), DEF_ABRIR[0]), 'primera respuesta por defecto de Abrir (organigrama)');
   await G(() => __game.doVerb('abrir', 'logo_pared'));
   ok(await G(t => __game.log.some(l => l.who === 'bruno' && l.text === t), DEF_ABRIR[1]), 'Abrir el logo rota a la 2.ª respuesta por defecto');

@@ -192,9 +192,14 @@ export default {
       skin: '#e8b48c', hair: '#6a4026', hairStyle: 'cowlick', shirt: '#9cc8ec', untucked: true,
       badge: '#c83030', backpack: '#4a6070', pants: '#3a4562', shoes: '#c8c0b0', build: 'slim', height: 1.02,
     },
-    // §8.6 cuarta pared: el propio sprite es clicable
+    // plan §4.3: con la chaqueta de Ramírez puesta (flag `bruno_con_chaqueta`, o api.vestir('bruno', 'con_chaqueta'))
+    variants: {
+      con_chaqueta: { doll: { jacket: '#c8b48a', backpack: null, badge: null, cuffs: '#c8b48a' } },
+    },
+    variant: (v) => (v.flag('bruno_con_chaqueta') && v.has('chaqueta_ramirez') ? 'con_chaqueta' : null),
+    // plan §8.2: «Mirar a Bruno» dice la meta actual en su voz (objetivo de la sala, content/pistas.js)
     handlers: {
-      mirar: 'Soy yo. Joven, prometedor y sin contrato. Como una startup.',
+      mirar: async (api) => { await api.say(api.objetivo.meta() || 'Respondo a todos. Es lo único que sé hacer bien.'); },
       'usar:tarjeta_becario': 'Me identifico. Me reconozco. Es más de lo que hace el torno.',
     },
   },

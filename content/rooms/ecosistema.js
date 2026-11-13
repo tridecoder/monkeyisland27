@@ -74,6 +74,11 @@ const duelMaripaz = {
   intro: ['¿Llamar yo a Siestatón un viernes a estas horas?', 'Te lo pongo por escrito, cariño.'],
   hurt: ['Uy. Eso tiene tarifa.', 'Me lo apunto para un patrocinio.'],
   taunt: ['Eso no lo patrocina nadie, cariño.', 'Muy bonito. Cero euros.'],
+  // plan §7 (paquete común): CC que crece, derrota propia y titular. La escena de derrota (Siestatón) es de P4:
+  // `defeatScene: '<escena>'` o `onLose(api, duel, 'lost')`; `duel.perdidos` = derrotas hasta ahora.
+  cc1: 'Colchones Siestatón',
+  defeatLine: 'RESPUESTA AUTOMÁTICA DE COMERCIAL: «Te llamamos nosotros.»',
+  defeatHeadline: 'BECARIO LLAMA A UN COLCHÓN UN VIERNES. EL COLCHÓN NO LO COGE',
   defeatLines: ['Asignado a ti, cariño. El teléfono de Siestatón es este. Suerte.',
     ['player', 'No pienso llamar a un colchón a estas horas.']],
   onWin: async (api) => {

@@ -96,6 +96,7 @@ const icons = {
       if (on) { px(g, 9, yy + 1, P.leaf[4]); px(g, 10, yy, P.leaf[5]); px(g, 11, yy - 1, P.leaf[5]); }
       hline(g, 13, yy + 1, 7, P.paper[2]);
     });
+    if (v && v.flag('pieza_escrita')) hline(g, 8, 17, 12, v.flag('pieza_recortada') ? P.leaf[4] : P.red[3]);   // la pieza
   },
   planillo(g) {
     sheet(g, 3, 1, 22, 16, [P.paper[3], P.paper[5], P.paper[6], P.paper[7]]);
@@ -179,6 +180,35 @@ const icons = {
 const say = (lines) => async (api) => { await api.say(lines); };
 const N_REPLICAS = 16;       // adenda 6.1: «[N] de 16» (14 de la biblia + R15/R16)
 
+// ------------------------------------------------------------------ plan §8.1: la ficha viva (textos literales del plan)
+export const FICHA = {
+  titulo: 'Ficha de la página 7. Hueco, fuente, firma.',
+  hueco: ['HUECO: vendida a Siestatón desde marzo. Se decide en la Sala Amazonas.',
+    'HUECO: la reunión ha acabado. Maripaz no. Sigue sentada en el planillo.',
+    'HUECO, hecho: Siestatón, a la web. El faldón es mío. Veintitrés líneas.'],
+  fuente: ['FUENTE: dos fuentes, dice Aurora. Tengo cero.',
+    'FUENTE: tengo una nota de gasto con un reverso. Me falta otra fuente.',
+    'FUENTE, hecho: una anónima y otra con IVA.'],
+  firma: ['FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.',
+    'FIRMA: el fax ya habla. Ahora hay que ganárselo contestando.',
+    'FIRMA, hecho: «Trece con espacios. Cabe.»'],
+  margen: 'Al margen, a lápiz: «Arriba no me atiende nadie. El CMS está en coma».',
+  pieza: ['PIEZA: sin escribir. Primero las fuentes; luego, mi ordenador.',
+    'PIEZA: treinta y una líneas. El faldón, veintitrés. Me sobran ocho.',
+    'PIEZA: veintitrés líneas. Lista para Teodoro.'],
+};
+/** Las líneas de Mirar la ficha según el estado de la partida (también las usa tools/test-fase0.mjs). */
+export function fichaViva(api) {
+  const f = (k) => !!api.flag(k);
+  const out = [FICHA.titulo];
+  out.push(FICHA.hueco[f('casilla_hueco') ? 2 : f('reunion_terminada') ? 1 : 0]);
+  out.push(FICHA.fuente[f('casilla_fuente') ? 2 : (api.has('fotocopia_nota_direccion') || api.has('mensaje_fp')) ? 1 : 0]);
+  out.push(FICHA.firma[f('casilla_firma') ? 2 : f('fax_con_papel') ? 1 : 0]);
+  if (!f('cms_vivo')) out.push(FICHA.margen);
+  if (f('casilla_fuente') || f('pieza_escrita')) out.push(FICHA.pieza[f('pieza_recortada') ? 2 : f('pieza_escrita') ? 1 : 0]);
+  return out;
+}
+
 export default {
   tarjeta_becario: {
     name: 'tarjeta de becario', icon: icons.tarjeta_becario,
@@ -234,25 +264,28 @@ export default {
   },
   chaqueta_ramirez: {
     name: 'chaqueta de Ramírez', icon: icons.chaqueta_ramirez,
-    handlers: { mirar: 'La chaqueta de Ramírez. Huele a 2019 y a sala de prensa.' },
+    handlers: {
+      mirar: 'La chaqueta de Ramírez. Huele a 2019 y a sala de prensa.',
+      // plan §4.3: Usar la chaqueta sin destino = ponérsela (el sprite de Bruno cambia: actors.js `con_chaqueta`)
+      usar: async (api) => {
+        if (api.flag('bruno_con_chaqueta')) { api.setFlag('bruno_con_chaqueta', false); await api.say('Me la quito. Vuelvo a ser yo. Con mangas de camisa.'); return; }
+        await api.anim(api.player, 'reach', 400);
+        api.setFlag('bruno_con_chaqueta', true);
+        await api.say(['Me la pongo. Por probar. Huele a 2019 y a cruasán.', 'Me queda grande. Lo apunto como «proyección de futuro».']);
+      },
+    },
   },
   sobre_azucar: {
     name: 'sobre de azúcar', icon: icons.sobre_azucar,
     handlers: { mirar: 'Sobre de azúcar caducado en 2021. Pone «Cafetería». Es casi un ticket.' },
   },
   ficha_pagina_7: {
+    // plan §8.1: la ficha es una LISTA VIVA. Mirar dice el título, las tres casillas en su estado (la hecha, corta; la
+    // pendiente, qué falta y dónde), la nota al margen sin CMS y la línea de la pieza. El icono marca cada casilla y la
+    // pieza (raya roja = escrita; con «23» = recortada).
     name: 'ficha de la página 7', icon: icons.ficha_pagina_7,
-    iconKey: (v) => ['casilla_hueco', 'casilla_fuente', 'casilla_firma'].map(f => (v.flag(f) ? 1 : 0)).join(''),
-    handlers: {
-      mirar: async (api) => {
-        const c = f => (api.flag(f) ? '[✓]' : '[ ]');
-        if (api.flag('casilla_hueco') && api.flag('casilla_fuente') && api.flag('casilla_firma')) {
-          await api.say('Tres casillas llenas. Es lo más parecido a un contrato que he tenido.');
-          return;
-        }
-        await api.say([`Ficha de la página 7. HUECO ${c('casilla_hueco')} · FUENTE ${c('casilla_fuente')} · FIRMA ${c('casilla_firma')}.`, 'Sin las tres, Teodoro no cierra.']);
-      },
-    },
+    iconKey: (v) => ['casilla_hueco', 'casilla_fuente', 'casilla_firma', 'pieza_escrita', 'pieza_recortada'].map(f => (v.flag(f) ? 1 : 0)).join(''),
+    handlers: { mirar: async (api) => { await api.say(fichaViva(api)); } },
   },
   planillo: {
     name: 'planillo de maqueta', icon: icons.planillo,

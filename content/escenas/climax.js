@@ -79,6 +79,9 @@ export const duelInigo = {
         await sayG(api, 'Es la única que hay. Las demás no las escribí.');
       } },
   ],
+  // plan §7 (paquete común): CC que crece y derrota propia; sin titular (el Titulator es Rubén y está en la sala)
+  cc1: 'Optimal Brains & Partners',
+  defeatLine: 'RESPUESTA AUTOMÁTICA DE OPTIMAL BRAINS: «Gracias por su feedback.»',
   defeatLines: ['Asignado a Vacante. Llama tú a la rotativa. Es un perfil ideal para despedir.',
     ['player', 'Ni hablar. Lo vuelvo a intentar.']],
   onWin: async (api) => {

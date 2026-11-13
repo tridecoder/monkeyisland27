@@ -134,9 +134,7 @@ function menuItems(game) {
     { label: `Música: ${Math.round(s.music * 100)}%`, act: 'music' },
     { label: `Efectos: ${Math.round(s.sfx * 100)}%`, act: 'sfx' },
   ];
-  // decorative difficulty selector (game.difficulty = ['Normal', ...]); changes nothing
-  const dif = game.G.difficulty;
-  if (dif && dif.length) items.push({ label: `Dificultad: ${dif[(s.difficulty || 0) % dif.length]}`, act: 'difficulty' });
+  // (el selector de dificultad decorativo se quitó: no hacía nada y la crítica lo señaló como engaño, §6.7)
   items.push({ label: fullscreenLabel(), act: 'fullscreen', enabled: !isStandalone() });
   items.push({ label: 'Salir al título', act: 'quit' });
   return items;
@@ -191,7 +189,6 @@ export function menuClick(game, x, y) {
   if (m.page === 'help') { m.page = 'main'; return; }
   switch (it.act) {
     case 'help': m.page = 'help'; break;
-    case 'difficulty': s.difficulty = ((s.difficulty || 0) + 1) % game.G.difficulty.length; game.saveSettings(); break;
     case 'resume': game.toggleMenu(); break;
     case 'hotspots': game.toggleMenu(); game.showHotspots(); break;
     case 'save': m.page = 'save'; break;

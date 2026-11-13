@@ -358,6 +358,10 @@ const dueloTeodoro = {
       },
       script: remateRespuestaAutomatica },
   ],
+  // plan §7 (paquete común): CC que crece, derrota propia y titular (la escena «VUELVE» en seis folios es de P3)
+  cc1: 'Aurora',
+  defeatLine: 'RESPUESTA AUTOMÁTICA DEL FAX: «SIN PAPEL PARA USTED.»',
+  defeatHeadline: 'UN BECARIO RECIBE SEIS FOLIOS PARA UNA PALABRA. LA PALABRA, CRUEL',
   defeatLines: ['Lo que está cerrado no se abre. Vuelve cuando sepas escribir.'],
   onWin: async (api) => {
     api.setFlag('duelo_teodoro_ganado', true);

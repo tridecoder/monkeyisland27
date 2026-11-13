@@ -6,6 +6,8 @@
 //   · «Llamadas perdidas»    → la eterna de la abuela y las de Evaristo hasta ahora
 //   · «Guardar el móvil»     → cierra (también Esc o un toque en la sala)
 // Leer un correo solo toca `movil_leidos` (bits de leídos): no suma contadores de la biblia ni de la adenda.
+// La hora de la barra de estado es la de la historia, por hitos (plan §8.4: content/pistas.js `horaMovil`, api.hora()):
+// 18:30 → 21:00; los relojes del edificio siguen parados en las 20:59.
 // Seguro: el móvil no se guarda, se retira al acabar el guion (aunque falle) y al cargar; en modo rápido, todo es instantáneo.
 
 /** Los «RV:» de Tadeo (adenda §2.2): condición, asunto (lo que dice Tadeo) y el comentario de Bruno. Los usa también la
@@ -22,12 +24,12 @@ export const RV_TADEO = [
 const FIJOS = [
   { bit: 8, de: 'Eventos', who: 'pilar_escaleta', fecha: '3 mar.', asunto: '¡Empezamos en 5 minutos!',
     cuerpo: ['Recordatorio: la presentación empieza en 5 minutos.', 'Enviado el 3 de marzo. Reenviado cada cinco minutos desde entonces.'],
-    bruno: 'Son las 20:59. Llevo ocho meses llegando tarde a algo.' },
+    bruno: 'Enviado el 3 de marzo. No he ido. Ya no sé si llego tarde o si no empieza.' },
   { bit: 9, de: 'Administración', who: 'begona_triplicado', fecha: 'ayer', asunto: 'Nota de gasto RECHAZADA (se adjunta duplicado)',
     cuerpo: ['Su nota «Café para pensar» queda RECHAZADA.', 'Motivo: pensar no es un gasto deducible. Triplicado, por correo interno.'],
-    bruno: 'Pienso gratis, entonces. Como siempre.' },
+    bruno: '«Pensar no es deducible». Lo enmarco. Mi primer documento oficial.' },
   { bit: 10, de: 'elContable.es', who: null, fecha: 'hace 6 años', asunto: '¡Bienvenido a elContable.es, Bruno!',
-    cuerpo: ['¡Bienvenido, Bruno! Tu acceso estará listo en 24 horas.', 'Mientras, lee el libro de estilo: página 1 de 412. Un abrazo, Personal.'],
+    cuerpo: ['¡Bienvenido, Bruno! Tu acceso estará listo en 24 horas.', 'Mientras, lee el libro de estilo: página 1 de 900. Un abrazo, Personal.'],
     bruno: 'Sin leer desde hace seis años. Ya casi me ha llegado el acceso.' },
 ];
 const COLOR_SISTEMA = '#c8d0e8';

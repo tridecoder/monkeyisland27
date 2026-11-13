@@ -130,6 +130,10 @@ const dueloGervasio = {
   intro: ['Ah, Vacante. El acta de la reunión hay que redactarla. Te lo pongo por escrito.'],
   hurt: ['Eso habría que hablarlo.', 'Lo hablamos. Bueno, no.'],
   taunt: ['Lo hablamos. O no.', 'Eso lo coges tú, que tienes la agenda limpia.'],
+  // plan §7 (paquete común): CC que crece, derrota propia y titular (la escena del acta-diario es de P2)
+  cc1: 'Sus tres móviles',
+  defeatLine: 'RESPUESTA AUTOMÁTICA DE DIRECCIÓN: «Lo que diga Gervasio.»',
+  defeatHeadline: 'UN BECARIO REDACTA UN ACTA. DIRECCIÓN LA ARCHIVA EN "DIARIOS"',
   defeatLines: ['Asignada a ti. El acta, digo. Tráemela mañana. Lo hablamos.'],
   onWin: async (api) => {
     await gv(api, 'Diecinueve años sin un marrón. Y ahora me toca el acta.');

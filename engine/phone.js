@@ -15,6 +15,7 @@
 import { PAL, rect, hline, vline, px, line, ellipse, ditherOverlay, gradV, glow } from './draw.js';
 import { drawText, measure, wrap } from './font.js';
 import { getFrame } from './sprites.js';
+import { hora as horaJuego } from './objetivos.js';
 
 export const PW = 96, PH = 146, PY = 2;       // cuerpo del móvil (px), y de su borde superior
 const SLIDE_MS = 380, HANG_MS = 520;
@@ -274,7 +275,7 @@ function drawApp(g, game, P, sx, sy, sw, sh) {
   const A = P.app || {};
   for (let i = 0; i < 4; i++) rect(g, sx + 3 + i * 2, sy + 9 - i * 2, 1, 1 + i * 2, i < 3 ? '#e8ecf8' : '#4a5070');
   rect(g, sx + sw - 12, sy + 3, 9, 5, '#e8ecf8'); rect(g, sx + sw - 11, sy + 4, 7, 3, '#10101a'); rect(g, sx + sw - 11, sy + 4, 1, 3, '#ff5040');
-  const hora = A.hora || '20:59';
+  const hora = A.hora || horaJuego(game);           // la hora de la historia, por hitos (plan §8.4)
   drawText(g, hora, sx + (sw >> 1), sy + 1, '#c8d0e8', { align: 'center' });
   rect(g, sx, sy + 12, sw, 12, '#22305a'); hline(g, sx, sy + 24, sw, '#4a6ab0');
   drawText(g, fit(A.title || 'Móvil', sw - 6), sx + 3, sy + 13, '#ffffff', { bold: true });

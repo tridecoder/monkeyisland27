@@ -7,7 +7,8 @@
 // - Flags LOCALES de una sala (que nadie más lee): decláralos en tu archivo de lógica, `flags: { <sala>_algo: 'comentario' }`,
 //   con el prefijo del id de la sala (p. ej. `office_microondas_visto`). Si un flag cruza de sala, NO lo inventes:
 //   pídelo al jefe de guion (va en la biblia §5.5 y aquí).
-// - Prefijos reservados del motor: `duel:<id>:won`, `walkbox:<sala>.<id>` (no hace falta declararlos).
+// - Prefijos reservados del motor: `duel:<id>:won|perdido_n|empieza|floja`, `walkbox:<sala>.<id>`, `obj:<objetivo>`,
+//   `ambient:<sala>.<id>` (no hace falta declararlos).
 // - `node tools/check.mjs` comprueba estáticamente que todo flag usado en content/ existe.
 
 const reps = {};
@@ -132,6 +133,21 @@ export default {
 
   // ---------------------------------------------------------------- el móvil de Bruno (content/lib/movil.js)
   movil_leidos: 'int · común (lib/movil.js) · bits de los correos leídos en el móvil (0-4 RV: de Tadeo, 8-10 fijos) · el menú del móvil',
+
+  // ---------------------------------------------------------------- PLAN DE COMEDIA §3.4 (altas; las bajas, cuando las
+  // salas dejen de usarlos). Los pone/lee cada paquete; el motor solo pone duel:<id>:* (no hace falta declararlos).
+  cafetera_viral: 'bool · P3 · office · Gertrudis, 1.er saludo · P2 (Yoli, Íñigo), P1 (torno, epílogo), P0 (abuela, hitos)',
+  cafetera_en_directo: 'bool · P3 · office · Gertrudis, el bis · P3 (3.er saludo, Vending con cms_vivo)',
+  apagon_n: 'int · P2 · pecera · Tirar enchufe_pantalla sin vio_ticket_3 · P2 (escalada del apagón, titular)',
+  bruno_con_chaqueta: 'bool · P0 · items.js · Usar chaqueta_ramirez sin destino · P2 (Redacción, Despachos), P0 (sprite de Bruno)',
+  mercados_huido: 'bool · P3 · office · mercados_1 → «siguientes pasos» · P3 (táper), P2 (titular)',
+  taper_dado: 'bool · P1 · cpd · Dar taper_huerfano a ruben · P1 (titular reactivo)',
+  teodoro_intentos_n: 'int · P3 · catacumba · hablar/dar/usar con Teodoro sin fax_con_papel · P3 (el fax vomita la tarde)',
+  fax_tecla_n: 'int · P3 · catacumba · teclas 1 y 3 del fax · P3 (Teodoro, Evaristo)',
+  climax_entrada: 'bool · P4 · climax · entrada en el clímax (opcional: la hora del móvil pasa a 20:59) · P0 (hora)',
+  abuela_obj: 'str · P0 · game.js pistas (engine/objetivos.js) · objetivo de la última pista · la abuela',
+  abuela_nivel: 'int · P0 · game.js pistas · nivel 1-3 de la última pista · la abuela',
+  // también prefijos reservados del motor: obj:<objetivo> (api.objetivo.marcar), obj:hora, ambient:<sala>.<id>
 
   // ---------------------------------------------------------------- réplicas del duelo (§6.3 + adenda 7.1)
   ...reps,

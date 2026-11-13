@@ -13,6 +13,7 @@
 //
 // Cada sala con ascensor tiene un objeto con `ascensor: { planta, label }` (lo leen los tests y tools/check.mjs para el
 // grafo de salidas) y la entrada `ascensor` en su arte. Los objetos se crean con `ascensorObjeto(id, handlers)`.
+import { narrarHito } from './celestino.js';
 import { rect, hline, vline, frameRect, gradV, paint, ditherPick, glow, PAL } from '../../engine/draw.js';
 import { drawText } from '../../engine/font.js';
 
@@ -103,7 +104,8 @@ export async function usarAscensor(api) {
   game.hud = cabina(aqui ? aqui.n : 0, dest.n, game.time, game);
   try {
     api.sfx('machine');
-    await api.narrate(FRASES[(n - 1) % FRASES.length], { color: ASCENSOR_COLOR });
+    // plan §4.7: si Bruno tiene una hazaña sin narrar, Celestino la retransmite por la megafonía de la cabina
+    if (!(await narrarHito(api, { via: 'megafonia' }))) await api.narrate(FRASES[(n - 1) % FRASES.length], { color: ASCENSOR_COLOR });
     await api.wait(250);
     api.sfx('beep');
   } finally { game.hud = null; }

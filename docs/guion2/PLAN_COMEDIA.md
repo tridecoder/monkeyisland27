@@ -2,7 +2,7 @@
 
 > Documento del jefe de guion. Sustituye a las tres propuestas
 > (situaciones, voces, estructura) como fuente de verdad para la reescritura.
-> Estado: COMPLETO (secciones 0-12).
+> Estado: COMPLETO (secciones 0-12) + **ENMIENDA E1** al final (prevalece; cambios marcados [E1]).
 
 ## Índice
 
@@ -40,9 +40,9 @@ marca la hora real (18:30 → 21:00 por hitos) y la abuela da pistas en tres niv
 
 | Personaje | Destino | En una línea |
 |---|---|---|
-| Leoncio (Infografía) | **Se va** | Su mejor frase la dice Yoli; en su mesa vacía se sienta ahora Nemesio. |
-| Anselmo (dir. Desarrollo) | **Se funde en Nemesio** | Nemesio hereda la cinta de carrocero y sus dos mejores frases. |
-| Herminia | **Pasa a objeto** | Un portátil «INFOGRAFÍA» que Desarrollo envuelve en cinta, acto a acto. |
+| Leoncio (Infografía) | **Se queda, con árbol** [E1] | Habla por su herramienta y de ella; pasa por el paso 32 y el momento 8. |
+| Anselmo (dir. Desarrollo) | **Se queda, con árbol** [E1] | Conserva su cinta y sus frases; encinta a Herminia acto a acto, en escena. |
+| Herminia | **Pasa a objeto** [E1] | El portátil «INFOGRAFÍA» de Leoncio; solo salidas en pantalla; Anselmo lo encinta. |
 | Valentín (Diseño y Producto) | **Cameo mudo** | Se quita un casco, espera, se lo pone. Luego: «Está en la bandeja.» |
 | Custodia (secretaria) | **Se queda** | En su ventanuco; pierde el oráculo de pistas, conserva el boli muerto. |
 | Tadeo (negocio) | **Se queda sin sprite** | Su portátil y 3 «RV:» del móvil, sin siglas. No se funde con Borja. |
@@ -51,7 +51,7 @@ marca la hora real (18:30 → 21:00 por hitos) y la abuela da pistas en tres niv
 | Coro de Desarrollo | **A un tercio** | 4 discusiones, cada 60-120 s, máx. 3 por visita, nunca encima de otro. |
 | Ramírez | **Del poscréditos al epílogo** | Entra con un cruasán a por su chaqueta. |
 
-De ~24 voces a 17 con árbol + 3 presencias sin árbol (Tadeo, Valentín, coro). **Cambios de sala en el recorrido óptimo: de 42 a
+De ~24 voces a 19 con árbol [E1] + 3 presencias sin árbol (Tadeo, Valentín, coro). **Cambios de sala en el recorrido óptimo: de 42 a
 28** (Acto II: de 24 a 14; pasos: de 46 a 42).
 
 **Los siete momentos de situación**
@@ -69,8 +69,8 @@ contestado el periódico!» → **FE DE ERRATAS** fija («Lamentamos el acierto.
 por jugar. Abrígate.» Nada después: fuera «Diseño soy yo», «Enhorabuena, Diseño», la cuarta pared, el poscréditos y la
 impresora.
 
-**Guiños de la casa que quedan:** infografía con IA contra Desarrollo (el portátil encintado + un ticket denegado en
-Sistemas); Desarrollo que culpa a Diseño (coro a un tercio, dos «¡Ha sido Diseño!» con escena); el responsable de
+**Guiños de la casa que quedan:** infografía con IA contra Desarrollo (Leoncio, Anselmo y el portátil encintado, en el
+camino de la solución [E1], + un ticket denegado en Sistemas); Desarrollo que culpa a Diseño (coro a un tercio, dos «¡Ha sido Diseño!» con escena); el responsable de
 negocio que reenvía lo que dice la IA (portátil y correos de Tadeo, sin jerga); la guerra de salas (reserva de Ramírez,
 carteles, diapositiva 247); los rumores (dos cadenas: la firma y Teodoro); las plazas de garaje (cuadro, porra, yunque,
 la plaza 1 en el epílogo); Custodia y su boli; Evaristo y su coma; Eventos entero.
@@ -79,7 +79,8 @@ la plaza 1 en el epílogo); Custodia y su boli; Evaristo y su coma; Eventos ente
 1. **Tadeo no se funde con Borja.** Son dos retratos distintos (negocio que reenvía la IA / Marketing que lo convierte
    todo en contenido); fundirlos borra a uno. Tadeo sigue sin sprite. [Aprobar]
 2. **Leoncio y Anselmo dejan de existir como personajes; Herminia pasa a objeto.** Retratan dinámicas reales de la casa:
-   conviene que los aludidos lo sepan antes de verlo. [Aprobar y avisar]
+   conviene que los aludidos lo sepan antes de verlo. [Aprobar y avisar] **[E1] Rechazada en parte: Leoncio y Anselmo
+   se quedan con voz y árbol; Herminia sí pasa a objeto. Ver ENMIENDA E1.**
 3. **Valentín, cameo mudo** (sin árbol, fuera de la escena 7.2, del epílogo y de los créditos). Retrata un cargo real de la
    casa: que el aludido lo vea antes. [Aprobar]
 4. **Custodia sin oráculo:** se queda en el ventanuco con su voz y el boli muerto; pierde el «¿Dónde está…?». [Aprobar]
@@ -103,8 +104,8 @@ como papel de fax, recorte del 26 %, Rubén como Titulator). Donde las tres prop
 | Final | Termina en la abuela; fuera «Diseño soy yo», la cuarta pared y los créditos para Diseño. |
 | Coro | 4 discusiones, una sola sobre Diseño; cada 60-120 s, máx. 3 por visita, nunca con globo o menú abierto. |
 | Valentín | Sin autoelogio, sin «mi juego», sin monitor con la aventura, fuera de créditos. |
-| Leoncio | Se va; «Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.» pasa a Yoli. |
-| Anselmo | Se funde en Nemesio («Peor. Si funciona, la gente se acostumbra.»). |
+| Leoncio | ~~Se va~~ [E1] Se queda con su frase («Esto, en barras…»); Yoli no la hereda. |
+| Anselmo | ~~Se funde en Nemesio~~ [E1] Se queda con «Peor. Si funciona, la gente se acostumbra.» |
 | Gertrudis | Fuera el saludo ×4; los chismes salen seguidos; fuera el segundo café inútil. |
 | Estampida | La reunión se vacía como escena, con huida visible y una línea que señala el planillo. |
 | Recorte | La pieza puede viajar por fax a Administración; dársela a Begoña en persona sigue valiendo. |
@@ -124,7 +125,7 @@ como papel de fax, recorte del 26 %, Rubén como Titulator). Donde las tres prop
 | M5 Fax | **Entra sin inserto** | Teclas 1/2/3 y la factura sí; Begoña habla por fax (cero arte nuevo). |
 | M6 Celestino narra | **Entra** | Barato y escala; la tele del clímax enseña «ENTRADA 1» y voz, sin sprite. |
 | M7 Colchón | **Entra en el duelo (§7)** | Es la derrota de D1; las otras tres derrotas siguen su patrón. |
-| Reparto C.1 | Parcial | Se acepta Leoncio/Anselmo/Herminia; **no** se funde Tadeo con Borja (decisión 1). |
+| Reparto C.1 | Parcial | [E1] Solo Herminia pasa a objeto; Leoncio y Anselmo se quedan; **no** se funde Tadeo con Borja. |
 | Valentín en M2 | No | Le devolvía «la razón» a Diseño; su cameo queda mudo. |
 | Biblia E | Base de §2 | Sus reglas «sintaxis/vocabulario/nunca» son las más operativas. |
 | Tabla F (40 peores) | **Entra casi entera** | Buenas sustituciones; se descartan las que dejaban fórmula. |
@@ -166,7 +167,7 @@ como papel de fax, recorte del 26 %, Rubén como Titulator). Donde las tres prop
 | Duelo E (reglas, ventana) | **Entra (§7)** | Se ajusta el menú: entran también réplicas de otros mazos como señuelo. |
 | Galerada del Acto III (objeto nuevo) | No | La lista del Acto III cabe en «Mirar a Bruno» y en la abuela. |
 | Fotocopia como remate de D3 | **Entra** | «Yo con Hidrovoltia no he comido en mi vida.» Aurora devuelve la fotocopia. |
-| Redacción a 1.000 px (arte) | Fase 2, fuera de este plan | Primero mover a Nemesio (dato de layout) y los dobles clics. |
+| Redacción a 1.000 px (arte) | Fase 2, fuera de este plan | Primero los dobles clics. [E1] Nemesio ya no se mueve. |
 | Créditos con «Infografía: Herminia» | No | Un crédito por guiño basta; Infografía vive en el portátil. |
 
 ---
@@ -180,8 +181,10 @@ como papel de fax, recorte del 26 %, Rubén como Titulator). Donde las tres prop
 | `bruno` | Bruno Pellejo | — | Protagonista | — |
 | `celestino` | Celestino | Vestíbulo | Se queda, crece (narrador) | chicle, pista del café, rep_05 |
 | `abuela_remedios` | Abuela Remedios | móvil | Se queda, crece (pistas en 3 niveles) | pistas |
-| `yoli_tendencias` | Yoli | Redacción | Se queda (hereda la línea de Leoncio) | rep_08 |
-| `nerea_backlog` | Nemesio (absorbe a Anselmo) | Redacción, **mesa vacía de Infografía** | Se queda, crece | rep_09, baja de Rubén |
+| `yoli_tendencias` | Yoli | Redacción | Se queda ([E1] no hereda la línea de Leoncio) | rep_08 |
+| `nerea_backlog` | Nemesio ([E1] no absorbe a Anselmo) | Redacción, **su mesa de siempre** [E1] | Se queda, crece | rep_09, baja de Rubén |
+| `leoncio_quesitos` | Leoncio [E1] | Redacción, Infografía | Se queda, con árbol (E1.6) | paso 32, momento 8, MP1 |
+| `anselmo_monolito` | Anselmo [E1] | Redacción, Desarrollo | Se queda, con árbol (E1.6) | paso 32, momento 8, apagón 1, MP1 |
 | `teodoro_cuerpodoce` | Teodoro | Redacción de papel | Intacto (por fax) | D2, cierre de página |
 | `aurora_galerada` | Aurora | Redacción de papel | Se queda | objetivos, rep_02, fuente |
 | `gertrudis` | Gertrudis (cafetera) | Vending | Crece (momento 1) | café, rep_03/04/10/14 |
@@ -201,7 +204,7 @@ como papel de fax, recorte del 26 %, Rubén como Titulator). Donde las tres prop
 | `lector_medio` | Lector Medio (cartón) | Despachos → Sala | Intacto | silla, clímax |
 | `ramirez` | Ramírez | epílogo | Pasa al epílogo | — |
 | `figurantes_mercados` | Mercados 1-3 | Sala Amazonas; uno al Vending | Ganan una línea cada uno | estampida |
-| `leoncio_quesitos`, `anselmo_monolito`, `herminia` | — | — | **Fuera** (Herminia: `herminia_portatil`, objeto) | — |
+| `herminia` | — | — | **Fuera** el actor; Herminia es el objeto `herminia_portatil` (E1.1) [E1] | paso 32, momento 8 |
 
 ### 2.2 Reglas generales de voz (para todo el reparto)
 
@@ -225,6 +228,8 @@ como papel de fax, recorte del 26 %, Rubén como Titulator). Donde las tres prop
 | Celestino | ráfagas | 3.ª: narra al que tiene delante | la retransmite |
 | Yoli | cortísima, cortada por cifras | 1.ª con datos | la mide |
 | Nemesio | lenta, con pausas | impersonal de tablero | la clasifica en una columna |
+| Leoncio [E1] | media, con pausa de orgullo | 1.ª, oficio en pasado | la pasa a gráfico y se cuelga la medalla |
+| Anselmo [E1] | tres tiempos: no · motivo · propiedad | 1.ª posesiva | pregunta de dónde viene |
 | Teodoro | telegrama | sin sujeto | la mide en caracteres |
 | Aurora | la más larga del juego | 2.ª, con subjuntivo | la corrige antes de contestar |
 | Gervasio | se corta antes del verbo | «se» impersonal | la devuelve (otro acaba su frase) |
@@ -276,17 +281,17 @@ rayas. Vocabulario: concurrentes, rebote, sube, cae, KPI (nada más técnico). N
 1. «Bruno, Bruno becario, becario sin silla, silla gratis cerca de mí.»
 2. «Me alegro mucho por ti — 3.402 — por ti, digo. Mucho.»
 3. «Eso que sientes no es tristeza, Bruno. Es una caída de clics.»
-4. «Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.» (heredada de Leoncio)
+4. [E1] «Tu pieza: cuarenta y siete lectores — 46 — perdona. Cuarenta y seis.» (la de Leoncio vuelve a Leoncio)
 5. «No estoy llorando. Es colirio. El colirio también baja, mira.»
 6. «Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.»
 
-**Nemesio** (absorbe a Anselmo). Sintaxis: clasifica la pregunta antes de contestarla; mueve un pósit entre frase y
+**Nemesio** ([E1] no absorbe a Anselmo; fichas de Leoncio y Anselmo en E1.2). Sintaxis: clasifica la pregunta antes de contestarla; mueve un pósit entre frase y
 frase (`reach`). Vocabulario: POR HACER, EN CURSO, BLOQUEADO, HECHO, HECHO (PERO NO), frontera, requisito, número.
 Nunca: exclamaciones; «Diseño»; un sentimiento sin columna. Tope: «Si no está en el tablero, no existe» 2.
 1. «Eso es una petición. Va a POR HACER. Hay cola desde 2019.»
 2. «Te tengo cariño, Bruno. En BLOQUEADO. Depende de que existas.»
-3. «¿Y si va sin pantalla? Peor. Si funciona, la gente se acostumbra.» (de Anselmo)
-4. «Si algo se rompe a las tres, ¿quién baja? Paco abre ticket. Bajo yo.» (de Anselmo)
+3. [E1] «¿Lo de Herminia? BLOQUEADO. Por Anselmo. Y Anselmo, por Anselmo.»
+4. [E1] «No hay urgentes. Hay POR HACER escrito más fuerte.»
 5. «La cinta del suelo es la frontera. A este lado, código propio. Y café.»
 6. «Un pósit solo sale del tablero de dos formas: hecho o muerto.»
 
@@ -504,10 +509,10 @@ Vestíbulo y Sistemas (1 cambio).
 | 29 | Redacción de papel | Mirar `mensaje_fp` | `vio_borde_perforado` | 0 | — |
 | 30 | Redacción de papel | Dar `fotocopia_nota_direccion` a `aurora_galerada` | `casilla_fuente`; −`mensaje_fp` (la fotocopia vuelve a Bruno) | 0 | Aurora: «Con una fuente se hace un rumor; con dos, una noticia.» |
 | 31 | Redacción de papel | Hablar `teodoro_cuerpodoce` → «Quiero firmar en tu página 7.» → D2 (R06, R02, R03 + remate `manual_fax`) | `duelo_teodoro_ganado`, `casilla_firma` | 0 | El fax ya tiene papel. |
-| 32 | Redacción | Usar `ordenador_bruno` | `pieza_opa`, `pieza_escrita` | 1 | Aurora: «Ahora escríbela en tu ordenador, fuera del CMS.» |
-| 33 | Redacción de papel | Usar `pieza_opa` con `fax` → «2: ADMINISTRACIÓN» | `pieza_recortada` (momento 5) | 1 | Teodoro: «ME SOBRAN OCHO. NO RECORTO: YO SOLO MIDO.» Fax: tres teclas. Cartel del 26 % y el recorte en directo de Begoña (paso 27). |
+| 32 | Redacción | Usar `ordenador_bruno` | `pieza_opa`, `pieza_escrita`, `herminia_midio` [E1: escena E1.4.1] | 1 | Aurora: «Ahora escríbela en tu ordenador, fuera del CMS.» |
+| 33 | Redacción de papel | Usar `pieza_opa` con `fax` → «2: ADMINISTRACIÓN» | `pieza_recortada` (momento 5) | 1 | Teodoro: «ME SOBRAN OCHO. NO RECORTO: YO SOLO MIDO.» Fax: tres teclas. Cartel del 26 % y el recorte en directo de Begoña (paso 27). [E1] Portátil de Herminia: «sobra: 26 %» (paso 32). |
 | 34 | Redacción de papel | Dar `ficha_pagina_7` a `teodoro_cuerpodoce` | `pagina_cerrada`, `acto_3_iniciado`; −`ficha_pagina_7`, −`pieza_opa`; móvil 20:22 | 0 | Abuela; ficha: «Lista para Teodoro.» |
-| 35 | Sistemas | Tirar `papel_continuo` | `ruben_encontrado` (escena 7.3 + momento 6) | 2 | Súplica del Titulator (paso 12), L4 de Evaristo (atún), RV x5 de Tadeo. |
+| 35 | Sistemas | [E1] (de paso por la Redacción: momento 8, E1.4.2) · Tirar `papel_continuo` | [E1] `dos_ias_vista`, `anselmo_dijo_regla`, `ruben_encontrado` (escena 7.3 + momento 6) | 2 | Súplica del Titulator (paso 12), L4 de Evaristo (atún), RV x5 de Tadeo. [E1] Portátil: «origen: Sistemas, armario 27 · consumo: atún». |
 | 36 | Sistemas | Hablar `ruben` → «¿Escribiste tú los discursos de Íñigo?» | `rep_13` | 0 | Rubén: «Mi baja es un pósit en el tablero de Nemesio.» |
 | 37 | Eventos | Hablar `pilar_escaleta` → «¿Me prestas el álbum?» | `album_eventos`, `oyo_descopear` (Borja se asoma, como hoy) | 2 | Rubén: «Una foto. En Eventos. Al fondo.» |
 | 38 | Redacción | Dar `album_eventos` a `nerea_backlog` → «No es un despido: es una salida en valor.» | `posit_descopeado`, `ticket_n1`, `ruben_libre`; −`album_eventos`; móvil 20:44 | 2 | Nemesio: «Despedir es otra columna.» Libreta: R13. Alternativa: «¿Y si... lo descopeamos?» |
@@ -561,10 +566,10 @@ export const STEPS = [
   { n: 29, sala: 'catacumba', txt: 'Mirar mensaje_fp', acc: [['verbo', 'mirar', 'mensaje_fp']], esp: { flags: ['vio_borde_perforado'] } },
   { n: 30, sala: 'catacumba', txt: 'Dar fotocopia a aurora → FUENTE', acc: [['dar', 'fotocopia_nota_direccion', 'aurora_galerada'], ['cerrar']], esp: { flags: ['casilla_fuente'], notiene: ['mensaje_fp'], tiene: ['fotocopia_nota_direccion'] } },
   { n: 31, sala: 'catacumba', txt: 'Teodoro → D2', acc: [['verbo', 'hablar', 'teodoro_cuerpodoce'], ['opcion', 'Quiero firmar en tu página 7.'], ['duelo', ['R06', 'R02', 'R03', { objeto: 'manual_fax' }]], ['cerrar']], esp: { flags: ['duelo_teodoro_ganado', 'casilla_firma'] } },
-  { n: 32, sala: 'pecera', txt: 'Usar ordenador_bruno', acc: [['ir', 'pecera'], ['verbo', 'usar', 'ordenador_bruno']], esp: { tiene: ['pieza_opa'], flags: ['pieza_escrita'] } },
+  { n: 32, sala: 'pecera', txt: 'Usar ordenador_bruno', acc: [['ir', 'pecera'], ['verbo', 'usar', 'ordenador_bruno']], esp: { tiene: ['pieza_opa'], flags: ['pieza_escrita', 'herminia_midio'] } }, // [E1]
   { n: 33, sala: 'catacumba', txt: 'Usar pieza_opa con fax → tecla 2', acc: [['ir', 'catacumba'], ['usar', 'pieza_opa', 'fax'], ['opcion', '2: ADMINISTRACIÓN'], ['cerrar']], esp: { flags: ['pieza_recortada'], tiene: ['pieza_opa'] } },
   { n: 34, sala: 'catacumba', txt: 'Dar ficha a teodoro → 7.3a', acc: [['dar', 'ficha_pagina_7', 'teodoro_cuerpodoce'], ['cerrar']], esp: { flags: ['pagina_cerrada', 'acto_3_iniciado'], notiene: ['ficha_pagina_7', 'pieza_opa'] } },
-  { n: 35, sala: 'cpd', txt: 'Tirar papel_continuo → 7.3', acc: [['ir', 'cpd'], ['verbo', 'tirar', 'papel_continuo']], esp: { flags: ['ruben_encontrado'] } },
+  { n: 35, sala: 'cpd', txt: 'Redacción (momento 8) → tirar papel_continuo → 7.3', acc: [['ir', 'pecera'], ['ir', 'cpd'], ['verbo', 'tirar', 'papel_continuo']], esp: { flags: ['dos_ias_vista', 'anselmo_dijo_regla', 'ruben_encontrado'] } }, // [E1]
   { n: 36, sala: 'cpd', txt: 'Hablar ruben → discursos', acc: [['verbo', 'hablar', 'ruben'], ['opcion', '¿Escribiste tú los discursos de Íñigo?'], ['cerrar']], esp: { flags: ['rep_13'] } },
   { n: 37, sala: 'eventos', txt: 'Pilar → álbum', acc: [['ir', 'eventos'], ['verbo', 'hablar', 'pilar_escaleta'], ['opcion', '¿Me prestas el álbum?'], ['cerrar']], esp: { tiene: ['album_eventos'], flags: ['oyo_descopear'] } },
   { n: 38, sala: 'pecera', txt: 'Álbum a Nemesio → salida en valor', acc: [['ir', 'pecera'], ['dar', 'album_eventos', 'nerea_backlog'], ['opcion', 'No es un despido: es una salida en valor.'], ['cerrar']], esp: { tiene: ['ticket_n1'], flags: ['posit_descopeado', 'ruben_libre'], notiene: ['album_eventos'] } },
@@ -627,11 +632,12 @@ porque el menú nuevo cambia el orden en cada asalto (§7).
 | `duel:<id>:perdido_n` | int | motor, en cada derrota | escena de derrota, titulares |
 | `abuela_obj`, `abuela_nivel` | str, int | llamada a la abuela | llamada a la abuela |
 
-**Eliminados**: `leoncio_acepta_alta`, `herminia_de_alta`, `infografia_integrada`, `anselmo_dijo_regla`,
+**Eliminados**: `leoncio_acepta_alta`,
 `bandeja_diseno_abierta`, `rumor_atun_n`, `rumor_plaza_n`; objetos `planillo`, `posit_baja_ruben`; hotspots
-`planillo_mesa` (pasa a ser solo de Mirar con otro dibujo: `planillo_bajo_maripaz`), `mesa_dibujo` (pasa a
-`mesa_infografia_vacia`), `pantalla_anselmo` (pasa a `pantalla_desarrollo`), `monitor_valentin`; actores
-`leoncio_quesitos`, `anselmo_monolito`, `herminia`.
+`planillo_mesa` (pasa a ser solo de Mirar con otro dibujo: `planillo_bajo_maripaz`), `monitor_valentin`; actor
+`herminia`. **[E1]** Se quedan `herminia_de_alta`, `infografia_integrada`, `anselmo_dijo_regla`, los hotspots
+`mesa_dibujo` y `pantalla_anselmo` (sin renombrar) y los actores `leoncio_quesitos` y `anselmo_monolito`; nuevos
+`herminia_midio` y `dos_ias_vista` (E1.4.5).
 
 **Cambian de significado**: `vio_ticket_3` (deja de ser candado: solo pistas y el camino antiguo del enchufe);
 `aurora_hablo_fax` (lo pone también A_CAFE); `posit_descopeado` («pósit movido a SALIDA EN VALOR»); `ruben_libre` y
@@ -650,7 +656,7 @@ puede llegar a 6 (llamada LC); `tadeo_rv_n` máximo 3; `rumor_atun_n` y `rumor_p
 | Paso X | Destino |
 |---|---|
 | X1-X4, X4b (planta, Celestino, rama, altavoz, plazas) | Se quedan. |
-| X5 (Leoncio), X7, X8, X10, X12, X13 (Herminia/Anselmo/Leoncio) | **Desaparecen.** |
+| X5 (Leoncio), X7, X8, X10, X12, X13 (Herminia/Anselmo/Leoncio) | **Desaparecen**; [E1] los sustituyen XE1-XE4 (E1.9). |
 | X6 (Custodia: boli) | Se queda. |
 | X9 (bandeja + coro «Diseño os avisó») | Queda solo «Abrir `bandeja_diseno`»; sin flag `bandeja_diseno_abierta`; fuera la opción del coro. |
 | X11 (rejilla) | Se queda (texto nuevo de rotación, §5.7). |
@@ -778,15 +784,15 @@ epílogo: §9.
 
 **Disparador:** Tirar `enchufe_pantalla` sin `vio_ticket_3` (antes era un «no» del juego: «Necesitaría un motivo. Por
 escrito»). **Escalada:** el apagón funciona tres segundos y alguien vuelve a enchufar, cada vez por un motivo peor: (1)
-Nemesio, porque la cinta es un requisito; (2) Yoli, porque sin gráfica no sabe si está contenta; (3) Nemesio, sin
-levantarse, fija la regla y señala la brida que baja por la pared. **Solución:** en Sistemas, el registro dice que la
+Anselmo, porque el enchufe es de sus sistemas [E1]; (2) Yoli, porque sin gráfica no sabe si está contenta; (3) Nemesio
+[E1: se levanta] fija la regla y señala la brida que baja por la pared. **Solución:** en Sistemas, el registro dice que la
 pantalla cuelga de la regleta R-3; tirar allí abajo no lo puede deshacer nadie («No subo. Nunca subo»). **Camino
 antiguo:** con `vio_ticket_3`, el enchufe de arriba también vale (Nemesio escribe la excepción en la cinta).
 **Consecuencias:** Gertrudis pierde a su público (4.1); el contador de Paco salta; Yoli, ciega, tiene su momento.
 
 **Qué se ve:** `pantalla_metricas` estado `negra_temporal` (como la apagada, pero vuelve al enchufar); monitor de Yoli
-con rótulo de 3×5 px «PUBLICADO»/«GUARDANDO» (dos estados); Nemesio `walkActor` al enchufe (≈ 90 px desde su mesa
-nueva) y `reach`; Yoli igual; `enchufe_pantalla` estado `con_ticket` (tira de cinta extra); en Sistemas, `regleta_r3`
+con rótulo de 3×5 px «PUBLICADO»/«GUARDANDO» (dos estados); Anselmo (vez 1) y Nemesio (vez 3) `walkActor` al enchufe
+desde sus mesas de siempre [E1] y `reach`; Yoli igual; `enchufe_pantalla` estado `con_ticket` (tira de cinta extra); en Sistemas, `regleta_r3`
 (hotspot de 14×6 px con brida y etiqueta; estados `encendida`/`apagada`: un piloto verde que se apaga) y el contador LED
 que salta con cuatro pitidos.
 
@@ -800,12 +806,12 @@ BRUNO: Etiqueta de la brida: «R-3, SISTEMAS. PACO».
 YOLI: ¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?
 (¡Plin! En el monitor de Yoli: «PUBLICADO».)
 YOLI: ...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!
-(Nemesio se levanta sin prisa, lee la cinta y enchufa.)
-NEMESIO: Pone «NO DESENCHUFAR». La cinta es un requisito.
+(Anselmo se levanta sin prisa, cruza su cinta, lee la del enchufe y enchufa.)   [E1]
+ANSELMO: Ese enchufe está en mis sistemas. Desenchufar es un cambio sin revisar.
 (La pantalla vuelve: 3.418. El monitor de Yoli: «GUARDANDO».)
 YOLI: ...Ya no va.
 BRUNO: Iba mientras estaba apagada.
-NEMESIO: ¿Y si va sin pantalla? Peor. Si funciona, la gente se acostumbra.
+ANSELMO: ¿Y si va sin pantalla? Peor. Si funciona, la gente se acostumbra.   [E1]
 
 (2.ª vez · apagon_n = 2)
 (Clic. Negro. ¡Plin! «PUBLICADO».)
@@ -816,7 +822,7 @@ BRUNO: Pero estaba entrando todo.
 YOLI: Ya. Pero no lo veía entrar. Eso no cuenta.
 
 (3.ª vez · apagon_n = 3)
-(Clic. Negro. Nemesio enchufa con el pie, sin levantarse.)
+(Clic. Negro. Nemesio se levanta, enchufa sin mirar y vuelve a su mesa.)   [E1]
 NEMESIO: Tercera vez. Te paso a BLOQUEADO.
 NEMESIO: Si quieres que se quede apagada, tráeme un motivo. Con número.
 NEMESIO: Y mira la brida. Ese cable no acaba aquí.
@@ -828,7 +834,7 @@ NEMESIO: Sin número, a su enchufe.
 (Sistemas · Mirar registro_tickets · paso 19 · sustituye al texto actual)
 BRUNO: Ticket nº 1, julio: «Alta becario Rubén». Estado: pendiente.
 BRUNO: Ticket nº 2, hoy: «Alta portátil de Infografía». Denegado.
-BRUNO: Motivo: «No ha pasado por Desarrollo». Firmado: Nemesio.
+BRUNO: Motivo: «No ha pasado por Desarrollo». Firmado: Anselmo.        [E1]
 BRUNO: Ticket nº 3, 2017: «El CMS se cuelga con la pantalla de la Redacción».
 BRUNO: «Va a la regleta R-3 de Sistemas. Apagarla». Estado: no prioritario.
 ⟶ vio_ticket_3
@@ -1414,15 +1420,15 @@ YOLI: Será un bot. Comenta «abrígate». En todo.
 > [4] «Me voy.»                                       exit
 YOLI: Me alegro mucho — 3.398 — mucho. Vuelve con número.
 [murmullos de ambiente de Yoli · sustituyen a los actuales con «Diseño»]
-YOLI: Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.
+YOLI: Esto sube — 3.402 — esto baja — 3.398 — esto soy yo.   [E1: la de las tartas es de Leoncio]
 YOLI: Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.
 ```
 
-### 5.5 Nemesio (`pecera.dialogos.js`) — absorbe a Anselmo; conserva `rep_09`, el álbum; nuevo: `ticket_n1` y `ruben_libre`
+### 5.5 Nemesio (`pecera.dialogos.js`) — conserva `rep_09`, el álbum; nuevo: `ticket_n1` y `ruben_libre`
 
-**Posición nueva:** la mesa vacía de Infografía (antiguo sitio de Leoncio), junto al borde del tablero: cambio de
-`layout`, no de arte. Hereda la cinta de carrocero (`frontera_carrocero`, `cartel_frontera`) y la pantalla
-(`pantalla_desarrollo`).
+**[E1] Ya no absorbe a Anselmo ni se muda:** se queda en su mesa de siempre; la cinta, el cartel y `pantalla_anselmo`
+siguen siendo de Anselmo. En `N0` salen [2], [3] y [4] (pasan a Anselmo, E1.6) y vuelve «¿Por qué está bloqueado lo
+de Herminia?». En `N_SALIDA`, dos líneas nuevas y «No se lo digas a Anselmo» (E1.4.3).
 
 ```text
 [onStart · 1.ª vez]
@@ -1432,14 +1438,9 @@ NEMESIO: Eso es una petición. Va a POR HACER. Hay cola desde 2019.
 
 [N0]
 > [1·WT] «¿Qué tal con Yoli?»                         once (anécdota actual, se queda)  ⟶ rep_09
-> [2·sens] «¿Qué es esa cinta del suelo?»             once
-NEMESIO: La frontera. A este lado, código propio. Y café.
-NEMESIO: Lo que cruza sin pasar por el tablero, lo envuelvo.
-> [3·abs] «¿Y el portátil envuelto?»                  once
-NEMESIO: Hace gráficos solo. Sin ticket. Sin columna.
-NEMESIO: ¿Y si funciona? Peor. Si funciona, la gente se acostumbra.
-> [4·desc] «¿Quién arregla esto de madrugada?»        once
-NEMESIO: Si algo se rompe a las tres, ¿quién baja? Paco abre ticket. Bajo yo.
+> [2·sens] «¿Por qué está bloqueado lo de Herminia?»  once   [E1; [2]-[4] antiguas pasan a Anselmo]
+NEMESIO: Lo bloquea Anselmo. Y a Anselmo lo bloquea Anselmo.
+NEMESIO: Es la dependencia más estable del tablero.
 > [5·NO] «¿Me cambias de columna? A HECHO, aunque sea.»   once
 NEMESIO: Te tengo cariño, Bruno. En BLOQUEADO. Depende de que existas.
 > [6] «¿Por qué gritan tanto ahí detrás?»             (se queda: «Juntos son un incendio. Por separado, santos.»)
@@ -1471,7 +1472,7 @@ NEMESIO: Descopear. Nadie se había atrevido a decirlo delante del tablero.
 (Rotulador. Una columna nueva en el tablero: SALIDA EN VALOR. El pósit, dentro.)
 NEMESIO: Columna nueva. La primera desde 1998.                  ⟶ posit_descopeado, −album_eventos
 NEMESIO: El tablero está integrado con el registro de Paco.
-NEMESIO: Es lo único integrado de esta casa. No se lo digas a nadie.
+NEMESIO: Es lo único integrado de esta casa. No se lo digas a Anselmo.   [E1]
 NEMESIO: El álbum se lo devuelvo yo a Pilar. Con acuse de recibo.
 (Tin. El ascensor se abre. Vacío. En el suelo, un papel.)
 BRUNO: «Ticket nº 1: Alta becario Rubén. CERRADO. No subo. Nunca subo. Paco.»
@@ -1479,6 +1480,9 @@ BRUNO: «Ticket nº 1: Alta becario Rubén. CERRADO. No subo. Nunca subo. Paco.�
 (Tin. Sale Rubén del ascensor. Va derecho a la ventana.)
 RUBÉN: Paco ha mandado primero el papeleo. Es el procedimiento.
 RUBÉN: Estoy esperando a que salga el sol. Me han dicho que existe.
+(La pantalla de Anselmo cambia sola: «ACCESO REVOCADO: TITULATOR 3000».)   [E1]
+ANSELMO: Revocado. Con fecha de hoy. Y de julio.
+LEONCIO: Integró una IA que era un becario. Y rechaza una IA que es una IA.
 BRUNO: La frase con la que Íñigo despide a la gente acaba de liberar a Rubén.
 RUBÉN: Y la escribí yo. SEGUIREMOS INFORMANDO. Perdón.
 ```
@@ -1555,8 +1559,9 @@ PACO: Ticket 48.100: «Armario 27, mastica». Estado: pendiente.
 [Rotación de Usar rejilla_cpd · se añade la de 4.7]
 ```
 
-`P_ALTA` (alta de Herminia), la opción «Quiero dar de alta a una becaria.» y el hilo de Tadeo desaparecen; la idea («la
-casa da de alta antes a un portátil que a un chaval») vive en los tickets nº 1 y nº 2 del registro (4.2).
+El hilo de Tadeo desaparece. **[E1]** `P_ALTA` no desaparece: se reescribe en el Acto III (E1.5, «Alta en cuarenta
+segundos»), con la opción «¿Me das de alta a una becaria? Se llama Herminia.» si `anselmo_dijo_regla`; la idea («la
+casa da de alta antes a un portátil que a un chaval») vive ahí y en los tickets nº 1 y nº 2 del registro (4.2).
 
 ### 5.8 Begoña (`administracion.dialogos.js`) — conserva el paso 27 entero (todas las opciones WT) y `recorte()`
 
@@ -1797,7 +1802,8 @@ YOLI: Te ha puesto en rosa. Yo me preocuparía — 3.402 — un poco.
 (Fuera la explicación del rosa en la escena: se explica solo en el árbol, opción 2.)
 ```
 
-Fuera: «¿Conoces a Herminia?» y el rumor B paso 3.
+Fuera: «¿Conoces a Herminia?» y el rumor B paso 3. [E1] Leoncio y Anselmo no hablan en la escena 7.2 (allí suena
+«¡Ha sido Diseño!» y no pueden coincidir Diseño e Infografía).
 
 ### 5.12 Rubén (`cpd.js`) — conserva `rep_13`; gana `rep_15` y el táper
 
@@ -2038,7 +2044,7 @@ devuelto la silla»). Se queda «Eso ha sido una despedida. La facturo.» ★. E
 | `rooms/pecera.js` (pantallas) | Las pantallas siguen encendidas. Sin nadie. Como la web. | Pantallas encendidas, sillas vacías. Si llama alguien, contesta la chaqueta. |
 | `rooms/pecera.js` (pantalla apagada) | Apagada. La Pecera trabaja a ciegas. Y publica. Es un milagro. | Apagada. La Redacción trabaja a ciegas. Y publica. Lo apunto como mío. |
 | `rooms/pecera.js` (enchufe enchufado) | Ya está enchufado. Más enchufado no se puede. Como el sobrino de alguien. | Ya está enchufado. Lo dicen la cinta, el cable y Nemesio con la mirada. |
-| `rooms/pecera.js` (cartel frontera) | Se tambalea y vuelve. Como la política de integración. | Se tambalea y vuelve. Debajo, un pósit de Nemesio: «NO TOCAR (tablero)». |
+| `rooms/pecera.js` (cartel frontera) | Se tambalea y vuelve. Como la política de integración. | [E1] Se tambalea y vuelve. La política de integración, igual. |
 | `rooms/pecera.js` (ventana) | Ya está cerrada. Por dentro. Como la redacción a las seis y media. | Las ventanas de oficina se abren una vez: para la foto de inauguración. |
 | `rooms/pecera.js` (ordenador, sin silla) | Mi ordenador. De pie no se ve. Sin silla soy un becario de pie. | Mi ordenador. Escribo de pie desde 2020. Para leer el correo necesito silla. |
 | `rooms/pecera.js` (Teodoro, cotilleo) | Teodoro vive en la Catacumba. Está hasta empadronado. Lo dice el wifi. | Teodoro vive en la Redacción de papel. Empadronado. Lo dice el wifi. |
@@ -2087,6 +2093,10 @@ devuelto la silla»). Se queda «Eso ha sido una despedida. La facturo.» ★. E
 
 ### 6.5 Herminia como objeto (`herminia_portatil`, Redacción) y la mesa vacía
 
+**[E1] Sustituida por E1.6 (tabla Mirar/Dar/Usar) y E1.8 (cuatro estados).** Herminia sigue siendo objeto (el portátil
+es ella); los estados ya no cambian por acto sino en escena: `cinta_2` en el paso 32, `paquete` en el momento 8,
+`anexionada` con el MP1. No hay mesa vacía: Leoncio sigue en la suya. Lo de abajo queda como referencia.
+
 Tres estados por acto (los de `frontera_carrocero` ya existen: recta → doble → lazo; el portátil copia la idea):
 
 | Estado | Mirar | Coger | Usar |
@@ -2095,8 +2105,7 @@ Tres estados por acto (los de `frontera_carrocero` ya existen: recta → doble �
 | Acto II `cinta_2` | La cinta ya le da dos vueltas. Para que no se contagie el resto de la sala. | (igual) | Dentro de la cinta, la pantalla dice: «¿Os ayudo?». Nadie contesta. |
 | Acto III `paquete` | Envuelto entero. Etiqueta: «PENDIENTE DE INTEGRAR (MARZO)». Regalo de nadie. | (igual) | No se puede. Lo han integrado en un paquete. |
 
-Mesa de Infografía (`mesa_infografia_vacia`; Nemesio se sienta en su extremo, junto al tablero): «La mesa de
-Infografía. Se fueron a las seis y media. Queda un quesito de cartulina. Y Nemesio, vigilándolo.»
+~~Mesa de Infografía vacía~~ [E1]: no existe; `mesa_dibujo` se queda con sus líneas de hoy.
 
 ---
 
@@ -2361,6 +2370,8 @@ BRUNO: Al margen, a lápiz: «Arriba no me atiende nadie. El CMS está en coma»
 (Pieza)
 BRUNO: PIEZA: sin escribir. Primero las fuentes; luego, mi ordenador.
 BRUNO: PIEZA: treinta y una líneas. El faldón, veintitrés. Me sobran ocho.
+[E1 · con herminia_midio, en lugar de la anterior]
+BRUNO: PIEZA: treinta y una líneas. Sobra un 26 %, dice Herminia. ¿Quién recorta?
 BRUNO: PIEZA: veintitrés líneas. Lista para Teodoro.
 ```
 
@@ -2384,7 +2395,7 @@ Dice **qué quiere ahora** (nunca cómo), según el primer objetivo activo de 8.
 ### 8.3 El Titulator anuncia tus hazañas al pasar (`pajarera.js`)
 
 Al entrar en los Despachos, si hay una hazaña nueva, la pantalla pita y la dice sola como globo **no bloqueante** (una
-por entrada). La lista actual se queda; fuera `herminia_de_alta`; entran estas:
+por entrada). La lista actual se queda ([E1] `herminia_de_alta` también se queda, E1.5); entran estas:
 
 | Flag | Titular |
 |---|---|
@@ -2448,7 +2459,7 @@ siempre acaba en «Abrígate.».
 | **Firma** · `casilla_firma` · `fax_con_papel` · Redacción de papel | Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor. | Si el del fax se pone terco, que le conteste su propia máquina. | ABUELA: Contéstale mejor que él. Y luego, su máquina. / BRUNO: Duelo con Teodoro. Remate: el manual. |
 | extra sin `manual_fax` | | | ABUELA: El manual lo tiene el de los ordenadores. Pregúntale por el fax. |
 | **Pieza** · `pieza_escrita` · `casilla_fuente` · Redacción | ¿Y has escrito ya? Siéntate en tu silla y escribe. | Lo de escribir, en tu mesa. Que te ha costado la silla. | ABUELA: Escribe en tu máquina, hijo. Sin palabras raras. / BRUNO: Mi ordenador. A escribir. |
-| **Recorte** · `pieza_recortada` · `pieza_escrita` · Redacción de papel, Administración | Si te sobra, dáselo a quien corta. La que me hace los bajos no pregunta. | La de la ventanilla no lee: corta. Y el fax llega a todas partes. | ABUELA: Mándaselo a la que corta, por la máquina o en mano. / BRUNO: La pieza a Begoña: fax, tecla 2, o subir. |
+| **Recorte** · `pieza_recortada` · `pieza_escrita` · Redacción de papel, Administración | [E1, con `herminia_midio`, antes:] Hasta la maquinita de los dibujos sabe cuánto te sobra, hijo. / Si te sobra, dáselo a quien corta. La que me hace los bajos no pregunta. | La de la ventanilla no lee: corta. Y el fax llega a todas partes. | ABUELA: Mándaselo a la que corta, por la máquina o en mano. / BRUNO: La pieza a Begoña: fax, tecla 2, o subir. |
 | **Cierre** · `pagina_cerrada` · tres casillas + `pieza_recortada` · todas | ¿Y a qué esperas para darle los papeles a ese señor del fax? | Tienes las tres cosas, hijo. Llévalas a quien manda en el papel. | ABUELA: Al señor del fax llévale los papeles. De mi parte. / BRUNO: La ficha, a Teodoro. |
 | **Armario** · `ruben_encontrado` · `acto_3_iniciado` · Sistemas | Si de un armario sale papel, es que alguien escribe dentro, hijo. | Esos titulares tan raros salen de abajo. De un armario. | ABUELA: Tira del papel que sale del armario. Con cuidado. / BRUNO: Sistemas: el papel continuo del 27. |
 | **Álbum** · `has:album_eventos` o `posit_descopeado` · `ruben_encontrado` · Eventos, Sistemas | Para que dejen irse a alguien, hay que demostrar que estuvo. | Las fotos de las fiestas las guarda la que las organiza. | ABUELA: Pídele las fotos a la de las fiestas. / BRUNO: El álbum de Pilar. Rubén sale al fondo. |
@@ -2639,29 +2650,29 @@ INSTALADA»). Ni Diseño y Producto ni Infografía aparecen en el epílogo ni en
 
 | Tipo | Qué | Dónde |
 |---|---|---|
-| Actores | `leoncio_quesitos`, `anselmo_monolito`, `herminia` (actor; el objeto `herminia_portatil` se queda) | `actors.js`, `pecera.js` (layout, murmullos, `dar:`) |
-| Árboles | `leoncio`, `anselmo`, `valentin`; nodos del coro `CO_BANDEJA`, `CO_HERMINIA`, opciones «¿Quién es Diseño?» y «¿Por qué se ha caído el CMS?»; `P_ALTA` (Paco); `N_DESCOPE` (pasa a `N_SALIDA`); en `CU_DONDE`, las opciones de silla, CMS y Titulator | `pecera.dialogos.js`, `cpd.js`, `pecera.secretaria.js` |
-| Hotspots | `monitor_valentin`; `fondo_aurora`, `fondo_ninja`, `fondo_pilar` (queda `fondo_yoli`); `planillo_mesa` (→ `planillo_bajo_maripaz`); `mesa_dibujo` (→ `mesa_infografia_vacia`); `pantalla_anselmo` (→ `pantalla_desarrollo`) | `pecera.js`, `sala_amazonas.js` |
+| Actores | ~~`leoncio_quesitos`, `anselmo_monolito`~~ [E1: se quedan], `herminia` (actor; el objeto `herminia_portatil` se queda) | `actors.js` |
+| Árboles | `leoncio` y `anselmo` [E1: se reescriben, E1.6; fuera `LQ_ALTA` y `AN_HERMINIA` como nodo], `valentin`; nodos del coro `CO_BANDEJA`, `CO_HERMINIA`, opciones «¿Quién es Diseño?» y «¿Por qué se ha caído el CMS?»; `P_ALTA` (Paco) [E1: se reescribe, E1.5]; `N_DESCOPE` (pasa a `N_SALIDA`); en `CU_DONDE`, las opciones de silla, CMS y Titulator | `pecera.dialogos.js`, `cpd.js`, `pecera.secretaria.js` |
+| Hotspots | `monitor_valentin`; `fondo_aurora`, `fondo_ninja`, `fondo_pilar` (queda `fondo_yoli`); `planillo_mesa` (→ `planillo_bajo_maripaz`); ~~`mesa_dibujo`, `pantalla_anselmo`~~ [E1: se quedan sin renombrar]; estados `doble` y `lazo` de `frontera_carrocero` [E1] | `pecera.js`, `sala_amazonas.js` |
 | Objetos | `planillo`, `posit_baja_ruben` | `items.js` |
-| Flags | `leoncio_acepta_alta`, `herminia_de_alta`, `infografia_integrada`, `anselmo_dijo_regla`, `bandeja_diseno_abierta`, `rumor_atun_n`, `rumor_plaza_n` | `flags.js` |
+| Flags | `leoncio_acepta_alta`, ~~`herminia_de_alta`, `infografia_integrada`, `anselmo_dijo_regla`~~ [E1: se quedan], `bandeja_diseno_abierta`, `rumor_atun_n`, `rumor_plaza_n` | `flags.js` |
 | Ambiente | 9 de las 13 discusiones del coro y 3 de las 4 «de fondo»; el `setInterval` de 14-24 s | `pecera.js` |
 | Rumores B y D | líneas de `onStart` (Paco, Nemesio, Íñigo, Borja, Celestino) y sus desmentidos | `cpd.js`, `pecera*.js`, `pajarera.js`, `ecosistema*.js`, `vestibulo.js` |
 | Tadeo | 9 entradas del portátil con siglas, 3 opciones del asistente, RV 2 y 4 del móvil | `ecosistema*.js`, `lib/movil.js` |
 | Duelo | floja «Eso es cosa de Diseño.» y su `offOnce`; respuesta común de las flojas | `duelo.js` |
-| Titulares | `herminia_de_alta` | `pajarera.js` |
+| Titulares | ~~`herminia_de_alta`~~ [E1: se queda] | `pajarera.js` |
 | Escenas | Gertrudis ×4 (paso antiguo 20); `pacoBaja()` como entrega; Gervasio en el Vending antes de D3; D1 en Marketing y Comercial | `office.js`, `cpd.js`, `ecosistema.js` |
 | Epílogo | escena de la Redacción (coro, infografía, «Diseño soy yo», cuarta pared), hilo de la esquina, poscréditos, impresora; créditos de Diseño, Valentín e Infografía | `escenas/final.js` |
 | Líneas | §6.4 y las de los nodos eliminados; la tríada del pósit rosa queda en una | varios |
-| Extras | X5, X7, X8, X10, X12, X13, X14, X15, X17b, X23b, X25b, X26 | `tools/extras.mjs` |
+| Extras | X5, X7, X8, X10, X12, X13 [E1: → XE1-XE4], X14, X15, X17b, X23b, X25b, X26 | `tools/extras.mjs` |
 
 ### 10.2 Arte: zonas que quedan vacías y estados nuevos
 
 | Sala | Qué | Tamaño / técnica | Prioridad |
 |---|---|---|---|
-| Redacción | Zona de Leoncio: mesa de Infografía vacía con un quesito de cartulina en una chincheta; **Nemesio se sienta en su extremo** (cambio de `layout`, sprite existente) | repintar mesa (sin la mesa de dibujo inclinada) | Alta |
-| Redacción | Zona de Anselmo: silla vacía con chaqueta colgada (motivo `sillas_con_chaqueta`) | 20×24 px | Alta |
+| Redacción | ~~Zona de Leoncio vacía; Nemesio en su extremo~~ **[E1] Nada:** Leoncio, su mesa y Nemesio se quedan como hoy | — | — |
+| Redacción | ~~Zona de Anselmo: silla vacía con chaqueta~~ **[E1] Nada:** Anselmo se queda | — | — |
 | Redacción | Monitor de Valentín: pantalla neutra (sin la aventura dentro) | 16×12 px | Alta |
-| Redacción | `herminia_portatil`: 3 estados (`cinta_1`, `cinta_2`, `paquete`) | 14×10 px | Media |
+| Redacción | `herminia_portatil`: [E1] 4 estados (`cinta_1`, `cinta_2`, `paquete` con hueco de pantalla, `anexionada` con pegatina «DESARROLLO»); frontera solo `recta` y pegamento | 14×10 px | **Alta** [E1] |
 | Redacción | `pantalla_metricas`: `viral` (taza 9×9) y `negra_temporal`; monitor de Yoli: «PUBLICADO»/«GUARDANDO» | microfuente 3×5 | Alta |
 | Redacción | `enchufe_pantalla`: `con_ticket`; brida bajando por la pared | 10×3 px | Media |
 | Redacción | `kanban`: columna nueva «SALIDA EN VALOR» con el pósit (`posit_descopeado`) | 18×30 px | Alta |
@@ -2694,9 +2705,9 @@ pruebas `tools/test-paquete-*.mjs`; P0 es dueño de `walk-data.mjs`, `extras.mjs
 | `content/game.js` | `DEFAULTS` (§6.2); abuela nueva (§8.5) con la línea de la cafetera (4.1); llamada LC (§5.13); `horaMovil` y su paso a `phone`. |
 | `content/lib/movil.js` | `RV_TADEO` (3), `FIJOS` (§5.16), hora por hitos (§8.4). |
 | `content/lib/ascensor.js` + `content/lib/celestino.js` (nuevo) | Helper `celestinoHito(api)` (§4.7): lista de hitos, flag de narrados, megafonía del ascensor. |
-| `content/actors.js` | Fuera Leoncio, Anselmo, Herminia; Bruno `con_chaqueta`; Mirar Bruno (§8.2); murmullos de Yoli y Nemesio; `mercados_1..3`. |
+| `content/actors.js` | [E1] Leoncio y Anselmo se quedan (murmullos de E1.6); fuera solo el actor Herminia; Bruno `con_chaqueta`; Mirar Bruno (§8.2); murmullos de Yoli y Nemesio; `mercados_1..3`. |
 | `content/items.js` | Ficha viva (§8.1); Usar `chaqueta_ramirez` (4.3); `taper_huerfano`; fuera `planillo`, `posit_baja_ruben`; manual (§6.4); boli muerto (§6.3). |
-| `content/flags.js` | Altas y bajas de §3.4 y la migración de partidas. |
+| `content/flags.js` | Altas y bajas de §3.4 y la migración de partidas; [E1] E1.4.5. |
 | `tools/` | `walk-data.mjs` (§3.2), `extras.mjs` (§3.5), `walk-lib.mjs` (duelo por id), `text-audit.mjs` (≤ 80 y palabras vetadas). |
 
 ### P1 · Vestíbulo, Sistemas y final (`vestibulo.js`, `cpd.js`, `escenas/final.js`)
@@ -2704,14 +2715,15 @@ pruebas `tools/test-paquete-*.mjs`; P0 es dueño de `walk-data.mjs`, `extras.mjs
 Celestino (§5.1) y sus hitos al entrar (§4.7); torno de la cafetera viral (4.1); fuera rumores B/D en el vestíbulo.
 Sistemas: registro nuevo, `regleta_r3` y escena del apagón (4.2); árbol de Paco (§5.7) con la línea del ticket nº 1 al
 volver; revelación de Rubén con primer plano y titulares (4.6); árbol de Rubén (§5.12) y el táper (4.4); rotación de la
-rejilla (4.7); líneas de §6.3-6.4 de su sala. `final.js`: §9 entero.
+rejilla (4.7); líneas de §6.3-6.4 de su sala; [E1] ticket nº 2 «Firmado: Anselmo» y `P_ALTA` reescrito (E1.5). `final.js`:
+§9 entero.
 
 ### P2 · Redacción y Despachos (`pecera.js`, `pecera.dialogos.js`, `pecera.escenas.js`, `pecera.voces.js`, `pecera.secretaria.js`, `pajarera.js`)
 
 Redacción: reacción viral (4.1), apagón y enchufe (4.2), reacciones a la chaqueta (4.3), Yoli (§5.4), Nemesio con su
 nueva posición, árbol y `N_SALIDA` con el ticket por el ascensor y Rubén a la ventana (§5.5), coro y Valentín (§5.14),
-Custodia (§5.15), portátil de Herminia (§6.5), bandeja, escena 7.2 (§5.11), primera entrada con `cms_vivo`; fuera
-Leoncio y Anselmo. Despachos: Íñigo (§5.11), viral (4.1), chaqueta en el Lector y matriz (4.3), titulares automáticos al
+Custodia (§5.15), portátil de Herminia ([E1] E1.6, 4 estados), bandeja, escena 7.2 (§5.11), primera entrada con
+`cms_vivo`; [E1] Leoncio y Anselmo se quedan: árboles, paso 32, momento 8, anexión, apagón 1 (ver E1.8, tabla P2). Despachos: Íñigo (§5.11), viral (4.1), chaqueta en el Lector y matriz (4.3), titulares automáticos al
 entrar (§8.3), Gervasio en la puerta + definición del duelo D3 (§5.10, §7.4), perchero, cristal.
 
 ### P3 · Vending, Redacción de papel y Administración (`office.js`, `catacumba.js`, `administracion.js`, `administracion.dialogos.js`)
@@ -2747,6 +2759,9 @@ Eventos: solo la línea del aro de luz y la traducción de «descopear» en `bor
 | Celestino narra | P0 (helper) | P1 (vestíbulo, rejilla), P0 (ascensor) |
 | Rubén en la Redacción tras `ruben_libre` | P2 | P1 (ya no en Sistemas), P4 (clímax) |
 | Gervasio Acto III | P2 (puerta) | P3 (solo tras `sala_abierta`) |
+| [E1] `herminia_midio` | P2 (paso 32) | P0 (ficha, abuela) |
+| [E1] `dos_ias_vista`, `anselmo_dijo_regla` | P2 (momento 8) | P1 (`P_ALTA`) |
+| [E1] `herminia_de_alta` | P1 (`P_ALTA`) | P2 (anexión, Rubén, titular) |
 
 ---
 
@@ -2799,6 +2814,9 @@ test de §2 y las celdas de diálogo de §5, §6, §7.5 y §8):
 - **Topes de muletilla** contados sobre las líneas nuevas: «cariño» 8 (Maripaz, todas fuera de su árbol de Marketing),
   «Lo hablamos» ≤ 5 (Gervasio), «¿Tú eres el nuevo?» 5 (Celestino), «Diseño» ≤ 11 (§5.14).
 
+**[E1]** Verificación de la enmienda en E1.10: recorrido igual (42 pasos, 28 cambios), líneas nuevas ≤ 80, reglas de la
+casa comprobadas.
+
 ### 12.3 Lo que deben ejecutar los implementadores al terminar
 
 1. `node tools/check.mjs` (grafo, ids, flags declarados).
@@ -2807,3 +2825,582 @@ test de §2 y las celdas de diálogo de §5, §6, §7.5 y §8):
 4. `node tools/text-audit.mjs` ampliado: ≤ 80 caracteres, palabras vetadas, «Como» final, nombres de sala visibles.
 5. `node tools/test-all.mjs` (cada paquete actualiza sus pruebas).
 6. Partida manual con una derrota en cada duelo, el apagón tres veces, la chaqueta puesta y el fax con las tres teclas.
+
+---
+
+## ENMIENDA E1 (prevalece sobre las secciones que cita)
+
+> Respuesta de la dirección a las seis decisiones de §0. Aprobadas la 1, 3, 4, 5 y 6. **Rechazada la 2**: Leoncio y
+> Anselmo **se quedan como personajes con voz y árbol**. Herminia **pasa a objeto**, como proponía el plan: es el
+> portátil «INFOGRAFÍA» de Leoncio, sin árbol ni voz propia; solo enseña salidas de programa en su pantalla. Esta
+> enmienda adapta el plan sin rehacerlo. Prevalece sobre §0, §1.1-1.2, §2.1-2.4, §3.1-3.5, §4.2, §5.4, §5.5, §5.7,
+> §5.11, §6.5, §8.1, §8.3, §8.5, §10, §11 y §12. En esas secciones, los cambios llevan la marca **[E1]**.
+
+### E1.0 Qué arregla y cómo
+
+El crítico decía dos cosas: (a) Leoncio, Anselmo y Herminia tenían **0 líneas en el camino de la solución** y eran
+«una subtrama completa que no toca la historia principal»; (b) sus voces no se distinguían de las demás. La enmienda
+no recorta a nadie. Hace tres cosas:
+
+1. **Dos pasadas obligatorias y baratas por Infografía**, sin cambios de sala nuevos ni pasos nuevos:
+   - **Paso 32 · «Herminia mide la pieza»**: al escribir la pieza en su ordenador, el portátil de Leoncio la lee, la
+     mide y saca «sobra: 26 %». Es la **pista justa** que le faltaba al recorte (paso 33) y Anselmo le pone otra tira
+     de cinta al portátil, delante de Bruno.
+   - **Momento 8 · «Dos IAs»** (escena corta forzada, primera entrada en la Redacción con `acto_3_iniciado`, que es
+     camino obligado entre los pasos 34 y 35): Anselmo acaba de envolver el portátil entero; la pantalla, por un hueco
+     de la cinta, enseña el gráfico de los titulares del Titulator: picos a la hora de comer, once pausas, origen
+     «Sistemas, armario 27», consumo «atún». La única IA de verdad del edificio desenmascara a la falsa, y está
+     precintada. Señala adónde ir en el Acto III y deja dicha la regla de Anselmo («lo que tiene alta es de la casa»)
+     que abre el micro-puzle opcional.
+2. **Voces con estructura propia** (E1.2): Leoncio habla desde el sillón de quien ya no hace nada y lo cuenta en
+   gráficos; Anselmo dice «no» con razones de propiedad y, cuando invade él, cambia el nombre de lo que hace. Herminia
+   no habla: escribe salidas de programa. Leoncio habla **por** ella y **de** ella, y ahí vive el chiste.
+3. **La guerra fría se ve** (E1.3): la cinta de Anselmo avanza sobre el portátil acto a acto (es la propia Herminia
+   la que está encintada), y cada avance ocurre en escena, delante del jugador, no en una línea de Mirar.
+
+**Lo que no cambia:** 42 pasos, 28 cambios de sala (6/14/8), los cuatro puzles protegidos, el coro a un tercio,
+Nemesio con el álbum y `N_SALIDA`, Valentín mudo, Custodia sin oráculo, Maripaz en la Sala, el final sin nada tras la
+fe de erratas. Epílogo y créditos siguen sin Diseño y sin Infografía (decisión 6 aprobada).
+
+### E1.1 Reparto (sustituye a las filas afectadas de §0 y §2.1)
+
+| Id | Personaje | Sala | Estado | Función en el grafo |
+|---|---|---|---|---|
+| `leoncio_quesitos` | Leoncio Quesitos, jefe de Infografía | Redacción, su mesa de siempre (Infografía) | **Se queda, con árbol** | paso 32 (lee la medida), momento 8, MP1 |
+| `anselmo_monolito` | Anselmo Monolito, director de Desarrollo | Redacción, su mesa de siempre (Desarrollo) | **Se queda, con árbol** | paso 32 (cinta), momento 8 (regla), apagón 1, MP1 |
+| `herminia_portatil` | Herminia (objeto: el portátil «INFOGRAFÍA») | Redacción, mesa de Leoncio | **Objeto con pantalla**, sin árbol ni voz | paso 32 (mide), momento 8 (gráfico del Titulator), MP1 |
+| `nerea_backlog` | Nemesio | Redacción, **su mesa de siempre** | Se queda; **no absorbe a Anselmo** | rep_09, baja de Rubén |
+| `yoli_tendencias` | Yoli | Redacción | Se queda; **no hereda** la línea de Leoncio | rep_08 |
+| `herminia` (actor sin sprite) | — | — | **Fuera** (el objeto la sustituye) | — |
+
+Recuento: de ~24 voces a **19 con árbol** + 3 presencias sin árbol (Tadeo, Valentín, coro). Herminia no cuenta como
+voz.
+
+**Reglas de pantalla de Herminia** (no es una ficha de voz: es un formato de salida). Se pinta con
+`api.sayFrom('herminia_portatil', …)` en su color `#FF8C3C`, sin nombre delante; en guion, `PORTÁTIL:`.
+1. Siempre empieza por `›` y es una sola línea de datos separados por `·`: `› objeto · medida · resultado`.
+2. Nunca primera persona, nunca un verbo conjugado, nunca una opinión, nunca mayúsculas sostenidas (las mayúsculas son
+   de Gertrudis y de Teodoro), nunca una pregunta. Si algo no le dejan hacer, escribe el estado: `· entrega: bloqueada`.
+3. Como mucho tres salidas por escena. Siempre aciertan: es lo único del edificio que funciona a la primera.
+4. Quien la interpreta en voz alta es Leoncio (o Bruno si Leoncio no está): el dato lo pone la máquina y el chiste,
+   el humano que ya no tiene trabajo.
+
+### E1.2 Fichas de voz (se añaden a §2.4; mismo formato que la biblia)
+
+Filas nuevas de la tabla de contraste (§2.3):
+
+| Voz | Longitud | Persona | Qué hace con la pregunta de Bruno |
+|---|---|---|---|
+| Leoncio | media, con una pausa de orgullo | 1.ª, oficio en pasado | la pasa a gráfico y se cuelga la medalla de lo que hizo la máquina |
+| Anselmo | tres tiempos: no · motivo · propiedad | 1.ª posesiva | pregunta de dónde viene antes de oír qué es |
+
+**Leoncio Quesitos** (jefe de Infografía). *Cómo piensa:* construyó una herramienta que le ha dejado sin trabajo y ha
+decidido que eso es su mayor logro. Ya no dibuja: mira a la máquina dibujar y lo cuenta. Lo único que sigue haciendo él
+es traducir el mundo a tipos de gráfico. Quiere que se note que Herminia es suya, y que no se note que ya no la
+necesita a él.
+1. **«Yo ya no X. Yo Y.»** X es un verbo de trabajo; Y, una ocupación ridícula (superviso, afilo lápices, le hago
+   compañía). Como mucho una por escena.
+2. **Traducción gráfica:** convierte lo que le cuentan en un tipo de gráfico con veredicto («En tarta, eso es una
+   invasión.» «En barras, mi día es una barra. Bajita.»). Una por intervención.
+3. **Falsa modestia en dos tiempos:** elogia a Herminia en una frase y en la siguiente se cobra el mérito («Lo hace
+   mejor que todo mi equipo. La hice yo.»). Nunca las dos cosas en la misma frase.
+4. **Lee la pantalla como un padre:** repite en voz alta lo que sale en el portátil y le pone adorno de orgullo («Ya la
+   ha leído. Cuatro décimas.»). Herminia da el dato; él, el chiste.
+Nunca: exclamaciones ni urgencia; «no sé»; hablar mal de Herminia; un verbo de trabajo en presente en 1.ª persona
+(«estoy dibujando»); llamarla «la IA» (dice «Herminia» o «mi herramienta»; «una IA» como categoría, sí); «Diseño».
+Topes: «en tarta» 4 líneas; «Yo ya no…» 3; «Me incluyo» 2 (las dos en la misma respuesta).
+1. «Yo ya no dibujo. Yo superviso. Que es mirarla con orgullo.»
+2. «Lo hace mejor que todo mi equipo. Me incluyo. Me duele, pero me incluyo.»
+3. «Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.» ★ (vuelve a Leoncio; Yoli no la hereda)
+4. «Cuatro décimas de segundo. Yo tardaba una semana. Bien hecha, eso sí.»
+5. «Mi equipo se fue a las seis y media. Ella no ficha. Yo le hago compañía.»
+6. «Un quesito que suma 130 %. En tarta, eso es una invasión.»
+7. «Integró una IA que era un becario. Y rechaza una IA que es una IA.»
+8. «Plana no es mala. Plana es estable. Yo estoy plano desde que existe ella.»
+
+**Anselmo Monolito** (director de Desarrollo). *Cómo piensa:* el edificio es un plano con fronteras. Lo de dentro es
+suyo y está bien; lo de fuera está mal aunque funcione, y si funciona, peor. Su miedo de verdad es bajar a las tres de
+la mañana a arreglar algo que no hizo él. Cuando es él quien cruza la cinta, no está cruzando: está dando servicio.
+1. **Pregunta el origen antes que el contenido:** «¿De dónde viene?» / «¿Quién lo ha hecho?». La respuesta depende
+   solo de eso.
+2. **«No» en tres tiempos:** negativa + motivo de arquitectura + consecuencia de propiedad («No. No ha pasado por mis
+   sistemas. Lo que no pasa por mí, no se despliega.»).
+3. **Renombra lo suyo con una corrección sin verbo:** «[palabra de Bruno], no. [término técnico].» («Meterse, no. Dar
+   servicio.» «Quitar, no. Absorber en plataforma.»). No es el «No es X: es Y» de Íñigo: Anselmo solo corrige palabras
+   sobre lo que hace él, nunca reencuadra a otros, y nunca usa «es» en la corrección.
+4. **Posesivos de infraestructura y aplazamiento propio:** mis sistemas, mi cinta, mi termo; «en la próxima versión».
+Nunca: «sí» a secas; reconocer que algo de fuera funciona sin decir «peor» detrás; llamar «IA» a lo suyo (es
+«automatización interna»); exclamaciones, salvo «¡Eh!» si le tocan la cinta; «marzo» (ese aplazamiento es de otros);
+«Diseño»; nada sobre quién es o cómo es la gente de fuera (solo sobre de dónde vienen las cosas).
+Topes: «mis sistemas» 5; «próxima versión» 3; «¿De dónde viene/s/n?» 6 (es su regla 1; nunca dos por escena).
+1. «¿De dónde viene? Entonces no. No ha pasado por mis sistemas.»
+2. «¿Y si va sin pantalla? Peor. Si funciona, la gente se acostumbra.» ★ (vuelve de Nemesio)
+3. «Si algo se rompe a las tres, ¿quién baja? Paco abre ticket. Bajo yo.» ★ (vuelve de Nemesio)
+4. «Meterse, no. Dar servicio. Un corrector para Aurora, de mi parte.»
+5. «Quitar, no. Absorber en plataforma.»
+6. «Tiene alta de usuario interno. Lo que tiene alta es de la casa.»
+7. «Un metro de fuera sigue siendo fuera. Pasa. Sin tocar.»
+8. «Solución de terceros. Funciona, pero no es mía. Próxima versión.»
+
+**Nemesio** (sustituye a su ficha de §2.4 en lo que dice «absorbe a Anselmo»). Conserva sintaxis, vocabulario,
+«Nunca» y tope. Sus líneas test 3 y 4 (de Anselmo) vuelven a Anselmo y se sustituyen por:
+3. «¿Lo de Herminia? BLOQUEADO. Por Anselmo. Y Anselmo, por Anselmo.»
+4. «No hay urgentes. Hay POR HACER escrito más fuerte.»
+Diferencia operativa, para que no suenen igual: **Nemesio clasifica** (todo va a una columna y nada es de nadie);
+**Anselmo posee** (todo es de alguien y lo de fuera no entra). Nemesio nunca dice «mis sistemas»; Anselmo nunca dice
+el nombre de una columna.
+
+**Yoli** (§2.4): su línea test 4 vuelve a Leoncio y se sustituye por:
+4. «Tu pieza: cuarenta y siete lectores — 46 — perdona. Cuarenta y seis.»
+
+### E1.3 La guerra fría, por situación y no por frases
+
+Reglas de puesta en escena (para P2):
+1. **Leoncio y Anselmo no discuten.** Nunca más de dos réplicas seguidas entre ellos. La guerra se hace con cosas:
+   la cinta, las dos pantallas, el gráfico de Desarrollo puesto en la sección de Infografía.
+2. **La cinta avanza en escena, delante de Bruno.** El portátil es la propia Herminia y Anselmo la va envolviendo:
+   una tira en el Acto I (ya está al llegar), la segunda en el paso 32 (se ve cómo la pega), el paquete entero en el
+   momento 8 (se ve la última vuelta). Leoncio no la defiende con discursos: la defiende mirando, con los brazos
+   cruzados, y leyendo en voz alta lo que ella sigue haciendo bien a través de la cinta.
+3. **El invasor es Anselmo.** Mientras Herminia está precintada, la pantalla de Anselmo (`pantalla_anselmo`, se queda)
+   pone gráficos de Desarrollo en la sección de Leoncio: un quesito que suma 130 %, «Lectores por continente» con la
+   Antártida en cabeza. El jugador ve los dos monitores a la vez: el que funciona, encintado; el que no, publicando.
+4. **La cinta de la frontera deja de crecer** (fuera los estados `doble` y `lazo` de `frontera_carrocero`): la
+   escalada vive solo en el portátil, para no contar el mismo chiste dos veces. La frontera queda recta, y con
+   `infografia_integrada`, marca de pegamento (estado que ya existe).
+5. **Nada de Diseño en sus escenas.** Ni Leoncio ni Anselmo nombran a Diseño, y el coro no grita «¡Ha sido Diseño!»
+   en ninguna escena donde se nombre Infografía (paso 32, momento 8, anexión): el motor pospone la discusión de
+   ambiente mientras dure la escena (regla general de §5.14).
+
+### E1.4 Integración en la trama (sustituye a lo que dicen §3.1, §3.2 y §4 para estos pasos)
+
+#### E1.4.1 Paso 32 · «Herminia mide la pieza» (Redacción; misma acción, misma sala, mismo recuento)
+
+**Disparador:** el paso 32 de siempre (Usar `ordenador_bruno` con `casilla_fuente`). Tras las dos líneas actuales de
+Bruno («Lo escribo fuera del CMS…» / «Treinta y una líneas…») sigue esta escena, una vez. **Función:** da la **pista
+justa** del recorte del paso 33 (el 26 % que el jugador tiene que casar con el cartel y la ventanilla de Begoña) sin
+decir quién recorta ni con qué tecla; y pone a Leoncio y a Anselmo en el camino. **Qué se ve:** portátil de Herminia
+`cinta_1` → `cinta_2` (Anselmo `walkActor` ≈ 80 px hasta la mesa de Infografía, `reach`, `sfx('paper')` largo,
+vuelta a su sitio); Leoncio `face` hacia Bruno, brazos cruzados (frame `idle` existente).
+
+```text
+(Paso 32 · tras las líneas actuales de Bruno · una vez)
+(Pitido en la mesa de al lado. Entre la cinta, la pantalla del portátil se enciende.)
+PORTÁTIL: › pieza_opa · 31 líneas · faldón de la página 7: 23 · sobra: 26 %
+LEONCIO: Ya te la ha leído. Yo no, ¿eh? Yo ya no leo. Superviso.
+BRUNO: ¿Cómo sabe el faldón de Teodoro?
+LEONCIO: Teodoro le manda faxes. Ella le contesta con quesitos. Se entienden.
+LEONCIO: Treinta y una para veintitrés. En tarta, ese 26 % es la parte triste.
+BRUNO: ¿Y quién quita un 26 %? Teodoro solo mide.
+LEONCIO: Ella tampoco quita. Mide. Quitar siempre es de otro departamento.
+(Segundo pitido.)
+PORTÁTIL: › infografia_opa · lista · 0,4 s · entrega: bloqueada
+LEONCIO: Y la infografía. Cuatro décimas. Yo tardaba una semana. Bien hecha, eso sí.
+(Anselmo se levanta sin prisa, cruza la cinta del suelo y llega a la mesa.)
+ANSELMO: ¿De dónde viene esa imagen? De fuera. No entra en ninguna pieza.
+(Le da una vuelta de cinta al portátil. Rasss. Estado cinta_2.)
+ANSELMO: Encintar, no. Aislar el componente.
+LEONCIO: (sin mirarle) Herminia, tendencia.
+PORTÁTIL: › cinta de Desarrollo · tiras: 2 · tendencia: sube
+(Anselmo vuelve a su lado de la frontera.)
+BRUNO: Mi pieza sale sin dibujo. Pero medida. Me han medido antes que Teodoro.
+⟶ herminia_midio
+```
+
+Después, con `herminia_midio`:
+
+```text
+(Usar pieza_opa con herminia_portatil · sin pieza_recortada)
+PORTÁTIL: › pieza_opa · ya medida · sobra: 26 % · sin cambios
+LEONCIO: Medida dos veces, mismo resultado. Eso, en mi época, era un milagro.
+(Usar pieza_opa con herminia_portatil · con pieza_recortada)
+PORTÁTIL: › pieza_opa · 23 líneas · faldón: 23 · cabe
+LEONCIO: Cabe. Ni ella ni yo hemos tocado nada. Mi parte favorita.
+(Dar pieza_opa a leoncio_quesitos · sin pieza_recortada)
+LEONCIO: Sobra un 26 %. Te la ha medido ella. Yo te la sostengo, que pesa.
+```
+
+**Pista justa, en cadena.** El jugador ya ha visto el 26 % en el cartel de Administración (paso 27) y el recorte en
+directo de Begoña (§5.8); ahora lo ve escrito en una pantalla sobre su propia pieza. Teodoro, en el paso 33, sigue
+diciendo solo «ME SOBRAN OCHO. NO RECORTO: YO SOLO MIDO.». El «¡ajá!» (26 % → Begoña → tecla 2) sigue siendo del
+jugador: nadie nombra a Begoña ni la tecla.
+
+Cambios de apoyo (§8):
+- Ficha (§8.1), PIEZA con `herminia_midio` y sin `pieza_recortada` (sustituye a «Me sobran ocho»):
+  `BRUNO: PIEZA: treinta y una líneas. Sobra un 26 %, dice Herminia. ¿Quién recorta?`
+- Abuela (§8.5), objetivo **Recorte**, nivel 1 con `herminia_midio`: antes de su línea de nivel 1,
+  `ABUELA: Hasta la maquinita de los dibujos sabe cuánto te sobra, hijo.`
+
+#### E1.4.2 Momento 8 · «Dos IAs» (Redacción, entre los pasos 34 y 35; cero cambios de sala nuevos)
+
+**Disparador:** primera entrada en la Redacción con `acto_3_iniciado` y sin `dos_ias_vista`. Es camino obligado: la
+Redacción de papel solo sale a la Redacción, y de ahí se baja a Sistemas en ascensor; los 2 cambios del paso 35 ya
+contaban esta pasada. **Función:** (1) **señala el objetivo del Acto III** (armario 27, Sistemas) con un chiste en
+vez de con una orden; (2) pone en pantalla el contraste que el giro de Rubén necesitaba: la única IA que funciona,
+precintada, desenmascara a la IA falsa que la casa sí integró; (3) deja dicha la regla de Anselmo que abre el MP1.
+**No destripa el giro:** dice dónde y qué come; quién es (Rubén, becario de verano, cuatro meses) se descubre en 7.3.
+**Qué se ve:** portátil `cinta_2` → `paquete` (Anselmo `reach` ×2, `sfx('paper')` largo; luego `walkActor` a su
+mesa); un hueco en la cinta deja ver la pantalla (el globo sale de ahí). Escena bloqueante, < 30 s, el coro calla.
+
+```text
+(Redacción · primera entrada con acto_3_iniciado · una vez · ⟶ dos_ias_vista)
+(Anselmo, en Infografía, da la última vuelta de cinta al portátil. Rasss.)
+ANSELMO: Última vuelta. Sellado. Integración: en la próxima versión.
+LEONCIO: Envuelta. Parece un regalo. De nadie.
+(Anselmo vuelve a su mesa. Leoncio se gira hacia Bruno.)
+LEONCIO: Antes de que la envolviera le pedí un gráfico. Del Titulator.
+LEONCIO: Por curiosidad. Yo ya no tengo otra cosa que hacer.
+(Por un hueco de la cinta, la pantalla.)
+PORTÁTIL: › titulares por hora · picos: 14:00 y 14:30 · pausas de 5 min: 11
+PORTÁTIL: › origen: Sistemas, armario 27 · consumo: atún
+LEONCIO: Una IA que come a las dos y va once veces al baño.
+LEONCIO: La mía no come ni ficha. Y es la que está envuelta.
+ANSELMO: (desde su mesa) El Titulator tiene alta de usuario interno.
+ANSELMO: Lo que tiene alta es de la casa. Lo de fuera, a la cinta.
+BRUNO: Armario 27. Atún. Baño. Eso no es un modelo. Eso es un compañero.
+⟶ anselmo_dijo_regla
+```
+
+Mirar `herminia_portatil` con `dos_ias_vista` (sustituye al estado `paquete` de §6.5): «Envuelta entera.
+"PENDIENTE DE INTEGRAR". Por un hueco, la pantalla trabaja.»
+
+#### E1.4.3 Paso 38 · callback del giro (dos líneas en `N_SALIDA`, sin cambio de función)
+
+En §5.5, tras «RUBÉN: Estoy esperando a que salga el sol. Me han dicho que existe.» y antes de «La frase con la que
+Íñigo despide…», se insertan:
+
+```text
+(La pantalla de Anselmo cambia sola: «ACCESO REVOCADO: TITULATOR 3000».)
+ANSELMO: Revocado. Con fecha de hoy. Y de julio.
+LEONCIO: Integró una IA que era un becario. Y rechaza una IA que es una IA.
+```
+
+Y en la misma escena, la línea de Nemesio «Es lo único integrado de esta casa. No se lo digas a nadie.» pasa a «Es lo
+único integrado de esta casa. No se lo digas a Anselmo.» [E1]
+
+#### E1.4.4 Walkthrough: pasos afectados
+
+| n | Sala | Acción | Resultado (cambia en negrita) | Cambios | Pista justa en pantalla |
+|---:|---|---|---|---:|---|
+| 32 | Redacción | Usar `ordenador_bruno` | `pieza_opa`, `pieza_escrita`, **`herminia_midio`** (escena E1.4.1) | 1 | Aurora: «Ahora escríbela en tu ordenador, fuera del CMS.» |
+| 33 | Redacción de papel | Usar `pieza_opa` con `fax` → «2: ADMINISTRACIÓN» | `pieza_recortada` | 1 | + **Portátil: «sobra: 26 %» (paso 32)**; ficha: «Sobra un 26 %, dice Herminia» |
+| 35 | Sistemas | (de paso por la Redacción → momento 8) · Tirar `papel_continuo` | **`dos_ias_vista`, `anselmo_dijo_regla`**, `ruben_encontrado` | 2 | + **Portátil: «origen: Sistemas, armario 27 · consumo: atún»** |
+| 38 | Redacción | Dar `album_eventos` a `nerea_backlog` → «salida en valor» | igual (+2 líneas, E1.4.3) | 2 | — |
+
+Recuento sin cambios: **42 pasos, 28 cambios de sala (6/14/8)**. Ningún paso nuevo; dos pasos ganan escena.
+
+Cambios en `tools/walk-data.mjs` (§3.2):
+
+```js
+  { n: 32, /* … igual … */ esp: { tiene: ['pieza_opa'], flags: ['pieza_escrita', 'herminia_midio'] } },
+  { n: 35, sala: 'cpd', txt: 'Redacción (momento 8) → tirar papel_continuo → 7.3',
+    acc: [['ir', 'pecera'], ['ir', 'cpd'], ['verbo', 'tirar', 'papel_continuo']],
+    esp: { flags: ['dos_ias_vista', 'anselmo_dijo_regla', 'ruben_encontrado'] } },
+```
+
+(El `['ir', 'pecera']` explícito asegura que el bot pasa por la puerta de la Redacción aunque `ir` sepa buscar
+camino; no añade cambios de sala: Redacción de papel → Redacción → Sistemas son los mismos 2 de antes.)
+
+#### E1.4.5 Flags (sustituye a las filas afectadas de §3.4)
+
+| Flag | Tipo | Lo pone | Lo lee |
+|---|---|---|---|
+| `herminia_midio` | bool, **nuevo** | P2, paso 32 | ficha (§8.1), abuela (Recorte), portátil y Leoncio con `pieza_opa` |
+| `dos_ias_vista` | bool, **nuevo** | P2, momento 8 | Mirar portátil, árbol de Leoncio, `extras.mjs` |
+| `anselmo_dijo_regla` | bool, **se queda** (ya no se elimina) | P2, momento 8 (ya no el árbol) | Paco `P_ALTA` (MP1) |
+| `herminia_de_alta` | bool, **se queda** | P1, Paco `P_ALTA` | P2 (anexión, Rubén en la Redacción), titular |
+| `infografia_integrada` | bool, **se queda** | P2, escena de la anexión | portátil, frontera, `pantalla_anselmo`, Leoncio, Anselmo |
+| `leoncio_acepta_alta` | — | — | **Se elimina** (como decía §3.4): el MP1 ya no pide permiso a Leoncio |
+
+### E1.5 Micro-puzle opcional MP1, reescrito: «Alta en cuarenta segundos» (Acto III)
+
+**Decisión:** se mantiene, más corto (dos conversaciones y una escena en vez de cinco nodos) y movido al Acto III,
+donde paga mejor: ocurre mientras Rubén espera su ticket nº 1 desde julio. Fuera el permiso de Leoncio
+(`leoncio_acepta_alta`). **Requisito:** `anselmo_dijo_regla` (momento 8; todo jugador lo tiene al llegar a Sistemas
+en el Acto III). **Pista justa:** la regla la dice Anselmo en el momento 8 («Lo que tiene alta es de la casa»), y el
+registro de Sistemas ya enseña el ticket nº 2 denegado (§4.2).
+
+```text
+(Sistemas · árbol de Paco, nodo P1 · opción nueva · si anselmo_dijo_regla y sin herminia_de_alta)
+> [abs] «¿Me das de alta a una becaria? Se llama Herminia.»  → P_ALTA
+[P_ALTA]
+PACO: Ticket 48.531: «Alta becaria Herminia». ¿Persona o herramienta?
+> «Persona.»
+PACO: Cola de personas. Detrás del nº 1, que es de julio. Estado: espera.
+(vuelve a P_ALTA)
+> «Herramienta.»
+PACO: Herramientas, por el otro circuito. El rápido.
+(Teclea. El contador LED cuenta cuarenta segundos. Pitido.)
+PACO: «Herminia. Becaria de Desarrollo. Herramienta.» Estado: de la casa.
+BRUNO: Cuarenta segundos. Rubén lleva desde julio. Lo apunto en «injusticias».
+⟶ herminia_de_alta
+[con ruben_encontrado y sin ruben_libre · desde el armario · una vez]
+RUBÉN: ¿CUARENTA SEGUNDOS? ...Perdón. Yo también soy herramienta. Sin pegatina.
+> «Mejor no.»  exit
+PACO: Lo dejo abierto. Total, uno más.
+
+(Redacción · primera entrada con herminia_de_alta y sin infografia_integrada · una vez)
+(La pantalla de Anselmo pita. La lee. Se levanta despacio.)
+ANSELMO: «Herminia. Becaria de Desarrollo.» ¿De dónde viene? ...De la casa.
+ANSELMO: Entonces es estupenda.
+(Cruza la frontera y desenvuelve el portátil. Rasss, al revés. Largo.)
+LEONCIO: Son los mismos gráficos de esta tarde.
+ANSELMO: Esta tarde eran de fuera. Ahora son nuestros. Se nota en el trazo.
+(Despega la pegatina «INFOGRAFÍA» y pega una de «DESARROLLO». Estado anexionada.)
+LEONCIO: ¿Me la estás quitando?
+ANSELMO: Quitar, no. Absorber en plataforma.
+PORTÁTIL: › propietario: Desarrollo · cambios en los gráficos: 0
+(Anselmo se agacha y arranca la cinta del suelo. Toda.)
+ANSELMO: Ya no hace falta frontera. Todo esto es Desarrollo.
+LEONCIO: Me han anexionado. Pero integrada, que es lo que quería. Creo.
+⟶ infografia_integrada (frontera: marca de pegamento)
+```
+
+Rubén en la Redacción (con `ruben_libre` y `herminia_de_alta`, si no lo dijo ya en el armario; se queda la de hoy):
+«¿A ella le dieron el alta en cuarenta segundos?» / BRUNO «Es una herramienta.» / RUBÉN «Yo también. Pero sin
+pegatina.». Titular de los Despachos (§8.3) **vuelve**: `herminia_de_alta` → «UNA HERRAMIENTA CONSIGUE CONTRATO EN 40
+SEGUNDOS. UN BECARIO, EN SHOCK». Nada de esto llega al epílogo ni a los créditos (decisión 6).
+
+### E1.6 Árboles y objetos (sustituyen a los árboles `leoncio` y `anselmo` de `pecera.dialogos.js`)
+
+Notación de §5. Leoncio: 8 opciones (hoy 8, con nodo `LQ_ALTA` que desaparece); Anselmo: 8 (hoy 8, con nodo
+`AN_HERMINIA` que pasa a escena de entrada). Como mucho 6 visibles a la vez por las condiciones.
+
+**Leoncio** (`leoncio`, start `LQ0`)
+
+```text
+[onStart · 1.ª vez]
+(Dibuja un quesito en el aire.)
+LEONCIO: Vacante. En el gráfico de la planta, un quesito muy fino. Pero se te ve.
+[siguientes]
+LEONCIO: Pasa. Aquí ya no se trabaja. Se supervisa.
+
+[LQ0]
+> [1·sens] «¿Qué es Herminia?»                         once
+LEONCIO: Mi herramienta. Tres fines de semana. Hace las infografías de la casa.
+LEONCIO: Papel, web y redes. Mejor que todo mi equipo. Me incluyo.
+LEONCIO: Me duele, pero me incluyo. Eso sí: la hice yo.
+> [2·desc] «¿Y tu equipo?»                              once
+LEONCIO: Se fue a las seis y media. Ella no ficha. Yo le hago compañía.
+LEONCIO: Yo ya no dibujo. Yo superviso. Que es mirarla con orgullo.
+LEONCIO: En barras, mi día es una barra. Bajita.
+> [3·abs] «¿Me hace un gráfico a mí?»                   once
+(Leoncio gira el portátil hacia Bruno. Si ya está en paquete, por el hueco.)
+PORTÁTIL: › Bruno · aportación a la planta: 0,3 % · tendencia: plana
+LEONCIO: Plana no es mala. Plana es estable. Yo estoy plano desde que existe ella.
+BRUNO: Mi primer gráfico. Plano, pero mío. Al currículum.
+> [4·desc] «¿Y por qué Anselmo pone gráficos en tu sección?»   acto_2_iniciado · once
+LEONCIO: Desde su pantalla. En mi sección. Sin preguntar.
+LEONCIO: Un quesito que suma 130 %. En tarta, eso es una invasión.
+LEONCIO: Ella lo arreglaría en una décima. Pero está encintada. Por él.
+> [5·NO] «¿Y si Herminia te sustituye a ti también?»     once
+LEONCIO: Ya lo ha hecho. En septiembre. No se lo he dicho a nadie.
+LEONCIO: Ni a ella. Es muy sensible a los datos.
+> [6] «El Titulator era un becario.»                    ruben_encontrado · once
+LEONCIO: Lo sé. Ella lo dijo a las ocho y veinte. En barras.
+LEONCIO: Nadie mira las barras. Para eso existo yo.
+> [7] «¿Qué tal ahora con Anselmo?»                     infografia_integrada
+LEONCIO: Me han absorbido en plataforma. Sigo aquí. Supervisando. Desde Desarrollo.
+> [8] «Me voy.»                                         exit
+LEONCIO: Al salir, cuidado con Anselmo. Si llevas algo de aquí, lo envuelve.
+```
+
+**Anselmo** (`anselmo`, start `AN0`)
+
+```text
+[onStart · 1.ª vez]
+ANSELMO: Alto. Esto es Desarrollo. ¿De dónde vienes?
+BRUNO: De la Redacción. Está a un metro.
+ANSELMO: Un metro de fuera sigue siendo fuera. Pasa. Sin tocar.
+[siguientes]
+ANSELMO: ¿Otra vez cruzando? Eso, en mis sistemas, es tráfico.
+
+[AN0]
+> [1·sens] «¿Por qué no integras a Herminia?»            once
+ANSELMO: ¿De dónde viene? De Infografía. Hecha con IA. Fuera de mis sistemas.
+BRUNO: ¿Y si funciona?
+ANSELMO: Entonces, peor. Lo de fuera que funciona crea precedente.
+> [2·desc] «¿Y tú no usas IA?»                           once
+ANSELMO: IA, no. Automatización interna. Para los demás departamentos.
+ANSELMO: Un corrector para Aurora. Un narrador del Ibex para Celestino.
+BRUNO: ¿Eso no es meterse en su trabajo?
+ANSELMO: Meterse, no. Dar servicio.
+> [3·desc] «¿Por qué invades la sección de Leoncio?»     acto_2_iniciado · once
+ANSELMO: Invadir, no. Desplegar capacidad.
+ANSELMO: Mi quesito suma 130 %. Desarrollo siempre da de más.
+> [4·sens] «¿Quién arregla esto de madrugada?»           once
+ANSELMO: Si algo se rompe a las tres, ¿quién baja? Paco abre ticket. Bajo yo.
+ANSELMO: Por eso, nada de fuera. A las tres no bajo por cosas ajenas.
+> [5·abs] «¿Me envuelves a mí? Para estar protegido.»    once
+ANSELMO: No. La cinta es para lo que consume recursos. Tú, de momento, no.
+> [6] «He arreglado el CMS.»                             cms_vivo · once
+ANSELMO: ¿Desde dónde?
+BRUNO: Desde Sistemas. Una regleta.
+ANSELMO: Solución de terceros. Funciona, pero no es mía. Próxima versión.
+> [7·NO] «El Titulator era un becario.»                  ruben_encontrado · !ruben_libre · once
+ANSELMO: Tenía alta. Estaba en mis sistemas. Todo en regla.
+(Silencio de 1,5 s.)
+ANSELMO: ...En un armario de mis sistemas. Lo miro en la próxima versión.
+> [8] «Me voy.»                                          exit
+ANSELMO: Sal por la frontera. Y no te lleves nada que no sea tuyo.
+```
+
+**Nemesio** (§5.5, nodo `N0` [E1]): quedan [1·WT] «¿Qué tal con Yoli?», [5·NO] «¿Me cambias de columna?», [6]
+«¿Por qué gritan tanto…?» y [7] «Me voy.»; salen [2] cinta, [3] portátil envuelto y [4] madrugada (pasan a Anselmo,
+arriba); vuelve, en su sitio, `[2·sens] «¿Por qué está bloqueado lo de Herminia?»` once → NEMESIO «Lo bloquea Anselmo.
+Y a Anselmo lo bloquea Anselmo.» / «Es la dependencia más estable del tablero.» (se queda, literal de hoy).
+
+**Mirar / Dar / Usar** (las importantes; lo que no se cita se queda como hoy en `pecera.js`)
+
+| Objeto | Verbo | Línea |
+|---|---|---|
+| `leoncio_quesitos` | Mirar | BRUNO: Leoncio, Infografía. Un quesito de cartulina prendido en el pecho. Se lo dio él. |
+| | Dar `cafe` | LEONCIO: Gracias. Herminia dice que es mi quinto. Me lo ha puesto en barras. Suben. |
+| | Dar `ficha_pagina_7` | LEONCIO: Tres casillas. Herminia lo pinta en semáforo. Estás en ámbar. (se queda) |
+| | Dar `acta_reunion` | LEONCIO: En tarta: 50 % café, 50 % nada. El gráfico más honesto del año. (se queda) |
+| | Dar `pieza_opa` | (E1.4.1) |
+| | Dar `*` | LEONCIO: Herminia ya lo ha contado. Yo lo sostengo. Es mi parte. |
+| | Empujar | BRUNO: No. Está mirando a Herminia trabajar. Es lo único que hace. |
+| `anselmo_monolito` | Mirar | BRUNO: Anselmo, director de Desarrollo. Un rollo de cinta en el cinto. Cargado. |
+| | Dar `pieza_opa` | ANSELMO: ¿Escrita fuera del CMS? Sistema paralelo. Te abro expediente. Mental. |
+| | Dar `cafe` | ANSELMO: ¿De Gertrudis? No. Yo bebo de mi termo. Café de la casa. |
+| | Dar `ticket_n1` | ANSELMO: Un ticket cerrado. Es de Sistemas. Yo no lo he visto. (se queda) |
+| | Dar `album_eventos` | ANSELMO: Fotos de Eventos. ¿De dónde vienen? Ya. Bonitas, pero no. |
+| | Dar `*` | ANSELMO: ¿De dónde viene? Si no lo sabes, no lo cojo. |
+| | Empujar | BRUNO: Está detrás de su cinta. Empujarle sería cruzar sin visado. |
+| `herminia_portatil` | Mirar `cinta_1` | BRUNO: Herminia. Un portátil con pegatina «INFOGRAFÍA». Y una tira de cinta encima. |
+| | Mirar `cinta_2` | BRUNO: Dos tiras de cinta. Por debajo, la pantalla sigue haciendo gráficos. |
+| | Mirar `paquete` | (E1.4.2) |
+| | Mirar `anexionada` | BRUNO: Sin cinta. Pegatina nueva: «DESARROLLO». Los gráficos, idénticos. |
+| | Usar (Actos I-II) | PORTÁTIL: › quesito de Desarrollo · suma: 130 % · corrección: bloqueada |
+| | | LEONCIO: Ella lo arreglaría en una décima. No la dejan. Él lo publica. |
+| | Usar `paquete` | BRUNO: No se puede. La han integrado en un paquete. |
+| | Hablar | PORTÁTIL: › saludo recibido · hola: 100 % / BRUNO: Un gráfico de un saludo. Me ha entendido. |
+| | Usar `ficha_pagina_7` | PORTÁTIL: › ficha página 7 · casillas hechas: {n} de 3 · semáforo: ámbar |
+| | Coger | LEONCIO: Herminia no sale de esta mesa. Fuera está Anselmo. |
+| | Cerrar | LEONCIO: Ni se te ocurra. Con nombre de persona no se la apaga. (se queda) |
+| | Tirar (la cinta) | ANSELMO: ¡Eh! Eso es infraestructura. |
+| `pantalla_anselmo` | Mirar | Se queda la rotación actual (ACCESO DENEGADO: HERMINIA / CONCEDIDO: TITULATOR; quesito 130 %; Antártida; REVOCADO con `ruben_encontrado`; CONCEDIDO: HERMINIA (DESARROLLO) con `infografia_integrada`). |
+| `frontera_carrocero` | Mirar | BRUNO: Cinta de carrocero en el suelo. La frontera de Desarrollo. Recta, de momento. |
+| `mesa_dibujo` | — | Se queda (no pasa a `mesa_infografia_vacia`). |
+
+**Murmullos.** Leoncio: «Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.» / «Cuarenta y un pósits a
+Anselmo. Cuarenta y un "no". Serie muy estable.» Anselmo: «Esto no ha pasado por mí. Esto tampoco. Esto, de refilón.» /
+«(al termo) Tú sí eres de la casa.». Fuera «Transversal. No invasivo.», «Revisión: marzo…» y «Si la cinta avanza otro
+palmo…». Regla: como mucho **un** murmullo por visita entre los dos, nunca en el mismo minuto que una discusión del
+coro y nunca con globo, menú o móvil abiertos (misma cola de ambiente que el coro, §5.14).
+
+### E1.7 Desarrollo: qué dice Anselmo, qué dice Nemesio, qué hace el coro
+
+**El coro no cambia** respecto a §5.14: 4 discusiones (una sola sobre Diseño), cada 60-120 s, máx. 3 por visita,
+nunca encima de otro texto, árbol de 3 opciones, recuento de «Diseño» ≤ 11. Leoncio y Anselmo **no suman ninguna
+mención a Diseño**. El chiste Diseño-contra-Desarrollo sigue a un tercio; el de Infografía-contra-Desarrollo es otro
+chiste y tiene su propio carril (E1.3), sin cruzarse con el primero.
+
+**Reparto de líneas entre Anselmo y Nemesio** (sustituye a lo que §2.4, §4.2 y §5.5 daban a Nemesio «de Anselmo»):
+
+| Línea | En el plan | Con E1 |
+|---|---|---|
+| «¿Y si va sin pantalla? Peor. Si funciona, la gente se acostumbra.» | Nemesio (apagón 1 y árbol) | **Anselmo**, apagón 1 (en el árbol, variante «crea precedente») |
+| «Si algo se rompe a las tres, ¿quién baja? Paco abre ticket. Bajo yo.» | Nemesio (árbol [4]) | **Anselmo**, árbol [4] |
+| «Pone "NO DESENCHUFAR". La cinta es un requisito.» | Nemesio (apagón 1) | **Anselmo**: «Ese enchufe está en mis sistemas. Desenchufar es un cambio sin revisar.» |
+| «La frontera. A este lado, código propio. Y café.» / «Lo que cruza sin pasar por el tablero, lo envuelvo.» | Nemesio (árbol [2]) | **Fuera** (lo dicen el cartel de la frontera, que se queda, y la escena del paso 32) |
+| «Hace gráficos solo. Sin ticket. Sin columna.» | Nemesio (árbol [3]) | **Fuera** (lo cuenta Leoncio) |
+| Ticket nº 2 del registro: «Firmado: Nemesio» | Nemesio | **«Firmado: Anselmo»** (§4.2, P1) |
+| «Tercera vez. Te paso a BLOQUEADO.» / «…tráeme un motivo. Con número.» / «Y mira la brida…» | Nemesio (apagón 3) | **Nemesio** (se queda; ver acotación nueva abajo) |
+| Camino antiguo del enchufe: «¿Tiene número?» … «HECHO (PERO NO)» | Nemesio | **Nemesio** (se queda) |
+| «Sin número, a su enchufe.» | Nemesio | **Nemesio** (se queda) |
+| «Si no está en el tablero, no existe.», `N_ALBUM`, `N_SALIDA` | Nemesio | **Nemesio** (se queda; una palabra cambia, E1.4.3) |
+| «¿Por qué está bloqueado lo de Herminia?» (opción de hoy) | eliminada | **Nemesio** (vuelve, literal) |
+
+**§4.2, apagón, vez 1 [E1]** (sustituye al bloque «1.ª vez · apagon_n = 1»; Yoli y Bruno, igual):
+
+```text
+(Clic. La pantalla se va a negro. Se oyen los ventiladores.)
+YOLI: ¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?
+(¡Plin! En el monitor de Yoli: «PUBLICADO».)
+YOLI: ...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!
+(Anselmo se levanta sin prisa, cruza su cinta, lee la del enchufe y enchufa.)
+ANSELMO: Ese enchufe está en mis sistemas. Desenchufar es un cambio sin revisar.
+(La pantalla vuelve: 3.418. El monitor de Yoli: «GUARDANDO».)
+YOLI: ...Ya no va.
+BRUNO: Iba mientras estaba apagada.
+ANSELMO: ¿Y si va sin pantalla? Peor. Si funciona, la gente se acostumbra.
+```
+
+**§4.2, apagón, vez 3 [E1]**: la acotación «Nemesio enchufa con el pie, sin levantarse» pasa a «Nemesio se levanta,
+enchufa sin mirar y vuelve a su mesa» (Nemesio ya no se muda junto al enchufe). Texto, igual.
+
+Así, en la misma sala, un «no» suena de dos maneras: **Anselmo** dice «eso es mío» (propiedad); **Nemesio** dice
+«eso va a BLOQUEADO» (columna). Yoli lo vive y el coro, a su ritmo, culpa a Diseño de lo demás.
+
+### E1.8 Arte y paquetes
+
+**§10.2, filas de la Redacción [E1]:**
+
+| Qué | Antes (plan) | Con E1 | Prioridad |
+|---|---|---|---|
+| Zona de Leoncio | repintar mesa de Infografía vacía + Nemesio en su extremo | **Nada que repintar**: Leoncio, su mesa de dibujo y su sitio se quedan como hoy; Nemesio no se mueve | — |
+| Zona de Anselmo | silla vacía con chaqueta (20×24) | **Nada que repintar**: Anselmo se queda | — |
+| `herminia_portatil` | 3 estados (`cinta_1`, `cinta_2`, `paquete`) | **4 estados**: `cinta_1` (una tira), `cinta_2` (dos tiras en aspa), `paquete` (envuelto, con un hueco de 4×3 px por donde se ve la pantalla encendida), `anexionada` (sin cinta, pegatina «DESARROLLO» de 6×2 px sobre la de «INFOGRAFÍA») | **Alta** (está en el camino) |
+| `frontera_carrocero` | estados `recta`, `doble`, `lazo`, pegamento | **Solo `recta` y pegamento** (fuera `doble` y `lazo`) | — |
+| Escenas | — | Anselmo `walkActor` + `reach` hasta la mesa de Leoncio (paso 32, momento 8, anexión); Leoncio gira el portátil (`reach`) | Media |
+
+Neto: dos repintados de prioridad Alta menos, un estado de 14×10 px más.
+
+**§10.1 [E1]:** salen de la tabla de eliminados los actores `leoncio_quesitos` y `anselmo_monolito`, los árboles
+`leoncio` y `anselmo` (se sustituyen por E1.6), los hotspots `mesa_dibujo` y `pantalla_anselmo` (no se renombran), los
+flags `anselmo_dijo_regla`, `herminia_de_alta` e `infografia_integrada`, el titular `herminia_de_alta` y `P_ALTA` de
+Paco (se reescribe, E1.5). Se siguen eliminando: el actor `herminia` (sin sprite), `leoncio_quesitos.murmurs` y
+`anselmo_monolito.murmurs` actuales (E1.6), `LQ_ALTA`, `AN_HERMINIA` como nodo, `CO_HERMINIA` del coro,
+`leoncio_acepta_alta`, los estados `doble` y `lazo` de la frontera.
+
+**§11 [E1], reparto del trabajo:**
+
+| Paquete | Añade | Quita |
+|---|---|---|
+| **P0** | `actors.js`: Leoncio y Anselmo se quedan (murmullos de E1.6); fuera solo el actor `herminia`. `flags.js`: E1.4.5. `items.js`: línea de la ficha con `herminia_midio`. `game.js`: abuela, Recorte nivel 1 con `herminia_midio`. `walk-data.mjs`: pasos 32 y 35 (E1.4.4). `extras.mjs`: E1.9. `text-audit.mjs`: cuenta «PORTÁTIL:» como línea hablada. | «Fuera Leoncio, Anselmo» de `actors.js`. |
+| **P1** | `cpd.js`: ticket nº 2 «Firmado: Anselmo»; `P_ALTA` reescrito (E1.5) con la línea de Rubén en el armario. | — |
+| **P2** | `pecera.dialogos.js`: árboles `leoncio` y `anselmo` (E1.6); Nemesio sin [2]-[4] y con «¿Por qué está bloqueado lo de Herminia?»; `N_SALIDA` con las dos líneas y «No se lo digas a Anselmo» (E1.4.3). `pecera.js`: escena del paso 32 dentro de `usar` de `ordenador_bruno` (E1.4.1), momento 8 y anexión en `onEnter` (E1.4.2, E1.5), apagón vez 1 con Anselmo (E1.7), portátil con 4 estados y sus verbos, Mirar/Dar de Leoncio y Anselmo (E1.6), frontera solo recta. `pecera.voces.js`: el `'H'` pasa a ser «PORTÁTIL» (`sayFrom('herminia_portatil')`, sin nombre). `pajarera.js`: titular `herminia_de_alta` vuelve. | Mover a Nemesio a la mesa de Infografía; renombrar `mesa_dibujo` y `pantalla_anselmo`; los «fuera Leoncio y Anselmo» de §11 P2. |
+| **P3** | `catacumba.js`: la opción de Teodoro «¿Conoce a Herminia, la de Infografía?» se queda (casa con E1.4.1: «Teodoro le manda faxes»). | — |
+| **P4** | Nada. (`sala_amazonas.js`: la línea «Alguien ha enchufado aquí a Herminia. Por cable.» se quita: Herminia no sale de su mesa.) | — |
+| **Final** (P1) | Nada: epílogo y créditos siguen sin Infografía. `final.js` deja de ocultar a Leoncio y Anselmo solo porque la escena de la Redacción del epílogo desaparece. | — |
+
+Cruces nuevos para §11.1: `herminia_midio` (P2 → P0 ficha y abuela); `dos_ias_vista` y `anselmo_dijo_regla` (P2 →
+P1 `P_ALTA`); `herminia_de_alta` (P1 → P2 anexión y titular, Rubén en la Redacción); `infografia_integrada` (P2 → P2).
+
+### E1.9 `tools/extras.mjs` (sustituye a la fila «X5, X7, X8, X10, X12, X13 … Desaparecen» de §3.5)
+
+| Paso | Tras | Sala | Acción | `esp` |
+|---|---|---|---|---|
+| XE1 | 13 | Redacción | Hablar `leoncio_quesitos` → «¿Me hace un gráfico a mí?» | sin flag (comprueba que sale la línea `PORTÁTIL:`) |
+| XE2 | 16 | Redacción | Hablar `anselmo_monolito` → «¿Por qué invades la sección de Leoncio?» | sin flag |
+| XE3 | 35 | Sistemas | Hablar `paco_ticket` → «¿Me das de alta a una becaria? Se llama Herminia.» → «Herramienta.» | `herminia_de_alta` |
+| XE4 | XE3 | Redacción | (entrar) → anexión | `infografia_integrada` |
+
+Los antiguos X5, X7, X8, X10, X12 y X13 desaparecen (como decía §3.5); XE1-XE4 ocupan su lugar.
+
+### E1.10 Verificación
+
+- **Resoluble.** El paso 32 y el momento 8 no piden nada nuevo: el paso 32 tiene los mismos requisitos que antes
+  (`silla_libre`, `casilla_fuente`) y el momento 8 solo `acto_3_iniciado`. No quitan objetos. El MP1 es opcional, sale
+  después de `anselmo_dijo_regla` (que todo jugador tiene al llegar al paso 35) y no toca nada del camino: ni Rubén,
+  ni el ticket nº 1, ni la frontera de la que dependa algo. **42 pasos, 28 cambios de sala (6/14/8)**, igual que §12.1.
+- **Flags.** Nuevos con lector: `herminia_midio` (ficha, abuela, portátil, Leoncio), `dos_ias_vista` (portátil,
+  Leoncio [6] vía `ruben_encontrado`, extras). Recuperados con lector: `anselmo_dijo_regla` (`P_ALTA`),
+  `herminia_de_alta` (anexión, Rubén, titular), `infografia_integrada` (portátil, frontera, pantalla, Leoncio [7]).
+  Eliminado sin lector: `leoncio_acepta_alta`.
+- **Longitud.** Todas las líneas nuevas de E1 (bloques de guion, celdas de tabla y líneas test): **0 pasan de 80
+  caracteres** (comprobado con script sobre el texto tras «NOMBRE: »).
+- **Reglas de la casa.**
+  - Sin director del periódico; sin «Consejo»; sin marcas reales (Titulator, Optimal Brains: inventadas).
+  - **Diseño y Producto e Infografía nunca juntos:** ni Leoncio ni Anselmo dicen «Diseño»; el paso 32, el momento 8, la
+    anexión y `P_ALTA` no contienen «Diseño» y el coro no habla durante esas escenas. Leoncio **no entra** en la escena
+    7.2 (allí suena «¡Ha sido Diseño!»). Epílogo y créditos, sin Infografía.
+  - **Machismo de Desarrollo:** nada nuevo; muy velado y nunca nombrado. Anselmo juzga solo el origen de las cosas
+    («¿De dónde viene?»), nunca a las personas; la etiqueta «becaria de Desarrollo» es de Sistemas y es literal de hoy.
+  - **Nombres visibles de salas:** Redacción, Sistemas, Redacción de papel, Despachos. Ningún apodo interno.
+  - **«Como…»:** ninguna línea nueva remata con «Como X» (la de hoy del `cartel_frontera`, «…Como la política de
+    integración.», queda en «Se tambalea y vuelve. La política de integración, igual.», §6.4 [E1]).
+  - **Topes:** «en tarta» (Leoncio) 4; «mis sistemas» (Anselmo) 5; «próxima versión» 3; Herminia, 3 salidas por escena
+    como mucho; «Diseño» en todo el juego, sin cambios (≤ 11).
