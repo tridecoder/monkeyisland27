@@ -42,8 +42,8 @@ async function revelacionRuben(api) {
     api.shake(200, 1);
     await api.wait(600);
     await api.sayAs(R, 'BECARIO DETECTADO. LO QUE PASÓ DESPUÉS TE SORPRENDERÁ.');
-    // sale del armario y se queda a su lado (deja ver el nido)
-    const at = L.at || [178, 105, 'down'];
+    // sale del armario (un paso adelante) y se queda delante del nido
+    const at = L.at || [186, 106, 'down'];
     await api.walkActor(R, at[0], at[1]);
     api.faceActor(R, 'bruno');
     api.face(R);
