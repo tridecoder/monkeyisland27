@@ -1,0 +1,221 @@
+n,clase,archivo,línea,texto
+0,sonrisa,lib/movil.js,31,Sin leer desde hace seis años. Ya casi me ha llegado el acceso.
+1,sonrisa,rooms/ecosistema.js,169,«TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO.»
+2,sonrisa,rooms/pecera.dialogos.js,285,CULPAS A DISEÑO: 3.112. CON RAZÓN: 0.
+3,neutra,rooms/pecera.js,41,Dicen que la plaza de Ramírez sale a subasta. Ya tiene columna en el tablero.
+4,neutra,rooms/vestibulo.js,139,En el Vending. Gertrudis. Pero no te lo dará así como así.
+5,sonrisa,items.js,233,Echarle azúcar al café de Gertrudis es corregirla. No me atrevo.
+6,sonrisa,rooms/catacumba.js,473,Lo empujo un centímetro. Teodoro lo devuelve a su sitio. Exacto.
+7,relleno,rooms/pecera.secretaria.js,128,No me preguntó nadie.
+8,sonrisa,rooms/sala_amazonas.js,110,"Si abro uno, me lo imputan como gasto de representación."
+9,neutra,rooms/pecera.js,317,"""DESARROLLO · A PARTIR DE AQUÍ, SOLO CÓDIGO PROPIO""."
+10,neutra,rooms/office.js,273,Pulso el botón del café. Me mira. Así no. Habrá que hablarle.
+11,sonrisa,rooms/pecera.js,412,"Yoli, audiencias. Le tiembla el párpado al ritmo de la gráfica."
+12,neutra,rooms/pecera.js,259,Lo escribo fuera del CMS: ahí dentro vive el Titulator.
+13,fallida,rooms/pecera.dialogos.js,220,"En mi juego, el Titulator ya era un becario."
+14,relleno,rooms/pecera.secretaria.js,37,Está a medias.
+15,neutra,rooms/pajarera.js,239,Todos los relojes marcan las 20:59. La sala es de Ramírez. Siempre.
+16,neutra,rooms/cpd.js,55,¿Y qué haces en un armario?
+17,sonrisa,actors.js,242,"Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño."
+18,sonrisa,rooms/sala_amazonas.js,61,"Si la cierro, esto se convierte en una reunión de verdad. No me atrevo."
+19,neutra,game.js,45,"Y pégala bien, que se cae. Pídele algo que pegue al del mostrador."
+20,sonrisa,lib/ascensor.js,39,Le recordamos que lo que se dice en el ascensor no sale. Ni el wifi.
+21,risa,rooms/ecosistema.dialogos.js,14,"¿Desde marzo sin confirmar? Eso no es un cliente, es un exnovio."
+22,excluida (no es diálogo),game.js,284,Clic derecho (o pulsación larga): la acción más obvia.
+23,sonrisa,rooms/pajarera.js,312,Rosa. Emociones. No te lo tomes como algo personal: es un pósit.
+24,sonrisa,actors.js,399,"Plaza 3, sucesión en disputa. Esto no es un garaje. Es una herencia."
+25,neutra,rooms/pecera.dialogos.js,218,Y prueba cosas raras. Aquí todo lo raro está probado.
+26,sonrisa,rooms/vestibulo.js,396,Celestino no se coge. Viene con el edificio. Como las goteras.
+27,sonrisa,rooms/ecosistema.js,141,"El roll-up no se toca, cariño. Está contratado hasta 2030."
+28,neutra,rooms/catacumba.js,369,"En mi página no hay erratas, chaval. Ni en los nombres."
+29,sonrisa,rooms/office.js,45,E-52: ESE CAFÉ ESTÁ SACADO DE CONTEXTO.
+30,sonrisa,rooms/cpd.js,132,¿El de Teodoro? Ese fax tiene más años que tú y más paciencia que yo.
+31,sonrisa,rooms/eventos.js,40,¡Flash! Para el álbum. Y para el seguro.
+32,sonrisa,rooms/eventos.js,122,Una foto de un álbum de fotos. Eso ya es un archivo. ¡Acreditado!
+33,sonrisa,rooms/eventos.js,237,«¿De quién eres?». La silla no contesta. Tiene contrato de confidencialidad.
+34,relleno,rooms/pecera.js,49,¡El navegador no respeta nada!
+35,sonrisa,rooms/vestibulo.js,42,"Debajo, a lápiz, la línea de sucesión. Como en una monarquía."
+36,sonrisa,game.js,20,Lo cierro. No pasa nada. Igual que en las reuniones.
+37,sonrisa,rooms/eventos.dialogos.js,75,Una vez sujeté un evento entero. Con dos tiras.
+38,neutra,game.js,118,Una cosita. ¿Puede pasarse por mi despacho? Es un segundo.
+39,neutra,rooms/pecera.js,324,"""ACCESO CONCEDIDO: HERMINIA (DESARROLLO)"". Lo de Infografía, tachado."
+40,risa,rooms/pecera.js,191,"""¿Me lees?"" Baja a 3.417. Creo que se ha ido el que me leía."
+41,sonrisa,rooms/ecosistema.dialogos.js,71,"Encantados. Ahora la web respira. El banner, digo."
+42,sonrisa,rooms/ecosistema.dialogos.js,29,¡Bruno! ¡Justo hablábamos de tu marca personal!
+43,neutra,rooms/pecera.dialogos.js,25,Íñigo va a cerrar el papel.
+44,fallida,rooms/administracion.dialogos.js,147,Lleva RECHAZADO en la frente. Del revés. Lo he leído igual.
+45,neutra,rooms/vestibulo.js,122,Hablar no. Pero oye. Y yo oigo a la planta.
+46,sonrisa,rooms/pecera.js,452,¿El sol también va con ticket?
+47,sonrisa,rooms/ecosistema.js,113,Se cierra solo. Es lo único de la planta que no pide feedback.
+48,sonrisa,duelo.js,36,Diseño entrega a tiempo. No sé en qué cuadrante ponerlos.
+49,relleno,rooms/eventos.js,194,"¡Probando, cambio! Se te oye en Comercial."
+50,neutra,rooms/eventos.js,171,"Todos los relojes de la casa marcan las 20:59. Este, cinco minutos."
+51,neutra,rooms/pecera.dialogos.js,47,"Ah. ""Baja becario Rubén"". Por Hacer. Desde julio."
+52,sonrisa,rooms/office.js,285,"Si le tiro de la manga, me la delega."
+53,neutra,game.js,121,Una cosita. Begoña me manda el triplicado de lo que recorta.
+54,relleno,rooms/office.js,73,Me lo apunto.
+55,neutra,rooms/pecera.secretaria.js,33,¿Me deja un boli?
+56,relleno,rooms/pecera.js,304,Nadie la ha visto moverse.
+57,neutra,rooms/pecera.dialogos.js,259,Vacante soy yo.
+58,neutra,lib/movil.js,23,¡Empezamos en 5 minutos!
+59,sonrisa,rooms/pajarera.js,122,OCUPADO hasta 2031. Llamar a esta puerta es pedir una prórroga.
+60,neutra,rooms/pecera.escenas.js,89,Os presento al Titulator 3000. Inteligencia artificial de titulares.
+61,sonrisa,rooms/pecera.secretaria.js,126,Armario 27. En agosto me pidió un boli por debajo de la puerta.
+62,sonrisa,rooms/pecera.dialogos.js,220,Una IA no pone las tildes con tanto cariño.
+63,sonrisa,rooms/office.js,57,"""Firmar el cierre"" suena a que lo cierro yo."
+64,sonrisa,rooms/pecera.js,91,"""Calendario laboral 2027: todos los puentes (y cómo pedir el lunes)""."
+65,risa,rooms/cpd.js,185,No me encerró. Me dio una silla y wifi. Yo pensé que era un contrato.
+66,fallida,rooms/office.js,271,Dentro hay posos de 2009 y un tornillo de la Ferretería Hermanos Tornillo.
+67,sonrisa,rooms/pecera.js,359,"Arriba: ""Entregado a las 18:29. Todo en la carpeta. Buen fin de semana""."
+68,neutra,rooms/pecera.dialogos.js,159,¿Y el Titulator? Ese sí entró.
+69,sonrisa,rooms/pecera.js,48,¡Abrid una incidencia a la lluvia!
+70,relleno,rooms/pecera.js,56,¡Esto es culpa de Dis...!
+71,sonrisa,duelo.js,39,"¿Y usted cómo se encuentra? De salud, digo."
+72,sonrisa,rooms/pecera.js,442,Rubén mira por la ventana. Espera al sol como quien espera una nómina.
+73,sonrisa,rooms/catacumba.js,481,Nada. Las 20:59. Es el minuto más largo de la historia del periodismo.
+74,sonrisa,rooms/administracion.dialogos.js,71,Representación. Me represento a mí mismo.
+75,sonrisa,escenas/final.js,90,Íñigo. Hay una beca en Mercados. Lo hablamos.
+76,sonrisa,rooms/pecera.js,71,"Javier, Javi y Javier Ignacio. Será el diseño del anuncio."
+77,relleno,rooms/vestibulo.js,334,Celestino lo ha tapado con su bufanda.
+78,sonrisa,rooms/sala_amazonas.js,115,¿Sigue siendo marzo?
+79,sonrisa,rooms/pajarera.js,177,"Rosa, emociones. Azul, excusas. El azul es el que más se gasta."
+80,neutra,rooms/pecera.dialogos.js,111,Porque Anselmo no la integra. Dice que no ha pasado por Desarrollo.
+81,neutra,rooms/administracion.dialogos.js,156,Todos los contratos de la casa. Leídos. Hasta la letra pequeña.
+82,relleno,rooms/pecera.dialogos.js,172,¿Cómo?
+83,sonrisa,rooms/catacumba.js,510,Ese libro no se mueve. Es lo único que sostiene esta mesa.
+84,neutra,rooms/administracion.dialogos.js,34,Quiero presentar una nota de gasto.
+85,risa,rooms/sala_amazonas.js,137,Hay uno que encaja consigo mismo. Lo dejo así: es feliz.
+86,neutra,rooms/pecera.dialogos.js,24,¿Quién comenta mis piezas?
+87,sonrisa,rooms/vestibulo.js,363,Esas llaves no se tocan. Las custodio yo. Y el garaje me custodia a mí.
+88,sonrisa,rooms/pecera.dialogos.js,109,Se fue a las seis y media. Herminia no ficha.
+89,neutra,rooms/pecera.js,241,"Ramírez: ""Quedo a la espera de tus comentarios""."
+90,sonrisa,rooms/cpd.js,126,"Cierra. No, esa no. Esa es un servidor."
+91,sonrisa,rooms/pecera.js,334,Las manos están enfadadas.
+92,neutra,rooms/office.js,130,"Ah, Vacante. El acta de la reunión hay que redactarla. Te lo pongo por escrito."
+93,sonrisa,rooms/vestibulo.js,329,"Si le tiro de una hoja, me la deja en la mano. Es de plástico, pero digna."
+94,excluida (no es diálogo),rooms/ecosistema.js,101,"bool · D · Cerrar portátil de Tadeo (Acto III) · D (Mirar portátil, impresora)"
+95,sonrisa,rooms/pecera.js,261,Tentador. Pero el teclado de al lado ya lo probó en 2017.
+96,neutra,rooms/vestibulo.js,138,¿Dónde hay café en esta casa?
+97,relleno,rooms/pecera.dialogos.js,277,"Perdón, Diseño."
+98,sonrisa,rooms/pecera.dialogos.js,158,Eso la hace nuestra.
+99,sonrisa,rooms/pajarera.js,192,"Es de cuero blanco. Si lo toco, le dejo la huella de un sueldo bajo."
+100,risa,rooms/catacumba.js,279,"En internet una errata se corrige, chaval. En papel se enmarca."
+101,sonrisa,rooms/ecosistema.dialogos.js,92,Tadeo confía. Leer es para quien duda.
+102,fallida,rooms/cpd.js,249,"No. Ya he encerrado a bastante gente hoy. Bueno, a nadie. Pero no."
+103,risa,actors.js,377,"Esto, en barras. Esto, en tarta. Esto, en tarta pero triste."
+104,neutra,escenas/climax.js,61,"¿Auditada por quién? Para Sistemas, tu IA es un becario. Alta: julio."
+105,neutra,rooms/administracion.dialogos.js,184,¿Y no me lo puede decir ahora?
+106,sonrisa,rooms/vestibulo.js,213,"Si me llevo la «e», se queda en «lContable». Suena a gestoría con prisas."
+107,relleno,rooms/pecera.secretaria.js,106,Para que sepa lo que se siente.
+108,neutra,rooms/pecera.dialogos.js,38,¿Qué es ese pósit tan amarillo?
+109,sonrisa,rooms/pecera.js,70,A la oferta de «ninja del backend» se han apuntado tres.
+110,sonrisa,rooms/pecera.dialogos.js,216,Con una flecha roja. De dos píxeles de grosor. Para que se viera.
+111,fallida,rooms/eventos.js,147,"Dentro, más lanyards. Y debajo, tazas con logo. Es un ecosistema."
+112,sonrisa,rooms/catacumba.js,243,Lo has dicho bien. Me has descolocado.
+113,fallida,rooms/cpd.js,190,Mirar el sol. Y preguntar quién gobierna.
+114,neutra,rooms/pecera.dialogos.js,189,"Si no está en el tablero, no existe."
+115,relleno,rooms/pecera.dialogos.js,88,Prometo cuidarlo.
+116,sonrisa,rooms/pecera.js,32,Teodoro vive en la Catacumba. Está hasta empadronado. Lo dice el wifi.
+117,sonrisa,rooms/pecera.dialogos.js,252,...Pues la pantalla la eligió Diseño.
+118,sonrisa,rooms/pajarera.js,198,Le pregunto quién le escribe los titulares. Parpadea. En mayúsculas.
+119,neutra,rooms/pecera.js,325,"""ACCESO REVOCADO: TITULATOR 3000"". Con fecha de hoy. Y de julio."
+120,sonrisa,rooms/vestibulo.js,279,Le pregunto por el Ibex. Me contesta en diferido.
+121,sonrisa,escenas/climax.js,72,...Eso es una alucinación.
+122,excluida (no es diálogo),rooms/ecosistema.dialogos.js,47,El álbum es de Eventos. Yo solo lo viralizo.
+123,sonrisa,rooms/ecosistema.js,152,"Pone SINERGIA en tres colores. Si la miras fijamente, aparece un velero."
+124,risa,rooms/pecera.dialogos.js,25,"Si cierra el papel, ¿quién me va a odiar con criterio?"
+125,excluida (no es diálogo),game.js,285,"H, Espacio o el ojo del panel: ver los objetos de la sala."
+126,neutra,rooms/pajarera.js,223,"""OCUPADO – hasta 2031""."
+127,sonrisa,rooms/pecera.js,51,Tu silla gira. Se ha tocado sola.
+128,neutra,rooms/cpd.js,186,¿Escribiste tú los discursos de Íñigo?
+129,sonrisa,rooms/pajarera.js,329,"Vacante. Te iba a llamar. Bueno, no. Lo hablamos."
+130,neutra,rooms/catacumba.js,110,"Veintitrés líneas. Hueco, fuente y firma."
+131,neutra,rooms/pajarera.js,126,"Tengo el acta. Pero sin lo de Rubén, Íñigo me desapalanca."
+132,sonrisa,escenas/final.js,219,"Asignado a: Ramírez (viernes, 20:59, recurrente)."
+133,sonrisa,rooms/vestibulo.js,147,¿Me preguntas por el Ibex? ¿A mí? ¿En treinta años?
+134,sonrisa,rooms/cpd.js,232,Pesan como un servidor. Porque son servidores.
+135,sonrisa,rooms/eventos.js,202,Pilar respira en mayúsculas.
+136,sonrisa,game.js,277,Tranquilo. Yo también me quedo así en las reuniones.
+137,neutra,rooms/catacumba.js,220,Tengo dos fuentes.
+138,sonrisa,rooms/office.js,206,"Si caliento la ficha, se borran las casillas. Y la ilusión."
+139,relleno,rooms/administracion.dialogos.js,167,No dormí en un año.
+140,neutra,rooms/pajarera.js,312,¿De qué color soy yo?
+141,sonrisa,actors.js,431,LIMPIEZA AUTOMÁTICA: NADIE ME LIMPIA.
+142,sonrisa,game.js,124,Le he mandado la coma a Teodoro. Por fax. Era solo eso.
+143,sonrisa,actors.js,197,"Soy yo. Joven, prometedor y sin contrato. Como una startup."
+144,neutra,rooms/pajarera.js,317,¿Conoces a Herminia?
+145,neutra,rooms/pecera.js,472,"Herminia la lee en un segundo. Ya tiene infografía. Papel, web, redes."
+146,sonrisa,rooms/pecera.js,246,Bandeja de entrada. Ramírez sigue a la espera de mis comentarios.
+147,neutra,game.js,52,¿Has hecho la cuenta de gastos? Hazla mal. Así te enseñan una bien hecha.
+148,sonrisa,rooms/sala_amazonas.js,19,«ENTRADA 2»: el tiempo de ayer. En diferido.
+149,neutra,rooms/catacumba.js,241,¿Ha oído cómo pregunta Custodia?
+150,sonrisa,rooms/cpd.js,114,No atiendo. Tengo 312 tickets que dicen «el CMS no va».
+151,sonrisa,rooms/administracion.dialogos.js,13,"Recorto por abajo, como manda la pirámide invertida."
+152,sonrisa,rooms/sala_amazonas.js,107,Catorce botellines por los suelos. Uno sigue en pie. Es de Mercados.
+153,neutra,escenas/climax.js,300,Cuatro meses. Nos deben 191.808 euros. Lo he revisado tres veces.
+154,sonrisa,rooms/cpd.js,245,Pegatina: «PROPIEDAD DE OPTIMAL BRAINS. NO ABRIR: SE ENFRÍA EL MODELO».
+155,neutra,rooms/vestibulo.js,324,"La giro. Debajo de una hoja, un micrófono de 1994."
+156,sonrisa,rooms/vestibulo.js,28,"¡Ibersideral entra por la banda! ¡Sube un 0,2! ¡Qué técnica!"
+157,fallida,rooms/eventos.js,128,"Si me lo llevo, mañana en la Pecera se nos ven las ojeras de verdad."
+158,neutra,rooms/administracion.dialogos.js,217,«Las cantidades se expresan con punto de miles y coma decimal.»
+159,sonrisa,actors.js,280,Diecinueve años. Ni un marrón. Ni uno.
+160,relleno,rooms/ecosistema.js,139,Me pongo delante del roll-up.
+161,neutra,rooms/vestibulo.js,285,"El ascensor. Detrás de los tornos, con su moqueta y su logo."
+162,sonrisa,rooms/pecera.js,483,¿Café de Gertrudis? No. Yo bebo del termo. Café propio.
+163,neutra,rooms/pecera.js,425,¿Fotos de eventos? Eso no lo ve nadie.
+164,relleno,rooms/pecera.dialogos.js,234,¿Diseño?
+165,fallida,rooms/administracion.dialogos.js,104,"Esto es un puzle, ¿verdad? Lo noto en el aire."
+166,neutra,rooms/pecera.js,242,"Respuesta: ""Espera sentado. Si encuentras silla"". Me la apunto."
+167,sonrisa,rooms/catacumba.js,472,No sé medir en cíceros. En la web medimos en clics y en disgustos.
+168,sonrisa,rooms/pecera.dialogos.js,123,Me han anexionado. Pero integrada. Que es lo que quería. Creo.
+169,sonrisa,rooms/pecera.secretaria.js,42,Lo suyo es un capricho con prisa.
+170,risa,rooms/administracion.dialogos.js,87,La palabra de honor dejó de ser moneda de curso legal con la peseta.
+171,relleno,rooms/pecera.secretaria.js,117,¿Desde 2019?
+172,neutra,rooms/pecera.escenas.js,81,"Buenas noches, equipo. Íñigo Sinergia, de Optimal Brains & Partners."
+173,sonrisa,rooms/ecosistema.dialogos.js,48,¡Salida de escena! ¡Eso es un cierre de embudo!
+174,sonrisa,game.js,57,"El que no contesta, contesta solo. Como el contestador de tu tío."
+175,sonrisa,rooms/office.js,257,"Un pósit: ""Servicio técnico: CELESTINO, ext. 0""."
+176,sonrisa,rooms/administracion.js,22,«Nota de gasto generada por IA (Desarrollo). Motivo: la IA no come».
+177,fallida,rooms/administracion.dialogos.js,105,"Para usted es lo mismo, pero con multa."
+178,neutra,rooms/pecera.secretaria.js,34,¿Me da una libreta?
+179,relleno,rooms/ecosistema.js,76,Muy bonito. Cero euros.
+180,neutra,rooms/pecera.escenas.js,104,Sin edición impresa. Sin rotativa. Sin costes. Solo clics.
+181,sonrisa,rooms/office.js,213,"Un hilo impreso: ""RE: RE: RE: ¿De quién es el yogur?"". 214 respuestas."
+182,sonrisa,rooms/eventos.js,306,"¡Sin fotos sin acreditación! ...Bueno, una. Salgo mejor de perfil."
+183,neutra,rooms/administracion.dialogos.js,175,¿Ha enviado ya el correo?
+184,relleno,rooms/pecera.js,59,Nunca mira.
+185,sonrisa,rooms/catacumba.js,226,Y Gervasio no ha escrito un acta en su vida.
+186,fallida,rooms/eventos.js,235,Antes miro de quién es. Aquí todo tiene dueño. Y acreditación.
+187,neutra,items.js,274,Borde perforado. Esto no viene de un fax: viene de una matricial.
+188,sonrisa,rooms/eventos.js,300,"En la muñeca, un rollo de cinta americana. Por si hay que acreditar algo."
+189,sonrisa,game.js,18,Le hablo. No me contesta. Es lo más parecido a una fuente oficial.
+190,neutra,escenas/final.js,120,¿Y si me lo dice ahora?
+191,neutra,rooms/eventos.js,39,¡Acreditado! Empezamos en cinco minutos.
+192,neutra,rooms/vestibulo.js,135,¿Tiene algo para los nervios?
+193,sonrisa,rooms/eventos.js,97,Está entornada. Pilar la deja así: «para que fluya el público».
+194,sonrisa,duelo.js,40,MÁS SANO QUE LA GOYITA. Y LA GOYITA TIRA.
+195,sonrisa,duelo.js,39,"Estupendamente. La plaza no se hereda, Vacante."
+196,sonrisa,rooms/pecera.escenas.js,155,¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?
+197,neutra,rooms/pecera.dialogos.js,152,Está hecha con IA. En otro departamento.
+198,sonrisa,rooms/ecosistema.js,229,Hay que hablarle al lector de tú. Y en vertical. Y con un emoji.
+199,risa,rooms/ecosistema.js,56,"Lo cierro. Antes de apagarse, reenvía: «RV: Me han cerrado»."
+200,sonrisa,rooms/pajarera.js,313,"Es generativo, autónomo y escalable. Y no pide vacaciones."
+201,sonrisa,rooms/ecosistema.js,217,Una piel de plátano junto a la impresora. Pósit: «Para Gervasio (plaza 7)».
+202,sonrisa,rooms/administracion.dialogos.js,18,Ni una línea más. Ni un céntimo menos.
+203,neutra,rooms/pecera.dialogos.js,256,Diseño y Producto. Se fueron a las seis y media. Menos su director.
+204,sonrisa,rooms/pecera.js,401,Ahí fuera hay un mundo real. Bajísimo tiempo de permanencia.
+205,sonrisa,rooms/sala_amazonas.js,91,Leo el punto 3 en voz baja. Uno de Mercados se estremece.
+206,fallida,rooms/administracion.js,131,"Si la abre, se pierde la página. Y la página es lo de menos: la coma."
+207,neutra,rooms/administracion.dialogos.js,211,Tengo que ir a cerrar una página.
+208,sonrisa,rooms/pecera.secretaria.js,51,Perdonado. Siguiente.
+209,relleno,rooms/pecera.js,58,No se lo digas.
+210,risa,rooms/catacumba.js,325,ESTOY FUERA DE LA OFICINA HASTA QUE EL PAPEL DEJE DE EXISTIR.
+211,risa,rooms/pajarera.js,197,"No le hago fotos. Luego me titula: ""BECARIO FOTOGRAFÍA UNA IA. LA IA, INCÓMODA""."
+212,sonrisa,rooms/sala_amazonas.js,118,Tres redactores de Mercados. Aquí desde marzo. Uno tiene barba de comité.
+213,sonrisa,rooms/eventos.dialogos.js,59,Así nunca llegamos tarde. Ni a lo que no hay.
+214,neutra,rooms/pecera.dialogos.js,40,¿Por qué un calendario de ferretería?
+215,sonrisa,rooms/pecera.secretaria.js,117,Él desayuna despacio. Yo apunto rápido.
+216,neutra,rooms/catacumba.js,550,Veintitrés. Cabe. Ahora dame la ficha: sin ficha no hay página.
+217,sonrisa,rooms/vestibulo.js,393,"Eso, a objetos perdidos. Ahí guardo desde paraguas hasta becarios."
+218,sonrisa,game.js,15,Está inventariado. Aquí todo está inventariado menos yo.
+219,sonrisa,rooms/pecera.js,251,"Ya está escrita. Si la toco más, le salen adjetivos."

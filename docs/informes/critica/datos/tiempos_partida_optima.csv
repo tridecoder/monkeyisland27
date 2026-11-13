@@ -1,0 +1,47 @@
+paso,acto,sala_final,segundos_bot,cambios_de_sala,lineas_dichas,accion
+1,1,vestibulo,15.6,0,20,"(Intro automática, 7.1)"
+2,1,vestibulo,4.1,0,7,Hablar celestino → «¿Tiene algo para los nervios?»
+3,1,vestibulo,3.4,0,8,Hablar celestino → «¿Dónde hay café en esta casa?»
+4,1,vestibulo,3.8,0,9,Hablar celestino → «¿Algún cotilleo?»
+5,1,vestibulo,1.2,0,1,Usar chicle con tarjeta_becario
+6,1,vestibulo,2.8,0,1,Usar tarjeta_becario con organigrama
+7,1,vestibulo,4.2,0,2,Usar tarjeta_becario con torno
+8,1,pecera,51.0,1,30,(entrar) → escena 7.2
+9,1,pecera,5.0,0,4,Coger chaqueta_ramirez_hotspot
+10,1,pajarera,30.0,1,18,Usar chaqueta_ramirez con lector_medio
+11,1,pajarera,5.9,0,5,Mirar ordenador_gervasio
+12,1,pajarera,8.4,0,8,Mirar pantalla_titulator ×3
+13,1,pecera,15.8,1,9,Mirar ordenador_bruno
+14,1,office,13.5,1,7,"Hablar gertrudis → «Buenas noches, Gertrudis.»"
+15,1,office,2.9,0,4,Mirar tablon
+16,1,catacumba,20.7,2,18,Dar cafe a aurora_galerada
+17,2,catacumba,3.8,0,9,Hablar aurora_galerada → «¿Por qué no se hablan usted y Teodoro?»
+18,2,catacumba,3.8,0,9,Hablar aurora_galerada → «¿Cómo convenzo a Teodoro?»
+19,2,catacumba,2.5,0,5,Mirar fax_enmarcado
+20,2,office,25.1,2,27,"Hablar gertrudis → «Buenas noches, Gertrudis.» (×3)"
+21,2,cpd,14.6,2,8,Mirar registro_tickets
+22,2,pecera,17.2,1,7,Tirar enchufe_pantalla
+23,2,pecera,5.8,0,11,Hablar yoli_tendencias → «¿Algún hilo bueno esta noche?»
+24,2,pecera,12.2,0,5,Hablar nerea_backlog → «¿Qué tal con Yoli?»
+25,2,cpd,36.3,1,21,Hablar paco_ticket → «¿Sabes algo del fax de la Catacumba?»
+26,2,cpd,4.1,0,10,Hablar paco_ticket → «¿Algún cotilleo del consultor?»
+27,2,sala_amazonas,28.0,3,8,Hablar gervasio_acta → «Bueno... ¿y cuáles son los siguientes pasos?»
+28,2,sala_amazonas,3.6,0,2,Coger planillo_mesa
+29,2,ecosistema,28.2,3,25,Dar planillo a maripaz_remitido → duelo D1
+30,2,administracion,18.2,1,35,Hablar begona_triplicado → nota de gasto (P08)
+31,2,catacumba,23.3,3,3,Usar copias_rechazadas con fax
+32,2,catacumba,1.6,0,4,Mirar mensaje_fp
+33,2,catacumba,6.4,0,11,Dar fotocopia_nota_direccion a aurora_galerada
+34,2,pecera,10.3,1,3,Usar ordenador_bruno
+35,2,catacumba,20.3,1,29,Hablar teodoro_cuerpodoce → «Quiero firmar en tu página 7.» → duelo D2
+36,2,administracion,24.1,3,8,Dar pieza_opa a begona_triplicado
+37,2,catacumba,39.4,3,22,Dar ficha_pagina_7 a teodoro_cuerpodoce → escena 7.3a
+38,3,cpd,36.6,2,39,Tirar papel_continuo → escena 7.3
+39,3,cpd,3.8,0,9,Hablar ruben → «¿Escribiste tú los discursos de Íñigo?»
+40,3,eventos,18.0,2,19,Hablar pilar_escaleta → «¿Me prestas el álbum?»
+41,3,pecera,38.7,2,16,Dar album_eventos a nerea_backlog → «¿Y si... lo descopeamos?»
+42,3,cpd,38.1,1,15,Dar posit_baja_ruben a paco_ticket
+43,3,office,23.6,2,22,Hablar gervasio_acta → «Necesito el acta de la última reunión.» → duelo D3
+44,3,sala_amazonas,17.3,2,11,Usar puerta_sala → escena 7.4 (entrada)
+45,3,sala_amazonas,19.5,0,27,Duelo D4 (Íñigo)
+46,3,pecera,120.7,0,68,Empujar lector_medio → 7.4 final + 7.5

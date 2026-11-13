@@ -1,0 +1,181 @@
+sala,verbo,objeto,objeto_inventario,clase,respuesta
+vestibulo,usar,torno_luces,,defecto,No veo cómo. El manual lo tiene alguien que se jubiló en 2011.
+vestibulo,tirar,celestino,,propio,Le tiro de la bufanda. Grita «¡fuera de juego!». Lo dejo.
+vestibulo,hablar,torno_bancada,,defecto,No contesta. O es un objeto o está en una videollamada.
+vestibulo,mirar,cuadro_plazas,,propio,"El cuadro de llaves del garaje. Doce plazas. Ciento doce aspirantes. / Debajo, a lápiz, la línea de sucesión. Como en una monarquía."
+vestibulo,coger,celestino,,propio,Celestino no se coge. Viene con el edificio. Como las goteras.
+vestibulo,dar,torno,tarjeta_becario,propio,El torno no acepta regalos. Solo credenciales. Y la mía no le convence.
+vestibulo,mirar,radio_celestino,,propio,Una radio de bolsillo. Retransmite la bolsa de las cinco y media. En diferido.
+vestibulo,tirar,organigrama,,propio,"Si tiro del organigrama, me caen treinta jefes. Y ninguno ayuda."
+vestibulo,hablar,cuadro_plazas,,propio,Le pregunto qué hay que hacer para tener plaza. El cuadro calla. Sabe cosas.
+vestibulo,mirar,planta_plastico,,propio,"Es de plástico. Aun así, es la que más tiempo lleva en plantilla."
+vestibulo,cerrar,paraguero,,defecto,Ya está cerrado. Aquí lo único que no cierra a tiempo es la edición.
+vestibulo,dar,torno,tarjeta_becario,propio,El torno no acepta regalos. Solo credenciales. Y la mía no le convence.
+vestibulo,coger,altavoz_ibex,,propio,Déjalo. Bajo la bufanda no molesta. Como yo.
+vestibulo,tirar,puerta_calle,,propio,Es de empujar. Lo pone. Lo pone en todas las puertas que no abro.
+vestibulo,hablar,planta_plastico,,propio,Le cuento lo de la firma. No me juzga. No me pide ticket.
+vestibulo,hablar,altavoz_ibex,,propio,Le pregunto por el Ibex. Me contesta con un índice. Sin bufanda no hay charla.
+vestibulo,mirar,planta_plastico,,propio,Juraría que tiene una hoja girada hacia mí. La de la oreja.
+vestibulo,coger,radio_celestino,,propio,Esa radio no se toca. Es la del Mundial del 82.
+pecera,abrir,semaforo_ruido,,defecto,No se abre. Como las plazas de redactor.
+pecera,hablar,figurantes_web,,propio,Ni me miran. Están en directo desde 2020.
+pecera,hablar,sillas_con_chaqueta,,defecto,Le hablo. No me contesta. Es lo más parecido a una fuente oficial.
+pecera,coger,cartel_frontera,,propio,"Es un cartel de frontera. Si me lo llevo, me convierto en contrabando."
+pecera,empujar,herminia_portatil,,defecto,Lo empujo. No se mueve. Como un correo pidiendo aumento de sueldo.
+pecera,usar,taza_abandonada,,propio,Beber de ahí sería datar la crisis con carbono 14.
+pecera,abrir,pantalla_anselmo,,defecto,Cerrado. Como el plazo. Como el cierre. Como mi futuro.
+pecera,empujar,bandeja_diseno,,defecto,No pienso empujar eso. Saldría en el próximo comité. En diapositiva.
+pecera,empujar,taza_abandonada,,propio,La empujo. No se mueve: la costra la tiene soldada a la mesa.
+pecera,mirar,ascensor_pecera,,propio,El ascensor. Lo rediseñó Valentín. No se nota nada: eso es lo bueno.
+pecera,cerrar,pantalla_anselmo,,defecto,"Cerrarlo no cierra nada. Bueno, cerraría el tema, que aquí es lo difícil."
+pecera,usar,herminia_portatil,tarjeta_becario,defecto,Usarlo así sería innovación. Y la innovación la cobra la consultora.
+pecera,coger,kanban,,propio,Ni se te ocurra. Un pósit solo sale del tablero hecho o muerto.
+pecera,hablar,custodia_precinto,,propio,"¿Qué quiere. / Nada, perdone. / Perdonado. Siguiente."
+pecera,empujar,pantalla_anselmo,,defecto,Ni se inmuta. Tiene más estabilidad laboral que yo.
+pecera,usar,leoncio_quesitos,libreta_replicas,defecto,No funciona. Como casi todo lo que se enchufa en esta planta.
+pecera,tirar,coro_desarrollo,,defecto,Tiro. Nada. Tiene más resistencia que el papel.
+pecera,coger,ascensor_pecera,,defecto,Está inventariado. Aquí todo está inventariado menos yo.
+office,mirar,cartel_cortado,,propio,"""El cortado sube a 1,20 €"". Escrito a mano. La noticia más leída del edificio."
+office,tirar,microondas,,defecto,Aquí el que tira de algo se convierte en el responsable.
+office,abrir,mesa_alta,,defecto,No tiene por dónde. Es un diseño muy de Dirección.
+office,cerrar,tablon,,defecto,No hay nada que cerrar. Salvo un ticket. Y eso es cosa de Paco.
+office,usar,maquina_vending,,propio,"Pulso la B4. La espiral gira, la bolsa se asoma... y se queda colgando. Como yo."
+office,empujar,microondas,,defecto,Empujo. Nada. Es como empujar la prima de riesgo con la mirada.
+office,hablar,office_a_pecera,,propio,Le digo a la Pecera que ahora vuelvo. Nadie levanta la vista. Es la web.
+office,cerrar,fregadero,,propio,Cierro el grifo. Gotea igual. Es su manera de opinar.
+office,hablar,nevera,,defecto,"Hablarle a eso sería como responder a todos: posible, pero imperdonable."
+office,coger,microondas,,propio,"Si me llevo el microondas, nueve tuppers me denuncian."
+office,tirar,hoja_firmas,,defecto,No pienso tirar de eso. En esta empresa ya tira siempre el becario.
+office,mirar,tablon,,propio,"Un hilo impreso: ""RE: RE: RE: ¿De quién es el yogur?"". 214 respuestas. / Uno: ""Como ya comenté en mi anterior correo, que parece que nadie ha leído..."" / Respuesta: ""Lo leímos todos. Por eso no contestó nadie"". Me la apunto."
+office,mirar,tablon,,propio,"Un hilo impreso: ""RE: RE: RE: ¿De quién es el yogur?"". 214 respuestas. / Uno: ""Como ya comenté en mi anterior correo, que parece que nadie ha leído..."" / Respuesta: ""Lo leímos todos. Por eso no contestó nadie"". Me la apunto."
+office,usar,gertrudis,,propio,Pulso el botón del café. Me mira. Así no. Habrá que hablarle.
+office,dar,cartel_cortado,sobre_azucar,defecto,"No creo que lo quiera. Y si lo acepta, luego hay que declararlo."
+office,usar,gertrudis,movil,propio,E-46: ESO NO ES UN CAFÉ.
+office,hablar,tablon,,defecto,Silencio. Al menos no me ha dicho «lo hablamos».
+office,dar,hoja_firmas,sobre_azucar,defecto,"Aquí si das algo sin acta, te lo devuelven con tareas."
+catacumba,dar,fotos_jefes_cierre,libreta_replicas,defecto,Lo rechazaría. Tiene cara de quien ya tiene uno.
+catacumba,hablar,fax_enmarcado,,defecto,"No me contesta. Bueno, no me ha llamado Pellizco. Algo es algo."
+catacumba,abrir,reloj_2147,,defecto,"Si lo abro, me hacen responsable de lo que salga."
+catacumba,dar,libro_estilo,ficha_pagina_7,defecto,Regalar cosas en una redacción se considera soborno o despedida.
+catacumba,usar,galeradas,tarjeta_becario,defecto,No se me ocurre para qué. Y eso que he hecho un máster.
+catacumba,empujar,galeradas,,defecto,"No, que luego se cae y el becario es el último que lo tocó."
+catacumba,usar,corrector_aurora,,propio,"Si la saco, se cae la mesa. Es su única función con futuro."
+catacumba,coger,fax,,propio,Es un fax de 1992. Pesa lo que pesa una década.
+catacumba,empujar,fax_enmarcado,,defecto,Lo empujo. No se mueve. Como un correo pidiendo aumento de sueldo.
+catacumba,dar,teodoro_cuerpodoce,libreta_replicas,propio,"Teclea una respuesta. El fax pita. Sin papel, Teodoro es un mimo."
+catacumba,coger,cartel_aurora,,propio,"Deja el cartel, criatura. Lleva treinta años sin una errata."
+catacumba,abrir,corrector_aurora,,defecto,No se abre. Lo dejo así: está en su derecho.
+catacumba,tirar,fax,,defecto,Tiro. Se resiste. Como Teodoro a la web.
+catacumba,hablar,mesa_teodoro,,defecto,No contesta. O es un objeto o está en una videollamada.
+catacumba,usar,telefono_rojo,,propio,"¡Au! Una palmada en la mano. Sin papel, Teodoro se expresa así."
+catacumba,empujar,reloj_2147,,propio,Le doy un toquecito. Sigue en las 20:59. Tiene más aguante que yo.
+catacumba,cerrar,teodoro_cuerpodoce,,defecto,Lo cierro. No pasa nada. Igual que en las reuniones.
+catacumba,mirar,aurora_galerada,,propio,"Aurora, correctora. Tiene un boli rojo clavado en el moño. Por si acaso."
+pajarera,empujar,ordenador_gervasio,,defecto,No pienso empujar eso. Saldría en el próximo comité. En diapositiva.
+pajarera,empujar,postits,,defecto,Ni se inmuta. Tiene más estabilidad laboral que yo.
+pajarera,empujar,hoja_reservas,,defecto,Empujo. Nada. Es como empujar la prima de riesgo con la mirada.
+pajarera,dar,pajarera_a_pecera,movil,defecto,"No. Si le doy eso, me pide factura."
+pajarera,hablar,mesa_direccion,,propio,El cartelito dice «RESERVADO». Desde 2015. Para una reunión que nunca empieza.
+pajarera,coger,hoja_reservas,,propio,"Si quito la hoja, la sala queda libre. Aquí eso es un golpe de Estado."
+pajarera,usar,inigo_sinergia,libreta_replicas,defecto,"Mejor no lo toco. Si se rompe, abren un ticket con mi nombre mal escrito."
+pajarera,tirar,pajarera_a_pecera,,defecto,"Mejor no. Si viene con cable, Paco me lo factura."
+pajarera,empujar,hoja_reservas,,defecto,"No, que luego se cae y el becario es el último que lo tocó."
+pajarera,abrir,pajarera_a_pecera,,nada,
+pajarera,abrir,posit_evaristo,,defecto,No se abre. Como las plazas de redactor.
+pajarera,coger,postits,,propio,Eso es propiedad intelectual. Y adhesiva.
+pajarera,empujar,postits,,defecto,Lo empujo. No se mueve. Como un correo pidiendo aumento de sueldo.
+pajarera,usar,ordenador_gervasio,,propio,"Sesión abierta. Enviados. / Gervasio a Teodoro: ""Me consta que esto ya lo hablamos"". / Teodoro, por fax escaneado: ""A ti te consta. A mí me consta que hablabas tú"". / Me la apunto."
+pajarera,hablar,persiana,,defecto,Le hablo. No me contesta. Es lo más parecido a una fuente oficial.
+pajarera,dar,persiana,tarjeta_becario,defecto,"No creo que lo quiera. Y si lo acepta, luego hay que declararlo."
+pajarera,mirar,matriz_2x2,,propio,"Matriz 2x2: COSTE contra DISPONIBILIDAD. Toda la plantilla en ""Prescindible"". / En ""Ideal"" hay un solo pósit: ""VACANTE"". Soy el empleado perfecto. No existo."
+pajarera,abrir,puerta_sala,,nada,
+sala_amazonas,mirar,tele_amazonas,,propio,"Una tele de videollamadas. Pegatina: «PULSAR ENTRADA 3. NO, LA 2. NO»."
+sala_amazonas,mirar,sala_a_pajarera,,propio,La puerta. Abierta. Nadie la usa: el orden del día no lo permite.
+sala_amazonas,cerrar,cartel_salida,,defecto,Prefiero dejarlo abierto. Como mi contrato.
+sala_amazonas,dar,sala_a_pajarera,libreta_replicas,defecto,"Aquí si das algo sin acta, te lo devuelven con tareas."
+sala_amazonas,coger,cartel_salida,,propio,"Si me lo llevo, no sabrán cuándo salir. Bueno, ya no lo saben."
+sala_amazonas,cerrar,minicruasanes,,defecto,Ya está cerrado. Aquí lo único que no cierra a tiempo es la edición.
+sala_amazonas,dar,figurantes_mercados,sobre_azucar,propio,"Lo miran. No lo cogen. Hasta que no se vote, no es suyo."
+sala_amazonas,coger,figurantes_mercados,,propio,No se cogen. Cotizan. Y a la baja desde marzo.
+sala_amazonas,hablar,orden_del_dia,,propio,Leo el punto 3 en voz baja. Uno de Mercados se estremece.
+sala_amazonas,cerrar,caja_cables,,defecto,"Cerrarlo no cierra nada. Bueno, cerraría el tema, que aquí es lo difícil."
+sala_amazonas,tirar,sala_a_pajarera,,defecto,Tiro. Nada. Tiene más resistencia que el papel.
+sala_amazonas,mirar,caja_cables,,propio,Catorce cables y siete adaptadores. Uno adapta un adaptador a otro. / Hay uno que encaja consigo mismo. Lo dejo así: es feliz.
+sala_amazonas,usar,cartel_salida,libreta_replicas,defecto,No veo cómo. El manual lo tiene alguien que se jubiló en 2011.
+sala_amazonas,empujar,tele_amazonas,,defecto,No pienso empujar eso. Saldría en el próximo comité. En diapositiva.
+sala_amazonas,cerrar,carteles_amazonas,,defecto,No hay nada que cerrar. Salvo un ticket. Y eso es cosa de Paco.
+sala_amazonas,cerrar,carteles_amazonas,,defecto,Lo cierro. No pasa nada. Igual que en las reuniones.
+sala_amazonas,empujar,cartel_salida,,propio,Empujo la puerta de al lado. Estaba abierta. Nadie lo había comprobado.
+sala_amazonas,cerrar,figurantes_mercados,,defecto,Prefiero dejarlo abierto. Como mi contrato.
+ecosistema,dar,portatil_tadeo,sobre_azucar,propio,"Si le doy algo, lo reenvía. Con «Por si os sirve!!»."
+ecosistema,hablar,ecosistema_a_administracion,,defecto,"Hablarle a eso sería como responder a todos: posible, pero imperdonable."
+ecosistema,dar,rollup_comercial,movil,defecto,Lo rechazaría. Tiene cara de quien ya tiene uno.
+ecosistema,dar,borja_engagement,ficha_pagina_7,propio,"¿Una ficha? Hazle un carrusel. Si no, no la firma nadie."
+ecosistema,cerrar,piel_platano,,defecto,Ya está cerrado. Aquí lo único que no cierra a tiempo es la edición.
+ecosistema,tirar,ecosistema_a_pecera,,defecto,Aquí el que tira de algo se convierte en el responsable.
+ecosistema,empujar,ascensor_ecosistema,,propio,No se empuja. Se activa. Lo dice el vinilo.
+ecosistema,dar,ecosistema_a_pecera,tarjeta_becario,defecto,Regalar cosas en una redacción se considera soborno o despedida.
+ecosistema,hablar,piel_platano,,propio,Le pregunto a quién espera. El pósit lo dice todo.
+ecosistema,abrir,ecosistema_a_pecera,,defecto,Cerrado. Como el plazo. Como el cierre. Como mi futuro.
+ecosistema,cerrar,ascensor_ecosistema,,propio,Se cierra solo. Es lo único de la planta que no pide feedback.
+ecosistema,abrir,ecosistema_a_pecera,,defecto,No tiene por dónde. Es un diseño muy de Dirección.
+ecosistema,abrir,embudo_marketing,,defecto,"Si lo abro, me hacen responsable de lo que salga."
+ecosistema,hablar,portatil_tadeo,,propio,Tadeo no está. Soy su asistente. ¡Excelente pregunta! / No he preguntado nada. / ¡Excelente silencio! ¿Quieres que te lo resuma en una tabla? / Me voy. / ¿Quieres que reenvíe tu salida? / No. / Reenviada.
+ecosistema,abrir,borja_engagement,,defecto,No se abre. Lo dejo así: está en su derecho.
+ecosistema,cerrar,piel_platano,,defecto,"Cerrarlo no cierra nada. Bueno, cerraría el tema, que aquí es lo difícil."
+ecosistema,coger,pufs,,propio,Un puf no se coge. Se adopta. Y no tengo piso.
+ecosistema,cerrar,lema_enmarcado,,defecto,No hay nada que cerrar. Salvo un ticket. Y eso es cosa de Paco.
+eventos,usar,photocall,tarjeta_becario,propio,"Pongo mi tarjeta en el hueco. «Bruno Pellizco», premium. / «Pellizco», acreditado. Con foto. Acceso: hasta el canapé."
+eventos,usar,focos,,propio,No llego. Los focos solo los toca Pilar. Con escalera acreditada.
+eventos,cerrar,pilar_escaleta,,defecto,Lo cierro. No pasa nada. Igual que en las reuniones.
+eventos,dar,silla_reservado,ficha_pagina_7,defecto,"No. Si le doy eso, me pide factura."
+eventos,empujar,marcas_cinta,,defecto,Ni se inmuta. Tiene más estabilidad laboral que yo.
+eventos,mirar,mesa_acreditaciones,,propio,La mesa de acreditaciones. Hay una lista pegada con cinta. / «Cola de la máquina de café: doce personas y una máquina».
+eventos,cerrar,aro_luz,,propio,Ya está apagado. Solo se enciende cuando hay alguien importante. Nunca.
+eventos,empujar,marcas_cinta,,defecto,Empujo. Nada. Es como empujar la prima de riesgo con la mirada.
+eventos,coger,eventos_a_ecosistema,,defecto,"Si lo cojo, alguien me pedirá una nota de gasto por tocarlo."
+eventos,hablar,mesa_acreditaciones,,defecto,Silencio. Al menos no me ha dicho «lo hablamos».
+eventos,hablar,mesa_sonido,,propio,Cojo un walkie: «¿Hola?». / WALKIE: Cinco minutos. Cambio.
+eventos,mirar,cuenta_atras,,propio,00:05:00. Juraría que he visto un 04:59. / Pilar le ha dado un golpe con la escaleta. Ha vuelto a 05:00.
+eventos,tirar,cajas_lanyards,,defecto,No pienso tirar de eso. En esta empresa ya tira siempre el becario.
+eventos,cerrar,mesa_sonido,,defecto,Prefiero dejarlo abierto. Como mi contrato.
+eventos,usar,silla_reservado,tarjeta_becario,defecto,Usarlo así sería innovación. Y la innovación la cobra la consultora.
+eventos,dar,flight_cases,tarjeta_becario,defecto,"No creo que lo quiera. Y si lo acepta, luego hay que declararlo."
+eventos,abrir,cuenta_atras,,defecto,No se abre. Como las plazas de redactor.
+eventos,hablar,mesa_acreditaciones,,defecto,"No me contesta. Bueno, no me ha llamado Pellizco. Algo es algo."
+administracion,coger,cartel_horario,,propio,"Ese cartel es el horario. Sin él, son las 19:08. Y eso no lo consiento."
+administracion,tirar,cartel_horario,,defecto,Tiro. Se resiste. Como Teodoro a la web.
+administracion,cerrar,mostrador_ventanilla,,defecto,Ya está cerrado. Aquí lo único que no cierra a tiempo es la edición.
+administracion,usar,evaristo_salvedad,,defecto,No funciona. Como casi todo lo que se enchufa en esta planta.
+administracion,dar,evaristo_salvedad,sobre_azucar,propio,Gracias. Lo leo y le escribo. Un correo. Muy pequeño.
+administracion,empujar,archivador_ejemplares,,propio,No se mueve. Lo sujetan cuarenta años de notas bien hechas.
+administracion,empujar,coma_enmarcada,,defecto,"No, que luego se cae y el becario es el último que lo tocó."
+administracion,hablar,sellos,,defecto,No contesta. O es un objeto o está en una videollamada.
+administracion,mirar,ventanilla,,propio,Una ventanilla dentro de una oficina. / Nadie sabe por qué. Begoña la defiende igual.
+administracion,dar,cartel_recorte,ficha_pagina_7,defecto,"Aquí si das algo sin acta, te lo devuelven con tareas."
+administracion,empujar,evaristo_salvedad,,propio,A don Evaristo no se le empuja. Se le espera.
+administracion,empujar,dispensador_turnos,,defecto,Lo empujo. No se mueve. Como un correo pidiendo aumento de sueldo.
+administracion,dar,cartel_recorte,sobre_azucar,defecto,Lo rechazaría. Tiene cara de quien ya tiene uno.
+administracion,dar,pared_rechazadas,movil,defecto,Regalar cosas en una redacción se considera soborno o despedida.
+administracion,tirar,dispensador_turnos,,propio,Tiro del papelito. Sale el 1. Aquí hasta la cola es de una persona.
+administracion,mirar,administracion_a_ecosistema,,propio,"El pasillo, de vuelta al Ecosistema. Al fondo, la impresora. Se oye un gong."
+administracion,tirar,banco_espera,,defecto,"Mejor no. Si viene con cable, Paco me lo factura."
+administracion,coger,contratos_evaristo,,propio,"Esas no. Están leídas. Si las toca, hay que releerlas."
+cpd,empujar,contador_tickets,,propio,Lo empujo. Sube uno. Me lo apunta a mí.
+cpd,coger,contador_tickets,,propio,Está atornillado a la pared. Como la paciencia de Paco.
+cpd,abrir,libro_visitas,,propio,Ya está abierto. Por la misma página desde julio.
+cpd,empujar,armarios,,propio,Empujas uno y Paco te abre cuarenta tickets. Uno por armario.
+cpd,coger,papel_continuo,,propio,"No lo arranco. El papel continuo, si se corta, deja de ser continuo."
+cpd,hablar,armarios,,propio,Les hablo. Me contestan en mi bemol. Es más de lo que hace Dirección.
+cpd,hablar,contador_tickets,,propio,Le pido que baje. Sube. Es su forma de decir que no.
+cpd,dar,rejilla_cpd,tarjeta_becario,defecto,"No. Si le doy eso, me pide factura."
+cpd,coger,paco_ticket,,propio,Paco no se mueve del CPD. Es infraestructura.
+cpd,usar,libro_visitas,,propio,Firmo: «Bruno. Entrada: 2020. Salida: —». Quedo igual que Rubén.
+cpd,mirar,armarios,,propio,Cuarenta armarios iguales. Zumban en mi bemol.
+cpd,coger,libro_visitas,,propio,"Si me lo llevo, Paco no sabe quién ha venido. Que es nadie, pero apuntado."
+cpd,empujar,paco_ticket,,propio,A Paco no se le empuja. Se le abre un ticket. Y se espera.
+cpd,mirar,cementerio_ratones,,propio,Una caja de ratones de bola. Paco no los tira. Dice que aún ruedan por dentro.
+cpd,cerrar,registro_tickets,,propio,Ya está cerrado. Es lo único cerrado de todo el registro.
+cpd,coger,armario_27,,defecto,"No es mío. Aquí nada es mío. Ni la silla, hasta hace poco."
+cpd,mirar,registro_tickets,,propio,"Registro de tickets. Nadie lo lee. Por eso es tan sincero. / Ticket nº 3, 2017: «CMS lento con la pantalla de la Pecera encendida». / Estado: no prioritario. / Ticket nº 1, julio: «Alta becario Rubén». Pendiente. / Ticket nº 0, 1997: «Alta jefe de cierre, Teodoro C.». No ha salido nunca."
+cpd,hablar,registro_tickets,,propio,Le leo en voz alta el ticket nº 3. Paco suspira desde su silla.
