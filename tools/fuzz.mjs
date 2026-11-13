@@ -143,7 +143,7 @@ async function duels() {
 }
 
 // ================================================================== 3. todos los objetos con todo
-const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'administracion', 'cpd'];
+const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'eventos', 'administracion', 'cpd'];
 async function everyItem(tag) {
   await G(() => __game.save('fz'));
   const consumed = new Map(), stuck = [], thrown = [];

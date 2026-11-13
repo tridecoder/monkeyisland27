@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // AUDITORÍA DE TEXTOS (QA): juega el walkthrough 5.4 en modo rápido y, en tres momentos (Actos I, II y III), prueba los
-// 9 verbos con TODO lo visible de las 9 salas (saliendo de diálogos con su despedida); recoge cada línea dicha
+// 9 verbos con TODO lo visible de las 10 salas (saliendo de diálogos con su despedida); recoge cada línea dicha
 // (`__game.log`) y comprueba:
 //   · ninguna intervención de más de 80 caracteres (biblia §0);
 //   · ningún globo de más de 3 renglones a 210 px (se saldría por arriba / taparía la escena);
@@ -46,7 +46,7 @@ async function escape() {
     return;
   }
 }
-const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'administracion', 'cpd'];
+const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'eventos', 'administracion', 'cpd'];
 const VERBS = ['mirar', 'coger', 'usar', 'abrir', 'cerrar', 'empujar', 'tirar', 'hablar', 'dar'];
 async function everything() {
   await G(() => __game.save('ta'));

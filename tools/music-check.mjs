@@ -12,7 +12,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const WAVES = new Set(['square', 'triangle', 'sawtooth', 'sine', 'noise']);
 const REQUIRED = ['m_titulo', 'm_vestibulo', 'm_pecera', 'm_office', 'm_catacumba', 'm_pajarera', 'm_sala_amazonas',
-  'm_ecosistema', 'm_administracion', 'm_cpd', 'm_duelo', 'm_climax', 'm_final', 'm_creditos'];
+  'm_ecosistema', 'm_eventos', 'm_administracion', 'm_cpd', 'm_duelo', 'm_climax', 'm_final', 'm_creditos'];
 let failures = 0, warnings = 0;
 const fail = (id, msg) => { failures++; console.log(`  FAIL [${id}] ${msg}`); };
 const warn = (id, msg) => { warnings++; console.log(`  warn [${id}] ${msg}`); };

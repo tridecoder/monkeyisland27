@@ -204,7 +204,7 @@ export default {
       VR0: {
         options: [
           { text: '¿Qué está dirigiendo?', once: true,
-            reply: ['Una aventura gráfica sobre esta redacción. Nueve salas. Nueve verbos.', 'Ahora mismo, un becario me pregunta qué estoy dirigiendo.'],
+            reply: ['Una aventura gráfica sobre esta redacción. Diez salas. Nueve verbos.', 'Ahora mismo, un becario me pregunta qué estoy dirigiendo.'],
             lines: [['player', '...¿Ese soy yo?'], ['valentin_reticula', 'Eres un sprite muy bien resuelto. El remolino, sobre todo.']] },
           { text: '¿Por qué trabaja aquí, al lado de Desarrollo?', once: true,
             reply: ['Porque aquí se entrega. La bandeja está a dos metros.', 'Y desde aquí oigo en directo de qué tengo la culpa.'],
@@ -213,9 +213,6 @@ export default {
             reply: ['Lo sé. Lo dicen a dos metros. Yo lo entrego a las 18:29.', 'Diseño tiene la culpa de todo lo que Desarrollo no abre.'] },
           { text: '¿Sabía que la pantalla tumbaba el CMS?', once: true, if: 'cms_vivo',
             reply: ['Desde 2017. Está en la bandeja. Primera hoja.', 'Con una flecha roja. De dos píxeles de grosor. Para que se viera.'] },
-          { text: '¿Es verdad que le quieren fusionar con Infografía?', once: true,
-            reply: ['Tercera vez esta semana. No.', 'Infografía hace gráficos. Diseño hace que se entiendan. Son dos oficios.',
-              'Íñigo me lo propuso en una matriz. Se la devolví alineada.'] },
           { text: '¿Algún truco?',                                                     // (se queda)
             reply: ['Si te atascas, llama a tu abuela. La diseñamos como sistema de pistas.', 'Y prueba cosas raras. Aquí todo lo raro está probado.'] },
           { text: '¿Usted sabía lo del Titulator?', if: 'ruben_encontrado', once: true,

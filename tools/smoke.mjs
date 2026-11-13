@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Smoke test de FE DE ERRATAS: sirve el juego y lo recorre con Playwright (clics reales + window.__game):
-// título, intro, ratón, las 9 salas por sus salidas, inventario (los 19 objetos), combinación común, pistas,
+// título, intro, ratón, las 10 salas por sus salidas, inventario (los 19 objetos), combinación común, pistas,
 // un duelo de prueba completo (fallo, comodín, acierto, remate con objeto equivocado y correcto), derrota,
 // retirada, guardar/cargar, menú de pausa, créditos (api.credits / api.ending), depuración y táctil.
 // Capturas en tools/shots/. Falla si hay errores de consola. Uso: node tools/smoke.mjs
@@ -56,7 +56,8 @@ async function chooseText(substr) {
 const ROUTE = [
   ['torno', 'pecera'], ['pecera_a_office', 'office'], ['office_a_catacumba', 'catacumba'], ['catacumba_a_office', 'office'],
   ['office_a_pecera', 'pecera'], ['pecera_a_pajarera', 'pajarera'], ['puerta_sala', 'sala_amazonas'], ['sala_a_pajarera', 'pajarera'],
-  ['pajarera_a_pecera', 'pecera'], ['pecera_a_ecosistema', 'ecosistema'], ['ecosistema_a_administracion', 'administracion'],
+  ['pajarera_a_pecera', 'pecera'], ['pecera_a_ecosistema', 'ecosistema'], ['ecosistema_a_eventos', 'eventos'],
+  ['eventos_a_ecosistema', 'ecosistema'], ['ecosistema_a_administracion', 'administracion'],
   ['administracion_a_ecosistema', 'ecosistema'], ['ecosistema_a_pecera', 'pecera'], ['pecera_a_vestibulo', 'vestibulo'],
   ['ascensor_vestibulo', 'cpd', 'Planta -1'], ['ascensor_cpd', 'pecera', 'Planta 1'], ['ascensor_pecera', 'ecosistema', 'Planta 2'],
   ['ascensor_ecosistema', 'vestibulo', 'Planta 0'],
@@ -123,8 +124,8 @@ try {
   await G(() => __game.doVerb('mirar', 'bruno'));
   ok(await G(() => __game.log.some(l => l.text.startsWith('Soy yo. Joven'))), 'Mirar a Bruno (cuarta pared §8.6)');
 
-  // ---------------------------------------------------------------- the 9 rooms
-  step('Recorrido por las 9 salas por sus salidas (juego real)');
+  // ---------------------------------------------------------------- the 10 rooms
+  step('Recorrido por las 10 salas por sus salidas (juego real)');
   await G(() => __game.doVerb('ir', 'torno'));
   ok((await state()).room === 'vestibulo', 'el torno está cerrado sin torno_abierto (P01)');
   await G(() => __game.setFlag('torno_abierto', true));
@@ -156,7 +157,7 @@ try {
       await fast(true);
     }
   }
-  ok(seen.size === 9, 'visitadas las 9 salas: ' + [...seen].join(', '));
+  ok(seen.size === 10, 'visitadas las 10 salas: ' + [...seen].join(', '));
   const presence = await G(async () => {
     await __game.gotoRoom('pajarera'); const a = __game.objects().filter(o => o.kind === 'actor').map(o => o.id);
     __game.setFlag('acto_3_iniciado', true);

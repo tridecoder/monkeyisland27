@@ -8,7 +8,7 @@ Authoritative reference for writing content on this engine. Everything here matc
   punctuation. `“”` become `"`, `’` becomes `'`, `…` becomes `...`. Unknown characters render as `?`.
 - Plain ES modules, no build step. Import with **relative** paths (`'../lib/room.js'` from `content/rooms/`,
   `'../../engine/draw.js'` from `content/rooms/`, `'../../../engine/draw.js'` from `content/rooms/art/`).
-- Screen 320×200. Room viewport 320×144 (y 0–143); UI panel y 144–199. Rooms may be wider than 320 (`pecera` is 800).
+- Screen 320×200. Room viewport 320×144 (y 0–143); UI panel y 144–199. Rooms may be wider than 320 (`pecera` is 800, `eventos` 512).
 - Bible rules that the tools enforce: ids in `snake_case` without accents; **no spoken line over 80 characters**
   (`tools/check.mjs` warns); a bible ` // ` means two separate lines (two balloons); stage directions in brackets
   are never shown as text.
@@ -42,7 +42,7 @@ Every file has exactly one owner, so nobody ever edits the same file.
 
 | file(s) | owner |
 |---|---|
-| `content/rooms/<id>.js` — room **logic** | the package writer of that room (A: `vestibulo`, `cpd` · B: `pecera`, `pajarera` · C: `office`, `catacumba` · D: `ecosistema`, `administracion`, `sala_amazonas`) |
+| `content/rooms/<id>.js` — room **logic** | the package writer of that room (A: `vestibulo`, `cpd` · B: `pecera`, `pajarera` · C: `office`, `catacumba` · D: `ecosistema`, `eventos`, `administracion`, `sala_amazonas`) |
 | `content/rooms/<id>.*.js`, `content/escenas/<name>.js` — extra logic files (dialogs, scenes) | the writer who creates them (prefix them with your room id / a unique name) |
 | `content/rooms/art/<id>.art.js` — room **art + geometry** | the background artist of that room |
 | `content/game.js`, `content/items.js`, `content/actors.js`, `content/duelo.js`, `content/flags.js`, `content/index.js`, `content/lib/*`, `engine/*`, `tools/*` | **shared — nobody edits them** |
@@ -63,7 +63,7 @@ the art owns pixels and coordinates. If the two sides disagree on an id, `buildR
 ```
 index.html, style.css               entry point
 engine/                             the engine (shared)
-content/index.js                    single registration point — already registers the 9 rooms (shared)
+content/index.js                    single registration point — already registers the 10 rooms (shared)
 content/game.js                     title, defaults §8.2, hints §5.6, fourth wall §8.6, credits shell, automatic notices `avisos` (shared)
 content/actors.js                   the whole cast §2 (shared)
 content/items.js                    the 19 inventory items (18 of §4 + `boli_muerto` of addendum 6.1) + item-on-item combos (shared)
@@ -79,8 +79,8 @@ content/rooms/_plantilla.js         annotated example of a logic file (not regis
 content/rooms/art/_plantilla.art.js annotated example of an art file (not registered)
 ```
 
-The 9 rooms (`vestibulo`, `pecera`, `office`, `catacumba`, `pajarera`, `sala_amazonas`, `ecosistema`,
-`administracion`, `cpd`) exist as working stubs: every exit of bible §3.0 works (**all unlocked for now**, with a
+The 10 rooms (`vestibulo`, `pecera`, `office`, `catacumba`, `pajarera`, `sala_amazonas`, `ecosistema`, `eventos`
+(the Sala Polivalente of Eventos, 512 px wide, next door to `ecosistema`), `administracion`, `cpd`) exist as working stubs: every exit of bible §3.0 works (**all unlocked for now**, with a
 `// TODO <package>: ... Bloqueo pendiente` comment where the lock goes), every hotspot id of §3 is present on both sides,
 NPCs stand in place. **Extra files never need `index.js`**: import them from your room file
 (`import dialogos from './pecera.dialogos.js'` and spread them into `dialogs`), and register scenes/duels through
@@ -90,7 +90,7 @@ your room's `scenes` / `duels` (they become global).
 ```js
 export default {
   game, actors: [actors], items: [items], duels: [duelo], flags: [flags],
-  rooms: [vestibulo, pecera, office, catacumba, pajarera, sala_amazonas, ecosistema, administracion, cpd],
+  rooms: [vestibulo, pecera, office, catacumba, pajarera, sala_amazonas, ecosistema, eventos, administracion, cpd],
   dialogs: [], music: [], sfx: [],
 };
 ```
@@ -203,7 +203,7 @@ Art may **read** flags (`view.flag('cms_vivo')`, `view.state`), never change the
 ---
 
 ### 2.5 The lift (`content/lib/ascensor.js`)
-One lift with a floor panel joins four rooms: -1 `cpd`, 0 `vestibulo`, 1 `pecera`, 2 `ecosistema` (`PLANTAS`). Each of
+One lift with a floor panel joins four rooms: -1 `cpd`, 0 `vestibulo`, 1 `pecera`, 2 `ecosistema` (`PLANTAS`; the Sala Polivalente `eventos` is reached from `ecosistema` through its door). Each of
 those rooms declares its lift object with `ascensorObjeto(id, extraHandlers, bloqueo?)` (Ir a / Usar / Abrir →
 `usarAscensor(api)`: `api.choose` with the four floors, the current one greyed «(aquí)», plus «Nada, me quedo en esta
 planta.»), and its art has the entry `ascensor` (where Bruno appears). `plantaPermitida(api, room)` applies the same
@@ -672,7 +672,7 @@ game by itself; `api.ending(opts)` ends the game (a click fast-forwards; at the 
 | `node tools/serve.mjs 8080` | static server → `http://localhost:8080/` |
 | `node tools/shot.mjs <room> [entry] [--debug] [--x=<roomX>] [--y=<roomY>] [--flags=a,b=1] [--verb=hablar:id] [--scale=3]` | screenshot of a room → `tools/shots/room-<room>[-debug].png`; prints content errors and **buildRoom warnings** (exit 1 if any) |
 | `node tools/check.mjs` | static check: imports, logic/art ids, files, exits/entries, undeclared flags, unknown items/actors/replies, duel decks; warnings for lines > 80 chars. **Must pass before you hand over** |
-| `node tools/smoke.mjs` | full UI smoke test (title, 9 rooms, inventory, sample duel, save/load, menu, credits, debug, touch) |
+| `node tools/smoke.mjs` | full UI smoke test (title, 10 rooms, inventory, sample duel, save/load, menu, credits, debug, touch) |
 | `node tools/walkthrough.mjs [--alt] [--hasta=N] [--lento]` | bible §5.4 step by step (data in the file); stops at the first failing step and says why. Fails while rooms are unfinished: expected |
 | `node tools/extras.mjs [--hasta=X10] [--lento]` | walkthrough 5.4 + the «extras» X1…X26 of addendum §12 interleaved (data in the file; fails at the first unimplemented X step: expected). Shares `walk-data.mjs` / `walk-lib.mjs` with the walkthrough; both **dismiss the automatic notices** and keep going |
 | `node tools/play-mouse.mjs [--solo=raton\|geometria] [--vis]` | Act I + duel D1 with REAL mouse events only (incl. the vestíbulo barrier: the lift is unreachable before `torno_abierto`, reachable after; the lift panel by clicks), and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, is not fully covered by another hotspot, and every talkable NPC shows ≥ 80 % of head+torso (silhouette render) with ≥ 120 px of own click area (`--vis` prints the figures) |

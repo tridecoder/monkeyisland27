@@ -257,7 +257,7 @@ La partida empieza un viernes a las 18:30 y **a esa hora ya se ha ido casi todo 
 ### 2.8 `borja_engagement` — Borja Engagement
 - **Departamento / sala:** Marketing (Brand Experience Lead) · `ecosistema`. *(Revisión de dirección: el photocall, la cámara, el flash y las acreditaciones son de **Eventos**, Pilar Escaleta: adenda §13.)*
 - **Aspecto:** treinta y tantos, tupé engominado, americana azul eléctrico con zapatillas blancas y el móvil en la mano como si fuera un micro (sin cámara ni acreditaciones). **Color: `#4FD8E8`**.
-- **Voz/tic:** flipado de manual: todo es «contenido», «engagement», «en vertical». El ¡FLASH! al entrar en la planta es del photocall de Eventos y lo celebra Pilar (adenda §13).
+- **Voz/tic:** flipado de manual: todo es «contenido», «engagement», «en vertical». El ¡FLASH! es del photocall de Eventos, en su sala propia (`eventos`, la Sala Polivalente), y lo celebra Pilar (adenda §13).
 - **Muestras:**
   - «Lo que no está en el photocall no ha ocurrido.»
   - «No es un evento, es una experiencia de marca con canapé.»
@@ -345,7 +345,7 @@ La partida empieza un viernes a las 18:30 y **a esa hora ya se ha ido casi todo 
 
 ```
                     PLANTA 2
-          [ecosistema] ──pasillo── [administracion]
+ [eventos] ──puerta── [ecosistema] ──pasillo── [administracion]
                 |
              escalera
                 |
@@ -371,6 +371,7 @@ flowchart LR
   pajarera -- puerta (Acto III: sala_abierta y ruben_libre) --- sala_amazonas
   pecera -- escalera --- ecosistema
   ecosistema -- pasillo --- administracion
+  ecosistema -- puerta --- eventos
 ```
 
 | Sala | Tamaño | Salidas (hotspot de salida → destino) | Bloqueos |
@@ -381,7 +382,8 @@ flowchart LR
 | `catacumba` | 320×144 | `catacumba_a_office` → `office` | Ninguno. |
 | `pajarera` | 320×144 | `pajarera_a_pecera` → `pecera`; `puerta_sala` → `sala_amazonas` | `puerta_sala` en el Acto III exige `sala_abierta` y `ruben_libre` (y llevar `acta_reunion` y `ticket_n1`). |
 | `sala_amazonas` | 320×144 | `sala_a_pajarera` → `pajarera` | En el Acto III, al entrar empieza el clímax: no se puede salir hasta ganar. |
-| `ecosistema` | 320×144 | `ecosistema_a_pecera` → `pecera`; `ecosistema_a_administracion` → `administracion`; `ascensor_ecosistema` → botonera | Ninguno. |
+| `ecosistema` | 320×144 | `ecosistema_a_pecera` → `pecera`; `ecosistema_a_eventos` → `eventos`; `ecosistema_a_administracion` → `administracion`; `ascensor_ecosistema` → botonera | Ninguno. |
+| `eventos` | **512×144 (scroll)** | `eventos_a_ecosistema` → `ecosistema` | Ninguno. (El ascensor llega al Ecosistema; a Eventos se entra por su puerta.) |
 | `administracion` | 320×144 | `administracion_a_ecosistema` → `ecosistema` | Ninguno. |
 | `cpd` | 320×144 | `ascensor_cpd` → botonera (-1, 0, 1, 2) | Ninguno. |
 
@@ -402,6 +404,8 @@ flowchart LR
 | `sala_a_pajarera` | ver tabla de la Sala |
 | `ecosistema_a_pecera` | «La escalera de bajada. A Redacción, donde la moqueta es de verdad.» |
 | `ecosistema_a_administracion` | «Pasillo a Administración. Al fondo, una ventanilla brilla como un faro.» |
+| `ecosistema_a_eventos` | «La puerta de Eventos. Por la rendija salen focos, un gong y prisa.» // «Encima, un piloto verde: "PRÓXIMO EVENTO: 5 MIN". No se apaga nunca.» |
+| `eventos_a_ecosistema` | «La puerta a Marketing y Comercial. Por ahí entra la luz lila y sale el gong.» |
 | `administracion_a_ecosistema` | «Vuelta al Ecosistema. Se oye un gong.» |
 
 **Estados por acto (quién está dónde):**
@@ -415,6 +419,7 @@ flowchart LR
 | `pajarera` | Íñigo (sofá), Lector Medio | Íñigo, Lector Medio; Gervasio en su mesa si `reunion_terminada` | vacía (todos en la Sala) | — |
 | `sala_amazonas` | Gervasio + 3 figurantes (reunión) | ídem hasta `reunion_terminada`; luego vacía con `planillo_mesa` | Íñigo, Lector Medio, Gervasio (clímax) | — |
 | `ecosistema` | Borja, Maripaz | Borja, Maripaz | Borja, Maripaz | — |
+| `eventos` | Pilar | Pilar | Pilar (Borja se asoma a la puerta en P14a) | — |
 | `administracion` | Begoña | Begoña | Begoña (entra en la Sala en el clímax) | — |
 | `cpd` | Paco | Paco | Paco; Rubén en el armario 27 hasta `ruben_libre` | — |
 
@@ -566,25 +571,31 @@ flowchart LR
 
 ### 3.7 `ecosistema` — El Ecosistema (Marketing y Comercial)
 
-**Fondo (320×144):** planta diáfana con moqueta más gruesa que en Redacción. A la izquierda, la escalera que baja a la Pecera. Un **photocall** con treinta logos y un hueco en medio: «ESPACIO PREMIUM PARA TU CARA»; delante, un **aro de luz**. **Pufs** de colores (Marketing los ha puesto delante del **ascensor**); sobre uno, el **álbum** de Eventos. En el centro-derecha, la mesa de **Maripaz** con un **gong** enorme, auricular de diadema y, enmarcado, el **lema** «TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO». Una **pizarra** con «SINERGIA» escrito en tres colores. **Cajas** de lanyards y tazas con logo. A la derecha, el pasillo hacia Administración y, en él, **la impresora de la tercera** con su pantalla «ATASCO EN BANDEJA 2».
+**Fondo (320×144):** planta diáfana con moqueta más gruesa que en Redacción. A la izquierda, la escalera que baja a la Pecera y, a su lado, la **puerta de Eventos** (doble hoja ciruela con ojos de buey por los que se escapan los focos, cartel verde «EVENTOS» y un piloto «5 MIN»): da a la **Sala Polivalente** (`eventos`, §3.7b). Bajo el neón «ECOSISTEMA», el **embudo de Marketing** en vinilo («VEN · MIRA · COMPARTE · ¿?»). **Pufs** de colores (Marketing los ha puesto delante del **ascensor**) y el **roll-up de Comercial** («SU ANUNCIO AQUÍ»). Una **pizarra** con «SINERGIA» escrito en tres colores sobre la mesa vacía de Tadeo. En el centro-derecha, el **termómetro de ventas** de Maripaz («OBJETIVO Q3», al 97 %), su mesa con auricular de diadema y, enmarcado, el **lema** «TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO». A la derecha, el pasillo hacia Administración y, en él, **la impresora de la tercera** con su pantalla «ATASCO EN BANDEJA 2».
 
-**PNJ:** `pilar_escaleta` (Eventos, en la alfombra del photocall: adenda §13), `borja_engagement` (Marketing, junto al aro de luz), `maripaz_remitido` (en su mesa).
-**Ambiente:** al entrar, ¡FLASH! del photocall de Eventos y PILAR acredita al que llega (cada vez; rota: adenda §13.1).
+**PNJ:** `borja_engagement` (Marketing, junto al embudo), `maripaz_remitido` (en su mesa). Eventos (Pilar, photocall, gong, lanyards, álbum) está en su sala.
+**Ambiente:** la primera vez (Acto I): «La planta 2 a las seis y media: moqueta, pufs y nadie. Y un gong, detrás.» El ¡FLASH! de entrada es de la Sala Polivalente.
 
 | id | Mirar | Interacciones especiales |
 |---|---|---|
-| `photocall` | «Treinta logos y un hueco en medio: "Espacio premium para tu cara".» | **Usar:** Bruno se pone. ¡FLASH! PILAR: «¡Foto de acreditación! Ya constas en un evento.» |
-| `aro_luz` | «Un aro de luz. Te pone cara de haber dormido. Mentira institucional.» | — |
-| `album_eventos_hotspot` | «El álbum de Eventos. En todas las fotos sale al fondo un chico pálido.» // «Siempre yendo al baño. Con un táper. Pilar lo llama "el extra".» | **Coger** sin `ruben_encontrado`: PILAR: «¡Eh! Ese álbum está acreditado. Pídemelo con un motivo.» · Con `ruben_encontrado`: «Mejor se lo pido a Pilar. Lo tiene acreditado. Con foto.» |
-| `gong` | «Un gong. Suena por cada venta. Y por cada promesa de venta.» | **Usar/Empujar:** «¡GOOONG! La planta entera aplaude: creen que he vendido algo.» // MARIPAZ: «¡Ese gong es mío, cariño! Bueno, da igual: lo facturo.» |
+| `ecosistema_a_eventos` | «La puerta de Eventos. Por la rendija salen focos, un gong y prisa.» | **Ir a / Usar / Abrir:** a la Sala Polivalente. · **Hablar:** «"¿Se puede?". Contesta un walkie: "Con acreditación. Cambio".» |
+| `embudo_marketing` | «Un embudo de Marketing: "VEN · MIRA · COMPARTE · ¿?".» // «El último paso es una interrogación. Es el único honesto.» | **Hablar:** BORJA: «¡No le hables al embudo! ¡El embudo te habla a ti!» |
+| `rollup_comercial` | «Un roll-up: "SU ANUNCIO AQUÍ". Y la extensión de Maripaz, en grande.» | **Empujar:** «¡Zas! Se enrolla solo.» // MARIPAZ: «Eso, cariño, es una baja de campaña. Te la facturo.» |
+| `termometro_ventas` | «Un termómetro pintado a rotulador: "OBJETIVO Q3". Rojo hasta el 97 %.» // «El 3 % que falta se lo lleva el gong de al lado.» | **Hablar:** «"¿Cuándo llegas al cien?".» // MARIPAZ: «El día que pagues tú, cariño.» |
 | `lema_enmarcado` | «"TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO."» | — |
 | `pizarra_sinergia` | «Pone SINERGIA en tres colores. Si la miras fijamente, aparece un velero.» | — |
 | `impresora_tercera` | «Pantalla: "ATASCO EN BANDEJA 2". No tiene bandeja 2.» // «Empiezo a dudar de la bandeja 1.» | **Abrir:** «Dentro hay un folio de 2016 que pone "PRUEBA". Superada.» · **Usar** cualquier papel: «"ATASCO EN BANDEJA 2". Le da igual lo que le dé.» |
-| `cajas_lanyards` | «Lanyards de Eventos. Para acreditar dos veces a la ONU.» | **Coger:** «Si me pongo uno más, Pilar me cuenta como asistente.» |
 | `pufs` | «Pufs. Aquí nadie se sienta: se "ubica".» | **Usar:** «Me ubico. Me hundo. Me desubico.» |
 | `borja_engagement` (PNJ) | «Borja Engagement, Marketing. Habla al móvil como a un micro. Aunque no grabe.» | **Hablar:** árbol 7.7.8 (revisado en la adenda §13.3). |
-| `pilar_escaleta` (PNJ) | «Pilar Escaleta, de Eventos. Cascos, walkie, escaleta y seis acreditaciones.» | **Hablar:** árbol `pilar` (adenda §13.2; presta el álbum, P14a). |
 | `maripaz_remitido` (PNJ) | «Maripaz, Comercial. Lleva el mazo del gong como otros el bolso.» | **Hablar:** árbol 7.7.9. · **Dar `planillo`:** P07 (abre el duelo D1). |
+
+### 3.7b `eventos` — La Sala Polivalente (Eventos)
+
+**Fondo (512×144, scroll):** sala oscura de techo técnico, ciruela y terciopelo negro, cruzada de lado a lado por una **barra de focos** (truss) con focos PAR: conos de luz con trama, brillo de lente y dos que **parpadean** (el tres del photocall y el del atril). De izquierda a derecha: la puerta abierta al Ecosistema (luz lila de Marketing); el **photocall** con su truss, la pared de logos y el hueco «ESPACIO PREMIUM PARA TU CARA», **alfombra roja**, postes dorados y cordón de terciopelo; el **aro de luz**; **flight cases** («EVNT», «5MIN»); el **escenario** con telón negro, la **pancarta** «BIENVENIDOS A» con el nombre tapado con cinta americana, la **cuenta atrás** clavada en **00:05:00**, el **gong**, un micro de pie y el **atril**; delante, **cuatro filas de sillas** granates en perspectiva con pasillo central (las famosas 112; una con el folio **«RESERVADO»** y otra, **torcida** y de Comercial, sacando la pata al pasillo); altavoces; la **mesa de sonido** («FOH») con el cargador de walkies; el cartel luminoso «SALA POLIVALENTE»; la **mesa de acreditaciones** (cajas de lanyards, el **álbum**, la lista pegada con cinta, roll-up «EN 5 MIN») y el **catering**: croquetas bajo campana, con su propio foco y el cartel «21:05». Cruces de **cinta americana** por todo el suelo.
+
+**PNJ:** `pilar_escaleta`, en la alfombra roja, delante de su photocall (Actos I-III).
+**Ambiente:** al entrar, ¡FLASH! del photocall y PILAR acredita al que llega (cada vez; rota: adenda §13.1). La primera vez: «La Sala Polivalente. Vale para todo.» // «Sobre todo, para estar a punto de empezar.»
+**Hotspots:** los de Eventos que estaban en el Ecosistema (`photocall`, `aro_luz`, `cajas_lanyards`, `gong`, `album_eventos_hotspot`, mismas líneas: adenda §13.3) y los nuevos de la adenda §13.4 (`focos`, `cuenta_atras`, `pancarta_evento`, `atril`, `sillas_evento`, `silla_reservado`, `silla_torcida`, `mesa_sonido`, `mesa_acreditaciones`, `catering_croquetas`, `flight_cases`, `marcas_cinta`, `eventos_a_ecosistema`).
 
 ---
 
@@ -745,11 +756,11 @@ flowchart LR
 - **Resultado:** `ruben_encontrado`; escena de la revelación (7.3). Hablar `ruben` → `rep_13`.
 - **Pista justa:** el borde perforado de `mensaje_fp` («viene de una matricial»); PACO: «La única matricial que queda está en el 27. Imprime sola.»; el titular «AYÚDAME ESTOY EN EL ARMARIO 27»; `libro_visitas`; `hoja_firmas`; Gertrudis «E-27: AYÚDAME».
 
-**P14 · Descopear a Rubén** — `ecosistema` + `pecera` + `cpd`
+**P14 · Descopear a Rubén** — `eventos` + `pecera` + `cpd`
 - **Precondiciones:** `ruben_encontrado`.
 - **Acciones:** (a) Hablar `pilar_escaleta` (Eventos) → «¿Me prestas el álbum?» → `album_eventos`, `oyo_descopear`. (b) **Dar `album_eventos` a `nerea_backlog`** → opción **«¿Y si... lo descopeamos?»** → `posit_baja_ruben`, `posit_descopeado`. (c) **Dar `posit_baja_ruben` a `paco_ticket`** → `ticket_n1`, `ruben_libre`.
 - **Resultado:** se gastan álbum y pósit; Rubén sale del armario y se va a la ventana de la Pecera.
-- **Pista justa:** RUBÉN: «Nerea no mueve un pósit sin pruebas de que el becario existió.» // «Nadie me ha hecho nunca una foto. Bueno, la de Eventos. Pero salgo al fondo.» NEREA: «Un pósit solo sale hecho o muerto.» BORJA, cuando Pilar presta el álbum: «Hemos descopeado la ética del Q3.»
+- **Pista justa:** RUBÉN: «Nerea no mueve un pósit sin pruebas de que el becario existió.» // «Nadie me ha hecho nunca una foto. Bueno, la de Eventos. Pero salgo al fondo.» NEREA: «Un pósit solo sale hecho o muerto.» BORJA, que lo oye desde Marketing y **se asoma por la puerta de la Sala Polivalente** cuando Pilar presta el álbum: «Hemos descopeado la ética del Q3.» (Borja, en el Ecosistema, también remite a Pilar: «Pídeselo a Pilar.»; la abuela, sin `oyo_descopear`: «Las fotos de las fiestas las guarda la que las organiza.»)
 
 **P15 · El acta: duelo con Gervasio** — `office`
 - **Precondiciones:** `acto_3_iniciado`.
@@ -839,7 +850,7 @@ Formato: `VERBO objeto [con/a objeto]`. Las elecciones de diálogo van entre com
 | 37 | catacumba | Dar ficha_pagina_7 a teodoro_cuerpodoce | `pagina_cerrada`, `acto_3_iniciado`; −`ficha_pagina_7`, −`pieza_opa`; escena 7.3a |
 | 38 | cpd | Tirar papel_continuo | `ruben_encontrado`; escena 7.3 |
 | 39 | cpd | Hablar ruben → «¿Escribiste tú los discursos de Íñigo?» | `rep_13` |
-| 40 | ecosistema | Hablar pilar_escaleta → «¿Me prestas el álbum?» | `album_eventos`, `oyo_descopear` |
+| 40 | eventos | Hablar pilar_escaleta → «¿Me prestas el álbum?» | `album_eventos`, `oyo_descopear` |
 | 41 | pecera | Dar album_eventos a nerea_backlog → «¿Y si... lo descopeamos?» | `posit_baja_ruben`, `posit_descopeado`; −`album_eventos` |
 | 42 | cpd | Dar posit_baja_ruben a paco_ticket | `ticket_n1`, `ruben_libre`; −`posit_baja_ruben` |
 | 43 | office | Hablar gervasio_acta → «Necesito el acta de la última reunión.» → duelo D3: R07 → «A ti te consta. A mí me consta que hablabas tú.» · R01 → «Lo leímos todos. Por eso no contestó nadie.» · R14 → «O en un correo de una línea. Este. De nada.» | `duelo_gervasio_ganado`, `acta_reunion`, `sala_abierta` |
@@ -891,7 +902,7 @@ Todos booleanos salvo los marcados `int`. **Paquete** = quién lo implementa (se
 | `vio_armario_27` | bool | B · pajarera · 3.ª Mirar a `pantalla_titulator` | B (Íñigo I4) · pistas |
 | `titulator_mirar_n` | int | B · pajarera · +1 por Mirar | B |
 | `ruben_encontrado` | bool | A · cpd · P13 | A · D (Pilar presta el álbum; `album_eventos_hotspot`) · B (Nerea N4) · pistas |
-| `oyo_descopear` | bool | D · ecosistema · Pilar «¿Me prestas el álbum?» (Borja dice «descopear») | B (opción «¿Y si... lo descopeamos?» de Nerea) |
+| `oyo_descopear` | bool | D · eventos · Pilar «¿Me prestas el álbum?» (Borja se asoma y dice «descopear») | B (opción «¿Y si... lo descopeamos?» de Nerea) |
 | `posit_descopeado` | bool | B · pecera · P14b | B (Mirar kanban) |
 | `ruben_libre` | bool | A · cpd · P14c | B (Rubén en la Pecera; `puerta_sala`) · A (armario vacío) · D (escena 7.4) · pistas |
 | `duelo_gervasio_ganado` | bool | C · office · fin D3 | C |
@@ -1772,7 +1783,8 @@ Dar ficha_pagina_7 (en este orden de comprobación):
      BORJA: ¡Salida de escena! ¡Eso es un cierre de embudo!  → FIN
 ```
 **P14a** se hace ahora con **Pilar Escaleta** (Eventos), árbol `pilar` de la adenda §13.2: «¿Me prestas el álbum?» → `album_eventos`
-y `oyo_descopear` (Borja, desde su sitio: «¡Compártelo! Por cierto: hemos descopeado la ética del Q3.»).
+y `oyo_descopear`, en la Sala Polivalente (`eventos`). Borja lo oye desde Marketing y **se asoma por la puerta**: «¡Compártelo!
+Por cierto: hemos descopeado la ética del Q3.» (puesta en escena en la adenda §13.6).
 
 #### 7.7.9 `maripaz_remitido` (ecosistema)
 ```
@@ -1949,7 +1961,7 @@ Líneas aprobadas. «Mirar (2.ª)» = sustituye al Mirar de la biblia a partir d
 | `pecera` | entrada | «Las seis y media. Se ha ido todo el mundo. Las pantallas no se han enterado.» | B |
 | `pecera` | Mirar (2.ª) de `figurantes_web` | «Los dos únicos que quedan. Están de guardia. Lo demás son chaquetas.» | B |
 | `office` | Mirar (2.ª) de `microondas` | «Sus dueños se fueron a las seis y media. Los tuppers siguen en la cola.» | C |
-| `ecosistema` | entrada | «La planta 2 a las seis y media: moqueta, pufs y nadie. Bueno, un gong.» | D |
+| `ecosistema` | entrada | «La planta 2 a las seis y media: moqueta, pufs y nadie. Y un gong, detrás.» | D |
 | `administracion` | murmullo de `begona_triplicado` | «Se ha ido todo el mundo. Yo cierro a las 19:15. Por principios.» | D |
 | `cpd` | murmullo de `paco_ticket` | «A las seis y media se va la gente. Los tickets se quedan. Como yo.» | A |
 
@@ -1976,9 +1988,9 @@ Cada autor implementa **sus salas completas** (fondo descrito, hotspots, Mirar, 
 | **A · «Puerta, sótano y común»** | `vestibulo`, `cpd` | `celestino`, `paco_ticket`, `ruben` (en el CPD), `abuela_remedios` | P01, P05a (registro), P13, P14c | — | 7.1 Intro, 7.3 Revelación de Rubén, **7.5 Final + créditos + poscréditos** (vestíbulo y el tramo de la Pecera) | Inventario completo (sección 4: ids, nombres, Mirar con estados), respuestas por defecto (8.2), pistas de la abuela (5.6), datos comunes del duelo (6.3 parejas, 6.6 flojas y comodín, 6.7 «cualquier otro»), cuarta pared (8.6), aviso «Réplica apuntada» |
 | **B · «La web y el poder»** | `pecera` (800 px), `pajarera` | `yoli_tendencias`, `nerea_backlog`, `inigo_sinergia` (Actos I-II), `gervasio_acta` (nodo Pajarera), `lector_medio` (Pajarera), `ruben` (en la Pecera, tras `ruben_libre`) | P04, P05b (enchufe), P10b (escribir), P14b (descopear) | — | 7.2 Presentación del villano | Rotación del Titulator (8.3) |
 | **C · «El papel y el café»** | `office`, `catacumba` | `gertrudis`, `aurora_galerada`, `teodoro_cuerpodoce`, `gervasio_acta` (nodo Office) | P02, P03, P09, P10a, P12, P15 | **D2** Teodoro, **D3** Gervasio | 7.3a Inicio del Acto III | Chismes y errores de Gertrudis (6.3, 7.7.3) |
-| **D · «Planta noble y Dirección»** | `ecosistema`, `administracion`, `sala_amazonas` | `pilar_escaleta`, `borja_engagement`, `maripaz_remitido`, `begona_triplicado`, `gervasio_acta` (nodo Reunión y clímax), `inigo_sinergia` y `lector_medio` (Acto III en la Sala) | P06, P07, P08, P11, P14a (álbum), P16 | **D1** Maripaz, **D4** Íñigo | 7.4 Clímax (entrada, duelo, empujón, Begoña con la factura, «Goyita, tira») | — |
+| **D · «Planta noble y Dirección»** | `ecosistema`, `eventos`, `administracion`, `sala_amazonas` | `pilar_escaleta`, `borja_engagement`, `maripaz_remitido`, `begona_triplicado`, `gervasio_acta` (nodo Reunión y clímax), `inigo_sinergia` y `lector_medio` (Acto III en la Sala) | P06, P07, P08, P11, P14a (álbum), P16 | **D1** Maripaz, **D4** Íñigo | 7.4 Clímax (entrada, duelo, empujón, Begoña con la factura, «Goyita, tira») | — |
 
-**Carga estimada:** A ≈ 2 salas + común + final; B ≈ 2 salas (una doble) + villano; C ≈ 2 salas + 6 puzles + 2 duelos; D ≈ 3 salas + 6 puzles + 2 duelos + clímax.
+**Carga estimada:** A ≈ 2 salas + común + final; B ≈ 2 salas (una doble) + villano; C ≈ 2 salas + 6 puzles + 2 duelos; D ≈ 4 salas (con la Sala Polivalente de Eventos) + 6 puzles + 2 duelos + clímax.
 
 ### 9.2 Lo que cruza entre paquetes
 

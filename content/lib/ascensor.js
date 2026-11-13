@@ -2,7 +2,7 @@
 // Un mismo ascensor une cuatro plantas. Usarlo (Ir a / Usar / Abrir) abre el menú de plantas (api.choose): la planta
 // actual sale en gris, hay opción de quedarse. Viaje: puertas, cabina con el indicador contando plantas (hud), una frase
 // del ascensor (rota en orden, `ascensor_viajes_n`) y llegada por la entrada `ascensor` de la sala de destino, que corre
-// su onEnter y los avisos comunes igual que por la ruta de siempre (escena 7.2 en la Pecera, ¡FLASH! en la planta 2...).
+// su onEnter y los avisos comunes igual que por la ruta de siempre (escena 7.2 en la Pecera, ticket del CPD...; el ¡FLASH! de Eventos es de su sala, `eventos`, junto al Ecosistema).
 //
 // BLOQUEOS: cada planta obedece exactamente la misma condición que la ruta antigua a esa sala:
 //   -1 cpd        torno_abierto (antes: ascensor del vestíbulo, «al otro lado del torno»)

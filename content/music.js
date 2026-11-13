@@ -222,6 +222,27 @@ const tracks = {
     };
   })(),
 
+  // events room (Sala Polivalente): the main hook (A C F) as a brass-like fanfare over a snare roll that keeps
+  // building up... and the loop ends on a held C7 that never resolves: always five minutes from starting.
+  m_eventos: (() => {
+    const prog = ['F', 'F', 'Bb', 'C7', 'F', 'F', 'Bb', 'C7', 'Dm', 'Bb', 'F', 'C7', 'Bb', 'C7', 'Bb', 'C7'];
+    const lead = J([
+      'A4 C5 F5 - - . . .', 'A4 C5 F5 - A5 - G5 -', 'F5 - D5 - Bb4 - . .', 'C5 - E5 - G5 - - -',
+      'A4 C5 F5 - - . . .', 'A4 C5 F5 - C6 - A5 -', 'Bb5 - F5 - D5 - . .', 'E5 - G5 - Bb5 - - -',
+      'D5 F5 A5 - - . A5 -', 'Bb5 - F5 - D5 - . .', 'A4 C5 F5 - A5 - C6 -', 'Bb5 - G5 - E5 - C5 -',
+      'D5 - F5 - Bb5 - . .', 'C5 - E5 - G5 - Bb5 -', 'D5 - F5 - Bb5 - D6 -', 'C6 - - - - - - -']);
+    return {
+      bpm: 112, steps: 2, vol: 0.85,
+      channels: [
+        { wave: 'square', duty: 0.25, vol: 0.085, gate: 0.85, notes: lead },
+        { wave: 'sawtooth', vol: 0.022, transpose: -12, gate: 0.7, notes: lead },
+        { wave: 'square', duty: 0.125, vol: 0.035, gate: 0.4, notes: comp(prog, '0 . 1 . 2 . 1 .') },
+        { wave: 'triangle', vol: 0.21, gate: 0.6, notes: bass(prog, 'R . R . F . R .') },
+        { wave: 'noise', vol: 0.05, notes: dr(16, 'k . x . o . x .', 'o o o o o o o o') },
+      ],
+    };
+  })(),
+
   // administration: slow bureaucratic march in C minor, staccato "stamp" lead.
   m_administracion: (() => {
     const prog = ['Cm', 'Cm', 'G7', 'Cm', 'Fm', 'Cm', 'G7', 'Cm', 'Ab', 'Fm', 'G7', 'G7', 'Cm', 'Fm', 'G7', 'Cm'];

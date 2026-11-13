@@ -1,5 +1,5 @@
 // Punto ÚNICO de registro del contenido. ARCHIVO COMPARTIDO: no lo edita ningún autor de sala.
-// Ya registra las 9 salas: cada sala importa sus propios archivos extra (diálogos, escenas, arte),
+// Ya registra las 10 salas: cada sala importa sus propios archivos extra (diálogos, escenas, arte),
 // así que nadie necesita tocar este archivo. Documentación: docs/CONTENT_SCHEMA.md §1.
 //
 //   game    : content/game.js      (título, defaults §8.2, pistas §5.6, cuarta pared §8.6, créditos)
@@ -20,6 +20,7 @@ import catacumba from './rooms/catacumba.js';
 import pajarera from './rooms/pajarera.js';
 import sala_amazonas from './rooms/sala_amazonas.js';
 import ecosistema from './rooms/ecosistema.js';
+import eventos from './rooms/eventos.js';
 import administracion from './rooms/administracion.js';
 import cpd from './rooms/cpd.js';
 
@@ -29,7 +30,7 @@ export default {
   items: [items],
   duels: [duelo],
   flags: [flags],
-  rooms: [vestibulo, pecera, office, catacumba, pajarera, sala_amazonas, ecosistema, administracion, cpd],
+  rooms: [vestibulo, pecera, office, catacumba, pajarera, sala_amazonas, ecosistema, eventos, administracion, cpd],
   dialogs: [],
   music: [],
   sfx: [],

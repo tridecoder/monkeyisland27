@@ -139,7 +139,7 @@ async function auditCurrentRoom(tag) {
     return { n: targets.length, issues: out, vis };
   }, tag);
 }
-const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'administracion', 'cpd'];
+const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'eventos', 'administracion', 'cpd'];
 async function auditAllRooms(tag) {
   await G(() => __game.save('geo'));
   const issues = []; let n = 0;
@@ -157,7 +157,7 @@ async function auditAllRooms(tag) {
     if (args.vis) console.log(`    ${tag} ${room}: ${r.vis.join(' · ')}`);
   }
   await G(() => __game.load('geo'));
-  ok(!issues.length, `${tag}: ${n} hotspots/PNJ en 9 salas — suelo, alcance desde cada entrada, cobertura y PNJ visibles/clicables${issues.length ? '\n      ' + issues.join('\n      ') : ''}`);
+  ok(!issues.length, `${tag}: ${n} hotspots/PNJ en 10 salas — suelo, alcance desde cada entrada, cobertura y PNJ visibles/clicables${issues.length ? '\n      ' + issues.join('\n      ') : ''}`);
 }
 
 // ================================================================== RATÓN REAL

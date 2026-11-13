@@ -118,14 +118,13 @@ try {
   await opcion('¿Qué está dirigiendo?');
   await opcion('¿Por qué trabaja aquí, al lado de Desarrollo?');
   await opcion('Desarrollo dice que todo es culpa de Diseño.');
-  await opcion('¿Es verdad que le quieren fusionar con Infografía?');
   must(!(await state()).dialog.some(o => o.includes('Titulator')), 'Valentín: la opción del Titulator sale sin ruben_encontrado');
   must(!(await state()).dialog.some(o => o.includes('pantalla tumbaba')), 'Valentín: la opción del CMS sale sin cms_vivo');
   await opcion('¿Algún truco?');
   await opcion('Me voy.');
   await verb('usar', 'monitor_valentin'); await verb('mirar', 'monitor_valentin'); await verb('mirar', 'valentin_reticula');
   for (const l of ['Eres un sprite muy bien resuelto.', 'La bandeja está a dos metros.', 'Es aislamiento por diseño.', 'Lo dicen a dos metros.',
-    'Se la devolví alineada.', 'Lo he rediseñado.', 'Con un empujón. Con educación.', 'Es esta Redacción. En pequeño.', 'Va mejor vestido que la planta entera.']) must(await logHas(l), `Valentín: falta «${l}»`);
+    'Lo he rediseñado.', 'Con un empujón. Con educación.', 'Es esta Redacción. En pequeño.', 'Va mejor vestido que la planta entera.']) must(await logHas(l), `Valentín: falta «${l}»`);
   const vb = await G(() => { const g = __game.game, a = g.actors.valentin_reticula, b = g.actorBox(a); const others = Object.values(g.actors).filter(o => o.room === 'pecera' && o.visible && o.id !== a.id && o.id !== 'bruno').map(o => [o.id, g.actorBox(o)]);
     return { x: a.x, y: a.y, overl: others.filter(([, o]) => o.x < b.x + b.w && b.x < o.x + o.w).map(([id]) => id), hs: g.roomObjects().filter(o => o.hotspot !== false && o.w && o.x < b.x + b.w && b.x < o.x + o.w && o.y + o.h > b.y + b.h * 0.3).map(o => o.id) }; });
   must(!vb.overl.length, `Valentín se solapa con ${vb.overl.join(', ')}`);

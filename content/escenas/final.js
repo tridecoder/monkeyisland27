@@ -210,6 +210,8 @@ function creditos(api) {
     '',
     'Ninguna rotativa fue apagada durante el desarrollo de este juego.',
     '',
+    ...asig('Sala Polivalente', 'Cuenta atrás: 00:04:59. Por fin empezamos.', 'Era la presentación de una fe de erratas.',
+      'La primera de la historia con photocall.'),
     'Gracias por jugar. Abrígate.',
     ...Array(4).fill(''),
   ];

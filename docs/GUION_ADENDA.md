@@ -29,9 +29,9 @@
 1. **Se parodia la dinámica, no a la persona.** Nombres inventados con apellido-chiste, como en la biblia. Ningún nombre de pila coincide con los de las propuestas en conflicto («Fermín» queda **eliminado** del juego).
 2. **Sprites solo por ropa y atrezo.** Nada de edad, cuerpo, pelo, cara ni gestos personales reconocibles.
 3. **Cada retratado gana algo.** Leoncio tiene la mejor herramienta del edificio; Anselmo de verdad baja a las tres de la mañana; Tadeo es generoso y la impresora acaba leyéndole; Evaristo **salva la empresa**; Custodia es la única que sabe dónde está todo; Diseño y Producto **tenía razón desde 2017**.
-4. **Diseño y Producto** es un departamento propio, inocente, al que culpan siempre. Su equipo se fue a las 18:30 con todo entregado (bandeja de entregas); **solo queda su director, Valentín Retícula** (cameo, 1.9), ocupadísimo. **Diseño no se fusiona con nadie** («Tercera vez esta semana. No.»). Sale siempre bien: el más puntual, el mejor vestido y el que tenía razón.
+4. **Diseño y Producto** es un departamento propio, inocente, al que culpan siempre. Su equipo se fue a las 18:30 con todo entregado (bandeja de entregas); **solo queda su director, Valentín Retícula** (cameo, 1.9), ocupadísimo. Sale siempre bien: el más puntual, el mejor vestido y el que tenía razón.
 5. **La redacción de las 18:30** (gag oficial, biblia 1.4b y 8.7): cada personaje nuevo tiene un motivo para seguir aquí, y se dice una vez.
-6. Lista negra de la biblia (1.3) respetada. Vetados de las propuestas por lista negra o meme: «Odio los lunes», cualquier chiste de viernes y despliegues, «Diseño se fusionó con Infografía».
+6. Lista negra de la biblia (1.3) respetada. Vetados de las propuestas por lista negra o meme: «Odio los lunes», cualquier chiste de viernes y despliegues.
 7. **Ningún director del periódico** en pantalla ni aludido. Los jefes que salen son de departamento (Desarrollo, Controlling, Diseño y Producto) o intermedios ficticios (Gervasio).
 8. **Garaje (guiño 8):** humor negro de dibujos animados. Nadie se hace daño, todos los planes fallan y «accidente» va siempre entre comillas.
 
@@ -42,7 +42,7 @@
 | 1 | Infografía con IA vs director de Desarrollo celoso | **Fusión.** Del absurdo: **Herminia** (herramienta con nombre de persona «para que no la desenchufen», eco de la Goyita), la **cinta de carrocero** que avanza por actos y el micro-puzle **«dar de alta a Herminia como becaria»** («Esta casa da de alta antes a un portátil que a un chaval»). De la sátira: la pantalla **«ACCESO DENEGADO: HERMINIA / ACCESO CONCEDIDO: TITULATOR 3000 (USUARIO INTERNO)»**, «Es transversalidad», «Peor. Si funciona, la gente se acostumbra», «Mi revisión es en marzo», «Lo revoco. Con fecha de hoy. Y de julio» y el «bajo yo a las tres». | El Tartómetro, QuIAque, BegoñIA/CelestIAno (juego de palabras que se explica solo una vez), la mampara, los infografistas figurantes (cuestan arte y la redacción está vacía: quedan sus chaquetas), el micro-puzle de la infografía al papel (un objeto más y un cuarto micro-puzle). | El chiste que se entiende en una línea es «la IA de verdad no entra; la falsa entró porque tenía alta». El alta une el guiño con Rubén sin código nuevo. |
 | 2 | Negocio reenvía sin leer lo que dice la IA | **Sátira, con nombre del absurdo.** **Tadeo Adjunto** (el apellido «Remitido» ya es de Maripaz). Presencia **sin sprite**: se fue a las seis, **su portátil no**. Mensajes de Core Web Vitals con cifras reales y propuestas absurdas («Propongo atornillarla»), Cerrar el portátil por actos, R15. Del absurdo: los avisos «RV:» en el móvil y la coda **la impresora es la única que le leía** («BANDEJA 2 INSTALADA», ya canónica). | El robot de telepresencia (arte y animación), la llamada de Lorenzo, el hilo de créditos largo, las siglas inventadas («Lectores Con Prisa»: el chiste es que la IA acierta y él no la entiende). | Encaja con «a las 18:30 se ha ido todo el mundo» y cuesta un hotspot. |
 | 3 | Controlling quisquilloso y heroico | **Fusión.** Del absurdo: **«escúchele hasta el final»** como micro-puzle (la mecánica es la dinámica al revés), la cláusula 12 «punto de miles y coma decimal», la cuarta copia de Begoña y el «Felicidades. Es la primera vez que lo digo sin adjunto». De la sátira: el apellido **Salvedad** (oficio de auditor), «Una cosita. Muy pequeña.», la coma del precio de la opa (salva la exclusiva), el **atún de la −1** (pista de P13 con una hoja de cálculo), la entrada por sorpresa en la Reunión de Dirección (aquí, por el **teléfono de conferencias** de la Sala) y un remate que se lo da la grabación del Lector Medio caído: **«...Y ahorrar.»** | El cable rizado que recorre el edificio (tres hotspots), el fijo de cable, la versión del clímax siempre activa. | Es el único que lee hasta el final y por eso gana. El refuerzo es **opcional** (versión A con el micro-puzle, B sin él). |
-| 4 | Desarrollo ruidoso que culpa a Diseño | **Absurdo en forma** (tres figurantes **de espaldas**, solo manos; la tercera espalda solo dice «No.»); **sátira en remate**: la casilla VACANTE cuelga de **DISEÑO Y PRODUCTO** («plaza pedida en 2021») y el epílogo «Enhorabuena, Diseño». **Nuevo remate humillante:** la **bandeja de entregas de Diseño** contiene, desde 2017, el aviso de que la pantalla de Dirección tumbaría el CMS. Sello de Desarrollo: «LEÍDO (PERO NO)». | Cualquier fusión de Diseño con Infografía (vetado), la figurante sola en el Office, prefijos largos por sprite. | Diseño sale bien: inocente, puntual y con razón. Desarrollo queda humillado con cariño. |
+| 4 | Desarrollo ruidoso que culpa a Diseño | **Absurdo en forma** (tres figurantes **de espaldas**, solo manos; la tercera espalda solo dice «No.»); **sátira en remate**: la casilla VACANTE cuelga de **DISEÑO Y PRODUCTO** («plaza pedida en 2021») y el epílogo «Enhorabuena, Diseño». **Nuevo remate humillante:** la **bandeja de entregas de Diseño** contiene, desde 2017, el aviso de que la pantalla de Dirección tumbaría el CMS. Sello de Desarrollo: «LEÍDO (PERO NO)». | La figurante sola en el Office, prefijos largos por sprite. | Diseño sale bien: inocente, puntual y con razón. Desarrollo queda humillado con cariño. |
 | 5 | Secretaría de Redacción temible | **Fusión.** De la sátira: **Custodia Precinto**, «Dejar es prestar. Prestar es perder.», la única respuesta buena («Para apuntar lo que me digan. Sin grabadora.»), «No me preguntó nadie» sobre Rubén, el saludo secreto a Gertrudis. Del absurdo: el tic **«¿Para qué.»** (abre interrogación, cierra con punto), el cadáver de Aurora y el gag **«Ya ha firmado. Ya lo ha usado. Devuélvamelo.»** | El oráculo de pistas completo (duplica a la abuela), la libreta de reportero y el boli de Custodia como objetos (dos objetos más), el sprite completo. | **Presencia sin sprite:** detrás de una persiana metálica a media altura solo se ven sus manos y la llave. Nadie le ha visto la cara. Da más miedo y cuesta menos. |
 | 6 | Guerra de salas y pantallas que fallan | **Fusión.** Absurdo: reserva fantasma de **Ramírez** (recurrente a la hora de los relojes parados: siempre), carteles en guerra, **proyector colgado en la 247 durante tres semanas** (explica el «asentir» del Lector Medio) y la 248 «EL VIAJE CONTINÚA» tras el ¡PLOF!. Sátira: la odisea de entradas de la tele («ENTRADA 3: Ramírez, congelado. Con cruasán»), «cinco minutitos» desde marzo. | El inserto «SIN SEÑAL» con adaptadores en el clímax (duplica la 247), el mando del proyector. | Todo es texto y tres hotspots. |
 | 7 | Rumores y paredes que oyen | **Absurdo en mecánica** (cada versión sale una vez, en orden, como línea inicial al hablar). **Tres rumores**: la firma de Bruno (remata la abuela: «Si lo dice mucha gente, sale»), el atún del Titulator (lo corrige Evaristo) y Teodoro vive aquí («ESTOY MAQUETADO»). Paredes: **micrófono de 1994 en la planta** y **rejilla del CPD**. | Rumores sobre Begoña, Gertrudis y personajes nuevos; el vaso en la pared; la rejilla del Office. | Tres cadenas bastan para el gag; más cadenas son más ganchos entre paquetes. |
@@ -123,7 +123,7 @@ Colores elegidos para no confundirse con los de la biblia (sección 2).
 - **Color de texto:** `#C0E8FF` (antes `#E0E0FF`, demasiado cerca del blanco de Bruno; ver legibilidad, §15).
 - **Voz / tic:** tranquilo, preciso, con una pizca de autoparodia. «Un segundo, que estoy dirigiendo.»
 - **Por qué sigue a las 18:30:** su equipo entregó a las 18:29 y se fue; él se ha quedado «dirigiendo» algo en su pantalla: una aventura gráfica sobre la propia redacción.
-- **Su momento bueno:** sabe que todo lo que se culpa a Diseño está en una bandeja sin abrir, y no lo dice con rencor. No se fusiona.
+- **Su momento bueno:** sabe que todo lo que se culpa a Diseño está en una bandeja sin abrir, y no lo dice con rencor.
 
 ---
 
@@ -729,7 +729,7 @@ Habla con el color de Tadeo. Todo lo contesta con ganas.
 ```
 [VR0] VALENTÍN: (sin apartar la vista de la pantalla) Un segundo, que estoy dirigiendo.
   1. «¿Qué está dirigiendo?»
-     VALENTÍN: Una aventura gráfica sobre esta redacción. Nueve salas. Nueve verbos.
+     VALENTÍN: Una aventura gráfica sobre esta redacción. Diez salas. Nueve verbos.
      VALENTÍN: Ahora mismo, un becario me pregunta qué estoy dirigiendo.
      BRUNO: ...¿Ese soy yo?
      VALENTÍN: Eres un sprite muy bien resuelto. El remolino, sobre todo.  → VR0
@@ -744,19 +744,15 @@ Habla con el color de Tadeo. Todo lo contesta con ganas.
   3b. [cms_vivo] «¿Sabía que la pantalla tumbaba el CMS?»
      VALENTÍN: Desde 2017. Está en la bandeja. Primera hoja.
      VALENTÍN: Con una flecha roja. De dos píxeles de grosor. Para que se viera.  → VR0
-  4. «¿Es verdad que le quieren fusionar con Infografía?»
-     VALENTÍN: Tercera vez esta semana. No.
-     VALENTÍN: Infografía hace gráficos. Diseño hace que se entiendan. Son dos oficios.
-     VALENTÍN: Íñigo me lo propuso en una matriz. Se la devolví alineada.  → VR0
-  5. «¿Algún truco?» (se queda)
+  4. «¿Algún truco?» (se queda)
      VALENTÍN: Si te atascas, llama a tu abuela. La diseñamos como sistema de pistas.
      VALENTÍN: Y prueba cosas raras. Aquí todo lo raro está probado.  → VR0
-  6. [ruben_encontrado] «¿Usted sabía lo del Titulator?»
+  5. [ruben_encontrado] «¿Usted sabía lo del Titulator?»
      VALENTÍN: En mi juego, el Titulator ya era un becario.
      VALENTÍN: Una IA no pone las tildes con tanto cariño.  → VR0
-  7. «¿Cómo va siempre tan bien vestido?» (se queda)
+  6. «¿Cómo va siempre tan bien vestido?» (se queda)
      VALENTÍN: Me visto como entrego: a tiempo y sin adornos de más.  → VR0
-  8. «Me voy.»
+  7. «Me voy.»
      VALENTÍN: Sal por el ascensor. Lo he rediseñado. No se nota: eso es lo bueno.  → FIN
 ```
 **Murmullos de `valentin_reticula`:** «Margen superior, ocho. Inferior, ocho. Paz.» · ««¡Diseño!». Sí, hola. Está en la bandeja.» · «Lo entregué a las 18:29. Lo demás es literatura.»
@@ -1223,7 +1219,7 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 | **A · vestíbulo + CPD + común/final** | `vestibulo`, `cpd` | Menciones del cameo por Celestino y Paco (el cameo, `valentin_reticula`, y `monitor_valentin` pasaron a la Pecera, paquete B). Ascensor con botonera (14). Garaje: `cuadro_plazas`, opción y murmullo de Celestino, rumor D paso 2 (Paco) y desmentido (Celestino), remate 8bis.2. Hotspots `altavoz_ibex`, `rama_diseno`, añadidos de `planta_plastico` (Hablar → `planta_oyo`, Empujar), `rejilla_cpd`. Línea del Ibex nueva. Opciones nuevas de Paco (alta de Herminia, rejilla, Tadeo) y de Rubén (Tadeo). Rumor A paso 1 (Celestino), rumor B paso 1 (Paco) y desmentido (Rubén). **Común:** cola de avisos (2.1 llamadas, 2.2 RV:), saludo nuevo de la abuela, Mirar de `movil` y `libreta_replicas`, objeto `boli_muerto` y su combinación con la ficha, datos de duelo (7.1-7.5). **Final:** insertos 9.8 a-d (epílogo, créditos, hilo de esquina). |
 | **B · Pecera + Pajarera** | `pecera`, `pajarera` | PNJ `leoncio_quesitos`, `anselmo_monolito`; presencias `herminia`, `coro_desarrollo`. Hotspots de 3.3 y 3.4. Árboles 4.1, 4.2, 4.3. Opciones nuevas de Íñigo y Nerea. Añadido de `enchufe_pantalla`. Línea de Rubén en la Pecera. Rumores: A paso 4 (Yoli), B pasos 2-3 (Nerea, Íñigo), C paso 2 (Yoli). Insertos 9.1 y 9.2. Titulares 9.9. Combinaciones de 4.8 marcadas B. Murmullos nuevos de Nerea y Yoli. Garaje: pésames de `figurantes_web`, rumor D paso 3 (Nerea), murmullo de Gervasio en la Pajarera. Cameo: murmullo de Nerea y discusión del coro sobre Valentín. |
 | **C · Office + Catacumba** | `office`, `catacumba` | Presencia `custodia_precinto` (árbol 4.4) y hotspots de 3.5; hotspots `bolis_aurora`, `corrector_aurora` (3.6). Opciones nuevas de Aurora (coma, Custodia) y Teodoro (Herminia, Evaristo). Murmullo de Aurora por los «!!». Chismes de relleno nuevos de Gertrudis. Rumores: A paso 2 (Gertrudis), C paso 1 (Aurora) y desmentido (Teodoro). Inserto 9.3. Combinaciones C. Garaje: `porra_plazas`, chisme nuevo de Gertrudis, murmullo de Gervasio en el Office. |
-| **D · Ecosistema + Administración + Sala Amazonas** | `ecosistema`, `administracion`, `sala_amazonas` | PNJ `evaristo_salvedad` (árbol 4.6) y hotspots de 3.8; presencia `tadeo_adjunto` vía `portatil_tadeo` (3.7, árbol 4.5); hotspots de la Sala (3.9). Opciones nuevas de Gervasio (reunión) y Begoña. Murmullos de Begoña, Maripaz, Borja y Mercados. Rumores: A paso 3 (Borja), C paso 3 (Maripaz). Insertos 9.4, 9.5, 9.6 (A y B). Cameo 7.4 y `hurt` nuevos de Íñigo en D4. Combinaciones D. Garaje: `piel_platano`, yunque en `pared_rechazadas`, opción de Begoña, murmullos de Maripaz, Borja, Evaristo y Gervasio (Sala), rumor D paso 1 (Borja). Cameo: murmullo de Borja. |
+| **D · Ecosistema + Eventos + Administración + Sala Amazonas** | `ecosistema`, `eventos`, `administracion`, `sala_amazonas` | PNJ `evaristo_salvedad` (árbol 4.6) y hotspots de 3.8; presencia `tadeo_adjunto` vía `portatil_tadeo` (3.7, árbol 4.5); hotspots de la Sala (3.9). Opciones nuevas de Gervasio (reunión) y Begoña. Murmullos de Begoña, Maripaz, Borja y Mercados. Rumores: A paso 3 (Borja), C paso 3 (Maripaz). Insertos 9.4, 9.5, 9.6 (A y B). Cameo 7.4 y `hurt` nuevos de Íñigo en D4. Combinaciones D. Garaje: `piel_platano`, yunque en `pared_rechazadas`, opción de Begoña, murmullos de Maripaz, Borja, Evaristo y Gervasio (Sala), rumor D paso 1 (Borja). Cameo: murmullo de Borja. |
 
 ### 11.2 Lo que deben añadir los ficheros comunes
 
@@ -1231,7 +1227,7 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 - `leoncio_quesitos` · Leoncio Quesitos · `#00C2A8` · PNJ con sprite (pecera)
 - `anselmo_monolito` · Anselmo Monolito · `#D96CFF` · PNJ con sprite (pecera)
 - `valentin_reticula` · Valentín Retícula · `#C0E8FF` · PNJ con sprite, cameo (pecera)
-- `pilar_escaleta` · Pilar Escaleta · `#A8F07A` · PNJ con sprite, Eventos (ecosistema), §13
+- `pilar_escaleta` · Pilar Escaleta · `#A8F07A` · PNJ con sprite, Eventos (`eventos`, Sala Polivalente), §13
 - `evaristo_salvedad` · Evaristo Salvedad (en globos: EVARISTO) · `#B5A642` · PNJ con sprite (administracion; vestíbulo en el epílogo)
 - `custodia_precinto` · Custodia Precinto (CUSTODIA) · `#C04E7A` · presencia (manos bajo persiana, office)
 - `tadeo_adjunto` · Tadeo Adjunto (y PORTÁTIL, su asistente) · `#FFCC99` · presencia (portátil, ecosistema; móvil)
@@ -1337,20 +1333,22 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 
 ---
 
-## 13. EVENTOS: Pilar Escaleta (encargo de dirección; paquete D, `ecosistema`)
+## 13. EVENTOS: Pilar Escaleta (encargo de dirección; paquete D, sala propia `eventos`)
 
 La casa tiene departamento de **Eventos**, y es Eventos (no Marketing) quien va con la cámara, el photocall y las
 acreditaciones. **Borja Engagement sigue siendo Marketing** y sigue flipado (engagement, «en vertical», «contenido»,
 embudos), pero **sin cámara ni acreditaciones**: lleva el móvil en la mano como si fuera un micro. Son de **Eventos**: el
 photocall, el ¡FLASH! al entrar en la planta, el aro de luz, las cajas de lanyards, el gong (suena para empezar; Maripaz
-lo usa por cada venta y factura) y el **álbum** de la cena de Navidad.
+lo usa por cada venta y factura) y el **álbum** de la cena de Navidad. **Revisión de dirección (§13.4):** Eventos tiene
+**sala propia**, la **Sala Polivalente** (`eventos`), junto al Ecosistema; todo lo de Eventos vive allí con sus mismos ids y
+líneas, y el Ecosistema queda para Marketing y Comercial.
 
 ### 13.1 Ficha · `pilar_escaleta` — Pilar Escaleta (PNJ con sprite)
-- **Departamento / sala:** jefa de Eventos · `ecosistema`, de pie en la alfombra roja, delante de su photocall. Actos I-III.
+- **Departamento / sala:** jefa de Eventos · `eventos` (Sala Polivalente), de pie en la alfombra roja, delante de su photocall. Actos I-III.
 - **Aspecto (definido por los objetos, sin rasgos de nadie real):** negro de equipo técnico, **cascos con micro**, **walkie** al cinto, la **escaleta** en una carpeta, **seis acreditaciones** al cuello y un rollo de **cinta americana** en la muñeca. Coleta alta.
 - **Color de texto:** `#A8F07A`.
 - **Tics:** todo está **«a cinco minutos de empezar»**; **cuenta sillas** (ciento doce... ciento trece); **tres personas juntas ya son un evento** y necesitan acreditación; obsesión con el **catering** (croquetas a las 21:05).
-- **Entrada en la planta (onEnter, cada vez):** ¡FLASH! del photocall y Pilar acredita al que llega (rota): «¡Acreditado! Empezamos en cinco minutos.» · «¡Foto de entrada hecha! Cinco minutos y empezamos.» · «Uno más. Ya sois tres. Eso es un evento. ¡Acreditación!» · «¡Flash! Para el álbum. Y para el seguro.»
+- **Entrada en la Sala Polivalente (onEnter, cada vez; antes, en la planta):** ¡FLASH! del photocall y Pilar acredita al que llega (rota): «¡Acreditado! Empezamos en cinco minutos.» · «¡Foto de entrada hecha! Cinco minutos y empezamos.» · «Uno más. Ya sois tres. Eso es un evento. ¡Acreditación!» · «¡Flash! Para el álbum. Y para el seguro.»
 
 ### 13.2 Árbol `pilar` (6-8 opciones)
 ```
@@ -1394,8 +1392,105 @@ lo usa por cada venta y factura) y el **álbum** de la cena de Navidad.
 - **Respuestas de Borja sin flash:** Coger: «¡Me has cogido del brazo! ¡Eso es una alianza estratégica!» · Empujar: «¡Contacto físico! ¡Eso es engagement orgánico!» · Dar `cafe`: «¡Café en mano! ¡Eso es un post! Quédatelo, que tú conviertes mejor.» · Dar `tarjeta_becario`: «¿"Pellizco"? ¡Eso es un naming! Te lo registro como marca.» · Dar `ficha_pagina_7`: «¿Una ficha? Hazle un carrusel. Si no, no la firma nadie.» · Usar `movil`: «¡Me grabas! ¡Eso es contenido generado por becario!» · Murmullos nuevos: «Hay que hablarle al lector de tú. Y en vertical. Y con un emoji.» · «Tadeo y yo hacemos sinergia. Él reenvía. Yo lo convierto en hilo.» · «Si alguien deja su plaza, el post del pésame lo escribo yo.» · «¡Valentín no necesita filtro! ¡El filtro necesita a Valentín!» · «Si no está en vertical, no ha pasado.»
 - **Objetos:** `photocall` (Usar: ¡FLASH! + PILAR: «¡Foto de acreditación! Ya constas en un evento.»; con la tarjeta: PILAR: «"Pellizco", acreditado. Con foto. Acceso: hasta el canapé.»; Coger: «¿Me llevo el photocall? Sin él, Eventos dejaría de existir.») · `cajas_lanyards` (Mirar: «Lanyards de Eventos. Para acreditar dos veces a la ONU.»; Coger: «Si me pongo uno más, Pilar me cuenta como asistente.») · `gong` (Mirar: «El gong de Eventos: suena para empezar. Maripaz lo usa por cada venta.»; Usar: PILAR: «¡Ese gong es de Eventos! ¡Y aún faltan cinco minutos!» // MARIPAZ: «Si suena, cariño, yo facturo. Es el acuerdo.»; Coger: PILAR: «El gong no se mueve. Tiene la marca de cinta en el suelo.») · **`album_eventos_hotspot`** (antes `album_borja_hotspot`): «El álbum de Eventos. En todas las fotos sale al fondo un chico pálido.» // «Siempre yendo al baño. Con un táper. Pilar lo llama "el extra".»; Coger: PILAR: «¡Eh! Ese álbum está acreditado. Pídemelo con un motivo.» (con `ruben_encontrado`: «Mejor se lo pido a Pilar. Lo tiene acreditado. Con foto.»).
 - **Objeto de inventario:** `album_eventos` (antes `album_borja`), «álbum de Eventos». Nerea, al cerrar P14b: «El álbum se lo devuelvo yo a Pilar. Con acuse de recibo.»
-- **P14a (walkthrough, paso 40):** Hablar `pilar_escaleta` → «¿Me prestas el álbum?» (antes, a Borja; los pasos siguen siendo los mismos).
-- **Carteles:** la planta 2 es «Marketing · Eventos · Comercial · Administración» (escalera de la Pecera, botonera del ascensor); en el organigrama del vestíbulo, un pósit pegado con cinta: «+EVENTOS». **Créditos:** «Eventos — Asignado a: Pilar Escaleta. Empezamos en cinco minutos.» · «Marketing — Asignado a: Borja Engagement (en vertical).»
+- **P14a (walkthrough, paso 40):** Hablar `pilar_escaleta` → «¿Me prestas el álbum?» (antes, a Borja; los pasos siguen siendo los mismos), ahora en la Sala Polivalente (§13.6).
+- **Carteles:** la planta 2 es «Marketing · Eventos · Comercial · Administración» (escalera de la Pecera, botonera del ascensor; el ascensor llega al Ecosistema y a Eventos se pasa por su puerta); en el organigrama del vestíbulo, un pósit pegado con cinta: «+EVENTOS». **Créditos:** «Eventos — Asignado a: Pilar Escaleta. Empezamos en cinco minutos.» · «Marketing — Asignado a: Borja Engagement (en vertical).»
+
+### 13.4 La Sala Polivalente (`eventos`): sala propia de Eventos (encargo de dirección)
+Se entra por la **puerta de Eventos** del Ecosistema (`ecosistema_a_eventos` ↔ `eventos_a_ecosistema`); el ascensor sigue
+llegando al Ecosistema. **512×144 con scroll.** Sala oscura de techo técnico, ciruela y terciopelo negro, con una **barra de
+focos** (truss) de lado a lado: focos PAR con conos de luz tramados, brillo de lente y dos que **parpadean** (el tres del
+photocall y el del atril). De izquierda a derecha: puerta abierta al Ecosistema (luz lila) · **photocall** con truss, pared de
+logos y el hueco discontinuo «ESPACIO PREMIUM PARA TU CARA», **alfombra roja**, postes y cordón de terciopelo (Pilar, delante)
+· **aro de luz** · **flight cases** · **escenario** (telón negro, pancarta «BIENVENIDOS A» con el nombre tapado con cinta,
+**cuenta atrás clavada en 00:05:00**, **gong**, micro de pie, **atril**) con **cuatro filas de sillas** granates en perspectiva
+delante (pasillo central; una con el folio **«RESERVADO»**, otra **torcida**, de Comercial, sacando la pata al pasillo) ·
+altavoces · **mesa de sonido** «FOH» con el cargador de walkies · cartel luminoso «SALA POLIVALENTE» · **mesa de
+acreditaciones** (cajas de lanyards, el álbum, la lista pegada con cinta, roll-up «EN 5 MIN») · **catering**: campana con
+croquetas, su propio foco y el cartel «21:05». Cruces de **cinta americana** por el suelo. Música: `m_eventos` (el motivo
+principal como fanfarria sobre un redoble que acaba en un acorde de dominante que nunca resuelve).
+
+**Lo que se muda del Ecosistema (ids y líneas intactos):** `pilar_escaleta` y su árbol `pilar`, el ¡FLASH! de entrada,
+`photocall`, `aro_luz`, `cajas_lanyards`, `gong`, `album_eventos_hotspot`. Contadores con su nombre de siempre (globales en
+`flags.js`): `ecosistema_entradas_n`, `ecosistema_sillas_n`, `ecosistema_gong_n`.
+
+**El Ecosistema, recompuesto (Marketing + Comercial):** donde estaba el photocall, la **puerta de Eventos**; bajo el neón, el
+**embudo de Marketing**; donde las cajas, el **roll-up de Comercial**; donde el gong, el **termómetro de ventas**. Borja junto
+al embudo. Primera entrada: «La planta 2 a las seis y media: moqueta, pufs y nadie. Y un gong, detrás.» Pufs, Empujar:
+«Rueda hacia la puerta de Eventos. Hasta el puf quiere salir en una foto.»
+
+| id (Ecosistema) | Mirar | Otras |
+|---|---|---|
+| `ecosistema_a_eventos` | «La puerta de Eventos. Por la rendija salen focos, un gong y prisa.» // «Encima, un piloto verde: "PRÓXIMO EVENTO: 5 MIN". No se apaga nunca.» | Ir a / Usar / Abrir: a la sala · Cerrar: «Ya está entornada. Más cerrada, Pilar lo llama "evento privado".» · Empujar: «Empujo. Desde dentro: "¡Faltan cinco minutos!". Empujo con más respeto.» · Hablar: «"¿Se puede?". Contesta un walkie: "Con acreditación. Cambio".» |
+| `embudo_marketing` | «Un embudo de Marketing: "VEN · MIRA · COMPARTE · ¿?".» // «El último paso es una interrogación. Es el único honesto.» | Usar: «Me meto en el embudo. Salgo por abajo convertido. En becario.» · Coger: «Borja lo tiene en vertical. Si lo descuelgo, se queda en horizontal y llora.» · Hablar: «"¿Y qué hay al final del embudo?".» // BORJA: «¡No le hables al embudo! ¡El embudo te habla a ti!» · Empujar: «Lo enderezo. Borja lo vuelve a torcer: "Así convierte más".» |
+| `rollup_comercial` | «Un roll-up: "SU ANUNCIO AQUÍ". Y la extensión de Maripaz, en grande.» // «Lleva aquí tanto tiempo que ya se anuncia a sí mismo.» | Usar: «Me pongo delante del roll-up.» // MARIPAZ: «Ahora tú eres el anuncio, cariño. Te cobro el metro cuadrado.» · Empujar: «¡Zas! Se enrolla solo.» // MARIPAZ: «Eso, cariño, es una baja de campaña. Te la facturo.» · Coger: MARIPAZ: «El roll-up no se toca, cariño. Está contratado hasta 2030.» · Tirar: «Tiro de la lona. Sube como una persiana con objetivos.» |
+| `termometro_ventas` | «Un termómetro pintado a rotulador: "OBJETIVO Q3". Rojo hasta el 97 %.» // «El 3 % que falta se lo lleva el gong de al lado.» | Usar: «Le pinto un poquito más de rojo.» // MARIPAZ: «Eso no es una venta, cariño. Es una ilusión. Y no la facturo.» · Empujar: «Si lo empujo, sube la temperatura. No las ventas.» · Coger: «Es la única cosa de la planta que sube sola. No lo toco.» · Hablar: «"¿Cuándo llegas al cien?".» // MARIPAZ: «El día que pagues tú, cariño.» |
+
+### 13.5 Gags nuevos de la Sala Polivalente (se añaden; los de §13.1-13.3 no cambian)
+**Entrada (una vez):** «La Sala Polivalente. Vale para todo.» // «Sobre todo, para estar a punto de empezar.»
+
+| id | Mirar | Otras |
+|---|---|---|
+| `eventos_a_ecosistema` | «La puerta a Marketing y Comercial. Por ahí entra la luz lila y sale el gong.» | Abrir: «Está abierta. Pilar la deja así: "para que fluya el público".» · Cerrar: PILAR: «¡No! Una puerta cerrada es un evento privado. Y no hay presupuesto.» · Empujar: «La empujo. Pilar me acredita al salir. Y al volver, por si acaso.» · Hablar: «"¿Hay alguien?". Desde Comercial: "Depende de lo que pagues, cariño".» |
+| `focos` | «Una barra de focos. Dos parpadean. Pilar dice que es "ambiente".» // «El tercero parpadea desde la cena de Navidad. Ya es de la plantilla.» | Usar: «No llego. Los focos solo los toca Pilar. Con escalera acreditada.» · Coger: «Si me llevo un foco, la Redacción me verá por fin. No estoy preparado.» · Tirar: «Tiro de un cable. Parpadean todos a la vez.» // PILAR: «¡Eso! ¡Eso es ambiente!» · Hablar: «Le pido al foco que deje de parpadear. Parpadea dos veces: es un no.» |
+| `cuenta_atras` | **Running gag por actos.** I (1.ª): «Una cuenta atrás: 00:05:00. No se mueve.» // «Todos los relojes de la casa marcan las 20:59. Este, cinco minutos.» · I (siguientes): «Sigue en 00:05:00. Pilar dice que así nadie llega tarde. Funciona: nadie llega.» · II: «00:05:00. Juraría que he visto un 04:59.» // «Pilar le ha dado un golpe con la escaleta. Ha vuelto a 05:00.» · III: «00:05:00. Mientras el edificio arde, aquí siempre faltan cinco minutos.» // «Es lo más estable de la casa. El CLS de Tadeo lo envidia.» · **Remate en los créditos** (abajo). | Usar: «Busco el botón de empezar. Solo hay uno, y pone "+5 MIN".» · Coger / Tirar: «Está pegada con cinta americana. A la pared y al tiempo.» · Hablar: «"¿Cuánto falta?".» // PILAR: «¡Cinco minutos! ...Perdona, creía que me hablabas a mí.» · Usar `movil`: «Le hago una foto. En el móvil también pone 00:05:00. Se contagia.» |
+| `pancarta_evento` | «Una pancarta: "BIENVENIDOS A". El nombre, tapado con cinta americana.» // «Debajo de la cinta, otra cinta. Es cinta hasta el fondo.» | Tirar / Usar: «Despego una esquina. Debajo pone "POR CONFIRMAR". La vuelvo a pegar.» · Coger: «La pancarta se queda. Es lo único confirmado del evento: "BIENVENIDOS".» · Hablar: «"Bienvenidos a...". Ni la pancarta lo sabe. Pero lo dice con ilusión.» |
+| `atril` | «Un atril con micro. Encima, el discurso: "Buenas noches y bienvenidos a...".» // «Ahí se acaba. Lleva así desde 2019, esperando un sustantivo.» | Usar: «"Buenas noches y bienvenidos a...".» // PILAR: «¡Aún no! ¡Faltan cinco minutos! ...Pero muy bien proyectado.» · Hablar: «"Sí, sí, probando". El micro me devuelve un eco.» // PILAR: «¡Probando, cambio! Se te oye en Comercial.» · Coger: «Si me llevo el atril, empiezo yo el evento. Y no sé de qué va.» · Empujar: «No. Tiene su cruz de cinta. Y Pilar tiene memoria fotográfica de cruces.» · Usar `ficha_pagina_7`: «Leo la ficha desde el atril: tres casillas. Ovación de ciento doce sillas.» · Usar `libreta_replicas`: «Ensayo réplicas en el atril. El eco me las devuelve mejoradas.» |
+| `sillas_evento` | **Running gag 112 → 113.** I: «Filas de sillas, cada una en su cruz de cinta. Cuento cincuenta y seis.» // «Pilar dice que son ciento doce. Las otras están "en el plano".» · II: «Las sillas. Una sobresale por la derecha.» // «Pilar la mira de reojo cada cinco minutos.» · III: «Ciento doce sillas para un evento sin tema. La ocupación media es Pilar.» · Con la silla devuelta: «Todas en su cruz. Ciento doce, según el plano.» // «Pilar respira en mayúsculas.» | Usar: «Me siento un momento en la última fila.» // PILAR: «¡Público! ¡Ya tenemos uno! Cuatro minutos y medio.» // «Me levanto. Vuelven a ser cinco.» · Coger: «Si me llevo una, Pilar tendrá que contar hacia atrás. Y eso es el reloj.» · Empujar: «No. Cada silla está en su cruz. Si muevo una, Pilar lo nota en el walkie.» · Hablar: «"¿Hay alguien?". Ciento doce sillas en silencio. El mejor público de la casa.» · Dar cualquier cosa: «Si dejo algo en una silla, Pilar lo acredita como asistente.» |
+| `silla_reservado` | «Un folio en una silla: "RESERVADO". Debajo, más pequeño: "Ponente".» // «"Por confirmar". La silla lleva años confirmando que no viene nadie.» | Usar: «No me siento. Si me siento, me toca hablar. Y no sé de qué va.» · Coger: PILAR: «¡Esa no! Es la del ponente. El día que venga, que la encuentre.» · Hablar: «Le pregunto al ponente si viene. El folio ni se mueve. Eso es un "ya veremos".» · Usar `chaqueta_ramirez`: «La chaqueta de Ramírez reserva sillas sola. Pero esta ya está pillada.» |
+| `silla_torcida` | 1.ª: «Una silla torcida, fuera de su cruz de cinta. Saca una pata al pasillo.» // «Debajo del asiento, una pegatina: "PROPIEDAD DE COMERCIAL. NO TOCAR, CARIÑO".» (+ con la crisis: «La silla ciento trece. Tiene dueña.») · Siguientes: «La silla de Comercial. Maripaz se la trajo para oír el gong sentada.» | **Micro-puzle opcional (§13.5b).** Usar / Empujar sin haberla mirado: «La pongo recta en su cruz.» // PILAR: «Ciento doce... ciento trece. ¡No es la postura, es la silla!» · Coger sin mirarla: «Antes miro de quién es. Aquí todo tiene dueño. Y acreditación.» · Hablar: «"¿De quién eres?". La silla no contesta. Tiene contrato de confidencialidad.» |
+| `mesa_sonido` | «La mesa de sonido. Doce faders y un pósit: "NO TOCAR. YA ESTÁ A 5 MIN".» // «Al lado, el cargador. Cuatro walkies cargando. Uno dice "cambio" solo.» | Usar: «Subo un fader. Suena una freidora. Es el canal del catering.» · Tirar: «Tiro de un cable. Se apaga el foco tres. Lo enchufo: sigue parpadeando.» · Hablar: «Cojo un walkie: "¿Hola?".» // WALKIE: «Cinco minutos. Cambio.» · Abrir: «Abro la tapa del cargador. Pilas de 2009 y un caramelo. Cierro.» · Coger: «Cojo un walkie. Pilar me lo quita sin mirar. Tiene seis acreditaciones.» · Usar `movil`: «Conecto el móvil. Suena mi tono a todo volumen. Lo oyen ciento doce sillas.» |
+| `mesa_acreditaciones` | **Running gag: acreditados cada vez más absurdos** (lista pegada con cinta; lo nuevo de cada acto sale primero, luego rota). 1.ª vez: «La mesa de acreditaciones. Hay una lista pegada con cinta.» · I: «"Cola de la máquina de café: doce personas y una máquina".» · «"El ascensor. Tres veces. Con acompañante: el hilo musical".» · «"Gertrudis, máquina de café. Acceso total. Ya lo tenía".» · II: «"La impresora de la tercera. Con su bandeja 2". La bandeja no consta.» · «"Piel de plátano, plaza 7. Asistencia: por confirmar".» · III: «"Titulator 3000: DENEGADA. Motivo: trae su propio atún".» · «"El chico del táper. Acreditado desde 2021. Sale en todas las fotos".» // «Al final, a boli: "Bruno. Acceso: hasta el canapé". Subrayado.» | Usar: «Me pongo detrás de la mesa, a acreditar.» // PILAR: «¡Fuera de mi mesa! Acreditar es un oficio. Tiene escaleta.» · Coger: «La mesa es de Eventos. Lo pone el mantel. Lo pone todo.» · Empujar: «No se mueve. Está pegada al suelo con cinta. Es su marca.» · Usar `tarjeta_becario`: «Dejo mi tarjeta en la mesa.» // PILAR: «"Pellizco", otra vez. Te hago la segunda. Por si pierdes la primera.» |
+| `catering_croquetas` | «Una campana de catering con un cartel: "21:05". Debajo, croquetas.» // «Tienen su propio foco. Son las únicas que están listas.» · Tras la croqueta: «Falta una croqueta. Pilar ha tapado el hueco con cinta americana.» // «Ahí no ha pasado nada.» | Abrir: PILAR: «¡Ni se te ocurra! A las 21:05. Ni un minuto antes. Ni cinco.» · Coger: PILAR: «Las croquetas están acreditadas para las 21:05. Tú, para el canapé.» · Usar: PILAR: «¡Las 21:05! ¡Lo pone el cartel! ¡Y la escaleta! ¡Y mi alma!» · Hablar: «Les susurro a las croquetas: "¿Falta mucho?". No contestan. Están en su papel.» · Usar `cafe`: «Dejo el café junto a la campana.» // PILAR: «Café junto al catering. Eso ya es una pausa. ¡Apuntado!» |
+| `flight_cases` | «Flight cases de Eventos. Uno pone "FRÁGIL". Otro, "5 MIN".» // «Encima, un rollo de cinta. El de repuesto del de repuesto.» | Abrir: «Dentro: cinta americana, cinta americana y un rollo de cinta de emergencia.» · Empujar: «Ruedan un palmo. Pilar los mira. Vuelven solos a su marca de cinta.» · Coger: «Pesa como un evento entero. Que es justo lo que lleva dentro.» · Usar: «Me subo a uno para ver el escenario. Desde arriba también faltan cinco minutos.» |
+| `marcas_cinta` | «Cruces de cinta en el suelo. Una por silla, por atril y por persona.» // «Hay una con mi nombre. Pilar me ha marcado antes de que llegara.» | Usar: «Me pongo en mi marca. Por fin sé dónde tengo que estar.» · Coger: «Despego una esquina. Pilar lo nota desde el photocall. La vuelvo a pegar.» · Tirar: «Tiro de la cinta. Debajo sale otra. Esto es arqueología de eventos.» · Hablar: «Le pregunto a mi cruz si me quedo. Las cruces no prometen nada.» |
+| `photocall` (nuevo) | — | Usar `album_eventos`: «Pongo el álbum en el hueco. Al fondo de la foto, el chico del táper.» // ¡FLASH! // PILAR: «Una foto de un álbum de fotos. Eso ya es un archivo. ¡Acreditado!» |
+
+**Opciones nuevas del árbol `pilar`** (antes de «Me voy.»; las 8 de §13.2 siguen igual y en su orden):
+```
+  9. «¿Y de qué va el evento?» (se queda; eventos_tema_n; escala)
+     1.ª: PILAR: Es un encuentro. Con ponente, photocall y croquetas.
+          PILAR: El tema lo trae el ponente. El ponente, por confirmar.
+     2.ª: PILAR: Es una jornada de... de... Mira, estamos a cinco minutos.
+          PILAR: No me líes, que pierdo la cuenta.
+     3.ª+: PILAR: Va de empezar. Cuando empiece, ya sabremos de qué iba.
+ 10. [ecosistema_sillas_n ≥ 1 Y !eventos_silla_devuelta] «¿Estás bien, Pilar?» (la crisis de la silla 113)
+     PILAR: Ciento trece, Bruno. Una silla de más es un asistente que no existe.
+     PILAR: ¿Y si se sienta? ¿A quién acredito? ¿Al vacío?
+     PILAR: Esa silla ha venido de fuera. Tiene que tener dueño.
+ 11. «¿Por qué no baja la cuenta atrás?» (una vez)
+     PILAR: La puse a cinco minutos el día que entré. Y ahí la dejé.
+     PILAR: Si baja, hay que empezar. Y eso ya es otro presupuesto.
+ 12. «¿Puedes acreditar a mi abuela?» (una vez)
+     PILAR: ¿Por teléfono? Tú, ella y la compañía: tres. ¡Evento!
+     PILAR: Acreditada: «Abuela de Bruno. Acceso: todo. Que se abrigue».
+ 13. [eventos_croqueta] «Gracias por la croqueta.» (una vez)
+     PILAR: No me las des. Te he apuntado como catering.
+     PILAR: Y si alguien pregunta, a las 21:05 estaban todas.
+```
+**Murmullos nuevos de Pilar:** «Foco tres, me parpadeas. No, cambio, foco tres. Tú.» · «Ponente: por confirmar. Croquetas: confirmadísimas.» · «Si alguien dice "empezamos ya", que me lo pase por escrito.» · con la crisis de la 113: «Ciento trece. Que alguien me diga que es una errata.» · «Una silla de más. Un asistente fantasma. Sin acreditar.» · resuelta: «Ciento doce. Qué paz. Hasta el walkie suena más bajito.» **Murmullos de los walkies** (`mesa_sonido`): «WALKIE: Catering a Eventos: croquetas en posición. Cambio.» · «WALKIE: ¿Empezamos? ...Cambio. No. Cambio.» · «WALKIE: Foco tres, deja de parpadear. Cambio. Foco tres no contesta.»
+
+**13.5b · Micro-puzle opcional «La silla ciento trece»** (no toca el grafo principal; flags `eventos_silla_devuelta`, `eventos_croqueta`):
+Pilar cuenta 113 (opción «¿Cuántas sillas hay?») y entra en crisis («¿Estás bien, Pilar?»: «Esa silla ha venido de fuera. Tiene que
+tener dueño.»). Mirar `silla_torcida` descubre la pegatina de Comercial (Maripaz se la trajo para oír el gong sentada). Usar /
+Coger / Empujar la silla, sabiendo de quién es: BRUNO: «Es de Comercial. Se la devuelvo a Maripaz, que es de donde ha venido.» //
+(ruido de sillas) // PILAR: «Ciento diez, ciento once... ciento doce.» // «¡CIENTO DOCE! ¡Vuelvo a ser persona!» // «Bruno, eso
+merece algo. Toma: una croqueta antes de las 21:05.» // BRUNO: «Está fría.» // PILAR: «Es una crisis de reputación. Pero es
+nuestra.» Al volver al Ecosistema, una vez: MARIPAZ: «Me has devuelto la silla, cariño. Te la facturo como mudanza.»
+
+**Remate en los créditos (el evento por fin empieza):** tras «Ninguna rotativa fue apagada...»: «Sala Polivalente — Cuenta atrás:
+00:04:59. Por fin empezamos.» · «Era la presentación de una fe de erratas.» · «La primera de la historia con photocall.»
+
+### 13.6 Puesta en escena entre las dos salas (P14a y el gong)
+- **P14a (álbum):** se pide a Pilar en la Sala Polivalente (paso 40). Al prestarlo, **Borja, que lo ha oído desde Marketing, se
+  asoma por la puerta** (entra un paso, habla en su sitio y en su color) con su línea de siempre: «¡Compártelo! Por cierto: hemos
+  descopeado la ética del Q3.» // BRUNO: «Descopear. Me lo apunto.» // PILAR (nuevo): «¡Borja! Sin acreditación, de la puerta no se
+  pasa.» // BORJA (nuevo): «¡Me voy! Pero esto lo cuento. En vertical.» Y vuelve a su sitio del Ecosistema. **Pista justa:** Borja,
+  en el Ecosistema, «¿Me prestas el álbum?» → «Pídeselo a Pilar. Con acreditación, que se pone tensa.»; la puerta de Eventos está a
+  dos pasos; y la abuela (pista de `ruben_libre`, sin `oyo_descopear`) añade: «Las fotos de las fiestas las guarda la que las
+  organiza. Pídeselas.»
+- **El gong** es de Eventos y está en el escenario. Maripaz no está en la sala, pero el dinero tiene buen oído: su línea llega
+  desde Comercial, arriba, sin globo sobre nadie («Si suena, cariño, yo facturo. Es el acuerdo.») y Bruno añade (nuevo): «Lo ha
+  oído desde Comercial. El dinero tiene muy buen oído.» Maripaz sigue llevando el mazo «como otros el bolso».
 
 ---
 
@@ -1419,7 +1514,7 @@ ve. Como la plantilla fija.»
 
 ### 14.2 La botonera
 Plantas: **-1** Sistemas y CPD (`cpd`) · **0** Vestíbulo · **1** Redacción (`pecera`) · **2** Marketing · Eventos ·
-Comercial · Administración (`ecosistema`). Hay ascensor en las cuatro salas (`ascensor_vestibulo`, `ascensor_cpd`,
+Comercial · Administración (`ecosistema`; la Sala Polivalente de Eventos, `eventos`, está tras la puerta del Ecosistema). Hay ascensor en las cuatro salas (`ascensor_vestibulo`, `ascensor_cpd`,
 `ascensor_pecera`, `ascensor_ecosistema`). Ir a / Usar / Abrir el ascensor abre el menú de plantas (la actual, en gris
 con «(aquí)»; última opción «Nada, me quedo en esta planta.»). Viaje: puertas, cabina con el indicador contando
 plantas, una frase del ascensor (rota en orden, `ascensor_viajes_n`) y llegada por la puerta del ascensor de la otra

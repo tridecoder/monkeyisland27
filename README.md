@@ -52,7 +52,7 @@ Necesitan Node 18+ y `playwright` (con Chromium) accesible para Node.
 | comando | qué hace |
 |---|---|
 | `node tools/check.mjs` | comprobación estática del contenido (ids lógica/arte, flags, salidas, líneas de más de 80 caracteres) |
-| `node tools/smoke.mjs` | prueba de humo de la interfaz (título, 9 salas, inventario, duelo, guardar/cargar, menú, créditos, táctil) |
+| `node tools/smoke.mjs` | prueba de humo de la interfaz (título, 10 salas, inventario, duelo, guardar/cargar, menú, créditos, táctil) |
 | `node tools/walkthrough.mjs [--alt]` | la partida completa (46 pasos del guion), en el orden de la tabla o en el alternativo |
 | `node tools/extras.mjs` | la partida completa con todos los extras intercalados (90 pasos) |
 | `node tools/test-paquete-{a,b,c,d}.mjs` | pruebas detalladas por grupo de salas |

@@ -118,6 +118,14 @@ export default {
   cuadro_plazas_n: 'int · A · vestibulo · +1 por Mirar cuadro_plazas · A',
   piel_platano_n: 'int · D · ecosistema · +1 por Mirar piel_platano · D',
 
+  // ---------------------------------------------------------------- EVENTOS: la Sala Polivalente (`eventos`, adenda §13)
+  // Los tres contadores conservan su nombre de cuando Pilar vivía en el Ecosistema (ids intactos por encargo de dirección).
+  ecosistema_entradas_n: 'int · D · eventos · +1 por entrada en la Sala Polivalente (rota la frase de Pilar con el ¡FLASH!) · D',
+  ecosistema_sillas_n: 'int · D · eventos · +1 por «¿Cuántas sillas hay?» (Pilar) · D (crisis de la silla 113, murmullos)',
+  ecosistema_gong_n: 'int · D · eventos · +1 por Usar/Empujar gong · D',
+  eventos_silla_devuelta: 'bool · D · eventos · devolver silla_torcida a Comercial (micro-puzle opcional) · D (Pilar, Maripaz en ecosistema, arte)',
+  eventos_croqueta: 'bool · D · eventos · Pilar regala la croqueta (premio del micro-puzle) · D (catering, Pilar)',
+
   // ---------------------------------------------------------------- ascensor con botonera (content/lib/ascensor.js)
   ascensor_viajes_n: 'int · común (lib/ascensor.js) · +1 por viaje en ascensor · rotación de las frases del ascensor',
   ascensor_negativas_n: 'int · común (lib/ascensor.js) · +1 por planta denegada · rotación de las negativas',

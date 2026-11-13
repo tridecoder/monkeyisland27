@@ -85,7 +85,7 @@ async function fresh() {
   await G(() => __game.newGame());
   done = 1;
 }
-const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'administracion', 'cpd'];
+const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'eventos', 'administracion', 'cpd'];
 async function tourRooms(tag) {
   await G(() => __game.save('rev'));
   for (const room of ROOMS) {

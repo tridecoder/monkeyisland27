@@ -57,7 +57,8 @@ const PISTAS = [
   ['pieza_recortada', ['Si te sobra, recorta por abajo. Como los pantalones.']],
   ['pagina_cerrada', ['¿Y a qué esperas para darle los papeles a ese señor del fax?']],
   ['ruben_encontrado', ['Si de un armario sale papel, es que alguien escribe dentro, hijo.']],
-  ['ruben_libre', ['Para que dejen irse a alguien, hay que demostrar que estuvo. Busca fotos.']],
+  ['ruben_libre', (api) => ['Para que dejen irse a alguien, hay que demostrar que estuvo. Busca fotos.',
+    ...(api.flag('oyo_descopear') ? [] : ['Las fotos de las fiestas las guarda la que las organiza. Pídeselas.'])]],
   ['sala_abierta', ['En una reunión manda el que escribe el acta. Haz que la escriba otro.']],
   ['juego_terminado', ['A los que nunca dicen nada, hijo, un empujoncito. Con educación.']],
 ];

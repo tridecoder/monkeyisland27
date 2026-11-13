@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Test del PAQUETE D («Planta noble y Dirección»): ecosistema, administracion, sala_amazonas, duelos D1 y D4, clímax 7.4.
+// Test del PAQUETE D («Planta noble y Dirección»): ecosistema, eventos (Sala Polivalente), administracion, sala_amazonas,
+// duelos D1 y D4, clímax 7.4.
 //   node tools/test-paquete-d.mjs            (modo rápido)
 //   node tools/test-paquete-d.mjs --shots    además guarda capturas en tools/shots/paquete-d-*.png
 // Simula con setFlag/giveItem lo que viene de otros paquetes y juega la parte D de principio a fin vía window.__game.
@@ -116,12 +117,21 @@ try {
   ok((await state()).room === 'pajarera', 'en el Acto II se sale de la sala sin bloqueo');
 
   // ================================================================ ECOSISTEMA
-  step('Ecosistema: ambiente, portátil de Tadeo, rumores, plátano');
+  step('Ecosistema: Marketing + Comercial (sin Eventos), portátil de Tadeo, rumores, plátano');
   await G(() => __game.clearLog());
   await G(() => __game.gotoRoom('ecosistema'));
-  ok(await logHas('¡Acreditado! Empezamos en cinco minutos.') >= 1, '¡FLASH! del photocall de Eventos al entrar (lo celebra Pilar, no Borja)');
+  ok(!(await G(() => __game.log.some(l => l.who === 'pilar_escaleta'))), 'el ¡FLASH! de entrada ya no es del Ecosistema (Eventos tiene sala)');
   ok(!(await G(() => __game.log.some(l => l.who === 'borja_engagement'))), 'Borja ya no es el del flash al entrar');
   ok(!(await G(() => JSON.stringify(__game.game.content.actors.borja_engagement.doll)).then(d => /camera|badges/.test(d))), 'Borja (Marketing) sin cámara ni acreditaciones');
+  {
+    const ids = await G(() => __game.game.room.def.objects.map(o => o.id));
+    ok(!['photocall', 'aro_luz', 'cajas_lanyards', 'gong', 'album_eventos_hotspot'].some(i => ids.includes(i)) && (await inRoom('pilar_escaleta')) !== 'ecosistema',
+      'en el Ecosistema no queda nada de Eventos (photocall, aro, lanyards, gong, álbum, Pilar)');
+    ok(['ecosistema_a_eventos', 'embudo_marketing', 'rollup_comercial', 'termometro_ventas'].every(i => ids.includes(i)), 'puerta de Eventos + pared de Marketing/Comercial');
+  }
+  await verb('mirar', 'embudo_marketing'); await verb('hablar', 'embudo_marketing'); await verb('empujar', 'rollup_comercial'); await verb('hablar', 'termometro_ventas');
+  ok(await logHas('Es el único honesto.') === 1 && await logHas('¡El embudo te habla a ti!') === 1 && await logHas('baja de campaña') === 1 && await logHas('El día que pagues tú') === 1,
+    'embudo de Marketing, roll-up y termómetro de Comercial');
   await verb('mirar', 'portatil_tadeo'); await verb('mirar', 'portatil_tadeo');
   ok((await flag('portatil_tadeo_n')) === 2 && (await flag('rep_15')) === true, 'Mirar portátil ×2 → portatil_tadeo_n=2, rep_15 (X16)');
   for (let i = 0; i < 8; i++) await verb('mirar', 'portatil_tadeo');
@@ -138,8 +148,6 @@ try {
   ok((await flag('rumor_plaza_n')) === 1 && await logHas('¡Se ha comprado una bici!') === 1, 'rumor D1 de Borja en la conversación siguiente');
   await verb('mirar', 'piel_platano'); await verb('coger', 'piel_platano');
   ok((await flag('piel_platano_n')) === 1 && await logHas('inversión a largo plazo') === 1, 'piel de plátano (8bis)');
-  await verb('usar', 'gong');
-  ok(await logHas('yo facturo') >= 1 && await logHas('¡Ese gong es de Eventos!') >= 1, 'gong de Eventos (Pilar) + Maripaz factura');
   await give('copias_rechazadas');
   await verb('usar', 'impresora_tercera', 'copias_rechazadas');
   ok(await logHas('es de principios') === 1, 'Usar copias con la impresora (8.1)');
@@ -147,16 +155,56 @@ try {
   await setFlags({ rumor_teodoro_n: 2 });
   await verb('hablar', 'maripaz_remitido');
   ok((await flag('rumor_teodoro_n')) === 3, 'rumor C3 de Maripaz');
-  await setFlags({ rumor_teodoro_n: 2 });
   await R.closeDialog();
+
+  step('Sala Polivalente (eventos): ¡FLASH!, Pilar, gong, sillas, cuenta atrás, acreditados');
+  await G(() => __game.clearLog());
+  await verb('ir', 'ecosistema_a_eventos');
+  ok((await state()).room === 'eventos', 'puerta del Ecosistema → Sala Polivalente');
+  ok(await logHas('¡Acreditado! Empezamos en cinco minutos.') >= 1, '¡FLASH! del photocall de Eventos al entrar (lo celebra Pilar)');
+  ok(await logHas('Sobre todo, para estar a punto de empezar.') === 1, 'primera entrada en la Sala Polivalente');
+  ok((await state()).music === 'm_eventos', 'música m_eventos');
+  await verb('usar', 'gong');
+  ok(await logHas('yo facturo') >= 1 && await logHas('¡Ese gong es de Eventos!') >= 1 && await logHas('El dinero tiene muy buen oído') === 1,
+    'gong de Eventos (Pilar) + Maripaz factura desde Comercial');
+  await setFlags({ rumor_teodoro_n: 2 });
   await verb('hablar', 'pilar_escaleta');
   ok((await flag('rumor_teodoro_n')) === 3 && await logHas('acreditación vitalicia') === 1, 'rumor C3 también lo cuenta Pilar (Eventos)');
   for (const o of ['¿Qué evento hay hoy?', '¿Para qué es el photocall?', '¿Cuántas sillas hay?', '¿Por qué hay que acreditarse?', '¿Hay catering?', '¿Qué es esa cinta en la muñeca?']) await choose(o);
   ok(await logHas('a cinco minutos de empezar') >= 1 && await logHas('Ciento doce') >= 1 && await logHas('Tres personas juntas ya son un evento') === 1
-    && await logHas('Croquetas a las 21:05') >= 1 && await logHas('Cinta americana') === 1, 'árbol de Pilar Escaleta (Eventos): 6 opciones');
+    && await logHas('Croquetas a las 21:05') >= 1 && await logHas('Cinta americana') === 1, 'árbol de Pilar Escaleta (Eventos): 6 opciones de siempre');
+  for (const o of ['¿Y de qué va el evento?', '¿Y de qué va el evento?', '¿Y de qué va el evento?', '¿Estás bien, Pilar?', '¿Por qué no baja la cuenta atrás?', '¿Puedes acreditar a mi abuela?']) await choose(o);
+  ok(await logHas('El ponente, por confirmar.') === 1 && await logHas('No me líes') === 1 && await logHas('ya sabremos de qué iba') === 1
+    && await logHas('¿Al vacío?') === 1 && await logHas('otro presupuesto') === 1 && await logHas('Que se abrigue') === 1, 'opciones nuevas de Pilar (tema que escala, crisis 113, reloj, abuela)');
   await choose('Me voy.');
   await verb('mirar', 'pilar_escaleta'); await verb('dar', 'pilar_escaleta', 'cafe');
   ok(await logHas('Pilar Escaleta, de Eventos') === 1 && await logHas('Con catering, una pausa') === 1, 'Mirar / Dar a Pilar');
+  await verb('mirar', 'cuenta_atras'); await verb('mirar', 'cuenta_atras'); await verb('usar', 'cuenta_atras');
+  ok(await logHas('Juraría que he visto un 04:59') >= 1 && await logHas('«+5 MIN»') === 1, 'cuenta atrás (Acto II) clavada en 00:05:00');
+  for (let i = 0; i < 6; i++) await verb('mirar', 'mesa_acreditaciones');
+  ok(await logHas('Hay una lista pegada con cinta') === 1 && await logHas('La bandeja no consta') === 1 && !(await logHas('trae su propio atún')), 'lista de acreditados por actos (Acto II: sin el Titulator)');
+  for (const [v, o] of [['mirar', 'focos'], ['tirar', 'focos'], ['mirar', 'pancarta_evento'], ['tirar', 'pancarta_evento'], ['mirar', 'atril'], ['usar', 'atril'], ['mirar', 'sillas_evento'], ['usar', 'sillas_evento'],
+    ['mirar', 'silla_reservado'], ['coger', 'silla_reservado'], ['mirar', 'mesa_sonido'], ['hablar', 'mesa_sonido'], ['mirar', 'catering_croquetas'], ['abrir', 'catering_croquetas'],
+    ['mirar', 'flight_cases'], ['abrir', 'flight_cases'], ['mirar', 'marcas_cinta'], ['usar', 'marcas_cinta'], ['mirar', 'photocall'], ['mirar', 'aro_luz'], ['mirar', 'cajas_lanyards']]) await verb(v, o);
+  ok(await logHas('¡Eso es ambiente!') === 1 && await logHas('POR CONFIRMAR') === 1 && await logHas('esperando un sustantivo') === 1 && await logHas('Cuatro minutos y medio') === 1
+    && await logHas('«Ponente».') === 1 && await logHas('WALKIE: Cinco minutos. Cambio.') === 1 && await logHas('Ni un minuto antes. Ni cinco.') === 1
+    && await logHas('Pilar me ha marcado antes de que llegara') === 1 && await logHas('Espacio premium para tu cara') === 1, 'hotspots nuevos de la sala (Mirar + verbos)');
+  step('Micro-puzle opcional: la silla 113 (de Comercial) → croqueta');
+  await verb('empujar', 'silla_torcida');
+  ok(await logHas('¡No es la postura, es la silla!') === 1 && !(await flag('eventos_silla_devuelta')), 'enderezarla sin saber de quién es: sigue habiendo 113');
+  await verb('mirar', 'silla_torcida');
+  ok(await logHas('PROPIEDAD DE COMERCIAL') === 1 && await logHas('Tiene dueña.') === 1, 'Mirar silla torcida: pegatina de Comercial');
+  await verb('coger', 'silla_torcida');
+  ok((await flag('eventos_silla_devuelta')) === true && (await flag('eventos_croqueta')) === true && await logHas('¡CIENTO DOCE!') === 1 && await logHas('Pero es nuestra.') === 1,
+    'devolver la silla a Comercial → Pilar recupera el 112 y regala la croqueta');
+  ok(!(await G(() => __game.objects().some(o => o.id === 'silla_torcida' && o.visible))), 'la silla torcida ya no está');
+  await verb('mirar', 'catering_croquetas'); await verb('hablar', 'pilar_escaleta');
+  ok(!(await opts()).includes('¿Estás bien, Pilar?') && (await opts()).includes('Gracias por la croqueta.'), 'sin crisis: la opción de la croqueta');
+  await choose('Gracias por la croqueta.'); await choose('Me voy.');
+  ok(await logHas('Falta una croqueta.') === 1 && await logHas('Te he apuntado como catering') === 1, 'el hueco de la croqueta, tapado con cinta');
+  await shot('eventos');
+  await verb('ir', 'eventos_a_ecosistema');
+  ok((await state()).room === 'ecosistema' && await logHas('Te la facturo como mudanza') === 1, 'vuelta al Ecosistema: Maripaz ha recuperado su silla');
   await verb('hablar', 'maripaz_remitido');
   ok((await opts()).includes('La página 7 está pendiente desde marzo.'), 'opción M0-2 con el planillo');
   await choose('Me voy.');
@@ -187,23 +235,34 @@ try {
   await verb('dar', 'maripaz_remitido', 'ficha_pagina_7');
   ok(await logHas('Firmar dos veces es un contrato') === 1, 'Dar ficha con hueco (8.1)');
 
-  step('P14a: el álbum de Eventos (lo presta Pilar; Borja dice «descopear»)');
+  step('P14a: el álbum de Eventos (lo presta Pilar en su sala; Borja se asoma por la puerta y dice «descopear»)');
+  await verb('ir', 'ecosistema_a_eventos');
   await verb('coger', 'album_eventos_hotspot');
   ok(await logHas('Pídemelo con un motivo') === 1, 'Coger álbum sin ruben_encontrado');
   await verb('hablar', 'pilar_escaleta');
   ok(!(await opts()).includes('¿Me prestas el álbum?'), 'sin ruben_encontrado no se pide el álbum');
   await R.closeDialog();
   await setFlags({ ruben_encontrado: true, acto_3_iniciado: true });
+  for (let i = 0; i < 2; i++) await verb('mirar', 'mesa_acreditaciones');
+  ok(await logHas('trae su propio atún') === 1, 'lista de acreditados, Acto III: el Titulator, denegado');
+  await verb('mirar', 'cuenta_atras');
+  ok(await logHas('El CLS de Tadeo lo envidia') === 1, 'cuenta atrás, Acto III');
+  await verb('ir', 'eventos_a_ecosistema');
   await verb('hablar', 'borja_engagement');
   await choose('¿Me prestas el álbum?');
   ok(await logHas('El álbum es de Eventos') === 1 && !(await state()).inventory.includes('album_eventos'), 'Borja remite a Eventos');
   await R.closeDialog();
+  const borja0 = (await state()).actors.borja_engagement;
+  await verb('ir', 'ecosistema_a_eventos');
   await verb('hablar', 'pilar_escaleta');
   await choose('¿Me prestas el álbum?');
   await R.closeDialog();
   st = await state();
   ok(st.inventory.includes('album_eventos') && st.flags.oyo_descopear && await logHas('hemos descopeado la ética del Q3') === 1, 'Pilar presta el álbum de Eventos; Borja suelta «descopear» → album_eventos, oyo_descopear');
-  ok(!(await G(() => __game.objects().some(o => o.id === 'album_eventos_hotspot' && o.visible))), 'el álbum ya no está en el puf');
+  ok(await G(() => __game.log.some(l => l.who === 'borja_engagement' && l.text.includes('descopeado'))) && await logHas('de la puerta no se pasa') === 1, 'Borja se asoma por la puerta (habla él, en la sala)');
+  ok(st.actors.borja_engagement.room === 'ecosistema' && Math.abs(st.actors.borja_engagement.x - borja0.x) < 1, 'Borja vuelve a su sitio del Ecosistema');
+  ok(!(await G(() => __game.objects().some(o => o.id === 'album_eventos_hotspot' && o.visible))), 'el álbum ya no está en la mesa de acreditaciones');
+  await verb('ir', 'eventos_a_ecosistema');
   await verb('cerrar', 'portatil_tadeo');
   ok((await flag('ecosistema_portatil_cerrado')) === true && await logHas('ATASCO EN BANDEJA DE SALIDA') === 1, 'Cerrar portátil en el Acto III: reenvía la impresora');
   await setFlags({ acto_3_iniciado: false, ruben_encontrado: false });
