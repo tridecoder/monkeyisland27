@@ -34,26 +34,31 @@ function portatilTitulator(g, r, t) {
 async function presentacionVillano(api) {
   await api.cutscene(async (api) => {
     // (La Pecera. La pantalla gigante marca 3.418 y baja. Yoli se echa colirio.)
-    // Si Bruno ha llegado en ascensor (al otro extremo de la sala), cruza la planta en un fundido: la escena es la misma.
-    if (api.actorPos(api.player).x > 300) {
+    // Rediseño (docs/GUIA_REDISENO.md §3, §6): el núcleo (escaleras y ascensor) y el pasillo de Dirección están a la
+    // IZQUIERDA; todas las entradas caen en x < 170. Si Bruno estuviera lejos (p. ej. al cargar), cruza en un fundido.
+    const SITIO_BRUNO = [184, 124], SITIO_IN = (art.layout[I] && art.layout[I].at) || [246, 122, 'down'];
+    if (api.actorPos(api.player).x > 330) {
       await api.fadeOut(250);
-      api.placeActor(api.player, 'pecera', 186, 120, 'left');
+      api.placeActor(api.player, 'pecera', 140, 122, 'right');
       api.cameraFollow();
       api.game.snapCamera();
       await api.fadeIn(250);
     }
-    await api.walkTo(150, 120);
+    await api.walkTo(SITIO_BRUNO[0], SITIO_BRUNO[1]);
     api.face('right');
+    api.cameraTo(232);                       // Bruno, la pantalla de métricas y Yoli en el mismo plano
     await api.anim(Y, 'reach', 700);
     await api.sayAs(Y, '¡No entra nada! ¡El CMS lleva dos horas en "Guardando borrador"!');
-    // (Las luces parpadean. Entra Íñigo con un portátil plateado bajo el brazo.)
+    // (Las luces parpadean. Entra Íñigo con un portátil plateado bajo el brazo.) Sube por la escalera del núcleo.
     for (let i = 0; i < 2; i++) { await api.fadeOut(70); await api.fadeIn(70); }
-    const door = art.layout.pecera_a_vestibulo.walkTo || [30, 112];
-    const at = (art.layout[I] && art.layout[I].at) || [230, 118, 'down'];
-    api.placeActor(I, 'pecera', door[0], door[1] + 6, 'right');
+    const door = art.layout.pecera_a_vestibulo.walkTo || [25, 108];
+    const at = SITIO_IN;
+    api.placeActor(I, 'pecera', door[0] + 6, door[1] + 4, 'right');
     api.show(I);
     api.sfx('door');
+    api.cameraTo(150);
     await api.walkActor(I, at[0], at[1]);
+    api.cameraTo(232);
     api.faceActor(I, 'down');
     api.face(I);
     await talk(api, [
@@ -99,13 +104,13 @@ async function presentacionVillano(api) {
       [I, 'Te tengo en la matriz, Vacante. Cuadrante "Ideal". No te muevas.'],
     ]);
     // (Íñigo sale hacia la Pajarera.)
-    const exitP = art.layout.pecera_a_pajarera.walkTo || [390, 106];
-    api.cameraTo(330);
+    const exitP = art.layout.pecera_a_pajarera.walkTo || [115, 108];
+    api.cameraTo(170);
     await api.walkActor(I, exitP[0], exitP[1]);
     api.sfx('door');
     api.placeActor(I, null);
     await talk(api, [[Y, '¿Pósit rosa? El rosa es "emociones". Te ha clasificado como emoción.']]);
-    api.cameraTo(390);
+    api.cameraTo(452);                       // Yoli (Web, 309) y Nerea (Desarrollo, 598) en el mismo plano
     await api.wait(400);
     await talk(api, [
       [N, 'El CMS no es nuestro, es de Sistemas.'],

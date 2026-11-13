@@ -1,362 +1,404 @@
-// SALA `ecosistema` — El Ecosistema (Marketing y Comercial). Arte y geometría. Biblia §3.7 + adenda §3.7 y §13.4.
-// Planta diáfana de moqueta gorda: escalera a la izquierda, la PUERTA DE EVENTOS (doble hoja con ojos de buey por los
-// que se escapan los focos de la Sala Polivalente), el embudo de Marketing bajo el neón, ascensor con pufs, roll-up de
-// Comercial, pizarra SINERGIA con la mesa vacía de Tadeo, el termómetro de ventas de Maripaz con su mesa y, a la
-// derecha, el pasillo con la impresora de la tercera. Eventos (photocall, gong, lanyards, Pilar) tiene sala propia.
-// Paleta: lila pastel, verde azulado, coral y oro.
-import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, ditherPick, ditherOverlay, noise, glow, gradV,
-  rng, hash2, shade, mix, shadowEllipse, bevel, vignette, floorTiles, cityWindow, mug } from '../../../engine/draw.js';
-import { greek, cap, dropShadow, miniText } from './lib-catacumba-util.js';
+// SALA `ecosistema` — Marketing y Comercial (planta 2, «el Ecosistema»). Arte y geometría. Rediseño P4 (docs/GUIA_REDISENO.md
+// §3, §7; propuesta §4.7). Biblia §3.7 + adenda §3.7, §8bis y §13.4. 400 px con scroll, cinco zonas de izquierda a derecha
+// (content/lib/edificio.js ECOSISTEMA_ZONAS), cada una con suelo, filete, pilastra y (los departamentos) rótulo colgado:
+//   NÚCLEO 0-96 ........... el kit del edificio (kit.nucleo, FL = 94): escalera que BAJA «1 REDACCIÓN ▼» y ascensor «2».
+//                           Marketing le ha puesto los PUFS delante al ascensor (gag A§14.2), sin tapar la botonera.
+//   MARKETING 96-190 ...... moqueta lila gruesa, Memphis: el embudo «VEN · MIRA · COMPARTE · ?», la pizarra SINERGIA sobre
+//                           la mesa vacía de Tadeo (con su portátil, que nunca se cierra) y Borja con su anillo de luz.
+//   puerta de EVENTOS 190-242 doble hoja ciruela con ojos de buey por los que se escapan los focos, piloto «5 MIN»,
+//                           placa «2 EVENTOS» y umbral granate.
+//   COMERCIAL 242-352 ..... roll-up «SU ANUNCIO AQUÍ» (desplegado / enrollado), termómetro de ventas al 97 %, el lema
+//                           ENTERO en 4 líneas, la mesa de Maripaz y, en el suelo, la piel de plátano de la plaza 7.
+//   PASILLO 352-400 ....... boca de 46 px en perspectiva hacia Administración (ventanilla al fondo, placa
+//                           «2 ADMINISTRACIÓN ►»), con la impresora de la tercera ENTERA dentro.
+// Paleta: lila y fucsia (Marketing), ciruela y granate (Eventos), naranja melocotón (Comercial), verde oliva (pasillo).
+import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, ditherPick, ditherOverlay, glow, gradV,
+  rng, hash2, shade, shadowEllipse, bevel, vignette, mug, label } from '../../../engine/draw.js';
+import * as kit from '../../lib/kit.js';
+import { nucleoGeom } from '../../lib/edificio.js';
 
-const W = 320;
-const LIL = ['#8c88b4', '#a29cc6', '#b8b2d6', '#cdc8e4', '#e0dcf0', '#f0eef8'];       // paredes lila pastel
+const W = 400, FL = 94;
+const N = nucleoGeom('ecosistema', FL);
+const LIL = ['#5a3c6c', '#6c4a80', '#7e5894', '#9268a8', '#a67cbc', '#bc94d0'];      // pared de Marketing
+const PLUM = ['#24142e', '#33203f', '#432a52', '#563666'];                             // pared de la puerta de Eventos
+const PEACH = ['#7a4a3a', '#8e5a46', '#a26a52', '#b67c60', '#c68e70'];               // pared de Comercial
+const OLIVA = ['#2e3a2c', '#3a4a36', '#4a5c42', '#5c704e'];                           // pasillo de Administración
 const CORAL = [PAL.dusk[3], PAL.dusk[4], PAL.dusk[5], PAL.dusk[6]];
-const CARP = ['#3a2058', '#4e2c70', '#6a3c92', '#8250aa', '#9c68c4'];
+const LEMA = 'TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO';
+const PUERTA_EV = { x: 199, y: 38, w: 34, h: FL - 38 };       // hueco de la doble hoja de Eventos
 
 const layout = {
-  ecosistema_a_pecera: { rect: [4, 26, 32, 72], walkTo: [26, 112], face: 'left' },
-  ecosistema_a_eventos: { rect: [40, 22, 56, 76], walkTo: [68, 110], face: 'up' },
-  embudo_marketing: { rect: [104, 33, 34, 40], walkTo: [124, 112], face: 'up' },
-  pizarra_sinergia: { rect: [192, 24, 44, 36], walkTo: [208, 112], face: 'up' },
-  ascensor_ecosistema: { rect: [142, 34, 40, 52], walkTo: [162, 120], face: 'up' },
-  pufs: { rect: [136, 86, 36, 17], walkTo: [154, 116], face: 'up' },
-  rollup_comercial: { rect: [173, 40, 20, 60], walkTo: [184, 114], face: 'up' },
-  termometro_ventas: { rect: [238, 26, 22, 54], walkTo: [250, 112], face: 'up' },
-  lema_enmarcado: { rect: [260, 24, 44, 22], walkTo: [284, 112], face: 'up' },
-  impresora_tercera: { rect: [284, 56, 18, 44], walkTo: [292, 112], face: 'up' },
-  ecosistema_a_administracion: { rect: [304, 24, 14, 74], walkTo: [308, 110], face: 'right' },
-  portatil_tadeo: { rect: [198, 62, 26, 22], walkTo: [210, 112], face: 'up', draw: (g, v, t) => drawPortatil(g, 198, 62, t) },
-  piel_platano: { rect: [292, 106, 14, 8], walkTo: [284, 122], face: 'up', priority: 1, draw: (g) => drawPlatano(g, 292, 106) },
-  borja_engagement: { at: [104, 108, 'right'], walkTo: [88, 116], face: 'right' },
-  maripaz_remitido: { at: [272, 106, 'down'], walkTo: [256, 116], face: 'right' },
+  // núcleo (geometría común del edificio)
+  ecosistema_a_pecera: { rect: N.escaleras.baja.rect, walkTo: N.escaleras.baja.walkTo, face: N.escaleras.baja.face },
+  ascensor_ecosistema: { rect: N.ascensor.rect, walkTo: N.ascensor.walkTo, face: 'up' },
+  pufs: { rect: [52, 91, 38, 14], walkTo: [72, 116], face: 'up' },
+  // Marketing
+  embudo_marketing: { rect: [100, 32, 36, 42], walkTo: [130, 116], face: 'up' },
+  pizarra_sinergia: { rect: [140, 30, 46, 30], walkTo: [162, 112], face: 'up' },
+  portatil_tadeo: { rect: [148, 60, 28, 18], walkTo: [162, 112], face: 'up', priority: 1, draw: drawPortatil },
+  // la puerta de Eventos
+  ecosistema_a_eventos: { rect: [194, 24, 44, 74], walkTo: [216, 108], face: 'up' },
+  // Comercial
+  rollup_comercial: { rect: [244, 32, 20, 64], walkTo: [254, 112], face: 'up', cache: true,
+    sprites: { desplegado: (g) => drawRollup(g, false), enrollado: (g) => drawRollup(g, true), default: (g) => drawRollup(g, false) } },
+  termometro_ventas: { rect: [267, 30, 22, 52], walkTo: [278, 112], face: 'up' },
+  lema_enmarcado: { rect: [290, 18, 62, 33], walkTo: [318, 114], face: 'up' },
+  piel_platano: { rect: [334, 118, 18, 10], walkTo: [360, 126], face: 'left', priority: 2, draw: drawPlatano },
+  // el pasillo a Administración, con la impresora dentro (la impresora, a la izquierda de la boca; la salida, el resto)
+  impresora_tercera: { rect: [354, 56, 20, 40], walkTo: [366, 108], face: 'up', priority: 1, draw: drawImpresora },
+  ecosistema_a_administracion: { rect: [370, 20, 28, 80], walkTo: [384, 108], face: 'right' },
+  // PNJ (guía §10): Borja delante del embudo; Maripaz de pie junto a su mesa, con el lema detrás
+  borja_engagement: { at: [118, 112, 'right'], walkTo: [94, 124], face: 'right' },
+  maripaz_remitido: { at: [328, 104, 'left'], walkTo: [302, 124], face: 'right' },
 };
 
-// ------------------------------------------------------------ objetos dibujados por el hotspot
-function drawPlatano(g, x, y) {
-  shadowEllipse(g, x + 7, y + 5, 7, 2, 0.5);
-  poly(g, [[x + 1, y + 3], [x + 7, y + 1], [x + 13, y + 3], [x + 8, y + 6], [x + 4, y + 6]], PAL.gold[5]);
-  poly(g, [[x + 6, y + 3], [x + 10, y + 5], [x + 13, y + 7], [x + 8, y + 7]], PAL.gold[4]);
-  line(g, x + 2, y + 2, x + 6, y + 4, PAL.gold[3]); line(g, x + 12, y + 3, x + 13, y + 6, PAL.gold[3]);
-  px(g, x + 6, y + 3, PAL.wood[3]); hline(g, x + 3, y + 3, 3, PAL.gold[6]);
+// ------------------------------------------------------------ objetos dibujados por su hotspot
+function drawPlatano(g) {
+  // piel de plátano de 16×8, amarillo saturado, con canto vivo (y su pósit «PLAZA 7»)
+  const x = 335, y = 119;
+  shadowEllipse(g, x + 8, y + 7, 9, 2, 0.6);
+  poly(g, [[x + 1, y + 4], [x + 8, y + 1], [x + 15, y + 4], [x + 9, y + 7], [x + 4, y + 7]], '#ffd21e');
+  poly(g, [[x + 6, y + 4], [x + 11, y + 6], [x + 15, y + 8], [x + 9, y + 8]], '#e8b010');
+  line(g, x + 1, y + 3, x - 2, y + 6, '#ffd21e'); line(g, x + 15, y + 3, x + 17, y + 7, '#e8b010');
+  hline(g, x + 4, y + 3, 6, '#fff07a'); px(g, x + 8, y + 1, PAL.wood[2]); px(g, x + 8, y, PAL.wood[1]);
+  rect(g, x + 11, y - 1, 5, 4, PAL.paper[7]); kit.micro(g, '7', x + 12, y - 1, PAL.red[3], { registrar: false });
+  kit.cantoVivo(g, x, y, 16, 8);
 }
-/** Portátil de Tadeo, 26x22: pantalla con notificaciones y un globo que parpadea (2 frames). */
-function drawPortatil(g, x, y, t) {
+/** Portátil de Tadeo: abierto con notificaciones y un globo que parpadea; cerrado (Acto III) apagado y en silencio. */
+function drawPortatil(g, view, t) {
+  const x = 148, y = 60;
+  if (view.flag('ecosistema_portatil_cerrado')) {
+    // cerrado: tapa plateada sin luz, una pegatina «¡VAMOS!» y nada más (por fin)
+    poly(g, [[x + 1, y + 13], [x + 27, y + 13], [x + 25, y + 17], [x + 3, y + 17]], PAL.metal[5]);
+    rect(g, x + 2, y + 10, 24, 4, PAL.metal[4]); hline(g, x + 2, y + 10, 24, PAL.metal[6]);
+    rect(g, x + 11, y + 11, 6, 2, PAL.dusk[5]);
+    px(g, x + 24, y + 15, PAL.ink[1]);
+    kit.cantoVivo(g, x + 1, y + 10, 26, 7);
+    return;
+  }
   const f = ((t || 0) % 900) < 450;
-  rect(g, x + 2, y + 4, 22, 13, PAL.metal[2]); frameRect(g, x + 2, y + 4, 22, 13, PAL.metal[4]); hline(g, x + 2, y + 4, 22, PAL.metal[6]);
-  rect(g, x + 4, y + 6, 18, 9, f ? PAL.blue[7] : PAL.blue[6]);
-  for (let i = 0; i < 4; i++) { const yy = y + 7 + i * 2; rect(g, x + 5, yy, 2, 1, i % 2 ? PAL.red[4] : PAL.gold[4]); hline(g, x + 8, yy, 6 + ((i * 5) % 7), PAL.blue[3]); }
-  rect(g, x + 17, y + 12, 4, 2, PAL.red[4]);
-  poly(g, [[x, y + 17], [x + 26, y + 17], [x + 24, y + 21], [x + 2, y + 21]], PAL.metal[5]); hline(g, x, y + 17, 26, PAL.metal[7]);
-  hline(g, x + 4, y + 19, 18, PAL.metal[3]); hline(g, x + 10, y + 20, 6, PAL.metal[2]);
-  const by = f ? y - 1 : y + 1;
-  if (f) glow(g, x + 20, by + 2, 9, 6, PAL.gold[5], 0.2, 3);
-  poly(g, [[x + 14, by], [x + 25, by], [x + 25, by + 6], [x + 19, by + 6], [x + 17, by + 9], [x + 17, by + 6], [x + 14, by + 6]], f ? PAL.paper[7] : PAL.red[4]);
-  frameRect(g, x + 14, by, 12, 7, PAL.ink[1]);
-  px(g, x + 18, by + 2, PAL.ink[0]); px(g, x + 20, by + 2, PAL.ink[0]); px(g, x + 22, by + 2, PAL.ink[0]); px(g, x + 18, by + 4, PAL.ink[0]); px(g, x + 22, by + 4, PAL.ink[0]);
+  rect(g, x + 2, y + 3, 24, 13, PAL.metal[2]); frameRect(g, x + 2, y + 3, 24, 13, PAL.metal[4]); hline(g, x + 2, y + 3, 24, PAL.metal[6]);
+  rect(g, x + 4, y + 5, 20, 9, f ? PAL.blue[7] : PAL.blue[6]);
+  for (let i = 0; i < 4; i++) { const yy = y + 6 + i * 2; rect(g, x + 5, yy, 2, 1, i % 2 ? PAL.red[4] : PAL.gold[4]); hline(g, x + 8, yy, 6 + ((i * 5) % 7), PAL.blue[3]); }
+  poly(g, [[x, y + 16], [x + 28, y + 16], [x + 26, y + 19], [x + 2, y + 19]], PAL.metal[5]); hline(g, x, y + 16, 28, PAL.metal[7]);
+  hline(g, x + 4, y + 18, 20, PAL.metal[3]);
+  glow(g, x + 14, y + 10, 16, 10, '#a8c8ff', 0.18, 3);
+  // el globo de «RV:» que no para
+  const by = f ? y - 2 : y;
+  poly(g, [[x + 16, by], [x + 27, by], [x + 27, by + 6], [x + 21, by + 6], [x + 19, by + 9], [x + 19, by + 6], [x + 16, by + 6]], f ? PAL.paper[7] : PAL.red[4]);
+  frameRect(g, x + 16, by, 12, 7, PAL.ink[1]);
+  kit.micro(g, 'RV', x + 18, by + 1, f ? PAL.red[3] : PAL.paper[7], { registrar: false });
+  kit.cantoVivo(g, x + 2, y + 3, 26, 17);
+}
+/** La impresora de la tercera, ENTERA, dentro del pasillo: piloto rojo de atasco; con el portátil cerrado, reenvía. */
+function drawImpresora(g, view, t) {
+  const x = 356, y = 58;
+  shadowEllipse(g, x + 9, FL + 1, 12, 2, 0.7);
+  bevel(g, x, y + 10, 18, 26, PAL.paper[4], PAL.paper[6], PAL.paper[1]);
+  rect(g, x - 1, y + 6, 20, 6, PAL.paper[3]); hline(g, x - 1, y + 6, 20, PAL.paper[7]);
+  rect(g, x + 2, y + 1, 14, 6, PAL.paper[5]); hline(g, x + 2, y + 1, 14, PAL.white);
+  // pantallita: «ATASCO» no cabe; un aviso rojo que parpadea y la bandeja 2 (que no existe) abierta
+  rect(g, x + 2, y + 13, 14, 6, PAL.ink[1]);
+  const on = ((t || 0) % 1200) < 700;
+  rect(g, x + 3, y + 14, 12, 4, on ? PAL.red[3] : PAL.red[1]); kit.micro(g, '2', x + 8, y + 14, PAL.paper[7], { registrar: false });
+  for (const [by, c] of [[y + 22, PAL.metal[3]], [y + 28, PAL.metal[2]]]) { rect(g, x + 2, by, 14, 5, c); hline(g, x + 2, by, 14, PAL.metal[5]); rect(g, x + 7, by + 2, 4, 1, PAL.ink[1]); }
+  rect(g, x + 1, y + 36, 16, 2, PAL.ink[2]);
+  // un folio atascado asomando, arrugado
+  poly(g, [[x + 3, y + 20], [x + 15, y + 20], [x + 14, y + 23], [x + 9, y + 21], [x + 2, y + 23]], PAL.paper[7]);
+  if (view.flag('ecosistema_portatil_cerrado')) {
+    // reenvía ella: folios que salen por la bandeja de salida (y uno en el suelo)
+    const k = Math.floor((t || 0) / 300) % 3;
+    for (let i = 0; i <= k; i++) { rect(g, x + 4, y - 2 - i * 2, 10, 2, PAL.paper[7]); hline(g, x + 5, y - 2 - i * 2, 7, PAL.ink[3]); }
+    poly(g, [[x + 18, FL - 1], [x + 26, FL - 3], [x + 28, FL + 1], [x + 20, FL + 2]], PAL.paper[7]);
+  }
+  ditherOverlay(g, x + 18, y + 8, 2, 30, PAL.shadow, 0.35);
+  kit.cantoVivo(g, x - 1, y + 1, 20, 37);
+}
+/** Roll-up de Comercial: desplegado («SU ANUNCIO AQUÍ», la extensión de Maripaz) o ENROLLADO (lona recogida en su
+ *  base, el mástil desnudo y el anuncio enrollado: cambia la forma y el color). */
+function drawRollup(g, enrollado) {
+  const x = 246, y = 34, w = 16, h = 58;
+  shadowEllipse(g, x + 8, FL + 1, 11, 2, 0.6);
+  rect(g, x - 2, y + h, w + 4, 4, PAL.metal[4]); hline(g, x - 2, y + h, w + 4, PAL.metal[6]); hline(g, x - 2, y + h + 3, w + 4, PAL.metal[2]);
+  if (enrollado) {
+    vline(g, x + 8, y + 4, h - 4, PAL.metal[4]); vline(g, x + 9, y + 4, h - 4, PAL.metal[6]);
+    rect(g, x - 1, y + h - 4, w + 2, 4, '#ff7a52'); hline(g, x - 1, y + h - 4, w + 2, '#ffb090'); hline(g, x - 1, y + h - 1, w + 2, '#c03a28');
+    px(g, x + 8, y + 3, PAL.metal[7]);
+    kit.cantoVivo(g, x - 1, y + h - 4, w + 2, 5);
+    return;
+  }
+  vline(g, x + 8, y - 2, 2, PAL.metal[4]);
+  rect(g, x, y, w, h, '#fff4ec'); frameRect(g, x, y, w, h, PAL.metal[3]);
+  rect(g, x + 1, y + 1, w - 2, 9, '#ff7a52'); kit.micro(g, 'SU', x + 8, y + 3, PAL.white, { align: 'center' });
+  kit.micro(g, 'ANUN', x + 8, y + 13, '#c03a28', { align: 'center' });
+  kit.micro(g, 'CIO', x + 8, y + 19, '#c03a28', { align: 'center' });
+  kit.micro(g, 'AQUÍ', x + 8, y + 26, '#c03a28', { align: 'center' });
+  ellipse(g, x + 8, y + 38, 4, 4, PAL.gold[5]); ellipse(g, x + 8, y + 38, 2, 2, '#ff7a52');
+  rect(g, x + 1, y + 46, w - 2, 8, '#ff7a52'); kit.micro(g, '247', x + 8, y + 48, PAL.white, { align: 'center' });
+  ditherOverlay(g, x + w, y + 2, 2, h, PAL.shadow, 0.4);
+  kit.cantoVivo(g, x, y, w, h);
 }
 
 // ------------------------------------------------------------ fondo
-function drawCeiling(g) {
-  gradV(g, 0, 0, W, 15, [PAL.paper[3], PAL.paper[5], PAL.paper[4]]);
-  for (let x = 0; x < W; x += 40) vline(g, x, 0, 14, PAL.paper[2]);
-  for (let lx = 24; lx < W; lx += 64) {
-    rect(g, lx, 6, 30, 5, PAL.paper[2]); rect(g, lx + 1, 7, 28, 3, '#fbfdff'); hline(g, lx + 1, 7, 28, '#ffffff');
-    glow(g, lx + 15, 14, 26, 8, '#f0f4ff', 0.12, 3);
+function techo(g) {
+  gradV(g, 0, 0, W, 15, [PAL.ink[1], PAL.metal[1], PAL.metal[2]]);
+  for (let x = 0; x < W; x += 24) vline(g, x, 0, 14, PAL.ink[0]);
+  hline(g, 0, 7, W, PAL.ink[0]); hline(g, 0, 14, W, PAL.ink[1]);
+  for (const lx of [110, 174, 262, 318]) {
+    rect(g, lx, 4, 30, 4, PAL.metal[3]); rect(g, lx + 1, 5, 28, 2, '#fbfdff');
+    glow(g, lx + 15, 12, 26, 8, '#f0f4ff', 0.1, 3);
   }
-  hline(g, 0, 14, W, PAL.paper[1]); ditherOverlay(g, 0, 15, W, 3, PAL.shadow, 0.25);
-  for (let x = 0; x < W; x++) px(g, x, 3, [PAL.dusk[5], PAL.teal[5], PAL.gold[5], PAL.leaf[6]][(x >> 3) & 3]);
+  // guirnalda Memphis de Marketing (solo en su zona)
+  for (let x = 98; x < 188; x++) px(g, x, 11 + ((x >> 2) & 1), [PAL.dusk[5], PAL.teal[5], PAL.gold[5], '#ff5aa8'][(x >> 3) & 3]);
 }
-
-function drawWall(g) {
-  paint(g, 0, 15, W, 83, (x, y) => ditherPick(x, y, LIL, 0.9 - (y - 15) / 83 * 0.55 + (hash2(x >> 3, y >> 2, 4) - 0.5) * 0.05));
-  noise(g, 0, 15, W, 80, LIL[1], 0.02, 6);
-  rect(g, 0, 76, W, 21, PAL.teal[3]);
-  paint(g, 0, 76, W, 21, (x, y) => ditherPick(x, y, [PAL.teal[2], PAL.teal[3], PAL.teal[4]], 0.2 + (97 - y) / 21 * 0.2 + hash2(x >> 3, y, 4) * 0.1));
-  hline(g, 0, 75, W, CORAL[2]); hline(g, 0, 76, W, CORAL[1]); hline(g, 0, 77, W, PAL.teal[6]);
-  ditherOverlay(g, 0, 78, W, 5, PAL.shadow, 0.2);
-  rect(g, 0, 96, W, 3, PAL.paper[5]); hline(g, 0, 96, W, PAL.paper[7]); hline(g, 0, 98, W, PAL.paper[2]);
-  // formas Memphis
-  ellipse(g, 107, 70, 5, 5, PAL.gold[4]); ellipse(g, 106, 69, 3, 3, PAL.gold[5]);
-  poly(g, [[190, 70], [196, 62], [202, 70]], PAL.teal[5]);
-  for (let i = 0; i < 8; i++) px(g, 262 + i * 2, 66 + ((i & 1) ? 2 : 0), CORAL[1]);
-}
-
-function drawFloor(g) {
-  floorTiles(g, { x: 0, y: 99, w: W, h: 45, vpx: W / 2, vpy: 36, tile: 22, rowPx: 7, colors: [CARP[3], CARP[2]], grout: CARP[1], far: CARP[0], fade: 0.35 });
-  paint(g, 0, 99, W, 45, (x, y) => { const v = hash2(x, y, 11); return v < 0.08 ? CARP[3] : v > 0.88 ? CARP[1] : null; });
-  ditherOverlay(g, 0, 99, W, 4, PAL.shadow, 0.45);
-  glow(g, 160, 118, 140, 18, '#e8d8ff', 0.07, 4);
-  // la lengua de luz cálida que sale por la rendija de la puerta de Eventos
-  glow(g, 68, 104, 26, 5, '#ffe0a0', 0.14, 4);
-}
-
-function drawStairs(g) {
-  rect(g, 3, 24, 34, 74, PAL.paper[2]); frameRect(g, 3, 24, 34, 74, PAL.ink[1]);
-  gradV(g, 6, 27, 28, 71, [PAL.ink[2], PAL.night[1], PAL.night[2]]);
-  glow(g, 18, 100, 22, 28, PAL.gold[5], 0.22, 5);
-  for (let i = 0; i < 6; i++) {
-    const y = 56 + i * 7, w = 28 - i * 2, x = 6 + i;
-    rect(g, x, y, w, 5, mix(PAL.paper[2], PAL.night[2], i / 6)); hline(g, x, y, w, mix(PAL.paper[5], PAL.night[4], i / 6)); hline(g, x, y + 4, w, PAL.ink[1]);
+function paredes(g) {
+  // MARKETING: lila con trama suave + formas Memphis
+  paint(g, 96, 14, 94, FL - 14, (x, y) => ditherPick(x, y, LIL, 0.85 - (y - 14) / (FL - 14) * 0.5 + (hash2(x >> 3, y >> 2, 4) - 0.5) * 0.06));
+  ellipse(g, 108, 82, 4, 4, PAL.gold[4]); ellipse(g, 107, 81, 2, 2, PAL.gold[5]);
+  poly(g, [[176, 86], [182, 78], [188, 86]], PAL.teal[5]);
+  for (let i = 0; i < 6; i++) px(g, 140 + i * 3, 84 + (i & 1) * 2, CORAL[1]);
+  // EVENTOS (la puerta): ciruela oscuro
+  paint(g, 190, 14, 52, FL - 14, (x, y) => ditherPick(x, y, PLUM, 0.75 - (y - 14) / (FL - 14) * 0.4));
+  // COMERCIAL: melocotón cálido con rayas finas de papel pintado
+  paint(g, 242, 14, 110, FL - 14, (x, y) => ditherPick(x, y, PEACH, 0.8 - (y - 14) / (FL - 14) * 0.45 + ((x % 12) === 0 ? -0.08 : 0)));
+  // PASILLO: verde oliva (el de Administración)
+  paint(g, 352, 14, 48, FL - 14, (x, y) => ditherPick(x, y, OLIVA, 0.6 - (y - 14) / (FL - 14) * 0.3));
+  // zócalo alto (moldura) y zócalo de suelo en toda la planta (menos el núcleo, que lleva el suyo)
+  for (const [x0, x1, c] of [[96, 190, LIL[1]], [190, 242, PLUM[0]], [242, 352, PEACH[0]], [352, 400, OLIVA[0]]]) {
+    rect(g, x0, FL - 4, x1 - x0, 4, shade(c, -0.2)); hline(g, x0, FL - 4, x1 - x0, shade(c, 0.25)); hline(g, x0, FL - 1, x1 - x0, PAL.ink[0]);
   }
-  line(g, 6, 40, 34, 66, PAL.metal[6], 1); line(g, 6, 41, 34, 67, PAL.metal[3], 1);
-  for (const [bx, by] of [[10, 44], [18, 51], [26, 58]]) vline(g, bx, by, 14, PAL.metal[4]);
-  bevel(g, 8, 28, 24, 11, PAL.blue[3], PAL.blue[5], PAL.blue[1]);
-  cap(g, 'P1', 14, 30, PAL.white);
-  poly(g, [[24, 31], [30, 31], [27, 36]], PAL.white);
-  ditherOverlay(g, 6, 27, 4, 71, PAL.shadow, 0.45);
-  rect(g, 3, 98, 34, 2, PAL.paper[6]); ditherOverlay(g, 3, 100, 34, 3, PAL.shadow, 0.4);
+  // filetes de departamento a la altura del zócalo alto
+  kit.filete(g, 96, 190, 66, 'marketing');
+  kit.filete(g, 190, 242, 66, 'eventos');
+  kit.filete(g, 242, 352, 66, 'comercial');
+  ditherOverlay(g, 96, 14, 304, 4, PAL.shadow, 0.3);
+}
+function suelos(g) {
+  // moqueta gruesa de la planta 2 por zona (canto de goma claro en cada cambio)
+  kit.zonaSuelo(g, 96, 190, FL, 'marketing', { vpx: 200, vpy: 24, borde: true });
+  kit.zonaSuelo(g, 190, 242, FL, 'eventos', { vpx: 200, vpy: 24, borde: true });
+  kit.zonaSuelo(g, 242, 352, FL, 'comercial', { vpx: 200, vpy: 24, borde: true });
+  kit.zonaSuelo(g, 352, 400, FL, 'administracion', { vpx: 200, vpy: 24, trama: 'baldosa', borde: true });
+  // trama de moqueta gruesa (Marketing y Comercial)
+  paint(g, 96, FL, 256, 144 - FL, (x, y) => (hash2(x, y, 11) < 0.05 ? '#2a1c34' : null));
+  ditherOverlay(g, 96, FL, 304, 3, PAL.shadow, 0.45);
 }
 
-/** La puerta de EVENTOS (Sala Polivalente): doble hoja ciruela con ojos de buey por los que se escapan los focos,
- *  barras antipánico, piloto verde «5 MIN» encima y una lengua de luz cálida que sale por la rendija. */
-function drawEventosDoor(g) {
-  const x = 42, y = 26, w = 52, h = 72;
-  dropShadow(g, x, y, w, h, 2, 2, 0.45);
-  rect(g, x - 4, y - 4, w + 8, h + 4, PAL.paper[2]); frameRect(g, x - 4, y - 4, w + 8, h + 4, PAL.ink[2]);
-  hline(g, x - 4, y - 4, w + 8, PAL.paper[5]); vline(g, x - 4, y - 4, h + 4, PAL.paper[4]);
-  const PL = ['#1c1228', '#2a1a3a', '#3a2650', '#4c3262', '#5e4076'];
-  for (const [dx, dw] of [[0, 26], [26, 26]]) {
-    paint(g, x + dx, y, dw, h, (xx, yy) => ditherPick(xx, yy, PL, 0.75 - (yy - y) / h * 0.4 - (xx - x - dx) / dw * 0.15));
-    frameRect(g, x + dx, y, dw, h, PAL.ink[1]);
-    frameRect(g, x + dx + 3, y + 40, dw - 6, 26, PL[1]);                             // cuarterón
-    // ojo de buey: dentro, el resplandor de los focos
-    const ox = x + dx + 13, oy = y + 18;
-    ellipse(g, ox, oy, 7, 7, PAL.metal[4]); ellipse(g, ox, oy, 6, 6, PAL.ink[0]);
-    ellipse(g, ox, oy, 5, 5, (xx, yy, d) => ditherPick(xx, yy, [PAL.ink[1], '#5a2a5a', '#c86aa8', '#fff0c0'], Math.max(0, 1 - d - (yy - oy) * 0.05)));
-    px(g, ox - 3, oy - 3, PAL.white);
-    rect(g, x + dx + 4, y + 34, dw - 8, 3, PAL.metal[5]); hline(g, x + dx + 4, y + 34, dw - 8, PAL.metal[7]);   // barra antipánico
-  }
-  vline(g, x + 25, y, h, PAL.ink[0]); vline(g, x + 26, y, h, PAL.ink[0]);
-  // rendija de luz y la lengua cálida sobre la moqueta
-  vline(g, x + 25, y + 2, h - 4, '#ffd890');
-  glow(g, x + 26, y + 30, 10, 34, '#ffe8b0', 0.18, 4);
-  // cartel encima: «EVENTOS» en verde Pilar y el piloto de los cinco minutos
-  rect(g, x + 4, y - 15, w - 10, 10, PAL.ink[1]); frameRect(g, x + 4, y - 15, w - 10, 10, PAL.ink[3]);
-  glow(g, x + w / 2, y - 10, 30, 8, '#a8f07a', 0.12, 3);
-  cap(g, 'EVENTOS', x + w / 2 - 1, y - 13, '#a8f07a', { align: 'center' });
-  rect(g, x + w + 1, y + 4, 4, 8, PAL.ink[1]); rect(g, x + w + 2, y + 5, 2, 2, PAL.crt[5]); rect(g, x + w + 2, y + 9, 2, 2, PAL.red[2]);
+/** Pilastras en los cambios de zona. */
+function pilastras(g) {
+  for (const x of [94, 188, 240, 350]) kit.pilastra(g, x, 14, FL, { w: 5 });
 }
 
-/** Marketing: el embudo de conversión en vinilo, «VEN · MIRA · COMPARTE · ¿?», con flechas Memphis. */
+/** El embudo de conversión de Marketing en vinilo: «VEN · MIRA · COMPARTE · ?». */
 function drawEmbudo(g) {
-  const x = 104, y = 34, w = 34, h = 38;
-  dropShadow(g, x, y, w, h, 2, 2, 0.4);
+  const x = 102, y = 34, w = 32, h = 38;
+  ditherOverlay(g, x + 2, y + 2, w, h, PAL.shadow, 0.45);
   rect(g, x, y, w, h, '#f6f2fc'); frameRect(g, x, y, w, h, LIL[0]);
-  const bands = [[PAL.dusk[5], 30], [PAL.teal[5], 22], [PAL.gold[5], 14], [PAL.dusk[3], 7]];
+  const bands = [[PAL.dusk[5], 28], [PAL.teal[5], 21], [PAL.gold[5], 14], [PAL.dusk[3], 7]];
   bands.forEach(([c, bw], i) => {
-    const by = y + 4 + i * 8, nx = bands[i + 1] ? bands[i + 1][1] : 3;
+    const by = y + 3 + i * 8, nx = bands[i + 1] ? bands[i + 1][1] : 3;
     poly(g, [[x + (w - bw) / 2, by], [x + (w + bw) / 2, by], [x + (w + nx) / 2, by + 7], [x + (w - nx) / 2, by + 7]], c);
     hline(g, x + Math.round((w - bw) / 2), by, bw, shade(c, 0.3));
   });
-  rect(g, x + 16, y + 36, 3, 2, PAL.dusk[2]);
-  for (const [i, t] of [[0, 'VEN'], [1, 'MIRA'], [2, 'COMP']]) miniText(g, t, x + w / 2, y + 5 + i * 8, PAL.white, { align: 'center' });
-  miniText(g, '?', x + w / 2, y + 29, PAL.white, { align: 'center' });
+  kit.micro(g, 'VEN', x + w / 2, y + 4, PAL.white, { align: 'center' });
+  kit.micro(g, 'MIRA', x + w / 2, y + 12, PAL.white, { align: 'center' });
+  kit.micro(g, 'COMP', x + w / 2, y + 20, PAL.ink[2], { align: 'center' });
+  kit.micro(g, '?', x + w / 2, y + 28, PAL.white, { align: 'center' });
+  rect(g, x + 15, y + 35, 3, 2, PAL.dusk[2]);
   line(g, x + 2, y + 6, x + 2, y + 30, PAL.dusk[4]); poly(g, [[x, y + 29], [x + 5, y + 29], [x + 2, y + 33]], PAL.dusk[4]);
-  px(g, x + 1, y + 1, PAL.white);
+  // el neón «ECOSISTEMA» (decoración de Marketing): pequeño, sobre el embudo, en fucsia
+  rect(g, x - 3, y - 13, 42, 10, PAL.ink[1]); frameRect(g, x - 3, y - 13, 42, 10, PAL.ink[3]);
+  glow(g, x + w / 2, y - 8, 26, 7, '#ff4aa8', 0.16, 4);
+  kit.texto(g, 'ECOSISTEMA', x - 3, y - 13, 42, 10, { color: '#ff6ec0', id: 'neón' });
 }
-
-/** Ascensor de la planta 2 (botonera común, content/lib/ascensor.js), donde antes había una ventana. Marketing le ha
- *  puesto los pufs delante y un vinilo de «ESPACIO DE ENCUENTRO» en las puertas. */
-function drawWindow(g) {
-  const x = 144, y = 36, w = 36, h = 62;
-  dropShadow(g, x, y, w, h, 2, 2, 0.45);
-  rect(g, x - 3, y - 3, w + 6, h + 3, PAL.paper[2]); frameRect(g, x - 3, y - 3, w + 6, h + 3, PAL.ink[2]);
-  rect(g, x, y, w, h, PAL.metal[2]);
-  rect(g, x + 5, y + 2, 26, 7, PAL.ink[0]); frameRect(g, x + 5, y + 2, 26, 7, PAL.metal[4]);
-  ['-1', '0', '1', '2'].forEach((t, i) => cap(g, t, x + 7 + i * 6, y + 3, i === 3 ? PAL.crt[5] : PAL.metal[3]));
-  const dx = x + 3, dy = y + 11, dw = w - 6, dh = h - 11;
-  paint(g, dx, dy, dw, dh, (xx, yy) => {
-    const fx = (xx - dx) / dw, base = fx < 0.5 ? fx * 2 : (1 - fx) * 2;
-    return ditherPick(xx, yy, [PAL.metal[3], PAL.metal[4], PAL.metal[5], PAL.metal[6]], 0.3 + base * 0.45 - (yy - dy) / dh * 0.15 + (hash2(xx, yy >> 2, 2) < 0.15 ? 0.12 : 0));
-  });
-  vline(g, dx + (dw >> 1) - 1, dy, dh, PAL.ink[0]); vline(g, dx + (dw >> 1), dy, dh, PAL.ink[1]);
-  vline(g, dx, dy, dh, PAL.ink[1]); vline(g, dx + dw - 1, dy, dh, PAL.ink[1]);
-  // vinilo Memphis en las puertas: círculo y triángulo de colores (Marketing no deja nada sin «activar»)
-  ellipse(g, dx + 7, dy + 14, 3, 3, PAL.dusk[5]); poly(g, [[dx + 19, dy + 17], [dx + 25, dy + 17], [dx + 22, dy + 11]], PAL.teal[5]);
-  for (let i = 0; i < 6; i++) px(g, dx + 4 + i * 4, dy + 24 + (i & 1), CORAL[1]);
-  // botonera de llamada
-  const px0 = x + w + 4, py0 = y + 20;
-  bevel(g, px0, py0, 5, 13, PAL.metal[4], PAL.metal[6], PAL.metal[1]);
-  ellipse(g, px0 + 2.5, py0 + 4, 1.5, 1.5, PAL.gold[6]); ellipse(g, px0 + 2.5, py0 + 9, 1.5, 1.5, PAL.white);
-  glow(g, x + w / 2, y + 30, 26, 26, PAL.light, 0.06, 4);
-}
-
-function drawNeon(g) {
-  const x = 94, y = 18;
-  glow(g, x + 27, y + 5, 40, 12, '#ff4aa8', 0.16, 5);
-  rect(g, x - 2, y - 1, 58, 12, PAL.ink[1]); frameRect(g, x - 2, y - 1, 58, 12, PAL.ink[3]);
-  cap(g, 'ECOSISTEMA', x + 27, y + 2, '#ff6ec0', { align: 'center' });
-}
-
-function drawPufs(g) {
-  shadowEllipse(g, 154, 102, 22, 3, 0.7);
-  const DU = [PAL.dusk[2], PAL.dusk[3], PAL.dusk[4], PAL.dusk[5], PAL.dusk[6], PAL.dusk[7]];
-  const defs = [[145, 97, 10, 8, PAL.teal], [160, 98, 11, 9, DU], [170, 99, 7, 6, PAL.gold]];
-  for (const [cx, cy, rx, ry, ramp] of defs) {
-    ellipse(g, cx, cy - 1, rx, ry, (x, y, d) => ditherPick(x, y, [ramp[2], ramp[3], ramp[4], ramp[5]], Math.max(0, Math.min(1, 1 - d * 0.9 - (x - cx) * 0.03 + (cy - y) * 0.02))));
-    ellipse(g, cx - 2, cy - ry + 1, Math.max(1, rx * 0.5), Math.max(1, ry * 0.3), ramp[Math.min(6, ramp.length - 1)]);
-    px(g, cx + 1, cy - 2, ramp[1]); px(g, cx, cy - 1, ramp[1]);
-    hline(g, cx - rx + 2, cy + ry - 1, rx * 2 - 3, ramp[1]);
-  }
-}
-
-/** Comercial: roll-up «SU ANUNCIO AQUÍ» con la extensión de Maripaz. */
-function drawRollup(g) {
-  const x = 175, y = 40, w = 16, h = 56;
-  shadowEllipse(g, x + 8, 100, 11, 2, 0.6);
-  rect(g, x - 2, y + h, w + 4, 4, PAL.metal[4]); hline(g, x - 2, y + h, w + 4, PAL.metal[6]);
-  vline(g, x + 8, y - 2, 2, PAL.metal[4]);
-  rect(g, x, y, w, h, '#fff4ec'); frameRect(g, x, y, w, h, PAL.metal[3]);
-  rect(g, x + 1, y + 1, w - 2, 12, '#ff7a52'); miniText(g, 'SU', x + 8, y + 4, PAL.white, { align: 'center' });
-  miniText(g, 'ANUN', x + 8, y + 16, '#c03a28', { align: 'center' });
-  miniText(g, 'CIO', x + 8, y + 22, '#c03a28', { align: 'center' });
-  miniText(g, 'AQUI', x + 8, y + 28, '#c03a28', { align: 'center' });
-  ellipse(g, x + 8, y + 40, 4, 4, PAL.gold[5]); ellipse(g, x + 8, y + 40, 2, 2, '#ff7a52');
-  rect(g, x + 2, y + 47, w - 4, 6, '#ff7a52'); miniText(g, '247', x + 8, y + 48, PAL.white, { align: 'center' });
-  ditherOverlay(g, x + w, y + 2, 2, h, PAL.shadow, 0.4);
-}
-
-function drawBoard(g) {
-  const x = 192, y = 24, w = 44, h = 36;
-  dropShadow(g, x, y, w, h, 2, 2, 0.5);
+/** La pizarra SINERGIA (con su velero) sobre la mesa vacía de Tadeo. */
+function drawPizarra(g) {
+  const x = 142, y = 32, w = 42, h = 26;
+  ditherOverlay(g, x + 2, y + 2, w, h, PAL.shadow, 0.5);
   rect(g, x - 1, y - 1, w + 2, h + 2, PAL.metal[5]); frameRect(g, x - 1, y - 1, w + 2, h + 2, PAL.metal[3]);
   gradV(g, x, y, w, h, ['#fbfdff', '#e8eef6', '#d6dfec']);
-  const t = 'SINERGIA';
   const cs = ['#d83c4a', '#2c5cc8', '#2c9a4c'];
-  let cx = x + 3;
-  for (let i = 0; i < t.length; i++) { cap(g, t[i], cx, y + 4, cs[i % 3]); cx += t[i] === 'I' ? 4 : 5; }
-  poly(g, [[x + 22, y + 15], [x + 22, y + 28], [x + 12, y + 28]], '#d4dcec'); line(g, x + 22, y + 15, x + 22, y + 29, '#aab6cc');
-  poly(g, [[x + 24, y + 19], [x + 24, y + 28], [x + 31, y + 28]], '#dbe3f0'); line(g, x + 10, y + 30, x + 33, y + 30, '#b2bed2'); line(g, x + 12, y + 31, x + 31, y + 31, '#c4cee0');
-  frameRect(g, x + 33, y + 19, 7, 7, '#c05060');
-  line(g, x + 4, y + 20, x + 9, y + 24, '#2c5cc8'); line(g, x + 9, y + 24, x + 4, y + 28, '#2c5cc8');
-  hline(g, x + 3, y + 33, 14, '#2c9a4c'); hline(g, x + 3, y + 34, 9, '#2c9a4c');
-  rect(g, x, y + h, w, 2, PAL.metal[4]); rect(g, x + 4, y + h - 1, 4, 2, '#d83c4a'); rect(g, x + 10, y + h - 1, 4, 2, '#2c5cc8'); rect(g, x + 16, y + h - 1, 4, 2, '#2c9a4c');
-  px(g, x + 3, y + 3, PAL.white);
+  let cx = x + 2;
+  for (let i = 0; i < 'SINERGIA'.length; i++) { kit.micro(g, 'SINERGIA'[i], cx, y + 3, cs[i % 3], { registrar: false }); cx += 5; }
+  kit.registro.add('texto', x, y, w, h, 'SINERGIA');
+  // el velero que aparece si la miras fijamente
+  poly(g, [[x + 21, y + 11], [x + 21, y + 21], [x + 13, y + 21]], '#d4dcec'); line(g, x + 21, y + 11, x + 21, y + 22, '#aab6cc');
+  poly(g, [[x + 23, y + 14], [x + 23, y + 21], [x + 29, y + 21]], '#dbe3f0');
+  line(g, x + 10, y + 23, x + 31, y + 23, '#b2bed2');
+  frameRect(g, x + 33, y + 13, 6, 6, '#c05060');
+  line(g, x + 3, y + 13, x + 8, y + 16, '#2c5cc8'); line(g, x + 8, y + 16, x + 3, y + 19, '#2c5cc8');
+  rect(g, x, y + h, w, 2, PAL.metal[4]); rect(g, x + 4, y + h - 1, 4, 2, '#d83c4a'); rect(g, x + 10, y + h - 1, 4, 2, '#2c5cc8');
+}
+/** La mesa VACÍA de Tadeo (se fue a las seis): silla arrimada, taza, la planta de plástico y su placa «TADEO». */
+function drawMesaTadeo(g) {
+  const x = 140, y = 76, w = 48;
+  shadowEllipse(g, x + w / 2, FL + 1, 26, 2, 0.7);
+  poly(g, [[x + 2, y], [x + w - 2, y], [x + w, y + 4], [x, y + 4]], PAL.paper[6]); hline(g, x + 2, y, w - 4, PAL.white);
+  rect(g, x, y + 4, w, 3, PAL.paper[3]); hline(g, x, y + 4, w, PAL.paper[5]);
+  rect(g, x + 2, y + 7, 3, FL - y - 7, PAL.metal[4]); rect(g, x + w - 5, y + 7, 3, FL - y - 7, PAL.metal[4]);
+  ditherOverlay(g, x + 5, y + 7, w - 10, 6, PAL.shadow, 0.3);
+  mug(g, x + 38, y - 5, { color: PAL.blue });
+  // placa «TADEO» atornillada al canto de la mesa
+  rect(g, x + 3, y + 4, 23, 7, PAL.ink[2]); hline(g, x + 3, y + 4, 23, PAL.metal[4]);
+  kit.micro(g, 'TADEO', x + 15, y + 5, PAL.gold[5], { align: 'center' });
+  // silla arrimada, vacía
+  const cx = x + 36;
+  rect(g, cx - 6, y + 6, 13, 9, PAL.ink[2]); hline(g, cx - 6, y + 6, 13, PAL.metal[3]);
+  rect(g, cx - 1, y + 15, 2, 3, PAL.metal[3]); hline(g, cx - 5, FL - 1, 11, PAL.metal[2]);
 }
 
-function drawTadeoDesk(g) {
-  const x = 194, y = 76;
-  shadowEllipse(g, 214, 100, 22, 3, 0.7);
-  rect(g, 226, 68, 12, 18, PAL.ink[2]); rect(g, 227, 69, 10, 16, PAL.metal[2]); hline(g, 227, 69, 10, PAL.metal[4]);
-  poly(g, [[224, 70], [239, 70], [240, 88], [223, 88]], PAL.blue[2]); hline(g, 224, 70, 15, PAL.blue[5]); vline(g, 224, 70, 18, PAL.blue[4]);
-  vline(g, 231, 72, 15, PAL.blue[1]); rect(g, 235, 74, 2, 2, PAL.gold[4]);
-  line(g, 224, 70, 229, 78, PAL.blue[3]);
-  poly(g, [[x + 3, y + 3], [x + 40, y + 3], [x + 42, y + 10], [x + 1, y + 10]], PAL.paper[6]); hline(g, x + 3, y + 3, 37, PAL.white);
-  rect(g, x + 1, y + 10, 41, 3, PAL.paper[3]); hline(g, x + 1, y + 10, 41, PAL.paper[5]);
-  rect(g, x + 3, y + 13, 3, 12, PAL.metal[4]); rect(g, x + 36, y + 13, 3, 12, PAL.metal[4]); vline(g, x + 3, y + 13, 12, PAL.metal[6]);
-  ditherOverlay(g, x + 6, y + 13, 30, 10, PAL.shadow, 0.3);
-  mug(g, x + 31, y + 8, { color: PAL.blue });
+/** La puerta de EVENTOS (Sala Polivalente): doble hoja ciruela con ojos de buey, barras antipánico, piloto «5 MIN»
+ *  en el montante, placa «2 EVENTOS», marco común y umbral granate. */
+function drawPuertaEventos(g) {
+  const { x, y, w, h } = PUERTA_EV;
+  kit.marcoPuerta(g, x, y, w, h);
+  const PL = ['#1c1228', '#2a1a3a', '#3a2650', '#4c3262', '#5e4076'];
+  const hw = w >> 1;
+  for (const [dx, dw] of [[0, hw], [hw, w - hw]]) {
+    paint(g, x + dx, y, dw, h, (xx, yy) => ditherPick(xx, yy, PL, 0.75 - (yy - y) / h * 0.4 - (xx - x - dx) / dw * 0.15));
+    frameRect(g, x + dx, y, dw, h, PAL.ink[1]);
+    frameRect(g, x + dx + 3, y + 32, dw - 6, 20, PL[1]);
+    const ox = x + dx + (dw >> 1), oy = y + 13;
+    ellipse(g, ox, oy, 6, 6, PAL.metal[4]); ellipse(g, ox, oy, 5, 5, PAL.ink[0]);
+    ellipse(g, ox, oy, 4, 4, (xx, yy, d) => ditherPick(xx, yy, [PAL.ink[1], '#5a2a5a', '#c86aa8', '#fff0c0'], Math.max(0, 1 - d - (yy - oy) * 0.05)));
+    px(g, ox - 2, oy - 2, PAL.white);
+    rect(g, x + dx + 3, y + 26, dw - 6, 2, PAL.metal[5]); hline(g, x + dx + 3, y + 26, dw - 6, PAL.metal[7]);
+  }
+  vline(g, x + hw, y + 2, h - 4, '#ffd890');                                     // la rendija de luz
+  glow(g, x + hw, y + 30, 8, 30, '#ffe8b0', 0.16, 4);
+  // montante con el piloto verde «5 MIN» (no se apaga nunca)
+  const my = y - 10;
+  rect(g, x - 2, my, w + 4, 8, PAL.ink[0]); frameRect(g, x - 2, my, w + 4, 8, PAL.metal[3]);
+  glow(g, x + hw, my + 4, 18, 5, '#a8f07a', 0.18, 3);
+  kit.micro(g, '5 MIN', x + hw, my + 2, '#a8f07a', { align: 'center' });
+  // placa común de destino
+  const pw = kit.placaSalaW('eventos', { sinSub: true });
+  kit.placaSala(g, x + hw - (pw >> 1), 15, 'eventos', { sinSub: true });
+  kit.umbral(g, x - 3, FL + 1, w + 6, 6, kit.DEPTO.eventos.c);
 }
 
-/** Comercial: el termómetro de ventas de Maripaz, pintado a rotulador en un papelógrafo: «OBJETIVO Q3», al 97 %. */
+/** Comercial: el termómetro de ventas de Maripaz en un papelógrafo: «OBJETIVO Q3», al 97 %. */
 function drawTermometro(g) {
-  const x = 239, y = 27, w = 20, h = 52;
-  dropShadow(g, x, y, w, h, 2, 2, 0.45);
+  const x = 268, y = 32, w = 20, h = 48;
+  // caballete
+  line(g, x + 3, y + h, x, FL, PAL.wood[3]); line(g, x + w - 3, y + h, x + w, FL, PAL.wood[3]); line(g, x + w / 2, y + h, x + w / 2 + 3, FL, PAL.wood[2]);
+  ditherOverlay(g, x + 2, y + 2, w, h, PAL.shadow, 0.45);
   rect(g, x, y, w, h, PAL.paper[7]); frameRect(g, x, y, w, h, PAL.paper[3]);
-  rect(g, x + 3, y - 2, 4, 3, '#d8cfa0'); rect(g, x + w - 7, y - 2, 4, 3, '#d8cfa0');
-  miniText(g, 'Q3', x + w / 2, y + 2, '#c03a28', { align: 'center' });
-  const tx = x + 8, ty = y + 9, th = 34;
+  rect(g, x - 1, y - 2, w + 2, 3, PAL.wood[3]);
+  kit.micro(g, 'Q3', x + 2, y + 3, '#c03a28');
+  kit.micro(g, '97', x + w - 2, y + 3, '#c03a28', { align: 'right' });
+  const tx = x + 6, ty = y + 10, th = 30;
   rect(g, tx, ty, 5, th, PAL.paper[5]); frameRect(g, tx, ty, 5, th, PAL.ink[3]);
   const fill = Math.round(th * 0.97);
   rect(g, tx + 1, ty + th - fill, 3, fill, '#d83c2a'); vline(g, tx + 1, ty + th - fill, fill, '#ff7a5a');
-  ellipse(g, tx + 2, ty + th + 3, 4, 4, PAL.ink[3]); ellipse(g, tx + 2, ty + th + 3, 3, 3, '#d83c2a'); px(g, tx + 1, ty + th + 2, '#ffb09a');
-  for (let i = 0; i <= 4; i++) hline(g, tx + 6, ty + i * 8, 3, PAL.ink[3]);
-  miniText(g, '97', tx + 9, ty - 1, '#c03a28');
-  for (const [px0, py0] of [[x + 3, y + 30], [x + 4, y + 18]]) { px(g, px0, py0, PAL.gold[4]); px(g, px0 - 1, py0, PAL.gold[5]); }
+  ellipse(g, tx + 2, ty + th + 3, 4, 3, PAL.ink[3]); ellipse(g, tx + 2, ty + th + 3, 3, 2, '#d83c2a');
+  for (let i = 0; i <= 3; i++) hline(g, tx + 6, ty + i * 9, 2, PAL.ink[3]);
 }
-
-function drawMaripazDesk(g) {
-  const x = 242, y = 80;
-  shadowEllipse(g, 264, 101, 26, 3, 0.7);
-  poly(g, [[x + 3, y], [x + 38, y], [x + 41, y + 6], [x, y + 6]], PAL.paper[6]); hline(g, x + 3, y, 35, PAL.white);
-  gradV(g, x, y + 6, 41, 18, [PAL.dusk[5], PAL.dusk[4], PAL.dusk[3]]);
-  hline(g, x, y + 6, 41, PAL.dusk[6]); vline(g, x, y + 6, 18, PAL.dusk[5]); vline(g, x + 40, y + 6, 18, PAL.dusk[2]);
-  rect(g, x + 4, y + 10, 33, 8, PAL.dusk[3]); frameRect(g, x + 4, y + 10, 33, 8, PAL.dusk[2]);
-  for (let i = 0; i < 6; i++) rect(g, x + 7 + i * 5, y + 12, 3, 4, i % 2 ? PAL.gold[5] : PAL.paper[6]);
-  rect(g, x + 8, y - 6, 3, 6, PAL.ink[2]); line(g, x + 9, y - 6, x + 15, y - 8, PAL.ink[2]); rect(g, x + 14, y - 9, 4, 4, PAL.metal[3]); px(g, x + 15, y - 8, PAL.metal[6]);
-  rect(g, x + 24, y - 4, 8, 4, PAL.metal[3]); hline(g, x + 24, y - 4, 8, PAL.metal[6]); rect(g, x + 26, y - 3, 4, 1, PAL.crt[4]);
-  rect(g, x + 33, y - 3, 5, 5, PAL.gold[5]); px(g, x + 34, y - 1, PAL.red[4]); hline(g, x + 34, y, 3, PAL.gold[3]);
-}
-
+/** El lema enmarcado de Comercial, ENTERO en 4 líneas 3×5 (antes «TODO ES…»). */
 function drawLema(g) {
-  const x = 262, y = 25, w = 40, h = 20;
-  dropShadow(g, x, y, w, h, 2, 2, 0.5);
-  rect(g, x - 2, y - 2, w + 4, h + 4, PAL.gold[2]); frameRect(g, x - 2, y - 2, w + 4, h + 4, PAL.gold[1]); hline(g, x - 2, y - 2, w + 4, PAL.gold[6]); vline(g, x - 2, y - 2, h + 4, PAL.gold[5]);
+  const x = 292, y = 20, w = 58, h = 29;
+  ditherOverlay(g, x + 2, y + 2, w, h, PAL.shadow, 0.5);
+  rect(g, x - 2, y - 2, w + 4, h + 4, PAL.gold[2]); frameRect(g, x - 2, y - 2, w + 4, h + 4, PAL.gold[1]);
+  hline(g, x - 2, y - 2, w + 4, PAL.gold[6]); vline(g, x - 2, y - 2, h + 4, PAL.gold[5]);
   gradV(g, x, y, w, h, [PAL.night[2], PAL.night[1]]);
-  cap(g, 'TODO ES', x + 20, y + 2, PAL.gold[6], { align: 'center' });
-  greek(g, x + 3, y + 10, 34, 1, PAL.gold[5], 7, 2, 0.9);
-  greek(g, x + 5, y + 13, 30, 1, PAL.gold[4], 8, 2, 0.9);
-  greek(g, x + 8, y + 16, 24, 1, PAL.gold[4], 9, 2, 0.9);
-  px(g, x + 1, y + 1, PAL.white);
+  kit.texto(g, LEMA, x, y, w, h, { color: PAL.gold[6], id: 'lema_enmarcado' });
 }
-
-function drawPrinter(g) {
-  const x = 284, y = 58;
-  shadowEllipse(g, x + 9, 100, 13, 3, 0.7);
-  bevel(g, x, y + 10, 18, 32, PAL.paper[4], PAL.paper[6], PAL.paper[1]);
-  rect(g, x - 1, y + 6, 20, 6, PAL.paper[3]); hline(g, x - 1, y + 6, 20, PAL.paper[7]);
-  rect(g, x + 2, y + 1, 14, 6, PAL.paper[5]); hline(g, x + 2, y + 1, 14, PAL.white);
-  rect(g, x + 2, y + 13, 14, 8, PAL.ink[1]);
-  rect(g, x + 3, y + 14, 12, 5, PAL.red[2]); for (let i = 0; i < 4; i++) hline(g, x + 4, y + 15 + (i >> 1) * 2, 4 + i * 2 - (i >> 1) * 2, PAL.red[5]);
-  rect(g, x + 4, y + 20, 2, 1, PAL.crt[5]); rect(g, x + 8, y + 20, 2, 1, PAL.dusk[5]);
-  for (const [by, c] of [[y + 25, PAL.metal[3]], [y + 32, PAL.metal[2]]]) { rect(g, x + 2, by, 14, 5, c); hline(g, x + 2, by, 14, PAL.metal[5]); rect(g, x + 7, by + 2, 4, 1, PAL.ink[1]); }
-  rect(g, x + 1, y + 40, 16, 2, PAL.ink[2]);
-  poly(g, [[x + 3, y + 22], [x + 15, y + 22], [x + 14, y + 25], [x + 2, y + 25]], PAL.paper[7]);
-  rect(g, x + 14, y + 27, 5, 5, PAL.gold[5]); px(g, x + 15, y + 29, PAL.red[4]); hline(g, x + 15, y + 30, 3, PAL.gold[3]);
-  ditherOverlay(g, x + 18, y + 8, 3, 34, PAL.shadow, 0.35);
+/** La mesa de Maripaz (Comercial): frente naranja, teléfono, calculadora con rollo, la agenda «FACTURAS». */
+function drawMesaMaripaz(g) {
+  const x = 290, y = 78, w = 34;
+  shadowEllipse(g, x + w / 2, FL + 1, 20, 2, 0.7);
+  poly(g, [[x + 2, y], [x + w - 2, y], [x + w, y + 4], [x, y + 4]], PAL.paper[6]); hline(g, x + 2, y, w - 4, PAL.white);
+  gradV(g, x, y + 4, w, FL - y - 4, [PAL.dusk[5], PAL.dusk[4], PAL.dusk[3]]);
+  hline(g, x, y + 4, w, PAL.dusk[6]); vline(g, x, y + 4, FL - y - 4, PAL.dusk[5]); vline(g, x + w - 1, y + 4, FL - y - 4, PAL.dusk[2]);
+  rect(g, x + 4, y + 8, w - 8, 6, PAL.dusk[3]); frameRect(g, x + 4, y + 8, w - 8, 6, PAL.dusk[2]);
+  for (let i = 0; i < 5; i++) rect(g, x + 6 + i * 5, y + 9, 3, 4, i % 2 ? PAL.gold[5] : PAL.paper[6]);
+  // teléfono, calculadora y agenda
+  rect(g, x + 3, y - 4, 8, 4, PAL.ink[2]); rect(g, x + 2, y - 6, 10, 2, PAL.ink[3]);
+  rect(g, x + 14, y - 3, 7, 3, PAL.metal[4]); hline(g, x + 14, y - 3, 7, PAL.metal[6]); rect(g, x + 15, y - 6, 5, 3, PAL.paper[7]);
+  rect(g, x + 23, y - 3, 9, 3, '#c03a28'); hline(g, x + 23, y - 3, 9, '#ff7a52');
 }
-
-function drawCorridor(g) {
-  const x = 303, y = 22, w = 17, h = 76;
-  rect(g, x - 2, y - 2, w + 2, h + 2, PAL.paper[3]); frameRect(g, x - 2, y - 2, w + 2, h + 2, PAL.paper[1]);
-  poly(g, [[x, y], [x + w, y + 6], [x + w, y + h - 8], [x, y + h]], PAL.green[2]);
-  gradV(g, x, y + 6, w, h - 10, [PAL.green[1], PAL.green[2], PAL.green[3]]);
-  poly(g, [[x, y + h], [x + w, y + h - 8], [x + w, y + h - 3], [x, y + h + 2]], PAL.purple[2]);
-  rect(g, x + 6, y + 14, 9, 36, PAL.green[0]);
-  glow(g, x + 12, y + 32, 12, 24, PAL.crt[6], 0.2, 5);
-  rect(g, x + 8, y + 24, 6, 18, PAL.crt[5]); hline(g, x + 8, y + 24, 6, PAL.white); vline(g, x + 11, y + 24, 18, PAL.crt[3]);
-  rect(g, x + 2, y + 2, 12, 5, PAL.metal[2]); rect(g, x + 4, y + 4, 8, 1, PAL.crt[5]);
-  glow(g, x + 8, y + 40, 20, 38, PAL.crt[4], 0.07, 4);
+/** El PASILLO a Administración: boca de 46 px en perspectiva, linóleo verde oliva, fluorescente y la ventanilla al
+ *  fondo que «brilla como un faro». La placa «2 ADMINISTRACIÓN ►» cuelga encima. */
+function drawPasillo(g) {
+  const x0 = 354, x1 = 398, top = 20;
+  const fx0 = 368, fx1 = 388, ftop = 40, fbot = 78;                        // el fondo del pasillo
+  // marco de la boca (común)
+  kit.marcoPuerta(g, x0, top, x1 - x0, FL - top, { ramp: [PAL.metal[0], PAL.metal[1], PAL.metal[2], PAL.metal[3], PAL.metal[4], PAL.metal[5], PAL.metal[6], PAL.metal[7]] });
+  // techo, paredes y suelo en perspectiva
+  poly(g, [[x0, top], [x1, top], [fx1, ftop], [fx0, ftop]], OLIVA[0]);
+  poly(g, [[x0, top], [fx0, ftop], [fx0, fbot], [x0, FL]], (xx, yy) => ditherPick(xx, yy, OLIVA, 0.55 - (xx - x0) / 30));
+  poly(g, [[x1, top], [fx1, ftop], [fx1, fbot], [x1, FL]], (xx, yy) => ditherPick(xx, yy, OLIVA, 0.35 + (x1 - xx) / 40));
+  poly(g, [[x0, FL], [fx0, fbot], [fx1, fbot], [x1, FL]], (xx, yy) => ditherPick(xx, yy, kit.DEPTO.administracion.suelo, 0.3 + (yy - fbot) / 20));
+  for (let k = 0; k < 3; k++) { const t = k / 3; line(g, Math.round(x0 + (fx0 - x0) * t), Math.round(FL + (fbot - FL) * t), Math.round(x1 + (fx1 - x1) * t), Math.round(FL + (fbot - FL) * t), OLIVA[1]); }
+  // fluorescentes del pasillo
+  for (const t of [0.25, 0.6]) { const yy = Math.round(top + (ftop - top) * t), xa = Math.round(x0 + (fx0 - x0) * t) + 8, xb = Math.round(x1 + (fx1 - x1) * t) - 8; hline(g, xa, yy + 1, xb - xa, '#e8ffe0'); }
+  // el fondo: la ventanilla de Administración, iluminada
+  rect(g, fx0, ftop, fx1 - fx0, fbot - ftop, OLIVA[2]);
+  rect(g, fx0 + 4, ftop + 10, 12, 12, '#d8f0b0'); frameRect(g, fx0 + 3, ftop + 9, 14, 14, PAL.metal[4]);
+  rect(g, fx0 + 3, ftop + 23, 14, 3, PAL.wood[3]);
+  glow(g, fx0 + 10, ftop + 16, 16, 14, '#e0ffb0', 0.3, 4);
+  rect(g, fx0 + 7, ftop + 2, 6, 5, kit.DEPTO.administracion.c);
+  // placa de destino colgada sobre la boca (alineada a la derecha, dentro de la sala)
+  const pw = kit.placaSalaW('administracion', { flecha: '>' });
+  vline(g, W - 30, 0, 2, PAL.metal[3]); vline(g, W - pw + 10, 0, 2, PAL.metal[3]);
+  kit.placaSala(g, W - 2 - pw, 2, 'administracion', { flecha: '>' });
+  kit.umbral(g, x0 + 2, FL + 1, x1 - x0 - 4, 6, kit.DEPTO.administracion.c);
 }
-
-function drawLights(g) {
-  glow(g, 68, 60, 30, 40, '#ffe8b0', 0.07, 4);
-  glow(g, 250, 52, 30, 34, PAL.light, 0.06, 4);
-  glow(g, 160, 54, 38, 36, PAL.night[5], 0.06, 4);
-  glow(g, 121, 24, 36, 14, '#ff4aa8', 0.09, 4);
+/** Los pufs (Marketing los ha puesto delante del ascensor para que la gente «se ubique»): sin tapar la botonera. */
+function drawPufs(g) {
+  shadowEllipse(g, 70, 102, 20, 3, 0.7);
+  const DU = [PAL.dusk[2], PAL.dusk[3], PAL.dusk[4], PAL.dusk[5], PAL.dusk[6], PAL.dusk[7]];
+  const defs = [[60, 98, 9, 7, PAL.teal], [74, 99, 10, 8, DU], [85, 100, 6, 5, PAL.gold]];
+  for (const [cx, cy, rx, ry, ramp] of defs) {
+    ellipse(g, cx, cy - 1, rx, ry, (x, y, d) => ditherPick(x, y, [ramp[2], ramp[3], ramp[4], ramp[5]], Math.max(0, Math.min(1, 1 - d * 0.9 - (x - cx) * 0.03 + (cy - y) * 0.02))));
+    ellipse(g, cx - 2, cy - ry + 1, Math.max(1, rx * 0.5), Math.max(1, ry * 0.3), ramp[Math.min(6, ramp.length - 1)]);
+    hline(g, cx - rx + 2, cy + ry - 1, rx * 2 - 3, ramp[1]);
+  }
+  // el vinilo de Marketing en el suelo del núcleo: «ESPACIO DE ENCUENTRO» (no cabe: «ENCUENTRO»)
+  kit.micro(g, 'UBÍCATE', 70, 108, '#ff6ec0', { align: 'center', registrar: false });
+}
+function luces(g) {
+  glow(g, 143, 40, 46, 30, '#ff4aa8', 0.06, 4);                 // Marketing, neón
+  glow(g, 216, 70, 26, 36, '#c86aa8', 0.08, 4);                 // los focos que se escapan por los ojos de buey
+  glow(g, 216, 104, 24, 6, '#ffe0a0', 0.14, 4);                 // la lengua de luz en el umbral
+  glow(g, 300, 50, 50, 34, '#ffc890', 0.07, 4);                 // Comercial, cálido
+  glow(g, 376, 60, 20, 30, '#e0ffb0', 0.06, 4);                 // el pasillo
 }
 
 export default {
   room: 'ecosistema',
-  width: 320,
-  scale: { yFar: 100, far: 0.86, yNear: 142, near: 1.0 },
-  walkboxes: [{ id: 'suelo', poly: [[10, 104], [312, 104], [318, 142], [2, 142]] }],
-  entries: { pecera: [26, 116, 'right'], administracion: [306, 116, 'left'], ascensor: [162, 122, 'down'], eventos: [68, 114, 'down'] },
+  width: W,
+  rediseno: true,
+  scale: { yFar: 98, far: 0.88, yNear: 142, near: 1.04 },
+  walkboxes: [{ id: 'suelo', poly: [[4, 100], [356, 100], [360, 98], [396, 98], [398, 142], [2, 142]] }],
+  entries: { pecera: N.escaleras.baja.entrada, ascensor: N.ascensor.entrada, eventos: [216, 114, 'down'], administracion: [372, 116, 'left'] },
   layout,
   draw(g) {
-    drawCeiling(g);
-    drawWall(g);
-    drawFloor(g);
-    drawStairs(g);
-    drawEventosDoor(g);
-    drawNeon(g);
-    drawWindow(g);
-    drawBoard(g);
-    drawLema(g);
+    techo(g);
+    paredes(g);
+    suelos(g);
+    kit.nucleo(g, 'ecosistema', FL);
+    pilastras(g);
+    kit.rotuloZona(g, 143, 2, 'marketing', { colgado: 2 });
+    kit.rotuloZona(g, 270, 2, 'comercial', { colgado: 2 });
     drawEmbudo(g);
-    drawPufs(g);
-    drawRollup(g);
-    drawTadeoDesk(g);
+    drawPizarra(g);
+    drawMesaTadeo(g);
+    drawPuertaEventos(g);
     drawTermometro(g);
-    drawMaripazDesk(g);
-    drawPrinter(g);
-    drawCorridor(g);
-    drawLights(g);
-    vignette(g, W, 144, 0.45);
+    drawLema(g);
+    drawMesaMaripaz(g);
+    drawPasillo(g);
+    drawPufs(g);
+    luces(g);
+    vignette(g, W, 144, 0.4);
   },
   animate(g, view, t) {
-    const on = (Math.sin(t / 240) + Math.sin(t / 73)) > -1.7;
-    if (!on) { rect(g, 94, 18, 54, 10, PAL.ink[1]); cap(g, 'ECOSISTEMA', 121, 20, PAL.metal[2], { align: 'center' }); }
-    if ((t % 1400) < 700) rect(g, 288, 72, 3, 1, PAL.red[6]);
+    // los ojos de buey: los focos de Eventos laten detrás del cristal
+    const k = (Math.sin(t / 260) + Math.sin(t / 97)) > 0.6;
+    if (k) for (const ox of [PUERTA_EV.x + 8, PUERTA_EV.x + 25]) { px(g, ox, PUERTA_EV.y + 12, '#fff0c0'); px(g, ox + 1, PUERTA_EV.y + 13, '#ffd0f0'); }
+    // el piloto «5 MIN»: un parpadeo de nada, cada mucho
+    if ((t % 4000) < 120) rect(g, PUERTA_EV.x + 4, PUERTA_EV.y - 9, PUERTA_EV.w - 8, 6, PAL.ink[0]);
   },
 };
+void label; void N;

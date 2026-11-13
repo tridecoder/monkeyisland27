@@ -11,6 +11,7 @@
 import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, ditherPick, ditherOverlay, noise, glow, gradV,
   hash2, shade, mix, shadowEllipse, bevel, vignette, bayer } from '../../../engine/draw.js';
 import { cap, dropShadow, fabric, miniText } from './lib-catacumba-util.js';
+import * as kit from '../../lib/kit.js';
 
 const W = 512;
 const FL = 98;                                        // línea de suelo
@@ -39,21 +40,25 @@ const RES_X = chairX(RES.r, RES.side, RES.i);
 const layout = {
   eventos_a_ecosistema: { rect: [2, 26, 34, 72], walkTo: [20, 116], face: 'left' },
   photocall: { rect: [44, 20, 103, 78], walkTo: [94, 116], face: 'up' },
-  aro_luz: { rect: [150, 32, 24, 68], walkTo: [160, 112], face: 'up' },
-  flight_cases: { rect: [175, 58, 28, 40], walkTo: [182, 104], face: 'up' },
-  focos: { rect: [36, 0, 444, 22], walkTo: [276, 136], face: 'up' },
+  aro_luz: { rect: [150, 34, 22, 64], walkTo: [160, 112], face: 'up' },
+  flight_cases: { rect: [176, 58, 28, 40], walkTo: [184, 106], face: 'up' },
+  // `focos`: el hotspot ya no es una franja de 444×22 en la zona de globos: es el foco PAR que parpadea (el «tres» del
+  // photocall, el de la cena de Navidad), con su propia silueta
+  focos: { rect: [113, 3, 20, 20], walkTo: [140, 110], face: 'up' },
   cuenta_atras: { rect: [246, 17, 58, 19], walkTo: [276, 136], face: 'up', priority: 1 },
   pancarta_evento: { rect: [240, 38, 82, 15], walkTo: [280, 136], face: 'up' },
   gong: { rect: [204, 42, 34, 44], walkTo: [186, 106], face: 'right' },
   atril: { rect: [320, 50, 22, 36], walkTo: [330, 136], face: 'up' },
-  sillas_evento: { poly: [[206, 92], [344, 92], [367, 130], [183, 130]], walkTo: [276, 136], face: 'up' },
-  silla_reservado: { rect: [RES_X - 10, 108, 20, 22], walkTo: [RES_X, 136], face: 'up', priority: 1 },
+  // las filas de sillas: el bloque (hasta el respaldo de la primera fila); la del «RESERVADO» y la torcida tienen su caja
+  sillas_evento: { poly: [[206, 92], [344, 92], [360, 118], [190, 118]], walkTo: [276, 136], face: 'up' },
+  silla_reservado: { rect: [RES_X - 19, 114, 38, 17], walkTo: [RES_X, 136], face: 'up', priority: 1 },
   silla_torcida: { rect: [367, 108, 20, 22], walkTo: [380, 137], face: 'up', priority: 1, draw: (g) => drawSillaTorcida(g) },
-  mesa_sonido: { rect: [392, 62, 42, 36], walkTo: [412, 108], face: 'up' },
-  mesa_acreditaciones: { rect: [436, 76, 42, 22], walkTo: [456, 108], face: 'up' },
-  cajas_lanyards: { rect: [438, 56, 22, 20], walkTo: [449, 108], face: 'up', priority: 1 },
-  album_eventos_hotspot: { rect: [461, 68, 15, 8], walkTo: [466, 108], face: 'up', priority: 2, draw: (g) => drawAlbum(g, 462, 69) },
-  catering_croquetas: { rect: [480, 58, 30, 40], walkTo: [494, 110], face: 'up' },
+  mesa_sonido: { rect: [386, 62, 40, 36], walkTo: [406, 108], face: 'up' },
+  mesa_acreditaciones: { rect: [432, 76, 52, 22], walkTo: [456, 108], face: 'up' },
+  cajas_lanyards: { rect: [436, 55, 22, 21], walkTo: [447, 108], face: 'up', priority: 1 },
+  // el álbum de P14a: 20×11 con «FOTOS» y canto vivo (antes 15×8)
+  album_eventos_hotspot: { rect: [460, 62, 25, 14], walkTo: [470, 108], face: 'up', priority: 2, draw: (g) => drawAlbum(g, 461, 64) },
+  catering_croquetas: { rect: [486, 58, 24, 40], walkTo: [496, 110], face: 'up' },
   marcas_cinta: { rect: [154, 127, 26, 11], walkTo: [167, 138], face: 'down' },
   // Pilar Escaleta, en la alfombra roja, delante de su photocall (la pared blanca detrás la recorta)
   pilar_escaleta: { at: [128, 124, 'left'], walkTo: [104, 127], face: 'right' },
@@ -165,7 +170,7 @@ function drawTapeMarks(g) {
 
 function drawDoor(g) {
   const x = 3, y = 26, w = 33, h = FL - 26;
-  rect(g, x - 1, y - 3, w + 2, h + 3, PAL.ink[0]);
+  kit.marcoPuerta(g, x + 2, y, w - 4, h);                                          // marco común del edificio
   // el otro lado: el Ecosistema, lila y luminoso
   paint(g, x + 2, y, w - 4, h, (xx, yy) => ditherPick(xx, yy, LIL, 0.9 - (yy - y) / h * 0.6));
   rect(g, x + 2, y + h - 12, w - 4, 12, '#6a3c92');                                  // su moqueta morada
@@ -177,10 +182,9 @@ function drawDoor(g) {
   poly(g, [[x + 2, y + 1], [x + 7, y + 4], [x + 7, y + h - 3], [x + 2, y + h]], PAL.ink[2]);
   poly(g, [[x + w - 3, y + 1], [x + w - 8, y + 4], [x + w - 8, y + h - 3], [x + w - 3, y + h]], PAL.ink[2]);
   vline(g, x + 5, y + 30, 8, PAL.metal[5]); vline(g, x + w - 6, y + 30, 8, PAL.metal[5]);
-  // cartel encima
-  rect(g, x - 1, 17, w + 2, 8, PAL.ink[0]); frameRect(g, x - 1, 17, w + 2, 8, PLUM[4]);
-  miniText(g, 'MKT', x + w / 2 + 2, 19, LIL[3], { align: 'center' });
-  poly(g, [[x + 4, 21], [x + 8, 18], [x + 8, 24]], LIL[3]);
+  // placa de destino del kit: «2 MARKETING ◄ / Y COMERCIAL» (antes «◄ MKT»), umbral lila de Marketing
+  kit.placaSala(g, 2, 3, 'ecosistema', { flecha: '<' });
+  kit.umbral(g, x, FL + 1, w, 6, kit.DEPTO.marketing.c);
   // la luz lila que entra
   glow(g, x + w / 2, FL + 8, 30, 10, LIL[2], 0.22, 4);
   poly(g, [[x + 3, FL], [x + w - 3, FL], [x + w + 22, 143], [x - 2, 143]], (xx, yy) => (bayer(xx, yy) < 0.18 * (1 - (yy - FL) / 46) ? LIL[1] : null));
@@ -281,14 +285,14 @@ function flightCase(g, x, y, w, h, txt) {
   hline(g, x, y, w, PAL.metal[6]); hline(g, x, y + (h >> 1), w, PAL.metal[3]);
   for (const [cx, cy] of [[x, y], [x + w - 3, y], [x, y + h - 3], [x + w - 3, y + h - 3]]) { rect(g, cx, cy, 3, 3, PAL.metal[5]); px(g, cx, cy, PAL.metal[7]); }
   rect(g, x + (w >> 1) - 3, y + 2, 6, 2, PAL.metal[3]);                               // asa
-  if (txt) miniText(g, txt, x + (w >> 1), y + (h >> 1) + 2, PAL.paper[4], { align: 'center' });
+  if (txt) kit.micro(g, txt, x + (w >> 1), y + (h >> 1) - 1, PAL.paper[4], { align: 'center' });
 }
 function drawFlightCases(g) {
-  shadowEllipse(g, 189, FL, 16, 2, 0.7);
-  flightCase(g, 175, 78, 28, 20, 'EVNT');
-  flightCase(g, 177, 62, 24, 16, '5MIN');
-  rect(g, 180, 59, 8, 3, PAL.ink[2]); ellipse(g, 184, 59, 4, 2, TAPE); ellipse(g, 184, 59, 2, 1, PAL.ink[3]);   // rollo de cinta encima
-  rect(g, 192, 69, 7, 2, TAPE);                                                       // tira pegada en una esquina
+  shadowEllipse(g, 190, FL, 16, 2, 0.7);
+  flightCase(g, 177, 78, 26, 20, 'FRÁGIL');
+  flightCase(g, 179, 62, 22, 16, '5 MIN');
+  rect(g, 182, 59, 8, 3, PAL.ink[2]); ellipse(g, 186, 59, 4, 2, TAPE); ellipse(g, 186, 59, 2, 1, PAL.ink[3]);   // rollo de cinta encima
+  rect(g, 194, 69, 6, 2, TAPE);                                                       // tira pegada en una esquina
 }
 
 function drawStage(g) {
@@ -422,12 +426,12 @@ function drawChairs(g) {
 /** El folio «RESERVADO», pegado con cinta al respaldo. */
 function reservado(g, cx, fy, s) {
   const top = fy - Math.round(7 * s) - Math.round(9 * s);
-  const x = cx - 10, y = top - 3;
-  rect(g, x + 1, y + 1, 21, 13, PAL.shadow);
-  rect(g, x, y, 21, 13, PAL.paper[7]); frameRect(g, x, y, 21, 13, PAL.paper[3]);
-  miniText(g, 'RESER', x + 11, y + 1, PAL.red[3], { align: 'center' });
-  miniText(g, 'VADO', x + 11, y + 7, PAL.red[3], { align: 'center' });
-  rect(g, x + 7, y - 1, 7, 2, TAPE);
+  const x = cx - 19, y = top + 2;
+  rect(g, x + 1, y + 1, 39, 9, PAL.shadow);
+  rect(g, x, y, 39, 9, PAL.paper[7]); frameRect(g, x, y, 39, 9, PAL.paper[3]);
+  kit.micro(g, 'RESERVADO', x + 20, y + 2, PAL.red[3], { align: 'center' });
+  rect(g, x + 3, y - 1, 6, 2, TAPE); rect(g, x + 30, y - 1, 6, 2, TAPE);
+  kit.cantoVivo(g, x, y, 39, 9);
 }
 /** La silla 113: de Comercial, torcida, fuera de su cruz, sacando una pata al pasillo (hotspot `silla_torcida`). */
 function drawSillaTorcida(g) {
@@ -449,7 +453,7 @@ function drawSillaTorcida(g) {
 }
 
 function drawMixingDesk(g) {
-  const x = 392, y = 74;
+  const x = 386, y = 74;
   shadowEllipse(g, x + 21, FL + 1, 24, 2, 0.7);
   // pie de flight case
   rect(g, x + 2, y + 10, 38, FL - y - 10, PAL.ink[2]); frameRect(g, x + 2, y + 10, 38, FL - y - 10, PAL.metal[3]);
@@ -480,60 +484,63 @@ function drawMixingDesk(g) {
 }
 
 function drawAccreditation(g) {
-  const x = 436, y = 76;
-  shadowEllipse(g, x + 21, FL + 1, 24, 2, 0.7);
-  // mantel negro hasta el suelo, con el cartel impreso
-  rect(g, x, y, 42, 3, PAL.ink[3]); hline(g, x, y, 42, PLUM[4]);
-  fabric(g, x, y + 3, 42, FL - y - 3, [PAL.ink[0], PAL.ink[1], PAL.ink[2]], { fold: 6 });
-  rect(g, x + 5, y + 6, 32, 9, '#f2eef8'); frameRect(g, x + 5, y + 6, 32, 9, PAL.dusk[3]);
-  miniText(g, 'ACREDIT', x + 21, y + 8, PAL.dusk[2], { align: 'center' });
+  const x = 432, y = 76, w = 52;
+  shadowEllipse(g, x + w / 2, FL + 1, 28, 2, 0.7);
+  // mantel negro hasta el suelo, con el faldón impreso «ACREDITACIÓN» (ENTERO; antes «ACREDIT»)
+  rect(g, x, y, w, 3, PAL.ink[3]); hline(g, x, y, w, PLUM[4]);
+  fabric(g, x, y + 3, w, FL - y - 3, [PAL.ink[0], PAL.ink[1], PAL.ink[2]], { fold: 6 });
+  rect(g, x + 1, y + 6, w - 2, 9, '#f2eef8'); hline(g, x + 1, y + 6, w - 2, PAL.dusk[3]); hline(g, x + 1, y + 14, w - 2, PAL.dusk[3]);
+  kit.texto(g, 'ACREDITACIÓN', x + 1, y + 6, w - 2, 9, { color: PAL.dusk[2], id: 'mesa_acreditaciones' });
   // la lista de acreditados, pegada con cinta al canto
-  rect(g, x + 33, y - 3, 7, 9, PAL.paper[7]); for (let i = 0; i < 3; i++) hline(g, x + 34, y - 1 + i * 2, 5, PAL.ink[3]);
-  rect(g, x + 34, y - 4, 5, 1, TAPE);
+  rect(g, x + 2, y - 3, 7, 9, PAL.paper[7]); for (let i = 0; i < 3; i++) hline(g, x + 3, y - 1 + i * 2, 5, PAL.ink[3]);
+  rect(g, x + 3, y - 4, 5, 1, TAPE);
   // las cajas de lanyards (cartón) con cintas de colores colgando
-  for (const [bx, by, bw, bh] of [[440, 66, 18, 10], [442, 58, 14, 8]]) {
+  for (const [bx, by, bw, bh] of [[438, 65, 18, 11], [440, 57, 14, 8]]) {
     bevel(g, bx, by, bw, bh, PAL.wood[5], PAL.wood[6], PAL.wood[3]);
     hline(g, bx, by + 3, bw, PAL.wood[3]); rect(g, bx + (bw >> 1) - 3, by + 4, 6, 3, PAL.paper[6]); hline(g, bx + (bw >> 1) - 2, by + 5, 4, PAL.red[4]);
   }
   const cs = [PAL.dusk[4], PAL.teal[5], PAL.gold[4], PAL.blue[4], PAL.leaf[5], '#ffcc00'];
-  for (let i = 0; i < 6; i++) { vline(g, 441 + i * 3, 74, 4 + (i % 3) * 2, cs[i]); px(g, 441 + i * 3, 78 + (i % 3) * 2, PAL.paper[6]); }
+  for (let i = 0; i < 6; i++) { vline(g, 439 + i * 3, 74, 3 + (i % 3), cs[i]); px(g, 439 + i * 3, 77 + (i % 3), PAL.paper[6]); }
+  kit.cantoVivo(g, 438, 57, 19, 19);
   // roll-up de Eventos detrás: «EN 5 MIN»
   rect(g, 463, 74, 15, 2, PAL.metal[4]);
   rect(g, 464, 28, 13, 46, '#f2f6ee'); frameRect(g, 464, 28, 13, 46, PAL.metal[3]);
-  rect(g, 465, 29, 11, 9, '#3a7a2a'); miniText(g, 'EV', 470, 31, '#e0ffd0', { align: 'center' });
-  ellipse(g, 470, 47, 5, 5, '#a8f07a'); ellipse(g, 470, 47, 4, 4, '#3a7a2a'); miniText(g, '5', 471, 45, '#e0ffd0', { align: 'center' });
-  miniText(g, 'MIN', 470, 56, '#3a7a2a', { align: 'center' });
-  for (let i = 0; i < 3; i++) hline(g, 466, 63 + i * 3, 9, PAL.metal[5]);
+  rect(g, 465, 29, 11, 9, '#3a7a2a'); poly(g, [[470, 30], [472, 34], [468, 34]], '#e0ffd0'); px(g, 470, 36, '#e0ffd0');
+  ellipse(g, 470, 47, 5, 5, '#a8f07a'); ellipse(g, 470, 47, 4, 4, '#3a7a2a'); kit.micro(g, '5', 470, 45, '#e0ffd0', { align: 'center' });
+  kit.micro(g, 'MIN', 470, 55, '#3a7a2a', { align: 'center' });
 }
+/** El álbum de Eventos (P14a): tapas granate de 20×11 con la etiqueta «FOTOS», una foto asomando (el chico del táper,
+ *  al fondo) y canto vivo. */
 function drawAlbum(g, x, y) {
-  poly(g, [[x + 1, y], [x + 12, y], [x + 13, y + 6], [x, y + 6]], PAL.paper[6]);
-  hline(g, x + 1, y, 11, PAL.white); hline(g, x, y + 6, 14, PAL.paper[2]);
-  rect(g, x + 2, y + 1, 8, 4, PAL.blue[5]);
-  rect(g, x + 4, y + 1, 3, 3, PAL.skin[5]); px(g, x + 5, y + 2, PAL.ink[0]);
-  rect(g, x + 8, y + 2, 2, 3, PAL.paper[7]); px(g, x + 8, y + 2, PAL.ink[1]);
-  hline(g, x + 1, y + 5, 11, PAL.gold[4]);
+  shadowEllipse(g, x + 11, y + 11, 12, 1, 0.6);
+  rect(g, x, y + 1, 23, 10, '#7a1c2c'); hline(g, x, y + 10, 23, '#4a0e18'); vline(g, x, y + 1, 10, '#a83a48');
+  rect(g, x + 1, y, 22, 2, PAL.paper[6]); hline(g, x + 1, y, 22, PAL.white);                  // canto de las hojas
+  rect(g, x + 16, y - 2, 5, 4, PAL.blue[5]); px(g, x + 18, y - 1, PAL.skin[5]);               // una foto que asoma
+  rect(g, x + 1, y + 3, 21, 7, PAL.paper[7]); hline(g, x + 1, y + 9, 21, PAL.gold[4]);
+  kit.micro(g, 'FOTOS', x + 2, y + 4, '#7a1c2c');
+  kit.cantoVivo(g, x, y, 23, 11);
 }
 
 function drawCatering(g, view) {
-  const x = 481, y = 76;
-  shadowEllipse(g, x + 15, FL + 1, 18, 2, 0.7);
+  const x = 486, y = 76;
+  shadowEllipse(g, x + 12, FL + 1, 15, 2, 0.7);
   // mantel blanco
-  rect(g, x, y, 30, 3, PAL.paper[7]); hline(g, x, y, 30, PAL.white);
-  fabric(g, x, y + 3, 30, FL - y - 3, [PAL.paper[3], PAL.paper[4], PAL.paper[5], PAL.paper[6]], { fold: 5 });
+  rect(g, x, y, 24, 3, PAL.paper[7]); hline(g, x, y, 24, PAL.white);
+  fabric(g, x, y + 3, 24, FL - y - 3, [PAL.paper[3], PAL.paper[4], PAL.paper[5], PAL.paper[6]], { fold: 5 });
   // campana plateada
-  const cx = x + 14, cy = y - 1;
-  ellipse(g, cx, cy, 11, 1, PAL.metal[3]);
+  const cx = x + 12, cy = y - 1;
+  ellipse(g, cx, cy, 10, 1, PAL.metal[3]);
   for (let yy = 0; yy < 10; yy++) {
-    const hw = Math.round(Math.sqrt(1 - (yy / 10) ** 2) * 10);
+    const hw = Math.round(Math.sqrt(1 - (yy / 10) ** 2) * 9);
     for (let xx = -hw; xx <= hw; xx++) px(g, cx + xx, cy - 1 - yy, ditherPick(cx + xx, cy - yy, [PAL.metal[3], PAL.metal[5], PAL.metal[6], PAL.metal[7]], 0.85 - (xx + 10) / 20 * 0.6 + (yy / 10) * 0.1));
   }
   ellipse(g, cx, cy - 11, 2, 1, PAL.metal[6]); px(g, cx - 4, cy - 8, PAL.white); px(g, cx - 5, cy - 6, PAL.white);
   // cartel doblado «21:05»
-  poly(g, [[cx - 12, y + 2], [cx + 12, y + 2], [cx + 11, y - 6], [cx - 11, y - 6]], PAL.paper[6]); hline(g, cx - 11, y - 6, 23, PAL.white);
-  hline(g, cx - 12, y + 2, 25, PAL.paper[3]);
-  miniText(g, '21:05', cx + 1, y - 4, PAL.red[3], { align: 'center' });
+  poly(g, [[cx - 11, y + 2], [cx + 11, y + 2], [cx + 10, y - 6], [cx - 10, y - 6]], PAL.paper[6]); hline(g, cx - 10, y - 6, 21, PAL.white);
+  hline(g, cx - 11, y + 2, 23, PAL.paper[3]);
+  kit.micro(g, '21:05', cx, y - 4, PAL.red[3], { align: 'center' });
   // servilletas y vasos
-  rect(g, x + 1, y - 3, 5, 3, PAL.paper[6]); for (const gx of [x + 25, x + 28]) { rect(g, gx, y - 5, 2, 5, ICE); px(g, gx, y - 5, PAL.white); }
+  rect(g, x + 20, y + 4, 3, 2, PAL.paper[6]); for (const gx of []) { rect(g, gx, y - 5, 2, 5, ICE); px(g, gx, y - 5, PAL.white); }
   void view;
 }
 
@@ -559,17 +566,17 @@ function drawRoomSign(g) {
 }
 /** Bruma de sala: el aire se ve donde hay foco (velo muy suave bajo la barra). */
 function drawHaze(g) {
-  for (const [x, c] of [[76, WARM], [118, WARM], [222, WARM], [331, ICE], [363, MAGENTA], [420, WARM], [490, WARM]]) glow(g, x, 30, 26, 14, c, 0.05, 3);
+  for (const [x, c] of [[90, WARM], [118, WARM], [222, WARM], [331, ICE], [363, MAGENTA], [420, WARM], [490, WARM]]) glow(g, x, 30, 26, 14, c, 0.05, 3);
 }
 function drawLights(g) {
   // focos fijos (los que no parpadean): photocall izquierdo, escenario (cálido y magenta), sala y catering
-  parCan(g, 72, 13, { dir: 1, gel: WARM });
+  parCan(g, 88, 13, { dir: 1, gel: WARM });
   parCan(g, 420, 13, { dir: 0, gel: WARM });
   parCan(g, 490, 13, { dir: 0, gel: WARM });
   // los dos que parpadean se pintan en animate (foco 3 del photocall y el del atril); aquí, su cuerpo apagado
   parCan(g, 122, 13, { dir: -1, on: false });
   // conos con trama + velo
-  cone(g, 76, 23, 86, 110, 5, 40, WARM, 0.2);  veil(g, 76, 23, 86, 112, 5, 44, WARM, 0.22);
+  cone(g, 90, 23, 90, 110, 5, 40, WARM, 0.2);  veil(g, 90, 23, 90, 112, 5, 44, WARM, 0.22);
   pool(g, 88, 112, 24, 6, WARM, 0.35);
   cone(g, 420, 23, 414, 74, 4, 26, WARM, 0.18); veil(g, 420, 23, 414, 74, 4, 28, WARM, 0.12);
   cone(g, 490, 23, 495, 64, 4, 18, WARM, 0.3); veil(g, 490, 23, 495, 64, 4, 22, WARM, 0.2);
@@ -579,6 +586,7 @@ function drawLights(g) {
 export default {
   room: 'eventos',
   width: W,
+  rediseno: true,
   scale: { yFar: 100, far: 0.86, yNear: 142, near: 1.0 },
   // el bloque de sillas no se pisa: se rodea por la izquierda (photocall), por delante (pasillo de cinta) y por la derecha
   walkboxes: [{ id: 'suelo', poly: [[6, 102], [194, 102], [176, 131], [370, 131], [388, 102], [506, 102], [510, 142], [2, 142]] }],
@@ -606,7 +614,7 @@ export default {
     drawMixingDesk(g);
     drawAccreditation(g);
     drawCatering(g, view);
-    glow(g, 495, 68, 14, 8, WARM, 0.3, 4);                                          // las croquetas, bajo su foco
+    glow(g, 498, 68, 13, 8, WARM, 0.3, 4);                                          // las croquetas, bajo su foco
     drawRoomSign(g);
     drawHaze(g);
     drawChairs(g);
@@ -616,6 +624,7 @@ export default {
     // foco 3 del photocall: parpadea «de ambiente» desde la cena de Navidad
     const on3 = (Math.sin(t / 97) + Math.sin(t / 31 + 1.3)) > -1.45;
     parCan(g, 122, 13, { dir: -1, on: on3 });
+    kit.cantoVivo(g, 115, 9, 14, 13);
     if (on3) { cone(g, 118, 23, 104, 112, 5, 40, WARM, 0.15, 1); veil(g, 118, 23, 104, 112, 5, 44, WARM, 0.16); glow(g, 104, 112, 22, 5, WARM, 0.14, 3); }
     // el del atril: se muere y resucita (frío)
     const k = (t % 5200) / 5200;
@@ -627,8 +636,8 @@ export default {
     // vúmetros de la mesa y pilotos del cargador de walkies
     for (let i = 0; i < 4; i++) {
       const lv = Math.floor((Math.sin(t / 120 + i * 1.7) + 1) * 2);
-      for (let j = 0; j < 4; j++) px(g, 425 + i, 76 + 3 - j, j <= lv ? (j > 2 ? PAL.red[5] : j > 1 ? PAL.gold[5] : PAL.crt[5]) : PAL.ink[0]);
+      for (let j = 0; j < 4; j++) px(g, 419 + i, 76 + 3 - j, j <= lv ? (j > 2 ? PAL.red[5] : j > 1 ? PAL.gold[5] : PAL.crt[5]) : PAL.ink[0]);
     }
-    for (let i = 0; i < 4; i++) px(g, 397 + i * 6, 67, ((t / 400 + i) | 0) % 3 ? PAL.crt[5] : PAL.red[5]);
+    for (let i = 0; i < 4; i++) px(g, 391 + i * 6, 67, ((t / 400 + i) | 0) % 3 ? PAL.crt[5] : PAL.red[5]);
   },
 };

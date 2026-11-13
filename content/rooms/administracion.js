@@ -87,6 +87,10 @@ export default buildRoom({
       coger: 'Si lo quito, el cartel sufre el recorte. Un 26 % de cartel no se entiende.',
       tirar: 'Tiro de una esquina. Se recorta sola. Un 26 %. Exacto.',
     } },
+    // muebles de plano medio (solo dibujo: tapan lo que queda tras ellos; sin hotspot)
+    { id: 'mostrador_ventanilla', name: 'mostrador', hotspot: false },
+    { id: 'banco_espera', name: 'banco de espera', hotspot: false },
+    { id: 'mesa_evaristo', name: 'mesa de Evaristo', hotspot: false },
     { id: 'ventanilla', name: 'ventanilla', handlers: {
       mirar: async (api) => { await api.say(['Una ventanilla dentro de una oficina.', 'Nadie sabe por qué. Begoña la defiende igual.']); },
       abrir: async (api) => { await sayBe(api, 'La ventanilla no se abre. Se atiende por el agujerito, como manda la norma.'); },

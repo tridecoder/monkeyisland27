@@ -55,10 +55,11 @@ async function cerrarPortatil(api) {
     api.sfx(SFX.plin);
     await api.say('Lo cierro. Antes de apagarse, reenvía: «RV: Me han cerrado».');
   } else {
+    // el flag va ANTES de las líneas (guía §11): el portátil se ve cerrado y la impresora reenvía mientras se cuenta
+    api.setFlag('ecosistema_portatil_cerrado', true);
     await api.say('Lo cierro. Silencio. Toda la planta suspira.');
     api.sfx(SFX.plin);
     await api.say(['Ahora reenvía desde la impresora de la tercera.', 'Pantalla de la impresora: «ATASCO EN BANDEJA DE SALIDA».']);
-    api.setFlag('ecosistema_portatil_cerrado', true);
   }
 }
 
@@ -131,12 +132,14 @@ export default buildRoom({
       hablar: async (api) => { await api.say('«¿Y qué hay al final del embudo?».'); await sayB(api, '¡No le hables al embudo! ¡El embudo te habla a ti!'); },
       empujar: 'Lo enderezo. Borja lo vuelve a torcer: «Así convierte más».',
     } },
-    { id: 'rollup_comercial', name: 'roll-up de Comercial', handlers: {
+    // estados (guía §11): 'desplegado' / 'enrollado' (Empujar lo enrolla; Tirar lo vuelve a subir; al volver a la
+    // planta, Maripaz ya lo ha desplegado: está contratado hasta 2030)
+    { id: 'rollup_comercial', name: 'roll-up de Comercial', state: 'desplegado', states: ['desplegado', 'enrollado'], handlers: {
       mirar: async (api) => api.say(['Un roll-up: «SU ANUNCIO AQUÍ». Y la extensión de Maripaz, en grande.', 'Lleva aquí tanto tiempo que ya se anuncia a sí mismo.']),
       usar: async (api) => { await api.say('Me pongo delante del roll-up.'); await sayM(api, 'Ahora tú eres el anuncio, cariño. Te cobro el metro cuadrado.'); },
-      empujar: async (api) => { await api.say('¡Zas! Se enrolla solo.'); await sayM(api, 'Eso, cariño, es una baja de campaña. Te la facturo.'); },
+      empujar: async (api) => { api.setState('rollup_comercial', 'enrollado'); await api.say('¡Zas! Se enrolla solo.'); await sayM(api, 'Eso, cariño, es una baja de campaña. Te la facturo.'); },
       coger: async (api) => { await sayM(api, 'El roll-up no se toca, cariño. Está contratado hasta 2030.'); },
-      tirar: 'Tiro de la lona. Sube como una persiana con objetivos.',
+      tirar: async (api) => { api.setState('rollup_comercial', 'desplegado'); await api.say('Tiro de la lona. Sube como una persiana con objetivos.'); },
     } },
     { id: 'termometro_ventas', name: 'termómetro de ventas', handlers: {
       mirar: async (api) => api.say(['Un termómetro pintado a rotulador: «OBJETIVO Q3». Rojo hasta el 97 %.', 'El 3 % que falta se lo lleva el gong de al lado.']),
@@ -273,6 +276,8 @@ export default buildRoom({
   async onEnter(api) {
     // El ¡FLASH! de entrada ya no es de esta planta: es del photocall de Eventos, en la Sala Polivalente (`eventos`).
     // §8.7: la primera vez que entra en el Acto I. Cargar partida no es entrar.
+    // el roll-up enrollado no dura: al volver a la planta, Maripaz ya lo ha desplegado (también al cargar)
+    if (api.getState('rollup_comercial') === 'enrollado') api.setState('rollup_comercial', 'desplegado');
     if (api.restoring) return;
     if (!api.flag('acto_2_iniciado') && api.once('ecosistema_entrada_1830')) {
       await api.say('La planta 2 a las seis y media: moqueta, pufs y nadie. Y un gong, detrás.');

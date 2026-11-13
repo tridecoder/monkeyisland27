@@ -5,8 +5,9 @@
 // NOTA PARA EL ARTISTA (los estados visuales los decide el arte leyendo flags; la lógica no los fuerza):
 //  - pantalla_metricas: apagada con `cms_vivo`. silla_ramirez: sin chaqueta con `chaqueta_cogida`; arrimada a la mesa
 //    de Bruno con `silla_libre`. kanban: hueco + pósit nuevo con `posit_descopeado`.
-//  - frontera_carrocero (adenda 3.3): Acto I en 420 px; `acto_2_iniciado` → 400 px; `acto_3_iniciado` y sin
-//    `infografia_integrada` → además un lazo alrededor de la mesa de Leoncio; con `infografia_integrada` → sin cinta.
+//  - frontera_carrocero (adenda 3.3): Acto I recta en x 480 (cambio de moqueta Infografía/Desarrollo); `acto_2_iniciado`
+//    → doble (otra tira 20 px hacia Infografía); `acto_3_iniciado` y sin `infografia_integrada` → además un lazo que
+//    encierra Infografía; con `infografia_integrada` → sin cinta (marca de pegamento). Zonas: docs/GUIA_REDISENO.md §6.
 //  - semaforo_ruido: estado de objeto 'rojo' (siempre) | 'ambar' | 'verde' (solo durante las escenas CO_BANDEJA y
 //    CO_HERMINIA del coro): si el arte pone `sprites`, que use exactamente esos nombres.
 import { buildRoom } from '../lib/room.js';
@@ -111,7 +112,7 @@ export default buildRoom({
       empujar: 'Una escalera no se empuja. Se sube. Como el IPC.',
     } },
 
-    // ---------------------------------------------------------------- 80-260 px: la redacción de las 18:30
+    // ---------------------------------------------------------------- WEB (170-310 px): la redacción de las 18:30
     { id: 'figurantes_web', name: 'redactores',
       murmurs: ['"Lo siento muchísimo. ¿Y la plaza?" ...No, así no.', '"Era un gran compañero. Aparcaba de lujo".', '"Mi más sentido pésame. Y mi matrícula, por si acaso".'],
       handlers: {
@@ -173,7 +174,7 @@ export default buildRoom({
       empujar: 'La empujo. No se mueve: la costra la tiene soldada a la mesa.',
     } },
 
-    // ---------------------------------------------------------------- 180-260 px: Infografía (adenda 3.3)
+    // ---------------------------------------------------------------- INFOGRAFÍA (386-480 px, adenda 3.3)
     { id: 'mesa_dibujo', name: 'mesa de dibujo', handlers: {
       mirar: 'Una mesa de dibujo inclinada. Tiene polvo con forma de regla.',
       usar: 'Dibujo un quesito. Herminia lo corrige desde la pantalla. Me lo merezco.',
@@ -188,7 +189,7 @@ export default buildRoom({
       'usar:pieza_opa': async (api) => talk(api, [['H', 'PIEZA: 31 LÍNEAS. ADJETIVOS: 1. EN TARTA: 97 % OPA.'], ['B', 'Hasta los adjetivos me los cuenta.']]),
     } },
 
-    // ---------------------------------------------------------------- 260-420 px: mesas de Yoli, Bruno y Ramírez
+    // ---------------------------------------------------------------- WEB/ECONOMÍA (284-386 px): mesas de Yoli, Bruno y Ramírez
     { id: 'ordenador_bruno', name: 'mi ordenador', handlers: {
       mirar: async (api) => {
         if (!api.flag('silla_libre')) { await api.say('Mi ordenador. De pie no se ve. Sin silla soy un becario de pie.'); return; }
@@ -251,7 +252,7 @@ export default buildRoom({
       hablar: '"¿Ramírez?" La chaqueta no contesta. Igual que Ramírez desde 2019.',
     } },
 
-    // ---------------------------------------------------------------- 420-640 px: rincón de Desarrollo
+    // ---------------------------------------------------------------- DESARROLLO (480-680 px) y DISEÑO Y PRODUCTO (680-800 px)
     { id: 'frontera_carrocero', name: 'cinta de carrocero', handlers: {
       mirar: async (api) => {
         if (api.flag('infografia_integrada')) await api.say('Ya no hay cinta. Queda la marca del pegamento.');
@@ -406,7 +407,7 @@ export default buildRoom({
     },
       murmurs: ['AMANECER DETECTADO. LO QUE PASÓ DESPUÉS... Perdón. Aún no ha salido.', '¿El sol también va con ticket?'] },
     // cameo (adenda 1.9 / 4.6b): Valentín Retícula trabaja aquí, a dos metros del coro de Desarrollo. No está en el
-    // epílogo ni en los poscréditos (sábado 6:00: Diseño ya lo había entregado todo). En la escena 7.2 está, lejos (x 712).
+    // epílogo ni en los poscréditos (sábado 6:00: Diseño ya lo había entregado todo). En la escena 7.2 está, lejos (x 770).
     { id: V, when: '!lector_derribado', handlers: {
       mirar: seq([['B', 'Valentín Retícula, director de Diseño y Producto.'], ['B', 'El único de Diseño que queda. Va mejor vestido que la planta entera.']]),
       hablar: async (api) => api.dialog('valentin'),

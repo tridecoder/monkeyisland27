@@ -1,37 +1,44 @@
-// SALA `administracion` — Administración, «La Ventanilla». Arte y geometría. Biblia §3.8 + adenda §3.8.
-// Oficina institucional verde sanatorio, luz de fluorescente enfermo. De izquierda a derecha: puerta al pasillo, cartel de
-// horario y dispensador de turnos, pared de notas rechazadas (trofeos) sobre el cartel del recorte y un banco de espera,
-// la VENTANILLA (cabina de cristal con Begoña detrás, el mostrador tapa sus piernas), el despacho acristalado de Controlling
-// (Evaristo, coma enmarcada, torres de contratos) y el archivador EJEMPLARES.
+// SALA `administracion` — Administración, «La Ventanilla». Arte y geometría (rediseño, docs/GUIA_REDISENO.md §4, §10).
+// Biblia §3.8 + adenda §3.8. Oficina institucional verde sanatorio, fluorescente enfermo. Cuatro zonas con su suelo, filete y
+// pilastra: ESPERA (puerta al pasillo con la placa «2 MARKETING ◄ / Y COMERCIAL», horario, dispensador de turnos, pared de
+// trofeos de notas rechazadas sobre el aviso del 26 % y el banco), VENTANILLA (cabina de cristal con BEGOÑA sentada tras el
+// mostrador y el agujerito a 14 px de su cara), CONTROLLING (despacho acristalado: don EVARISTO sentado con su lupa, la coma
+// enmarcada como una coma y las torres de contratos leídos) y ARCHIVO (EJEMPLARES entero).
 import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, ditherPick, ditherOverlay, noise, glow, gradV,
   rng, hash2, shade, mix, shadowEllipse, bevel, vignette, floorTiles, fluorescent, wallClock, glaze, lightCone } from '../../../engine/draw.js';
 import { greek, cap, pin, stain, dropShadow, miniText } from './lib-catacumba-util.js';
+import * as kit from '../../lib/kit.js';
 
 const W = 320;
+const FL = 97;                                                                              // línea pared / suelo
 const WALLU = [PAL.green[3], PAL.green[4], PAL.green[5], PAL.green[6], PAL.green[7]];      // parte alta: verde sanatorio claro
 const WALLL = [PAL.green[1], PAL.green[2], PAL.green[3], PAL.green[4]];                    // zócalo oscuro
+const BENCH_ZY = 109, BOOTH_ZY = 100, DESK_ZY = 101;
 
 const layout = {
-  administracion_a_ecosistema: { rect: [4, 30, 34, 68], walkTo: [26, 112], face: 'left' },
-  cartel_horario: { rect: [36, 30, 43, 30], walkTo: [58, 112], face: 'up' },
-  dispensador_turnos: { rect: [44, 62, 22, 36], walkTo: [56, 112], face: 'up' },
-  pared_rechazadas: { rect: [82, 5, 80, 36], walkTo: [120, 112], face: 'up' },
-  cartel_recorte: { rect: [82, 42, 80, 40], walkTo: [122, 112], face: 'up' },
-  ventanilla: {
-    rect: [160, 34, 66, 66], walkTo: [193, 114], face: 'up', layer: 'sorted', zy: 100, prop: true, cache: true, cachePad: 8,
-    draw: (g) => drawBoothFront(g),
-  },
-  sellos: { rect: [168, 73, 22, 11], walkTo: [178, 114], face: 'up', priority: 1, layer: 'sorted', zy: 98, cache: true, cachePad: 4, draw: (g) => drawSellos(g, 168, 73) },
-  tazas_begona: { rect: [198, 73, 22, 11], walkTo: [210, 114], face: 'up', priority: 1, layer: 'sorted', zy: 98, cache: true, cachePad: 4, draw: (g) => drawTazas(g, 198, 73) },
-  puerta_controlling: { rect: [228, 42, 18, 56], walkTo: [238, 114], face: 'up' },
-  contratos_evaristo: { rect: [260, 52, 12, 46], walkTo: [262, 114], face: 'up', priority: 1 },
-  coma_enmarcada: { rect: [250, 32, 14, 14], walkTo: [254, 114], face: 'up', priority: 1 },
-  archivador_ejemplares: { rect: [276, 38, 42, 60], walkTo: [296, 112], face: 'up' },
-  // Bruno le habla desde la izquierda de la ventanilla, de perfil, junto al agujerito (no delante de ella)
-  begona_triplicado: { at: [193, 96, 'down'], walkTo: [158, 116], face: 'right' },
-  // dentro de su despacho (leyendo con lupa); `puerta`: sale a la puerta de cristal cuando se le llama (adenda 3.8)
-  evaristo_salvedad: { at: [252, 97, 'down'], walkTo: [240, 115], face: 'right',
-    positions: { despacho: { at: [252, 97, 'down'] }, puerta: { at: [237, 106, 'left'], walkTo: [216, 114], face: 'right' } } },
+  administracion_a_ecosistema: { rect: [4, 8, 38, 90], walkTo: [26, 112], face: 'left' },
+  cartel_horario: { rect: [42, 30, 36, 28], walkTo: [58, 112], face: 'up' },
+  dispensador_turnos: { rect: [44, 62, 22, 36], walkTo: [58, 112], face: 'up' },
+  pared_rechazadas: { rect: [79, 14, 78, 24], walkTo: [118, 112], face: 'up' },
+  cartel_recorte: { rect: [79, 39, 78, 52], walkTo: [118, 112], face: 'up' },
+  // la cabina: cristal y rótulo (el mostrador lo pinta el frente, ordenado por z, delante de Begoña)
+  ventanilla: { rect: [164, 34, 58, 38], walkTo: [193, 114], face: 'up' },
+  mostrador_ventanilla: { rect: [160, 34, 66, 70], layer: 'sorted', zy: BOOTH_ZY, prop: true, cache: true, cachePad: 8, draw: (g) => drawBoothFront(g) },
+  sellos: { rect: [168, 73, 22, 11], walkTo: [178, 114], face: 'up', priority: 1, layer: 'sorted', zy: BOOTH_ZY - 2, cache: true, cachePad: 4, draw: (g) => drawSellos(g, 168, 73) },
+  tazas_begona: { rect: [203, 73, 20, 11], walkTo: [212, 114], face: 'up', priority: 1, layer: 'sorted', zy: BOOTH_ZY - 2, cache: true, cachePad: 4, draw: (g) => drawTazas(g, 203, 73) },
+  puerta_controlling: { rect: [226, 42, 20, 56], walkTo: [238, 114], face: 'up' },
+  contratos_evaristo: { rect: [262, 58, 12, 40], walkTo: [266, 114], face: 'up', priority: 1 },
+  coma_enmarcada: { rect: [250, 33, 18, 20], walkTo: [258, 114], face: 'up', priority: 1 },
+  archivador_ejemplares: { rect: [278, 38, 42, 60], walkTo: [298, 112], face: 'up' },
+  // muebles de plano medio (sin hotspot): el banco de espera y la mesa de Evaristo, ordenados por z
+  banco_espera: { rect: [84, 92, 74, 20], layer: 'sorted', zy: BENCH_ZY, prop: true, cache: true, cachePad: 10, draw: (g) => drawBench(g) },
+  mesa_evaristo: { rect: [226, 78, 48, 22], layer: 'sorted', zy: DESK_ZY, prop: true, cache: true, cachePad: 10, draw: (g) => drawEvaristoDesk(g) },
+  // Begoña, SENTADA tras el mostrador. Bruno le habla desde la izquierda de la cabina, de perfil, junto al agujerito
+  // (nunca delante de ella): el agujero está a 14 px de su cara
+  begona_triplicado: { at: [196, 98, 'down'], pose: 'tras_mesa', walkTo: [158, 120], face: 'right' },
+  // Evaristo, SENTADO dentro de su despacho (lupa en la mesa); `puerta`: sale a la puerta de cristal, de pie, cuando se le llama
+  evaristo_salvedad: { at: [256, 99, 'down'], pose: 'sentado', walkTo: [226, 126], face: 'right',
+    positions: { despacho: { at: [256, 99, 'down'], pose: 'sentado' }, puerta: { at: [238, 107, 'left'], walkTo: [212, 114], face: 'right' } } },
 };
 
 // ------------------------------------------------------------ objetos
@@ -73,7 +80,8 @@ function drawBoothFront(g) {
   bevel(g, x0, top, x1 - x0, 12, PAL.crt[2], PAL.crt[4], PAL.crt[0]);
   cap(g, 'VENTANILLA', (x0 + x1) >> 1, top + 3, PAL.crt[6], { align: 'center' });
   // agujerito a la altura de la boca (con aro), a un lado del cristal: así no le tapa la cara a Begoña (problema C)
-  ellipse(g, 177, 64, 3, 2, PAL.metal[5]); ellipse(g, 177, 64, 2, 1, PAL.ink[0]);
+  ellipse(g, 182, 65, 3.5, 2.5, PAL.gold[4]); ellipse(g, 182, 65, 2.5, 1.5, PAL.ink[0]); hline(g, 179, 62, 6, PAL.gold[6]);
+  for (let k = 0; k < 3; k++) px(g, 180 + k * 2, 65, PAL.metal[2]);
   // número del turno y flecha
   rect(g, 207, 49, 9, 5, PAL.ink[1]); rect(g, 208, 50, 7, 3, PAL.red[2]); px(g, 210, 51, PAL.red[6]); px(g, 211, 51, PAL.red[6]); px(g, 212, 52, PAL.red[6]);
   // mostrador (cara exterior): repisa saliente, panel frontal, ranura pasapapeles con bandeja de latón
@@ -112,44 +120,52 @@ function drawWall(g) {
   hline(g, 0, 74, W, WALLU[4]); hline(g, 0, 75, W, PAL.green[6]); hline(g, 0, 76, W, PAL.ink[1]);
   ditherOverlay(g, 0, 77, W, 6, PAL.shadow, 0.22);
   rect(g, 0, 95, W, 3, PAL.paper[3]); hline(g, 0, 95, W, PAL.paper[5]); hline(g, 0, 97, W, PAL.ink[1]);
+  kit.filete(g, 0, W, 70, 'administracion');
 }
 
 function drawFloor(g) {
   floorTiles(g, { x: 0, y: 98, w: W, h: 46, vpx: W / 2, vpy: 34, tile: 20, rowPx: 8, colors: [PAL.paper[3], PAL.green[5]], colors3: PAL.paper[2], grout: PAL.green[2], far: PAL.green[0], fade: 0.5 });
+  // tres suelos con canto: ventanilla (verde oliva), despacho de Controlling (moqueta granate) y archivo (gris)
+  kit.zonaSuelo(g, 158, 224, 98, kit.DEPTO.administracion.suelo, { vpx: 191, vpy: 34, trama: 'baldosa', borde: '#a8c880', seed: 4 });
+  kit.zonaSuelo(g, 224, 276, 98, ['#3a1820', '#4a1e28', '#5a2630'], { vpx: 250, vpy: 34, borde: '#a86060', seed: 5 });
+  kit.zonaSuelo(g, 276, 320, 98, ['#2c303a', '#363a46', '#404452'], { vpx: 298, vpy: 34, trama: 'baldosa', borde: '#8a90a0', seed: 6 });
   ditherOverlay(g, 0, 98, W, 4, PAL.shadow, 0.5);
   // línea amarilla de espera pintada en el suelo frente a la ventanilla
-  for (let x = 162; x < 226; x += 6) { hline(g, x, 118, 4, PAL.gold[5]); hline(g, x, 119, 4, PAL.gold[3]); }
+  for (let x = 164; x < 224; x += 6) { hline(g, x, 119, 4, PAL.gold[5]); hline(g, x, 120, 4, PAL.gold[3]); }
   // huellas de zapato mojado (viernes de lluvia)
   for (const [fx, fy] of [[60, 124], [66, 128], [110, 120], [118, 126], [150, 130], [233, 122]]) { ellipse(g, fx, fy, 2, 1, PAL.green[3]); }
-  glow(g, 186, 112, 60, 14, PAL.crt[5], 0.05, 3);
+  glow(g, 190, 112, 60, 14, PAL.crt[5], 0.05, 3);
 }
 
 function drawExitDoor(g) {
-  // puerta metálica al pasillo del Ecosistema, con barra antipánico y ventanuco con alambre
-  rect(g, 4, 28, 33, 71, PAL.metal[1]); frameRect(g, 4, 28, 33, 71, PAL.ink[0]);
-  gradV(g, 7, 31, 27, 68, [PAL.metal[4], PAL.metal[3], PAL.metal[2]]);
-  vline(g, 7, 31, 68, PAL.metal[6]); vline(g, 33, 31, 68, PAL.metal[1]);
-  rect(g, 13, 38, 15, 18, PAL.ink[0]); gradV(g, 14, 39, 13, 16, [PAL.teal[3], PAL.teal[5]]);
-  for (let i = 0; i < 13; i += 3) { vline(g, 14 + i, 39, 16, PAL.metal[6]); } for (let j = 0; j < 16; j += 3) hline(g, 14, 39 + j, 13, PAL.metal[6]);
-  rect(g, 8, 70, 25, 4, PAL.red[3]); hline(g, 8, 70, 25, PAL.red[5]); hline(g, 8, 73, 25, PAL.red[1]);              // barra antipánico
-  rect(g, 8, 88, 25, 8, PAL.metal[2]); hline(g, 8, 88, 25, PAL.metal[5]);                                         // chapa de patada
-  rect(g, 7, 22, 27, 8, PAL.crt[2]); frameRect(g, 7, 22, 27, 8, PAL.crt[0]);
-  miniText(g, 'PASILLO', 20, 24, PAL.crt[6], { align: 'center' });
-  // «TIRE» con la flecha
-  miniText(g, 'EMPUJE', 20, 60, PAL.ink[1], { align: 'center' });
-  ditherOverlay(g, 4, 98, 36, 5, PAL.shadow, 0.5);
+  // puerta metálica al pasillo del Ecosistema (marco común del kit), con barra antipánico y ventanuco con alambre
+  const x = 6, y = 34, w = 32, h = FL - 34;
+  kit.marcoPuerta(g, x, y, w, h);
+  gradV(g, x, y, w, h, [PAL.metal[4], PAL.metal[3], PAL.metal[2]]);
+  vline(g, x, y, h, PAL.metal[6]); vline(g, x + w - 1, y, h, PAL.metal[1]);
+  rect(g, x + 7, y + 6, 15, 18, PAL.ink[0]); gradV(g, x + 8, y + 7, 13, 16, [PAL.teal[3], PAL.teal[5]]);
+  for (let i = 0; i < 13; i += 3) vline(g, x + 8 + i, y + 7, 16, PAL.metal[6]);
+  for (let j = 0; j < 16; j += 3) hline(g, x + 8, y + 7 + j, 13, PAL.metal[6]);
+  rect(g, x + 2, y + 38, 28, 4, PAL.red[3]); hline(g, x + 2, y + 38, 28, PAL.red[5]); hline(g, x + 2, y + 41, 28, PAL.red[1]);   // barra antipánico
+  rect(g, x + 2, y + h - 10, 28, 8, PAL.metal[2]); hline(g, x + 2, y + h - 10, 28, PAL.metal[5]);                               // chapa de patada
+  kit.micro(g, 'EMPUJE', x + 16, y + 28, PAL.ink[1], { align: 'center' });
+  kit.cantoVivo(g, x, y, w, h);
+  // sobre el dintel: placa del kit «2 MARKETING ◄ / Y COMERCIAL» y, bajo la puerta, el umbral del destino
+  kit.placaSala(g, 4, 9, 'ecosistema', { flecha: '<' });
+  kit.umbral(g, x - 2, FL + 1, w + 4, 6, kit.DEPTO.marketing.c, { chevron: true });
 }
 
 function drawHorario(g) {
-  // cartel «ATENCIÓN: 19:00 A 19:15» y reloj parado en las 19:07 (según Begoña)
-  const x = 36, y = 30, w = 43, h = 30;
+  // cartel «ATENCIÓN: 19:00 A 19:15» (las 19:07, según Begoña)
+  const x = 42, y = 30, w = 36, h = 28;
   dropShadow(g, x, y, w, h, 2, 2, 0.5);
   rect(g, x, y, w, h, PAL.paper[6]); frameRect(g, x, y, w, h, PAL.metal[3]);
-  rect(g, x + 1, y + 1, w - 2, 6, PAL.red[3]); hline(g, x + 1, y + 1, w - 2, PAL.red[5]);
-  cap(g, 'ATENCIÓN', x + w / 2, y + 7, PAL.ink[1], { align: 'center' });
-  cap(g, '19:00 A', x + w / 2, y + 15, PAL.ink[1], { align: 'center' });
-  cap(g, '19:15', x + w / 2, y + 22, PAL.red[3], { align: 'center' });
+  rect(g, x + 1, y + 1, w - 2, 8, PAL.red[3]); hline(g, x + 1, y + 1, w - 2, PAL.red[5]);
+  kit.micro(g, 'ATENCIÓN', x + (w >> 1), y + 4, PAL.paper[7], { align: 'center' });
+  kit.micro(g, '19:00 A', x + (w >> 1), y + 13, PAL.ink[1], { align: 'center' });
+  kit.micro(g, '19:15', x + (w >> 1), y + 20, PAL.red[3], { align: 'center' });
   pin(g, x + 2, y + 2, PAL.metal[7]); pin(g, x + w - 3, y + 2, PAL.metal[7]);
+  kit.cantoVivo(g, x, y, w, h);
 }
 
 function drawKiosk(g) {
@@ -169,56 +185,60 @@ function drawKiosk(g) {
 }
 
 function drawRechazadas(g) {
-  // cinco notas de gasto enmarcadas como trofeos (con placa y sello RECHAZADO); cornamenta en el centro
-  const x0 = 82, y0 = 14;
-  rect(g, x0, y0, 80, 26, PAL.wood[2]); frameRect(g, x0, y0, 80, 26, PAL.wood[1]); hline(g, x0, y0, 80, PAL.wood[5]);
-  gradV(g, x0 + 1, y0 + 1, 78, 24, [PAL.wood[3], PAL.wood[2]]);
-  const r = rng(51);
+  // la pared de trofeos: cinco notas de gasto enmarcadas como piezas de caza (placa de latón y sello RECHAZADO), con
+  // cornamenta de ciervo en el centro
+  const x0 = 79, y0 = 16, w = 78, h = 22;
+  rect(g, x0, y0, w, h, PAL.wood[2]); frameRect(g, x0, y0, w, h, PAL.wood[1]); hline(g, x0, y0, w, PAL.wood[5]);
+  gradV(g, x0 + 1, y0 + 1, w - 2, h - 2, [PAL.wood[3], PAL.wood[2]]);
   for (let i = 0; i < 5; i++) {
-    const fx = x0 + 3 + i * 15, fy = y0 + 4;
-    dropShadow(g, fx, fy, 13, 17, 1, 1, 0.5);
-    rect(g, fx, fy, 13, 17, PAL.gold[2]); hline(g, fx, fy, 13, PAL.gold[6]); vline(g, fx, fy, 17, PAL.gold[5]);
-    rect(g, fx + 2, fy + 2, 9, 11, PAL.paper[6]);
-    greek(g, fx + 3, fy + 3, 7, 4, PAL.paper[2], 10 + i, 2, 0.6);
-    // sello RECHAZADO oblicuo
-    line(g, fx + 2, fy + 11, fx + 10, fy + 6, PAL.red[4]); line(g, fx + 2, fy + 12, fx + 10, fy + 7, PAL.red[3]);
-    rect(g, fx + 3, fy + 14, 7, 2, PAL.gold[4]); hline(g, fx + 4, fy + 15, 5, PAL.gold[2]);                  // placa de latón
+    const fx = x0 + 4 + i * 14.6 | 0, fy = y0 + 3;
+    dropShadow(g, fx, fy, 12, 15, 1, 1, 0.5);
+    rect(g, fx, fy, 12, 15, PAL.gold[2]); hline(g, fx, fy, 12, PAL.gold[6]); vline(g, fx, fy, 15, PAL.gold[5]);
+    rect(g, fx + 2, fy + 2, 8, 9, PAL.paper[6]);
+    greek(g, fx + 3, fy + 3, 6, 3, PAL.paper[2], 10 + i, 2, 0.6);
+    line(g, fx + 2, fy + 9, fx + 9, fy + 5, PAL.red[4]); line(g, fx + 2, fy + 10, fx + 9, fy + 6, PAL.red[3]);     // sello RECHAZADO oblicuo
+    rect(g, fx + 3, fy + 12, 6, 2, PAL.gold[4]); hline(g, fx + 4, fy + 13, 4, PAL.gold[2]);                     // placa de latón
   }
-  // cornamenta de ciervo sobre el marco del centro
-  for (const s of [-1, 1]) { const cx = x0 + 40; line(g, cx + s * 2, y0 + 1, cx + s * 8, y0 - 4, PAL.paper[5]); line(g, cx + s * 8, y0 - 4, cx + s * 10, y0 - 9, PAL.paper[5]); line(g, cx + s * 6, y0 - 2, cx + s * 4, y0 - 7, PAL.paper[4]); }
-  rect(g, x0 + 37, y0 - 1, 6, 3, PAL.wood[4]);
+  for (const sg of [-1, 1]) { const cx = x0 + 38; line(g, cx + sg * 2, y0 + 1, cx + sg * 8, y0 - 4, PAL.paper[5]); line(g, cx + sg * 8, y0 - 4, cx + sg * 10, y0 - 8, PAL.paper[5]); line(g, cx + sg * 6, y0 - 2, cx + sg * 4, y0 - 6, PAL.paper[4]); }
+  rect(g, x0 + 35, y0 - 1, 6, 3, PAL.wood[4]);
+  kit.cantoVivo(g, x0, y0, w, h);
 }
 
 function drawRecorte(g) {
-  const x = 82, y = 42, w = 80, h = 40;
+  // aviso del recorte del 26 % (pista de P11): entero, con la firma «— LA DIRECCIÓN (TAMBIÉN RECORTADA)» en 2 líneas
+  const x = 79, y = 39, w = 78, h = 52;
   dropShadow(g, x, y, w, h, 2, 2, 0.5);
-  rect(g, x, y, w, h, PAL.paper[6]); frameRect(g, x, y, w, h, PAL.red[3]); frameRect(g, x + 1, y + 1, w - 2, h - 2, PAL.paper[4]);
-  rect(g, x + 2, y + 2, w - 4, 6, PAL.red[3]); hline(g, x + 2, y + 2, w - 4, PAL.red[5]);
-  miniText(g, 'AVISO AL PERSONAL', x + w / 2, y + 3, PAL.white, { align: 'center' });
-  miniText(g, 'TODA PIEZA O NOTA', x + w / 2, y + 10, PAL.ink[1], { align: 'center' });
-  miniText(g, 'SUFRE EL RECORTE', x + w / 2, y + 16, PAL.ink[1], { align: 'center' });
-  cap(g, 'ESTÁNDAR (26 %)', x + w / 2, y + 25, PAL.red[3], { align: 'center' });
-  miniText(g, 'SIN EXCEPCIONES', x + w / 2, y + 34, PAL.ink[1], { align: 'center' });
-  pin(g, x + 3, y + 3, PAL.metal[7]); pin(g, x + w - 3, y + 3, PAL.metal[7]);
+  rect(g, x, y, w, h, PAL.paper[6]); frameRect(g, x, y, w, h, PAL.red[3]); hline(g, x + 1, y + h - 2, w - 2, PAL.paper[4]);
+  rect(g, x + 2, y + 2, w - 4, 7, PAL.red[3]); hline(g, x + 2, y + 2, w - 4, PAL.red[5]);
+  kit.texto(g, 'AVISO AL PERSONAL', x + 2, y + 3, w - 4, 6, { color: PAL.paper[7], fuente: 'micro', pad: 0 });
+  kit.texto(g, 'TODA PIEZA O NOTA', x + 2, y + 9, w - 4, 6, { color: PAL.ink[1], fuente: 'micro', pad: 0 });
+  kit.texto(g, 'SUFRE EL RECORTE', x + 2, y + 15, w - 4, 6, { color: PAL.ink[1], fuente: 'micro', pad: 0 });
+  kit.texto(g, 'ESTÁNDAR (26 %)', x + 2, y + 20, w - 4, 10, { color: PAL.red[3], fuente: 'juego', pad: 0 });
+  kit.texto(g, 'SIN EXCEPCIONES', x + 2, y + 31, w - 4, 6, { color: PAL.ink[1], fuente: 'micro', pad: 0 });
+  hline(g, x + 6, y + 37, w - 12, PAL.paper[3]);
+  kit.texto(g, '- LA DIRECCIÓN', x + 2, y + 39, w - 4, 6, { color: PAL.metal[3], fuente: 'micro', pad: 0 });
+  kit.texto(g, '(TAMBIÉN RECORTADA)', x + 1, y + 44, w - 2, 6, { color: PAL.metal[3], fuente: 'micro', pad: 0 });
+  pin(g, x + 3, y + 4, PAL.metal[7]); pin(g, x + w - 4, y + 4, PAL.metal[7]);
+  // el aviso ya está recortado por abajo: borde dentado
+  for (let i = 0; i < w - 2; i += 3) px(g, x + 1 + i, y + h - 1, PAL.paper[2]);
+  kit.cantoVivo(g, x, y, w, h);
 }
 
+/** Banco de espera de plástico naranja (cuatro asientos soldados): mueble de plano medio, ordenado por z. */
 function drawBench(g) {
-  // banco de espera de plástico naranja (cuatro asientos soldados) bajo el cartel
-  const x = 88, y = 84;
-  shadowEllipse(g, x + 36, 99, 38, 3, 0.7);
+  const x = 86, y = 93;
+  shadowEllipse(g, x + 36, 109, 40, 3, 0.7);
   for (let i = 0; i < 4; i++) {
     const cx = x + i * 18;
-    poly(g, [[cx + 1, y], [cx + 16, y], [cx + 17, y + 9], [cx, y + 9]], PAL.dusk[5]); hline(g, cx + 1, y, 15, PAL.dusk[7]);
-    vline(g, cx + 16, y, 9, PAL.dusk[3]);
-    rect(g, cx + 1, y + 10, 16, 4, PAL.dusk[4]); hline(g, cx + 1, y + 10, 16, PAL.dusk[6]); hline(g, cx + 1, y + 13, 16, PAL.dusk[2]);
+    poly(g, [[cx + 1, y], [cx + 16, y], [cx + 17, y + 6], [cx, y + 6]], PAL.dusk[5]); hline(g, cx + 1, y, 15, PAL.dusk[7]);
+    vline(g, cx + 16, y, 6, PAL.dusk[3]);
+    rect(g, cx + 1, y + 7, 16, 5, PAL.dusk[4]); hline(g, cx + 1, y + 7, 16, PAL.dusk[6]); hline(g, cx + 1, y + 11, 16, PAL.dusk[2]);
   }
-  rect(g, x + 2, y + 14, 3, 10, PAL.metal[3]); rect(g, x + 68, y + 14, 3, 10, PAL.metal[3]); rect(g, x + 35, y + 14, 3, 10, PAL.metal[3]);
-  hline(g, x + 2, y + 24, 3, PAL.ink[1]); hline(g, x + 35, y + 24, 3, PAL.ink[1]); hline(g, x + 68, y + 24, 3, PAL.ink[1]);
-  // revista antigua y tela de araña en el asiento 4
-  rect(g, x + 38, y + 10, 8, 3, PAL.paper[5]); hline(g, x + 39, y + 11, 6, PAL.red[4]);
-  line(g, x + 54, y + 1, x + 60, y + 8, PAL.paper[6]); line(g, x + 60, y + 1, x + 54, y + 8, PAL.paper[6]); hline(g, x + 54, y + 4, 7, PAL.paper[6]);
-  // paraguas goteando
-  line(g, x - 6, y + 4, x - 4, y + 22, PAL.ink[0]); line(g, x - 6, y + 4, x - 3, y + 2, PAL.ink[0]); ellipse(g, x - 4, y + 24, 3, 1, PAL.teal[3]);
+  for (const lx of [x + 2, x + 35, x + 68]) { rect(g, lx, y + 12, 3, 12, PAL.metal[3]); hline(g, lx, y + 23, 3, PAL.ink[1]); vline(g, lx, y + 12, 12, PAL.metal[5]); }
+  // revista antigua, tela de araña en el asiento 4 y paraguas goteando
+  rect(g, x + 38, y + 8, 8, 3, PAL.paper[5]); hline(g, x + 39, y + 9, 6, PAL.red[4]);
+  line(g, x + 56, y + 1, x + 62, y + 7, PAL.paper[6]); line(g, x + 62, y + 1, x + 56, y + 7, PAL.paper[6]); hline(g, x + 56, y + 4, 7, PAL.paper[6]);
+  line(g, x - 3, y + 6, x - 2, y + 23, PAL.ink[0]); line(g, x - 3, y + 6, x, y + 4, PAL.ink[0]); ellipse(g, x - 2, y + 24, 3, 1, PAL.teal[3]);
 }
 
 function drawBoothBack(g) {
@@ -243,46 +263,43 @@ function drawBoothBack(g) {
   glow(g, 193, 52, 28, 16, PAL.crt[6], 0.1, 4);
 }
 
+/** Despacho acristalado de Controlling (fondo): marco de aluminio hasta el techo, rótulo esmerilado, puerta de cristal, la
+ *  coma enmarcada (una coma grande y negra en su marco, con placa), las torres de contratos LEÍDOS y la moqueta granate. */
 function drawOffice(g) {
-  // despacho acristalado de Controlling: marco de aluminio, puerta de cristal esmerilado con rótulo, interior visible
-  const x0 = 224, x1 = 274, y0 = 24, yb = 98;
-  // interior
+  const x0 = 224, x1 = 274, y0 = 16, yb = 98;
   rect(g, x0, y0, x1 - x0, yb - y0, PAL.paper[3]);
   gradV(g, x0 + 2, y0 + 2, x1 - x0 - 4, yb - y0 - 2, [PAL.paper[5], PAL.paper[4], PAL.paper[3]]);
-  // suelo / zócalo interior moqueta granate
-  rect(g, x0 + 2, 94, x1 - x0 - 4, 4, PAL.red[1]);
-  // coma enmarcada en la pared interior
-  const cx = 250, cy = 33;
-  rect(g, cx, cy, 14, 14, PAL.gold[3]); frameRect(g, cx, cy, 14, 14, PAL.gold[1]); hline(g, cx, cy, 14, PAL.gold[6]); vline(g, cx, cy, 14, PAL.gold[5]);
-  rect(g, cx + 2, cy + 2, 10, 10, PAL.paper[7]);
-  ellipse(g, cx + 6, cy + 5, 2, 2, PAL.ink[1]); poly(g, [[cx + 7, cy + 6], [cx + 8, cy + 6], [cx + 6, cy + 11], [cx + 5, cy + 11]], PAL.ink[1]);       // la coma
-  rect(g, cx + 4, cy + 14, 6, 2, PAL.gold[4]);                                                                                                        // placa
+  rect(g, x0 + 2, 94, x1 - x0 - 4, 4, PAL.red[1]);                                  // zócalo de moqueta granate
+  // la coma enmarcada: marco dorado, passepartout crema, una coma negra de 8 px y su placa
+  const cx = 251, cy = 33;
+  dropShadow(g, cx, cy, 18, 20, 2, 2, 0.5);
+  rect(g, cx, cy, 18, 20, PAL.gold[3]); frameRect(g, cx, cy, 18, 20, PAL.gold[1]); hline(g, cx, cy, 18, PAL.gold[6]); vline(g, cx, cy, 20, PAL.gold[5]);
+  rect(g, cx + 2, cy + 2, 14, 12, PAL.paper[7]); frameRect(g, cx + 2, cy + 2, 14, 12, PAL.paper[4]);
+  ellipse(g, cx + 9, cy + 6, 2.6, 2.6, PAL.ink[1]);                                    // la cabeza redonda de la coma…
+  poly(g, [[cx + 10, cy + 7], [cx + 12, cy + 7], [cx + 11, cy + 10], [cx + 8, cy + 13], [cx + 7, cy + 12], [cx + 9, cy + 9]], PAL.ink[1]);   // …y su cola curva
+  rect(g, cx + 4, cy + 16, 10, 3, PAL.gold[5]); hline(g, cx + 5, cy + 17, 8, PAL.gold[2]);   // placa «Cláusula 7, 2009»
+  kit.cantoVivo(g, cx, cy, 18, 20);
   // torres de contratos (LEÍDOS) a la derecha: tres columnas de carpetas
   const cs = [PAL.blue[4], PAL.red[4], PAL.gold[4], PAL.leaf[5], PAL.paper[6], PAL.dusk[4]];
   const r = rng(77);
-  for (const [tx, tw, th] of [[259, 6, 34], [265, 5, 28], [269, 4, 40]]) {
+  for (const [tx, tw, th] of [[262, 5, 34], [267, 4, 28], [271, 3, 38]]) {
     let yy = 98;
     shadowEllipse(g, tx + tw / 2, 98, tw + 2, 1.5, 0.5);
     while (yy > 98 - th) { const hh = 3 + ((r() * 2) | 0); rect(g, tx + (r() < 0.5 ? 0 : 1), yy - hh, tw, hh, cs[(r() * cs.length) | 0]); hline(g, tx, yy - hh, tw, PAL.paper[7]); yy -= hh; }
   }
-  rect(g, 258, 92, 15, 2, PAL.metal[2]);
-  // escritorio visible: lupa y carpeta abierta sobre mesa pequeña
-  rect(g, 232, 82, 22, 3, PAL.wood[5]); hline(g, 232, 82, 22, PAL.wood[7]); rect(g, 233, 85, 2, 12, PAL.wood[2]); rect(g, 251, 85, 2, 12, PAL.wood[2]);
-  rect(g, 238, 79, 10, 3, PAL.paper[7]); line(g, 249, 80, 253, 77, PAL.metal[5]); ellipse(g, 254, 76, 2, 2, PAL.teal[5]);
-  // lámpara verde
-  rect(g, 231, 78, 2, 4, PAL.metal[3]); poly(g, [[229, 77], [236, 77], [234, 73], [231, 73]], PAL.green[3]);
-  // marco de aluminio y cristal (frontal)
+  kit.cantoVivo(g, 262, 60, 12, 38);
+  // lámpara verde en la esquina de la mesa (la mesa y Evaristo se pintan aparte, ordenados por z)
+  rect(g, 234, 62, 2, 14, PAL.metal[3]); poly(g, [[231, 61], [239, 61], [237, 56], [233, 56]], PAL.green[3]); hline(g, 233, 56, 4, PAL.green[6]);
+  glow(g, 237, 76, 14, 8, PAL.gold[5], 0.12, 3);
+  // marco de aluminio y cristal (frontal), hasta el techo
   rect(g, x0, y0, x1 - x0, 3, PAL.metal[5]); hline(g, x0, y0, x1 - x0, PAL.metal[7]); hline(g, x0, y0 + 2, x1 - x0, PAL.metal[2]);
   rect(g, x0, y0, 3, yb - y0, PAL.metal[5]); vline(g, x0, y0, yb - y0, PAL.metal[7]);
   rect(g, x1 - 3, y0, 3, yb - y0, PAL.metal[5]); vline(g, x1 - 3, y0, yb - y0, PAL.metal[7]); vline(g, x1 - 1, y0, yb - y0, PAL.ink[1]);
-  rect(g, x0, 40, x1 - x0, 2, PAL.metal[4]); hline(g, x0, 40, x1 - x0, PAL.metal[7]);
-  // cristal: reflejos diagonales y tinte
-  glaze(g, x0 + 3, 42, x1 - x0 - 6, 56, PAL.teal[6], 0.1);
-  ditherOverlay(g, 250, 44, 8, 50, PAL.white, 0.07);
-  // dintel: rótulo esmerilado
+  rect(g, x0, 31, x1 - x0, 2, PAL.metal[4]); hline(g, x0, 31, x1 - x0, PAL.metal[7]);
+  // dintel: rótulo esmerilado «CONTROLLING / Y FINANZAS»
   bevel(g, x0 + 3, y0 + 3, x1 - x0 - 6, 14, PAL.teal[2], PAL.teal[4], PAL.teal[0]);
-  miniText(g, 'CONTROLLING', (x0 + x1) / 2, y0 + 5, PAL.teal[7], { align: 'center' });
-  miniText(g, 'Y FINANZAS', (x0 + x1) / 2, y0 + 11, PAL.teal[7], { align: 'center' });
+  kit.micro(g, 'CONTROLLING', (x0 + x1) / 2, y0 + 4, PAL.teal[7], { align: 'center' });
+  kit.micro(g, 'Y FINANZAS', (x0 + x1) / 2, y0 + 10, PAL.teal[7], { align: 'center' });
   // puerta de cristal esmerilado (izquierda) con marco, rótulo y tirador
   const dx = 228, dw = 17, dy = 42;
   rect(g, dx - 1, dy - 1, dw + 2, yb - dy + 1, PAL.metal[3]); frameRect(g, dx - 1, dy - 1, dw + 2, yb - dy + 1, PAL.metal[1]);
@@ -290,33 +307,53 @@ function drawOffice(g) {
   rect(g, dx + 3, dy + 6, dw - 6, 1, PAL.teal[3]); rect(g, dx + 3, dy + 9, dw - 10, 1, PAL.teal[3]);
   rect(g, dx + dw - 4, 66, 2, 8, PAL.metal[7]); vline(g, dx + dw - 4, 66, 8, PAL.white);
   hline(g, dx, yb - 2, dw, PAL.metal[3]);
+  kit.cantoVivo(g, dx - 1, dy - 1, dw + 2, yb - dy + 1);
   ditherOverlay(g, x0, yb, x1 - x0 + 2, 3, PAL.shadow, 0.5);
 }
 
+/** La mesa de Evaristo, DELANTE de él (objeto ordenado por z): tablero con la lupa sobre un contrato, la carpeta abierta y el
+ *  cristal del despacho, que lo envuelve en un tinte de acuario. */
+function drawEvaristoDesk(g) {
+  const x = 238, y = 91, w = 30;
+  shadowEllipse(g, x + w / 2, y + 9, w / 2 + 4, 2, 0.6);
+  rect(g, x + 2, y + 5, 3, 5, PAL.wood[2]); rect(g, x + w - 5, y + 5, 3, 5, PAL.wood[2]);
+  poly(g, [[x + 2, y], [x + w - 2, y], [x + w + 1, y + 5], [x - 1, y + 5]], (xx, yy) => ditherPick(xx, yy, [PAL.wood[5], PAL.wood[6]], 0.3 + (yy - y) / 5 * 0.6));
+  hline(g, x - 1, y + 5, w + 2, PAL.wood[1]);
+  rect(g, x + 4, y + 5, w - 8, 2, PAL.wood[3]);
+  // contrato abierto con la cláusula subrayada y la lupa encima
+  poly(g, [[x + 4, y + 1], [x + 17, y + 1], [x + 18, y + 4], [x + 3, y + 4]], PAL.paper[7]); hline(g, x + 5, y + 2, 10, PAL.metal[4]); hline(g, x + 5, y + 3, 7, PAL.red[4]);
+  // la lupa (aro metálico, cristal y mango de madera) sobre el contrato
+  line(g, x + 25, y - 2, x + 29, y + 3, PAL.wood[3], 2);
+  ellipse(g, x + 23, y - 5, 5, 5, PAL.metal[6]); ellipse(g, x + 23, y - 5, 4, 4, PAL.metal[3]); ellipse(g, x + 23, y - 5, 3, 3, PAL.teal[7]);
+  px(g, x + 21, y - 7, PAL.white); px(g, x + 22, y - 7, PAL.white); px(g, x + 21, y - 6, PAL.white);
+  // el cristal del despacho tinta lo que hay dentro
+  glaze(g, 247, 42, 25, 56, PAL.teal[6], 0.1);
+  ditherOverlay(g, 252, 44, 7, 50, PAL.white, 0.07);
+}
+
 function drawArchivador(g) {
-  // armario archivador de acero verde, ocho cajones; rótulo EJEMPLARES, candado y nota «NO TOCAR»
-  const x = 276, y = 38, w = 42, h = 60;
+  // armario archivador de acero verde, ocho cajones; rótulo EJEMPLARES entero, candado y nota «NO TOCAR»
+  const x = 278, y = 38, w = 42, h = 60;
   shadowEllipse(g, x + w / 2, y + h, w / 2 + 2, 3, 0.7);
   rect(g, x, y, w, h, PAL.green[1]); frameRect(g, x, y, w, h, PAL.ink[0]);
   gradV(g, x + 1, y + 1, w - 2, h - 2, [PAL.green[5], PAL.green[4], PAL.green[3]]);
   hline(g, x, y, w, PAL.green[7]); vline(g, x, y, h, PAL.green[6]); vline(g, x + w - 1, y, h, PAL.green[1]);
-  // rótulo superior
   bevel(g, x + 1, y + 3, w - 2, 9, PAL.paper[6], PAL.white, PAL.paper[2]);
-  miniText(g, 'EJEMPLARES', x + w / 2, y + 6, PAL.red[3], { align: 'center' });
+  kit.texto(g, 'EJEMPLARES', x + 1, y + 4, w - 2, 7, { color: PAL.red[3], fuente: 'micro', pad: 0 });
   for (let j = 0; j < 4; j++) {
     const cy = y + 15 + j * 11;
     for (let i = 0; i < 2; i++) {
       const cx = x + 3 + i * 19;
       bevel(g, cx, cy, 18, 10, PAL.green[4], PAL.green[6], PAL.green[1]);
-      hline(g, cx + 6, cy + 3, 6, PAL.metal[6]); hline(g, cx + 6, cy + 4, 6, PAL.metal[2]);                // tirador
-      rect(g, cx + 2, cy + 6, 6, 3, PAL.paper[6]); hline(g, cx + 3, cy + 7, 4, PAL.metal[3]);              // etiqueta
+      hline(g, cx + 6, cy + 3, 6, PAL.metal[6]); hline(g, cx + 6, cy + 4, 6, PAL.metal[2]);
+      rect(g, cx + 2, cy + 6, 6, 3, PAL.paper[6]); hline(g, cx + 3, cy + 7, 4, PAL.metal[3]);
     }
   }
-  // candado en el cajón de arriba y nota «NO TOCAR»
   rect(g, x + 28, y + 20, 4, 4, PAL.gold[4]); frameRect(g, x + 28, y + 20, 4, 4, PAL.gold[1]); hline(g, x + 28, y + 18, 4, PAL.metal[5]);
-  rect(g, x + 8, y + 27, 29, 7, PAL.gold[5]); hline(g, x + 8, y + 27, 29, PAL.gold[6]); miniText(g, 'NO TOCAR', x + 22, y + 29, PAL.red[3], { align: 'center' });
-  // arañazos y sombra lateral
+  rect(g, x + 4, y + 27, 34, 8, PAL.gold[5]); hline(g, x + 4, y + 27, 34, PAL.gold[6]);
+  kit.texto(g, 'NO TOCAR', x + 4, y + 28, 34, 7, { color: PAL.red[3], fuente: 'micro', pad: 0 });
   ditherOverlay(g, x + w - 4, y + 2, 4, h - 2, PAL.shadow, 0.35);
+  kit.cantoVivo(g, x, y, w, h);
 }
 
 function drawQueue(g) {
@@ -335,12 +372,27 @@ function drawLights(g) {
   glow(g, 288, 30, 34, 24, PAL.crt[5], 0.06, 4);
 }
 
+function foreground(g) {
+  // primer plano: el paraguas olvidado de alguien, apoyado en el borde bajo del banco, y el cubo de la gotera (esquina inferior izquierda)
+  const x = 2, y = 141;
+  shadowEllipse(g, x + 10, y, 12, 2, 0.7);
+  poly(g, [[x + 3, y], [x + 17, y], [x + 15, y - 14], [x + 5, y - 14]], (xx) => ditherPick(xx, 0, [PAL.metal[2], PAL.metal[4], PAL.metal[3]], (xx - x) / 14));
+  hline(g, x + 3, y, 15, PAL.metal[1]); hline(g, x + 5, y - 14, 11, PAL.metal[6]); ellipse(g, x + 10, y - 14, 6, 1.5, PAL.teal[4]);
+  px(g, x + 8, y - 17, PAL.teal[6]);
+}
+
 export default {
   room: 'administracion',
   width: 320,
+  rediseno: true,
   scale: { yFar: 100, far: 0.86, yNear: 142, near: 1.0 },
-  walkboxes: [{ id: 'suelo', poly: [[8, 104], [314, 104], [318, 142], [2, 142]] }],
-  entries: { ecosistema: [28, 116, 'right'] },
+  // suelo con forma: el banco de espera (hasta y 109) y el cubo del rincón quedan fuera; la franja de atrás deja pasar a Evaristo
+  walkboxes: [
+    { id: 'espera', poly: [[8, 104], [82, 104], [82, 142], [26, 142], [26, 128], [2, 128], [2, 116], [8, 116]] },
+    { id: 'centro', poly: [[80, 110], [312, 110], [318, 142], [80, 142]] },
+    { id: 'fondo', poly: [[158, 104], [312, 104], [312, 112], [158, 112]] },
+  ],
+  entries: { ecosistema: [30, 116, 'right'] },
   layout,
   draw(g) {
     drawCeiling(g);
@@ -351,14 +403,16 @@ export default {
     drawKiosk(g);
     drawRechazadas(g);
     drawRecorte(g);
-    drawBench(g);
     drawBoothBack(g);
     drawOffice(g);
     drawArchivador(g);
+    kit.pilastra(g, 157, 15, FL, { w: 5 });
+    kit.pilastra(g, 274, 15, FL, { w: 4 });
     drawQueue(g);
     drawLights(g);
     vignette(g, W, 144, 0.5);
   },
+  foreground(g) { foreground(g); },
   animate(g, view, t) {
     // fluorescente que parpadea sobre la ventanilla
     const on = (Math.sin(t / 90) + Math.sin(t / 223) + Math.sin(t / 51)) > -2.2;

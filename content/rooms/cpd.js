@@ -6,8 +6,9 @@
 // Valentín Retícula y su monitor ya NO están aquí: trabajan en la Pecera, junto a la bandeja de Diseño (pecera.js).
 // El ascensor usa la botonera común (../lib/ascensor.js): -1 · 0 · 1 · 2.
 // El arte y la geometría están en ./art/cpd.art.js (artista de fondos).
-// Estados que el arte puede dibujar (sprites por estado): `armario_27`: 'cerrado' | 'abierto' (Rubén dentro, desde
-// ruben_encontrado) | 'vacio' (desde ruben_libre). Flag que puede leer: paco_tickets (cifra del contador LED).
+// Estados que el arte puede dibujar (sprites por estado): `armario_27`: 'cerrado' | 'entreabierto' (solo en 7.3) | 'abierto'
+// (Rubén dentro) | 'vacio' (desde ruben_libre); `papel_continuo`: 'asoma' | 'tensa' (7.3) | 'recogida'. Flag que puede leer:
+// paco_tickets (cifra del contador LED).
 import { buildRoom } from '../lib/room.js';
 import art from './art/cpd.art.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
@@ -24,6 +25,7 @@ const estadoArmario = (api) => (api.flag('ruben_libre') ? 'vacio' : api.flag('ru
 async function revelacionRuben(api) {
   await api.cutscene(async () => {
     await api.walkTo('papel_continuo');
+    api.setState('papel_continuo', 'tensa');                                    // la tira se tensa: recta, levantada del suelo
     for (let i = 0; i < 3; i++) { await api.anim('bruno', 'reach', 380); api.sfx('paper'); await api.wait(200); }
     api.shake(300, 1);
     await api.sayFrom('armario_27', '¡EH! ¡QUE ES MI BORRADOR!', { color: '#B6FF4D' });
@@ -39,6 +41,7 @@ async function revelacionRuben(api) {
     const dentro = (L.positions && L.positions.dentro && L.positions.dentro.at) || [187, 93, 'down'];
     api.placeActor(R, 'cpd', dentro[0], dentro[1], 'down'); api.show(R);
     api.setState('armario_27', 'abierto');
+    api.setState('papel_continuo', 'recogida');                                 // la matricial recoge la tira
     api.shake(200, 1);
     await api.wait(600);
     await api.sayAs(R, 'BECARIO DETECTADO. LO QUE PASÓ DESPUÉS TE SORPRENDERÁ.');
@@ -229,7 +232,7 @@ export default buildRoom({
       coger: 'Pesan como un servidor. Porque son servidores.',
       tirar: 'Tiro de un cable. Paco carraspea a seis metros. Lo suelto.',
     } },
-    { id: 'armario_27', name: 'armario 27', state: 'cerrado', states: ['cerrado', 'abierto', 'vacio'], handlers: {
+    { id: 'armario_27', name: 'armario 27', state: 'cerrado', states: ['cerrado', 'entreabierto', 'abierto', 'vacio'], handlers: {
       mirar: async (api) => {
         if (api.flag('ruben_libre')) await api.say('Armario 27. Vacío. Huele a atún y a becario.');
         else if (api.flag('ruben_encontrado')) await api.say('Rubén asoma la cabeza. Tiene más ojeras que el armario.');
@@ -255,7 +258,8 @@ export default buildRoom({
         else await api.say('Le hablo al armario. Me contesta «ñiiic». Es más de lo que hace Teodoro.');
       },
     } },
-    { id: 'papel_continuo', name: 'papel continuo', handlers: {
+    // estados del arte (cpd.art.js): 'asoma' (la tira serpentea por el suelo) · 'tensa' (7.3, al tirar) · 'recogida' (tras la revelación)
+    { id: 'papel_continuo', name: 'papel continuo', state: 'asoma', states: ['asoma', 'tensa', 'recogida'], handlers: {
       mirar: async (api) => {
         await api.say('Papel continuo con borde perforado.');
         if (api.flag('vio_borde_perforado')) await api.say('...Como el del fax de F.P.');
@@ -319,6 +323,7 @@ export default buildRoom({
       empujar: 'La caja no se mueve. Pesa como treinta jefes de Sistemas.',
     } },
     // ADENDA 3.2
+    { id: 'carro_kvm', name: 'carro de consola', hotspot: false },              // decorado del arte: mueble exento del plano medio
     { id: 'rejilla_cpd', name: 'rejilla', handlers: {
       mirar: say('Una rejilla del falso suelo. Por aquí suben las voces del edificio.', 'Paco lo sabe todo. No es intuición: es fontanería.'),
       usar: async (api) => {
@@ -376,5 +381,7 @@ export default buildRoom({
     if (api.flag('cms_vivo') && !api.flag('cpd_cms_sumado')) { api.inc('paco_tickets', 318); api.setFlag('cpd_cms_sumado', true); }
     const st = estadoArmario(api);
     if (api.getState('armario_27') !== st) api.setState('armario_27', st);
+    const sp = api.flag('ruben_encontrado') ? 'recogida' : 'asoma';
+    if (api.getState('papel_continuo') !== sp) api.setState('papel_continuo', sp);
   },
 }, art);

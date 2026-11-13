@@ -117,9 +117,10 @@ async function escenaActo3a(api) {
     // (Se abre la puerta. Entra Íñigo con dos pósits azules.)
     const prev = api.actorPos('inigo_sinergia');
     api.sfx('door');
-    api.placeActor('inigo_sinergia', 'catacumba', 26, 118, 'right');
+    // (entra por los peldaños de la puerta y se queda a la izquierda, ante el camastro: Bruno habla a Teodoro desde [66, 124])
+    api.placeActor('inigo_sinergia', 'catacumba', 30, 112, 'right');
     api.show('inigo_sinergia');
-    await api.walkActor('inigo_sinergia', 66, 118);
+    await api.walkActor('inigo_sinergia', 46, 119);
     await api.sayAs('inigo_sinergia', [
       'Qué bonito. Una página. Lástima que no se vaya a imprimir.',
       'La Reunión de Dirección es ahora, en la Sala Amazonas.',
@@ -127,7 +128,7 @@ async function escenaActo3a(api) {
     ]);
     await fax(api, 'Lo que está cerrado no se abre.');
     await api.sayAs('inigo_sinergia', 'Lo que está cerrado se reimagina.');
-    await api.walkActor('inigo_sinergia', 22, 118);
+    await api.walkActor('inigo_sinergia', 30, 112);
     api.sfx('doorClose');
     if (prev) api.placeActor('inigo_sinergia', prev.room, prev.x, prev.y, prev.dir);
     else api.placeActor('inigo_sinergia', null);
@@ -393,6 +394,8 @@ export default buildRoom({
       hablar: 'Le digo adiós a 1994. 1994 no contesta: está maquetando.',
       coger: 'Esta puerta separa 1994 del café. No se toca.',
     } },
+    // mueble de plano medio (solo dibujo: tapa las rodillas de Teodoro, sentado tras él; sin hotspot)
+    { id: 'mesa_teodoro', name: 'mesa de Teodoro', hotspot: false },
     { id: 'galeradas', name: 'galeradas', handlers: {
       mirar: async (api) => {
         const n = api.inc('catacumba_galeradas_n');

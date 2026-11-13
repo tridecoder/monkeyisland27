@@ -282,7 +282,7 @@ const dueloGervasio = {
     api.sfx('pickup');
     api.setFlag('duelo_gervasio_ganado', true);
     api.setFlag('sala_abierta', true);
-    await api.walkActor(GV, 170, 108);        // se planta delante de Gertrudis
+    await api.walkActor(GV, 170, 119);        // se planta delante de Gertrudis (su cabeza queda bajo el LCD)
     api.faceActor(GV, GER);
   },
 };
@@ -366,6 +366,8 @@ export default buildRoom({
       abrir: 'Abro el grifo. Sale un hilo de agua. Como el de las nóminas.',
       cerrar: 'Cierro el grifo. Gotea igual. Es su manera de opinar.',
     } },
+    // mueble de plano medio (solo dibujo: tapa lo que queda tras su tablero; sin hotspot)
+    { id: 'mesa_alta', name: 'mesa alta', hotspot: false },
     { id: 'office_a_catacumba', name: 'puerta de TALLERES', exit: { room: 'catacumba' }, handlers: {
       mirar: 'Una puerta de madera: "TALLERES". Huele a tinta y a 1994.',
       abrir: async (api) => { api.sfx('door'); await api.goto('catacumba'); },
@@ -466,5 +468,10 @@ export default buildRoom({
   defaults: {},
   ambient: [],
 
-  async onEnter(api) { /* sin escenas de entrada: deja pasar los avisos automáticos (adenda §2) */ },
+  async onEnter(api) {
+    // Gertrudis es una máquina de 66 px (rediseño): escala 1,5 sobre el sprite de 44 px, solo mientras está en esta sala
+    const ger = api.game.actors[GER];
+    if (ger) ger.scale = 1.5;
+    // sin escenas de entrada: deja pasar los avisos automáticos (adenda §2)
+  },
 }, art);

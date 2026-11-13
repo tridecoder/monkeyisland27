@@ -5,9 +5,12 @@
 // `final` (§7.5 + créditos + poscréditos; la lanza el paquete D al acabar 7.4) con su alias `epilogo`.
 // El arte y la geometría están en ./art/vestibulo.art.js (artista de fondos): aquí no hay ni una coordenada propia,
 // salvo las posiciones de reserva del epílogo (ver ../escenas/final.js).
-// Estados que el arte puede dibujar (sprites por estado): `cuadro_plazas`: 'normal' | 'tachado' (epílogo, 8bis.2).
-// Flags que el arte puede leer: foto_en_organigrama (foto en VACANTE), planta_empujada_n ≥ 1 (micrófono a la vista),
-// lector_derribado (epílogo: amanece). La sala es `dynamic` para que el fondo se repinte cuando cambian.
+// Estados que el arte puede dibujar (sprites por estado): `cuadro_plazas`: 'normal' | 'tachado' (epílogo, 8bis.2);
+// `puerta_calle`: 'noche' | 'amanecer' (epílogo: final.js lo pone al empezar la escena; cambia cielo, luz del suelo y lluvia).
+// Flags que el arte puede leer: torno_abierto (alas recogidas + LED verde + franja de luz; la lógica lo pone ANTES de la
+// línea que lo comenta), foto_en_organigrama (foto en VACANTE), planta_empujada_n ≥ 1 (micrófono a la vista).
+// Objetos decorativos del arte (hotspot: false): torno_luces, paraguero, cartel_suelo, fardo_periodicos (oculto hasta 7.5).
+// La sala es `dynamic` para que el fondo se repinte cuando cambian.
 import { buildRoom } from '../lib/room.js';
 import art from './art/vestibulo.art.js';
 import { finalScenes } from '../escenas/final.js';
@@ -166,7 +169,8 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'puerta_calle', name: 'puerta de la calle', handlers: {
+    // estado `amanecer` (epílogo 7.5): final.js lo pone al empezar la escena; el arte cambia cielo, luz y lluvia (forma, color y luz)
+    { id: 'puerta_calle', name: 'puerta de la calle', state: 'noche', states: ['noche', 'amanecer'], handlers: {
       mirar: 'La calle. Ahí fuera hay gente que lee el periódico. Dicen.',
       abrir: 'Si salgo ahora, mi abuela se entera por otro.',
       usar: 'Si salgo ahora, mi abuela se entera por otro.',
@@ -295,6 +299,12 @@ export default buildRoom({
     } },
     // bancada delantera de tornos, carril fuera de servicio (decorado: tapa a quien pase detrás)
     { id: 'torno_bancada', name: 'torno', hotspot: false },
+    // decorado del arte (sin hotspot): lector y franja de luz del carril de Bruno (cambian con torno_abierto), paraguas,
+    // cartel de suelo mojado y el fardo de periódicos del epílogo (oculto hasta que llega la furgoneta)
+    { id: 'torno_luces', name: 'torno', hotspot: false },
+    { id: 'paraguero', name: 'paragüero', hotspot: false },
+    { id: 'cartel_suelo', name: 'cartel de suelo mojado', hotspot: false },
+    { id: 'fardo_periodicos', name: 'fardo de periódicos', hotspot: false, visible: false },
     { id: 'planta_plastico', name: 'ficus', handlers: {
       mirar: async (api) => {
         if (api.flag('planta_oyo')) await api.say('Juraría que tiene una hoja girada hacia mí. La de la oreja.');

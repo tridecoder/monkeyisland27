@@ -3,7 +3,7 @@
 // Al acabar, lanza la escena del FINAL 7.5 del paquete A: api.scene('final') (si no existe, el motor solo avisa).
 import { SFX, sello, fundidoBlanco } from './planta_noble.js';
 import artAdmin from '../rooms/art/administracion.art.js';
-import artSala, { LECTOR_AT } from '../rooms/art/sala_amazonas.art.js';
+import artSala, { LECTOR_AT, detalleAtrezo } from '../rooms/art/sala_amazonas.art.js';
 import { getFrame } from '../../engine/sprites.js';
 import { PAL, rect, hline, vline, frameRect, gradV, label } from '../../engine/draw.js';
 import { auricularRojo, cableRizado } from '../actors.js';
@@ -16,12 +16,20 @@ const sayR = (api, t) => api.sayAs(RUBEN, t);
 const sayBe = (api, t) => api.sayAs(BEGONA, t);
 const sayEv = (api, t) => api.sayAs(EV, t);
 
-// staging (coordenadas de la sala; la puerta es la entrada `pajarera` del arte)
+// staging (coordenadas de la sala rediseñada, docs/GUIA_REDISENO.md §5; la puerta es la entrada `pajarera` del arte).
+// Mesa en el centro con la cabecera a la DERECHA (Gervasio, de pie junto a su sillón vacío en [304, 112]); el Lector
+// Medio, a la IZQUIERDA de la pantalla ([100, 120]); Íñigo presenta bajo la pantalla ([222, 122]). El Lector cae hacia
+// la derecha, delante de la mesa (centro ≈ [137, 124]): nadie se pone delante del cartón caído ni de su pegatina.
 const PUERTA = [30, 118];
-// (el Lector Medio está junto a la pantalla, a la derecha, y cae hacia la derecha: nadie se pone delante de él caído)
-const SITIO_RUBEN = [178, 128];      // entre Íñigo y el Lector, sin tapar el cartón caído ni la pegatina
-const SITIO_BEGONA = [148, 130];     // frente a Íñigo, a la izquierda del Lector caído (no lo tapa)
-const SITIO_TRAS_EMPUJON = [206, 126];   // Bruno, tras el ¡PLOF!: a la izquierda del Lector caído, sin taparlo
+const POR_DELANTE = [70, 138];       // los que entran por la puerta pasan por la franja delantera (no cruzan al Lector)
+const SITIO_RUBEN = [276, 130];      // a la derecha del cartón caído, delante de Gervasio y de la cabecera
+const SITIO_BEGONA = [250, 132];     // entre Íñigo y Rubén, frente a la pantalla; no tapa el cartón
+const SITIO_TRAS_EMPUJON = [76, 128];    // Bruno, tras el ¡PLOF!: a la izquierda del Lector caído, sin taparlo
+/** Entra por la puerta y va a su sitio por la franja delantera (sin pasar por encima del Lector Medio). */
+async function entraPorDelante(api, id, [x, y]) {
+  await api.walkActor(id, POR_DELANTE[0], POR_DELANTE[1]);
+  await api.walkActor(id, x, y);
+}
 
 export const DECK_D4 = ['R10', 'R12', 'R13', 'R05', 'R01', 'R07', 'R15', 'R16'];
 export const PUNTOS_D4 = 4;          // 2 + remate A + 2 + remate B
@@ -56,7 +64,7 @@ export const duelInigo = {
           api.sfx('door');
           api.placeActor(RUBEN, 'sala_amazonas', PUERTA[0], PUERTA[1], 'right');
           api.show(RUBEN);
-          await api.walkActor(RUBEN, SITIO_RUBEN[0], SITIO_RUBEN[1]);
+          await entraPorDelante(api, RUBEN, SITIO_RUBEN);
           api.faceActor(RUBEN, INIGO);
           duel.show();
         }
@@ -171,8 +179,11 @@ export async function climaxEmpujon(api) {
     // Bruno da un paso atrás (sin tapar al Lector Medio caído ni la pegatina) y lo mira
     await api.walkTo(SITIO_TRAS_EMPUJON[0], SITIO_TRAS_EMPUJON[1]);
     api.face('right');
-    await api.wait(700);
-    await api.sayAs(LECTOR, 'A mí lo que me interesa es la economía. Y ahorrar.');
+    // plano detalle (guía §13.3): el reverso del cartón caído, con su pegatina, mientras suena su grabación
+    await api.detalle({ titulo: 'EL REVERSO DEL LECTOR MEDIO', x: 98, y: 4, w: 150, h: 60, draw: detalleAtrezo }, async (api) => {
+      await api.wait(700);
+      await api.sayAs(LECTOR, 'A mí lo que me interesa es la economía. Y ahorrar.');
+    });
     await sayG(api, 'Lo que diga el Lector Medio.');
     await api.wait(1200);                                          // (silencio)
     await sayI(api, '...¿Y quién ha validado la fase 1?');
@@ -192,7 +203,7 @@ export async function climaxEmpujon(api) {
     api.sfx('door');
     api.placeActor(BEGONA, 'sala_amazonas', PUERTA[0], PUERTA[1], 'right');
     api.show(BEGONA);
-    await api.walkActor(BEGONA, SITIO_BEGONA[0], SITIO_BEGONA[1]);
+    await entraPorDelante(api, BEGONA, SITIO_BEGONA);
     api.faceActor(BEGONA, INIGO);
     await sayBe(api, ['Factura de Optimal Brains. 48.000 euros. Concepto: «IA».', '¿Qué es una IA? ¿Un taxi?']);
     sello(api);

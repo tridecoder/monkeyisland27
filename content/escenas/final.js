@@ -15,30 +15,35 @@
 import { PAL, rect, hline, vline, frameRect, gradV, ellipse, line, ditherOverlay, glow } from '../../engine/draw.js';
 import { drawText, measure, wrap, LINE_H } from '../../engine/font.js';
 import game from '../game.js';
-import vestArt from '../rooms/art/vestibulo.art.js';
+import vestArt, { drawCajaInigo } from '../rooms/art/vestibulo.art.js';
 
 const C = 'celestino', A = 'abuela_remedios', Y = 'yoli_tendencias', R = 'ruben', I = 'inigo_sinergia', GV = 'gervasio_acta', EV = 'evaristo_salvedad';
 const CORO = '#7FFFD4';
 const at = (layout, id, fb) => (layout && layout[id] && layout[id].at) || fb;
 const LH = LINE_H + 2;
 
-// ------------------------------------------------------------------ primer plano del periódico (HUD del motor)
-function periodicoHud(g) {
-  const x = 30, y = 30, w = 260, h = 110;
-  ditherOverlay(g, 0, 0, 320, 144, PAL.ink[0], 0.5);
-  rect(g, x + 3, y + 3, w, h, PAL.ink[0]);
-  rect(g, x, y, w, h, PAL.paper[5]);
-  frameRect(g, x, y, w, h, PAL.paper[2]);
-  drawText(g, 'elContable.es', x + 6, y + 3, PAL.ink[2], { outline: null, bold: true });
-  drawText(g, 'Sábado · Pág. 7', x + w - 6, y + 3, PAL.paper[1], { outline: null, align: 'right' });
-  hline(g, x + 4, y + 15, w - 8, PAL.ink[2]);
-  for (let c = 0; c < 3; c++) for (let ly = y + 20; ly < y + 62; ly += 3) hline(g, x + 6 + c * 85, ly, 76 - ((ly * 7 + c * 3) % 9), PAL.paper[2]);
-  // faldón
-  rect(g, x + 4, y + 66, w - 8, h - 70, PAL.paper[6]);
-  frameRect(g, x + 4, y + 66, w - 8, h - 70, PAL.ink[3]);
-  drawText(g, 'Hidrovoltia lanza una opa sobre Banco Robledal', x + w / 2, y + 71, PAL.ink[0], { outline: null, align: 'center' });
-  drawText(g, 'Por Bruno Pellejo', x + w / 2, y + 84, PAL.red[3], { outline: null, align: 'center' });
-  for (let ly = y + 97; ly < y + h - 5; ly += 3) hline(g, x + 10, ly, w - 24 - ((ly * 5) % 11), PAL.paper[2]);
+// ------------------------------------------------------------------ plano detalle: la página 7 (D5, §13.3)
+// Titular en tipografía de periódico (negrita a doble tamaño, filetes, columnas, firma en rojo). Coordenadas de PANTALLA
+// dentro del marco r = { x, y, w, h } (api.detalle, engine/detalle.js).
+export function paginaSiete(g, r) {
+  const { x, y, w, h } = r;
+  rect(g, x, y, w, h, '#e8e0c8');
+  for (let yy = y; yy < y + h; yy += 2) hline(g, x, yy, w, (yy & 2) ? '#e4dcc2' : '#ece4cc');            // papel con grano
+  rect(g, x, y, w, 2, '#d8cfb0'); rect(g, x, y + h - 2, w, 2, '#d8cfb0');
+  // cabecera: «elContable.es» a la izquierda, «SÁBADO · PÁGINA 7» a la derecha, filete doble debajo
+  drawText(g, 'elContable.es', x + 5, y + 2, '#141220', { outline: null, bold: true });
+  drawText(g, 'SÁBADO · PÁGINA 7', x + w - 5, y + 3, '#5a4a38', { outline: null, align: 'right' });
+  rect(g, x + 4, y + 15, w - 8, 2, '#141220'); hline(g, x + 4, y + 18, w - 8, '#141220');
+  // columnas de texto gris, a la izquierda, bajo la cabecera (ruido tipográfico)
+  for (let c = 0; c < 2; c++) for (let ly = y + 21; ly < y + 33; ly += 2) hline(g, x + 5 + c * 36, ly, 31 - ((ly * 7 + c * 5) % 7), '#a89c80');
+  rect(g, x + 78, y + 21, 1, 12, '#a89c80');
+  // el titular: negrita a doble tamaño, centrado, con filete grueso encima
+  rect(g, x + 4, y + 36, w - 8, 2, '#141220');
+  drawText(g, 'Hidrovoltia lanza', x + (w >> 1), y + 37, '#0c0a12', { outline: null, bold: true, align: 'center', scale: 2 });
+  drawText(g, 'una opa', x + (w >> 1), y + 51, '#0c0a12', { outline: null, bold: true, align: 'center', scale: 2 });
+  drawText(g, 'sobre Banco Robledal', x + (w >> 1), y + 76, '#2a2418', { outline: null, bold: true, align: 'center' });
+  hline(g, x + 40, y + 87, w - 80, '#141220');
+  drawText(g, 'Por Bruno Pellejo', x + (w >> 1), y + 89, '#b02a22', { outline: null, align: 'center' });
 }
 
 // ------------------------------------------------------------------ escena
@@ -53,6 +58,10 @@ async function final(api) {
     // --- reparto del amanecer en el vestíbulo (sitios del arte: vestArt.epilogo)
     await api.goto('vestibulo', 'inicio');
     await api.fadeOut(0);
+    // el amanecer se dibuja por el ESTADO de los objetos de cristal (§11), no por un flag tardío: puerta de la calle y
+    // ventana de la Pecera (P2 dibuja su estado `amanecer`)
+    api.setState('vestibulo.puerta_calle', 'amanecer');
+    if (G.content.rooms.pecera && (G.content.rooms.pecera.objects || []).some(o => o.id === 'ventana')) api.setState('pecera.ventana', 'amanecer');
     const pc = at(L, C, [224, 98, 'down']);
     api.placeActor(C, 'vestibulo', pc[0], pc[1], 'down');
     const pr = EP.ruben;
@@ -68,6 +77,7 @@ async function final(api) {
     // Íñigo con su caja (sale del ascensor)
     const ei = EP.inigo_sinergia, eg = EP.gervasio_acta;
     api.placeActor(I, 'vestibulo', ei.from[0], ei.from[1], ei.from[2]); api.show(I);
+    api.sostener(I, { draw: drawCajaInigo });                                  // su caja de cartón: pósits, matriz, portátil y la taza
     api.sfx('door');
     await api.walkActor(I, ei.at[0], ei.at[1]);
     await api.sayAs(C, '¿Íñigo? ¿El becario de marzo del 98? ¡Te dejaste la taza!');
@@ -87,15 +97,13 @@ async function final(api) {
     api.hide(GV);
     // el fardo de periódicos
     api.sfx('drop');
+    api.show('vestibulo.fardo_periodicos');                                    // el fardo, sobre el mostrador
     await api.sayAs(C, 'Ha llegado la furgoneta del polígono. Recién salidos.');
     await api.walkTo(EP.periodicos[0], EP.periodicos[1]); api.face('celestino');
     await api.anim('bruno', 'reach', 400);
     api.sfx('paper');
-    G.hud = periodicoHud;
-    try {
-      await api.narrate(['Hidrovoltia lanza una opa sobre Banco Robledal', 'Por Bruno Pellejo'], { color: '#F4ECD8' });
-      await api.say('Bien escrito. Bruno. Pellejo. Con las dos eles.');
-    } finally { G.hud = null; }
+    await api.detalle({ titulo: 'PÁGINA 7', x: 40, y: 3, w: 240, h: 100, draw: paginaSiete, color: '#f2ecd8', oscurecer: 0.55,
+      lines: ['Hidrovoltia lanza una opa sobre Banco Robledal', 'Por Bruno Pellejo', ['player', 'Bien escrito. Bruno. Pellejo. Con las dos eles.']] });
     api.face('down');
     await api.sayAs(C, '¡Hidrovoltia se lanza a por el Robledal! ¡Eso es opa, árbitro!');
     api.face(C);

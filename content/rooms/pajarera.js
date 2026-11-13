@@ -45,7 +45,9 @@ async function mirarTitulator(api) {
   const n = api.inc('titulator_mirar_n');
   if (n === 3) {                                                    // G4: la 3.ª mirada, medio segundo
     api.sfx('beep');
+    api.setState('pantalla_titulator', 'ayudame');                 // la pantalla lo enseña mientras dura la línea (§11)
     await talk(api, [['T', 'AYÚDAME ESTOY EN EL ARMARIO 27', { ms: 500 }]]);
+    api.setState('pantalla_titulator', 'rotando');
     if (here(api, I)) await api.sayAs(I, 'Alucinaciones. Es normal en modelos tan avanzados.');
     api.setFlag('vio_armario_27', true);
     return;
