@@ -227,6 +227,7 @@ export default {
       shirt: '#4a5a80', emblem: '#FF78B8', pants: '#2a2a3a', shoes: '#f0f0f0', prop: 'eyedrops', build: 'slim', height: 0.97,
     },
     murmurs: ['Precio café hoy, precio café 2026, precio café por qué...', 'Si baja otra vez, me pongo colirio en el alma.',
+      'Ahí al lado imprimen lo que yo publiqué ayer. Con las faltas corregidas.',   // orden 2: la Redacción de papel, al lado
       'Busco "el Contable" y salen gestorías. Nos ganan en SEO.', 'Hacen más ruido que mi gráfica cuando baja.'],
   },
   nerea_backlog: {
@@ -246,7 +247,8 @@ export default {
       hat: 'visor', hatColor: '#2a8a4a', pocketItem: '#c0a060', pocketKind: 'ruler', pants: '#3a3a42', shoes: '#8a5a4a',
       height: 0.94, build: 'normal',
     },
-    murmurs: ['CUERPO 9. INTERLINEADO 10. CORAZÓN 12.', 'GOYITA, ¿ME OYES? TÚ AGUANTA.'],
+    murmurs: ['CUERPO 9. INTERLINEADO 10. CORAZÓN 12.', 'GOYITA, ¿ME OYES? TÚ AGUANTA.',
+      'AL OTRO LADO DEL LATÓN PUBLICAN SIN CERRAR. YO CIERRO SIN PUBLICAR.'],
     // escena 7.3a: con el teléfono rojo descolgado (la escena pone `auricular` en el actor), el auricular en la oreja
     // y el cable rizado que baja hasta el teléfono de su mesa (catacumba, x≈141 y≈80)
     drawExtra(g, a, t, c) {
@@ -262,7 +264,8 @@ export default {
       skin: '#f0c8a8', hair: '#a8a8b0', hairStyle: 'bun', hairPencil: '#d02020', glasses: 'half', glassesColor: '#6a5040',
       glassesChain: '#d0b060', shirt: '#e8e0d8', jacket: '#7a2234', skirt: '#4a3a40', shoes: '#2a1a20', height: 0.92, build: 'slim',
     },
-    murmurs: ['«Detrás mío». Ha dicho «detrás mío». En esta planta.', 'Una tilde. Solo pido una tilde.'],
+    murmurs: ['«Detrás mío». Ha dicho «detrás mío». En esta planta.', 'Una tilde. Solo pido una tilde.',
+      'Por esa puerta entra la web. No se limpia los pies. Ni las tildes.'],
   },
   gervasio_acta: {
     name: 'Gervasio', color: '#AEC6E6', speed: 52,
@@ -368,7 +371,7 @@ export default {
       emblem: '#3CE0C6', pocketItem: '#c8ccd4', pocketKind: 'ruler', prop: 'folder', propColor: '#e8d49a',
       sleeves: 'short', pants: '#4e5a48', shoes: '#3a2e26', height: 0.99,
     },
-    murmurs: ['Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.', 'Cuarenta y un pósits. Cuarenta y un «NO». Es una serie muy estable.', 'Si la cinta avanza otro palmo, me piden pasaporte para el Office.'],
+    murmurs: ['Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.', 'Cuarenta y un pósits. Cuarenta y un «NO». Es una serie muy estable.', 'Si la cinta avanza otro palmo, me piden pasaporte para el Vending.'],
   },
   anselmo_monolito: {
     // Director de Desarrollo (pecera, 560-610 px). Chaleco acolchado gris con muchos bolsillos, un rollo de cinta de
@@ -409,7 +412,7 @@ export default {
   // Son actores solo para tener nombre y color al hablar (`api.sayAs`): NUNCA se colocan en una sala (el hotspot que
   // las representa es un objeto de la sala con el mismo id, o un objeto cercano). Para que el texto salga encima de
   // su objeto usa `api.sayFrom('<objeto>', texto)`, que toma el `color` del objeto (declarado igual en el stub).
-  custodia_precinto: { name: 'Custodia', color: '#FF94BE', hotspot: false, presence: 'manos bajo una persiana metálica (office)', doll: {} },
+  custodia_precinto: { name: 'Custodia', color: '#A0A0FF', hotspot: false, presence: 'manos bajo una persiana metálica (Secretaría de Redacción, en la pecera)', doll: {} },
   tadeo_adjunto: { name: 'Tadeo', color: '#FFCC99', hotspot: false, presence: 'portátil (ecosistema) y móvil (avisos RV:)', doll: {} },
   herminia: { name: 'Herminia', color: '#FF8C3C', hotspot: false, presence: 'rótulos en el portátil de Leoncio (pecera)', doll: {} },
   coro_desarrollo: { name: 'CORO', color: '#7FFFD4', hotspot: false, presence: 'los tres devs, a la vez', doll: {} },

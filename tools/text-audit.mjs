@@ -7,6 +7,10 @@
 //   · signos de apertura: cada «?» / «!» con su «¿» / «¡» en la misma frase;
 //   · nombres: elContable.es, Íñigo, Begoña, Rubén, Ramírez... con sus tildes;
 //   · horas: lista de todas las horas que aparecen (18:30 → 21:00, relojes en 20:59, Begoña 19:00-19:15 / 19:07);
+//   · palabras prohibidas en lo que ve u oye el jugador (órdenes de dirección): «Pajarera» (es «Dirección») y «Office»
+//     (es «Vending»), en cualquier mayúscula: en las líneas dichas, los nombres de salas/objetos/PNJ, la botonera y TODAS
+//     las cadenas literales de content/ (pintadas incluidas), salvo ids (`office_a_pecera`, `GV_OFFICE`, `m_office`) y
+//     las descripciones de flags; los comentarios no cuentan;
 //   · puesta en escena (problema C del director): quien dice una línea no puede estar tapado por otro actor que esté
 //     delante de él (más de un 20 % de su cabeza y torso bajo la figura de otro, por cajas de sprite).
 //   node tools/text-audit.mjs
@@ -132,6 +136,43 @@ sec('Intervenciones de más de 80 caracteres', long);
 sec('Globos de más de 3 renglones', tall);
 sec('Signos de apertura que faltan (¿ ¡)', [...new Set(punct)]);
 sec('Nombres mal escritos', names);
+// palabras prohibidas (órdenes de dirección 1 e i): en lo dicho, en los nombres y en las cadenas literales de content/
+const PROHIBIDAS = /pajarera|office/i;
+const esId = (t) => /^[A-Za-z0-9_.:\-/]+$/.test(t) || /^(bool|int|str|num|flag)\b.*·/.test(t);
+const prohibidas = [];
+for (const t of texts) if (PROHIBIDAS.test(t)) prohibidas.push(`dicho (${lines.get(t).who}): ${t}`);
+const visibles = await G(() => {
+  const g = __game.game, out = [];
+  for (const [rid, r] of Object.entries(g.content.rooms)) {
+    out.push(['sala ' + rid, r.name || '']);
+    for (const o of r.objects || []) { if (typeof o.name === 'string') out.push([`${rid}.${o.id}`, o.name]); if (o.ascensor && o.ascensor.label) out.push([`${rid}.${o.id} (botonera)`, o.ascensor.label]); }
+  }
+  for (const [id, a] of Object.entries(g.actors)) out.push(['actor ' + id, (a.def && a.def.name) || a.name || '']);
+  return out;
+});
+for (const [k, t] of visibles) if (PROHIBIDAS.test(t)) prohibidas.push(`nombre ${k}: «${t}»`);
+/** Cadenas literales de un archivo JS, sin comentarios (tokenizador mínimo: '…', "…", `…`, // y /* *\/). */
+function literales(src) {
+  const out = []; let i = 0;
+  while (i < src.length) {
+    const c = src[i], n = src[i + 1];
+    if (c === '/' && n === '/') { i = src.indexOf('\n', i); if (i < 0) break; continue; }
+    if (c === '/' && n === '*') { i = src.indexOf('*/', i + 2); if (i < 0) break; i += 2; continue; }
+    if (c === "'" || c === '"' || c === '`') {
+      let j = i + 1, t = '';
+      while (j < src.length && src[j] !== c) { if (src[j] === '\\') { t += src[j + 1]; j += 2; continue; } t += src[j]; j++; }
+      out.push(t); i = j + 1; continue;
+    }
+    i++;
+  }
+  return out;
+}
+const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : e.name.endsWith('.js') ? [path.join(d, e.name)] : []);
+for (const f of walk(path.join(here, '..', 'content'))) {
+  if (/content[\\/]flags\.js$/.test(f)) continue;                        // descripciones internas de flags
+  for (const t of literales(fs.readFileSync(f, 'utf8'))) if (PROHIBIDAS.test(t) && !esId(t)) prohibidas.push(`${path.relative(path.join(here, '..'), f)}: «${t}»`);
+}
+sec('Palabras prohibidas a la vista (Pajarera / Office)', [...new Set(prohibidas)]);
 const ocl = [...new Set(await G(() => window.__ocl || []))];
 sec('Quien habla queda tapado por otro actor', ocl);
 out.push('\nHoras que aparecen: ' + [...times.keys()].sort().join(', '));
@@ -139,7 +180,7 @@ console.log(out.join('\n'));
 fs.mkdirSync(path.join(here, 'shots'), { recursive: true });
 fs.writeFileSync(path.join(here, 'shots', 'textos.json'), JSON.stringify(texts.map(t => ({ ...lines.get(t), text: t })), null, 1));
 if (consoleErrors.length) console.log('\nErrores de consola:\n  ' + [...new Set(consoleErrors)].join('\n  '));
-const bad = long.length + tall.length + punct.length + names.length + ocl.length + consoleErrors.length;
+const bad = long.length + tall.length + punct.length + names.length + ocl.length + consoleErrors.length + new Set(prohibidas).size;
 console.log(bad ? `\nTEXTOS: ${bad} AVISOS` : '\nTEXTOS: OK');
 await browser.close();
 server.close();

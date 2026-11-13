@@ -206,7 +206,7 @@ const REJILLA = [
   (api) => (acto3(api) && !api.flag('ruben_libre') ? ['(Desde el 27) Alguien teclea. Con faltas.']
     : api.flag('ruben_libre') ? ['(Desde el 27) Nada. Solo la matricial, imprimiendo por respeto.']
       : ['(Desde el 27) Ñiiic, ñiiic. Y alguien mastica.', '...Eso no viene de arriba.']),
-  () => ['(Office) «...Buenas noches.» Una voz de mujer, muy bajita.', 'Alguien más saluda a Gertrudis.'],
+  () => ['(Vending) «...Buenas noches.» Una voz de mujer, muy bajita.', 'Alguien más saluda a Gertrudis.'],
 ];
 
 export default buildRoom({

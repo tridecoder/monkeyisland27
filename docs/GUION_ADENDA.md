@@ -1,5 +1,13 @@
 # FE DE ERRATAS — Adenda de producción: «Guiños de la casa»
 
+
+> **Cierre del rediseño (órdenes de dirección iii-v, vinculantes):** la sala del café se llama **Vending** (id `office`);
+> la Redacción de papel (`catacumba`) está **al lado** de la Redacción, al mismo nivel, tras una puerta doble con umbral
+> de latón (ya no se entra por el Vending); la **Secretaría de Custodia** vive en la Redacción, junto a esa puerta. Todas
+> las líneas e ids de Custodia siguen igual; MP3 queda «a unos metros»: el boli muerto de Aurora está en la sala de al lado.
+> Nuevas líneas de vecindad (murmullos): YOLI «Ahí al lado imprimen lo que yo publiqué ayer. Con las faltas corregidas.» ·
+> AURORA «Por esa puerta entra la web. No se limpia los pies. Ni las tildes.» · TEODORO «AL OTRO LADO DEL LATÓN PUBLICAN
+> SIN CERRAR. YO CIERRO SIN PUBLICAR.» · y los Mirar de la puerta doble (biblia §3.0).
 > Documento canónico del jefe de guion, complemento de `GUION_BIBLIA.md`.
 > **Todo lo de aquí es aditivo y opcional.** No cambia ningún id, flag, puzle, objeto ni paso del walkthrough 5.4 de la biblia. Si algo de aquí contradice la biblia, **manda la biblia**, salvo en los insertos de texto que se indican expresamente (sección 9).
 > Si algo de las propuestas `writers-room/guinos-absurdo.md` o `writers-room/guinos-satira.md` no está aquí, **no entra**.
@@ -42,10 +50,10 @@
 | 1 | Infografía con IA vs director de Desarrollo celoso | **Fusión.** Del absurdo: **Herminia** (herramienta con nombre de persona «para que no la desenchufen», eco de la Goyita), la **cinta de carrocero** que avanza por actos y el micro-puzle **«dar de alta a Herminia como becaria»** («Esta casa da de alta antes a un portátil que a un chaval»). De la sátira: la pantalla **«ACCESO DENEGADO: HERMINIA / ACCESO CONCEDIDO: TITULATOR 3000 (USUARIO INTERNO)»**, «Es transversalidad», «Peor. Si funciona, la gente se acostumbra», «Mi revisión es en marzo», «Lo revoco. Con fecha de hoy. Y de julio» y el «bajo yo a las tres». | El Tartómetro, QuIAque, BegoñIA/CelestIAno (juego de palabras que se explica solo una vez), la mampara, los infografistas figurantes (cuestan arte y la redacción está vacía: quedan sus chaquetas), el micro-puzle de la infografía al papel (un objeto más y un cuarto micro-puzle). | El chiste que se entiende en una línea es «la IA de verdad no entra; la falsa entró porque tenía alta». El alta une el guiño con Rubén sin código nuevo. |
 | 2 | Negocio reenvía sin leer lo que dice la IA | **Sátira, con nombre del absurdo.** **Tadeo Adjunto** (el apellido «Remitido» ya es de Maripaz). Presencia **sin sprite**: se fue a las seis, **su portátil no**. Mensajes de Core Web Vitals con cifras reales y propuestas absurdas («Propongo atornillarla»), Cerrar el portátil por actos, R15. Del absurdo: los avisos «RV:» en el móvil y la coda **la impresora es la única que le leía** («BANDEJA 2 INSTALADA», ya canónica). | El robot de telepresencia (arte y animación), la llamada de Lorenzo, el hilo de créditos largo, las siglas inventadas («Lectores Con Prisa»: el chiste es que la IA acierta y él no la entiende). | Encaja con «a las 18:30 se ha ido todo el mundo» y cuesta un hotspot. |
 | 3 | Controlling quisquilloso y heroico | **Fusión.** Del absurdo: **«escúchele hasta el final»** como micro-puzle (la mecánica es la dinámica al revés), la cláusula 12 «punto de miles y coma decimal», la cuarta copia de Begoña y el «Felicidades. Es la primera vez que lo digo sin adjunto». De la sátira: el apellido **Salvedad** (oficio de auditor), «Una cosita. Muy pequeña.», la coma del precio de la opa (salva la exclusiva), el **atún de la −1** (pista de P13 con una hoja de cálculo), la entrada por sorpresa en la Reunión de Dirección (aquí, por el **teléfono de conferencias** de la Sala) y un remate que se lo da la grabación del Lector Medio caído: **«...Y ahorrar.»** | El cable rizado que recorre el edificio (tres hotspots), el fijo de cable, la versión del clímax siempre activa. | Es el único que lee hasta el final y por eso gana. El refuerzo es **opcional** (versión A con el micro-puzle, B sin él). |
-| 4 | Desarrollo ruidoso que culpa a Diseño | **Absurdo en forma** (tres figurantes **de espaldas**, solo manos; la tercera espalda solo dice «No.»); **sátira en remate**: la casilla VACANTE cuelga de **DISEÑO Y PRODUCTO** («plaza pedida en 2021») y el epílogo «Enhorabuena, Diseño». **Nuevo remate humillante:** la **bandeja de entregas de Diseño** contiene, desde 2017, el aviso de que la pantalla de Dirección tumbaría el CMS. Sello de Desarrollo: «LEÍDO (PERO NO)». | La figurante sola en el Office, prefijos largos por sprite. | Diseño sale bien: inocente, puntual y con razón. Desarrollo queda humillado con cariño. |
+| 4 | Desarrollo ruidoso que culpa a Diseño | **Absurdo en forma** (tres figurantes **de espaldas**, solo manos; la tercera espalda solo dice «No.»); **sátira en remate**: la casilla VACANTE cuelga de **DISEÑO Y PRODUCTO** («plaza pedida en 2021») y el epílogo «Enhorabuena, Diseño». **Nuevo remate humillante:** la **bandeja de entregas de Diseño** contiene, desde 2017, el aviso de que la pantalla de Dirección tumbaría el CMS. Sello de Desarrollo: «LEÍDO (PERO NO)». | La figurante sola en el Vending, prefijos largos por sprite. | Diseño sale bien: inocente, puntual y con razón. Desarrollo queda humillado con cariño. |
 | 5 | Secretaría de Redacción temible | **Fusión.** De la sátira: **Custodia Precinto**, «Dejar es prestar. Prestar es perder.», la única respuesta buena («Para apuntar lo que me digan. Sin grabadora.»), «No me preguntó nadie» sobre Rubén, el saludo secreto a Gertrudis. Del absurdo: el tic **«¿Para qué.»** (abre interrogación, cierra con punto), el cadáver de Aurora y el gag **«Ya ha firmado. Ya lo ha usado. Devuélvamelo.»** | El oráculo de pistas completo (duplica a la abuela), la libreta de reportero y el boli de Custodia como objetos (dos objetos más), el sprite completo. | **Presencia sin sprite:** detrás de una persiana metálica a media altura solo se ven sus manos y la llave. Nadie le ha visto la cara. Da más miedo y cuesta menos. |
 | 6 | Guerra de salas y pantallas que fallan | **Fusión.** Absurdo: reserva fantasma de **Ramírez** (recurrente a la hora de los relojes parados: siempre), carteles en guerra, **proyector colgado en la 247 durante tres semanas** (explica el «asentir» del Lector Medio) y la 248 «EL VIAJE CONTINÚA» tras el ¡PLOF!. Sátira: la odisea de entradas de la tele («ENTRADA 3: Ramírez, congelado. Con cruasán»), «cinco minutitos» desde marzo. | El inserto «SIN SEÑAL» con adaptadores en el clímax (duplica la 247), el mando del proyector. | Todo es texto y tres hotspots. |
-| 7 | Rumores y paredes que oyen | **Absurdo en mecánica** (cada versión sale una vez, en orden, como línea inicial al hablar). **Tres rumores**: la firma de Bruno (remata la abuela: «Si lo dice mucha gente, sale»), el atún del Titulator (lo corrige Evaristo) y Teodoro vive aquí («ESTOY MAQUETADO»). Paredes: **micrófono de 1994 en la planta** y **rejilla del CPD**. | Rumores sobre Begoña, Gertrudis y personajes nuevos; el vaso en la pared; la rejilla del Office. | Tres cadenas bastan para el gag; más cadenas son más ganchos entre paquetes. |
+| 7 | Rumores y paredes que oyen | **Absurdo en mecánica** (cada versión sale una vez, en orden, como línea inicial al hablar). **Tres rumores**: la firma de Bruno (remata la abuela: «Si lo dice mucha gente, sale»), el atún del Titulator (lo corrige Evaristo) y Teodoro vive aquí («ESTOY MAQUETADO»). Paredes: **micrófono de 1994 en la planta** y **rejilla del CPD**. | Rumores sobre Begoña, Gertrudis y personajes nuevos; el vaso en la pared; la rejilla del Vending. | Tres cadenas bastan para el gag; más cadenas son más ganchos entre paquetes. |
 | 8 | Plazas de garaje (encargo directo de dirección) | Escrito por el jefe de guion (sección 8bis): cuadro de llaves con **línea de sucesión dinástica**, porra, pésames ensayados, piel de plátano para quien no imprime, yunque rechazado por nota de gasto, «¿y usted cómo se encuentra, de salud?», un rumor más y el remate: Teodoro, que no sale desde 1997, le regala su plaza a Bruno, que no tiene coche. | Cualquier daño real o violencia. | Humor negro de dibujos animados, sin víctimas. |
 | — | Cameo del director de Diseño y Producto (encargo de dirección) | **Valentín Retícula** (nombre provisional, lo confirma el retratado), en la Pecera, junto a la bandeja de Diseño y a dos metros del coro de Desarrollo, «dirigiendo» una aventura gráfica sobre esta redacción. Cuarta pared corta, autoparódica y que deja bien a Diseño. | — | Cierra con elegancia el guiño 4. |
 
@@ -89,9 +97,9 @@ Colores elegidos para no confundirse con los de la biblia (sección 2).
 - **Quiere:** que alguien le escuche hasta el final. **En el fondo:** enviar por fin ese correo.
 
 ### 1.5 `custodia_precinto` — Custodia Precinto (presencia sin sprite)
-- **Departamento / sala:** Secretaría de Redacción · `office`, detrás de un **ventanuco con persiana metálica a media altura** en la pared del fondo, entre la puerta de la Pecera y Gertrudis. Detrás se intuye el armario del material.
+- **Departamento / sala:** Secretaría de Redacción · `pecera` (orden de dirección v: antes en el Vending), detrás de un **ventanuco con persiana metálica a media altura** en la pared de la Redacción, en la bisagra con la Redacción de papel (x 179-215, junto a la puerta doble). Detrás se intuye el armario del material.
 - **Lo que se ve:** solo **las manos** bajo la persiana (guantes de punto sin dedos), una **llave colgada de una cinta roja** y, a veces, la esquina de un libro de tapas negras («EL LIBRO»: quién tiene cada boli desde 1989). Nadie le ha visto la cara desde 2012.
-- **Color de texto:** `#C04E7A`.
+- **Color de texto:** `#A0A0FF` (antes `#C04E7A` y `#FF94BE`: en la Redacción se confundía con Yoli, y el lila con Anselmo).
 - **Voz / tic:** pregunta **sin entonación**, abre interrogación y cierra con punto: **«¿Para qué.»** Corta con «Siguiente.» aunque no haya nadie. Nunca grita. De usted con todo el mundo.
 - **En qué se diferencia de Begoña (y tiene que notarse):** Begoña da miedo por el procedimiento (sellos, copias, horario). Custodia da miedo por ella misma: **no tiene formularios, ni sellos, ni horario**. «Begoña tiene formularios. Yo tengo memoria.» Quien escriba sus líneas: nunca «sello», «copia», «procedimiento» ni horas.
 - **Por qué sigue a las 18:30:** la Secretaría cierra cuando cierra el periódico.
@@ -187,7 +195,7 @@ Colores elegidos para no confundirse con los de la biblia (sección 2).
 
 | id | Mirar | Interacciones especiales |
 |---|---|---|
-| `rejilla_cpd` | «Una rejilla del falso suelo. Por aquí suben las voces del edificio.» // «Paco lo sabe todo. No es intuición: es fontanería.» | **Usar** (escuchar; rota con `rejilla_n` +1): 1 «(Planta 2) "Te escribo desde el más absoluto cariño". Maripaz.» // «(¡GONG!)» · 2 «(Administración) "Original. Duplicado. Triplicado. Original..."» · 3 «(Pajarera) "Amarillo, facturación. Verde, oportunidades..."» · 4 «(Vestíbulo) "¡Ibersideral entra por la banda!". También narra para el sótano.» · 5 Actos I-II: «(Desde el 27) Ñiiic, ñiiic. Y alguien mastica.» // «...Eso no viene de arriba.» · Acto III: «(Desde el 27) Alguien teclea. Con faltas.» · 6 «(Office) "...Buenas noches." Una voz de mujer, muy bajita.» // «Alguien más saluda a Gertrudis.» · 7 vuelve a 1. · **Abrir:** PACO: «Ahí abajo hay cables de 1997. Y un bocadillo de 2003.» |
+| `rejilla_cpd` | «Una rejilla del falso suelo. Por aquí suben las voces del edificio.» // «Paco lo sabe todo. No es intuición: es fontanería.» | **Usar** (escuchar; rota con `rejilla_n` +1): 1 «(Planta 2) "Te escribo desde el más absoluto cariño". Maripaz.» // «(¡GONG!)» · 2 «(Administración) "Original. Duplicado. Triplicado. Original..."» · 3 «(Pajarera) "Amarillo, facturación. Verde, oportunidades..."» · 4 «(Vestíbulo) "¡Ibersideral entra por la banda!". También narra para el sótano.» · 5 Actos I-II: «(Desde el 27) Ñiiic, ñiiic. Y alguien mastica.» // «...Eso no viene de arriba.» · Acto III: «(Desde el 27) Alguien teclea. Con faltas.» · 6 «(Vending) "...Buenas noches." Una voz de mujer, muy bajita.» // «Alguien más saluda a Gertrudis.» · 7 vuelve a 1. · **Abrir:** PACO: «Ahí abajo hay cables de 1997. Y un bocadillo de 2003.» |
 
 ### 3.3 `pecera` (paquete B)
 
@@ -215,7 +223,7 @@ Colores elegidos para no confundirse con los de la biblia (sección 2).
 | `enchufe_pantalla` (existe; **añadido**) | — | **Tirar** con `bandeja_diseno_abierta` y sin `vio_ticket_3` (sustituye a la 2.ª línea de la biblia): «Pone NO DESENCHUFAR. Diseño avisó, pero un aviso no es un ticket.» // «Paco tendrá el número.» (no pone flags) |
 
 **Murmullos nuevos (8.5):**
-- `leoncio_quesitos`: «Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.» · «Cuarenta y un pósits. Cuarenta y un "NO". Es una serie muy estable.» · «Si la cinta avanza otro palmo, me piden pasaporte para el Office.»
+- `leoncio_quesitos`: «Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.» · «Cuarenta y un pósits. Cuarenta y un "NO". Es una serie muy estable.» · «Si la cinta avanza otro palmo, me piden pasaporte para el Vending.»
 - `anselmo_monolito`: «Esto no ha pasado por Desarrollo. Esto tampoco. Esto sí, de refilón.» · «Transversal. No invasivo. Transversal.» · «Revisión: marzo. Qué bien suena marzo.» · (al termo) «Tú sí eres de Desarrollo.»
 - `coro_desarrollo` (discusiones de fondo; cada una, globos encadenados):
   1. DEV 1: «¿Quién ha llamado "botón2" a un botón?» // DEV 2: «Era el segundo botón.» // DEV 1: «¡Hay cuatro!» // DEV 3: «No.»
@@ -249,7 +257,7 @@ Colores elegidos para no confundirse con los de la biblia (sección 2).
 
 ### 3.5 `office` (paquete C)
 
-**Para el artista:** en la pared del fondo, entre la puerta de la Pecera y Gertrudis, un **ventanuco** con **persiana metálica a media altura** y un mostrador estrecho. Bajo la persiana: **dos manos con guantes de punto sin dedos** (idle: tamborilean; a veces cuentan con los dedos), una **llave con cinta roja** colgando, y la esquina de un libro negro. Encima del ventanuco, un cartel; sobre el mostrador, un **timbre** con pegatina «NO». En las escenas de Custodia: la mano sale y vuelve a entrar (dos frames).
+**Para el artista:** *(construido en la Redacción, zona de papel, x 174-220: orden v)* en la pared del fondo, un **ventanuco** con **persiana metálica a media altura** y un mostrador estrecho. Bajo la persiana: **dos manos con guantes de punto sin dedos** (idle: tamborilean; a veces cuentan con los dedos), una **llave con cinta roja** colgando, y la esquina de un libro negro. Encima del ventanuco, un cartel; sobre el mostrador, un **timbre** con pegatina «NO». En las escenas de Custodia: la mano sale y vuelve a entrar (dos frames).
 
 | id | Mirar | Interacciones especiales |
 |---|---|---|
@@ -257,9 +265,9 @@ Colores elegidos para no confundirse con los de la biblia (sección 2).
 | `cartel_material` | «"EL MATERIAL NO SE PIDE. SE MERECE".» | — |
 | `timbre_secretaria` | «Un timbre de mostrador. Pegatina: "NO".» | **Usar:** «¡Ding!» // CUSTODIA: «Estoy delante.» // «Ya. Perdón.» · 2.ª vez y siguientes: CUSTODIA: «Tóquelo otra vez y le apunto en el libro.» |
 
-**Murmullos de `custodia_precinto`:** «Ochenta y tres bolis. Los tengo contados. Los que faltan.» · «Siguiente.» (no hay nadie) · «Las paredes no oyen. Oigo yo.» · (muy bajito, hacia Gertrudis) «...Buenas noches.»
+**Murmullos de `custodia_precinto`:** «Ochenta y tres bolis. Los tengo contados. Los que faltan.» · «Siguiente.» (no hay nadie) · «Las paredes no oyen. Oigo yo.» · (muy bajito, hacia el pasillo del Vending; antes, hacia Gertrudis) «...Buenas noches.»
 
-**Chismes de relleno nuevos de Gertrudis** (6.3, se añaden **detrás** de los tres de la biblia, en este orden): «CHISME: LAS PAREDES OYEN. YO SOY UNA PARED CON CAFÉ.» · «CHISME: DESARROLLO INTENTÓ ACTUALIZARME. LE DI UN E-47.» · «CHISME: ALGUIEN ME SALUDA DESDE LA PERSIANA. NO DIGO QUIÉN.» · «CHISME: EVARISTO ME REVISÓ EL "1,20". ESTABA BIEN. NOS EMOCIONAMOS.»
+**Chismes de relleno nuevos de Gertrudis** (6.3, se añaden **detrás** de los tres de la biblia, en este orden): «CHISME: LAS PAREDES OYEN. YO SOY UNA PARED CON CAFÉ.» · «CHISME: DESARROLLO INTENTÓ ACTUALIZARME. LE DI UN E-47.» · «CHISME: LA DE LA PERSIANA DICE QUE LE DEBO CATORCE CAFÉS. ME DEBE QUINCE.» · «CHISME: EVARISTO ME REVISÓ EL "1,20". ESTABA BIEN. NOS EMOCIONAMOS.»
 
 ### 3.6 `catacumba` (paquete C)
 
@@ -306,7 +314,7 @@ Colores elegidos para no confundirse con los de la biblia (sección 2).
 |---|---|---|
 | `tele_amazonas` (Actos I-II) | «Una tele de videollamadas. Pegatina: "PULSAR ENTRADA 3. NO, LA 2. NO".» | **Usar** (rota con `tele_n` +1): 1 «Sale la cámara del vestíbulo. Celestino le narra el Ibex al ficus.» · 2 «"ENTRADA 2": el tiempo de ayer. En diferido.» · 3 «"ENTRADA 3": una videollamada de 2019. Ramírez, congelado. Con cruasán.» · 4 «"BUSCANDO SEÑAL". La busca con más ganas que yo.» · 5 «"ENTRADA 5": "PLAN CERO PAPEL · DIAPOSITIVAS: 400 · DATOS: 0".» // «Alguien ha enchufado aquí a Herminia. Por cable.» · 6 vuelve a 1. · **Hablar:** «"¿Me veis la pantalla?". La tele no contesta. Es la experiencia completa.» // FIGURANTE (si hay reunión): «Se te ha congelado, chaval.» |
 | `caja_cables` (Actos I-II) | «Catorce cables y siete adaptadores. Uno adapta un adaptador a otro.» // «Hay uno que encaja consigo mismo. Lo dejo así: es feliz.» | **Usar con `tele_amazonas`:** igual que Usar la tele (avanza la rotación). · **Coger:** «Si me llevo un cable, alguien no podrá presentar. Tentador. No.» |
-| `carteles_amazonas` | Rota: «"NO DEJÉIS TAZAS. – Dirección".» · «"LAS TAZAS SON DE DIRECCIÓN. – Mercados".» · «"ESTA SALA NO ES UN OFFICE". Firmado por la cafetera.» · «"ESTE CARTEL ESTÁ RESERVADO. – Íñigo".» · «"¿QUIÉN HA CAMBIADO LOS CARTELES? – Todos".» | **Coger:** «Los carteles están en guerra y yo soy neutral. Como Suiza, pero becario.» |
+| `carteles_amazonas` | Rota: «"NO DEJÉIS TAZAS. – Dirección".» · «"LAS TAZAS SON DE DIRECCIÓN. – Mercados".» · «"ESTA SALA NO ES UN VENDING". Firmado por la cafetera.» · «"ESTE CARTEL ESTÁ RESERVADO. – Íñigo".» · «"¿QUIÉN HA CAMBIADO LOS CARTELES? – Todos".» | **Coger:** «Los carteles están en guerra y yo soy neutral. Como Suiza, pero becario.» |
 
 **Murmullos nuevos de `figurantes_mercados`:** «Entramos cinco minutitos. En marzo.» · «¿Me veis la pantalla? ...¿Hola? ¿Me veis?» · «Que alguien pida sala para salir de la sala.»
 
@@ -484,7 +492,7 @@ Formato de la biblia (7.6): `[NODO] condición` · opciones · `→` salto · `{
   PACO: (por los altavoces, desde la planta −1) Otro ticket.  → FIN
 ```
 
-### 4.4 `custodia_precinto` (office, paquete C)
+### 4.4 `custodia_precinto` (Secretaría de Redacción, en `pecera` desde la orden v; antes `office`; paquete C)
 ```
 [CU0] 1.ª vez: CUSTODIA: (la persiana no se mueve) ¿Qué quiere.
       siguientes: CUSTODIA: Otra vez usted. ¿Qué quiere.
@@ -981,7 +989,7 @@ Origen: Bruno le cuenta lo de la firma a la planta del vestíbulo (Hablar `plant
 
 **La dinámica:** hay pocas plazas y muchos aspirantes; entre los nuevos corre el deseo de que a alguien con plaza le pase un «accidente» para heredarla. **Tono:** humor negro de dibujos animados. Nadie se hace daño; todos los planes son absurdos y fallan; la palabra va siempre entre comillas; quien tiene plaza está estupendamente.
 
-**Escalada:** (1) el cuadro de llaves con su **línea de sucesión** (vestíbulo) → (2) la porra (Office) → (3) pésames ensayados (Pecera) → (4) la piel de plátano para quien no imprime (Ecosistema) → (5) el yunque por nota de gasto (Administración) → (6) «¿y usted cómo se encuentra, de salud?» (Maripaz, floja del duelo) → (7) rumor D → **remate** en el epílogo: Teodoro, que no sale del edificio desde 1997, le cede la plaza 1 a Bruno, que no tiene coche. Ni bici.
+**Escalada:** (1) el cuadro de llaves con su **línea de sucesión** (vestíbulo) → (2) la porra (Vending) → (3) pésames ensayados (Pecera) → (4) la piel de plátano para quien no imprime (Ecosistema) → (5) el yunque por nota de gasto (Administración) → (6) «¿y usted cómo se encuentra, de salud?» (Maripaz, floja del duelo) → (7) rumor D → **remate** en el epílogo: Teodoro, que no sale del edificio desde 1997, le cede la plaza 1 a Bruno, que no tiene coche. Ni bici.
 
 ### 8bis.1 Hotspots y líneas
 
@@ -1218,7 +1226,7 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 |---|---|---|
 | **A · vestíbulo + CPD + común/final** | `vestibulo`, `cpd` | Menciones del cameo por Celestino y Paco (el cameo, `valentin_reticula`, y `monitor_valentin` pasaron a la Pecera, paquete B). Ascensor con botonera (14). Garaje: `cuadro_plazas`, opción y murmullo de Celestino, rumor D paso 2 (Paco) y desmentido (Celestino), remate 8bis.2. Hotspots `altavoz_ibex`, `rama_diseno`, añadidos de `planta_plastico` (Hablar → `planta_oyo`, Empujar), `rejilla_cpd`. Línea del Ibex nueva. Opciones nuevas de Paco (alta de Herminia, rejilla, Tadeo) y de Rubén (Tadeo). Rumor A paso 1 (Celestino), rumor B paso 1 (Paco) y desmentido (Rubén). **Común:** cola de avisos (2.1 llamadas, 2.2 RV:), saludo nuevo de la abuela, Mirar de `movil` y `libreta_replicas`, objeto `boli_muerto` y su combinación con la ficha, datos de duelo (7.1-7.5). **Final:** insertos 9.8 a-d (epílogo, créditos, hilo de esquina). |
 | **B · Pecera + Pajarera** | `pecera`, `pajarera` | PNJ `leoncio_quesitos`, `anselmo_monolito`; presencias `herminia`, `coro_desarrollo`. Hotspots de 3.3 y 3.4. Árboles 4.1, 4.2, 4.3. Opciones nuevas de Íñigo y Nerea. Añadido de `enchufe_pantalla`. Línea de Rubén en la Pecera. Rumores: A paso 4 (Yoli), B pasos 2-3 (Nerea, Íñigo), C paso 2 (Yoli). Insertos 9.1 y 9.2. Titulares 9.9. Combinaciones de 4.8 marcadas B. Murmullos nuevos de Nerea y Yoli. Garaje: pésames de `figurantes_web`, rumor D paso 3 (Nerea), murmullo de Gervasio en la Pajarera. Cameo: murmullo de Nerea y discusión del coro sobre Valentín. |
-| **C · Office + Catacumba** | `office`, `catacumba` | Presencia `custodia_precinto` (árbol 4.4) y hotspots de 3.5; hotspots `bolis_aurora`, `corrector_aurora` (3.6). Opciones nuevas de Aurora (coma, Custodia) y Teodoro (Herminia, Evaristo). Murmullo de Aurora por los «!!». Chismes de relleno nuevos de Gertrudis. Rumores: A paso 2 (Gertrudis), C paso 1 (Aurora) y desmentido (Teodoro). Inserto 9.3. Combinaciones C. Garaje: `porra_plazas`, chisme nuevo de Gertrudis, murmullo de Gervasio en el Office. |
+| **C · Vending + Catacumba** | `office`, `catacumba` | Presencia `custodia_precinto` (árbol 4.4) y hotspots de 3.5; hotspots `bolis_aurora`, `corrector_aurora` (3.6). Opciones nuevas de Aurora (coma, Custodia) y Teodoro (Herminia, Evaristo). Murmullo de Aurora por los «!!». Chismes de relleno nuevos de Gertrudis. Rumores: A paso 2 (Gertrudis), C paso 1 (Aurora) y desmentido (Teodoro). Inserto 9.3. Combinaciones C. Garaje: `porra_plazas`, chisme nuevo de Gertrudis, murmullo de Gervasio en el Vending. |
 | **D · Ecosistema + Eventos + Administración + Sala Amazonas** | `ecosistema`, `eventos`, `administracion`, `sala_amazonas` | PNJ `evaristo_salvedad` (árbol 4.6) y hotspots de 3.8; presencia `tadeo_adjunto` vía `portatil_tadeo` (3.7, árbol 4.5); hotspots de la Sala (3.9). Opciones nuevas de Gervasio (reunión) y Begoña. Murmullos de Begoña, Maripaz, Borja y Mercados. Rumores: A paso 3 (Borja), C paso 3 (Maripaz). Insertos 9.4, 9.5, 9.6 (A y B). Cameo 7.4 y `hurt` nuevos de Íñigo en D4. Combinaciones D. Garaje: `piel_platano`, yunque en `pared_rechazadas`, opción de Begoña, murmullos de Maripaz, Borja, Evaristo y Gervasio (Sala), rumor D paso 1 (Borja). Cameo: murmullo de Borja. |
 
 ### 11.2 Lo que deben añadir los ficheros comunes
@@ -1229,7 +1237,7 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 - `valentin_reticula` · Valentín Retícula · `#C0E8FF` · PNJ con sprite, cameo (pecera)
 - `pilar_escaleta` · Pilar Escaleta · `#A8F07A` · PNJ con sprite, Eventos (`eventos`, Sala Polivalente), §13
 - `evaristo_salvedad` · Evaristo Salvedad (en globos: EVARISTO) · `#B5A642` · PNJ con sprite (administracion; vestíbulo en el epílogo)
-- `custodia_precinto` · Custodia Precinto (CUSTODIA) · `#C04E7A` · presencia (manos bajo persiana, office)
+- `custodia_precinto` · Custodia Precinto (CUSTODIA) · `#A0A0FF` · presencia (manos bajo persiana; Secretaría de Redacción, en `pecera`)
 - `tadeo_adjunto` · Tadeo Adjunto (y PORTÁTIL, su asistente) · `#FFCC99` · presencia (portátil, ecosistema; móvil)
 - `herminia` · Herminia · `#00C2A8` · objeto con carácter (rótulos)
 - `coro_desarrollo` · DEV 1, DEV 2, DEV 3, CORO · `#7FFFD4` · figurantes de espaldas (pecera)
@@ -1251,7 +1259,7 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 | `cpd` | `rejilla_cpd` (rejilla en el suelo técnico); armarios 22 y 23 y cables donde estaba el rincón de Valentín; mampara tras Paco; `ascensor_cpd` con la botonera común. |
 | `pecera` | `sillas_con_chaqueta` (sillas vacías con chaqueta y pantallas encendidas, 80-180 px), sprite de Leoncio, `mesa_dibujo`, `herminia_portatil` (portátil con pegatina y animación), dos sillas con chaqueta giradas hacia Herminia, `frontera_carrocero` (4 estados: 420 px, 400 px, 400 px + lazo alrededor de Leoncio, sin cinta con marca), `cartel_frontera` (atril), coro de espaldas con manos animadas, `semaforo_ruido` (rojo; ámbar y verde para escenas), `taza_no`, `bandeja_diseno`, sprite de Anselmo, `pantalla_anselmo`. |
 | `pajarera` | `hoja_reservas` en la puerta (y folio del Acto III encima), `posit_evaristo` en la matriz. |
-| `office` | `porra_plazas` (hoja en el tablón); ventanuco con persiana metálica a media altura (`custodia_precinto`): manos con guantes (idle y dos frames de «sacar la mano»), llave con cinta roja, esquina del libro negro; `cartel_material`; `timbre_secretaria`. |
+| `office` → `pecera` (orden v) | `porra_plazas` (hoja en el tablón, se queda en el Vending); en la Redacción: ventanuco con persiana metálica a media altura (`custodia_precinto`): manos con guantes (idle y dos frames de «sacar la mano»), llave con cinta roja, esquina del libro negro; `cartel_material`; `timbre_secretaria`. |
 | `catacumba` | `bolis_aurora` (bote con un boli tumbado), `corrector_aurora` (tableta bajo el Libro de Estilo). |
 | `ecosistema` | mesa vacía con chaqueta y `portatil_tadeo` (portátil con notificaciones, 2 frames); `piel_platano` con pósit junto a la impresora. |
 | `administracion` | despacho acristalado con `puerta_controlling`, `contratos_evaristo`, `coma_enmarcada`, sprite de Evaristo (sentado tras el cristal y de pie en la puerta). |
@@ -1280,7 +1288,7 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 | — | paso 14 | office | (el «Buenas noches» lleva antes el rumor A2) | `rumor_firma_n`=2 |
 | — | paso 17 | catacumba | (A_MENU lleva antes el rumor C1) | `rumor_teodoro_n`=1 |
 | — | tras el paso 20 | | Control: L2 ya ha salido (primera entrada tras el paso 16) | `evaristo_convoco`, `evaristo_llamadas`=2 |
-| X6 | tras el paso 20 | office | Hablar custodia_precinto → «¿Me deja un boli?» → «¿Y cómo se consigue un boli aquí?» | `custodia_regla` |
+| X6 | tras el paso 20 | pecera | Hablar custodia_precinto → «¿Me deja un boli?» → «¿Y cómo se consigue un boli aquí?» | `custodia_regla` |
 | — | paso 23 | pecera | (Y0 lleva antes el rumor C2) | `rumor_teodoro_n`=2 |
 | X7 | tras el paso 24 | pecera | Hablar anselmo_monolito → «¿Y el Titulator? Ese sí entró.» → «Me voy.» | `anselmo_dijo_regla` |
 | X8 | | pecera | Hablar leoncio_quesitos → «¿Y si Herminia tuviera alta en Sistemas?» | `leoncio_acepta_alta` |
@@ -1306,7 +1314,7 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 | — | paso 35 | catacumba | (T0 lleva antes el desmentido C de Teodoro al hablarle; luego «Quiero firmar en tu página 7.») | rumor C cerrado (sin cambio de contador) |
 | X22 | tras el paso 36 | administracion | Hablar evaristo_salvedad → «Aurora dice que su coma está bien.» | `correo_evaristo_listo` |
 | — | paso 37 | catacumba | (al entrar, L3; en 7.3a sale la línea 9.3) | `evaristo_llamadas`=3 |
-| X23 | tras el paso 37 | office | (al entrar en el Office sale L4, versión sin Rubén) Dar boli_muerto a custodia_precinto → «Para apuntar lo que me digan. Sin grabadora.» | `custodia_ablandada`; −`boli_muerto`; `evaristo_llamadas`=4 |
+| X23 | tras el paso 37 | pecera | (al entrar en la Redacción sale L4, versión sin Rubén) Dar boli_muerto a custodia_precinto → «Para apuntar lo que me digan. Sin grabadora.» | `custodia_ablandada`; −`boli_muerto`; `evaristo_llamadas`=4 |
 | X24 | | office | Hablar custodia_precinto → «¿Dónde está...?» → «¿Dónde está el Titulator?» → «Ya está.» | sin flags |
 | — | paso 38 | cpd | (L5 sale en una de las salas por las que se pasa camino del CPD: las llamadas saltan en cada entrada, también de paso) | `evaristo_llamadas`=5 |
 | X23b | antes de Tirar (paso 38) | cpd | Hablar paco_ticket → (rumor D2) → «Me voy.» | `rumor_plaza_n`=2 |
@@ -1323,7 +1331,7 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 - **Los tres micro-puzles se resuelven:** MP1 en X7, X8, X10, X12 (con `cms_vivo` desde el paso 22); MP2 en X19, X21, X22 (con `evaristo_convoco` desde la primera entrada tras el paso 16 y `acto_2_iniciado`); MP3 en X6, X20, X23.
 - **Objeto nuevo:** `boli_muerto` se consigue (X20) antes de usarse (X23) y se usa una vez. Ningún objeto del juego principal entra ni sale en los pasos X.
 - **Flags nuevos sin huérfanos:** todos los de 6.2 tienen quien los pone y quien los lee (los contadores de rotación los lee su propio hotspot).
-- **Avisos:** con el orden del 5.4 hay entradas de sobra para que salgan L1-L5 (L1 en el paso 10; L2 en la primera entrada tras el 16; L3 en el 37; L4 en la primera entrada posterior —el Office de X23, o el CPD del 38 sin extras—; L5 en la siguiente entrada, de paso hacia el CPD con extras o entre el 40 y el 44 sin ellos) y RV1-RV5 (las entradas sin llamada pendiente). Ninguno sale en escenas, duelos ni en la Sala del clímax.
+- **Avisos:** con el orden del 5.4 hay entradas de sobra para que salgan L1-L5 (L1 en el paso 10; L2 en la primera entrada tras el 16; L3 en el 37; L4 en la primera entrada posterior —la Redacción de X23, o el CPD del 38 sin extras—; L5 en la siguiente entrada, de paso hacia el CPD con extras o entre el 40 y el 44 sin ellos) y RV1-RV5 (las entradas sin llamada pendiente). Ninguno sale en escenas, duelos ni en la Sala del clímax.
 - **Rumores:** con la tabla 12.2, las cuatro cadenas llegan al final (A en X25, B en el paso 39, C en el paso 35, D en X26). X25b va antes del paso 41 (Dar el álbum no es Hablar; el rumor sale al Hablar). Si el jugador se salta un eslabón, la cadena espera y solo se pierde el remate opcional.
 - **Sin callejones:** MP2 se reinicia sin coste; en MP3 el muerto no se gasta hasta CU_DA y Custodia lo devuelve si Bruno sale; MP1 no gasta nada.
 - **Sprites:** 4 PNJ nuevos con sprite (tope cumplido); el cameo cuenta.
@@ -1541,7 +1549,7 @@ vertical: "Bruno abriendo caminos".» · Hablar: «"¿Bajas?". Hace "tin". Marip
 ## 15. Legibilidad y móvil (encargo de dirección)
 - **Texto hablado:** contorno negro de 8 vecinos + banda oscura translúcida bajo cada línea (`SPEECH_BACKING`, 80 %).
   Colores aclarados para que se lean sobre la planta 2 lila y la Administración verde: Aurora `#FF8A7A`, Begoña
-  `#C0A2F6`, Anselmo `#E496FF`, Custodia `#FF94BE`, Evaristo `#F0F0A8`, Gervasio `#AEC6E6`, Paco `#92C0FF`, Maripaz
+  `#C0A2F6`, Anselmo `#E496FF`, Custodia `#A0A0FF`, Evaristo `#F0F0A8`, Gervasio `#AEC6E6`, Paco `#92C0FF`, Maripaz
   `#FF8A60`, Leoncio `#3CE0C6`, Yoli `#FF78B8`, Valentín `#C0E8FF`, Herminia `#FF8C3C` (antes igual que Leoncio), Lector
   Medio `#E8C8A8` (antes se confundía con Gervasio), LED del torno `#FF7E6A`. Comprobación: `node tools/contrast.mjs`.
 - **Móvil:** web app instalable (iPhone: Compartir → Añadir a pantalla de inicio), opción «Pantalla completa» en el

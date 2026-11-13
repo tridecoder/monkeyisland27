@@ -48,7 +48,7 @@ if (salas) {
   add('walkthrough', 'walkthrough.mjs');
   add('walkthrough --alt', 'walkthrough.mjs', ['--alt']);
   add('extras', 'extras.mjs');
-  add('play-mouse', 'play-mouse.mjs', rapido ? ['--solo=geometria'] : []);
+  add('play-mouse', 'play-mouse.mjs', rapido ? ['--solo=geometria'] : [], 2400);   // la partida entera con ratón + conexiones + geometría
   add('fuzz', 'fuzz.mjs', rapido ? ['--rapido'] : []);
   add('text-audit', 'text-audit.mjs');
   add('contrast', 'contrast.mjs');

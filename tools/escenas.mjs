@@ -67,7 +67,7 @@ async function verPaso(s) {
   await G(() => { clearInterval(window.__dismisser); window.__dismisser = null; __game.skipText(false); });
   let done = false, err = null;
   const acc = (async () => { for (const a of s.acc) await R.run(a); })().then(() => { done = true; }, e => { err = e; done = true; });
-  let last = null, k = 0, quietSince = Date.now();
+  let last = null, k = 0, quietSince = Date.now(), choiceSince = 0;
   while (true) {
     const st = await G(() => { const g = __game.game; return { sp: g.speeches.some(x => x.blocking), mode: g.mode, busy: g.busy > 0 || !!g.acting, choice: !!g.choice, aviso: __game.state().aviso }; });
     if (st.sp) {
@@ -99,12 +99,14 @@ async function verPaso(s) {
       await page.waitForTimeout(120);
       continue;
     }
-    if (done && !st.busy) break;
+    if (done && !st.busy && Date.now() - quietSince > 400) break;
+    // un menú esperando (el duelo que abre la escena: lo juega el paso siguiente) → se deja correr y se sigue
+    if (st.choice && !st.sp) { if (!choiceSince) choiceSince = Date.now(); else if (Date.now() - choiceSince > 1500) break; } else choiceSince = 0;
     if (Date.now() - quietSince > 45000) { report.push(`${s.n}: sin globos en 45 s; acelero`); await G(() => __game.skipText(true)); quietSince = Date.now(); }
     await page.waitForTimeout(80);
   }
   if (err) throw err;
-  await R.check(s.esp);
+  if (done) await R.check(s.esp);
   await G(() => __game.skipText(true));
   await R.startDismisser();
 }
@@ -115,6 +117,7 @@ try {
   await G(() => { try { localStorage.clear(); } catch (e) { /* ignore */ } });
   if (PASOS.includes(1)) {
     await G(() => { __game.newGame(); });
+    await page.waitForTimeout(600);                         // la intro arranca sola (onStart)
     await verPaso({ n: 1, acc: [], esp: STEPS[0].esp });
   } else {
     await G(() => __game.skipText(true)); await R.startDismisser(); await G(() => __game.newGame()); await G(() => __game.waitIdle());

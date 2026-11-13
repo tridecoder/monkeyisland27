@@ -16,6 +16,7 @@ import dialogos from './pecera.dialogos.js';
 import escenas from './pecera.escenas.js';
 import { talk, seq, num } from './pecera.voces.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
+import { dialogoCustodia, objetosSecretaria, flagsSecretaria } from './pecera.secretaria.js';
 
 const Y = 'yoli_tendencias', N = 'nerea_backlog', L = 'leoncio_quesitos', A = 'anselmo_monolito', R = 'ruben', V = 'valentin_reticula';
 const val = (...lines) => async (api) => { await api.sayAs(V, lines); };
@@ -75,6 +76,7 @@ export default buildRoom({
     pecera_figurantes_n: 'int · B · +1 por Mirar figurantes_web (biblia, 8.7, monitores 8.3)',
     pecera_sillas_n: 'int · B · +1 por Mirar sillas_con_chaqueta (adenda 3.3)',
     pecera_pantalla_anselmo_n: 'int · B · +1 por Mirar pantalla_anselmo (rotación Acto II)',
+    ...flagsSecretaria,
   },
 
   objects: [
@@ -93,11 +95,22 @@ export default buildRoom({
       hablar: 'Golpeo el cristal con los nudillos. Al otro lado lo apuntan en un pósit.',
       cerrar: 'Ya está cerrada. Dirección no cierra puertas: las delega.',
     } },
-    { id: 'pecera_a_office', name: 'puerta del Office', exit: { room: 'office' }, handlers: {
-      mirar: 'El Office. Ahí vive Gertrudis.',
+    { id: 'pecera_a_office', name: 'puerta del Vending', exit: { room: 'office' }, handlers: {
+      mirar: 'El Vending. Ahí vive Gertrudis.',
       abrir: async (api) => api.goto('office', 'pecera'), usar: async (api) => api.goto('office', 'pecera'),
       hablar: '¡Buenas noches, Gertrudis! No contesta. Habrá que decírselo a la cara.',
     } },
+    // orden de dirección 2: la Redacción de papel, AL LADO, por la puerta doble (el umbral de latón es la frontera)
+    { id: 'pecera_a_catacumba', name: 'Redacción de papel', exit: { room: 'catacumba' }, handlers: {
+      mirar: async (api) => { await api.say(['La Redacción de papel. Misma planta, otro siglo.', 'El umbral de latón es la frontera. Nadie lo pisa sin motivo.']); },
+      abrir: 'Está abierta de par en par. Desde 1994. Nadie se atreve a cerrarla.',
+      cerrar: 'Si cierro esa puerta, Teodoro lo publica en la página 7.',
+      usar: async (api) => api.goto('catacumba', 'pecera'),
+      hablar: '"¿Hola?" Me contesta un fax. Dentro de un rato.',
+      empujar: 'Está abierta. Empujarla sería meterme en la guerra fría a traición.',
+    } },
+    // orden de dirección 3: la Secretaría de Redacción (Custodia), junto a la puerta de la Redacción de papel
+    ...objetosSecretaria,
     ascensorObjeto('ascensor_pecera', {
       mirar: 'El ascensor. Lo rediseñó Valentín. No se nota nada: eso es lo bueno.',
       cerrar: 'Se cierra solo. Con un margen de ocho píxeles exactos.',
@@ -442,7 +455,7 @@ export default buildRoom({
     } },
   ],
 
-  dialogs: dialogos,
+  dialogs: { ...dialogos, custodia: dialogoCustodia },
   scenes: escenas,
   ambient: [
     // discusiones de fondo del coro de Desarrollo (adenda 3.3 y 4.6b), en orden

@@ -3,6 +3,7 @@
 //   pecera_cms_vivo        P05b: Tirar de enchufe_pantalla con vio_ticket_3 (biblia 5.2 P05 + inserto 9.2 de la adenda)
 // Las acotaciones de la biblia (entre paréntesis) son acciones, nunca texto.
 import { talk } from './pecera.voces.js';
+import { PECERA_DESPLAZ as D } from '../lib/edificio.js';
 import art from './art/pecera.art.js';
 import { PAL, rect, hline, vline, frameRect, gradV, label, glow } from '../../engine/draw.js';
 
@@ -31,22 +32,31 @@ function portatilTitulator(g, r, t) {
   rect(g, x + w - 18, y + h - 9, 10, 2, PAL.ink[2]);
 }
 
+/** Mueve la cámara a `x` y espera a que llegue (así nadie habla con la cámara aún de camino). */
+async function encuadre(api, x) {
+  const g = api.game;
+  api.cameraTo(x);
+  const t = Math.max(0, Math.min(g.room.width - 320, x - 160));
+  for (let i = 0; i < 60 && !g.instant && Math.abs(g.camX - t) > 2; i++) await api.wait(50);
+}
+
 async function presentacionVillano(api) {
   await api.cutscene(async (api) => {
     // (La Pecera. La pantalla gigante marca 3.418 y baja. Yoli se echa colirio.)
     // Rediseño (docs/GUIA_REDISENO.md §3, §6): el núcleo (escaleras y ascensor) y el pasillo de Dirección están a la
-    // IZQUIERDA; todas las entradas caen en x < 170. Si Bruno estuviera lejos (p. ej. al cargar), cruza en un fundido.
-    const SITIO_BRUNO = [184, 124], SITIO_IN = (art.layout[I] && art.layout[I].at) || [246, 122, 'down'];
-    if (api.actorPos(api.player).x > 330) {
+    // IZQUIERDA; las entradas caen en x < 300 (con la puerta de la Redacción de papel). La Web empieza en 310 (desde la
+    // orden 2, todo lo de Web a Diseño está 140 px más a la derecha: PECERA_DESPLAZ). Si Bruno estuviera lejos, fundido.
+    const SITIO_BRUNO = [184 + D, 124], SITIO_IN = (art.layout[I] && art.layout[I].at) || [246 + D, 122, 'down'];
+    if (api.actorPos(api.player).x > 330 + D) {
       await api.fadeOut(250);
-      api.placeActor(api.player, 'pecera', 140, 122, 'right');
+      api.placeActor(api.player, 'pecera', 140 + D, 122, 'right');
       api.cameraFollow();
       api.game.snapCamera();
       await api.fadeIn(250);
     }
     await api.walkTo(SITIO_BRUNO[0], SITIO_BRUNO[1]);
     api.face('right');
-    api.cameraTo(232);                       // Bruno, la pantalla de métricas y Yoli en el mismo plano
+    api.cameraTo(232 + D);                   // Bruno, la pantalla de métricas y Yoli en el mismo plano
     await api.anim(Y, 'reach', 700);
     await api.sayAs(Y, '¡No entra nada! ¡El CMS lleva dos horas en "Guardando borrador"!');
     // (Las luces parpadean. Entra Íñigo con un portátil plateado bajo el brazo.) Sube por la escalera del núcleo.
@@ -58,7 +68,7 @@ async function presentacionVillano(api) {
     api.sfx('door');
     api.cameraTo(150);
     await api.walkActor(I, at[0], at[1]);
-    api.cameraTo(232);
+    api.cameraTo(232 + D);
     api.faceActor(I, 'down');
     api.face(I);
     await talk(api, [
@@ -109,9 +119,10 @@ async function presentacionVillano(api) {
     await api.walkActor(I, exitP[0], exitP[1]);
     api.sfx('door');
     api.placeActor(I, null);
+    await encuadre(api, 232 + D);            // de vuelta a Yoli (Web) antes de que hable
     await talk(api, [[Y, '¿Pósit rosa? El rosa es "emociones". Te ha clasificado como emoción.']]);
-    api.cameraTo(452);                       // Yoli (Web, 309) y Nerea (Desarrollo, 598) en el mismo plano
-    await api.wait(400);
+    await encuadre(api, 452 + D);            // Yoli (Web, 449) y Nerea (Desarrollo, 738) en el mismo plano
+    await api.wait(200);
     await talk(api, [
       [N, 'El CMS no es nuestro, es de Sistemas.'],
       [Y, '¡Paco dice que es vuestro!'],

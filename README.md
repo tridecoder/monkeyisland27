@@ -59,16 +59,28 @@ Necesitan Node 18+ y `playwright` (con Chromium) accesible para Node.
 | `node tools/walkthrough.mjs [--alt]` | la partida completa (46 pasos del guion), en el orden de la tabla o en el alternativo |
 | `node tools/extras.mjs` | la partida completa con todos los extras intercalados (90 pasos) |
 | `node tools/test-paquete-{a,b,c,d}.mjs` | pruebas detalladas por grupo de salas |
-| `node tools/play-mouse.mjs` | Acto I y un duelo **solo con ratón real** + auditoría de geometría de todos los hotspots |
+| `node tools/play-mouse.mjs [--solo=raton\|conexiones\|geometria]` | la partida **entera** (pasos 1-46, los cuatro duelos y el final) **solo con ratón real**, cada salida del edificio en los dos sentidos con clics reales, y la auditoría de geometría de todos los hotspots en cada acto |
+| `node tools/escenas.mjs [--pasos=8,46]` | revisión de escenas: una captura por línea dicha (intro, 7.2, duelos, 7.3a, 7.3, clímax, epílogo, créditos, poscréditos) y quién habla fuera de cámara o tapado |
+| `node tools/contactos.mjs [--actos=a1]` | hoja de contactos del edificio: las 10 salas en cada acto y los cuatro núcleos lado a lado (`tools/shots/rediseno/final/`) |
 | `node tools/fuzz.mjs` | guardar/cargar en cada acto, perder cada duelo, y Dar/Usar todo con todo (sin callejones) |
 | `node tools/contrast.mjs` | legibilidad: contraste de los colores de cada personaje sobre los fondos reales, del panel, los menús y el duelo |
 | `node tools/make-icons.mjs` | regenera los iconos de la web app (`icons/`) con el propio código de dibujo del juego |
-| `node tools/text-audit.mjs` | auditoría de textos (longitud, signos de apertura, nombres, horas) |
+| `node tools/text-audit.mjs` | auditoría de textos (longitud, signos de apertura, nombres, horas y palabras prohibidas a la vista: «Pajarera», «Office») |
 | `node tools/music-check.mjs` | comprueba las pistas de música |
 | `node tools/review.mjs` | hojas de contactos para revisión visual (todas las salas por acto y los momentos clave) |
 | `node tools/shot.mjs <sala> [--debug]` | captura de una sala · `node tools/actors.mjs`: hoja del reparto |
 
 Depuración en el navegador: `?debug=1` (hotspots, suelo, consola con F3) y `?room=<sala>` (empezar en una sala).
+
+## El edificio
+
+Diez salas en cuatro plantas, con un mismo núcleo (escalera + ascensor) en cada una (mapa completo:
+`docs/CONTENT_SCHEMA.md` §2.6; rediseño: `docs/GUIA_REDISENO.md`):
+
+- **Planta 2:** Marketing y Comercial (con la puerta de Eventos / Sala Polivalente y el pasillo de Administración).
+- **Planta 1:** la Redacción (940 px: Dirección, el Vending, la Secretaría de Redacción y, al lado, tras una puerta doble,
+  la Redacción de papel / Cierre; de Dirección se pasa a la Sala Amazonas).
+- **Planta 0:** el Vestíbulo (tornos). **Planta −1:** Sistemas (solo en ascensor).
 
 ## Estructura
 

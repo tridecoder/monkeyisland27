@@ -117,7 +117,7 @@ async function escenaActo3a(api) {
     // (Se abre la puerta. Entra Íñigo con dos pósits azules.)
     const prev = api.actorPos('inigo_sinergia');
     api.sfx('door');
-    // (entra por los peldaños de la puerta y se queda a la izquierda, ante el camastro: Bruno habla a Teodoro desde [66, 124])
+    // (entra por la puerta doble de la Redacción, a la izquierda, y se queda ante el camastro: Bruno habla a Teodoro desde [66, 124])
     api.placeActor('inigo_sinergia', 'catacumba', 30, 112, 'right');
     api.show('inigo_sinergia');
     await api.walkActor('inigo_sinergia', 46, 119);
@@ -129,7 +129,6 @@ async function escenaActo3a(api) {
     await fax(api, 'Lo que está cerrado no se abre.');
     await api.sayAs('inigo_sinergia', 'Lo que está cerrado se reimagina.');
     await api.walkActor('inigo_sinergia', 30, 112);
-    api.sfx('doorClose');
     if (prev) api.placeActor('inigo_sinergia', prev.room, prev.x, prev.y, prev.dir);
     else api.placeActor('inigo_sinergia', null);
     await fax(api, ['Chaval. Si no hay rotativa, no hay firma.', 'Haz algo. Y hazlo rápido.']);
@@ -386,13 +385,14 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'catacumba_a_office', name: 'puerta del Office', exit: { room: 'office' }, handlers: {
-      mirar: 'Vuelta al Office. Al siglo XXI, con escalas.',
-      abrir: async (api) => { api.sfx('door'); await api.goto('office'); },
-      usar: async (api) => { api.sfx('door'); await api.goto('office'); },
-      cerrar: 'Ya está cerrada. Aquí lo que se cierra son páginas.',
+    // orden de dirección 2: la Redacción (web) está AL LADO, al mismo nivel, tras la puerta doble y el umbral de latón
+    { id: 'catacumba_a_pecera', name: 'Redacción', exit: { room: 'pecera' }, handlers: {
+      mirar: 'Vuelta a la Redacción web. Al otro lado del latón, el siglo XXI. Con escalas.',
+      abrir: 'Está abierta de par en par. Aquí lo que se cierra son páginas.',
+      usar: async (api) => api.goto('pecera', 'catacumba'),
+      cerrar: 'Ya lo intentó Teodoro en 2009. La web entró igual. Por el fax.',
       hablar: 'Le digo adiós a 1994. 1994 no contesta: está maquetando.',
-      coger: 'Esta puerta separa 1994 del café. No se toca.',
+      coger: 'Esta puerta separa 1994 del clic. No se toca.',
     } },
     // mueble de plano medio (solo dibujo: tapa las rodillas de Teodoro, sentado tras él; sin hotspot)
     { id: 'mesa_teodoro', name: 'mesa de Teodoro', hotspot: false },

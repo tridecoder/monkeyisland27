@@ -1,11 +1,11 @@
-// SALA `office` — ARTE Y GEOMETRÍA (rediseño, docs/GUIA_REDISENO.md §4, §8, §10). Biblia §3.3 + adenda §3.5 / §8bis.
-// Cocina de la redacción. De izquierda a derecha: puerta de la Pecera (placa «1 REDACCIÓN ◄»), nevera con su cartel,
-// el ventanuco de Custodia (Secretaría de Redacción) con el cartel del material, pilastra, GERTRUDIS grande (66 px) en
-// el centro y sin nada delante, pilastra, tablón (hilo del yogur, porra, hoja de firmas) sobre la encimera con la COLA
-// DE NUEVE TUPPERS ante el microondas y el fregadero, y la puerta vieja de TALLERES con su placa esmaltada y, sobre el
-// dintel, la placa del kit «1 CIERRE ▼ / REDACCIÓN DE PAPEL». Tres peldaños bajan hasta la Catacumba (medio nivel).
-// En el plano medio, una mesa alta rompe el suelo vacío; el walkbox la rodea. Un cartel de «suelo mojado» hace de
-// oclusor en el primer plano.
+// SALA `office` — en pantalla «VENDING» (orden de dirección 1). ARTE Y GEOMETRÍA (rediseño, docs/GUIA_REDISENO.md §4,
+// §10). Biblia §3.3 + adenda §8bis. La sala del café, sin más: una sola puerta, a la Redacción (orden 2: la Redacción de
+// papel ya no se alcanza desde aquí; la Secretaría de Custodia se mudó a la Redacción, orden 3). De izquierda a derecha:
+// puerta de la Redacción (placa «1 REDACCIÓN ◄ / REDACCIÓN WEB»), nevera con su cartel, la MÁQUINA DE VENDING (la que da
+// nombre a la sala: le queda una bolsa de pipas), pilastra, GERTRUDIS grande (66 px) en el centro y sin nada delante,
+// pilastra, tablón (hilo del yogur, porra, hoja de firmas) sobre la encimera con la COLA DE NUEVE TUPPERS ante el
+// microondas y el fregadero, y en el rincón la fuente de agua que gotea (de ahí el cartel de «suelo mojado» del primer
+// plano). En el plano medio, una mesa alta rompe el suelo vacío; el walkbox la rodea.
 import {
   PAL, mix, shade, rect, hline, vline, frameRect, line, px, poly, ellipse, paint, gradV, gradH, bevel, noise, hash2,
   ditherOverlay, ditherPick, glow, vignette, shadowEllipse, trashBin, floorTiles,
@@ -16,7 +16,7 @@ const W = 320;
 const FL = 94; // línea pared / suelo
 
 // geometría de los elementos (compartida por el dibujo y el layout)
-const HATCH = { x: 91, y: 40, w: 36, h: 18 };          // hueco del ventanuco (los marcos, por fuera)
+const VENDING = { x: 88, y: 22, w: 42, h: 72 };      // la máquina de vending (donde estaba el ventanuco de Custodia)
 const GER_AT = [164, 96, 'down'];                      // pies de Gertrudis (máquina de 66 px: escala 1,5)
 const MESA = { x: 214, y: 111, w: 36 };                // mesa alta: tablero y patas hasta y 134
 const MESA_ZY = 136;
@@ -56,23 +56,21 @@ function paintBackground(g) {
   rect(g, 0, FL - 3, W, 3, PAL.wood[1]); hline(g, 0, FL - 3, W, PAL.wood[3]);          // zócalo
   // suelo de linóleo en perspectiva, con el canto de goma oscuro bajo el zócalo
   floorTiles(g, { x: 0, y: FL, w: W, h: 144 - FL, vpx: 160, vpy: 30, tile: 20, rowPx: 8, colors: ['#c49a62', '#a47e52'], colors3: '#b08a58', grout: PAL.wood[1], far: PAL.wood[0], fade: 0.5 });
-  // dos zonas de suelo con canto: la franja de goma del café (bajo Gertrudis) y el felpudo de imprenta ante TALLERES
+  // la franja de goma del café (bajo Gertrudis), con su canto
   kit.zonaSuelo(g, 134, 196, FL, ['#3a3430', '#4a443c', '#5a5248'], { vpx: 165, vpy: 30, trama: 'baldosa', borde: '#7a6e5a', seed: 8 });
-  kit.zonaSuelo(g, 272, 320, FL, kit.DEPTO.papel.suelo, { vpx: 300, vpy: 30, borde: '#8a6a44', seed: 9 });
   ditherOverlay(g, 0, FL, W, 5, PAL.ink[0], 0.55);
   rect(g, 0, FL, W, 1, PAL.ink[1]);
 
   doorLeft(g);
   fridge(g);
-  hatchFrame(g);
-  secretaria(g);
+  maquinaVending(g, 0, false);
   kit.pilastra(g, 131, 11, FL);
   kit.pilastra(g, 193, 11, FL);
   ledPanel(g);
   matGertrudis(g);
   corkboard(g);
   counter(g);
-  doorRight(g);
+  fuenteAgua(g);
   props(g);
   // luz del fluorescente sobre pared y suelo
   glow(g, 164, 46, 80, 40, '#f4ffd8', 0.07, 5);
@@ -126,93 +124,6 @@ function fridge(g) {
   rect(g, x + 22, y + 44, 9, 8, '#f4c0c8'); hline(g, x + 23, y + 46, 7, PAL.red[3]); hline(g, x + 23, y + 48, 5, PAL.red[3]);
   rect(g, x + 4, y + 53, 15, 6, PAL.paper[6]); kit.micro(g, 'RAMIREZ', x + 5, y + 54, PAL.red[3]);     // «RAMÍREZ NO SE TOCA»
   kit.cantoVivo(g, x, y, w, h);
-}
-
-// ------------------------------------------------------------------ ventanuco de Custodia (fondo; las manos son un objeto animado)
-function hatchFrame(g) {
-  const { x, y, w, h } = HATCH;
-  // cartel «EL MATERIAL NO SE PIDE. SE MERECE.» encima del ventanuco (no de Gertrudis)
-  const cx = 86, cy = 14, cw = 46, ch = 21;
-  ditherOverlay(g, cx + 2, cy + 2, cw, ch, PAL.ink[0], 0.45);
-  rect(g, cx, cy, cw, ch, PAL.paper[6]); frameRect(g, cx, cy, cw, ch, PAL.metal[2]); frameRect(g, cx + 1, cy + 1, cw - 2, ch - 2, PAL.red[3]);
-  kit.micro(g, 'EL MATERIAL', cx + (cw >> 1), cy + 3, PAL.ink[1], { align: 'center' });
-  kit.micro(g, 'NO SE PIDE.', cx + (cw >> 1), cy + 9, PAL.ink[1], { align: 'center' });
-  kit.micro(g, 'SE MERECE.', cx + (cw >> 1), cy + 14, PAL.red[3], { align: 'center' });
-  kit.cantoVivo(g, cx, cy, cw, ch);
-  // marco metálico y sombra interior
-  rect(g, x - 3, y - 3, w + 6, h + 9, PAL.metal[2]); frameRect(g, x - 3, y - 3, w + 6, h + 9, PAL.metal[1]);
-  hline(g, x - 2, y - 2, w + 4, PAL.metal[5]); vline(g, x - 2, y - 2, h + 8, PAL.metal[4]);
-  // interior oscuro con estantes y archivadores a la luz de un flexo verde
-  rect(g, x, y, w, h, PAL.ink[0]);
-  gradH(g, x, y, w, h, [PAL.ink[0], '#10281a', PAL.ink[0]]);
-  for (let sy = y + 2; sy < y + h - 4; sy += 5) {
-    hline(g, x, sy + 4, w, PAL.metal[1]);
-    for (let k = 0; k < 11; k++) rect(g, x + 2 + k * 3, sy, 2, 4, [PAL.wood[2], PAL.green[2], PAL.paper[2], PAL.red[2]][(k * 7 + sy) % 4]);
-  }
-  glow(g, x + 28, y + 6, 12, 6, '#c8f0a0', 0.25, 3);
-  // alféizar de madera (mostrador estrecho)
-  rect(g, x - 4, y + h, w + 8, 5, PAL.wood[4]); hline(g, x - 4, y + h, w + 8, PAL.wood[7]); hline(g, x - 4, y + h + 4, w + 8, PAL.wood[1]);
-  ditherOverlay(g, x - 2, y + h + 5, w + 4, 3, PAL.ink[0], 0.5);
-}
-function drawBell(g) {
-  // timbre de mostrador con pegatina «NO», con su canto vivo (es interactivo)
-  const bx = 108, by = 53;
-  rect(g, bx, by + 7, 12, 3, PAL.metal[4]); hline(g, bx, by + 7, 12, PAL.metal[7]); hline(g, bx, by + 9, 12, PAL.metal[1]);
-  ellipse(g, bx + 6, by + 5, 5, 3, (xx, yy, d) => ditherPick(xx, yy, [PAL.gold[6], PAL.gold[4], PAL.gold[3]], d));
-  px(g, bx + 6, by + 1, PAL.metal[7]); px(g, bx + 5, by + 2, PAL.gold[6]);
-  rect(g, bx + 3, by + 6, 6, 3, PAL.paper[7]); kit.micro(g, 'N', bx + 3, by + 4, PAL.red[3], { registrar: false }); px(g, bx + 8, by + 8, PAL.red[3]);
-  kit.cantoVivo(g, bx, by, 12, 10);
-}
-function drawCustodia(g, view, t) {
-  const { x, y, w } = HATCH;
-  const T = t || 0;
-  // persiana metálica a media altura (lamas, tope inferior y asa)
-  for (let ly = y - 1; ly < y + 7; ly += 2) { hline(g, x - 1, ly, w + 2, PAL.metal[4]); hline(g, x - 1, ly + 1, w + 2, PAL.metal[2]); }
-  rect(g, x - 1, y + 7, w + 2, 2, PAL.metal[5]); hline(g, x - 1, y + 7, w + 2, PAL.metal[7]); hline(g, x - 1, y + 9, w + 2, PAL.ink[0]);
-  rect(g, x + 15, y + 8, 5, 2, PAL.metal[3]);
-  ditherOverlay(g, x, y + 10, w, 2, PAL.ink[0], 0.5);
-  // llave con cinta roja colgando
-  line(g, x + 31, y + 10, x + 31, y + 14, PAL.red[4], 2);
-  rect(g, x + 30, y + 14, 3, 2, PAL.gold[5]); px(g, x + 31, y + 16, PAL.gold[4]);
-  // esquina del libro negro
-  poly(g, [[x + 1, y + 15], [x + 8, y + 15], [x + 8, y + 12], [x + 1, y + 11]], PAL.ink[1]); hline(g, x + 1, y + 11, 7, PAL.metal[3]);
-  // manos con guantes de punto sin dedos: tamborilean; de vez en cuando cuentan con los dedos (dedos de 2 px, bien visibles)
-  const cyc = T % 11000;
-  const counting = cyc > 8000 && cyc < 10200;
-  const nfing = counting ? 1 + Math.floor((cyc - 8000) / 700) : 0;
-  const tap = Math.floor(T / 140);
-  const hand = (hx, hy, right, ph) => {
-    rect(g, hx, hy, 9, 5, PAL.purple[4]);
-    for (let k = 0; k < 9; k += 2) vline(g, hx + k, hy, 5, PAL.purple[5]);
-    hline(g, hx, hy + 4, 9, PAL.purple[2]); hline(g, hx, hy, 9, PAL.purple[6]);
-    rect(g, hx + (right ? 8 : -1), hy + 1, 2, 4, PAL.purple[3]);
-    for (let f = 0; f < 4; f++) {
-      const up = counting && right ? (f < nfing ? 3 : 0) : ((tap + f * 2 + ph) % 6 === 0 ? 1 : 0);
-      const fx = hx + f * 2 + (right ? 1 : 0);
-      rect(g, fx, hy - 3 - up, 2, 3 + up, PAL.skin[4]); px(g, fx, hy - 3 - up, PAL.skin[5]); px(g, fx + 1, hy - 3 - up, PAL.skin[3]);
-    }
-  };
-  hand(x + 3, y + 10, false, 0);
-  hand(x + 24, y + 10, true, 3);
-  glow(g, x + 22, y + 14, 18, 4, '#c8f0a0', 0.12, 3);
-  kit.cantoVivo(g, x - 4, y - 3, w + 8, HATCH.h + 9);
-  drawBell(g);
-}
-
-// cajonera de la Secretaría bajo el ventanuco (archivadores de madera)
-function secretaria(g) {
-  const x = 88, y = 66, w = 42;
-  shadowEllipse(g, x + w / 2, FL + 1, w / 2 + 3, 2.5, 0.8);
-  gradV(g, x, y + 3, w, FL - y - 3, [PAL.wood[4], PAL.wood[3], PAL.wood[2]]);
-  noise(g, x, y + 3, w, FL - y - 3, PAL.wood[1], 0.05, 7);
-  for (let j = 0; j < 2; j++) for (let i = 0; i < 2; i++) {
-    const px0 = x + 3 + i * 19, py0 = y + 6 + j * 12;
-    frameRect(g, px0, py0, 17, 10, PAL.wood[1]); hline(g, px0 + 1, py0 + 1, 15, PAL.wood[5]); vline(g, px0 + 1, py0 + 1, 8, PAL.wood[5]);
-    rect(g, px0 + 6, py0 + 4, 5, 1, PAL.metal[6]);
-    rect(g, px0 + 2, py0 + 2, 5, 3, PAL.paper[6]); px(g, px0 + 3, py0 + 3, PAL.ink[2]); px(g, px0 + 5, py0 + 3, PAL.ink[2]);   // etiquetas
-  }
-  rect(g, x, FL - 3, w, 3, PAL.ink[2]);
-  rect(g, x - 1, y, w + 2, 3, PAL.metal[4]); hline(g, x - 1, y, w + 2, PAL.metal[7]);
 }
 
 // panel LED sobre Gertrudis: su estado en reposo (texto entero de la biblia)
@@ -328,32 +239,58 @@ function counter(g) {
   kit.cantoVivo(g, sx - 1, y - 18, sw + 1, 20);
 }
 
-// ------------------------------------------------------------------ puerta de TALLERES (placa esmaltada en la hoja) + placa del kit + peldaños
-function doorRight(g) {
-  const x = 282, y = 32, w = 34, h = FL - 32;
-  kit.marcoPuerta(g, x, y, w, h, { ramp: PAL.wood });
-  gradH(g, x, y, w, h, [PAL.wood[4], PAL.wood[3], PAL.wood[2]]);
-  noise(g, x, y, w, h, PAL.wood[1], 0.08, 5);
-  for (let k = 0; k < 7; k++) vline(g, x + 3 + k * 5, y + 2, h - 4, PAL.wood[2]);
-  frameRect(g, x + 4, y + 22, w - 8, 14, PAL.wood[1]); hline(g, x + 5, y + 23, w - 10, PAL.wood[5]);
-  frameRect(g, x + 4, y + 40, w - 8, 16, PAL.wood[1]); hline(g, x + 5, y + 41, w - 10, PAL.wood[5]);
-  rect(g, x + 4, y + 36, 3, 3, PAL.gold[4]); px(g, x + 4, y + 36, PAL.gold[6]);     // pomo de latón
-  // placa esmaltada «TALLERES» (es un gag de la biblia: se queda en la hoja)
-  rect(g, x, y + 6, 34, 11, PAL.paper[7]); frameRect(g, x, y + 6, 34, 11, PAL.blue[3]);
-  kit.micro(g, 'TALLERES', x + 17, y + 9, PAL.blue[2], { align: 'center' });
-  px(g, x + 1, y + 7, PAL.paper[5]); px(g, x + 32, y + 15, PAL.paper[2]);
-  ditherOverlay(g, x, y + h - 6, w, 6, PAL.ink[0], 0.5);
-  rect(g, x + 2, FL - 2, w - 4, 2, '#e0a050');
-  glow(g, x + 17, FL + 5, 26, 6, '#e0a050', 0.3, 3);                              // luz ámbar de la imprenta, abajo
-  kit.cantoVivo(g, x, y, w, h);
-  // sobre el dintel: placa del kit «1 CIERRE ▼ / REDACCIÓN DE PAPEL»
-  const pw = kit.placaSalaW('catacumba', { flecha: 'v' });
-  kit.placaSala(g, W - 2 - pw, 11, 'catacumba', { flecha: 'v' });
-  // umbral ámbar y TRES PELDAÑOS con nariz amarilla que BAJAN a la Catacumba (medio nivel)
-  kit.umbral(g, x - 2, FL + 1, w + 4, 7, kit.DEPTO.papel.c, { chevron: true });
-  rect(g, x + 1, FL, w - 2, 12, PAL.ink[0]);                                       // el hueco de la escalera
-  kit.peldanos(g, x + 2, FL + 12, w - 4, 'baja', { color: PAL.paper[3] });
-  vline(g, x + 1, FL, 12, PAL.ink[2]); vline(g, x + w - 2, FL, 12, PAL.ink[2]);
+// ------------------------------------------------------------------ la máquina de vending (la que da nombre a la sala)
+/** Expositor acristalado con cuatro filas de espirales vacías y una sola bolsa de pipas que asoma (y no cae), panel de
+ *  monedas con teclado y la pegatina «NO ZARANDEAR». `t` = tiempo (el piloto parpadea). */
+function maquinaVending(g, t, soloPiloto) {
+  const { x, y, w, h } = VENDING;
+  if (!soloPiloto) {
+    shadowEllipse(g, x + w / 2, FL + 1, w / 2 + 3, 2.5, 0.8);
+    bevel(g, x, y, w, h, '#8a2a32', '#b8404a', '#5a161e');
+    rect(g, x + 2, y + 2, w - 4, 7, PAL.ink[1]); kit.micro(g, 'VENDING', x + 3, y + 3, '#ffd060');
+    // el expositor: cuatro baldas con sus espirales, todas vacías salvo una
+    const gx = x + 3, gy = y + 11, gw = 26, gh = 44;
+    rect(g, gx - 1, gy - 1, gw + 2, gh + 2, PAL.ink[0]);
+    gradV(g, gx, gy, gw, gh, ['#2a3440', '#1c2430', '#141a24']);
+    for (let r = 0; r < 4; r++) {
+      const by = gy + 10 + r * 11;
+      hline(g, gx, by, gw, PAL.metal[4]); hline(g, gx, by + 1, gw, PAL.metal[2]);
+      for (let c = 0; c < 4; c++) { const sx = gx + 2 + c * 6; for (let k = 0; k < 4; k++) px(g, sx + k, by - 2 - (k & 1), PAL.metal[5]); }
+      kit.micro(g, 'ABCD'[r], gx - 1 + 0, by - 9, PAL.metal[3], { registrar: false });
+    }
+    // la última bolsa de pipas, en la B4, asomada y colgando
+    const bx = gx + 20, by = gy + 10 + 11 - 8;
+    rect(g, bx, by, 5, 7, '#e8c040'); rect(g, bx, by, 5, 2, '#c03a2a'); px(g, bx + 2, by + 4, '#7a5020'); hline(g, bx, by + 6, 5, '#b89030');
+    g.save(); g.globalAlpha = 0.16; poly(g, [[gx + 2, gy + gh], [gx + 8, gy + gh], [gx + 20, gy], [gx + 14, gy]], '#ffffff'); g.restore();   // reflejo
+    // panel: ranura de monedas, teclado, cajetín de recogida
+    const px0 = x + w - 11;
+    rect(g, px0, gy, 9, 18, PAL.metal[3]); frameRect(g, px0, gy, 9, 18, PAL.metal[1]);
+    rect(g, px0 + 2, gy + 2, 5, 3, '#0c1810'); px(g, px0 + 3, gy + 3, '#7cff7c');
+    for (let k = 0; k < 6; k++) rect(g, px0 + 2 + (k % 2) * 3, gy + 7 + (k >> 1) * 3, 2, 2, PAL.metal[6]);
+    rect(g, px0 + 3, gy + 22, 3, 6, PAL.ink[0]);                                           // ranura
+    rect(g, x + 3, y + h - 14, w - 6, 9, PAL.ink[0]); hline(g, x + 3, y + h - 14, w - 6, PAL.metal[3]);   // cajetín
+    // pegatina «NO ZARANDEAR» (en amarillo, ladeada)
+    rect(g, px0 - 1, gy + 31, 10, 9, '#f4e48c'); kit.micro(g, 'NO', px0, gy + 33, PAL.red[3], { registrar: false });
+    rect(g, x + 2, y + h - 3, w - 4, 3, PAL.ink[1]);
+    glow(g, gx + gw / 2, gy + gh / 2, 22, 26, '#9ad0ff', 0.10, 3);
+    kit.cantoVivo(g, x, y, w, h);
+  }
+}
+// ------------------------------------------------------------------ la fuente de agua del rincón (gotea: de ahí el cartel)
+function fuenteAgua(g) {
+  const x = 286, y = 46;
+  shadowEllipse(g, x + 10, FL + 1, 12, 2.5, 0.8);
+  // garrafa azul boca abajo y cuerpo blanco
+  ellipse(g, x + 10, y + 8, 8, 9, (xx, yy, d) => ditherPick(xx, yy, ['#3a7ac8', '#5a9ae0', '#8ac0f4'], 1 - d + (xx < x + 8 ? 0.2 : 0)));
+  rect(g, x + 8, y + 16, 4, 3, '#3a6aa8');
+  bevel(g, x + 2, y + 19, 16, FL - y - 19, PAL.paper[6], PAL.paper[7], PAL.paper[3]);
+  rect(g, x + 5, y + 26, 3, 2, PAL.blue[4]); rect(g, x + 12, y + 26, 3, 2, PAL.red[4]);   // grifos frío/caliente
+  rect(g, x + 4, y + 30, 12, 2, PAL.metal[3]);
+  // el vasito de plástico y el charco
+  rect(g, x + 13, y + 22, 3, 3, PAL.paper[7]);
+  ellipse(g, x + 6, FL + 6, 9, 2, '#5a8ab8'); ellipse(g, x + 6, FL + 6, 6, 1, '#8ab8e0');
+  // papeleras de reciclaje junto a la pared (amarilla, azul, gris)
+  for (const [bx, c] of [[306, '#d8b030'], [312, '#3a6ab0']]) { rect(g, bx, FL - 12, 6, 12, c); hline(g, bx, FL - 12, 6, shade(c, 0.3)); }
 }
 
 function props(g) {
@@ -422,31 +359,23 @@ function tube(g, t) {
 }
 function animateOffice(g, view, t) {
   tube(g, t);
-  // olor a tinta que sale por debajo de la puerta de TALLERES
-  const T = t || 0;
-  for (let k = 0; k < 3; k++) {
-    const ph = (T / 900 + k * 0.9) % 3;
-    const yy = 28 - ph * 6, xx = 290 + k * 9 + Math.round(Math.sin(T / 400 + k) * 2);
-    g.fillStyle = '#3a2a4a'; g.globalAlpha = 0.5 * (1 - ph / 3);
-    g.fillRect(xx, yy, 1, 3); g.fillRect(xx + 1, yy - 1, 1, 2);
-    g.globalAlpha = 1;
-  }
+  // la fuente de agua gotea (una gota cada 1,6 s) y el piloto verde de la máquina de vending parpadea
+  const T = t || 0, k = (T % 1600) / 1600;
+  if (k < 0.5) { g.fillStyle = '#8ac0f4'; g.fillRect(292, 81 + Math.floor(k * 2 * 16), 1, 2); }
+  if (Math.floor(T / 700) % 3 === 0) { g.fillStyle = '#1c3a1c'; g.fillRect(VENDING.x + VENDING.w - 8, VENDING.y + 14, 1, 1); }
 }
 
 // ------------------------------------------------------------------ geometría
 const layout = {
   office_a_pecera: { rect: [4, 12, 36, 84], walkTo: [28, 108], face: 'left' },
   nevera: { rect: [44, 32, 40, 62], walkTo: [64, 108], face: 'up' },
-  cartel_material: { rect: [86, 14, 46, 22], walkTo: [110, 108], face: 'up' },
-  custodia_precinto: { rect: [87, 37, 44, 16], walkTo: [100, 108], face: 'up', priority: 1, draw: (g, v, t) => drawCustodia(g, v, t) },
-  timbre_secretaria: { rect: [107, 52, 14, 10], walkTo: [114, 108], face: 'up', priority: 2 },
+  maquina_vending: { rect: [VENDING.x, VENDING.y, VENDING.w, VENDING.h], walkTo: [109, 108], face: 'up' },
   microondas: { rect: [201, 48, 55, 24], walkTo: [226, 108], face: 'up' },
   tablon: { rect: [199, 18, 20, 30], walkTo: [208, 108], face: 'up' },
   porra_plazas: { rect: [219, 23, 19, 18], walkTo: [224, 108], face: 'up', priority: 1 },
   hoja_firmas: { rect: [241, 20, 14, 24], walkTo: [246, 108], face: 'up', priority: 1 },
   cartel_cortado: { rect: [219, 78, 55, 14], walkTo: [250, 108], face: 'up' },
   fregadero: { rect: [257, 52, 21, 25], walkTo: [267, 108], face: 'up' },
-  office_a_catacumba: { rect: [279, 12, 40, 84], walkTo: [296, 108], face: 'right' },
   // mueble de plano medio: tapa lo que queda detrás de su tablero y se rodea por el walkbox (sin hotspot)
   mesa_alta: { rect: [MESA.x - 12, MESA.y - 4, MESA.w + 12, 28], layer: 'sorted', zy: MESA_ZY, prop: true, cache: true, cachePad: 4, draw: (g) => drawMesaAlta(g) },
   // Gertrudis: máquina de 66 px (escala 1,5 desde onEnter). Bruno le habla desde la izquierda, nunca delante (taparía el
@@ -467,7 +396,7 @@ export default {
     { id: 'der', poly: [[256, 108], [316, 108], [316, 124], [288, 124], [288, 142], [256, 142]] },
     { id: 'frente', poly: [[2, 134], [290, 134], [290, 142], [2, 142]] },
   ],
-  entries: { pecera: [30, 112, 'right'], catacumba: [294, 112, 'left'] },
+  entries: { pecera: [30, 112, 'right'] },
   layout,
   draw(g) { paintBackground(g); },
   foreground(g) { foreground(g); },

@@ -72,7 +72,7 @@ try {
   // lo que viene del paquete A (torno) y el estado inicial: sin escenas de otros paquetes
   await setFlags({ intro_vista: true, torno_abierto: true, inigo_presentado: true });
   await G(() => __game.gotoRoom('office')); await idle();
-  ok((await state()).room === 'office', 'se entra en el Office');
+  ok((await state()).room === 'office', 'se entra en el Vending (id office)');
   await shot('office');
 
   // ------------------------------------------------------------ P02 · Gertrudis: errores y buenas noches
@@ -100,7 +100,7 @@ try {
   // ------------------------------------------------------------ Catacumba, Acto I: Aurora sin café, Teodoro sin papel
   step('Catacumba antes del café (P03 precondición) y Teodoro sin papel');
   await R.run(['ir', 'catacumba']); await idle();
-  ok((await state()).room === 'catacumba', 'Office → Catacumba');
+  ok((await state()).room === 'catacumba', 'Vending → Redacción → Redacción de papel');
   await shot('catacumba');
   await verb('hablar', 'aurora_galerada');
   ok(JSON.stringify(await opts()) === JSON.stringify(['Buenas noches, Aurora.', '¿Usted es la correctora?', 'Nada, ya me voy.']), 'A_SIN_CAFE: tres opciones');
@@ -141,7 +141,8 @@ try {
   ok(await logHas('E-51: ESTAMOS ANALIZANDO TODAS LAS OPCIONES.') && await logHas('E-52: ESE CAFÉ ESTÁ SACADO DE CONTEXTO.') && await logHas('gabinete de prensa'), 'Acto II: E-51 (con la línea de Bruno) y E-52');
 
   // ------------------------------------------------------------ MP3 · Custodia, el boli muerto
-  step('Adenda MP3 · Custodia Precinto y el boli muerto');
+  step('Adenda MP3 · Custodia Precinto y el boli muerto (Secretaría de Redacción, en la Redacción: orden 3)');
+  await R.run(['ir', 'pecera']); await idle();
   await clearLog();
   await verb('hablar', 'custodia_precinto');
   ok(await logHas('¿Qué quiere.'), 'CU0: «¿Qué quiere.» la primera vez');
@@ -164,7 +165,7 @@ try {
   await clearLog();
   await verb('coger', 'bolis_aurora');
   ok(await logHas('Los demás están vivos. Y son míos.'), 'el muerto no se da dos veces');
-  await R.run(['ir', 'office']); await idle();
+  await R.run(['ir', 'pecera']); await idle();
   await verb('dar', 'custodia_precinto', 'boli_muerto');
   await choose('Para mi abuela.'); await idle();
   let o = await opts();
@@ -287,11 +288,11 @@ try {
   ok((await opts()).includes('Íñigo dice que en la reunión van a apagar la rotativa.'), 'Aurora, opción del Acto III');
   await close();
 
-  // ------------------------------------------------------------ D3 · Gervasio en el Office
-  step('D3 · Gervasio en el Office (Acto III): perder y ganar (paso 43)');
+  // ------------------------------------------------------------ D3 · Gervasio en el Vending
+  step('D3 · Gervasio en el Vending (Acto III): perder y ganar (paso 43)');
   await R.run(['ir', 'office']); await idle();
   st = await state();
-  ok(st.actors.gervasio_acta && st.actors.gervasio_acta.room === 'office', 'Gervasio está en el Office en el Acto III');
+  ok(st.actors.gervasio_acta && st.actors.gervasio_acta.room === 'office', 'Gervasio está en el Vending en el Acto III');
   await shot('office-acto3');
   await clearLog();
   await verb('hablar', 'gertrudis'); await choose('Nada, solo miraba.'); await idle();
@@ -313,6 +314,7 @@ try {
   await clearLog();
   await verb('hablar', 'gervasio_acta');
   ok(!(await opts()) && await logHas('Estoy esperando a que la máquina me salude.'), 'Gervasio tras perder el duelo');
+  await R.run(['ir', 'pecera']); await idle();                    // la Secretaría está en la Redacción (orden 3)
   await verb('hablar', 'custodia_precinto'); await choose('¿Dónde está...?'); await choose('¿Dónde está el Titulator?'); await choose('Ya está.'); await idle(); await close();
   ok(await logHas('No me preguntó nadie.'), 'X24: Custodia sabe dónde está el Titulator');
 
@@ -324,9 +326,10 @@ try {
   const defaultLines = new Set(Object.values(DEF).flat());
   defaultLines.add('¿Estás probando todo con todo? Así trabajan en Administración. Y no funciona.');
   const VERBS = ['mirar', 'coger', 'usar', 'abrir', 'cerrar', 'empujar', 'tirar', 'hablar'];
-  const EXITS = ['office_a_pecera', 'office_a_catacumba', 'catacumba_a_office'];
-  for (const [room, ids] of [['office', ['office_a_pecera', 'nevera', 'microondas', 'tablon', 'hoja_firmas', 'cartel_cortado', 'fregadero', 'office_a_catacumba', 'custodia_precinto', 'cartel_material', 'timbre_secretaria', 'porra_plazas', 'gertrudis', 'gervasio_acta']],
-    ['catacumba', ['catacumba_a_office', 'galeradas', 'camastro', 'fax', 'telefono_rojo', 'tipometro', 'reloj_2147', 'fotos_jefes_cierre', 'fax_enmarcado', 'cartel_aurora', 'libro_estilo', 'bolis_aurora', 'corrector_aurora', 'teodoro_cuerpodoce', 'aurora_galerada']]]) {
+  const EXITS = ['office_a_pecera', 'catacumba_a_pecera'];
+  for (const [room, ids] of [['office', ['office_a_pecera', 'nevera', 'maquina_vending', 'microondas', 'tablon', 'hoja_firmas', 'cartel_cortado', 'fregadero', 'porra_plazas', 'gertrudis', 'gervasio_acta']],
+    ['pecera', ['custodia_precinto', 'cartel_material', 'timbre_secretaria']],
+    ['catacumba', ['catacumba_a_pecera', 'galeradas', 'camastro', 'fax', 'telefono_rojo', 'tipometro', 'reloj_2147', 'fotos_jefes_cierre', 'fax_enmarcado', 'cartel_aurora', 'libro_estilo', 'bolis_aurora', 'corrector_aurora', 'teodoro_cuerpodoce', 'aurora_galerada']]]) {
     const bad = [], few = [];
     for (const id of ids) {
       let own = 0, mirarOwn = false;

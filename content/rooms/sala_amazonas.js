@@ -26,7 +26,7 @@ async function usarTele(api) { const n = api.inc('tele_n'); await api.say(TELE[(
 const CARTELES = [
   '«NO DEJÉIS TAZAS. – Dirección».',
   '«LAS TAZAS SON DE DIRECCIÓN. – Mercados».',
-  '«ESTA SALA NO ES UN OFFICE». Firmado por la cafetera.',
+  '«ESTA SALA NO ES EL VENDING». Firmado por la cafetera.',
   '«ESTE CARTEL ESTÁ RESERVADO. – Íñigo».',
   '«¿QUIÉN HA CAMBIADO LOS CARTELES? – Todos».',
 ];

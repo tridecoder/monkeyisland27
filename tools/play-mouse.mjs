@@ -98,7 +98,7 @@ async function settle(timeout = 90000) {
 }
 /** Un punto de pantalla (virtual) donde un clic elige exactamente este objetivo; mueve la cámara andando si hace falta. */
 async function pointFor(id) {
-  for (let k = 0; k < 6; k++) {
+  for (let k = 0; k < 12; k++) {          // la Redacción mide 940 px: hasta 4 tramos de pantalla andando
     const r = await G((id) => {
       const g = __game.game, cam = Math.round(g.camX);
       const objs = __game.objects();
@@ -293,8 +293,8 @@ try {
       if (s.n === 16) {                  // clic derecho sobre una salida = Ir a (y vuelta, con clics)
         await settle();
         const r0 = (await state()).room;
-        await clickTarget('catacumba_a_office', 'right'); await settle();
-        ok((await state()).room === 'office' && r0 === 'catacumba', 'clic derecho en una salida = «Ir a» (catacumba → office)');
+        await clickTarget('catacumba_a_pecera', 'right'); await settle();
+        ok((await state()).room === 'pecera' && r0 === 'catacumba', 'clic derecho en una salida = «Ir a» (Redacción de papel → Redacción)');
         await travelMouse('catacumba');
       }
       if (args.lento) await page.screenshot({ path: path.join(here, 'shots', `raton-${String(s.n).padStart(2, '0')}.png`) });
@@ -335,8 +335,9 @@ try {
           const g = __game.game, p = g.player, def = g.room.def;
           const en = (def.entries || {})[d.entry]; const ep = Array.isArray(en) ? en : en ? [en.x, en.y] : null;
           // la salida de vuelta: la que lleva a la sala de origen (o el ascensor)
-          const back = (def.objects || []).find(o => (d.entry === 'ascensor' ? o.ascensor : o.exit && o.exit.room === from));
-          const bt = back ? g.objectTarget(back) : null; const ap = bt ? g.approachPoint(bt) : null;
+          // (si hay varias —el torno y la escalera del vestíbulo—, la más cercana)
+          const cands = (def.objects || []).filter(o => (d.entry === 'ascensor' ? o.ascensor : o.exit && o.exit.room === from)).map(o => { const ap = g.approachPoint(g.objectTarget(o)); return { o, ap, d: Math.hypot(ap.x - p.x, ap.y - p.y) }; }).sort((a, b) => a.d - b.d);
+          const back = cands.length ? cands[0].o : null; const ap = cands.length ? cands[0].ap : null;
           return { room: g.state.room, at: [Math.round(p.x), Math.round(p.y)], ep, back: back && back.id, ap: ap && [Math.round(ap.x), Math.round(ap.y)], inside: g.room.walk.inside(p.x, p.y) };
         }, { d, from: e.room });
         const tag = `${e.room} —${e.id}${e.lift ? ' → ' + d.to : ''}→ ${r.room}`;

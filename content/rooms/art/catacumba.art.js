@@ -1,10 +1,12 @@
-// SALA `catacumba` — CIERRE / REDACCIÓN DE PAPEL (la Catacumba). Arte y geometría (rediseño, docs/GUIA_REDISENO.md §8, §10).
-// Biblia §3.4 + adenda §3.6. Planta 1, MEDIO NIVEL por debajo del Office: la puerta (izquierda) está sobre tres peldaños
-// que SUBEN, con la placa del kit «1 OFFICE ▲». Tres zonas con su suelo, filete y pilastra: la mesa de TEODORO (camastro tras
+// SALA `catacumba` — REDACCIÓN DE PAPEL / CIERRE (apodo, solo en boca de los personajes: la Catacumba). Arte y geometría
+// (rediseño, docs/GUIA_REDISENO.md §8, §10). Biblia §3.4 + adenda §3.6. Planta 1, AL LADO de la Redacción web y al mismo
+// nivel (orden de dirección 2): a la izquierda, la puerta doble abierta con el umbral de latón y la placa del kit
+// «1 REDACCIÓN ◄ / REDACCIÓN WEB»; por ella se ve el azul de las pantallas. La placa esmaltada «TALLERES» (que antes
+// colgaba en la puerta del Office) cuelga aquí dentro, sobre el camastro. Tres zonas con su suelo, filete y pilastra: la mesa de TEODORO (camastro tras
 // la cortina, el fax y el teléfono rojo bajo su cartel «ROTATIVA», el tipómetro; Teodoro SENTADO frente al fax, de perfil,
 // con la mesa por delante), la PARED DE CIERRE (reloj de las 20:59, galería de ex-jefes de cierre, fax enmarcado, cajonera
 // de tipos) y la mesa de AURORA (cartel, Libro de Estilo y tableta calzando la pata, bolis rojos). Galeradas colgadas como
-// jamones, tuberías, bombillas desnudas. Primer plano: bobinas de papel (oclusor que no tapa a nadie).
+// jamones, conductos viejos del aire en el techo (edificio de 1987), bombillas desnudas. Primer plano: bobinas de papel (oclusor que no tapa a nadie).
 import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, ditherPick, ditherOverlay, noise, glow, gradV,
   rng, hash2, shade, shadowEllipse, bevel, vignette, floorPlanks, desk, wallClock,
   bookshelf, newspaperStack, mug, papers, lightCone, trashBin } from '../../../engine/draw.js';
@@ -21,7 +23,7 @@ const FL = 97;                       // línea pared / suelo
 const FAX = { x: 103, y: 77 };       // el fax, sobre la mesa de Teodoro (a su derecha: Teodoro lo mira de perfil)
 const DESK_Y = 91, DESK_ZY = 110;    // tablero de la mesa de Teodoro; z de su frente (quien está más abajo va delante)
 const layout = {
-  catacumba_a_office: { rect: [4, 12, 40, 86], walkTo: [30, 112], face: 'left' },
+  catacumba_a_pecera: { rect: [3, 26, 42, 72], walkTo: [30, 112], face: 'left' },
   galeradas: { rect: [74, 15, 98, 24], walkTo: [120, 112], face: 'up' },
   camastro: { rect: [44, 52, 34, 46], walkTo: [62, 112], face: 'up' },
   mesa_teodoro: { rect: [98, DESK_Y, 72, 20], layer: 'sorted', zy: DESK_ZY, prop: true, cache: true, cachePad: 6, draw: (g) => drawTeodoroDesk(g) },
@@ -137,7 +139,6 @@ function drawCeiling(g) {
     rect(g, bx, 2, 4, 9, PAL.metal[2]); vline(g, bx, 2, 9, PAL.metal[5]); vline(g, bx + 3, 2, 9, PAL.ink[1]);
     px(g, bx + 1, 4, PAL.ink[0]); px(g, bx + 1, 8, PAL.ink[0]);
   }
-  for (const rx of [246]) { for (let i = 0; i < 9; i++) px(g, rx + 1, 12 + i, i < 3 ? '#8a4a24' : '#5a3a20'); stain(g, rx + 1, 18, 5, 3, '#4a3018', 0.5); }
 }
 
 function drawWall(g) {
@@ -168,29 +169,33 @@ function drawFloor(g) {
 }
 
 function drawDoor(g) {
-  // la puerta del Office, medio nivel más ARRIBA: marco común del kit sobre tres peldaños que suben hasta ella
-  const x = 6, y = 31, w = 32, h = 57;
-  kit.marcoPuerta(g, x, y, w, h);
-  gradV(g, x, y, w, h, [PAL.wood[4], PAL.wood[3], PAL.wood[2]]);
-  vline(g, x, y, h, PAL.wood[5]); vline(g, x + w - 1, y, h, PAL.wood[1]);
-  for (const [py0, ph] of [[y + 20, 14], [y + 38, 17]]) {
-    rect(g, x + 5, py0, w - 10, ph, PAL.wood[2]); hline(g, x + 5, py0, w - 10, PAL.wood[1]); vline(g, x + 5, py0, ph, PAL.wood[1]);
-    hline(g, x + 5, py0 + ph - 1, w - 10, PAL.wood[5]); vline(g, x + w - 6, py0, ph, PAL.wood[5]);
-    gradV(g, x + 6, py0 + 1, w - 12, ph - 2, [PAL.wood[3], PAL.wood[2]]);
-  }
-  rect(g, x + 5, y + 6, w - 10, 9, PAL.wood[2]); hline(g, x + 5, y + 6, w - 10, PAL.wood[1]); hline(g, x + 5, y + 14, w - 10, PAL.wood[5]);
-  rect(g, x + 8, y + 8, 12, 5, PAL.paper[6]); greek(g, x + 9, y + 9, 10, 2, PAL.metal[3], 2);
-  rect(g, x + w - 6, y + 32, 3, 4, PAL.gold[3]); px(g, x + w - 6, y + 32, PAL.gold[6]); px(g, x + w - 5, y + 38, PAL.ink[0]);
-  rect(g, x + 8, y + 22, 7, 5, PAL.paper[5]); frameRect(g, x + 8, y + 22, 7, 5, PAL.paper[2]); rect(g, x + 10, y + 23, 2, 2, PAL.red[4]); // aviso clavado
-  ditherOverlay(g, x, y + h - 5, w, 5, PAL.ink[0], 0.4);
-  kit.cantoVivo(g, x, y, w, h);
-  // placa de destino del kit sobre el dintel: «1 OFFICE ▲» (no repite «TALLERES»)
-  kit.placaSala(g, 4, 9, 'office', { flecha: '^' });
-  // tres peldaños con nariz amarilla que SUBEN hasta la puerta (el primero, junto al suelo de la sala) y umbral del destino
-  rect(g, x - 2, FL - 9, w + 4, 9, PAL.ink[1]);
-  kit.peldanos(g, x - 2, FL, w + 4, 'sube', { color: PAL.metal[4] });
-  kit.umbral(g, x - 4, FL + 1, w + 8, 6, kit.DEPTO.office.c, { chevron: true });
-  ditherOverlay(g, 4, 98, 40, 5, PAL.shadow, 0.55);
+  // la puerta doble a la Redacción web, abierta de par en par y AL MISMO NIVEL (orden de dirección 2): por el hueco se
+  // ve la moqueta azul y el resplandor de las pantallas; en el suelo, el umbral de latón (la frontera)
+  const x = 6, y = 33, w = 34, h = FL - 33;
+  kit.marcoPuerta(g, x, y, w, h, { ramp: PAL.wood });
+  gradV(g, x, y, w, h, ['#16202c', '#1e2c3c', '#28384a']);
+  paint(g, x, y + h - 12, w, 12, (xx, yy) => ditherPick(xx, yy, ['#243462', '#2e4078', '#3a4e8c'], (yy - (y + h - 12)) / 12));
+  for (let k = 0; k < 3; k++) { const mx = x + 4 + k * 10; rect(g, mx, y + 24, 8, 6, PAL.ink[1]); rect(g, mx + 1, y + 25, 6, 4, [PAL.crt[3], PAL.blue[4], PAL.crt[4]][k]); rect(g, mx - 1, y + 31, 10, 3, PAL.metal[3]); }
+  rect(g, x + 2, y + 6, w - 4, 3, PAL.metal[4]); hline(g, x + 2, y + 9, w - 4, '#e8fff0');                       // un fluorescente
+  glow(g, x + w / 2, y + 28, 22, 16, '#8ec8ff', 0.3, 3);
+  for (const [lx, d] of [[x, 1], [x + w - 5, -1]]) { rect(g, lx, y, 5, h, OLDW[3]); vline(g, lx + (d > 0 ? 0 : 4), y, h, OLDW[5]); vline(g, lx + (d > 0 ? 4 : 0), y, h, OLDW[1]); }
+  ditherOverlay(g, x, y + h - 4, w, 4, PAL.ink[0], 0.35);
+  kit.cantoVivo(g, x - 3, y - 3, w + 6, h + 3);
+  // placa de destino del kit sobre el dintel: «1 REDACCIÓN ◄ / REDACCIÓN WEB»
+  kit.placaSala(g, 3, 10, 'pecera', { flecha: '<' });
+  // el umbral de latón: la frontera, del color del destino (Redacción, azul)
+  kit.umbral(g, x - 4, FL + 1, w + 8, 6, kit.DEPTO.redaccion.c, { chevron: true });
+  line(g, x - 5, FL + 8, x + w + 5, FL + 8, PAL.gold[5]); line(g, x - 6, FL + 9, x + w + 6, FL + 9, PAL.gold[2]);
+  ditherOverlay(g, 4, 98, 40, 3, PAL.shadow, 0.4);
+}
+/** La placa esmaltada «TALLERES» (gag de la biblia: antes en la puerta del Office): ahora cuelga aquí dentro, torcida. */
+function drawTalleres(g) {
+  const x = 44, y = 37, w = 37, h = 10;
+  ditherOverlay(g, x + 2, y + 2, w, h, PAL.ink[0], 0.45);
+  rect(g, x, y, w, h, PAL.paper[7]); frameRect(g, x, y, w, h, PAL.blue[3]);
+  kit.micro(g, 'TALLERES', x + (w >> 1) + 1, y + 3, PAL.blue[2], { align: 'center' });
+  px(g, x + 1, y + 1, PAL.paper[5]); px(g, x + w - 2, y + 8, PAL.paper[2]); px(g, x + 3, y + 8, PAL.metal[2]);   // desconchones
+  line(g, x + 4, y, x + 18, y - 5, PAL.metal[3]); line(g, x + w - 4, y, x + 18, y - 5, PAL.metal[3]); px(g, x + 18, y - 6, PAL.metal[5]);   // el cordel
 }
 
 function drawGaleradas(g) {
@@ -430,15 +435,6 @@ function drawCamastro(g) {
   ditherOverlay(g, 50, 52, 6, 40, PAL.shadow, 0.3);
 }
 
-function drawBucket(g) {
-  // el cubo que recoge la gotera (cae de la tubería sobre la pilastra de la pared de cierre)
-  const x = 241, y = 101;
-  shadowEllipse(g, x, y, 8, 2, 0.7);
-  poly(g, [[x - 5, y - 8], [x + 5, y - 8], [x + 4, y], [x - 4, y]], (xx) => ditherPick(xx, 0, [PAL.metal[2], PAL.metal[4], PAL.metal[6], PAL.metal[3]], (xx - x + 5) / 10));
-  hline(g, x - 5, y - 8, 11, PAL.metal[7]); hline(g, x - 4, y - 1, 9, PAL.metal[1]);
-  ellipse(g, x, y - 8, 5, 1, PAL.teal[4]);
-}
-
 function drawRug(g) {
   // alfombra raída bajo la mesa de Teodoro (zona 1), con su canto de flecos
   const quad = [[54, 108], [166, 108], [172, 138], [44, 138]];
@@ -511,13 +507,14 @@ export default {
     { id: 'centro', poly: [[98, 111], [312, 111], [318, 142], [98, 142]] },
     { id: 'fondo_der', poly: [[168, 104], [312, 104], [312, 112], [168, 112]] },
   ],
-  entries: { office: [32, 116, 'right'] },
+  entries: { pecera: [32, 116, 'right'] },
   layout,
   draw(g) {
     drawCeiling(g);
     drawWall(g);
     drawFloor(g);
     drawDoor(g);
+    drawTalleres(g);
     drawGaleradas(g);
     drawCamastro(g);
     drawChair(g);
@@ -534,16 +531,12 @@ export default {
     drawBolis(g);
     drawLibroEstilo(g);
     drawCorrector(g);
-    drawBucket(g);
     drawFloorProps(g);
     drawLight(g);
     vignette(g, W, 144, 0.55);
   },
   foreground(g) { foreground(g); },
   animate(g, view, t) {
-    const k = (t % 2400) / 2400;
-    if (k < 0.55) { const y = 18 + Math.floor(Math.pow(k / 0.55, 2) * 73); px(g, 242, y, PAL.teal[6]); px(g, 242, y - 1, PAL.teal[4]); }
-    else if (k < 0.7) { const r = Math.floor((k - 0.55) / 0.15 * 4); px(g, 242 - r, 92, PAL.teal[6]); px(g, 242 + r, 92, PAL.teal[6]); }
     const f = (Math.sin(t / 380) + Math.sin(t / 137) * 0.6) * 0.5;
     if (f > 0.55) glow(g, 122, 30, 30, 18, PAL.light, 0.08, 3);
     for (let i = 0; i < 4; i++) { const ph = ((t / 700) + i * 0.25) % 1; px(g, 130 + Math.round(Math.sin(ph * 6 + i) * 2), 80 - Math.floor(ph * 14), PAL.paper[5]); }

@@ -1,7 +1,7 @@
 // SALA `pajarera` (en pantalla y en las placas: «DIRECCIÓN»; el apodo no se enseña nunca, orden i) — ARTE Y GEOMETRÍA.
 // Paquete P2 del rediseño (docs/GUIA_REDISENO.md §2, §4, §9-§12; propuesta §4.5). 320×144, planta 1, FL = 96.
 // De izquierda a derecha:
-//   · el TABIQUE DE CRISTAL hacia la Redacción (con la puerta: `pajarera_a_pecera`; placa «1 REDACCIÓN ◄ / LA PECERA»):
+//   · el TABIQUE DE CRISTAL hacia la Redacción (con la puerta: `pajarera_a_pecera`; placa «1 REDACCIÓN ◄ / REDACCIÓN WEB»):
 //     a través se ven la pantalla de métricas, mesas con pantallas encendidas y sillas con chaqueta; persiana a media
 //     altura desde 2015 (`persiana`) en el cristal
 //   · la ZONA DEL CONSULTOR: pared de pósits, la matriz 2×2 (COSTE entero), el pósit de Evaristo asomando por la esquina

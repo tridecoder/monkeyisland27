@@ -350,8 +350,8 @@ La partida empieza un viernes a las 18:30 y **a esa hora ya se ha ido casi todo 
              escalera
                 |
  PLANTA 0       |            PLANTA 1
-[vestibulo] ──torno── [pecera] ──puerta── [office] ──puerta── [catacumba]
-     |                   |
+[vestibulo] ──torno── [pecera] ──puerta── [office] (Vending)
+     |                   |  └──puerta doble── [catacumba] (Redacción de papel)
   ascensor            puerta de cristal
      |                   |
  PLANTA -1           [pajarera] ──puerta── [sala_amazonas]
@@ -366,7 +366,7 @@ flowchart LR
   pecera -- ascensor --- ecosistema
   vestibulo -- ascensor (torno_abierto) --- ecosistema
   pecera --- office
-  office --- catacumba
+  pecera -- puerta doble --- catacumba
   pecera --- pajarera
   pajarera -- puerta (Acto III: sala_abierta y ruben_libre) --- sala_amazonas
   pecera -- escalera --- ecosistema
@@ -377,12 +377,12 @@ flowchart LR
 | Sala | Tamaño | Salidas (hotspot de salida → destino) | Bloqueos |
 |---|---|---|---|
 | `vestibulo` | 320×144 | `torno` y `vestibulo_a_redaccion` (escalera, detrás de los tornos) → `pecera`; `ascensor_vestibulo` → botonera | Todo exige `torno_abierto`: el ascensor y la escalera están físicamente **detrás de la línea de tornos** (adenda §14.1). |
-| `pecera` | **800×144 (scroll)** | `pecera_a_vestibulo` → `vestibulo`; `pecera_a_office` → `office`; `pecera_a_pajarera` → `pajarera`; `pecera_a_ecosistema` → `ecosistema`; `ascensor_pecera` → botonera | Ninguno. |
-| `office` | 320×144 | `office_a_pecera` → `pecera`; `office_a_catacumba` → `catacumba` | Ninguno. |
-| `catacumba` | 320×144 | `catacumba_a_office` → `office` | Ninguno. |
+| `pecera` | **940×144 (scroll)** | `pecera_a_vestibulo` → `vestibulo`; `pecera_a_office` → `office` (Vending); `pecera_a_catacumba` → `catacumba` (Redacción de papel); `pecera_a_pajarera` → `pajarera`; `pecera_a_ecosistema` → `ecosistema`; `ascensor_pecera` → botonera | Ninguno. |
+| `office` | 320×144 | `office_a_pecera` → `pecera` (es su única salida) | Ninguno. |
+| `catacumba` | 320×144 | `catacumba_a_pecera` → `pecera` (puerta doble, mismo nivel) | Ninguno. |
 | `pajarera` | 320×144 | `pajarera_a_pecera` → `pecera`; `puerta_sala` → `sala_amazonas` | `puerta_sala` en el Acto III exige `sala_abierta` y `ruben_libre` (y llevar `acta_reunion` y `ticket_n1`). |
 | `sala_amazonas` | 320×144 | `sala_a_pajarera` → `pajarera` | En el Acto III, al entrar empieza el clímax: no se puede salir hasta ganar. |
-| `ecosistema` | 320×144 | `ecosistema_a_pecera` → `pecera`; `ecosistema_a_eventos` → `eventos`; `ecosistema_a_administracion` → `administracion`; `ascensor_ecosistema` → botonera | Ninguno. |
+| `ecosistema` | **400×144 (scroll)** | `ecosistema_a_pecera` → `pecera`; `ecosistema_a_eventos` → `eventos`; `ecosistema_a_administracion` → `administracion`; `ascensor_ecosistema` → botonera | Ninguno. |
 | `eventos` | **512×144 (scroll)** | `eventos_a_ecosistema` → `ecosistema` | Ninguno. (El ascensor llega al Ecosistema; a Eventos se entra por su puerta.) |
 | `administracion` | 320×144 | `administracion_a_ecosistema` → `ecosistema` | Ninguno. |
 | `cpd` | 320×144 | `ascensor_cpd` → botonera (-1, 0, 1, 2) | Ninguno. |
@@ -394,12 +394,12 @@ flowchart LR
 | id | Mirar |
 |---|---|
 | `pecera_a_vestibulo` | «La escalera de bajada al vestíbulo. Planta 0.» // «Abajo espera el torno. Ya no me da miedo. Un poco.» |
-| `pecera_a_office` | «El Office. Ahí vive Gertrudis.» |
-| `pecera_a_pajarera` | «La Pajarera. Despacho de cristal: se ven las broncas, pero no se oyen.» |
+| `pecera_a_office` | «El Vending. Ahí vive Gertrudis.» |
+| `pecera_a_catacumba` | «La Redacción de papel. Misma planta, otro siglo.» // «El umbral de latón es la frontera. Nadie lo pisa sin motivo.» |
+| `pecera_a_pajarera` | «Dirección. Despacho de cristal: se ven las broncas, pero no se oyen.» |
 | `pecera_a_ecosistema` | «Escalera a la planta 2. La moqueta engorda dos centímetros: ahí está el dinero.» |
-| `office_a_pecera` | «La Pecera. Se oye teclear "pensiones".» |
-| `office_a_catacumba` | «Una puerta de madera: "TALLERES". Huele a tinta y a 1994.» |
-| `catacumba_a_office` | «Vuelta al Office. Al siglo XXI, con escalas.» |
+| `office_a_pecera` | «La Redacción. Se oye teclear "pensiones".» |
+| `catacumba_a_pecera` | «Vuelta a la Redacción web. Al otro lado del latón, el siglo XXI. Con escalas.» |
 | `pajarera_a_pecera` | «La Pecera, a través del cristal. Desde aquí parecen peces de verdad.» |
 | `sala_a_pajarera` | ver tabla de la Sala |
 | `ecosistema_a_pecera` | «La escalera de bajada. A Redacción, donde la moqueta es de verdad.» |
@@ -413,7 +413,7 @@ flowchart LR
 | Sala | Acto I | Acto II | Acto III | Epílogo |
 |---|---|---|---|---|
 | `vestibulo` | Celestino | Celestino | Celestino | Celestino, Rubén, Íñigo (con su caja), Gervasio |
-| `pecera` | Yoli, Nerea (+ Íñigo en la presentación) | Yoli, Nerea | Yoli, Nerea; Rubén en la ventana si `ruben_libre` | Yoli, Bruno |
+| `pecera` | Yoli, Nerea, Leoncio, Anselmo, Valentín, Custodia (Secretaría) (+ Íñigo en la presentación) | ídem | ídem; Rubén en la ventana si `ruben_libre` | Yoli, Bruno, el coro; poscréditos: Ramírez y el Lector Medio caído |
 | `office` | Gertrudis | Gertrudis | Gertrudis, **Gervasio** | — |
 | `catacumba` | Teodoro, Aurora | Teodoro, Aurora | Teodoro, Aurora | Aurora (créditos) |
 | `pajarera` | Íñigo (sofá), Lector Medio | Íñigo, Lector Medio; Gervasio en su mesa si `reunion_terminada` | vacía (todos en la Sala) | — |
@@ -428,6 +428,9 @@ flowchart LR
 ---
 
 ### 3.1 `vestibulo` — Vestíbulo y torno
+
+> **Construido:** núcleo a la DERECHA, detrás de los tornos (escalera «1 REDACCIÓN ▲» y ascensor «0»); Celestino tras un
+> mostrador bajo `[170, 97]`; el carril delantero, con cinta y cartel «AVERIADO». Con el torno cerrado no se llega al núcleo.
 
 **Fondo (320×144):** noche. A la izquierda, puertas de cristal a la calle con el naranja de las farolas y lluvia fina. En la pared izquierda, un **organigrama** enorme enmarcado: un árbol de treinta casillas con fotos diminutas; abajo del todo, una casilla con borde discontinuo que pone **VACANTE** y no tiene foto. Junto al cuadro de llaves, un ficus **de plástico** y el **mostrador de seguridad** de Celestino, pegado a los tornos: un monitor con el Ibex en verde y rojo, una radio de bolsillo y un buzón de sugerencias con polvo. **La línea de tornos** cruza la sala en diagonal, del fondo al borde de la pantalla: tres bancadas de acero con alas de cristal (el carril de atrás, con su pantallita LED roja, es el de Bruno; el de delante, FUERA DE SERVICIO) y un cartel colgado «REDACCIÓN → / ASCENSOR →». **Detrás de los tornos**, el vestíbulo interior: pared de nogal con el logo del medio en letras metálicas (a la «e» le falta un tornillo), moqueta roja, el **ascensor** de acero con su botonera (2, 1, 0, −1) y la **escalera a la Redacción**. Suelo de mármol gastado justo delante del carril del torno. *(Revisión de dirección: el ascensor tenía que verse **al otro lado** del torno; sin `torno_abierto` no se puede andar al interior. Adenda §14.1.)*
 
@@ -451,10 +454,18 @@ flowchart LR
 
 ### 3.2 `pecera` — La Pecera (Redacción Web y rincón de Desarrollo)
 
+> **Construido (rediseño, `docs/GUIA_REDISENO.md` §6; órdenes de dirección iv-v):** 940 px. De izquierda a derecha: el
+> NÚCLEO (escalera ▲ P2, escalera ▼ P0, ascensor «1», x 0-96); el pasillo de Dirección (cristal de Dirección x 100-130,
+> puerta del Vending x 136-166); la ZONA DE PAPEL (x 170-310): la **Secretaría de Redacción** de Custodia (ventanuco con
+> persiana, timbre «NO», cartel «EL MATERIAL NO SE PIDE. SE MERECE.», x 174-220) y la **puerta doble abierta a la Redacción
+> de papel** (x 236-296, placa «1 REDACCIÓN / DE PAPEL · CIERRE», umbral de latón: la frontera de la guerra fría); luego
+> Web (Yoli), Economía (Bruno, Ramírez), Infografía (Leoncio, Herminia), la cinta en el suelo, Desarrollo (kanban, Nerea,
+> el coro, Anselmo) y Diseño y Producto (Valentín, el ventanal). La descripción de abajo es la original de la biblia.
+
 **Fondo (800×144, scroll horizontal):** de izquierda a derecha.
 - **0-80 px:** la **escalera que baja al vestíbulo** (planta 0): hueco en la pared, rellano a ras de suelo, barandilla que se hunde y rótulo «↓ VESTÍBULO · PLANTA 0». *(Revisión de dirección: la Redacción está en la planta 1; ya no hay puerta de cristal con el torno detrás. Ver el mapa de §3.0 y la adenda §14.)*
 - **80-260 px:** filas de mesas con monitores dobles llenos de gráficas, casi todas **vacías**: sillas con la chaqueta colgada y pantallas encendidas sin nadie (1.4b); dos figurantes al fondo tecleando. En la pared, una **pantalla gigante** «LECTORES CONCURRENTES: 3.418» con una línea roja que baja. Debajo, en el zócalo, una regleta y un **enchufe** con cinta de carrocero: «NO DESENCHUFAR – PANTALLA DE DIRECCIÓN».
-- **260-420 px:** la mesa de **Yoli** (tres monitores, un colirio, pósit «KEYWORD DEL DÍA»); al lado, la **mesa de Bruno** (monitor viejo con un pósit «Bruno Pellizco», **sin silla**); pegada a ella, la mesa vacía de Ramírez con **la única silla libre**, que tiene colgada una **chaqueta beige**. Una taza abandonada en una mesa. Al fondo, en el centro, la **puerta de cristal de la Pajarera** (se ven las persianas a media altura) y la puerta con letrero «OFFICE».
+- **260-420 px:** la mesa de **Yoli** (tres monitores, un colirio, pósit «KEYWORD DEL DÍA»); al lado, la **mesa de Bruno** (monitor viejo con un pósit «Bruno Pellizco», **sin silla**); pegada a ella, la mesa vacía de Ramírez con **la única silla libre**, que tiene colgada una **chaqueta beige**. Una taza abandonada en una mesa. Al fondo, en el centro, la **puerta de cristal de la Pajarera** (se ven las persianas a media altura) y la puerta con letrero «VENDING».
 - **420-600 px:** **rincón de Desarrollo**: la mesa de Nerea; una **pizarra kanban** con ruedas (columnas POR HACER · EN CURSO · BLOQUEADO · HECHO · HECHO (PERO NO)), con un pósit amarillísimo y viejo en la última columna; un **calendario de papel** de «Ferretería Hermanos Tornillo» en la pared; al fondo, la **ventana** con la ciudad de noche; en el extremo derecho, una **escalera** que sube con el cartel «PLANTA 2 – COMERCIAL · MARKETING · ADMINISTRACIÓN».
 
 - **600-800 px (ampliación):** **Diseño y Producto**: la bandeja de entregas, el puesto de **Valentín Retícula** (cameo, adenda §1.9) a dos metros del coro de Desarrollo, el **ascensor** y la escalera a la planta 2 («MARKETING · EVENTOS · COMERCIAL · ADMINISTRACIÓN»).
@@ -481,9 +492,14 @@ flowchart LR
 
 ---
 
-### 3.3 `office` — El Office
+### 3.3 `office` — El Vending
 
-**Fondo (320×144):** cocina pequeña con fluorescente que parpadea. A la izquierda, la puerta a la Pecera. En el centro, **Gertrudis**: cafetera de espresso cromada, gigantesca, con un display LCD verde de una línea y un pósit «Servicio técnico: CELESTINO, ext. 0». A su lado, una **nevera** con imanes y el cartel «ETIQUETAD VUESTROS TUPPERS», y un **microondas** con nueve tuppers en fila esperando turno. En la pared, un **tablón de corcho** con un hilo de correo impreso larguísimo y una hoja de firmas; un cartel a mano: «EL CORTADO SUBE A 1,20 €». Fregadero con tazas de eventos. A la derecha, una **puerta de madera vieja** con placa esmaltada «TALLERES» y líneas de olor a tinta: lleva a la Catacumba. Es el único sitio donde la web y el papel se cruzan.
+> **Orden de dirección (iii-v):** en pantalla se llama **Vending** (el id sigue siendo `office`). Solo tiene su puerta a
+> la Redacción: la puerta de TALLERES ya no existe (la Redacción de papel se abre a la Redacción) y en su rincón hay una
+> fuente de agua que gotea; la Secretaría de Custodia se mudó a la Redacción y en su hueco está la **máquina de vending**
+> (`maquina_vending`, le queda una bolsa de pipas). La descripción de abajo es la original, con el nombre nuevo.
+
+**Fondo (320×144):** cocina pequeña con fluorescente que parpadea. A la izquierda, la puerta a la Pecera. En el centro, **Gertrudis**: cafetera de espresso cromada, gigantesca, con un display LCD verde de una línea y un pósit «Servicio técnico: CELESTINO, ext. 0». A su lado, una **nevera** con imanes y el cartel «ETIQUETAD VUESTROS TUPPERS», y un **microondas** con nueve tuppers en fila esperando turno. En la pared, un **tablón de corcho** con un hilo de correo impreso larguísimo y una hoja de firmas; un cartel a mano: «EL CORTADO SUBE A 1,20 €». Fregadero con tazas de eventos. *(Antes, a la derecha, la puerta de madera de «TALLERES» que bajaba a la Catacumba: anulada por la orden iv.)* El sitio donde la web y el papel se cruzan es ahora el umbral de latón de la Redacción.
 
 **PNJ:** `gertrudis` (objeto). En el Acto III, `gervasio_acta`, plantado delante de Gertrudis, que no le sirve.
 
@@ -502,7 +518,12 @@ flowchart LR
 
 ### 3.4 `catacumba` — La Catacumba (Redacción de Papel)
 
-**Fondo (320×144):** techo bajo con tuberías, luz amarillenta, olor a 1994. **Galeradas** colgadas de un cordel como jamones. En la pared del fondo, un **reloj** parado en las **20:59**, **fotos** en blanco y negro de jefes de cierre con bigote y un **fax enmarcado**. A la izquierda, la mesa de **Teodoro**: un **fax beige de 1992** con la bandeja de papel vacía, un **teléfono rojo** sin teclas, un **tipómetro** y un cenicero convertido en lapicero; detrás de una cortina entreabierta, un **camastro** con manta de cuadros. A la derecha, la mesa de **Aurora**: bolígrafos rojos, una taza vacía, un **cartel** de cartulina y el **Libro de Estilo** (novecientas páginas, calzando media mesa). Puerta a la izquierda, de vuelta al Office.
+> **Orden de dirección (iv):** en pantalla, «Redacción de papel» / «Cierre». Está AL LADO de la Redacción web, en la
+> planta 1 y al mismo nivel: a la izquierda, la puerta doble abierta (placa «1 REDACCIÓN ◄ / REDACCIÓN WEB») por la que
+> se ve el azul de las pantallas, y el umbral de latón. No es un sótano: conductos viejos en el techo, pero sin gotera.
+> La placa esmaltada «TALLERES» cuelga ahora aquí dentro, sobre el camastro.
+
+**Fondo (320×144):** techo bajo con tuberías, luz amarillenta, olor a 1994. **Galeradas** colgadas de un cordel como jamones. En la pared del fondo, un **reloj** parado en las **20:59**, **fotos** en blanco y negro de jefes de cierre con bigote y un **fax enmarcado**. A la izquierda, la mesa de **Teodoro**: un **fax beige de 1992** con la bandeja de papel vacía, un **teléfono rojo** sin teclas, un **tipómetro** y un cenicero convertido en lapicero; detrás de una cortina entreabierta, un **camastro** con manta de cuadros. A la derecha, la mesa de **Aurora**: bolígrafos rojos, una taza vacía, un **cartel** de cartulina y el **Libro de Estilo** (novecientas páginas, calzando media mesa). Puerta doble a la izquierda, de vuelta a la Redacción web.
 
 **PNJ:** `teodoro_cuerpodoce` (sentado frente al fax), `aurora_galerada`.
 **Regla de Teodoro:** nunca habla. Sus líneas salen del fax en papel continuo, con su color `#D9CFA6` y prefijo «TEODORO (fax):». **Sin `fax_con_papel` no puede contestar**: escribe, el fax pita y no sale nada.
@@ -549,10 +570,14 @@ flowchart LR
 
 ### 3.6 `sala_amazonas` — Sala de Reuniones «Amazonas»
 
+> **Construido (`docs/GUIA_REDISENO.md` §5):** la mesa cruza la sala con la cabecera a la DERECHA, contra el ventanal: es de
+> Gervasio (sentado en los Actos I-II, de pie junto a su sillón vacío en el III). El Lector Medio, a la izquierda de la
+> pantalla y delante de la mesa, con su foco; cae hacia la derecha. Ninguna placa «PRESIDENCIA».
+
 **Fondo (320×144):** mesa larga con doce sillas, una pantalla en la pared con el **orden del día**, una bandeja de **mini-cruasanes** (quedan migas y medio), **botellines** de agua sin abrir. Junto a la puerta, por dentro, un cartel: **«SALIDA: AL TERMINAR EL ORDEN DEL DÍA»**.
 - **Actos I-II (antes de `reunion_terminada`):** Gervasio preside; tres **figurantes de Mercados** desplomados, uno con barba de varios meses.
 - **Acto II (después):** sala vacía, sillas desordenadas, el **planillo** olvidado en la mesa.
-- **Acto III:** penumbra; proyector encendido con la **diapositiva 247 de 400**: «SINERGIAS EXPONENCIALES: EL VIAJE». En la cabecera, **el Lector Medio** con la chaqueta de Ramírez; Íñigo de pie con el portátil; Gervasio en un rincón; catorce botellines alineados.
+- **Acto III:** penumbra; proyector encendido con la **diapositiva 247 de 400**: «SINERGIAS EXPONENCIALES: EL VIAJE». Junto a la pantalla, a su izquierda y delante de la mesa (nunca en la cabecera: orden de dirección ii), **el Lector Medio** con la chaqueta de Ramírez, con su propio foco; Íñigo de pie con el portátil; Gervasio en un rincón; catorce botellines alineados.
 
 | id | Mirar | Interacciones especiales |
 |---|---|---|
@@ -563,13 +588,16 @@ flowchart LR
 | `planillo_mesa` (solo con `reunion_terminada` y sin `planillo`) | «El planillo de maqueta. Alguien lo ha soltado al huir.» | **Coger** → `planillo`. |
 | `botellines` | «Catorce botellines sin abrir. Aquí nadie bebe: se nota que se piensa.» | **Coger:** «Si abro uno, me lo imputan como gasto de representación.» |
 | `proyector` (Acto III) | «Diapositiva 247 de 400: "Sinergias exponenciales: el viaje". No hay vuelta.» | — |
-| `lector_medio` (Acto III) | «En la cabecera, el Lector Medio, con la chaqueta de Ramírez. Asiente.» | **Empujar** solo con `duelo_inigo_ganado` → **final de P16** (7.4). Antes: «Todavía no. Primero, por escrito.» |
+| `lector_medio` (Acto III) | «Junto a la pantalla, el Lector Medio, con la chaqueta de Ramírez. Asiente.» (nunca «en la cabecera»: orden ii) | **Empujar** solo con `duelo_inigo_ganado` → **final de P16** (7.4). Antes: «Todavía no. Primero, por escrito.» |
 | `gervasio_acta` (PNJ, Actos I-II) | «Gervasio preside. Lleva en el punto 3 desde marzo.» | **Hablar:** árbol 7.7.6 (nodo Reunión) → P06. |
 | `sala_a_pajarera` | «La puerta. Abierta. Nadie la usa: el orden del día no lo permite.» | En el Acto III no se puede salir hasta el final. |
 
 ---
 
 ### 3.7 `ecosistema` — El Ecosistema (Marketing y Comercial)
+
+> **Construido:** 400 px con scroll; núcleo a la izquierda, Marketing, puerta de Eventos (194-238), Comercial y el pasillo
+> de Administración (352-398). El neón dice «MARKETING» (los apodos, solo en boca de los personajes).
 
 **Fondo (320×144):** planta diáfana con moqueta más gruesa que en Redacción. A la izquierda, la escalera que baja a la Pecera y, a su lado, la **puerta de Eventos** (doble hoja ciruela con ojos de buey por los que se escapan los focos, cartel verde «EVENTOS» y un piloto «5 MIN»): da a la **Sala Polivalente** (`eventos`, §3.7b). Bajo el neón «ECOSISTEMA», el **embudo de Marketing** en vinilo («VEN · MIRA · COMPARTE · ¿?»). **Pufs** de colores (Marketing los ha puesto delante del **ascensor**) y el **roll-up de Comercial** («SU ANUNCIO AQUÍ»). Una **pizarra** con «SINERGIA» escrito en tres colores sobre la mesa vacía de Tadeo. En el centro-derecha, el **termómetro de ventas** de Maripaz («OBJETIVO Q3», al 97 %), su mesa con auricular de diadema y, enmarcado, el **lema** «TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO». A la derecha, el pasillo hacia Administración y, en él, **la impresora de la tercera** con su pantalla «ATASCO EN BANDEJA 2».
 
@@ -601,7 +629,7 @@ flowchart LR
 
 ### 3.8 `administracion` — Administración, «La Ventanilla»
 
-**Fondo (320×144):** una oficina pequeña y, dentro de ella, una **ventanilla**: una cabina de cristal con un agujerito a la altura de la boca. Detrás, **Begoña** con tres sellos, tres bolis y tres tazas vacías. En la pared del fondo, la **pared de notas rechazadas**: notas de gasto enmarcadas como trofeos de caza. Un **cartel** grande: «TODA PIEZA O NOTA SUFRE EL RECORTE ESTÁNDAR (26 %). SIN EXCEPCIONES. — La Dirección (también recortada)». Otro, pequeño: «ATENCIÓN: 19:00 A 19:15». Un **dispensador de turnos** que marca 0. A la derecha, un **archivador** con la etiqueta «EJEMPLARES». Puerta a la izquierda, al pasillo del Ecosistema.
+**Fondo (320×144):** una oficina pequeña y, dentro de ella, una **ventanilla**: una cabina de cristal con un agujerito a la altura de la boca. Detrás, **Begoña** con tres sellos, tres bolis y tres tazas vacías. En la pared del fondo, la **pared de notas rechazadas**: notas de gasto enmarcadas como trofeos de caza. Un **cartel** grande: «TODA PIEZA O NOTA SUFRE EL RECORTE ESTÁNDAR (26 %). SIN EXCEPCIONES. — Administración (también recortada)». Otro, pequeño: «ATENCIÓN: 19:00 A 19:15». Un **dispensador de turnos** que marca 0. A la derecha, un **archivador** con la etiqueta «EJEMPLARES». Puerta a la izquierda, al pasillo del Ecosistema.
 
 **PNJ:** `begona_triplicado`.
 
@@ -609,7 +637,7 @@ flowchart LR
 |---|---|---|
 | `ventanilla` | «Una ventanilla dentro de una oficina.» // «Nadie sabe por qué. Begoña la defiende igual.» | — |
 | `pared_rechazadas` | Rota una por cada Mirar: «"Comida con fuente. Motivo: las fuentes no comen".» · «"Cena con el ministro. Motivo: el ministro pagó".» · «"Taxi a un canutazo. Motivo: un canutazo no es una dirección".» · «"Paraguas. Motivo: la lluvia no es gasto de empresa".» · «"Doble fila durante exclusiva. Motivo: la exclusiva no salió".» · «"Flores para una fuente. Motivo: las fuentes no se riegan".» | — |
-| `cartel_recorte` | «"TODA PIEZA O NOTA SUFRE EL RECORTE ESTÁNDAR (26 %). SIN EXCEPCIONES".» // «"Firmado: la Dirección (también recortada)".» | — (pista de P11) |
+| `cartel_recorte` | «"TODA PIEZA O NOTA SUFRE EL RECORTE ESTÁNDAR (26 %). SIN EXCEPCIONES".» // «"Firmado: Administración (también recortada)".» | — (pista de P11) |
 | `cartel_horario` | «"ATENCIÓN: 19:00 A 19:15". Según Begoña son las 19:07.» // «Llevan siéndolo toda la tarde.» | — |
 | `dispensador_turnos` | «Dispensador de turnos. Marca 0. Si no hay cola, no hay control.» | **Coger:** «Cojo número. El 1. Begoña me mira como a un milagro.» |
 | `archivador_ejemplares` | «"EJEMPLARES". Aquí guarda Begoña las notas bien hechas. Como reliquias.» | **Abrir:** BEGOÑA: «Las notas son confidenciales. Como las nóminas y la receta de la tortilla.» |
@@ -620,6 +648,9 @@ flowchart LR
 ---
 
 ### 3.9 `cpd` — Sistemas y CPD (planta −1)
+
+> **Construido:** núcleo a la izquierda (ascensor «−1» y la escalera cerrada «SOLO EVACUACIÓN»); quedan los armarios
+> 24-30 (el 22 y el 23 ya no caben junto al núcleo); Paco sentado a la derecha `[277, 96]`; Rubén en el 27.
 
 **Fondo (320×144):** luz azul fría, suelo técnico, filas de **armarios de servidores** negros e idénticos, numerados (en primer plano del 24 al 30). Del **armario 27** sale por debajo de la puerta una tira de **papel continuo** con borde perforado, y se oye un «ñiiic, ñiiic». A la derecha, la mesa de **Paco** con un archivador gordo «REGISTRO DE TICKETS» y, encima, un **contador** LED rojo «TICKETS ABIERTOS: 48.211». Una caja llena de **ratones de bola**. Un **ventilador** de pie con una cuña de papel doblado. Un **libro de visitas** en un atril. A la izquierda, la puerta del ascensor.
 
@@ -764,7 +795,7 @@ flowchart LR
 
 **P15 · El acta: duelo con Gervasio** — `office`
 - **Precondiciones:** `acto_3_iniciado`.
-- **Acción:** Hablar `gervasio_acta` (en el Office) → «Necesito el acta de la última reunión.» → duelo **D3**. Ganarlo.
+- **Acción:** Hablar `gervasio_acta` (en el Vending) → «Necesito el acta de la última reunión.» → duelo **D3**. Ganarlo.
 - **Resultado:** `duelo_gervasio_ganado`; `acta_reunion`; `sala_abierta`.
 - **Pista justa:** AURORA (Acto III): «Esa reunión no decide nada sin acta. Y Gervasio no ha escrito un acta en su vida.» GERVASIO: «Diecinueve años sin un marrón.»
 
@@ -898,7 +929,7 @@ Todos booleanos salvo los marcados `int`. **Paquete** = quién lo implementa (se
 | `duelo_teodoro_ganado` | bool | C · catacumba · fin D2 | C (sellar FIRMA al dar la ficha; árbol de Teodoro) |
 | `casilla_firma` | bool | C · catacumba · fin D2 con ficha, o Dar ficha tras ganar | A (Mirar ficha) · C (cierre) · pistas |
 | `pagina_cerrada` | bool | C · catacumba · P12b | C · pistas |
-| `acto_3_iniciado` | bool | C · catacumba · P12b | A (`papel_continuo`, `armario_27`) · B (`puerta_sala` OCUPADO; Pajarera vacía) · C (Gervasio en el Office; Aurora A6) · D (Sala del clímax) · pistas |
+| `acto_3_iniciado` | bool | C · catacumba · P12b | A (`papel_continuo`, `armario_27`) · B (`puerta_sala` OCUPADO; Pajarera vacía) · C (Gervasio en el Vending; Aurora A6) · D (Sala del clímax) · pistas |
 | `vio_armario_27` | bool | B · pajarera · 3.ª Mirar a `pantalla_titulator` | B (Íñigo I4) · pistas |
 | `titulator_mirar_n` | int | B · pajarera · +1 por Mirar | B |
 | `ruben_encontrado` | bool | A · cpd · P13 | A · D (Pilar presta el álbum; `album_eventos_hotspot`) · B (Nerea N4) · pistas |
@@ -989,7 +1020,7 @@ En esta casa los conflictos no se resuelven a gritos: alguien dice **«Te lo pon
 | R13 | «No es un despido: es una salida en valor.» | «Claro. Y la carta de despido es una newsletter personalizada.» | `rep_13` | Rubén, opción R2 (Acto III) | cpd | D4 |
 | R14 | «Esto lo podemos ver en una reunión rápida.» | «O en un correo de una línea. Este. De nada.» | `rep_14` | Gertrudis, chisme nº 4 | office | D1, D3 |
 
-> El chiste satírico de fondo: **todo el edificio usa las mismas frases**. Por eso un ataque que oyes en el Office te lo suelta luego el consultor. No hay «traducciones» ni dialectos: son literalmente las mismas palabras.
+> El chiste satírico de fondo: **todo el edificio usa las mismas frases**. Por eso un ataque que oyes en el Vending te lo suelta luego el consultor. No hay «traducciones» ni dialectos: son literalmente las mismas palabras.
 
 **Textos de los chismes de Gertrudis** (LCD, MAYÚSCULAS, color `#39FF14`; dos pantallas cada uno):
 
@@ -1216,7 +1247,7 @@ RUBÉN: ¿Me traes un táper, ya que vas?
 **Entrada (Usar `puerta_sala` con todo):**
 ```
 (Penumbra. Proyector: diapositiva 247 de 400, "SINERGIAS EXPONENCIALES: EL VIAJE".
- En la cabecera, el Lector Medio con la chaqueta de Ramírez. Íñigo, de pie.
+ Junto a la pantalla, el Lector Medio con la chaqueta de Ramírez. Íñigo, de pie.
  Gervasio en un rincón, con un café que no le han servido.)
 ÍÑIGO: ...y en la fase 3, el papel pasa a ser un recuerdo de marca.
 ÍÑIGO: (sin girarse) ¿Vacante? Esto es una Reunión de Dirección. Los becarios no tienen voz.
@@ -1238,7 +1269,7 @@ BRUNO: Respondo a todos.
 
 **Empujar `lector_medio`:**
 ```
-(El Lector Medio está de pie en la cabecera, DELANTE de la mesa, iluminado: no es una proyección.
+(El Lector Medio está de pie junto a la pantalla, DELANTE de la mesa, iluminado: no es una proyección. La cabecera es de Gervasio.
  Bruno se le acerca por un lado y le da un toquecito. Se inclina. Se inclina más.
  Cae de cara al suelo, delante de la mesa. ¡PLOF! Rebota, tiembla la sala, vuelan catorce botellines.
  Por detrás: cartón pluma, celo y una pegatina: "Atrezo – Focus group 2014". Se queda ahí.)
@@ -1992,7 +2023,7 @@ Cada autor implementa **sus salas completas** (fondo descrito, hotspots, Mirar, 
 |---|---|---|---|---|---|---|
 | **A · «Puerta, sótano y común»** | `vestibulo`, `cpd` | `celestino`, `paco_ticket`, `ruben` (en el CPD), `abuela_remedios` | P01, P05a (registro), P13, P14c | — | 7.1 Intro, 7.3 Revelación de Rubén, **7.5 Final + créditos + poscréditos** (vestíbulo y el tramo de la Pecera) | Inventario completo (sección 4: ids, nombres, Mirar con estados), respuestas por defecto (8.2), pistas de la abuela (5.6), datos comunes del duelo (6.3 parejas, 6.6 flojas y comodín, 6.7 «cualquier otro»), cuarta pared (8.6), aviso «Réplica apuntada» |
 | **B · «La web y el poder»** | `pecera` (800 px), `pajarera` | `yoli_tendencias`, `nerea_backlog`, `inigo_sinergia` (Actos I-II), `gervasio_acta` (nodo Pajarera), `lector_medio` (Pajarera), `ruben` (en la Pecera, tras `ruben_libre`) | P04, P05b (enchufe), P10b (escribir), P14b (descopear) | — | 7.2 Presentación del villano | Rotación del Titulator (8.3) |
-| **C · «El papel y el café»** | `office`, `catacumba` | `gertrudis`, `aurora_galerada`, `teodoro_cuerpodoce`, `gervasio_acta` (nodo Office) | P02, P03, P09, P10a, P12, P15 | **D2** Teodoro, **D3** Gervasio | 7.3a Inicio del Acto III | Chismes y errores de Gertrudis (6.3, 7.7.3) |
+| **C · «El papel y el café»** | `office`, `catacumba` | `gertrudis`, `aurora_galerada`, `teodoro_cuerpodoce`, `gervasio_acta` (nodo Vending) | P02, P03, P09, P10a, P12, P15 | **D2** Teodoro, **D3** Gervasio | 7.3a Inicio del Acto III | Chismes y errores de Gertrudis (6.3, 7.7.3) |
 | **D · «Planta noble y Dirección»** | `ecosistema`, `eventos`, `administracion`, `sala_amazonas` | `pilar_escaleta`, `borja_engagement`, `maripaz_remitido`, `begona_triplicado`, `gervasio_acta` (nodo Reunión y clímax), `inigo_sinergia` y `lector_medio` (Acto III en la Sala) | P06, P07, P08, P11, P14a (álbum), P16 | **D1** Maripaz, **D4** Íñigo | 7.4 Clímax (entrada, duelo, empujón, Begoña con la factura, «Goyita, tira») | — |
 
 **Carga estimada:** A ≈ 2 salas + común + final; B ≈ 2 salas (una doble) + villano; C ≈ 2 salas + 6 puzles + 2 duelos; D ≈ 4 salas (con la Sala Polivalente de Eventos) + 6 puzles + 2 duelos + clímax.
@@ -2060,7 +2091,7 @@ Se ha simulado el walkthrough 5.4 con un modelo de estado (inventario + flags + 
 
 - **Cada objeto que se usa se ha conseguido antes**, y **los 15 objetos no iniciales se usan al menos una vez** (ninguno sobra).
 - **Ningún flag huérfano:** todos los flags de la tabla 5.5 tienen quien los pone y quien los lee (los marcados como opcionales solo los lee una línea opcional o las pistas).
-- **Los cuatro duelos se ganan** con las réplicas aprendidas antes de cada uno (D1: R08, R04, R11 · D2: R06, R02, R03 + `manual_fax` · D3: R07, R01, R14 · D4: R10, R12, `ticket_n1`, R13, R05, `acta_reunion`). En el orden alternativo, `rep_07` se puede aprender también en el Acto III (Gervasio está en el Office), así que leer su ordenador tarde no bloquea nada.
+- **Los cuatro duelos se ganan** con las réplicas aprendidas antes de cada uno (D1: R08, R04, R11 · D2: R06, R02, R03 + `manual_fax` · D3: R07, R01, R14 · D4: R10, R12, `ticket_n1`, R13, R05, `acta_reunion`). En el orden alternativo, `rep_07` se puede aprender también en el Acto III (Gervasio está en el Vending), así que leer su ordenador tarde no bloquea nada.
 - **Sin callejones:** el café es infinito; perder un duelo no gasta nada; todo remate permite [Retirarse del hilo]; cada puerta bloqueada dice qué falta.
 - **Cifras comprobadas:** «Bruno Pellejo» = 13; «Hidrovoltia lanza una opa sobre Banco Robledal» = 46; 31 × 0,74 = 22,94 → 23; el titular de los áridos = 87. **v2:** ventanilla 19:15 − 19:07 = 8 minutos; 1997 → 2026 = 29 años (Teodoro); ticket nº 3, 2017 → 2026 = 9 años; 1996 → 2026 = 30 años (Aurora); 2014 → 2026 = 12 años.
 

@@ -47,7 +47,7 @@ export const DEPTO = {
   desarrollo: { nombre: 'DESARROLLO', c: '#9a6ae0', suelo: ['#2e2a44', '#38324f', '#423b5c'] },
   diseno: { nombre: 'DISEÑO Y PRODUCTO', c: '#f0f0e8', suelo: ['#6a6a70', '#7c7c84', '#8e8e96'] },
   direccion: { nombre: 'DIRECCIÓN', c: '#d8a040', suelo: ['#4a2e1c', '#5a3a24', '#6a462c'] },
-  office: { nombre: 'OFFICE', c: '#f0d060', suelo: ['#6a5a3a', '#7a6a44', '#8a7a50'] },
+  office: { nombre: 'VENDING', c: '#f0d060', suelo: ['#6a5a3a', '#7a6a44', '#8a7a50'] },
   papel: { nombre: 'CIERRE', c: '#c89050', suelo: ['#3a2618', '#4a3220', '#5a3e28'] },
   marketing: { nombre: 'MARKETING', c: '#ff5aa8', suelo: ['#3e2a4a', '#4a3258', '#563a66'] },
   eventos: { nombre: 'EVENTOS', c: '#e04050', suelo: ['#3a1420', '#4a1a28', '#5a2030'] },
@@ -191,7 +191,7 @@ export function placa(g, x, y, text, o = {}) {
   const fw = flecha ? 8 : 0;
   const w = band + 4 + tw + 4 + fw;
   const h = sub ? 20 : 13;
-  if (String(text).length > 14) registro.mal(`placa «${text}»: más de 12-14 caracteres (usa \`sub\` para la segunda línea)`);
+  if (String(text).length > 18) registro.mal(`placa «${text}»: más de 12-14 caracteres (usa \`sub\` para la segunda línea)`);
   ditherOverlay(g, x + 1, y + 1, w, h, PAL.shadow, 0.55);
   rect(g, x, y, w, h, INK);
   frameRect(g, x, y, w, h, o.marco || '#c8c4d8');
@@ -220,8 +220,8 @@ export function placaSalaW(room, o = {}) { const S = SALA[room]; return S ? plac
 /** Flecha de 6×7: '<' '>' '^' 'v'. */
 export function flechaPx(g, x, y, dir, c) {
   const A = {
-    '>': ['..#...', '..##..', '######', '######', '######', '..##..', '..#...'],
-    '<': ['...#..', '..##..', '######', '######', '######', '..##..', '...#..'],
+    '>': ['...#..', '...##.', '#####.', '######', '#####.', '...##.', '...#..'],
+    '<': ['..#...', '.##...', '.#####', '######', '.#####', '.##...', '..#...'],
     '^': ['..##..', '.####.', '######', '..##..', '..##..', '..##..', '..##..'],
     'v': ['..##..', '..##..', '..##..', '..##..', '######', '.####.', '..##..'],
   }[dir];
@@ -283,8 +283,8 @@ export function huecoAbierto(g, x, y, w, h, o = {}) {
   rect(g, lx, y, 5, h, hoja[3]); vline(g, lx, y, h, hoja[5]); vline(g, lx + 4, y, h, hoja[1]);
   rect(g, lx + (o.hojaIzq ? 3 : 1), y + (h * 0.52 | 0), 1, 3, PAL.gold[5]);
 }
-/** Tres peldaños con nariz amarilla en el umbral de una puerta de MEDIO NIVEL (D6: Office ↔ Catacumba).
- *  dir 'baja' (desde el Office: los peldaños se hunden tras la puerta) | 'sube' (desde la Catacumba: suben hacia ella). */
+/** Tres peldaños con nariz amarilla en el umbral de una puerta de MEDIO NIVEL (ya sin uso: la D6 se anuló; la Redacción
+ *  de papel está al lado de la Redacción, al mismo nivel). dir 'baja' | 'sube' (el dibujo es el mismo: pirámide). */
 export function peldanos(g, x, yBase, w, dir = 'baja', o = {}) {
   // pirámide: el peldaño de ABAJO es el más ancho y cada uno de encima entra 2 px por lado (en los dos sentidos); el
   // de abajo, más oscuro (en 'baja' es el más hondo; en 'sube', el que queda en la sombra del suelo)

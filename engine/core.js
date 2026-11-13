@@ -15,6 +15,8 @@ import { Debug } from './debug.js';
 import * as Pose from './pose.js';
 import * as Detalle from './detalle.js';
 import * as Ver from './hotspots.js';
+/** Versión de las partidas guardadas: 2 = tras el rediseño de las salas (las posiciones de los PNJ cambiaron). */
+const SAVE_V = 2;
 
 export const SCREEN_W = 320, SCREEN_H = 200, VIEW_H = 144;
 
@@ -228,7 +230,7 @@ export class Game {
   save(slot = 1) {
     if (!this.state) return false;
     this.syncState();
-    const data = { v: 1, date: Date.now(), roomName: this.room ? (this.room.def.name || this.room.def.id) : '', state: this.state };
+    const data = { v: SAVE_V, date: Date.now(), roomName: this.room ? (this.room.def.name || this.room.def.id) : '', state: this.state };
     try { localStorage.setItem(this.slotKey(slot), JSON.stringify(data)); return true; } catch (e) { this.error('No se pudo guardar', e); return false; }
   }
   slotInfo(slot) {
@@ -240,10 +242,35 @@ export class Game {
     if (!d || !d.state) { this.error('Ranura vacía: ' + slot); return false; }
     this.resetRuntime();
     this.state = d.state;
+    // partidas de antes del rediseño (v < 2): las posiciones guardadas de los PNJ son las de las salas viejas (la Redacción
+    // medía 800 px, los mostradores y las mesas estaban en otro sitio). Cada PNJ vuelve a su sitio de la sala donde está.
+    if ((d.v || 1) < SAVE_V) this.migrarPosiciones();
     this.buildActors();
     this.mode = 'play';
     await this.runScript(async () => { await this.enterRoom(this.state.room, null, { restore: true }); }, { label: 'cargar' });
+    this.anclarJugador();
     return true;
+  }
+  /** Partida vieja: cada PNJ (no el jugador) que está en una sala donde tiene sitio en el arte vuelve a ese sitio (y a su
+   *  pose); una sala que ya no existe en la geografía (salida retirada) no importa: el sitio es el de la sala. */
+  migrarPosiciones() {
+    const pl = this.G.player;
+    for (const [id, s] of Object.entries(this.state.actors || {})) {
+      if (id === pl || !s || !s.room) continue;
+      const r = this.content.rooms[s.room];
+      const p = r && asArray(r.actors).find(p => p.id === id);
+      if (!p || p.x == null) continue;
+      s.x = p.x; s.y = p.y; s.dir = p.dir || s.dir; delete s.pose;
+    }
+    if (this.state.poses) this.state.poses = {};
+  }
+  /** Tras cargar: si el jugador ha quedado fuera del suelo (partida vieja, sala repintada), al punto de suelo más cercano. */
+  anclarJugador() {
+    const p = this.player, rt = this.room;
+    if (!p || !rt || !rt.walk || p.room !== rt.def.id || rt.walk.inside(p.x, p.y)) return;
+    const [x, y] = rt.walk.nearest(p.x, p.y);
+    p.x = x; p.y = y; p.path = [];
+    this.snapCamera(); this.syncState();
   }
   autosave() { if (this.G.autosave !== false) this.save('auto'); }
 

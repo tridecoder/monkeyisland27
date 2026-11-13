@@ -57,8 +57,8 @@ async function chooseText(substr) {
 }
 
 const ROUTE = [
-  ['torno', 'pecera'], ['pecera_a_office', 'office'], ['office_a_catacumba', 'catacumba'], ['catacumba_a_office', 'office'],
-  ['office_a_pecera', 'pecera'], ['pecera_a_pajarera', 'pajarera'], ['puerta_sala', 'sala_amazonas'], ['sala_a_pajarera', 'pajarera'],
+  ['torno', 'pecera'], ['pecera_a_office', 'office'], ['office_a_pecera', 'pecera'], ['pecera_a_catacumba', 'catacumba'],
+  ['catacumba_a_pecera', 'pecera'], ['pecera_a_pajarera', 'pajarera'], ['puerta_sala', 'sala_amazonas'], ['sala_a_pajarera', 'pajarera'],
   ['pajarera_a_pecera', 'pecera'], ['pecera_a_ecosistema', 'ecosistema'], ['ecosistema_a_eventos', 'eventos'],
   ['eventos_a_ecosistema', 'ecosistema'], ['ecosistema_a_administracion', 'administracion'],
   ['administracion_a_ecosistema', 'ecosistema'], ['ecosistema_a_pecera', 'pecera'], ['pecera_a_vestibulo', 'vestibulo'],
@@ -184,6 +184,11 @@ try {
   ok(/escalera/i.test(geo.pname), `la salida de la Redacción (planta 1) al vestíbulo (planta 0) es una escalera que baja («${geo.pname}»)`);
   ok(geo.ep[0] <= geo.exX[0] + geo.exX[2] + 10, `llegando del vestíbulo se aparece arriba de esa escalera (x=${geo.ep[0]})`);
   ok(geo.ev[0] >= 234 && Math.abs(geo.ev[0] - (geo.erX[0] + geo.erX[2] / 2)) < 30, `llegando de la Redacción se aparece al pie de la escalera «REDAC. 1», detrás de los tornos (x=${geo.ev[0]})`);
+  // orden de dirección 2: la Redacción de papel, AL LADO de la Redacción (puerta doble, mismo nivel), sin pasar por el
+  // Vending; el Vending solo tiene la puerta a la Redacción
+  const vecinos = await G(() => { const R = __game.game.content.rooms; const ex = (r) => (R[r].objects || []).filter(o => o.exit).map(o => o.exit.room).sort(); return { cat: ex('catacumba'), off: ex('office'), pec: ex('pecera') }; });
+  ok(JSON.stringify(vecinos.cat) === '["pecera"]' && JSON.stringify(vecinos.off) === '["pecera"]' && vecinos.pec.includes('catacumba'),
+    `la Redacción de papel sale solo a la Redacción y el Vending solo a la Redacción (catacumba → ${vecinos.cat}; office → ${vecinos.off})`);
   await G(() => __game.gotoRoom('pecera', 'vestibulo')); await G(() => __game.waitIdle());
   await G(() => __game.doVerb('ir', 'pecera_a_vestibulo'));
   const llegaV = await state();
@@ -191,6 +196,24 @@ try {
   await G(() => __game.doVerb('ir', 'vestibulo_a_redaccion'));
   const llegaP = await state();
   ok(llegaP.room === 'pecera' && llegaP.player.x < 70, `subiendo «REDAC. 1» se llega a la Pecera arriba de la escalera de bajada (x=${Math.round(llegaP.player.x)})`);
+  // partidas de antes del rediseño (v1): PNJ con las posiciones viejas y el jugador fuera del suelo → al cargar, cada PNJ a
+  // su sitio nuevo y el jugador al suelo más cercano (engine/core.js migrarPosiciones / anclarJugador)
+  const vieja = await G(async () => {
+    const g = __game.game;
+    await __game.gotoRoom('pecera', 'vestibulo'); await __game.waitIdle();
+    g.syncState();
+    const st = JSON.parse(JSON.stringify(g.state));
+    st.actors.yoli_tendencias = { ...st.actors.yoli_tendencias, room: 'pecera', x: 309, y: 116 };     // sitio de la sala de 800 px
+    st.actors.valentin_reticula = { ...st.actors.valentin_reticula, room: 'pecera', x: 780, y: 97, pose: 'sentado' };
+    st.actors.bruno = { ...st.actors.bruno, room: 'pecera', x: 330, y: 92 };                          // dentro de una mesa / la pared
+    localStorage.setItem(g.slotKey('vieja'), JSON.stringify({ v: 1, date: Date.now(), roomName: 'La Pecera', state: st }));
+    await __game.load('vieja'); await __game.waitIdle();
+    const A = g.actors, L = g.content.rooms.pecera.layout, P = g.player;
+    return { yoli: [A.yoli_tendencias.x, A.yoli_tendencias.y], yoliAt: L.yoli_tendencias.at, val: [A.valentin_reticula.x, A.valentin_reticula.y, A.valentin_reticula.pose || null],
+      valAt: L.valentin_reticula.at, p: [Math.round(P.x), Math.round(P.y)], dentro: g.room.walk.inside(P.x, P.y) };
+  });
+  ok(vieja.yoli[0] === vieja.yoliAt[0] && vieja.val[0] === vieja.valAt[0] && !vieja.val[2], `partida vieja: los PNJ vuelven a su sitio nuevo (Yoli ${vieja.yoli}, Valentín ${vieja.val})`);
+  ok(vieja.dentro, `partida vieja: el jugador fuera del suelo vuelve al suelo (${vieja.p})`);
   const presence = await G(async () => {
     await __game.gotoRoom('pajarera'); const a = __game.objects().filter(o => o.kind === 'actor').map(o => o.id);
     __game.setFlag('acto_3_iniciado', true);

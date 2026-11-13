@@ -1,18 +1,23 @@
 // SALA `pecera` (la Redacción) — ARTE Y GEOMETRÍA. Paquete P2 del rediseño (docs/GUIA_REDISENO.md §3, §6, §10-§12).
-// 800×144, planta 1, FL = 94. Siete zonas de izquierda a derecha (content/lib/edificio.js PECERA_ZONAS), cada una con
+// 940×144, planta 1, FL = 94. Ocho zonas de izquierda a derecha (content/lib/edificio.js PECERA_ZONAS), cada una con
 // las cuatro capas: suelo propio con canto de goma, pared con filete de su color, pilastra en el cambio y rótulo colgado.
 //   NÚCLEO 0-96 ............ kit.nucleo: escalera que SUBE a P2 (arriba), que BAJA a P0 (abajo) y ascensor «1»
-//   PASILLO DE DIRECCIÓN ... 96-170: puerta de cristal de Dirección (100-130) y puerta de madera del Office (136-166)
-//   WEB .................... 170-310: pantalla de métricas con su enchufe en el zócalo, sillas con chaqueta, la guardia,
+//   PASILLO DE DIRECCIÓN ... 96-170: puerta de cristal de Dirección (100-130) y puerta de madera del Vending (136-166)
+//   PAPEL (bisagra) ........ 170-310: la Secretaría de Redacción (Custodia: ventanuco 179-215, cartel, timbre, cajonera
+//                            176-218) y la PUERTA DOBLE a la Redacción de papel (236-296) con su placa y el umbral de
+//                            latón: la frontera de la guerra fría papel/web. Parqué viejo (órdenes de dirección 2 y 3)
+//   WEB .................... 310-450: pantalla de métricas con su enchufe en el zócalo, sillas con chaqueta, la guardia,
 //                            la mesa de Yoli (tres monitores)
-//   ECONOMÍA ............... 310-386: la mesa de Bruno SIN silla (marcas de ruedas), el pósit «BRUNO / PELLIZCO»,
+//   ECONOMÍA ............... 450-526: la mesa de Bruno SIN silla (marcas de ruedas), el pósit «BRUNO / PELLIZCO»,
 //                            la mesa de Ramírez parada en marzo de 2019 y su silla con chaqueta en el plano medio
-//   INFOGRAFÍA ............. 386-480: mesa de dibujo con flexo, Herminia, quesitos; cartel «SOLO CÓDIGO» en la pilastra
-//   (cinta) ................ 480: la frontera de carrocero EN EL SUELO, sobre el cambio de moqueta (recta/doble/lazo)
-//   DESARROLLO ............. 480-680: kanban EXENTO con ruedas (plano medio), calendario, semáforo, pantalla de Anselmo,
+//   INFOGRAFÍA ............. 526-620: mesa de dibujo con flexo, Herminia, quesitos; cartel «SOLO CÓDIGO» en la pilastra
+//   (cinta) ................ 620: la frontera de carrocero EN EL SUELO, sobre el cambio de moqueta (recta/doble/lazo)
+//   DESARROLLO ............. 620-820: kanban EXENTO con ruedas (plano medio), calendario, semáforo, pantalla de Anselmo,
 //                            el coro de espaldas y la taza «NO»
-//   DISEÑO Y PRODUCTO ...... 680-800: ventanal (Rubén en el Acto III; amanecer en el epílogo), bandeja ENTREGAS,
+//   DISEÑO Y PRODUCTO ...... 820-940: ventanal (Rubén en el Acto III; amanecer en el epílogo), bandeja ENTREGAS,
 //                            puesto de Valentín (la Redacción en miniatura); Valentín de pie, a cuerpo entero
+// De Web a Diseño, el dibujo y los objetos están escritos en las coordenadas de antes (sala de 800 px) y se pintan con
+// un desplazamiento de PECERA_DESPLAZ = 140 px (`desplazado`, `D`); el layout suma lo mismo (`mover`).
 // Tres planos: fondo (pared), plano medio (kanban exento, silla de Ramírez: `layer: 'sorted'` + walkbox con muescas) y
 // primer plano (`foreground`: ficus del pasillo y canto de una mesa de Desarrollo, siempre por debajo de los torsos).
 // Estados (se dibujan por el ESTADO del objeto o por el flag que la lógica pone ANTES de la línea que lo comenta):
@@ -27,12 +32,17 @@ import {
 } from '../../../engine/draw.js';
 import { postit, POSTIT, lcd, JACKETS, chairBack, jacketOn, deskFront, blinds, rainOnGlass, rainyGlassStatic, cable, personBack } from './lib-oficina.js';
 import * as kit from '../../lib/kit.js';
-import { nucleoGeom, PECERA_ZONAS, PECERA_PUERTAS } from '../../lib/edificio.js';
+import { nucleoGeom, PECERA_ZONAS, PECERA_PUERTAS, PECERA_DESPLAZ, SALA } from '../../lib/edificio.js';
+import { hatchFrame, secretaria, drawCustodia, SECRETARIA_RECTS } from './lib-secretaria.js';
 
-const W = 800;
+const W = 940;
+const D = PECERA_DESPLAZ;            // 140: lo que se corren las zonas de Web a Diseño
+const SDX = 88;                      // la Secretaría, dibujada en coordenadas del antiguo Office, + 88 px
+/** pinta `fn` corrido D px a la derecha (dibujo escrito en las coordenadas de la sala de 800 px) */
+const desplazado = (fn, dx = D) => (g, ...a) => { g.save(); g.translate(dx, 0); try { return fn(g, ...a); } finally { g.restore(); } };
 const FL = 94;                       // línea pared/suelo (obligatoria en las salas con núcleo, §3)
 const DT = 80;                       // tapa de las mesas pegadas a la pared
-const VPX = 400, VPY = -150;         // fuga del suelo: juntas y cantos suaves que se abren desde el centro de la sala
+const VPX = 470, VPY = -150;         // fuga del suelo: juntas y cantos suaves que se abren desde el centro de la sala
 const N = nucleoGeom('pecera', FL);
 const { micro } = kit;
 const INK = kit.INK;
@@ -54,6 +64,7 @@ const RAMPA = {
   infografia: { r: ['#3a3024', '#4a3e2c', '#5a4c36', '#6a5a40'], loseta: 12 },      // cálida
   desarrollo: { r: ['#28223e', '#322a4e', '#3c335e', '#463c70'], loseta: 16 },      // violeta
   diseno: { r: ['#5a5a62', '#6a6a72', '#7a7a82', '#8a8a92'], loseta: 20 },          // gris perla
+  papel: { r: ['#3a2616', '#4a321c', '#5a3e24', '#6a4a2c'], loseta: 5 },             // parqué viejo de tablilla (Redacción de papel)
 };
 function suelos(g) {
   paint(g, 0, FL, W, 144 - FL, (x, y) => {
@@ -75,7 +86,7 @@ function suelos(g) {
   });
   // cantos de goma entre zonas (líneas de fuga claras); en 480 manda la cinta (objeto)
   for (const z of PECERA_ZONAS) {
-    if (z.x0 === 0 || z.x0 === 480) continue;
+    if (z.x0 === 0 || z.x0 === Z.desarrollo.x0) continue;
     const xe = Math.round(deSuelo(z.x0, 144));
     line(g, z.x0, FL, xe, 144, '#c4c8d4'); line(g, z.x0 + 1, FL, xe + 1, 144, '#4a4e5c');
   }
@@ -107,16 +118,18 @@ function techo(g) {
   for (let x = 0; x < W; x += 24) vline(g, x, 0, 14, PAL.ink[0]);
   hline(g, 0, 7, W, PAL.ink[0]); hline(g, 0, 14, W, PAL.ink[1]);
   // fluorescentes por zona (en el pasillo de Dirección, focos cálidos)
-  for (const x of [190, 250, 326, 412, 500, 560, 620, 700, 760]) fluorescent(g, x, 10, 30, true);
+  for (const x of [190, 250, 326, 412, 500, 560, 620, 700, 760]) fluorescent(g, x + D, 10, 30, true);
+  // en la zona de papel, dos lámparas de campana de las de antes (la luz de la Redacción de papel asoma hasta aquí)
+  for (const x of [196, 270]) { vline(g, x, 0, 9, PAL.metal[2]); poly(g, [[x - 5, 13], [x + 5, 13], [x + 3, 9], [x - 3, 9]], PAL.green[3]); hline(g, x - 5, 13, 11, PAL.green[5]); hline(g, x - 3, 14, 7, '#fff2c0'); glow(g, x, 26, 18, 14, '#ffd890', 0.18, 3); }
   for (const x of [112, 150]) { rect(g, x - 3, 12, 7, 2, PAL.metal[3]); hline(g, x - 2, 14, 5, '#fff2c0'); glow(g, x, 22, 14, 10, '#ffd890', 0.16, 3); }
   // rejillas del aire, rociadores y la bandeja de cables de Desarrollo (con cables que cuelgan)
-  for (const x of [222, 362, 456, 668, 742]) { rect(g, x, 2, 12, 5, PAL.metal[2]); for (let k = 0; k < 12; k += 2) vline(g, x + k, 3, 3, PAL.ink[1]); }
-  for (const x of [280, 470, 540, 720]) { px(g, x, 13, PAL.metal[5]); px(g, x - 1, 14, PAL.red[3]); px(g, x + 1, 14, PAL.red[3]); }
-  rect(g, 486, 4, 190, 2, PAL.metal[3]); hline(g, 486, 6, 190, PAL.ink[0]);
-  cable(g, 520, 6, 548, 6, 4, '#3a2a5a', 10); cable(g, 600, 6, 640, 6, 6, PAL.ink[0], 12); cable(g, 650, 6, 672, 6, 3, '#5a2a2a', 8);
+  for (const x of [222 + D, 362 + D, 456 + D, 668 + D, 742 + D]) { rect(g, x, 2, 12, 5, PAL.metal[2]); for (let k = 0; k < 12; k += 2) vline(g, x + k, 3, 3, PAL.ink[1]); }
+  for (const x of [280 + D, 470 + D, 540 + D, 720 + D]) { px(g, x, 13, PAL.metal[5]); px(g, x - 1, 14, PAL.red[3]); px(g, x + 1, 14, PAL.red[3]); }
+  rect(g, 486 + D, 4, 190, 2, PAL.metal[3]); hline(g, 486 + D, 6, 190, PAL.ink[0]);
+  cable(g, 520 + D, 6, 548 + D, 6, 4, '#3a2a5a', 10); cable(g, 600 + D, 6, 640 + D, 6, 6, PAL.ink[0], 12); cable(g, 650 + D, 6, 672 + D, 6, 3, '#5a2a2a', 8);
 }
 function pilastras(g) {
-  for (const x of [96, 170, 310, 386, 480, 680]) kit.pilastra(g, x - 3, 15, FL);
+  for (const z of PECERA_ZONAS) if (z.x0 > 0) kit.pilastra(g, z.x0 - 3, 15, FL);
 }
 function rotulos(g) {
   for (const z of PECERA_ZONAS) {
@@ -176,7 +189,7 @@ function pasillo(g) {
   puertaDireccion(g);
   puertaOffice(g);
   // las dos placas, apiladas a dos alturas (orden i: «DIRECCIÓN», nunca el apodo)
-  vline(g, 124, 0, 6, PAL.metal[3]); vline(g, 165, 0, 6, PAL.metal[3]);
+  vline(g, 124, 0, 6, PAL.metal[3]); vline(g, 163, 0, 6, PAL.metal[3]);
   kit.placaSala(g, 170 - 2 - kit.placaSalaW('office', { flecha: '>' }), 5, 'office', { flecha: '>' });
   kit.placaSala(g, 98, 21, 'pajarera', { flecha: '<' });
 }
@@ -323,20 +336,13 @@ function plantita(g, x, y) {
   hline(g, x - 5, y - 9, 10, PAL.white || '#ffffff');
 }
 
-// ================================================================== FONDO
-function drawRoom(g) {
-  techo(g);
-  for (const z of PECERA_ZONAS) if (z.id !== 'nucleo' && z.id !== 'pasillo_direccion') pared(g, z.x0, z.x1, z.pared, { depto: z.depto });
-  suelos(g);
-  nucleo(g);
-  pasillo(g);
+/** De Web a Diseño, en las coordenadas de la sala de 800 px (se pinta corrido D px). */
+function zonasDeRedaccion(g) {
   web(g);
   economia(g);
   infografia(g);
   desarrollo(g);
   diseno(g);
-  pilastras(g);
-  rotulos(g);
   // charcos de luz de los fluorescentes y de las pantallas
   for (const x of [205, 265, 341, 427, 515, 575, 635, 715, 775]) glow(g, x, 124, 34, 8, '#e8fff0', 0.06, 4);
   glow(g, 226, 104, 50, 6, '#8ec8ff', 0.1, 3);
@@ -346,7 +352,60 @@ function drawRoom(g) {
   poly(g, [[204, 101], [262, 104], [262, 106], [204, 103]], '#20242c'); line(g, 204, 101, 262, 104, '#4a505c');
   rect(g, 597, 92, 6, 7, PAL.metal[3]); frameRect(g, 597, 92, 6, 7, PAL.metal[1]);
   for (let k = 0; k < 2; k++) rect(g, 598 + k * 2, 90 + k, 2, 3, [PAL.red[4], PAL.teal[5]][k]);
+}
+
+// ================================================================== ZONA DE PAPEL: Secretaría + puerta doble a la Redacción de papel
+/** La bisagra entre las dos redacciones (órdenes de dirección 2 y 3). Pared de nogal viejo con friso, la Secretaría de
+ *  Redacción (Custodia) a la izquierda y la puerta doble, abierta, a la Redacción de papel a la derecha; en el suelo, el
+ *  umbral de latón: de un lado moqueta y clic, del otro parqué y tinta. */
+function zonaPapel(g) {
+  const z = Z.papel;
+  // friso de tablas bajo el filete (lo viejo empieza aquí)
+  for (let x = z.x0 + 3; x < z.x1; x += 9) vline(g, x, 70, FL - 74, '#3a2614');
+  hline(g, z.x0, 69, z.x1 - z.x0, '#8a6440');
+  // la Secretaría (dibujo del antiguo Office, + SDX)
+  desplazado((gg) => { hatchFrame(gg); secretaria(gg); }, SDX)(g);
+  // la PUERTA DOBLE (abierta de par en par) a la Redacción de papel
+  const [x, w] = PECERA_PUERTAS.pecera_a_catacumba, y = 40, h = FL - y;
+  kit.marcoPuerta(g, x, y, w, h, { ramp: PAL.wood });
+  // dentro: la Redacción de papel (pared de nicotina, galeradas colgadas, una lámpara de banquero y el reloj parado)
+  gradV(g, x, y, w, h, ['#2c2016', '#45321f', '#5f4829']);
+  paint(g, x, y + h - 14, w, 14, (xx, yy) => ditherPick(xx, yy, ['#3a2818', '#4a3420', '#5a4028'], (yy - (y + h - 14)) / 14 + (((xx + yy * 3) >> 2) & 1) * 0.1));
+  hline(g, x, y + 3, w, PAL.paper[2]);
+  for (let k = 0; k < 7; k++) { const gx = x + 4 + k * 8; vline(g, gx + 2, y + 3, 2, PAL.paper[3]); rect(g, gx, y + 5, 5, 12 + (k % 3) * 2, PAL.paper[5 + (k & 1)]); for (let l = y + 7; l < y + 15 + (k % 3) * 2; l += 2) hline(g, gx + 1, l, 3, PAL.paper[2]); }
+  wallClock(g, x + w - 10, y + 24, 5, 20 + 59 / 60);
+  rect(g, x + 10, y + 36, 30, 3, PAL.wood[4]); rect(g, x + 12, y + 39, 2, 10, PAL.wood[2]); rect(g, x + 36, y + 39, 2, 10, PAL.wood[2]);   // una mesa
+  rect(g, x + 22, y + 30, 6, 3, PAL.green[3]); vline(g, x + 25, y + 33, 3, PAL.gold[4]); hline(g, x + 22, y + 30, 6, PAL.green[5]);       // lámpara de banquero
+  glow(g, x + 25, y + 34, 18, 10, '#ffd890', 0.35, 3);
+  // las dos hojas, abiertas contra el marco (madera vieja con su ventanuco)
+  for (const [lx, d] of [[x, 1], [x + w - 6, -1]]) {
+    rect(g, lx, y, 6, h, PAL.wood[3]); vline(g, lx + (d > 0 ? 0 : 5), y, h, PAL.wood[5]); vline(g, lx + (d > 0 ? 5 : 0), y, h, PAL.wood[1]);
+    rect(g, lx + 1, y + 8, 4, 12, '#c8a870'); frameRect(g, lx + 1, y + 8, 4, 12, PAL.wood[1]);
+  }
+  ditherOverlay(g, x, y + h - 5, w, 5, PAL.ink[0], 0.3);
+  // la frontera: umbral de latón con su chevrón, del color del destino
+  kit.umbral(g, x - 4, FL + 1, w + 8, 7, kit.DEPTO.papel.c, { chevron: true });
+  line(g, x - 6, FL + 9, x + w + 6, FL + 9, PAL.gold[5]); line(g, x - 7, FL + 10, x + w + 7, FL + 10, PAL.gold[2]);
+  kit.cantoVivo(g, x - 3, y - 3, w + 6, h + 3);
+  // la placa del kit sobre el dintel: «1 REDACCIÓN / DE PAPEL · CIERRE» (nombre llano, orden de dirección)
+  const pw = kit.placaSalaW('catacumba');
+  kit.placaSala(g, Math.min(z.x1 - 4 - pw, x + (w >> 1) - (pw >> 1)), 17, 'catacumba');
+  void SALA;
+}
+
+// ================================================================== FONDO
+function drawRoom(g) {
+  techo(g);
+  for (const z of PECERA_ZONAS) if (z.id !== 'nucleo' && z.id !== 'pasillo_direccion') pared(g, z.x0, z.x1, z.pared, { depto: z.depto });
+  suelos(g);
+  nucleo(g);
+  pasillo(g);
+  zonaPapel(g);
+  desplazado(zonasDeRedaccion)(g);
+  pilastras(g);
+  rotulos(g);
   glow(g, 115, 104, 18, 5, PAL.gold[5], 0.18, 3);
+  glow(g, 266, 106, 30, 6, '#ffc870', 0.16, 3);                    // la luz ámbar de la Redacción de papel, en el umbral
   vignette(g, W, 144, 0.32);
 }
 
@@ -368,10 +427,12 @@ function drawFrente(g) {
   poly(g, [[x - 11, y - 14], [x + 11, y - 14], [x + 9, y], [x - 9, y]], (xx) => (xx < x - 4 ? '#2a2c36' : '#16161e'));
   hline(g, x - 11, y - 14, 22, '#4a4c58'); hline(g, x - 10, y - 13, 20, '#20222a');
   // canto de mesa en primer plano (Desarrollo), con un portátil cerrado y cables
-  poly(g, [[514, 134], [588, 134], [592, 144], [510, 144]], '#16141f');
-  hline(g, 514, 134, 74, '#3a364c'); hline(g, 514, 135, 74, '#262234');
-  rect(g, 540, 130, 22, 4, '#2a2838'); hline(g, 540, 130, 22, '#4a4660');
-  cable(g, 590, 136, 606, 144, 3, '#0c0a14', 10);
+  desplazado((g) => {
+    poly(g, [[514, 134], [588, 134], [592, 144], [510, 144]], '#16141f');
+    hline(g, 514, 134, 74, '#3a364c'); hline(g, 514, 135, 74, '#262234');
+    rect(g, 540, 130, 22, 4, '#2a2838'); hline(g, 540, 130, 22, '#4a4660');
+    cable(g, 590, 136, 606, 144, 3, '#0c0a14', 10);
+  })(g);
 }
 
 // ================================================================== OBJETOS CON ESTADO
@@ -772,6 +833,24 @@ function drawMonitorValentin(g, view, t) {
 }
 
 // ================================================================== GEOMETRÍA
+/** [x, y, w, h] + dx */
+function mueveR(r, dx) { return [r[0] + dx, r[1], r[2], r[3]]; }
+/** Corre D px un grupo de entradas de layout (y envuelve sus dibujos para que se pinten corridos). */
+function mover(L) {
+  const out = {};
+  for (const [k, v] of Object.entries(L)) {
+    const o = { ...v };
+    if (o.rect) o.rect = mueveR(o.rect, D);
+    if (o.poly) o.poly = o.poly.map(([x, y]) => [x + D, y]);
+    if (o.walkTo) o.walkTo = [o.walkTo[0] + D, o.walkTo[1]];
+    if (o.at) o.at = [o.at[0] + D, ...o.at.slice(1)];
+    if (o.draw) o.draw = desplazado(o.draw);
+    if (o.sprites) o.sprites = Object.fromEntries(Object.entries(o.sprites).map(([st, fn]) => [st, desplazado(fn)]));
+    if (o.positions) o.positions = Object.fromEntries(Object.entries(o.positions).map(([pk, pv]) => [pk, pv && pv.at ? { ...pv, at: [pv.at[0] + D, ...pv.at.slice(1)] } : pv]));
+    out[k] = o;
+  }
+  return out;
+}
 const layout = {
   // NÚCLEO (kit; geometría de content/lib/edificio.js nucleoGeom)
   pecera_a_ecosistema: { rect: N.escaleras.sube.rect, walkTo: N.escaleras.sube.walkTo, face: N.escaleras.sube.face },
@@ -780,45 +859,53 @@ const layout = {
   // PASILLO DE DIRECCIÓN
   pecera_a_pajarera: { rect: [97, 35, 36, 59], walkTo: [115, 108], face: 'up' },
   pecera_a_office: { rect: [134, 35, 36, 59], walkTo: [151, 108], face: 'up' },
+  // ZONA DE PAPEL: la Secretaría de Redacción (Custodia, orden 3) y la puerta doble a la Redacción de papel (orden 2)
+  pecera_a_catacumba: { rect: [PECERA_PUERTAS.pecera_a_catacumba[0] - 3, 37, PECERA_PUERTAS.pecera_a_catacumba[1] + 6, 57], walkTo: [266, 108], face: 'up' },
+  cartel_material: { rect: mueveR(SECRETARIA_RECTS.cartel_material, SDX), walkTo: [198, 108], face: 'up' },
+  custodia_precinto: { rect: mueveR(SECRETARIA_RECTS.custodia_precinto, SDX), walkTo: [188, 108], face: 'up', priority: 1, draw: desplazado((g, v, t) => drawCustodia(g, v, t), SDX) },
+  timbre_secretaria: { rect: mueveR(SECRETARIA_RECTS.timbre_secretaria, SDX), walkTo: [202, 108], face: 'up', priority: 2 },
+  // DE WEB A DISEÑO: coordenadas de la sala de 800 px; `mover` les suma D (rects, walkTo, at, poly y el dibujo)
+  ...mover({
   // WEB
-  pantalla_metricas: { rect: [176, 29, 100, 42], walkTo: [226, 112], face: 'up', draw: drawMetricas },
-  enchufe_pantalla: { rect: [174, 72, 46, 22], walkTo: [196, 110], face: 'up', priority: 1, draw: drawEnchufe },
-  sillas_con_chaqueta: { rect: [218, 64, 36, 40], walkTo: [236, 112], face: 'up' },
-  figurantes_web: { rect: [254, 60, 30, 44], walkTo: [268, 112], face: 'up', draw: drawFigurantes },
-  // ECONOMÍA
-  ordenador_bruno: { rect: [312, 44, 36, 48], walkTo: [330, 120], face: 'up', draw: drawOrdenadorBruno },
-  silla_ramirez: { rect: [322, 98, 60, 16], walkTo: [350, 122], face: 'up', layer: 'sorted', zy: 112, draw: drawSillaRamirez },
-  chaqueta_ramirez_hotspot: { rect: [355, 84, 20, 16], walkTo: [362, 122], face: 'up', priority: 2, layer: 'sorted', zy: 113, draw: drawChaqueta },
-  taza_abandonada: { rect: [368, 64, 14, 14], walkTo: [378, 120], face: 'up', priority: 1, draw: drawTaza },
-  // INFOGRAFÍA
-  mesa_dibujo: { rect: [388, 60, 46, 36], walkTo: [404, 118], face: 'up', draw: drawMesaDibujo },
-  herminia_portatil: { rect: [442, 56, 38, 28], walkTo: [460, 120], face: 'up', draw: drawHerminia },
-  cartel_frontera: { rect: [456, 34, 34, 19], walkTo: [470, 116], face: 'up', draw: drawCartelFrontera },
-  // la cinta, en el suelo (debajo de los actores)
-  frontera_carrocero: { poly: [[456, 95], [488, 95], [508, 143], [466, 143]], walkTo: [482, 126], face: 'down', layer: 'back', draw: drawFrontera },
-  // DESARROLLO
-  kanban: { rect: [488, 30, 84, 78], walkTo: [530, 124], face: 'up', layer: 'sorted', zy: 106, prop: true, draw: drawKanban },
-  posit_1998: { rect: [572, 47, 20, 15], walkTo: [580, 124], face: 'up', priority: 1 },
-  calendario_ferreteria: { rect: [596, 32, 34, 26], walkTo: [612, 112], face: 'up', draw: drawCalendario },
-  semaforo_ruido: { rect: [632, 22, 12, 34], walkTo: [638, 112], face: 'up', draw: drawSemaforo },
-  pantalla_anselmo: { rect: [644, 27, 36, 25], walkTo: [658, 112], face: 'up', draw: drawAnselmoScreen },
-  taza_no: { rect: [604, 68, 13, 14], walkTo: [610, 120], face: 'up', priority: 1, draw: drawTazaNo },
-  coro_desarrollo: { rect: [618, 58, 52, 38], walkTo: [644, 116], face: 'up', draw: drawCoro },
-  // DISEÑO Y PRODUCTO
-  bandeja_diseno: { rect: [684, 56, 34, 42], walkTo: [700, 112], face: 'up', draw: drawBandeja },
-  ventana: { rect: [759, 27, 40, 46], walkTo: [778, 116], face: 'up',
-    sprites: { default: (g, view, t) => ventana(g, t, false), amanecer: (g, view, t) => ventana(g, t, true) } },
-  monitor_valentin: { rect: [721, 46, 38, 30], walkTo: [740, 114], face: 'up', prop: true, draw: drawMonitorValentin },
-  // PNJ (docs/GUIA_REDISENO.md §10): Bruno siempre a un lado, a ≥ 24 px
-  yoli_tendencias: { at: [309, 116, 'down'], walkTo: [284, 126], face: 'right' },
-  leoncio_quesitos: { at: [434, 114, 'down'], walkTo: [410, 126], face: 'right' },
-  nerea_backlog: { at: [598, 114, 'left'], walkTo: [624, 126], face: 'left' },
-  anselmo_monolito: { at: [672, 118, 'left'], walkTo: [696, 128], face: 'left' },
-  // Valentín, de pie y a cuerpo entero, junto a su mesa mirando su monitor; Rubén (Acto III), en el ventanal
-  valentin_reticula: { at: [770, 112, 'left'], walkTo: [746, 126], face: 'right' },
-  ruben: { at: [788, 114, 'up'], walkTo: [764, 126], face: 'right' },
-  // solo en la escena 7.2 (pecera.escenas.js): presenta bajo la pantalla de métricas, entre Bruno y Yoli
-  inigo_sinergia: { at: [246, 122, 'down'] },
+    pantalla_metricas: { rect: [176, 29, 100, 42], walkTo: [226, 112], face: 'up', draw: drawMetricas },
+    enchufe_pantalla: { rect: [174, 72, 46, 22], walkTo: [196, 110], face: 'up', priority: 1, draw: drawEnchufe },
+    sillas_con_chaqueta: { rect: [218, 64, 36, 40], walkTo: [236, 112], face: 'up' },
+    figurantes_web: { rect: [254, 60, 30, 44], walkTo: [268, 112], face: 'up', draw: drawFigurantes },
+    // ECONOMÍA
+    ordenador_bruno: { rect: [312, 44, 36, 48], walkTo: [330, 120], face: 'up', draw: drawOrdenadorBruno },
+    silla_ramirez: { rect: [322, 98, 60, 16], walkTo: [350, 122], face: 'up', layer: 'sorted', zy: 112, draw: drawSillaRamirez },
+    chaqueta_ramirez_hotspot: { rect: [355, 84, 20, 16], walkTo: [362, 122], face: 'up', priority: 2, layer: 'sorted', zy: 113, draw: drawChaqueta },
+    taza_abandonada: { rect: [368, 64, 14, 14], walkTo: [378, 120], face: 'up', priority: 1, draw: drawTaza },
+    // INFOGRAFÍA
+    mesa_dibujo: { rect: [388, 60, 46, 36], walkTo: [404, 118], face: 'up', draw: drawMesaDibujo },
+    herminia_portatil: { rect: [442, 56, 38, 28], walkTo: [460, 120], face: 'up', draw: drawHerminia },
+    cartel_frontera: { rect: [456, 34, 34, 19], walkTo: [470, 116], face: 'up', draw: drawCartelFrontera },
+    // la cinta, en el suelo (debajo de los actores)
+    frontera_carrocero: { poly: [[456, 95], [488, 95], [508, 143], [466, 143]], walkTo: [482, 126], face: 'down', layer: 'back', draw: drawFrontera },
+    // DESARROLLO
+    kanban: { rect: [488, 30, 84, 78], walkTo: [530, 124], face: 'up', layer: 'sorted', zy: 106, prop: true, draw: drawKanban },
+    posit_1998: { rect: [572, 47, 20, 15], walkTo: [580, 124], face: 'up', priority: 1 },
+    calendario_ferreteria: { rect: [596, 32, 34, 26], walkTo: [612, 112], face: 'up', draw: drawCalendario },
+    semaforo_ruido: { rect: [632, 22, 12, 34], walkTo: [638, 112], face: 'up', draw: drawSemaforo },
+    pantalla_anselmo: { rect: [644, 27, 36, 25], walkTo: [658, 112], face: 'up', draw: drawAnselmoScreen },
+    taza_no: { rect: [604, 68, 13, 14], walkTo: [610, 120], face: 'up', priority: 1, draw: drawTazaNo },
+    coro_desarrollo: { rect: [618, 58, 52, 38], walkTo: [644, 116], face: 'up', draw: drawCoro },
+    // DISEÑO Y PRODUCTO
+    bandeja_diseno: { rect: [684, 56, 34, 42], walkTo: [700, 112], face: 'up', draw: drawBandeja },
+    ventana: { rect: [759, 27, 40, 46], walkTo: [778, 116], face: 'up',
+      sprites: { default: (g, view, t) => ventana(g, t, false), amanecer: (g, view, t) => ventana(g, t, true) } },
+    monitor_valentin: { rect: [721, 46, 38, 30], walkTo: [740, 114], face: 'up', prop: true, draw: drawMonitorValentin },
+    // PNJ (docs/GUIA_REDISENO.md §10): Bruno siempre a un lado, a ≥ 24 px
+    yoli_tendencias: { at: [309, 116, 'down'], walkTo: [284, 126], face: 'right' },
+    leoncio_quesitos: { at: [434, 114, 'down'], walkTo: [410, 126], face: 'right' },
+    nerea_backlog: { at: [598, 114, 'left'], walkTo: [624, 126], face: 'left' },
+    anselmo_monolito: { at: [672, 118, 'left'], walkTo: [696, 128], face: 'left' },
+    // Valentín, de pie y a cuerpo entero, junto a su mesa mirando su monitor; Rubén (Acto III), en el ventanal
+    valentin_reticula: { at: [770, 112, 'left'], walkTo: [746, 126], face: 'right' },
+    ruben: { at: [788, 114, 'up'], walkTo: [764, 126], face: 'right' },
+    // solo en la escena 7.2 (pecera.escenas.js): presenta bajo la pantalla de métricas, entre Bruno y Yoli
+    inigo_sinergia: { at: [246, 122, 'down'] },
+  }),
 };
 
 export default {
@@ -829,23 +916,23 @@ export default {
   // suelo con muescas: el kanban exento (pies en 106) y la silla de Ramírez (pies en 112) quedan en el plano medio; la
   // muesca de la silla se mueve con ella (silla_libre)
   walkboxes: [
-    { id: 'suelo', poly: [[4, 100], [320, 100], [320, 115], [378, 115], [378, 100], [486, 100], [486, 108], [594, 108], [594, 100], [796, 100], [798, 142], [2, 142]] },
-    { id: 'hueco_mesa_bruno', poly: [[319, 100], [351, 100], [351, 116], [319, 116]], when: '!silla_libre' },
-    { id: 'hueco_silla_ramirez', poly: [[349, 100], [379, 100], [379, 116], [349, 116]], when: 'silla_libre' },
+    { id: 'suelo', poly: [[4, 100], [320 + D, 100], [320 + D, 115], [378 + D, 115], [378 + D, 100], [486 + D, 100], [486 + D, 108], [594 + D, 108], [594 + D, 100], [796 + D, 100], [798 + D, 142], [2, 142]] },
+    { id: 'hueco_mesa_bruno', poly: [[319 + D, 100], [351 + D, 100], [351 + D, 116], [319 + D, 116]], when: '!silla_libre' },
+    { id: 'hueco_silla_ramirez', poly: [[349 + D, 100], [379 + D, 100], [379 + D, 116], [349 + D, 116]], when: 'silla_libre' },
   ],
   // entradas: se llaman como la sala de la que se viene (§9)
   entries: {
     vestibulo: N.escaleras.baja.entrada, ecosistema: N.escaleras.sube.entrada, ascensor: N.ascensor.entrada,
-    pajarera: [115, 110, 'down'], office: [151, 110, 'down'],
+    pajarera: [115, 110, 'down'], office: [151, 110, 'down'], catacumba: [266, 110, 'down'],
   },
   layout,
   draw: drawRoom,
   foreground: drawFrente,
-  animate(g, view, t) {
+  animate: desplazado((g, view, t) => {
     lcd(g, 220, DT - 15, 15, 13, { kind: (Math.floor(t / 4000) & 1) ? 'saver' : 'article', seed: 3, t });
     lcd(g, 255, DT - 15, 14, 13, { kind: (Math.floor(t / 3000) & 1) ? 'bars' : 'chart', seed: 9, t });
     // un fluorescente moribundo parpadea sobre Infografía
     if (hash2(Math.floor(t / 120), 5, 2) < 0.1) { rect(g, 412, 10, 30, 4, PAL.metal[3]); g.save(); g.globalAlpha = 0.18; rect(g, 386, 15, 94, 30, PAL.ink[0]); g.restore(); }
-  },
+  }),
 };
 void mix; void bayer; void papers; void frameRect; void vline;

@@ -8,7 +8,7 @@ Authoritative reference for writing content on this engine. Everything here matc
   punctuation. `“”` become `"`, `’` becomes `'`, `…` becomes `...`. Unknown characters render as `?`.
 - Plain ES modules, no build step. Import with **relative** paths (`'../lib/room.js'` from `content/rooms/`,
   `'../../engine/draw.js'` from `content/rooms/`, `'../../../engine/draw.js'` from `content/rooms/art/`).
-- Screen 320×200. Room viewport 320×144 (y 0–143); UI panel y 144–199. Rooms may be wider than 320 (`pecera` is 800, `eventos` 512).
+- Screen 320×200. Room viewport 320×144 (y 0–143); UI panel y 144–199. Rooms may be wider than 320 (`pecera` is 940, `eventos` 512, `ecosistema` 400).
 - Bible rules that the tools enforce: ids in `snake_case` without accents; **no spoken line over 80 characters**
   (`tools/check.mjs` warns); a bible ` // ` means two separate lines (two balloons); stage directions in brackets
   are never shown as text.
@@ -152,7 +152,7 @@ const layout = {
 };
 export default {
   room: '<id>',
-  width: 320,                       // 800 for pecera
+  width: 320,                       // 940 for pecera
   scale: { yFar: 100, far: 0.86, yNear: 142, near: 1.0 },   // or a number, or (y) => scale
   walkboxes: [{ id: 'suelo', poly: [[4, 104], [316, 104], [318, 142], [2, 142]] }],
   entries: { pecera: [160, 108, 'down'], cpd: [278, 112, 'down'] },   // named after the room you come FROM
@@ -221,27 +221,35 @@ for any entry. Lift objects carry `ascensor: { planta, label }` (no `exit`): `to
 (`walk-lib.mjs`, `play-mouse.mjs`) add lift edges to the exit graph and pick the floor by its label.
 
 ### 2.6 Mapa del edificio (plantas y conexiones: arte, guion y botonera coinciden)
-Fuente única de la geografía (biblia §3.0, adenda §14). Toda señal, indicador de ascensor y escalera debe cuadrar con esto;
-una salida nueva se añade aquí primero.
+Fuente única de la geografía (biblia §3.0, adenda §14, `content/lib/edificio.js`, órdenes de dirección 1-3 del cierre del
+rediseño). Toda placa, indicador de ascensor y escalera debe cuadrar con esto; una salida nueva se añade aquí primero.
+Las placas son las del kit (`kit.placaSala`: banda con el número y el color de la planta, nombre llano, flecha); los
+apodos (Pecera, Catacumba, Ecosistema) solo en boca de los personajes; «Pajarera» y «Vending» no se ven nunca (son ids).
 
-| planta | salas | cómo se llega / se sale |
+| planta | salas (id → nombre visible) | cómo se llega / se sale |
 |---|---|---|
-| **2** Marketing · Eventos · Comercial · Administración | `ecosistema`, `eventos`, `administracion` | `ecosistema` → escalera que BAJA «P1 ▼» a `pecera` (llegas arriba de la escalera de la Pecera: entrada `ecosistema` de la Pecera, al pie de su escalera «PLANTA 2 ↑»); puerta «EVENTOS» → `eventos`; pasillo → `administracion` («PASILLO»). Ascensor `ascensor_ecosistema` (indicador en 2). |
-| **1** Redacción | `pecera`, `office`, `catacumba`, `pajarera`, `sala_amazonas` | `pecera`: a la izquierda la escalera que BAJA «↓ VESTÍBULO · PLANTA 0» (`pecera_a_vestibulo`; ni puerta de cristal ni torno a la vista); puerta «OFFICE» → `office` → puerta «TALLERES» → `catacumba` (por dentro rotula «OFFICE»); cristal «DIRECCIÓN» → `pajarera` → `puerta_sala` → `sala_amazonas`; a la derecha la escalera que SUBE «PLANTA 2» y el ascensor `ascensor_pecera` (indicador en 1). La Catacumba tiene techo bajo y tuberías, pero NO es un sótano: está en la planta 1, detrás del Office. |
-| **0** Vestíbulo | `vestibulo` | puerta de la calle (no se sale) · línea de tornos · detrás de los tornos, la escalera que SUBE «REDAC. 1» (`vestibulo_a_redaccion` / `torno`: llegas a la Pecera arriba de su escalera de bajada, entrada `vestibulo`) y el ascensor (indicador en 0). |
-| **−1** Sistemas y CPD | `cpd` | solo el ascensor («SALA FRÍA», indicador −1). |
+| **2** (lila) | `ecosistema` → Marketing y Comercial · `eventos` → Eventos / Sala Polivalente · `administracion` → Administración | `ecosistema` (400 px): a la IZQUIERDA el NÚCLEO (x 0-96): escalera que BAJA (placa «1 REDACCIÓN ▼», `ecosistema_a_pecera`) y ascensor «2»; puerta doble con ojos de buey (placa «2 EVENTOS», x 194-238) → `eventos`; al fondo a la derecha el pasillo (placa «2 ADMINISTRACIÓN ►», x 352-398) → `administracion`. |
+| **1** (verde agua) | `pecera` → Redacción · `catacumba` → Redacción de papel / Cierre · `office` → Vending · `pajarera` → Dirección · `sala_amazonas` → Sala Amazonas | `pecera` (940 px): a la IZQUIERDA el NÚCLEO (x 0-96): escalera que SUBE (placa «2 MARKETING ▲», arriba), escalera que BAJA (placa «0 VESTÍBULO ▼», abajo) y ascensor «1»; pasillo de Dirección (x 96-170): puerta de cristal «1 DIRECCIÓN ◄» (x 100-130) → `pajarera` → `puerta_sala` («1 AMAZONAS / SALA DE REUNIONES ►») → `sala_amazonas`; puerta de madera «1 VENDING ►» (x 136-166) → `office` (sala sin más salidas); zona de papel (x 170-310): la Secretaría de Redacción (Custodia, ventanuco x 179-215) y la PUERTA DOBLE abierta (x 236-296, placa «1 REDACCIÓN / DE PAPEL · CIERRE», umbral de latón) → `catacumba`, al MISMO nivel (por dentro, placa «1 REDACCIÓN ◄ / REDACCIÓN WEB»). |
+| **0** (verde) | `vestibulo` → Vestíbulo | puerta de la calle (no se sale) · línea de tornos (el carril delantero, «AVERIADO») · a la DERECHA, detrás de los tornos, el NÚCLEO (x 224-320): escalera que SUBE (placa «1 REDACCIÓN ▲», `vestibulo_a_redaccion` / `torno`) y ascensor «0». Con el torno cerrado, el núcleo queda al otro lado (walkbox condicional `paso_torno`). |
+| **−1** (azul) | `cpd` → Sistemas | a la IZQUIERDA el NÚCLEO: ascensor «−1» y la caja de escalera CERRADA («SOLO EVACUACIÓN», sin hotspot): solo se llega en ascensor. |
 
 ```
-P2   [eventos] ─puerta─ [ecosistema] ─pasillo─ [administracion]          ascensor (2)
-                           │ escalera (baja: «P1 ▼»)
-P1   [catacumba] ─TALLERES/OFFICE─ [office] ─OFFICE─ [pecera] ─cristal DIRECCIÓN─ [pajarera] ─puerta─ [sala_amazonas]
-                                   escalera «↓ VESTÍBULO» ┘  └ escalera «PLANTA 2 ↑» + ascensor (1)
-P0   [vestibulo]: tornos → escalera «REDAC. 1 ↑» + ascensor (0)
-P−1  [cpd]: solo ascensor (−1)
+P2   núcleo[▼ escalera · ascensor 2] [ecosistema: Marketing · puerta EVENTOS · Comercial · pasillo] ─┬─ [eventos]
+                                                                                                    └─ [administracion]
+P1   núcleo[▲ ▼ escaleras · ascensor 1] [pecera: pasillo de Dirección · zona de papel · Web … Diseño]
+            ├─ cristal DIRECCIÓN ─ [pajarera] ─ puerta AMAZONAS ─ [sala_amazonas]
+            ├─ puerta VENDING ─ [office]                        (sin más salidas)
+            └─ puerta doble (umbral de latón, mismo nivel) ─ [catacumba]   (sin más salidas)
+P0   [vestibulo: calle · tornos] ─torno─ núcleo[▲ escalera · ascensor 0]
+P−1  núcleo[ascensor −1 · escalera cerrada] [cpd]
 ```
-Entradas: `pecera.entries.vestibulo` = arriba de la escalera de bajada (x≈34); `vestibulo.entries.pecera` = al pie de la
-escalera «REDAC. 1» (detrás de los tornos); `pecera.entries.ecosistema` = al pie de la escalera «PLANTA 2»;
-`ecosistema.entries.pecera` = junto a la escalera «P1 ▼». `tools/smoke.mjs` comprueba estas señales y entradas.
+Entradas (se llaman como la sala de origen; Bruno aparece dentro del suelo, delante de la salida de vuelta):
+`pecera.entries` = `vestibulo`/`ecosistema` [31, 112] (pie de las escaleras), `ascensor` [69, 110], `pajarera` [115, 110],
+`office` [151, 110], `catacumba` [266, 110]; `catacumba.entries.pecera` [32, 116]; `office.entries.pecera` [30, 112];
+`vestibulo.entries.pecera` [289, 112] (pie de la escalera, detrás de los tornos), `ascensor`/`cpd` [251, 110];
+`ecosistema.entries.pecera` [31, 112], `ascensor` [69, 110], `eventos` [216, 114], `administracion` [372, 116].
+`tools/smoke.mjs` comprueba plantas, escaleras y vecindad; `tools/play-mouse.mjs --solo=conexiones` recorre cada salida en
+los dos sentidos con clics reales y mide dónde se aparece.
 
 ### 2.7 Redesign engine features (art side) — details in `docs/GUIA_REDISENO.md` §13
 - **Seated pose** (`engine/pose.js`): NPC layout `at: [x, y, dir], pose: 'sentado'` (torso lowered, lap and calves;
@@ -265,9 +273,10 @@ escalera «REDAC. 1» (detrás de los tornos); `pecera.entries.ecosistema` = al 
 
 > **Rediseño (D1, contrato vigente para el repintado):** un solo NÚCLEO (ascensor + escalera) idéntico en las cuatro
 > plantas, a la izquierda de `pecera`, `ecosistema` y `cpd` y a la derecha (tras los tornos) del `vestibulo`; Catacumba
-> a medio nivel bajo el Office; Ecosistema a 400 px; la Pecera reordenada. Coordenadas, entradas y salidas que cambian:
-> `docs/GUIA_REDISENO.md` §3 y §9 (datos en `content/lib/edificio.js`). La tabla de arriba describe el arte actual
-> hasta que cada paquete entregue su sala; las conexiones (qué sala lleva a cuál) no cambian.
+> AL LADO de la Redacción y al mismo nivel (orden de dirección 2; anula la D6); Ecosistema a 400 px; la Pecera reordenada. Coordenadas, entradas y salidas que cambian:
+> `docs/GUIA_REDISENO.md` §3 y §9 (datos en `content/lib/edificio.js`). Las diez salas ya están rediseñadas y la tabla
+> de §2.6 describe el edificio construido. Única conexión que cambió: la Redacción de papel (`catacumba`) se abre a la
+> Redacción (`pecera`) y ya no al Vending (`office`).
 
 ## 3. game.js (shared)
 
@@ -376,9 +385,9 @@ newspaper, chest card «LECTOR MEDIO · 43 años…», taped speaker; recording 
 **Addendum cast** (adenda §1/§11.2/§13): sprite characters `pilar_escaleta` (Eventos, `#A8F07A`), `leoncio_quesitos` (`#3CE0C6`), `anselmo_monolito` (`#E496FF`),
 `evaristo_salvedad` (`#F0F0A8`) and the cameo `valentin_reticula` (`#C0E8FF`). **Sprite-less presences** only give a
 speaking name/colour to `api.sayAs` (flag `presence` in the definition, `hotspot: false`, never placed in a room):
-`custodia_precinto` (`#FF94BE`), `tadeo_adjunto` (`#FFCC99`), `herminia` (`#FF8C3C`), `coro_desarrollo` (CORO), `dev_1`,
+`custodia_precinto` (`#A0A0FF`), `tadeo_adjunto` (`#FFCC99`), `herminia` (`#FF8C3C`), `coro_desarrollo` (CORO), `dev_1`,
 `dev_2`, `dev_3` (`#7FFFD4`; the balloon text carries the prefix «DEV 1: …»), `altavoz_ibex` (ALTAVOZ, `#CCCCCC`). The
-hotspot that represents a presence is an **object** of the room with the same id (e.g. `office.custodia_precinto`) whose
+hotspot that represents a presence is an **object** of the room with the same id (e.g. `pecera.custodia_precinto`) whose
 `color` is declared in the stub, so `api.sayFrom('custodia_precinto', '…')` draws the text above it in its colour.
 Contact sheet: `node tools/actors.mjs` → `tools/shots/actores.png`.
 

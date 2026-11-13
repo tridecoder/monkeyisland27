@@ -1,7 +1,10 @@
 # GUÍA DEL REDISEÑO VISUAL — contrato para los cuatro paquetes de salas
 
-**Estado:** FASE 1 (fundamentos comunes) terminada. Esta guía es **vinculante** para los cuatro artistas que repintan
-las 10 salas en paralelo. Desarrolla la propuesta aprobada (`docs/informes/propuesta/PROPUESTA_ALTERNATIVA.md`, «la
+**Estado:** REDISEÑO TERMINADO e integrado (fase 1, los cuatro paquetes y el cierre). Las tablas de §3-§10 describen
+lo CONSTRUIDO; donde la guía original decía otra cosa, manda lo de aquí. El cierre añadió tres órdenes de dirección más
+(§2 iii-v: «Vending», la Redacción de papel al lado de la Redacción y la Secretaría de Custodia en la Redacción), que anulan
+la decisión D6 de la propuesta (la Catacumba «a medio nivel»). Esta guía fue **vinculante** para los cuatro artistas que
+repintaron las 10 salas en paralelo. Desarrolla la propuesta aprobada (`docs/informes/propuesta/PROPUESTA_ALTERNATIVA.md`, «la
 propuesta», decisiones D1–D8 = **sí**) y la auditoría (`docs/informes/INFORME_AJUSTE_VISUAL.md`, problemas **#n**).
 **Orden de prioridad si algo choca:** 1) las dos órdenes de dirección (§2), 2) esta guía, 3) la propuesta, 4) la biblia.
 
@@ -46,7 +49,7 @@ cambio de tu sala rompe una aserción que la guía ya prevé (p. ej. una coorden
 | `climax.js` (P4) | `administracion.art.js` (P3) | `layout.begona_triplicado.at` (Begoña vuelve a su ventanilla) |
 | `eventos.dialogos.js` (P4) | `ecosistema.art.js` (P4) | coordenadas del Ecosistema (mismo paquete) |
 | `pecera.escenas.js` (P2) | `pecera.art.js` (P2) | `pecera_a_vestibulo.walkTo`, `inigo_sinergia.at`, `pecera_a_pajarera.walkTo`; además supone el ascensor a la derecha (`x > 300` → fundido): **P2 lo cambia** al mover el núcleo a la izquierda |
-| `catacumba.js` (P3) | — | coloca a Íñigo en `[26, 118]` (entrada desde el Office): revísalo si mueves la puerta |
+| `catacumba.js` (P3) | — | coloca a Íñigo en `[26, 118]` (entrada desde la Redacción, por la puerta doble): revísalo si mueves la puerta |
 | `cpd.js` (P1) | `cpd.art.js` (P1) | `ascensor_cpd.walkTo`, `ruben.positions.dentro` |
 | `tools/smoke.mjs` | todas | la geografía de §3 (escaleras y entradas): está escrita para valer antes y después del rediseño |
 
@@ -64,7 +67,7 @@ pero **toda placa o rótulo lleva el nombre llano**: Redacción, Cierre / Redacc
 (tabla de §4, que está en `content/lib/edificio.js` `SALA`).
 *Ya aplicado en esta fase (texto puro):* `pajarera.js` (nombre de sala «Dirección», tres frases), `pecera.js`
 («puerta de Dirección», su Mirar), `sala_amazonas.js` («puerta de Dirección»), `cpd.js` (murmullo «(Dirección)»),
-`content/lib/ascensor.js` (botonera «Planta 1 · Redacción · Dirección · Office»). *Pendiente de pintar* (§4.2).
+`content/lib/ascensor.js` (botonera «Planta 1 · Redacción · Redacción de papel · Dirección · Vending», tras el cierre). *Pendiente de pintar* (§4.2).
 
 **(ii) El Lector Medio NO preside.** En la Sala Amazonas, el cartón «Lector Medio» **nunca** está en la cabecera de la
 mesa ni junto a ninguna placa de «presidencia», en ningún estado: no debe leerse como «el jefe es un cartón» (en este
@@ -79,6 +82,22 @@ izquierdo— en los Actos I-II y de pie en el rincón bajo «SALIDA» en el Acto
 en la cabecera»). El clímax se ha vuelto a comprobar (§5).
 
 ---
+
+**(iii) La sala del café se llama «VENDING», no «Office».** En todo lo visible y lo dicho (placas, botonera, línea de
+frase, ranuras de guardado, frases): «el Vending», «la sala de Vending». El id `office` y los flags `office_*` no cambian.
+`tools/text-audit.mjs` falla si «Office» u «Pajarera» aparecen en algo que el jugador ve u oye.
+
+**(iv) La Redacción de papel (`catacumba`, «Redacción de papel» / «Cierre») está AL LADO de la Redacción web**, en la
+misma planta y al mismo nivel: una puerta doble abierta en la pared de la Redacción (`pecera_a_catacumba`, x 236-296),
+con la placa «1 REDACCIÓN / DE PAPEL · CIERRE» y, por dentro, «1 REDACCIÓN ◄ / REDACCIÓN WEB». El umbral de latón es la
+frontera de la guerra fría papel/web (moqueta y clic a un lado, parqué y tinta al otro). Sin peldaños y sin puerta entre
+el Vending y la Redacción de papel: el Vending solo tiene su puerta a la Redacción. La placa esmaltada «TALLERES» cuelga
+ahora dentro de la Redacción de papel. Anula la D6 (§8).
+
+**(v) La Secretaría de Redacción (Custodia Precinto) vive en la Redacción**, en la bisagra entre las dos redacciones: el
+ventanuco con la persiana (x 179-215), el timbre «NO», el cartel «EL MATERIAL NO SE PIDE. SE MERECE.» y la cajonera
+(x 176-218), junto a la puerta doble. Ids, líneas y árbol sin cambios (`content/rooms/pecera.secretaria.js`, dibujo en
+`content/rooms/art/lib-secretaria.js`). En el Vending, su hueco lo ocupa la máquina de vending (`maquina_vending`).
 
 ## 3. El edificio y el núcleo (D1)
 
@@ -110,9 +129,11 @@ layout.pecera_a_vestibulo = { rect: N.escaleras.baja.rect, walkTo: N.escaleras.b
 entries: { ascensor: N.ascensor.entrada, vestibulo: N.escaleras.baja.entrada, ecosistema: N.escaleras.sube.entrada, … }
 ```
 
-Conexiones (no cambian): P2 `ecosistema` ─puerta─ `eventos`; `ecosistema` ─pasillo─ `administracion`. P1 `pecera` ─
-pasillo de Dirección: puerta a `pajarera` (Dirección) y puerta a `office` ─ `office` ─3 peldaños─ `catacumba`;
-`pajarera` ─puerta─ `sala_amazonas`. P0 `vestibulo`: tornos → núcleo. P−1 `cpd`: solo ascensor.
+Conexiones (construidas): P2 `ecosistema` ─puerta─ `eventos`; `ecosistema` ─pasillo─ `administracion`. P1 `pecera` ─
+pasillo de Dirección: puerta a `pajarera` (Dirección) y puerta a `office` (Vending, sin más salidas); zona de papel:
+puerta doble a `catacumba` (Redacción de papel, mismo nivel, sin más salidas, orden iv); `pajarera` ─puerta─
+`sala_amazonas`. P0 `vestibulo`: tornos → núcleo (con el torno cerrado, el núcleo queda al otro lado: walkbox `when`).
+P−1 `cpd`: solo ascensor. Mapa completo: `docs/CONTENT_SCHEMA.md` §2.6.
 Las reglas del ascensor (`content/lib/ascensor.js`) no cambian.
 
 ---
@@ -124,9 +145,9 @@ Las reglas del ascensor (`content/lib/ascensor.js`) no cambian.
 | sala (id) | placa (fuente del juego) | 2.ª línea (3×5) | planta | departamento (color) | apodo permitido en boca de personajes |
 |---|---|---|---|---|---|
 | `vestibulo` | VESTÍBULO | — | 0 | — | — |
-| `pecera` | REDACCIÓN | LA PECERA | 1 | redacción | la Pecera |
-| `office` | OFFICE | — | 1 | office | — |
-| `catacumba` | CIERRE | REDACCIÓN DE PAPEL | 1 (½ nivel ↓) | papel | la Catacumba |
+| `pecera` | REDACCIÓN | REDACCIÓN WEB | 1 | redacción | la Pecera |
+| `office` | **VENDING** (orden iii) | — | 1 | office (amarillo) | — |
+| `catacumba` | REDACCIÓN | DE PAPEL · CIERRE | 1 (al lado de la Redacción, mismo nivel) | papel | la Catacumba |
 | `pajarera` | **DIRECCIÓN** | — | 1 | dirección | **ninguno** (orden i) |
 | `sala_amazonas` | AMAZONAS | SALA DE REUNIONES | 1 | dirección | — |
 | `ecosistema` | MARKETING | Y COMERCIAL | 2 | marketing | el Ecosistema |
@@ -151,33 +172,28 @@ planta o de dirección (◄ ► ▲ ▼). Sobre el dintel; dos puertas juntas �
 | P2 | pecera | «PANTONE», «DANA», pancarta «BIENVENIDO», torre «PRE», «HERMINI», «BRU/PEL», «DESARR.», «ACCESO DENEG/REVOC», tazas «DEV/NO» | quitar los cuatro primeros; los demás, enteros (§12) |
 | P2 | pajarera | «COSTE» cortado («STE»); Titulator ilegible | «COSTE» entero; pantalla del Titulator 30×18 con 3 líneas 3×5 |
 | P2 | pajarera | — (la puerta de la Sala no dice nada) | placa «1 AMAZONAS / SALA DE REUNIONES» sobre `puerta_sala` |
-| P3 | office | placa «PECERA» en la puerta izquierda | placa «1 REDACCIÓN ◄» (2.ª línea LA PECERA) |
-| P3 | office | placa esmaltada «TALLERES» | se queda en la HOJA (es un gag de la biblia); encima, placa del kit «CIERRE ▼ / REDACCIÓN DE PAPEL» |
-| P3 | catacumba | «TALLERES»/«OFFICE» colgado | placa «1 OFFICE ▲» y 3 peldaños que suben (§8) |
-| P3 | administracion | «PASILLO», «EJEMPLARE…» | placa «2 MARKETING ◄ / Y COMERCIAL»; «EJEMPLARES» entero |
+| P3 | office | placa «PECERA» en la puerta izquierda | **hecho**: placa «1 REDACCIÓN ◄ / REDACCIÓN WEB» (los apodos, nunca en placas) |
+| P3 | office | placa esmaltada «TALLERES» y la puerta a la Catacumba | **cierre**: la puerta ya no existe (orden iv); en su sitio, la fuente de agua; la placa «TALLERES» cuelga dentro de la Redacción de papel |
+| P3 | catacumba | «TALLERES»/«VENDING» colgado | **cierre**: puerta doble abierta con placa «1 REDACCIÓN ◄ / REDACCIÓN WEB», sin peldaños |
+| P3 | administracion | «PASILLO», «EJEMPLARE…» | placa «2 MARKETING ◄ / Y COMERCIAL»; «EJEMPLARES» entero; el aviso del 26 % lo firma «ADMINISTRACIÓN (TAMBIÉN RECORTADA)» |
 | P4 | sala_amazonas | ninguna placa | placa «1 DIRECCIÓN ◄» sobre la puerta; **ninguna** «PRESIDENCIA» |
-| P4 | ecosistema | neón «ECOSISTEMA», placa verde «EVENTOS», «P1▼», «TODO ES…» | rótulos de zona MARKETING y COMERCIAL; placa «2 EVENTOS» en la puerta; núcleo del kit; el neón «ECOSISTEMA» puede quedarse como decoración de Marketing; lema entero en 4 líneas 3×5 |
+| P4 | ecosistema | neón «ECOSISTEMA», placa verde «EVENTOS», «P1▼», «TODO ES…» | rótulos de zona MARKETING y COMERCIAL; placa «2 EVENTOS» en la puerta; núcleo del kit; el neón dice «MARKETING» (cierre: los apodos, solo en boca de los personajes); lema entero en 4 líneas 3×5 |
 | P4 | eventos | «◄ MKT», «ACREDIT» | placa «2 MARKETING ◄ / Y COMERCIAL»; «ACREDITACIÓN» entero |
 
 ### 4.3 Rótulos de zona (departamentos)
 
 `kit.rotuloZona(g, cx, y, depto)`: bandera colgada del techo y centrada sobre la zona, con el filete del color del
 departamento. Van **en la franja de techo y 14-30** (no tapan pistas). Colores en `kit.DEPTO`: Web verde agua,
-Economía/Redacción azul, Infografía naranja, Desarrollo violeta, Diseño blanco, Dirección nogal y latón, Office amarillo,
+Economía/Redacción azul, Infografía naranja, Desarrollo violeta, Diseño blanco, Dirección nogal y latón, Vending amarillo,
 Papel/Cierre ámbar, Marketing fucsia, Eventos granate, Comercial naranja, Administración verde oliva, Sistemas azul.
 
 ---
 
 ## 5. Sala Amazonas (orden ii)
 
-**Juego actual (ya hecho en esta fase, arte provisional):** cabecera a la IZQUIERDA (silla roja). Actos I-II:
-Gervasio `preside` sentado `[84, 106, 'right']`. Acto III: Gervasio `rincon` de pie `[60, 110]` bajo «SALIDA»; Íñigo
-`[118, 118]` presentando; Lector Medio `[238, 108]` a la derecha de la pantalla (x 104-224), delante de la mesa, con
-foco propio (`penumbra`, `luz: 1`); Bruno lo empuja desde `[214, 112]`; cae hacia la derecha, delante de la mesa (centro
-≈ `[275, 112]`); tras el ¡PLOF!, Bruno `[206, 126]`, Rubén `[178, 128]`, Begoña `[148, 130]`: nadie tapa el cartón ni la
-pegatina «ATREZO». Verificado con `tools/test-paquete-d.mjs` (131 OK) y capturas.
+(La disposición provisional de la fase 1 —cabecera a la izquierda, Lector a la derecha de la pantalla— ya no existe.)
 
-**Repintado de P4 (definitivo, sobre la prueba pintada `docs/informes/propuesta/arte/sala_amazonas.propuesta.art.js`):**
+**Construido (P4, sobre la prueba pintada `docs/informes/propuesta/arte/sala_amazonas.propuesta.art.js`):**
 la mesa cruza la sala y la **cabecera queda a la DERECHA**, contra el ventanal y bajo el foco: **es de Gervasio**.
 
 | quién | acto | pies `at` | pose | Bruno habla desde | nota |
@@ -187,7 +203,7 @@ la mesa cruza la sala y la **cabecera queda a la DERECHA**, contra el ventanal y
 | Lector Medio | III | `[100, 120, 'down']` | expositor | empuje desde `[76, 124]` | a la IZQUIERDA de la pantalla (x 118-246), delante del pie de la mesa, foco propio, `luz: 1` |
 | Lector caído | III | centro ≈ `[137, 124]` | variante `caido` | — | cae hacia la derecha, delante de la mesa; botellines por el aire |
 | Íñigo | III | `[222, 122, 'left']` | de pie | `[198, 124]` | presenta bajo la pantalla |
-| Rubén / Begoña | clímax | `[276, 130]` / `[250, 130]` | de pie | — | a la derecha del cartón caído, sin taparlo |
+| Rubén / Begoña | clímax | `[276, 130]` / `[250, 132]` | de pie | — | a la derecha del cartón caído, sin taparlo (`climax.js` `SITIO_RUBEN` / `SITIO_BEGONA`) |
 | Bruno tras el ¡PLOF! | clímax | `[76, 128]` | — | — | a la izquierda del cartón |
 
 Prohibido en cualquier estado: el Lector a menos de **60 px** de la cabecera; una placa o rótulo «PRESIDENCIA»; el
@@ -199,20 +215,23 @@ Gervasio, a **≤ 40 px** de un borde de `orden_del_dia` (la pantalla) y con los
 
 ## 6. La Pecera (D2)
 
-800 px. Zonas de izquierda a derecha (`content/lib/edificio.js` `PECERA_ZONAS`). Cada zona tiene **las cuatro capas**:
-suelo propio con canto de goma (`kit.zonaSuelo`), filete de pared de su color (`kit.filete`, y≈66), pilastra en el
-cambio (`kit.pilastra`) y rótulo colgado centrado (`kit.rotuloZona`).
+**940 px** (800 + la zona de papel de las órdenes iv-v). Zonas de izquierda a derecha (`content/lib/edificio.js`
+`PECERA_ZONAS`). Cada zona tiene **las cuatro capas**: suelo propio con canto de goma (`kit.zonaSuelo`), filete de pared
+de su color (`kit.filete`, y≈66), pilastra en el cambio (`kit.pilastra`) y rótulo colgado centrado (`kit.rotuloZona`).
+De Web a Diseño, el arte está escrito en las coordenadas de la sala de 800 px y se pinta corrido `PECERA_DESPLAZ` = 140 px
+(`desplazado` / `mover` en `pecera.art.js`); las escenas que usan coordenadas literales suman lo mismo.
 
-| zona | x | ancho | pared | suelo | rótulo | contenido obligatorio |
+| zona | x | ancho | pared | suelo | rótulo | contenido |
 |---|---|---|---|---|---|---|
 | NÚCLEO | 0-96 | 96 | `#3a3e4a` | terrazo | (placas del núcleo) | escalera ▲ P2 / ▼ P0 + ascensor «1» (§3) |
-| PASILLO DE DIRECCIÓN | 96-170 | 74 | nogal `#4a3020` | linóleo gris | — | `pecera_a_pajarera` hueco x 100-130 (cristal con persiana, placa «DIRECCIÓN», umbral dorado); `pecera_a_office` x 136-166 (madera, placa «OFFICE», umbral amarillo) |
-| WEB | 170-310 | 140 | `#2c6a66` | moqueta azul pizarra | WEB | pantalla de métricas (176-272), enchufe con cinta en el zócalo, sillas con chaqueta, figurantes, mesa de Yoli |
-| ECONOMÍA | 310-386 | 76 | `#3a5a6c` | moqueta azul | ECONOMÍA | mesa de Bruno SIN silla (marcas de ruedas), pósit «BRUNO / PELLIZCO» 35×13, silla y chaqueta de Ramírez en el plano medio, taza |
-| INFOGRAFÍA | 386-480 | 94 | `#7a6448` | moqueta cálida | INFOGRAFÍA | mesa de dibujo con flexo, portátil «HERMINIA» entero, cartel «SOLO CÓDIGO» en la pilastra de 480 |
-| (cinta) | 480 | — | — | cinta beige EN EL SUELO sobre el cambio de moqueta | — | `frontera_carrocero` (recta / doble / lazo a Infografía) |
-| DESARROLLO | 480-680 | 200 | `#3e3656` | moqueta violeta | DESARROLLO | kanban EXENTO con ruedas (488-596) 18 px a la izquierda del coro, pósit 1998, calendario, semáforo vertical, coro de espaldas (612-676), taza «NO», pantalla de Anselmo «DENEGADO» |
-| DISEÑO Y PRODUCTO | 680-800 | 120 | `#c8c8c0` | moqueta gris | DISEÑO Y PROD. | ventanal (Rubén, Acto III; amanecer en el epílogo), bandeja ENTREGAS, monitor de Valentín (la Pecera en miniatura), Valentín sentado |
+| PASILLO DE DIRECCIÓN | 96-170 | 74 | nogal `#4a3020` | linóleo gris | — | `pecera_a_pajarera` x 100-130 (cristal con persiana, placa «1 DIRECCIÓN ◄», umbral dorado); `pecera_a_office` x 136-166 (madera, placa «1 VENDING ►», umbral amarillo) |
+| PAPEL (bisagra) | 170-310 | 140 | nogal viejo `#5a3e26` con friso | parqué de tablilla | — (placa) | la Secretaría de Redacción (Custodia: `cartel_material` 174-220 × 14-36, `custodia_precinto` 175-219 × 37-53, `timbre_secretaria` 195-209 × 52-62, cajonera 176-218); `pecera_a_catacumba` x 236-296 (puerta doble abierta, placa «1 REDACCIÓN / DE PAPEL · CIERRE», umbral de latón) |
+| WEB | 310-450 | 140 | `#2c6a66` | moqueta azul pizarra | WEB | pantalla de métricas (316-416), enchufe con cinta en el zócalo, sillas con chaqueta, figurantes, mesa de Yoli |
+| ECONOMÍA | 450-526 | 76 | `#3a5a6c` | moqueta azul | ECONOMÍA | mesa de Bruno SIN silla (marcas de ruedas), pósit «BRUNO / PELLIZCO», silla y chaqueta de Ramírez en el plano medio, taza |
+| INFOGRAFÍA | 526-620 | 94 | `#7a6448` | moqueta cálida | INFOGRAFÍA | mesa de dibujo con flexo, portátil «HERMINIA» entero, cartel «SOLO CÓDIGO» en la pilastra de 620 |
+| (cinta) | 620 | — | — | cinta beige EN EL SUELO sobre el cambio de moqueta | — | `frontera_carrocero` (recta / doble / lazo a Infografía) |
+| DESARROLLO | 620-820 | 200 | `#3e3656` | moqueta violeta | DESARROLLO | kanban EXENTO con ruedas (628-712), pósit 1998, calendario, semáforo, coro de espaldas (758-810), taza «NO», pantalla de Anselmo |
+| DISEÑO Y PRODUCTO | 820-940 | 120 | `#c8c8c0` | moqueta gris | DISEÑO Y PROD. | ventanal (Rubén, Acto III; amanecer en el epílogo), bandeja ENTREGAS, monitor de Valentín, Valentín de pie |
 
 El plano de hotspots es la tabla de la propuesta §4.2 (posiciones x, y, an, al): sus **ids no cambian** y las cajas son
 intención; la geometría final la fija el artista respetando los rangos de zona, el mínimo de 12×10 y los solapes ≤ 30 %.
@@ -235,36 +254,30 @@ cámara cuando la cámara está quieta en el centro de su zona.
 
 ---
 
-## 8. Catacumba a medio nivel (D6)
+## 8. Catacumba a medio nivel (D6) — ANULADA
 
-Sigue en la **planta 1**, pero **medio nivel por debajo del Office**. Se cuenta con **tres peldaños con nariz amarilla**
-(`kit.peldanos`) en el umbral de la misma puerta, visto desde los dos lados:
-
-* **Desde el Office (P3, `office_a_catacumba`):** puerta de madera vieja con la placa esmaltada «TALLERES» en la hoja
-  (gag de la biblia, se conserva) y, sobre el dintel, la placa del kit **«1 CIERRE ▼» / «REDACCIÓN DE PAPEL»**. Al
-  otro lado del hueco se ven **3 peldaños que BAJAN** (`kit.peldanos(g, x, FL, w, 'baja')`) y luz ámbar.
-* **Desde la Catacumba (P3, `catacumba_a_office`):** **3 peldaños que SUBEN** hasta la puerta
-  (`kit.peldanos(…, 'sube')`), placa **«1 OFFICE ▲»** (no repite «TALLERES»). El techo bajo y las tuberías se quedan.
-* El `walkTo` y la entrada de cada lado quedan **delante del primer peldaño, en el suelo de la sala** (los peldaños
-  son dibujo, no walkbox).
-
----
+La orden de dirección (iv) la anula: la Redacción de papel está **al lado** de la Redacción web, al mismo nivel, y se
+entra por una puerta doble abierta en la pared de la Redacción (zona de papel, x 236-296). No hay peldaños ni puerta al
+Vending. Desde dentro, la misma puerta doble (x 6-40) con la placa «1 REDACCIÓN ◄ / REDACCIÓN WEB» y, por el hueco, la
+moqueta azul y el resplandor de las pantallas. `kit.peldanos` queda en el kit, sin uso. Los conductos viejos del techo se
+quedan (el edificio es de 1987); la gotera y su cubo, no (no es un sótano).
 
 ## 9. Anchos, salidas y entradas que cambian
 
-**Ningún id cambia** (ni de hotspot, ni de salida, ni de entrada, ni de flag). Cambian coordenadas y anchos:
+**Ningún id cambió en el repintado**; el cierre (orden iv) cambió UNA salida: `catacumba_a_office` / `office_a_catacumba`
+→ `catacumba_a_pecera` / `pecera_a_catacumba`, con sus entradas. El resto, coordenadas y anchos:
 
 | sala | ancho | lo que se mueve | entradas (`entries`, nombradas como la sala de origen) |
 |---|---|---|---|
-| `vestibulo` | 320 | `ascensor_vestibulo`, `vestibulo_a_redaccion` → núcleo derecho (§3) | `pecera` = entrada de la escalera `[289, 112, 'left']`; `ascensor`/`cpd` = `[251, 110, 'down']`; `inicio` sin cambios |
+| `vestibulo` | 320 | `ascensor_vestibulo`, `vestibulo_a_redaccion` → núcleo derecho (§3); el carril del torno es un walkbox condicional (`paso_torno`, `when: 'torno_abierto'`) | `pecera` = `[289, 112, 'left']`; `ascensor`/`cpd` = `[251, 110, 'down']`; `inicio` `[38, 118, 'right']` |
 | `cpd` | 320 | `ascensor_cpd` de x 4 → núcleo (puertas 54-84) | `ascensor` y `vestibulo` = `[69, 110, 'down']` |
-| `pecera` | 800 | `pecera_a_ecosistema` y `ascensor_pecera` de la derecha → núcleo izquierdo; `pecera_a_pajarera` → x 100-130; `pecera_a_office` → x 136-166; el resto según §6 | `vestibulo` y `ecosistema` = `[31, 112, 'right']`; `ascensor` = `[69, 110, 'down']`; `pajarera` = `[115, 110, 'down']`; `office` = `[151, 110, 'down']` |
+| `pecera` | **940** | núcleo izquierdo; `pecera_a_pajarera` x 100-130; `pecera_a_office` x 136-166; **nueva** `pecera_a_catacumba` x 236-296 y la Secretaría (orden iv-v); de Web a Diseño +140 px (§6) | `vestibulo` y `ecosistema` = `[31, 112, 'right']`; `ascensor` = `[69, 110, 'down']`; `pajarera` = `[115, 110, 'down']`; `office` = `[151, 110, 'down']`; **`catacumba` = `[266, 110, 'down']`** |
 | `pajarera` | 320 | pared izquierda de cristal hacia la Redacción; Titulator en atril propio | sin cambio de ids |
-| `office` | 320 | ventanuco de Custodia ENTRE la puerta de la Redacción y Gertrudis; 3 peldaños en TALLERES | sin cambios |
-| `catacumba` | 320 | puerta con 3 peldaños que suben | sin cambios |
+| `office` (Vending) | 320 | sin la puerta a la Catacumba ni el ventanuco de Custodia (órdenes iv-v): máquina de vending (88-130) y fuente de agua (286-306) | solo `pecera` = `[30, 112, 'right']` (se quita `catacumba`) |
+| `catacumba` | 320 | `catacumba_a_office` → **`catacumba_a_pecera`** (puerta doble x 6-40, sin peldaños) | `office` → **`pecera`** = `[32, 116, 'right']` |
 | `sala_amazonas` | 320 | mesa en U con cabecera a la derecha (§5) | `pajarera` sin cambio |
 | `ecosistema` | **400** | §7: `ascensor_ecosistema` → núcleo; `ecosistema_a_eventos` → 194-238; `ecosistema_a_administracion` → 352-398 | `pecera` = `[31, 112, 'right']`; `ascensor` = `[69, 110, 'down']`; `eventos` = `[216, 114, 'down']`; `administracion` = `[372, 116, 'left']` |
-| `eventos` | 512 | apenas: `focos` pasa a los 2 PAR; álbum 20×12 | sin cambios |
+| `eventos` | 512 | `focos` es el foco tres de la barra (`[113, 3, 20, 20]`); álbum 20×12 | sin cambios |
 | `administracion` | 320 | Begoña y Evaristo sentados | sin cambios |
 
 Convenciones: entrada = donde aparece Bruno **dentro del walkbox**, 2-6 px delante de la salida, mirando hacia la sala;
@@ -281,31 +294,31 @@ con el motor: `at: [x, y, dir], pose: 'sentado'` (o `'tras_mesa'`, §13.1).
 
 | PNJ | sala | pies `at` | pose | Bruno habla desde | detrás | nota |
 |---|---|---|---|---|---|---|
-| Celestino | vestibulo | `[178, 97]` | de pie tras mostrador BAJO | `[138, 122]` | pared verde con monitor | #3 |
-| Yoli | pecera | `[309, 116]` | de pie | `[284, 126]` | pared Web | |
-| Leoncio | pecera | `[434, 114]` | de pie | `[410, 126]` | pared crema | no tapa a Herminia |
-| Nerea | pecera | `[606, 114]` | de pie | `[630, 126]` | pared violeta | #7 |
-| Anselmo | pecera | `[674, 118]` | de pie | `[698, 128]` | ventanal | |
-| Valentín | pecera | `[780, 97]` | **sentado** | `[754, 126]` | pared blanca | cameo |
-| Rubén (A III) | pecera | `[712, 112]` | de pie, de cara a la ventana | `[688, 124]` | ventanal | |
-| Gertrudis | office | `[162, 96]` | máquina de 66 px | `[136, 110]` | azulejo | #13 |
-| Gervasio (A III) | office | `[166, 118]` | delante de Gertrudis | `[132, 126]` | LCD por encima de su cabeza | |
-| Teodoro | catacumba | `[104, 99]` | **sentado** frente al fax | `[70, 124]` | cortina del camastro | #4; en 7.3a con el auricular en la mano (`api.sostener` o `positions.telefono`) |
+| Celestino | vestibulo | `[170, 97]` | de pie tras mostrador BAJO | `[138, 122]` | pared verde con monitor | #3 |
+| Yoli | pecera | `[449, 116]` (antes 309) | de pie | `[424, 126]` | pared Web | epílogo: Bruno a su izquierda |
+| Leoncio | pecera | `[574, 114]` | de pie | `[550, 126]` | pared crema | no tapa a Herminia |
+| Nerea | pecera | `[738, 114]` | de pie | `[764, 126]` | pared violeta | #7 |
+| Anselmo | pecera | `[812, 118]` | de pie | `[836, 128]` | ventanal | |
+| Valentín | pecera | `[910, 112]` (`[770, 112]` + 140) | **de pie** junto a su mesa | `[886, 126]` | pared blanca | cameo |
+| Rubén (A III) | pecera | `[928, 114]` (`[788, 114]` + 140) | de pie, de cara a la ventana | `[904, 126]` | ventanal | |
+| Gertrudis | office (Vending) | `[164, 96]` | máquina de 66 px (`scale: 1.5` en `actors.js`) | `[134, 110]` | azulejo | #13 |
+| Gervasio (A III) | office (Vending) | `[170, 119]` | delante de Gertrudis | `[136, 128]` | LCD por encima de su cabeza | |
+| Teodoro | catacumba | `[94, 104]` | **sentado** frente al fax | `[66, 124]` | cortina del camastro | #4; en 7.3a de pie al teléfono (`positions.telefono` `[152, 113]`) con el auricular en la mano |
 | Aurora | catacumba | `[232, 108]` | de pie | `[206, 124]` | cartel «NO HABLO…» | |
-| Íñigo (I-II) | pajarera | `[92, 96]` | **sentado** en el sofá | `[66, 126]` | pósits | #16 |
-| Lector Medio | pajarera | `[52, 104]` | expositor | `[28, 124]` | pósits | |
+| Íñigo (I-II) | pajarera | `[92, 98]` | **sentado** en el sofá | `[66, 126]` | pósits | #16 |
+| Lector Medio | pajarera | `[50, 106]` | expositor | `[26, 124]` | pósits | junto a la puerta, nunca tras la mesa de Gervasio |
 | Gervasio (II) | pajarera | `[262, 97]` | **sentado** en su mesa (`tras_mesa`) | `[236, 126]` | pared nogal | |
+| Custodia | pecera (Secretaría) | — (presencia: manos bajo la persiana, objeto `custodia_precinto`) | — | `[188, 108]` | ventanuco 179-215 | orden v |
 | Gervasio / Lector / Íñigo | sala_amazonas | §5 | §5 | §5 | | orden ii |
-| Borja | ecosistema | `[118, 112]` | de pie | `[94, 126]` | embudo | |
-| Maripaz | ecosistema | `[326, 104]` | de pie junto a su mesa | `[300, 126]` | lema | |
-| Pilar | eventos | `[128, 124]` | de pie | `[100, 128]` | photocall | se conserva |
-| Begoña | administracion | `[196, 98]` | **sentada** tras el cristal (`tras_mesa`) | `[156, 126]` | estantería | el agujerito 14 px a SU IZQUIERDA (#14) |
-| Evaristo | administracion | `[258, 96]` | **sentado** con lupa | `[228, 126]` | cristal de Controlling | sale a la puerta (`positions.puerta`, de pie) |
-| Paco | cpd | `[274, 96]` | **sentado** | `[246, 126]` | mampara gris «SISTEMAS» | #17 |
-| Rubén (III) | cpd | `[185, 94]` | dentro del 27 abierto | `[214, 118]` | luz verde del armario | #2 |
+| Borja | ecosistema | `[118, 112]` | de pie | `[94, 124]` | embudo | |
+| Maripaz | ecosistema | `[328, 104]` | de pie junto a su mesa | `[302, 124]` | lema | |
+| Pilar | eventos | `[128, 124]` | de pie | `[104, 127]` | photocall | se conserva |
+| Begoña | administracion | `[196, 98]` | **sentada** tras el cristal (`tras_mesa`) | `[158, 120]` | estantería | el agujerito 14 px a SU IZQUIERDA (#14); en el clímax, `[250, 132]` en la Sala |
+| Evaristo | administracion | `[256, 99]` | **sentado** con lupa | `[226, 126]` | cristal de Controlling | sale a la puerta (`positions.puerta` `[238, 107]`, de pie; Bruno le habla desde `[212, 114]`) |
+| Paco | cpd | `[277, 96]` | **sentado** | `[246, 126]` | mampara gris «SISTEMAS» | #17 |
+| Rubén (III) | cpd | dentro `[187, 93]`, fuera `[186, 106]` | dentro del 27 abierto | `[214, 118]` | luz verde del armario | #2; los armarios 22 y 23 ya no caben junto al núcleo (quedan 24-30) |
 
-Las coordenadas son las de la propuesta con los talk spots corregidos a ≥ 24 px; el artista puede moverlas unos px
-si su dibujo lo pide, sin romper las reglas (la auditoría lo comprueba, §16).
+Coordenadas CONSTRUIDAS (`node tools/sala.mjs <sala>` las enseña; la auditoría comprueba las reglas, §16).
 
 ---
 
@@ -340,7 +353,8 @@ si su dibujo lo pide, sin romper las reglas (la auditoría lo comprueba, §16).
   **plano detalle** (§13.3).
 * Textos a dejar enteros (lista de la auditoría §5.3): «VESTÍBULO», «HERMINIA», «BRUNO / PELLIZCO», «DESARROLLO»,
   «DENEGADO», «NO», «COSTE», carteles en guerra de la Sala, «EJEMPLARES», el lema de Comercial, «AVERIADO»,
-  «ACREDITACIÓN», el LCD de Gertrudis en reposo («PRECALENTANDO RENCOR»), «LA DIRECCIÓN (TAMBIÉN RECORTADA)».
+  «ACREDITACIÓN», el LCD de Gertrudis en reposo («PRECALENTANDO RENCOR»), «ADMINISTRACIÓN (TAMBIÉN RECORTADA)» (antes firmaba
+  «la Dirección»: se quitó, el juego no alude a ninguna dirección de periódico).
 
 ---
 
@@ -429,6 +443,10 @@ Copia esta lista en tu informe y marca cada punto:
 | `node tools/play-mouse.mjs --solo=geometria [--sala=x] [--estricto] [--avisos]` | la auditoría de geometría; `--avisos` enseña las infracciones de las reglas del rediseño en salas aún no rediseñadas |
 | `node tools/test-motor.mjs` | prueba del motor y del kit sobre la sala de demostración (`tools/demo-rediseno.js`) |
 | `node tools/shot.mjs <sala> [--debug] [--x=] [--flags=]` | una captura suelta |
+| `node tools/contactos.mjs [--actos=a1] [--hotspots]` | (cierre) las 10 salas en cada acto y los cuatro núcleos lado a lado → `tools/shots/rediseno/final/` |
+| `node tools/escenas.mjs [--pasos=8,46]` | (cierre) una captura por línea dicha en cada escena; avisa si quien habla está fuera de cámara o tapado |
+| `node tools/play-mouse.mjs --solo=conexiones` | (cierre) cada salida del edificio en los dos sentidos con clic real: llegada, entrada y salida de vuelta |
+| `node tools/perf.mjs` | (cierre) fps en un móvil medio emulado (CPU ×4, iPhone en horizontal) cruzando cada sala ancha |
 
 Todas las herramientas levantan su servidor en un **puerto libre**: varios agentes pueden lanzarlas a la vez.
 **Reglas que la auditoría aplica a una sala con `rediseno: true`** (errores; en las demás, avisos): R1 interactivo

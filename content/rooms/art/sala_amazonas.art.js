@@ -173,14 +173,14 @@ function cartelSalida(g) {
   for (const cx of [x - 1, x + w - 6]) rect(g, cx, y - 1, 7, 2, '#d8cfa0');
 }
 function tablonGuerra(g) {
-  // tablón de corcho con la GUERRA DE CARTELES: tazas, office y reservas de sala, uno encima de otro sin taparse el texto
+  // tablón de corcho con la GUERRA DE CARTELES: tazas, vending y reservas de sala, uno encima de otro sin taparse el texto
   const { x, y, w, h } = TAB;
   rect(g, x - 1, y - 1, w + 2, h + 2, PAL.wood[1]); rect(g, x, y, w, h, PAL.wood[4]);
   ditherOverlay(g, x, y, w, h, PAL.wood[2], 0.35);
   const hojas = [
     [x + 1, y + 1, 36, 11, PAL.gold[6], ['NO DEJÉIS', 'TAZAS'], PAL.ink[2]],
     [x + 37, y + 1, 36, 11, PAL.paper[7], ['Y DÓNDE', 'LAS DEJO?'], PAL.blue[3]],
-    [x + 1, y + 12, 36, 11, '#f4c0c8', ['NO ES UN', 'OFFICE'], PAL.red[3]],
+    [x + 1, y + 12, 36, 11, '#f4c0c8', ['NO ES EL', 'VENDING'], PAL.red[3]],
     [x + 37, y + 12, 36, 11, PAL.teal[6], ['QUIÉN', 'CAMBIÓ?'], PAL.ink[2]],
     // reservas de sala, en guerra: la hoja impresa (Ramírez, viernes 20:59) y la réplica a mano de Íñigo
     [x + 1, y + 23, 36, 11, PAL.paper[6], ['RESERVA:', 'VIE 20:59'], PAL.ink[2]],
