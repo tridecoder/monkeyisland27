@@ -1113,8 +1113,11 @@ export class Game {
     if (rt.def.animate) safe(() => rt.def.animate(g, view, this.time), 'animate()');
     const objs = this.roomObjects();
     const sorted = [];
+    // fuera de cámara no se pinta (salas anchas: la Redacción mide 940 px; margen de 64 px para lo que se sale de su caja)
+    const cull = (o) => o.x != null && o.w != null && (o.x + o.w + 64 < cam || o.x - 64 > cam + SCREEN_W);
     for (const o of objs) {
       if (!o.draw) continue;
+      if (cull(o)) continue;
       const st = this.getObjState(o.id);
       // `prop: true` (art key): the drawing is FURNITURE that hides actors' legs (a counter, a desk, a table): it is
       // painted even while its hotspot is hidden / its `when` is false (then it is just not clickable). The draw
@@ -1127,6 +1130,7 @@ export class Game {
     }
     for (const a of Object.values(this.actors)) {
       if (a.room !== rt.def.id || !a.visible) continue;
+      if (a.x + 48 < cam || a.x - 48 > cam + SCREEN_W) continue;
       sorted.push({ z: a.y, fn: () => this.drawActor(g, a), label: a.id });
     }
     sorted.sort((a, b) => a.z - b.z);

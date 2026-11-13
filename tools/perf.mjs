@@ -34,21 +34,25 @@ for (const sala of SALAS) {
     // render de la sala cronometrado
     const orig = g.renderRoom.bind(g); const rt = [];
     g.renderRoom = (c) => { const t0 = performance.now(); const v = orig(c); rt.push(performance.now() - t0); return v; };
+    const oR = g.render.bind(g), oU = g.update.bind(g); const tr = [], tu = [];
+    g.render = () => { const t0 = performance.now(); oR(); tr.push(performance.now() - t0); };
+    g.update = (dt) => { const t0 = performance.now(); oU(dt); tu.push(performance.now() - t0); };
     // Bruno cruza la sala de punta a punta (y vuelve)
     const P = g.player, ends = [g.room.walk.nearest(20, 124), g.room.walk.nearest(W - 20, 124)];
     let k = 0; const go = () => { const [x, y] = ends[k++ % 2]; P.path = g.room.walk.findPath([P.x, P.y], [x, y]); };
     go();
     const ft = []; let last = performance.now();
     await new Promise(res => { const t0 = performance.now(); const tick = (t) => { ft.push(t - last); last = t; if (!P.path.length) go(); if (t - t0 < ms) requestAnimationFrame(tick); else res(); }; requestAnimationFrame(tick); });
-    g.renderRoom = orig;
+    g.renderRoom = orig; g.render = oR; g.update = oU;
+    const m = (a) => a.reduce((x, y) => x + y, 0) / Math.max(1, a.length);
     ft.shift();
     const sorted = ft.slice().sort((a, b) => a - b), avg = ft.reduce((a, b) => a + b, 0) / ft.length;
     const rAvg = rt.reduce((a, b) => a + b, 0) / Math.max(1, rt.length), rS = rt.slice().sort((a, b) => a - b);
-    return { fps: 1000 / avg, p95: sorted[Math.floor(sorted.length * 0.95)], render: rAvg, render95: rS[Math.floor(rS.length * 0.95)] || 0, n: ft.length };
+    return { total: m(tr), upd: m(tu), fps: 1000 / avg, p95: sorted[Math.floor(sorted.length * 0.95)], render: rAvg, render95: rS[Math.floor(rS.length * 0.95)] || 0, n: ft.length };
   }, MS);
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
   peor = Math.min(peor, r.fps);
-  out.push(`${sala.padEnd(14)} ${r.fps.toFixed(1).padStart(5)} fps · fotograma p95 ${r.p95.toFixed(1)} ms · renderRoom ${r.render.toFixed(2)} ms (p95 ${r.render95.toFixed(2)}) · ${r.n} fotogramas`);
+  out.push(`${sala.padEnd(14)} ${r.fps.toFixed(1).padStart(5)} fps · fotograma p95 ${r.p95.toFixed(1)} ms · render ${r.total.toFixed(1)} ms · update ${r.upd.toFixed(1)} ms · renderRoom ${r.render.toFixed(2)} ms (p95 ${r.render95.toFixed(2)}) · ${r.n} fotogramas`);
   console.log(out[out.length - 1]);
 }
 console.log(`\nCPU ×${CPU}, ${devices['iPhone 13 landscape'].viewport.width}×${devices['iPhone 13 landscape'].viewport.height}: peor sala ${peor.toFixed(1)} fps ${peor >= 30 ? '(≥ 30: OK)' : '(< 30: CACHEAR CAPAS)'}`);

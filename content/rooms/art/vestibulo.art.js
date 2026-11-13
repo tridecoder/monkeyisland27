@@ -393,7 +393,7 @@ function paintBackground(g, view) {
   wallClock(g, 146, 28, 7, 20 + 59 / 60);
   hangingSign(g);
   // ---- NÚCLEO (kit): ascensor «0», escalera que sube y sus placas, idénticos en las cuatro plantas
-  kit.nucleo(g, 'vestibulo', FL, { sinPared: true, sinSuelo: true });
+  kit.nucleo(g, 'vestibulo', FL, { sinSuelo: true });          // la pared del núcleo, la misma que en las otras plantas
   drawBankBack(g);
 
   // luz de los fluorescentes en la pared y el suelo (entrada); luz cálida del interior

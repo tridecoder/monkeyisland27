@@ -89,11 +89,24 @@ export function scrollInventory(game, dir) {
   if (ns !== game.ui.invScroll) { game.ui.invScroll = ns; game.audio.sfx('click'); }
 }
 
+// Rendimiento (móvil): el fondo del panel (degradado con trama, píxel a píxel) se pinta una vez en un lienzo aparte, y
+// el panel entero en modo normal se reutiliza mientras no cambie nada de lo que enseña (frase, verbo, ratón encima,
+// inventario…). Antes costaba ~5 ms por fotograma en un móvil medio (20 ms con la CPU ×4).
+let bgCache = null;
 function panelBg(g) {
+  if (!bgCache && typeof document !== 'undefined') {
+    bgCache = document.createElement('canvas'); bgCache.width = 320; bgCache.height = 56;
+    const c = bgCache.getContext('2d'); c.translate(0, -PANEL_Y);
+    gradV(c, 0, PANEL_Y, 320, 56, COL.bg);
+    hline(c, 0, PANEL_Y, 320, COL.border);
+    ditherOverlay(c, 0, PANEL_Y + 1, 320, 2, COL.border, 0.5);
+  }
+  if (bgCache) { g.drawImage(bgCache, 0, PANEL_Y); return; }
   gradV(g, 0, PANEL_Y, 320, 56, COL.bg);
   hline(g, 0, PANEL_Y, 320, COL.border);
   ditherOverlay(g, 0, PANEL_Y + 1, 320, 2, COL.border, 0.5);
 }
+let panelCache = null;
 
 function arrow(g, x, y, w, h, up, enabled, hover) {
   const c = !enabled ? COL.verbOff : hover ? COL.verbHover : COL.verb;
@@ -114,16 +127,34 @@ export function drawPanel(game, g) {
   if (game.choice) { drawChoice(game, g); return; }
   const L = LAYOUT;
   const hit = !game.busy && game.mouse.inside ? panelHit(game, game.mouse.x, game.mouse.y) : null;
-  // sentence
   const sent = game.sentenceText();
+  const hov = game.ui.hover;
+  const defVerb = !game.busy && hov && !game.ui.verb ? game.defaultVerbFor(hov) : null;
+  const key = [sent, !!game.ui.sentence, game.ui.verb, game.ui.item, defVerb, !!game.hsShow, game.ui.invScroll, game.state.inventory.map(id => { const it = game.content.items[id]; let v = ''; if (it && it.iconKey) { try { v = String(it.iconKey(game.viewFor())); } catch (e) { v = ''; } } return id + '/' + v; }).join(','),
+    hit ? [hit.type, hit.id, hit.index, hit.dir].join(':') : ''].join('|');
+  if (typeof document !== 'undefined') {
+    if (!panelCache) { const cv = document.createElement('canvas'); cv.width = 320; cv.height = 56; panelCache = { cv, ctx: cv.getContext('2d'), key: null }; }
+    if (panelCache.key !== key) {
+      const c = panelCache.ctx;
+      c.setTransform(1, 0, 0, 1, 0, -PANEL_Y); c.clearRect(0, PANEL_Y, 320, 56);
+      panelBg(c);
+      drawPanelBody(game, c, hit, sent, defVerb);
+      panelCache.key = key;
+    }
+    g.drawImage(panelCache.cv, 0, PANEL_Y);
+    return;
+  }
+  drawPanelBody(game, g, hit, sent, defVerb);
+}
+function drawPanelBody(game, g, hit, sent, defVerb) {
+  const L = LAYOUT;
+  // sentence
   drawText(g, sent, 160, L.sentenceY, game.ui.sentence ? COL.sentenceVerb : COL.sentence, { align: 'center' });
   // menu icon
   const mh = hit && hit.type === 'menu';
   for (let i = 0; i < 3; i++) rect(g, L.menuX + 2, L.menuY + 2 + i * 3, 9, 1, mh ? COL.verbHover : COL.verbOff);
   drawEye(g, hit && hit.type === 'hotspots', !!game.hsShow);
   // verbs
-  const hov = game.ui.hover;
-  const defVerb = !game.busy && hov && !game.ui.verb ? game.defaultVerbFor(hov) : null;
   game.verbs.forEach((v, i) => {
     const c = Math.floor(i / 3), r = i % 3;
     let col = COL.verb;
