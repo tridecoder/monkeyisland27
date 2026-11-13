@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Laboratorio de la propuesta</title></head>
+<body style="margin:0;background:#111">
+<script type="module">
+  // Página de trabajo: la carga render.mjs (Playwright) y llama a window.LAB.pieza(nombre) → dataURL PNG.
+  import { PIEZAS } from './piezas.js';
+  window.LAB = {
+    lista: () => Object.keys(PIEZAS),
+    async pieza(n) { const c = await PIEZAS[n](); return { url: c.toDataURL('image/png'), w: c.width, h: c.height }; },
+  };
+  window.__listo = true;
+</script>
+</body></html>
