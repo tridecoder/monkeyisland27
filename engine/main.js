@@ -57,6 +57,7 @@ function makeTestApi(game) {
         music: game.audio.requestedId ?? game.audio.currentId ?? null,
         menu: game.menu ? game.menu.page : null,
         speaking: game.speeches.map(s => ({ who: s.actor, text: s.text })),
+        phone: game.phone ? { caller: game.phone.caller, label: game.phone.label, state: game.phone.state, side: game.phone.side } : null,   // llamada en curso (api.phone)
         aviso: !!game.avisoActive,          // true mientras suena una llamada / un RV: / un aviso común (game.js `avisos`)
         // última partida terminada con api.ending() (el juego ya está en el título): sus flags, inventario, sala y objetos
         finished: game.finished ? { room: game.finished.room, flags: game.finished.flags, inventory: game.finished.inventory, objects: game.finished.objects, actors: game.finished.actors } : null,

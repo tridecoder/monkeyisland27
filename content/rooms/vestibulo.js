@@ -56,22 +56,23 @@ async function intro(api) {
     api.sfx('step');
     await api.walkTo(74, 120);
     await api.anim('bruno', 'reach', 300);                                  // se sacude la lluvia
-    api.sfx('phone'); api.shake(300, 1);
-    await api.wait(700);
     api.face('down');
+    api.faceActor(C, 'up');                                                  // Celestino, de espaldas con su periódico: no pinta nada en la llamada
     const A = 'abuela_remedios';
-    await api.sayAs(A, ['¿Bruno? ¿Has comido? Se te nota en la voz que no has comido.']);
-    await api.say('He comido, abuela. Un café.');
-    await api.sayAs(A, 'Eso es una bebida, hijo. ¿Y mañana sales en el periódico?');
-    await api.say('Salgo todos los días, abuela. En la web.');
-    await api.sayAs(A, 'En el de papel, digo. En el de verdad. El que mancha.');
-    await api.say('...');
-    await api.say('Mañana. Mañana salgo en el de papel. Te lo prometo.');
-    await api.sayAs(A, '¡Ay, qué ilusión! Se lo digo a la del quiosco. Y a la del pan.');
-    await api.say('No hace falta que se lo digas a todo el...');
-    await api.sayAs(A, 'Ya está. Lo he dicho en el grupo del pueblo. Abrígate.');
-    api.sfx('click');
-    await api.wait(400);
+    // la llamada con el móvil de Bruno en primer plano (api.phone): se ve QUIÉN llama y que habla desde el móvil
+    await api.phone.call({ caller: A, label: 'Abuela' }, async () => {
+      await api.phone.say(['¿Bruno? ¿Has comido? Se te nota en la voz que no has comido.']);
+      await api.say('He comido, abuela. Un café.');
+      await api.phone.say('Eso es una bebida, hijo. ¿Y mañana sales en el periódico?');
+      await api.say('Salgo todos los días, abuela. En la web.');
+      await api.phone.say('En el de papel, digo. En el de verdad. El que mancha.');
+      await api.say('...');
+      await api.say('Mañana. Mañana salgo en el de papel. Te lo prometo.');
+      await api.phone.say('¡Ay, qué ilusión! Se lo digo a la del quiosco. Y a la del pan.');
+      await api.say('No hace falta que se lo digas a todo el...');
+      await api.phone.say('Ya está. Lo he dicho en el grupo del pueblo. Abrígate.');
+    });
+    await api.wait(300);
     await api.say(['Vale. Tengo hasta las nueve para firmar en papel.', 'Y a todo un pueblo esperando en el quiosco.']);
     await api.walkTo('torno');
     await api.anim('bruno', 'reach', 350);
@@ -367,7 +368,8 @@ export default buildRoom({
         ...(v.flag('acto_2_iniciado') ? ['Hoy tres me han preguntado por mi salud. Con mucho interés. Estoy de miedo.'] : []),   // 8bis.1
       ],
       handlers: {
-        mirar: 'Celestino, el conserje. Lleva bufanda del Ibex. Es el único hincha que tiene.',
+        mirar: say('Celestino, el conserje. Bufanda del Ibex y un chicle que no descansa.',
+          'Mastica al ritmo del cierre de bolsa. Y hay un paquete abierto en el mostrador.'),
         hablar: async (api) => { await api.dialog('celestino'); },
         'dar:tarjeta_becario': async (api) => {
           await api.sayAs(C, '¿Pellizco? Aquí pone Pellizco.');

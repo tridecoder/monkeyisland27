@@ -337,6 +337,25 @@ try {
   ok(await G(() => __game.log.some(l => l.text.startsWith('Y 1 correos de Tadeo'))), 'Mirar móvil con tadeo_rv_n >= 1: «Y 1 correos de Tadeo...»');
   await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'acto_2_iniciado', 'acto_3_iniciado']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); __game.setFlag('evaristo_convoco', false); });
 
+  step('Llamadas: primer plano del móvil (api.phone) en pista, aviso e intro; se retira siempre');
+  const phoneState = () => G(() => __game.state().phone);
+  await fast(false);
+  await G(() => { __game.setFlag('torno_abierto', true); __game.clearLog(); __game.doVerb('usar', 'movil'); });
+  ok(await waitFor(() => !!__game.state().phone && __game.state().phone.caller === 'abuela_remedios', null, 4000), 'pista: se abre el móvil con la abuela');
+  await waitFor(() => __game.state().phone && __game.state().phone.state === 'talk', null, 6000);
+  await G(() => __game.waitIdle());
+  ok((await phoneState()) === null, 'pista: el móvil se cierra al colgar');
+  ok(await G(() => __game.log.some(l => l.who === 'aviso' && l.text === 'Cuelga: Abuela')), 'pista: cuelga');
+  await G(() => { __game.setFlag('evaristo_llamadas', 0); __game.gotoRoom('office'); });
+  ok(await waitFor(() => !!__game.state().phone && __game.state().phone.caller === 'evaristo_salvedad', null, 8000), 'aviso: se abre el móvil con Evaristo');
+  await G(() => __game.waitIdle());
+  ok((await phoneState()) === null, 'aviso: el móvil se cierra al acabar');
+  await G(() => { __game.setFlag('evaristo_llamadas', 0); __game.skipText(true); __game.setFlag('torno_abierto', true); });
+  await G(() => __game.gotoRoom('pecera')); await G(() => __game.gotoRoom('office'));
+  ok((await phoneState()) === null, 'modo rápido: sin móvil colgado');
+  await G(() => __game.skipText(false));
+  await G(() => { for (const f of ['torno_abierto']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); });
+
   // ---------------------------------------------------------------- save / load
   step('Guardar / cargar');
   await G(() => __game.gotoRoom('catacumba'));
@@ -495,6 +514,14 @@ try {
   await dp.waitForTimeout(400);
   ok(!(await dp.evaluate(() => !!document.fullscreenElement)), 'escritorio: tecla F otra vez → sale de pantalla completa');
   await dctx.close();
+
+  step('Intro: el móvil de la abuela y Esc');
+  await G(() => { __game.newGame(); });
+  ok(await waitFor(() => __game.state().phone && __game.state().cutscene, null, 40000), 'intro: el móvil se abre durante la llamada de la abuela');
+  await G(() => __game.skipCutscene());
+  await G(() => __game.waitIdle());
+  ok((await phoneState()) === null, 'intro: Esc salta la cinemática y no deja el móvil');
+  ok((await state()).busy === false, 'intro: entrada liberada tras saltar');
 } catch (e) {
   failures++;
   console.error('\nERROR:', e);

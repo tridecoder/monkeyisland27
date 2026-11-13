@@ -127,22 +127,22 @@ async function final(api) {
     api.sfx('paper');
     api.setState('vestibulo.cuadro_plazas', 'tachado');
     await api.sayAs(C, 'La línea de sucesión acaba de enloquecer.');
-    // la abuela
-    api.sfx('phone'); await api.wait(700); api.sfx('phone'); await api.wait(700);
-    await api.sayAs(A, '¿Bruno? ¿Has comido?');
-    await api.say('Abuela. Salgo en el papel. Página 7. Con mi nombre bien escrito.');
-    await api.sayAs(A, 'Ay, hijo. El papel lo dejé en 2011, que me manchaba el sofá.');
-    await api.say('...');
-    await api.sayAs(A, 'Yo te leo todas las mañanas en el móvil. Te pongo un corazoncito.');
-    await api.say('¿En todo?');
-    await api.sayAs(A, ['En todo. Hasta en lo del Euríbor.', 'No lo entiendo, pero lo escribes muy bonito.']);
-    if ((api.flag('rumor_firma_n') || 0) >= 4) {                           // adenda 9.8b
-      await api.sayAs(A, 'En el pueblo digo que eres el dueño. Que suena más.');
-      await api.say('Abuela...');
-      await api.sayAs(A, ['Tú déjame. Los rumores, en el pueblo, son como el periódico.', 'Si lo dice mucha gente, sale.']);
-    }
-    await api.sayAs(A, 'Y te pongo «abrígate». Que nunca contestas.');
-    api.sfx('click');
+    // la abuela (llamada con el móvil de Bruno en primer plano: api.phone)
+    await api.phone.call({ caller: A, label: 'Abuela', ringMs: 2000 }, async () => {
+      await api.phone.say('¿Bruno? ¿Has comido?');
+      await api.say('Abuela. Salgo en el papel. Página 7. Con mi nombre bien escrito.');
+      await api.phone.say('Ay, hijo. El papel lo dejé en 2011, que me manchaba el sofá.');
+      await api.say('...');
+      await api.phone.say('Yo te leo todas las mañanas en el móvil. Te pongo un corazoncito.');
+      await api.say('¿En todo?');
+      await api.phone.say(['En todo. Hasta en lo del Euríbor.', 'No lo entiendo, pero lo escribes muy bonito.']);
+      if ((api.flag('rumor_firma_n') || 0) >= 4) {                           // adenda 9.8b
+        await api.phone.say('En el pueblo digo que eres el dueño. Que suena más.');
+        await api.say('Abuela...');
+        await api.phone.say(['Tú déjame. Los rumores, en el pueblo, son como el periódico.', 'Si lo dice mucha gente, sale.']);
+      }
+      await api.phone.say('Y te pongo «abrígate». Que nunca contestas.');
+    });
     await api.wait(500);
 
     // --- corte a la Pecera

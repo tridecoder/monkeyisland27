@@ -1,6 +1,8 @@
 // Script API given to every handler / hook: async (api) => { ... }
 // See docs/CONTENT_SCHEMA.md#script-api for the authoritative reference.
 
+import * as Phone from './phone.js';
+
 function pick(arr) { return Array.isArray(arr) ? arr[Math.floor(Math.random() * arr.length)] : arr; }
 
 export function makeApi(game, ctx = {}) {
@@ -58,6 +60,24 @@ export function makeApi(game, ctx = {}) {
       for (const l of lines) { if (gone()) return; await game.speak(null, l, { blocking, at: [cx, top - 2], color: opts.color || d.color || '#e8e8e8', who: d.id, ...opts }); }
     },
     sayRandom: (lines) => sayLines(P(), pick(lines)),
+
+    // llamadas de teléfono: primer plano del móvil (engine/phone.js). Ver docs/CONTENT_SCHEMA.md «Llamadas».
+    phone: {
+      /** Abre una llamada: { caller (id de actor), label?, sub?, outgoing? (Bruno llama), ringMs?, side? }. */
+      open: (opts) => Phone.open(game, ctx, opts),
+      /** Habla quien llama, anclado al móvil (texto o lista de líneas). */
+      say: async (text, opts) => { const P = game.phone; if (P) await sayLines(P.caller, text, opts); else game.error('phone.say: no hay llamada abierta'); },
+      /** Cuelga: el móvil se desliza fuera. */
+      close: (opts) => Phone.close(game, opts),
+      /** open + fn + close garantizado (también si fn lanza). */
+      call: async (opts, fn) => {
+        const ok = await Phone.open(game, ctx, opts);
+        try { if (ok !== false || game.instant) await fn(api); }
+        finally { await Phone.close(game); }
+      },
+      get active() { return !!game.phone; },
+      get caller() { return game.phone ? game.phone.caller : null; },
+    },
 
     // movement
     walkTo: async (target, y) => {

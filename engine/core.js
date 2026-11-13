@@ -9,6 +9,7 @@ import { makeApi } from './script.js';
 import { runDialog } from './dialog.js';
 import { runDuel } from './duel.js';
 import * as UI from './ui.js';
+import * as Phone from './phone.js';
 import * as Screens from './screens.js';
 import { Debug } from './debug.js';
 
@@ -116,6 +117,7 @@ export class Game {
     this.choice = null;
     this.menu = null;
     this.hud = null;
+    this.phone = null;            // primer plano del móvil durante una llamada (engine/phone.js, api.phone)
     this.ui = { verb: null, item: null, hover: null, invScroll: 0, sentence: null };
     this.mouse = { x: -1, y: -1, inside: false, touch: false };
     this.log = [];
@@ -240,7 +242,7 @@ export class Game {
   resetRuntime() {
     this.speeches.forEach(s => s.resolve && s.resolve());
     this.speeches = []; this.timers.forEach(t => t.resolve()); this.timers = [];
-    this.choice = null; this.menu = null; this.hud = null; this.hudTop = 0; this.cutscene = 0; this.skipCut = false; this.inDialog = 0;
+    this.choice = null; this.menu = null; this.hud = null; this.phone = null; this.hudTop = 0; this.cutscene = 0; this.skipCut = false; this.inDialog = 0;
     if (this.itemPick) { const r = this.itemPick.resolve; this.itemPick = null; r(null); }
     this.notices = []; this.idleMs = 0; this.idleFired = false; this.comboFails = 0; this.duelInfo = null;
     this.ui.verb = null; this.ui.item = null; this.ui.invScroll = 0; this.ui.sentence = null;
@@ -496,12 +498,14 @@ export class Game {
     if (actorId && !a) this.error('Actor desconocido en sayAs: ' + actorId);
     this.log.push({ who: a ? a.id : (opts.who || (opts.narrator ? 'narrador' : null)), name: a ? a.name : null, text, room: this.state && this.state.room, t: Math.round(this.time) });
     if (this.debug.on) console.log(`[diálogo] ${a ? a.name : '—'}: ${text}`);
+    // el que llama por el móvil habla SIEMPRE anclado al teléfono (aunque el contenido no lo pida)
+    if (this.phone && a && a.id === this.phone.caller && !opts.at && !opts.narrator) opts = { ...opts, ...Phone.anchor(this) };
     if (this.instant) return Promise.resolve();
     for (const s of this.speeches.filter(s => s.actor === (a ? a.id : null) && !s.at === !opts.at)) this.endSpeech(s);
     return new Promise(resolve => {
       const color = opts.color || (a ? a.color : (this.G.narratorColor || '#f0e8c0'));
       const lines = wrap(text, opts.width || 210);
-      const sp = { actor: a ? a.id : null, at: opts.at || null, text, lines, color, end: this.time + (opts.ms || this.speechDuration(text)), blocking: opts.blocking !== false, resolve };
+      const sp = { actor: a ? a.id : null, at: opts.at || null, text, lines, color, end: this.time + (opts.ms || this.speechDuration(text)), blocking: opts.blocking !== false, tail: opts.tail || null, phone: !!opts.phone, resolve };
       this.speeches.push(sp);
     });
   }
@@ -817,6 +821,7 @@ export class Game {
       this.error(`Error en script [${ctx.label || '?'}]: ${e && e.message}`, e);
       if (blocking) this.speeches.filter(s => s.blocking).forEach(s => this.endSpeech(s));
     } finally {
+      if (this.phone && (this.phone.owner === ctx || (blocking && this.busy <= 1))) Phone.kill(this);   // nunca queda el móvil colgado
       if (blocking) {
         this.busy = Math.max(0, this.busy - 1);
         if (!this.busy) { this.cutscene = 0; this.skipCut = false; this.ui.sentence = null; this.applyPresence(); }
@@ -1057,6 +1062,7 @@ export class Game {
       }
     }
     if (this.hud) safe(() => this.hud(g), 'hud');
+    if (this.phone) safe(() => Phone.draw(g, this), 'móvil');
     this.drawSpeech(g, cam);
     this.drawNotices(g);
   }
@@ -1100,7 +1106,8 @@ export class Game {
       g.drawImage(canvas, dx, dy, dw, dh);
       g.restore();
     } else g.drawImage(canvas, dx, dy, dw, dh);
-    if (a.def.drawExtra) a.def.drawExtra(g, a, this.time);
+    if (this.phone && this.phone.ear && a.id === this.G.player) Phone.drawEar(g, this, a, this.actorBox(a));
+    if (a.def.drawExtra) a.def.drawExtra(g, a, this.time, { s, box: this.actorBox(a) });
   }
   drawSpeech(g, cam) {
     for (const sp of this.speeches) {
@@ -1113,7 +1120,8 @@ export class Game {
         bottom = Math.round(b.y) - 3;
       } else { cx = SCREEN_W / 2; bottom = 18 + sp.lines.length * LINE_H; }
       const w = Math.max(...sp.lines.map(l => measure(l)));
-      cx = Math.max(w / 2 + 3, Math.min(SCREEN_W - w / 2 - 3, cx));
+      const [fLo, fHi] = this.phone && !sp.phone ? Phone.freeRange(this) : [3, SCREEN_W - 3];   // con el móvil abierto, los demás hablan en el hueco libre
+      cx = Math.max(fLo + w / 2, Math.min(fHi - w / 2, cx));
       let top = bottom - sp.lines.length * LINE_H;
       const minTop = this.hud ? Math.max(2, this.hudTop) : 2;
       if (top < minTop) top = minTop;
@@ -1125,7 +1133,25 @@ export class Game {
         sp.lines.forEach((l, i) => { const lw = measure(l) + 6; g.fillRect(Math.round(cx - lw / 2), top + i * LINE_H - 2, lw, LINE_H + 1); });
         g.restore();
       }
+      if (sp.tail) this.drawTail(g, sp, cx, top, w);
       sp.lines.forEach((l, i) => drawText(g, l, cx, top + i * LINE_H, sp.color, { align: 'center' }));
+    }
+  }
+
+  /** Globo del móvil: marco del color de quien habla + piquito que apunta al retrato (se ve de quién sale la voz). */
+  drawTail(g, sp, cx, top, w) {
+    const x0 = Math.round(cx - w / 2) - 4, x1 = Math.round(cx + w / 2) + 4, y0 = top - 3, y1 = top + sp.lines.length * LINE_H;
+    const [tx, ty] = sp.tail;
+    g.fillStyle = sp.color;
+    g.fillRect(x0, y0, x1 - x0, 1); g.fillRect(x0, y1, x1 - x0, 1); g.fillRect(x0, y0, 1, y1 - y0); g.fillRect(x1 - 1, y0, 1, y1 - y0 + 1);
+    const fromRight = tx > cx, ax = fromRight ? x1 - 1 : x0, ay = y1;
+    // piquito escalonado desde la esquina inferior hasta el móvil
+    const n = Math.max(2, Math.floor(Math.abs(tx - ax) / 2));
+    for (let i = 0; i <= n; i++) {
+      const k = i / n, x = Math.round(ax + (tx - ax) * k), y = Math.round(ay + (ty - ay) * k), th = Math.max(1, Math.round(5 * (1 - k)));
+      g.save(); g.globalAlpha = 0.8; g.fillStyle = '#06050c'; g.fillRect(x - (fromRight ? th : 0), y - 1, th, th); g.restore();
+      g.fillStyle = sp.color; g.fillRect(x, y + th - 1, 1, 1);
+      g.fillRect(x - (fromRight ? th : 0), y - 1, 1, 1);
     }
   }
 

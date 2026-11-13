@@ -437,6 +437,25 @@ time. Blocking scripts lock input; errors are caught and logged (`[motor] Error 
 `opts`: `{ ms, color, width }`. Duration ≈ 0.9 s + 55 ms/char × text speed. Every line goes to `__game.log`
 (`who` = actor id, object id for `sayFrom`, `'narrador'`, `'aviso'` for notices).
 
+### Llamadas de teléfono (`api.phone`, `engine/phone.js`)
+**Toda llamada del juego usa el primer plano del móvil** de Bruno (grieta en la esquina, pantalla con el nombre, cronómetro,
+icono verde «en llamada» y retrato animado de quien llama; la sala se oscurece detrás). El móvil se desliza por el lado
+contrario al de Bruno; el texto de quien llama sale en un globo con marco de su color y un piquito que apunta al retrato;
+Bruno habla sobre Bruno (con el móvil en la oreja) y los demás globos se acomodan en el hueco libre.
+| | |
+|---|---|
+| `await api.phone.open({ caller, label?, outgoing?, ringMs?, side? })` | `caller` = id de actor (su `portrait`, o la cabeza de su sprite si no tiene). Entrante: suena, vibra y Bruno descuelga; `outgoing: true`: Bruno llama («Llamando...») |
+| `await api.phone.say(text \| [lines], opts?)` | habla quien llama (anclado al móvil). `api.say` sigue siendo Bruno |
+| `await api.phone.close()` | pitidos de colgar, «fin de llamada» y el móvil se desliza fuera |
+| `await api.phone.call(opts, async (api) => {...})` | `open` + cuerpo + `close` garantizado (también si el cuerpo lanza). **Úsalo siempre que puedas** |
+| `api.phone.active`, `api.phone.caller` | estado |
+Retratos: `portrait(g, w=72, h=54, { mouth: 0..2, blink, t })` en la definición del actor (ver `content/lib/retratos.js`: Abuela y
+Evaristo). Cualquier `sayAs(caller)` con el móvil abierto se ancla solo al móvil. El móvil se retira siempre: al cerrar, con
+Esc (cinemática saltada), en modo rápido (`skipText`, instantáneo), al terminar el script que lo abrió aunque falle, y al
+cargar partida. `__game.state().phone` = `{ caller, label, state: 'ring'|'talk'|'hang'|'out', side }` o `null`; el log
+recibe avisos `Llamada de X` / `Cuelga: X`. Llamadas del juego: intro, `pistas` (Usar móvil), epílogo (`final.js`) y los avisos
+L1–L5 de Evaristo (`game.js`). Los correos «RV:» de Tadeo no son llamadas (siguen con globo y aviso).
+
 ### Movement & animation
 `api.walkTo(x, y | [x,y] | 'objOrActorId')`, `api.walkActor(id, ...)`, `api.face(dir|target)`,
 `api.faceActor(id, dir|target)`, `api.placeActor(id, room, x, y, dir?)`, `api.actorPos(id)`,

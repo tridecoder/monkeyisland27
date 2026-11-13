@@ -442,6 +442,11 @@ function counterTop(g) {
   // termo de 1994 y libro de firmas
   rect(g, 174, y - 9, 4, 9, PAL.green[3]); vline(g, 174, y - 9, 9, PAL.green[5]); rect(g, 174, y - 11, 4, 2, PAL.metal[5]);
   rect(g, 182, y - 2, 10, 2, PAL.paper[6]); hline(g, 182, y - 2, 10, PAL.red[4]);
+  // paquete de chicles de menta (abierto, con la tira asomando) y dos papelitos: Celestino mastica sin parar
+  rect(g, 184, y - 6, 7, 4, PAL.teal[5]); hline(g, 184, y - 6, 7, PAL.teal[7]); hline(g, 184, y - 3, 7, PAL.teal[2]);
+  rect(g, 185, y - 5, 5, 1, PAL.paper[7]); px(g, 187, y - 4, PAL.red[4]);
+  rect(g, 190, y - 7, 2, 3, PAL.paper[6]); px(g, 190, y - 7, PAL.metal[6]);
+  px(g, 179, y - 1, PAL.paper[7]); px(g, 180, y - 1, PAL.metal[6]);
   // radio del Mundial del 82 (derecha)
   const rx = 192, ry = y - 10;
   ditherOverlay(g, rx + 1, ry + 2, 12, 9, PAL.ink[0], 0.5);

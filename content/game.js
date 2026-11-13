@@ -39,7 +39,9 @@ defaults['*'] = rotating('mirar');
 // ------------------------------------------------------------------ §5.6 pistas de la abuela (Usar movil)
 const SALUDOS = ['¿Bruno? ¿Has comido?', 'Hijo, ¿ya sales en el periódico?', 'Te llamo porque no me llamas.'];
 const PISTAS = [
-  ['torno_abierto', ['En el pueblo, el que no sale en la foto no existe. Ponte en la foto, hijo.', 'Y masca chicle, que relaja.']],
+  ['torno_abierto', (api) => ['En el pueblo, el que no sale en la foto no existe. Ponte en la foto, hijo.',
+    ...(api.has('chicle') || api.flag('tarjeta_con_chicle') ? ['Y pégala bien, que se cae. Con eso que llevas, hijo.']
+      : ['Y pégala bien, que se cae. Pídele algo que pegue al del mostrador.', 'Ese siempre está mascando algo.'])]],
   ['gertrudis_saludada', ['¿Has saludado a todo el mundo? A las máquinas también. Son las que trabajan.']],
   ['acto_2_iniciado', ['A la señora que corrige llévale un café.', 'Los que corrigen siempre están cansados.']],
   ['silla_libre', ['¿Estás de pie? Siéntate. Y si hay una chaqueta, que la lleve alguien importante.']],
@@ -61,17 +63,18 @@ const PISTAS = [
 ];
 async function pistas(api) {
   const n = api.inc('abuela_llamadas');
-  api.sfx('phone');
-  await api.wait(600);
   const A = 'abuela_remedios';
-  await api.sayAs(A, SALUDOS[(n - 1) % SALUDOS.length]);
-  // adenda 2.1: una sola vez, en la primera llamada con evaristo_llamadas >= 2, antes de la pista (la pista no cambia)
-  if ((api.flag('evaristo_llamadas') || 0) >= 2 && api.once('abuela_evaristo')) {
-    await api.sayAs(A, ['Me ha llamado un señor de tu trabajo, muy educado.', 'Quería saber si "Remedios" lleva tilde. Le he dicho que no.', 'Y que te abrigues. Me ha dicho que era solo eso.']);
-  }
-  const hit = PISTAS.find(([flag]) => !api.flag(flag));
-  if (hit) await api.sayAs(A, hit[1]);
-  await api.sayAs(A, 'Abrígate.');
+  // Bruno llama a su abuela: primer plano del móvil (api.phone) con su retrato; ella habla desde el móvil
+  await api.phone.call({ caller: A, label: 'Abuela', outgoing: true }, async () => {
+    await api.phone.say(SALUDOS[(n - 1) % SALUDOS.length]);
+    // adenda 2.1: una sola vez, en la primera llamada con evaristo_llamadas >= 2, antes de la pista (la pista no cambia)
+    if ((api.flag('evaristo_llamadas') || 0) >= 2 && api.once('abuela_evaristo')) {
+      await api.phone.say(['Me ha llamado un señor de tu trabajo, muy educado.', 'Quería saber si "Remedios" lleva tilde. Le he dicho que no.', 'Y que te abrigues. Me ha dicho que era solo eso.']);
+    }
+    const hit = PISTAS.find(([flag]) => !api.flag(flag));
+    if (hit) await api.phone.say(typeof hit[1] === 'function' ? hit[1](api) : hit[1]);
+    await api.phone.say('Abrígate.');
+  });
 }
 
 // ------------------------------------------------------------------ ADENDA §2: avisos al entrar en sala
@@ -86,21 +89,22 @@ const EV = 'evaristo_salvedad', TA = 'tadeo_adjunto';
 const topAt = (api) => [api.game.camX + 160, 34];            // el teléfono siempre habla arriba, aunque el actor esté en la sala
 const callLine = async (api, who, text) => {
   const g = api.game, t0 = g.time, dur = g.speechDuration(text);
-  await api.sayAs(who, text, { at: topAt(api) });
+  await api.phone.say(text);
   // «No se puede colgar a Evaristo»: un clic temprano sobre el globo durante una llamada (una vez en toda la partida)
   if (!g.instant && g.time - t0 < dur * 0.4 && api.once('evaristo_colgar')) {
     await api.say(['No se puede colgar a Evaristo. Lo he intentado. Me ha anotado.']);
   }
 };
+// Las llamadas de Evaristo (L1-L5): el móvil de Bruno en primer plano con el retrato de don Evaristo (api.phone). Cortas.
+const EV_CALL = { caller: EV, label: 'Evaristo', sub: 'Controlling', ringMs: 1000 };
 const llamada = (cond, guion) => ({ cond, run: async (api) => {
-  api.sfx('phone'); api.shake(350, 1);
-  api.notice('Llamada entrante: EVARISTO (CONTROLLING)', { color: '#F0F0A8', ms: 2200 });
-  await api.wait(700);
-  for (const [who, text] of (typeof guion === 'function' ? guion(api) : guion)) {
-    if (who === 'E') await callLine(api, EV, text);
-    else if (who === 'B') await api.say(text);
-    else if (who === 'ring') { api.sfx('phone'); await api.wait(600); }
-  }
+  await api.phone.call(EV_CALL, async () => {
+    for (const [who, text] of (typeof guion === 'function' ? guion(api) : guion)) {
+      if (who === 'E') await callLine(api, EV, text);
+      else if (who === 'B') await api.say(text);
+      else if (who === 'ring') { await api.phone.close(); await api.wait(250); await api.phone.open({ ...EV_CALL, ringMs: 700 }); }   // cuelga y vuelve a llamar
+    }
+  });
 } });
 const LLAMADAS = [
   llamada('torno_abierto', [                                                                              // L1

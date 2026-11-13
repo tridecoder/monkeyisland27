@@ -5,6 +5,7 @@
 // Hoja de contactos de todos: node tools/actors.mjs → tools/shots/actores.png
 import { paperDoll, defineSprite } from '../engine/sprites.js';
 import { PAL, rect, px, hline, vline, line, ditherPick, frameRect } from '../engine/draw.js';
+import { retratoAbuela, retratoEvaristo } from './lib/retratos.js';
 
 // ------------------------------------------------------------------ Gertrudis (cafetera con LCD, §2.14)
 const gertrudisSprite = defineSprite({
@@ -149,7 +150,18 @@ export default {
       epaulettes: '#e0b840', scarf: '#2a8a3a', scarfStripe: '#d03030', earpiece: '#202020',
       pocketItem: '#303034', pocketKind: 'radio', pants: '#5a5e68', shoes: '#1a1a1e', height: 0.96, build: 'normal', belly: true,
     },
-    murmurs: ['Treinta años en este mostrador. El mostrador, cuarenta.', 'Si me preguntan por el Ibex, digo que va.'],
+    murmurs: ['Treinta años en este mostrador. El mostrador, cuarenta.', 'Si me preguntan por el Ibex, digo que va.',
+      'Chof, chof... Menta. Lo único de esta casa que no caduca.'],
+    // mastica chicle de menta sin parar: de vez en cuando, una pompa rosa (solo de frente)
+    drawExtra(g, a, t, c) {
+      if (a.dir !== 'down' || !c) return;
+      const ph = (t + 1500) % 7200;
+      if (ph > 3000) return;
+      const r = Math.round((1 + (ph / 2700) * 3.4) * c.s * 0.9), x = Math.round(a.x + 1 * c.s), y = Math.round(c.box.y + 15 * c.s);
+      g.fillStyle = ph < 2700 ? '#ff9ac8' : '#ffc8e0';
+      if (ph < 2700) { g.fillRect(x - r + 1, y - r, Math.max(1, 2 * r - 2), 2 * r + 1); g.fillRect(x - r, y - r + 1, 2 * r + 1, Math.max(1, 2 * r - 1)); g.fillStyle = '#ffd8ea'; g.fillRect(x - r + 1, y - r + 1, 1, 1); }
+      else { g.fillRect(x - 5, y - 3, 2, 1); g.fillRect(x + 4, y - 4, 2, 1); g.fillRect(x - 1, y - 6, 1, 2); g.fillRect(x - 3, y + 2, 2, 1); g.fillRect(x + 3, y + 2, 2, 1); }
+    },
   },
   yoli_tendencias: {
     name: 'Yoli', color: '#FF78B8', speed: 70,
@@ -262,9 +274,9 @@ export default {
     murmurs: (v) => (!v.flag('ruben_libre') ? ['UN BECARIO ENCUENTRA UN ARMARIO. EL ARMARIO, OCUPADO.', '¿Hay alguien? ¿Traéis táper?'] : null),
   },
   abuela_remedios: {
-    // SOLO TELÉFONO: nunca se coloca en una sala. api.sayAs('abuela_remedios', ...) muestra el texto arriba.
-    // El paper doll existe por si se hace un retrato para la llamada (moño blanco, bata de flores, móvil con purpurina).
-    name: 'Abuela Remedios', color: '#FFC2D9', hotspot: false,
+    // SOLO TELÉFONO: nunca se coloca en una sala. Habla por el primer plano del móvil (api.phone.open / api.phone.say):
+    // `portrait` es el retrato animado (content/lib/retratos.js) que sale en la pantalla del móvil de Bruno.
+    name: 'Abuela Remedios', color: '#FFC2D9', hotspot: false, portrait: retratoAbuela,
     doll: {
       skin: '#f0c8a8', hair: '#f4f4f4', hairStyle: 'bun', glasses: 'round', glassesColor: '#8a6a5a', shirt: '#7aa0d8',
       skirt: '#7aa0d8', dots: '#ffd0e4', prop: 'phone', propColor: '#e060c0', shoes: '#5a4050', height: 0.88, build: 'normal',
@@ -307,7 +319,7 @@ export default {
     // Director de Controlling y Financiero (administracion; epílogo, vestibulo). Chaqueta de punto gris perla abrochada,
     // corbata con estampado de comas diminutas, lupa colgada de un cordón, lápiz bicolor y un inalámbrico en la mano.
     // En globos: EVARISTO. En el clímax solo suena por el teléfono de conferencias (sin sprite).
-    name: 'Evaristo', color: '#F0F0A8', speed: 46,
+    name: 'Evaristo', color: '#F0F0A8', speed: 46, portrait: retratoEvaristo,
     doll: {
       skin: '#e8c4a4', hair: '#b4b6bc', hairStyle: 'parted', shirt: '#f4f2ea', jacket: '#b9bcc4', tie: '#33427a', tieDots: '#f2ecc4',
       loupe: '#F0F0A8', pencil: true, pencilColor: '#c03030', prop: 'phone', propColor: '#f0f0f2',
