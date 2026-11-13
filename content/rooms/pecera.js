@@ -32,7 +32,7 @@ async function rumorYoli(api) {
     await api.sayAs(Y, 'Teodoro vive en la Catacumba. Está hasta empadronado. Lo dice el wifi.');
   }
 }
-async function rumorNerea(api) {
+async function rumorNemesio(api) {
   if (num(api, 'rumor_atun_n') === 1) {                                     // B, paso 2
     api.setFlag('rumor_atun_n', 2);
     await api.sayAs(N, 'Dicen que el Titulator consume mucho. Lo ha oído Paco.');
@@ -59,7 +59,33 @@ const DISCUSIONES = [
   [['CORO', '¡Diseño!'], ['D3', 'Ni nos mira.'], ['D1', 'Nunca mira.'], ['D2', 'Es que lo entregó todo.']],
   [['D2', '¿Le abrimos una incidencia a Diseño?'], ['D1', '¿Con qué? Lo tiene todo en la bandeja.'], ['D2', 'Pues a la bandeja.']],
 ];
-let discusionN = 0;
+// RUNNING GAG (adenda §16): Desarrollo es machista SIN SABERLO y se cree feminista. El chiste es siempre SOBRE ELLOS (su
+// punto ciego y su autobombo), nunca sobre las mujeres. Se intercala con las de «¡Diseño!» (una de cada tres) y escala
+// por actos: Acto I autobombo · Acto II el comité y la oferta · Acto III el comité decide contratar (remate: epílogo).
+const N_ = 'nerea_backlog', A_ = 'anselmo_monolito';
+const CONCIENCIADOS = [
+  { if: null, l: [['D1', 'Somos un equipo feminista. Lo pone el diploma.'], ['D2', 'Nos lo dimos nosotros. Por unanimidad.'], ['D3', 'No.'], ['D2', 'Por mayoría.']] },
+  { if: null, l: [['D2', '¿Diversidad? Aquí hay muchísima.'], ['D1', 'Él usa Linux.'], ['D2', 'Y yo, modo oscuro.'], ['D3', 'No.']] },
+  { if: null, l: [['D1', 'El 8 de marzo pusimos el logo en morado. Todo el día.'], ['D2', 'Sin que nadie lo pidiera.'], ['D1', 'Ese tema ya está cerrado.'], [N_, 'Lo tengo en HECHO (PERO NO).']] },
+  { if: null, l: [['D1', 'Le he explicado a Yoli su propio artículo de SEO.'], ['D2', '¿Y?'], ['D1', 'Me ha corregido tres cosas. Le he dado las gracias por escuchar.'], ['D2', 'Eso es dar voz.']] },
+  { if: 'acto_2_iniciado', l: [['D2', 'La oferta pedía un «ninja del backend». Solo se apuntan chicos.'], ['D1', 'Qué raro. Con lo neutro que es «ninja».'], ['D2', 'Y «rockstar». Y «partirse la cara por el producto».'], ['D1', 'Será el diseño del anuncio.'], ['CORO', '¡Diseño!']] },
+  { if: 'acto_2_iniciado', l: [['D1', 'Mañana es jueves. Comité de igualdad.'], ['D2', '¿Quién viene?'], ['D1', 'Los de siempre. Los cuatro.'], ['D2', 'Qué gusto que estemos todos de acuerdo.']] },
+  { if: 'acto_2_iniciado', l: [['D2', 'Hoy le he dicho «compañera» a Aurora. Con muchísimo respeto.'], ['D1', '¿Y qué te ha contestado?'], ['D2', 'No sé. La he interrumpido para explicarle una tilde.'], ['D3', 'No.']] },
+  { if: 'acto_3_iniciado', l: [['D1', 'El comité ha aprobado contratar a una mujer.'], ['D2', '¿Para qué puesto?'], ['D1', 'Para que el comité tenga sentido.'], ['D3', 'No.']] },
+  { if: 'acto_3_iniciado', l: [['D2', '¿Y si la brecha es culpa de Diseño?'], ['D1', 'Diseño tiene más mujeres que nosotros.'], ['D2', '¡Pues eso! ¡Provocadores!'], ['CORO', '¡Diseño!']] },
+];
+let discusionN = 0, concienciadoN = 0;
+/** La siguiente discusión del coro: dos de «¡Diseño!» y una de «conciencia» (la siguiente de su acto, en orden). */
+function siguienteDiscusion(api) {
+  const n = discusionN++;
+  if (n % 3 === 2) {
+    const ok = CONCIENCIADOS.filter(c => !c.if || api.flag(c.if));
+    if (ok.length) return ok[concienciadoN++ % ok.length].l;
+  }
+  return DISCUSIONES[(n - Math.floor(n / 3)) % DISCUSIONES.length];
+}
+export { CONCIENCIADOS };
+
 
 // ------------------------------------------------------------------ biblia 8.3: monitores de la Pecera (Mirar figurantes_web)
 const MONITORES = [
@@ -89,14 +115,15 @@ export default buildRoom({
       cerrar: 'Una escalera no se cierra. Para eso ya está el torno, abajo.',
       empujar: 'Empujar a alguien escaleras abajo sería una salida en valor. No.',
     } },
-    { id: 'pecera_a_pajarera', name: 'puerta de Dirección', exit: { room: 'pajarera' }, handlers: {
-      mirar: 'Dirección. Despacho de cristal: se ven las broncas, pero no se oyen.',
+    { id: 'pecera_a_pajarera', name: 'Despachos', exit: { room: 'pajarera' }, handlers: {
+      mirar: async (api) => { await api.say(['Los Despachos. Cristal de arriba abajo: se ven las broncas, pero no se oyen.', 'Al fondo, la puerta de la Sala de Reuniones.']); },
       abrir: async (api) => api.goto('pajarera', 'pecera'), usar: async (api) => api.goto('pajarera', 'pecera'),
       hablar: 'Golpeo el cristal con los nudillos. Al otro lado lo apuntan en un pósit.',
-      cerrar: 'Ya está cerrada. Dirección no cierra puertas: las delega.',
+      cerrar: 'Ya está cerrada. En los Despachos las puertas no se cierran: se delegan.',
     } },
-    { id: 'pecera_a_office', name: 'puerta del Vending', exit: { room: 'office' }, handlers: {
-      mirar: 'El Vending. Ahí vive Gertrudis.',
+    { id: 'pecera_a_office', name: 'Vending', exit: { room: 'office' }, handlers: {
+      mirar: 'El Vending. Un arco sin puerta: se ve la máquina y a Gertrudis. Ahí vive ella.',
+      cerrar: 'No tiene puerta. Gertrudis no necesita puertas: necesita público.',
       abrir: async (api) => api.goto('office', 'pecera'), usar: async (api) => api.goto('office', 'pecera'),
       hablar: '¡Buenas noches, Gertrudis! No contesta. Habrá que decírselo a la cara.',
     } },
@@ -109,8 +136,15 @@ export default buildRoom({
       hablar: '"¿Hola?" Me contesta un fax. Dentro de un rato.',
       empujar: 'Está abierta. Empujarla sería meterme en la guerra fría a traición.',
     } },
-    // orden de dirección 3: la Secretaría de Redacción (Custodia), junto a la puerta de la Redacción de papel
+    // orden de dirección 3: la Secretaría de Redacción (Custodia), en su propio hueco junto a la Redacción de papel
     ...objetosSecretaria,
+    // el tótem-directorio del vestíbulo de planta (junto al núcleo)
+    { id: 'directorio_planta', name: 'directorio de la planta', handlers: {
+      mirar: seq([['B', 'Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.'], ['B', 'Un punto rojo: «ESTÁ AQUÍ». Es la primera vez que algo me ubica.']]),
+      usar: 'Busco «becario» en la lista. No sale. Será que va dentro de «Redacción».',
+      empujar: 'No se mueve. Es lo único de esta planta que está donde dice que está.',
+      coger: 'Es un tótem. Se consulta, no se adopta.',
+    } },
     ascensorObjeto('ascensor_pecera', {
       mirar: 'El ascensor. Lo rediseñó Valentín. No se nota nada: eso es lo bueno.',
       cerrar: 'Se cierra solo. Con un margen de ocho píxeles exactos.',
@@ -176,7 +210,7 @@ export default buildRoom({
       empujar: async (api) => api.say(api.flag('cms_vivo')
         ? 'Ni hablar. El ticket nº 3 tenía razón. Nueve años esperando.'
         : 'Ya está enchufado. Más enchufado no se puede. Como el sobrino de alguien.'),
-      usar: 'Enchufar algo más aquí sería pedirle demasiado a Dirección.',
+      usar: 'Enchufar algo más aquí sería pedirle demasiado a la pantalla de Dirección.',
       coger: 'La cinta dice NO DESENCHUFAR. No dice NO COGER. Pero se sobreentiende.',
     } },
     { id: 'taza_abandonada', name: 'taza abandonada', handlers: {
@@ -308,7 +342,7 @@ export default buildRoom({
       'dar:*': seq([['D1', '¿Eso quién lo ha diseñado?'], ['CORO', '¡Diseño!']]),
     } },
     { id: 'semaforo_ruido', name: 'semáforo de ruido', state: 'rojo', states: ['rojo', 'ambar', 'verde'], handlers: {
-      mirar: seq([['B', 'Semáforo de ruido de Prevención. Rojo.'], ['B', 'Pósit de Nerea: "Verde: 14 de agosto. Estaban de vacaciones".']]),
+      mirar: seq([['B', 'Semáforo de ruido de Prevención. Rojo.'], ['B', 'Pósit de Nemesio: "Verde: 14 de agosto. Estaban de vacaciones".']]),
       usar: 'Lo toco. Se pone más rojo. Existe un rojo más rojo.',
       tirar: async (api) => api.sayAs(N, 'No. Es lo único que les mide sin que se enfaden.'),
       hablar: '"Shhh", le digo. Es la primera vez que alguien le da la razón.',
@@ -351,8 +385,8 @@ export default buildRoom({
         await api.say(lines);
       },
       coger: async (api) => api.sayAs(N, 'Ni se te ocurra. Un pósit solo sale del tablero hecho o muerto.'),
-      empujar: 'Tiene ruedas. Lo empujo un palmo y Nerea lo devuelve a su sitio con la mirada.',
-      tirar: 'Si tiro, se caen los pósits. Y Nerea me pone en BLOQUEADO.',
+      empujar: 'Tiene ruedas. Lo empujo un palmo y Nemesio lo devuelve a su sitio con la mirada.',
+      tirar: 'Si tiro, se caen los pósits. Y Nemesio me pone en BLOQUEADO.',
       usar: 'Me escribo un pósit: "Firmar en papel". Lo pego en POR HACER. Desde hoy.',
     } },
     { id: 'posit_1998', name: 'pósit amarillísimo', handlers: {
@@ -361,10 +395,33 @@ export default buildRoom({
       usar: 'No lo muevo. En HECHO (PERO NO) se está calentito.',
     } },
     { id: 'calendario_ferreteria', name: 'calendario de ferretería', handlers: {
-      mirar: seq([['B', 'Calendario de Ferretería Hermanos Tornillo. Nerea solo se fía de este.'], ['B', 'Trae santoral, fases de la luna y una oferta de tacos del 8.']]),
+      mirar: seq([['B', 'Calendario de Ferretería Hermanos Tornillo. Nemesio solo se fía de este.'], ['B', 'Trae santoral, fases de la luna y una oferta de tacos del 8.']]),
       tirar: async (api) => api.sayAs(N, '¡Quieto! Es la única fuente fiable de este departamento.'),
-      coger: 'Si me lo llevo, Nerea no sabría en qué día vive.',
+      coger: 'Si me lo llevo, Nemesio no sabría en qué día vive.',
       abrir: 'Lo hojeo. En diciembre regalan una llave inglesa. Hay que llegar a diciembre.',
+    } },
+    // ---------------------------------------------------------------- DESARROLLO: el rincón del comité de igualdad (adenda §16)
+    { id: 'diploma_concienciado', name: 'diploma «100 % concienciado»', handlers: {
+      mirar: seq([['B', '«EQUIPO 100 % CONCIENCIADO». Expedido por: el equipo. Para: el equipo.'], ['B', 'Cuatro firmas. Todas de los premiados.']]),
+      coger: async (api) => api.sayAs(N, 'Ni lo toques. Nos costó mucho dárnoslo.'),
+      usar: 'Lo leo dos veces. Sigue sin firmarlo ninguna compañera. Ni para aprobarlo.',
+      tirar: async (api) => api.sayAs(A, 'Quieto. Es el único premio que hemos ganado por unanimidad.'),
+    } },
+    { id: 'logo_morado', name: 'logo morado', handlers: {
+      mirar: seq([['B', 'El logo del periódico, en morado. Impreso el 8 de marzo. Sigue en el corcho.'], ['B', 'Debajo, a boli: «IGUALDAD: HECHO».']]),
+      coger: seq([['D1', '¡Eh! Eso es nuestra política de igualdad.'], ['D2', 'Entera.']]),
+      empujar: 'Lo enderezo. Se vuelve a torcer. Lleva así desde marzo.',
+      usar: async (api) => api.sayAs(N, 'Lo descolgamos el 9. Volvió a subir solo. Como el café.'),
+    } },
+    { id: 'buzon_companeras', name: 'buzón «COMPAÑERAS»', handlers: {
+      mirar: async (api) => {
+        if (api.flag('acto_3_iniciado')) await api.say(['El buzón «COMPAÑERAS». Ha aparecido una araña.', 'Es la primera incorporación del año.']);
+        else await api.say(['Buzón de sugerencias: «COMPAÑERAS». Con candado y telarañas.', 'Dentro hay una sola nota. Es de Anselmo: «Más buzones».']);
+      },
+      abrir: async (api) => api.sayAs(N, 'La llave la tiene el comité. Somos cuatro. No la encuentra ninguno.'),
+      usar: 'Echo una sugerencia: «Contratad». Cae al fondo. Hace eco.',
+      'usar:pieza_opa': 'Si la echo ahí, Desarrollo la contesta explicándome mi propia pieza.',
+      empujar: 'Suena hueco. Es el sonido oficial del comité de igualdad.',
     } },
     { id: 'ventana', name: 'ventana', handlers: {
       mirar: 'Ahí fuera hay un mundo real. Bajísimo tiempo de permanencia.',
@@ -396,9 +453,9 @@ export default buildRoom({
       murmurs: ['Precio café hoy, precio café 2026, precio café por qué...', 'Si baja otra vez, me pongo colirio en el alma.',
         'Busco "el Contable" y salen gestorías. Nos ganan en SEO.', 'Hacen más ruido que mi gráfica cuando baja.'] },
     { id: N, when: '!lector_derribado', handlers: {
-      mirar: 'Nerea, Desarrollo. Mueve pósits con precisión de cirujana.',
+      mirar: 'Nemesio, Desarrollo. Mueve pósits con precisión de cirujano.',
       hablar: async (api) => {
-        await rumorNerea(api);
+        await rumorNemesio(api);
         if (!api.flag('cms_vivo')) { await api.sayAs(N, 'El CMS no es nuestro, es de Sistemas. Y no, no tengo un momento.'); return; }
         await api.sayAs(N, ['Si vienes a pedirme algo, está en el tablero.', 'Si no está en el tablero, no existe.']);
         await api.dialog('nerea');
@@ -406,7 +463,8 @@ export default buildRoom({
       'dar:album_eventos': async (api) => api.dialog('nerea', 'N_ALBUM_INTRO'),     // P14b
     },
       murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.',
-        'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.'] },
+        'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.',
+        'Igualdad: EN CURSO desde 2016. Va a muy buen ritmo.'] },
     { id: R, when: ['ruben_libre', '!lector_derribado'], handlers: {
       mirar: 'Rubén mira por la ventana. Espera al sol como quien espera una nómina.',
       hablar: async (api) => {
@@ -452,7 +510,10 @@ export default buildRoom({
       'dar:cafe': async (api) => api.sayAs(A, '¿Café de Gertrudis? No. Yo bebo del termo. Café propio.'),
       'dar:ticket_n1': async (api) => api.sayAs(A, 'Un ticket cerrado. Eso es de Sistemas. Yo no lo he visto.'),
       empujar: 'Ni hablar. Está detrás de su cinta. Empujarlo sería invadir.',
-    } },
+    },
+      murmurs: ['Esto no ha pasado por Desarrollo. Esto tampoco. Esto sí, de refilón.', 'Transversal. No invasivo. Transversal.',
+        'Revisión: marzo. Qué bien suena marzo.', '(al termo) Tú sí eres de Desarrollo.',
+        'Brecha salarial cero. Lo he medido yo. Conmigo mismo.'] },
   ],
 
   dialogs: { ...dialogos, custodia: dialogoCustodia },
@@ -460,8 +521,7 @@ export default buildRoom({
   ambient: [
     // discusiones de fondo del coro de Desarrollo (adenda 3.3 y 4.6b), en orden
     { every: [14000, 24000], if: '!lector_derribado', run: async (api) => {
-      const d = DISCUSIONES[discusionN++ % DISCUSIONES.length];
-      await talk(api, d);
+      await talk(api, siguienteDiscusion(api));
     } },
   ],
 

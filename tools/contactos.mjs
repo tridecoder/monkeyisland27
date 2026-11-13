@@ -45,13 +45,14 @@ const renderRoom = (room, mode) => G(async ({ room, mode }) => {
   const x2 = c2.getContext('2d'); x2.imageSmoothingEnabled = false;
   const S = { cam: g.camX, hs: g.hsShow, sh: g.shakeUntil };
   g.shakeUntil = 0; g.speeches.length = 0; g.notices.length = 0;
-  if (mode === 'hotspots') { g.hsShow = { t0: g.realTime, until: g.realTime + 1e9 }; g.hsCentro = true; }
+  if (mode === 'hotspots') { g.hsShow = { t0: g.realTime, until: g.realTime + 1e9 }; g.hsCentro = 0; }
   try {
     for (let x = 0; x < W; x += 320) {
       const cam = Math.min(x, W - 320); g.camX = cam;
+      if (g.hsCentro !== false && g.hsCentro != null) g.hsCentro = x;      // rótulos: solo los del tramo nuevo
       x2.setTransform(1, 0, 0, 1, 0, 0); x2.clearRect(0, 0, 320, 144);
       g.renderRoom(x2);
-      cv.getContext('2d').drawImage(c2, cam, 0);
+      cv.getContext('2d').drawImage(c2, x - cam, 0, 320 - (x - cam), 144, x, 0, 320 - (x - cam), 144);   // el último tramo, solo lo nuevo
     }
   } finally { g.camX = S.cam; g.hsShow = S.hs; g.shakeUntil = S.sh; g.hsCentro = false; }
   return { w: W, url: cv.toDataURL('image/png') };

@@ -98,7 +98,7 @@ async function settle(timeout = 90000) {
 }
 /** Un punto de pantalla (virtual) donde un clic elige exactamente este objetivo; mueve la cámara andando si hace falta. */
 async function pointFor(id) {
-  for (let k = 0; k < 12; k++) {          // la Redacción mide 940 px: hasta 4 tramos de pantalla andando
+  for (let k = 0; k < 16; k++) {          // la Redacción mide 1270 px: hasta 4-5 tramos de pantalla andando
     const r = await G((id) => {
       const g = __game.game, cam = Math.round(g.camX);
       const objs = __game.objects();

@@ -46,7 +46,7 @@ export const DEPTO = {
   infografia: { nombre: 'INFOGRAFÍA', c: '#e8a030', suelo: ['#3c3428', '#4a4030', '#584c38'] },
   desarrollo: { nombre: 'DESARROLLO', c: '#9a6ae0', suelo: ['#2e2a44', '#38324f', '#423b5c'] },
   diseno: { nombre: 'DISEÑO Y PRODUCTO', c: '#f0f0e8', suelo: ['#6a6a70', '#7c7c84', '#8e8e96'] },
-  direccion: { nombre: 'DIRECCIÓN', c: '#d8a040', suelo: ['#4a2e1c', '#5a3a24', '#6a462c'] },
+  direccion: { nombre: 'DESPACHOS', c: '#d8a040', suelo: ['#4a2e1c', '#5a3a24', '#6a462c'] },
   office: { nombre: 'VENDING', c: '#f0d060', suelo: ['#6a5a3a', '#7a6a44', '#8a7a50'] },
   papel: { nombre: 'CIERRE', c: '#c89050', suelo: ['#3a2618', '#4a3220', '#5a3e28'] },
   marketing: { nombre: 'MARKETING', c: '#ff5aa8', suelo: ['#3e2a4a', '#4a3258', '#563a66'] },

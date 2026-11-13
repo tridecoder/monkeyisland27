@@ -20,7 +20,7 @@ export const ASCENSOR_COLOR = '#9FD8FF';
 
 export const PLANTAS = [
   { n: 2, room: 'ecosistema', obj: 'ascensor_ecosistema', label: 'Planta 2 · Marketing · Eventos · Comercial · Administración' },
-  { n: 1, room: 'pecera', obj: 'ascensor_pecera', label: 'Planta 1 · Redacción · Redacción de papel · Dirección · Vending' },
+  { n: 1, room: 'pecera', obj: 'ascensor_pecera', label: 'Planta 1 · Redacción · Despachos · Vending' },
   { n: 0, room: 'vestibulo', obj: 'ascensor_vestibulo', label: 'Planta 0 · Vestíbulo' },
   { n: -1, room: 'cpd', obj: 'ascensor_cpd', label: 'Planta -1 · Sistemas y CPD' },
 ];

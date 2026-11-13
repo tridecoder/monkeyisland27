@@ -12,11 +12,15 @@ export const HATCH = { x: 91, y: 40, w: 36, h: 18 };          // hueco del venta
 export const SECRETARIA_RECTS = {
   cartel_material: [86, 14, 46, 22], custodia_precinto: [87, 37, 44, 16], timbre_secretaria: [107, 52, 14, 10],
 };
+/** El cartel, en su sitio de la Redacción (hall rediseñado): A LA DERECHA del ventanuco, a la altura del hueco (encima
+ *  va ahora la placa «SECRETARÍA / DE REDACCIÓN»). Coordenadas de origen. */
+export const CARTEL_LADO = [135, 42];
 
-export function hatchFrame(g) {
+/** Marco del ventanuco y el cartel. o.cartel = [x, y] (coordenadas de origen) para colgar el cartel en otro sitio. */
+export function hatchFrame(g, o = {}) {
   const { x, y, w, h } = HATCH;
-  // cartel «EL MATERIAL NO SE PIDE. SE MERECE.» encima del ventanuco (no de Gertrudis)
-  const cx = 86, cy = 14, cw = 46, ch = 21;
+  // cartel «EL MATERIAL NO SE PIDE. SE MERECE.» (no de Gertrudis)
+  const [cx, cy] = o.cartel || [86, 14], cw = 46, ch = 21;
   ditherOverlay(g, cx + 2, cy + 2, cw, ch, PAL.ink[0], 0.45);
   rect(g, cx, cy, cw, ch, PAL.paper[6]); frameRect(g, cx, cy, cw, ch, PAL.metal[2]); frameRect(g, cx + 1, cy + 1, cw - 2, ch - 2, PAL.red[3]);
   kit.micro(g, 'EL MATERIAL', cx + (cw >> 1), cy + 3, PAL.ink[1], { align: 'center' });

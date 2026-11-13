@@ -1113,7 +1113,7 @@ export class Game {
     if (rt.def.animate) safe(() => rt.def.animate(g, view, this.time), 'animate()');
     const objs = this.roomObjects();
     const sorted = [];
-    // fuera de cámara no se pinta (salas anchas: la Redacción mide 940 px; margen de 64 px para lo que se sale de su caja)
+    // fuera de cámara no se pinta (salas anchas: la Redacción mide 1270 px; margen de 64 px para lo que se sale de su caja)
     const cull = (o) => o.x != null && o.w != null && (o.x + o.w + 64 < cam || o.x - 64 > cam + SCREEN_W);
     for (const o of objs) {
       if (!o.draw) continue;

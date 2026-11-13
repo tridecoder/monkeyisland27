@@ -188,14 +188,15 @@ function drawDoor(g) {
   line(g, x - 5, FL + 8, x + w + 5, FL + 8, PAL.gold[5]); line(g, x - 6, FL + 9, x + w + 6, FL + 9, PAL.gold[2]);
   ditherOverlay(g, 4, 98, 40, 3, PAL.shadow, 0.4);
 }
-/** La placa esmaltada «TALLERES» (gag de la biblia: antes en la puerta del Office): ahora cuelga aquí dentro, torcida. */
+/** La placa esmaltada «TALLERES» (gag de la biblia: antes en la puerta del Office): ahora cuelga aquí dentro, torcida,
+ *  del mismo cordel que las galeradas, lejos de la barra de la cortina del camastro y del cartel «ROTATIVA». */
 function drawTalleres(g) {
-  const x = 44, y = 37, w = 37, h = 10;
+  const x = 130, y = 32, w = 35, h = 10;
   ditherOverlay(g, x + 2, y + 2, w, h, PAL.ink[0], 0.45);
   rect(g, x, y, w, h, PAL.paper[7]); frameRect(g, x, y, w, h, PAL.blue[3]);
   kit.micro(g, 'TALLERES', x + (w >> 1) + 1, y + 3, PAL.blue[2], { align: 'center' });
   px(g, x + 1, y + 1, PAL.paper[5]); px(g, x + w - 2, y + 8, PAL.paper[2]); px(g, x + 3, y + 8, PAL.metal[2]);   // desconchones
-  line(g, x + 4, y, x + 18, y - 5, PAL.metal[3]); line(g, x + w - 4, y, x + 18, y - 5, PAL.metal[3]); px(g, x + 18, y - 6, PAL.metal[5]);   // el cordel
+  line(g, x + 4, y, x + 17, y - 9, PAL.metal[3]); line(g, x + w - 4, y, x + 17, y - 9, PAL.metal[3]); px(g, x + 17, y - 10, PAL.metal[5]);   // colgada del cordel
 }
 
 function drawGaleradas(g) {
@@ -514,8 +515,8 @@ export default {
     drawWall(g);
     drawFloor(g);
     drawDoor(g);
-    drawTalleres(g);
     drawGaleradas(g);
+    drawTalleres(g);                 // delante de las galeradas: cuelga del mismo cordel
     drawCamastro(g);
     drawChair(g);
     drawReloj(g);

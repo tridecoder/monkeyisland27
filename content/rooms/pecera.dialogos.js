@@ -1,5 +1,6 @@
 // SALA `pecera` — ÁRBOLES DE DIÁLOGO (paquete B). Importado desde ./pecera.js.
-// Biblia 7.7.2 (Yoli), 7.6.3 (Nerea); adenda 4.1 (Leoncio), 4.2 (Anselmo), 4.3 (coro de Desarrollo) y 4.7 (Nerea).
+// Biblia 7.7.2 (Yoli), 7.6.3 (Nemesio, antes Nerea; id `nerea_backlog`); adenda 4.1 (Leoncio), 4.2 (Anselmo), 4.3 (coro de
+// Desarrollo), 4.7 (Nemesio) y §16 (el comité de igualdad: Desarrollo se cree feminista y no lo es; el chiste, sobre ellos).
 // Opciones con el texto LITERAL de la biblia/adenda (el walkthrough las busca por texto).
 // Convención de la biblia 7.6: una opción ya usada que no cambia nada desaparece (once) salvo «(se queda)».
 import { talk } from './pecera.voces.js';
@@ -21,6 +22,9 @@ export default {
             reply: ['Maripaz me escribió "desde el más absoluto cariño".', 'Le contesté: "Y yo te leo desde el más absoluto modo avión".', 'Me ha puesto en copia a mi madre.'],
             do: async (api) => { api.learnReply('rep_08'); } },
           { text: '¿Quién comenta mis piezas?', once: true, reply: 'Una cuenta que solo pone "abrígate". En todo. Será un bot.' },
+          // adenda §16: Yoli, sobre Desarrollo
+          { text: 'Desarrollo dice que te da voz.', once: true,
+            reply: 'Me explicaron mi propio artículo de SEO. Luego me agradecieron que lo escuchara.' },
           { text: 'Íñigo va a cerrar el papel.', if: 'acto_3_iniciado', reply: 'Si cierra el papel, ¿quién me va a odiar con criterio?' },
           { text: 'Me voy.', exit: true, reply: 'Vuelve cuando tengas un titular con número.' },
         ],
@@ -28,7 +32,7 @@ export default {
     },
   },
 
-  // ---------------------------------------------------------------- 7.6.3 Nerea (+ adenda 4.7)
+  // ---------------------------------------------------------------- 7.6.3 Nemesio (+ adenda 4.7 y §16); id del árbol: `nerea`
   nerea: {
     actor: N, start: 'N0',
     nodes: {
@@ -40,12 +44,20 @@ export default {
             reply: 'El del ordenador miente. Este no: trae santoral y tacos del 8.' },
           { text: '¿Qué tal con Yoli?', once: true,
             reply: ['Me dijo que mi dato de tráfico estaba "sacado de contexto".', 'Le contesté: "Dame el contexto y lo pongo en el subtítulo".',
-              '"Que ahí no lo lee nadie". No hemos vuelto a comer juntas.', 'Bueno, ella no come. Mide.'],
+              '"Que ahí no lo lee nadie". No hemos vuelto a comer juntos.', 'Bueno, ella no come. Mide.'],
             do: async (api) => { api.learnReply('rep_09'); } },
           { text: 'Necesito la baja de Rubén.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!posit_descopeado'],
             reply: ['¿Rubén?', 'Ah. "Baja becario Rubén". Por Hacer. Desde julio.', 'Un pósit solo sale del tablero de dos formas: hecho o muerto.',
               'Y para darlo por hecho necesito pruebas de que el becario existió.', 'No sale en ninguna foto, ninguna acta, ningún sitio. Es como tú.'] },
           { text: 'Mira este álbum.', if: 'has:album_eventos', goto: 'N_ALBUM_INTRO' },
+          // adenda §16: el comité de igualdad (Actos I-II) y su gran decisión (Acto III)
+          { text: '¿En Desarrollo no hay ninguna mujer?', once: true,
+            do: async (api) => talk(api, [[N, 'Ninguna. Pero tenemos un comité de igualdad. Se reúne los jueves.'],
+              [N, 'Lo tengo en el tablero: «Igualdad», EN CURSO. Desde 2016.'], ['B', '¿Y quién está en el comité?'],
+              [N, 'Los cuatro. Por eso funciona tan bien: nadie nos lleva la contraria.']]) },
+          { text: '¿Qué ha decidido el comité de igualdad?', once: true, if: 'acto_3_iniciado',
+            do: async (api) => talk(api, [[N, 'Contratar a una mujer. Por fin. Votación reñida: cuatro a cero.'],
+              ['B', '¿Y ahora?'], [N, 'Ahora debatimos quién le explica a ella lo de la igualdad.']]) },
           // adenda 4.7 (se queda)
           { text: '¿Por qué está bloqueado lo de Herminia?',
             reply: ['Lo bloquea Anselmo. Y a Anselmo lo bloquea Anselmo.', 'Es la dependencia más estable del tablero.'] },
@@ -70,7 +82,7 @@ export default {
       },
       N_DESCOPE: {
         onEnter: async (api) => {
-          // (Nerea se queda quieta. De su ordenador salen violines que nadie ha puesto.)
+          // (Nemesio se queda quieto. De su ordenador salen violines que nadie ha puesto.)
           api.sfx('good');
           await api.wait(700);
           await api.sayAs(N, ['Nadie... nadie se había atrevido a decirlo en voz alta.', 'Descopear. Es lo más bonito que me han dicho delante del tablero.']);
@@ -165,6 +177,10 @@ export default {
               }
               api.setFlag('anselmo_dijo_regla', true);
             } },
+          // adenda §16: el más orgulloso de todos
+          { text: '¿Hay brecha salarial en Desarrollo?', once: true,
+            do: async (api) => talk(api, [[A, 'En mi equipo no hay brecha salarial.'], [A, 'No hay nadie con quien compararla.'],
+              ['B', 'Eso no es un logro.'], [A, 'Es un dato. Y los datos no discriminan. Los hemos hecho nosotros.']]) },
           { text: '¿Por qué eres tan celoso de tus sistemas?',
             do: async (api) => talk(api, [[A, 'Cuando algo se rompe a las tres de la mañana, ¿quién baja?'], ['B', '¿Paco?'], [A, 'Paco abre un ticket. Bajo yo.']]) },
           { text: 'He arreglado el CMS.', if: 'cms_vivo',
@@ -186,7 +202,7 @@ export default {
           api.repaint();
           await talk(api, [[A, 'Ya no hace falta frontera. Ahora todo esto es Desarrollo.'], [L, 'Me han anexionado.'],
             [L, '...Pero integrada. Que es lo que quería. Creo.'], [N, 'Si no está en el tablero, no existe.']]);
-          // (Nerea pega un pósit: «HERMINIA — HECHO»)
+          // (Nemesio pega un pósit: «HERMINIA — HECHO»)
           await api.anim(N, 'reach', 600);
           api.sfx('paper');
           return 'exit';
@@ -260,6 +276,10 @@ export default {
               }
             } },
           { text: 'Diseño os avisó de lo del CMS. En 2017.', once: true, if: 'bandeja_diseno_abierta', goto: 'CO_BANDEJA' },
+          // adenda §16
+          { text: '¿Vosotros sois feministas?', once: true,
+            do: async (api) => talk(api, [['CORO', '¡Muchísimo!'], ['D1', 'Tenemos diploma.'], ['D2', 'Y pusimos el logo en morado. Un día entero.'],
+              ['B', '¿Y alguna compañera en el equipo?'], ['D1', 'Estamos en ello. Lo lleva el comité.'], ['D3', 'No.']]) },
           { text: 'Herminia ahora es de Desarrollo.', once: true, if: 'infografia_integrada', goto: 'CO_HERMINIA' },
           { text: 'Me voy.', exit: true, do: async (api) => talk(api, [['CORO', '¡Vale!']]) },   // (lo gritan como un insulto, sin serlo)
         ],

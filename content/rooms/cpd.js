@@ -67,8 +67,8 @@ async function revelacionRuben(api) {
     await api.wait(700);
     await api.sayAs(R, 'Qué ilusión. Nunca había sido el nuevo de nada.');
     await api.say('Sal de ahí. Vámonos.');
-    await api.sayAs(R, ['No puedo. Mi baja es un pósit en el tablero de Nerea. Desde julio.',
-      'Si salgo sin baja, Íñigo me factura las horas de sol.', 'Y Nerea no mueve un pósit sin pruebas de que el becario existió.',
+    await api.sayAs(R, ['No puedo. Mi baja es un pósit en el tablero de Nemesio. Desde julio.',
+      'Si salgo sin baja, Íñigo me factura las horas de sol.', 'Y Nemesio no mueve un pósit sin pruebas de que el becario existió.',
       'Nadie me ha hecho nunca una foto.']);
     await api.wait(700);
     await api.sayAs(R, ['Bueno. La de Eventos. Pero salgo al fondo. Yendo al baño.', '¿Me traes un táper, ya que vas?']);
@@ -201,7 +201,7 @@ const rubenDialog = {
 const REJILLA = [
   () => ['(Planta 2) «Te escribo desde el más absoluto cariño». Maripaz.', '(¡GONG!)'],
   () => ['(Administración) «Original. Duplicado. Triplicado. Original...»'],
-  () => ['(Dirección) «Amarillo, facturación. Verde, oportunidades...»'],
+  () => ['(Despachos) «Amarillo, facturación. Verde, oportunidades...»'],
   () => ['(Vestíbulo) «¡Ibersideral entra por la banda!». También narra para el sótano.'],
   (api) => (acto3(api) && !api.flag('ruben_libre') ? ['(Desde el 27) Alguien teclea. Con faltas.']
     : api.flag('ruben_libre') ? ['(Desde el 27) Nada. Solo la matricial, imprimiendo por respeto.']

@@ -1,4 +1,4 @@
-// SALA `pajarera` (en pantalla y en las placas: «DIRECCIÓN»; el apodo no se enseña nunca, orden i) — ARTE Y GEOMETRÍA.
+// SALA `pajarera` (en pantalla y en las placas: «DESPACHOS», antes «DIRECCIÓN»; el apodo no se enseña nunca, orden i) — ARTE Y GEOMETRÍA.
 // Paquete P2 del rediseño (docs/GUIA_REDISENO.md §2, §4, §9-§12; propuesta §4.5). 320×144, planta 1, FL = 96.
 // De izquierda a derecha:
 //   · el TABIQUE DE CRISTAL hacia la Redacción (con la puerta: `pajarera_a_pecera`; placa «1 REDACCIÓN ◄ / REDACCIÓN WEB»):

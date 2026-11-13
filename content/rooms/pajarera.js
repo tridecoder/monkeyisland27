@@ -39,7 +39,7 @@ const GENERICOS = [
 
 async function mirarTitulator(api) {
   if (acto3(api)) {
-    await api.say(['El atril está vacío. Íñigo se ha llevado el Titulator a la reunión.', 'Sin titulares, Dirección parece un despacho normal.']);
+    await api.say(['El atril está vacío. Íñigo se ha llevado el Titulator a la reunión.', 'Sin titulares, los Despachos parecen una oficina normal.']);
     return;
   }
   const n = api.inc('titulator_mirar_n');
@@ -103,7 +103,8 @@ async function grabacion(api) {
 
 export default buildRoom({
   id: 'pajarera',
-  name: 'Dirección',                 // orden de dirección: «Pajarera» no se enseña nunca (id interno)
+  name: 'Despachos',                 // «Pajarera» no se enseña nunca (id interno); antes «Dirección» (antesala de los
+                                     // despachos que lleva a la Sala de Reuniones; la reunión sigue siendo «de Dirección»)
   music: 'm_pajarera',
   flags: {
     pajarera_titulares_vistos: 'lista · B · titulares de hazaña (8.3/9.9) ya mostrados por pantalla_titulator',
@@ -158,16 +159,16 @@ export default buildRoom({
       hablar: 'El cartelito dice «RESERVADO». Desde 2015. Para una reunión que nunca empieza.',
     } },
     { id: 'perchero', name: 'perchero', handlers: {
-      mirar: seq([['B', 'El perchero de Dirección. Vacío.'], ['B', 'Colgar algo aquí le quitaría autoridad a la chaqueta.']]),
+      mirar: seq([['B', 'El perchero de los Despachos. Vacío.'], ['B', 'Colgar algo aquí le quitaría autoridad a la chaqueta.']]),
       'usar:chaqueta_ramirez': 'En el perchero se vería. Encima del Lector Medio, se respetaría.',
       usar: 'Me cuelgo la mochila. El perchero se tambalea. No está hecho para becarios.',
-      coger: 'Es el único mueble de Dirección sin pósit. No pienso estropearlo.',
+      coger: 'Es el único mueble de los Despachos sin pósit. No pienso estropearlo.',
     } },
     { id: 'ordenador_gervasio', name: 'ordenador de Gervasio', handlers: {
       mirar: async (api) => leerEnviados(api),
       usar: async (api) => leerEnviados(api),
       hablar: 'Le hablo. Me contesta con una notificación: "Lo hablamos".',
-      cerrar: 'No lo cierro. Una sesión abierta en Dirección es lo más parecido a un acta.',
+      cerrar: 'No lo cierro. Una sesión abierta en estos despachos es lo más parecido a un acta.',
     } },
     { id: 'puerta_sala', name: 'puerta de la Sala Amazonas', exit: { room: 'sala_amazonas' }, handlers: {
       mirar: async (api) => {

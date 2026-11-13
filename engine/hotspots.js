@@ -64,24 +64,56 @@ export function draw(game, g, cam) {
     // esquinas marcadas
     for (const [cx, cy] of [[x, y], [x + w - 2, y], [x, y + h - 2], [x + w - 2, y + h - 2]]) R(cx, cy, 2, 2, '#fff2c0');
   }
-  // rótulos: encima de la caja (o dentro si no cabe), sin pisarse, siempre dentro de la vista
+  // rótulos: cerca de su caja, SIN PISARSE y siempre dentro de la vista. Se colocan de los pequeños a los grandes
+  // probando posiciones cada vez más lejos (encima, dentro, debajo, más arriba/abajo, corridas a los lados); el primero
+  // libre gana. Si el rótulo queda despegado de su caja, una línea guía (1 px) los une. En las salas llenas (Desarrollo,
+  // Marketing) así se leen todos, también en el iPhone en horizontal (la pantalla virtual es la misma: 320 × 144).
   const placed = [];
-  const hit = (r) => placed.some(p => r.x < p.x + p.w && r.x + r.w > p.x && r.y < p.y + p.h && r.y + r.h > p.y);
-  // (tools/sala.mjs pinta panorámicas por tramos de 320 px: con game.hsCentro cada rótulo sale solo en el tramo de su centro)
-  const L = game.hsCentro ? T.filter(t => t.box.x + t.box.w / 2 >= cam && t.box.x + t.box.w / 2 < cam + 320) : T;
+  const hit = (r) => placed.some(p => r.x < p.x + p.w + 1 && r.x + r.w + 1 > p.x && r.y < p.y + p.h && r.y + r.h > p.y);
+  // (tools/sala.mjs pinta panorámicas por tramos de 320 px: con game.hsCentro = x cada rótulo sale solo en el tramo de su
+  // centro, que empieza en x; `true` = el tramo de la cámara)
+  const c0 = typeof game.hsCentro === 'number' ? game.hsCentro : cam;
+  const L = (game.hsCentro != null && game.hsCentro !== false) ? T.filter(t => t.box.x + t.box.w / 2 >= c0 && t.box.x + t.box.w / 2 < cam + 320) : T;
   const order = L.slice().sort((a, b) => a.box.w * a.box.h - b.box.w * b.box.h);   // los pequeños primero
+  const out = [];
   for (const t of order) {
     const txt = String(t.name || t.id);
     const tw = measure(txt) + 4, th = 11;
-    const cx = t.box.x + t.box.w / 2;
-    let r = null;
-    for (const dy of [-th - 1, 2, t.box.h + 2, -2 * th - 2, t.box.h + th + 3, 2 + th + 1]) {
-      const c = { x: Math.round(Math.max(cam + 1, Math.min(cam + 319 - tw, cx - tw / 2))), y: Math.round(Math.max(1, Math.min(134, t.box.y + dy))), w: tw, h: th };
-      if (!hit(c)) { r = c; break; }
+    const { x: bx, y: by, w: bw, h: bh } = t.box;
+    const cx = bx + bw / 2;
+    const clampX = (x) => Math.round(Math.max(cam + 1, Math.min(cam + 319 - tw, x)));
+    const clampY = (y) => Math.round(Math.max(1, Math.min(133, y)));
+    const cands = [];
+    const dys = [-th - 1, 2, bh + 2];
+    for (let k = 1; k <= 7; k++) dys.push(-th - 1 - k * (th + 1), bh + 2 + k * (th + 1), 2 + k * (th + 1));
+    const dxs = [0, -(tw / 2 + 2), tw / 2 + 2, -(tw + 4), tw + 4];
+    for (const dy of dys) for (const dx of dxs) {
+      const c = { x: clampX(cx - tw / 2 + dx), y: clampY(by + dy), w: tw, h: th };
+      const ax = c.x + c.w / 2, ay = c.y + c.h / 2;
+      c.d = Math.hypot(ax - cx, ay - (by + Math.min(bh, 20) / 2)) + Math.abs(dx) * 0.4;
+      cands.push(c);
     }
-    if (!r) r = { x: Math.round(Math.max(cam + 1, Math.min(cam + 319 - tw, cx - tw / 2))), y: Math.round(Math.max(1, Math.min(134, t.box.y + 2))), w: tw, h: th };
+    cands.sort((a, b) => a.d - b.d);
+    let r = cands.find(c => !hit(c));
+    if (!r) r = cands[0];
     placed.push(r);
-    g.globalAlpha = 0.85 * fade; R(r.x, r.y, r.w, r.h, '#08060e');
+    out.push({ t, r, txt });
+  }
+  // líneas guía primero (por debajo de los rótulos), luego los rótulos
+  for (const { t, r } of out) {
+    const { x: bx, y: by, w: bw, h: bh } = t.box;
+    const toca = r.x < bx + bw + 1 && r.x + r.w > bx - 1 && r.y < by + bh + 1 && r.y + r.h > by - 1;
+    if (toca) continue;
+    const c = t.kind === 'actor' ? (t.color || COL.actor) : COL[t.kind];
+    const lx = Math.max(r.x + 2, Math.min(r.x + r.w - 3, bx + bw / 2)), ly = r.y + r.h / 2 < by ? r.y + r.h : r.y - 1;
+    const tx = Math.max(bx + 1, Math.min(bx + bw - 2, lx)), ty = ly < by ? by : by + bh - 1;
+    g.globalAlpha = 0.9 * fade;
+    const n = Math.max(Math.abs(tx - lx), Math.abs(ty - ly)) || 1;
+    for (let i = 0; i <= n; i++) R(lx + (tx - lx) * i / n, ly + (ty - ly) * i / n, 1, 1, c);
+    R(tx - 1, ty - 1, 3, 3, c);
+  }
+  for (const { t, r, txt } of out) {
+    g.globalAlpha = 0.88 * fade; R(r.x, r.y, r.w, r.h, '#08060e');
     g.globalAlpha = fade;
     const c = t.kind === 'actor' ? (t.color || COL.actor) : COL[t.kind];
     drawText(g, txt, r.x + 2, r.y, c, {});

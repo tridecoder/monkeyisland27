@@ -1,15 +1,15 @@
 // SALA `ecosistema` — Marketing y Comercial (planta 2, «el Ecosistema»). Arte y geometría. Rediseño P4 (docs/GUIA_REDISENO.md
-// §3, §7; propuesta §4.7). Biblia §3.7 + adenda §3.7, §8bis y §13.4. 400 px con scroll, cinco zonas de izquierda a derecha
+// §3, §7; propuesta §4.7). Biblia §3.7 + adenda §3.7, §8bis y §13.4. 432 px con scroll, cinco zonas de izquierda a derecha
 // (content/lib/edificio.js ECOSISTEMA_ZONAS), cada una con suelo, filete, pilastra y (los departamentos) rótulo colgado:
 //   NÚCLEO 0-96 ........... el kit del edificio (kit.nucleo, FL = 94): escalera que BAJA «1 REDACCIÓN ▼» y ascensor «2».
 //                           Marketing le ha puesto los PUFS delante al ascensor (gag A§14.2), sin tapar la botonera.
 //   MARKETING 96-190 ...... moqueta lila gruesa, Memphis: el embudo «VEN · MIRA · COMPARTE · ?», la pizarra SINERGIA sobre
 //                           la mesa vacía de Tadeo (con su portátil, que nunca se cierra) y Borja con su anillo de luz.
 //   puerta de EVENTOS 190-242 doble hoja ciruela con ojos de buey por los que se escapan los focos, piloto «5 MIN»,
-//                           placa «2 EVENTOS» y umbral granate.
-//   COMERCIAL 242-352 ..... roll-up «SU ANUNCIO AQUÍ» (desplegado / enrollado), termómetro de ventas al 97 %, el lema
+//                           placa «2 EVENTOS» (en la fila de placas y rótulos, y 2) y umbral granate.
+//   COMERCIAL 242-384 ..... roll-up «SU ANUNCIO AQUÍ» (desplegado / enrollado), termómetro de ventas al 97 %, el lema
 //                           ENTERO en 4 líneas, la mesa de Maripaz y, en el suelo, la piel de plátano de la plaza 7.
-//   PASILLO 352-400 ....... boca de 46 px en perspectiva hacia Administración (ventanilla al fondo, placa
+//   PASILLO 384-432 ....... boca de 46 px (dibujada en coordenadas de 400 px, `corrido` +32) en perspectiva hacia Administración (ventanilla al fondo, placa
 //                           «2 ADMINISTRACIÓN ►»), con la impresora de la tercera ENTERA dentro.
 // Paleta: lila y fucsia (Marketing), ciruela y granate (Eventos), naranja melocotón (Comercial), verde oliva (pasillo).
 import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, ditherPick, ditherOverlay, glow, gradV,
@@ -17,7 +17,10 @@ import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, dit
 import * as kit from '../../lib/kit.js';
 import { nucleoGeom } from '../../lib/edificio.js';
 
-const W = 400, FL = 94;
+const W = 432, FL = 94;
+const PX = 32;                       // el pasillo (y la impresora) se corren 32 px: Comercial ganó pared para que las placas respiren
+/** pinta `fn` corrido PX px a la derecha (el pasillo está dibujado en las coordenadas de la sala de 400 px) */
+const corrido = (fn) => (g, ...a) => { g.save(); g.translate(PX, 0); try { return fn(g, ...a); } finally { g.restore(); } };
 const N = nucleoGeom('ecosistema', FL);
 const LIL = ['#5a3c6c', '#6c4a80', '#7e5894', '#9268a8', '#a67cbc', '#bc94d0'];      // pared de Marketing
 const PLUM = ['#24142e', '#33203f', '#432a52', '#563666'];                             // pared de la puerta de Eventos
@@ -45,8 +48,8 @@ const layout = {
   lema_enmarcado: { rect: [290, 18, 62, 33], walkTo: [318, 114], face: 'up' },
   piel_platano: { rect: [334, 118, 18, 10], walkTo: [360, 126], face: 'left', priority: 2, draw: drawPlatano },
   // el pasillo a Administración, con la impresora dentro (la impresora, a la izquierda de la boca; la salida, el resto)
-  impresora_tercera: { rect: [354, 56, 20, 40], walkTo: [366, 108], face: 'up', priority: 1, draw: drawImpresora },
-  ecosistema_a_administracion: { rect: [370, 20, 28, 80], walkTo: [384, 108], face: 'right' },
+  impresora_tercera: { rect: [354 + PX, 56, 20, 40], walkTo: [366 + PX, 108], face: 'up', priority: 1, draw: (g, v, t) => corrido(drawImpresora)(g, v, t) },
+  ecosistema_a_administracion: { rect: [370 + PX, 20, 28, 80], walkTo: [384 + PX, 108], face: 'right' },
   // PNJ (guía §10): Borja delante del embudo; Maripaz de pie junto a su mesa, con el lema detrás
   borja_engagement: { at: [118, 112, 'right'], walkTo: [94, 124], face: 'right' },
   maripaz_remitido: { at: [328, 104, 'left'], walkTo: [302, 124], face: 'right' },
@@ -160,33 +163,33 @@ function paredes(g) {
   // EVENTOS (la puerta): ciruela oscuro
   paint(g, 190, 14, 52, FL - 14, (x, y) => ditherPick(x, y, PLUM, 0.75 - (y - 14) / (FL - 14) * 0.4));
   // COMERCIAL: melocotón cálido con rayas finas de papel pintado
-  paint(g, 242, 14, 110, FL - 14, (x, y) => ditherPick(x, y, PEACH, 0.8 - (y - 14) / (FL - 14) * 0.45 + ((x % 12) === 0 ? -0.08 : 0)));
+  paint(g, 242, 14, 110 + PX, FL - 14, (x, y) => ditherPick(x, y, PEACH, 0.8 - (y - 14) / (FL - 14) * 0.45 + ((x % 12) === 0 ? -0.08 : 0)));
   // PASILLO: verde oliva (el de Administración)
-  paint(g, 352, 14, 48, FL - 14, (x, y) => ditherPick(x, y, OLIVA, 0.6 - (y - 14) / (FL - 14) * 0.3));
+  paint(g, 352 + PX, 14, 48, FL - 14, (x, y) => ditherPick(x, y, OLIVA, 0.6 - (y - 14) / (FL - 14) * 0.3));
   // zócalo alto (moldura) y zócalo de suelo en toda la planta (menos el núcleo, que lleva el suyo)
-  for (const [x0, x1, c] of [[96, 190, LIL[1]], [190, 242, PLUM[0]], [242, 352, PEACH[0]], [352, 400, OLIVA[0]]]) {
+  for (const [x0, x1, c] of [[96, 190, LIL[1]], [190, 242, PLUM[0]], [242, 352 + PX, PEACH[0]], [352 + PX, W, OLIVA[0]]]) {
     rect(g, x0, FL - 4, x1 - x0, 4, shade(c, -0.2)); hline(g, x0, FL - 4, x1 - x0, shade(c, 0.25)); hline(g, x0, FL - 1, x1 - x0, PAL.ink[0]);
   }
   // filetes de departamento a la altura del zócalo alto
   kit.filete(g, 96, 190, 66, 'marketing');
   kit.filete(g, 190, 242, 66, 'eventos');
-  kit.filete(g, 242, 352, 66, 'comercial');
-  ditherOverlay(g, 96, 14, 304, 4, PAL.shadow, 0.3);
+  kit.filete(g, 242, 352 + PX, 66, 'comercial');
+  ditherOverlay(g, 96, 14, W - 96, 4, PAL.shadow, 0.3);
 }
 function suelos(g) {
   // moqueta gruesa de la planta 2 por zona (canto de goma claro en cada cambio)
   kit.zonaSuelo(g, 96, 190, FL, 'marketing', { vpx: 200, vpy: 24, borde: true });
   kit.zonaSuelo(g, 190, 242, FL, 'eventos', { vpx: 200, vpy: 24, borde: true });
-  kit.zonaSuelo(g, 242, 352, FL, 'comercial', { vpx: 200, vpy: 24, borde: true });
-  kit.zonaSuelo(g, 352, 400, FL, 'administracion', { vpx: 200, vpy: 24, trama: 'baldosa', borde: true });
+  kit.zonaSuelo(g, 242, 352 + PX, FL, 'comercial', { vpx: 200, vpy: 24, borde: true });
+  kit.zonaSuelo(g, 352 + PX, W, FL, 'administracion', { vpx: 200, vpy: 24, trama: 'baldosa', borde: true });
   // trama de moqueta gruesa (Marketing y Comercial)
-  paint(g, 96, FL, 256, 144 - FL, (x, y) => (hash2(x, y, 11) < 0.05 ? '#2a1c34' : null));
-  ditherOverlay(g, 96, FL, 304, 3, PAL.shadow, 0.45);
+  paint(g, 96, FL, 256 + PX, 144 - FL, (x, y) => (hash2(x, y, 11) < 0.05 ? '#2a1c34' : null));
+  ditherOverlay(g, 96, FL, W - 96, 3, PAL.shadow, 0.45);
 }
 
 /** Pilastras en los cambios de zona. */
 function pilastras(g) {
-  for (const x of [94, 188, 240, 350]) kit.pilastra(g, x, 14, FL, { w: 5 });
+  for (const x of [94, 188, 240, 350 + PX]) kit.pilastra(g, x, 14, FL, { w: 5 });
 }
 
 /** El embudo de conversión de Marketing en vinilo: «VEN · MIRA · COMPARTE · ?». */
@@ -273,7 +276,9 @@ function drawPuertaEventos(g) {
   kit.micro(g, '5 MIN', x + hw, my + 2, '#a8f07a', { align: 'center' });
   // placa común de destino
   const pw = kit.placaSalaW('eventos', { sinSub: true });
-  kit.placaSala(g, x + hw - (pw >> 1), 15, 'eventos', { sinSub: true });
+  // en la misma fila que el resto de placas y rótulos de la planta (y 2), con varillas hasta el techo
+  vline(g, x + hw - (pw >> 1) + 4, 0, 2, PAL.metal[3]); vline(g, x + hw + (pw >> 1) - 5, 0, 2, PAL.metal[3]);
+  kit.placaSala(g, x + hw - (pw >> 1), 2, 'eventos', { sinSub: true });
   kit.umbral(g, x - 3, FL + 1, w + 6, 6, kit.DEPTO.eventos.c);
 }
 
@@ -340,8 +345,9 @@ function drawPasillo(g) {
   rect(g, fx0 + 7, ftop + 2, 6, 5, kit.DEPTO.administracion.c);
   // placa de destino colgada sobre la boca (alineada a la derecha, dentro de la sala)
   const pw = kit.placaSalaW('administracion', { flecha: '>' });
-  vline(g, W - 30, 0, 2, PAL.metal[3]); vline(g, W - pw + 10, 0, 2, PAL.metal[3]);
-  kit.placaSala(g, W - 2 - pw, 2, 'administracion', { flecha: '>' });
+  const WX = W - PX;                                         // (este dibujo va corrido PX: el borde de la sala, en sus coordenadas)
+  vline(g, WX - 30, 0, 2, PAL.metal[3]); vline(g, WX - pw + 10, 0, 2, PAL.metal[3]);
+  kit.placaSala(g, WX - 2 - pw, 2, 'administracion', { flecha: '>' });
   kit.umbral(g, x0 + 2, FL + 1, x1 - x0 - 4, 6, kit.DEPTO.administracion.c);
 }
 /** Los pufs (Marketing los ha puesto delante del ascensor para que la gente «se ubique»): sin tapar la botonera. */
@@ -362,7 +368,7 @@ function luces(g) {
   glow(g, 216, 70, 26, 36, '#c86aa8', 0.08, 4);                 // los focos que se escapan por los ojos de buey
   glow(g, 216, 104, 24, 6, '#ffe0a0', 0.14, 4);                 // la lengua de luz en el umbral
   glow(g, 300, 50, 50, 34, '#ffc890', 0.07, 4);                 // Comercial, cálido
-  glow(g, 376, 60, 20, 30, '#e0ffb0', 0.06, 4);                 // el pasillo
+  glow(g, 376 + PX, 60, 20, 30, '#e0ffb0', 0.06, 4);            // el pasillo
 }
 
 export default {
@@ -370,8 +376,8 @@ export default {
   width: W,
   rediseno: true,
   scale: { yFar: 98, far: 0.88, yNear: 142, near: 1.04 },
-  walkboxes: [{ id: 'suelo', poly: [[4, 100], [356, 100], [360, 98], [396, 98], [398, 142], [2, 142]] }],
-  entries: { pecera: N.escaleras.baja.entrada, ascensor: N.ascensor.entrada, eventos: [216, 114, 'down'], administracion: [372, 116, 'left'] },
+  walkboxes: [{ id: 'suelo', poly: [[4, 100], [356 + PX, 100], [360 + PX, 98], [396 + PX, 98], [398 + PX, 142], [2, 142]] }],
+  entries: { pecera: N.escaleras.baja.entrada, ascensor: N.ascensor.entrada, eventos: [216, 114, 'down'], administracion: [372 + PX, 116, 'left'] },
   layout,
   draw(g) {
     techo(g);
@@ -380,7 +386,7 @@ export default {
     kit.nucleo(g, 'ecosistema', FL);
     pilastras(g);
     kit.rotuloZona(g, 143, 2, 'marketing', { colgado: 2 });
-    kit.rotuloZona(g, 270, 2, 'comercial', { colgado: 2 });
+    kit.rotuloZona(g, 290, 2, 'comercial', { colgado: 2 });          // centrado entre la placa de Eventos y la de Administración
     drawEmbudo(g);
     drawPizarra(g);
     drawMesaTadeo(g);
@@ -388,7 +394,7 @@ export default {
     drawTermometro(g);
     drawLema(g);
     drawMesaMaripaz(g);
-    drawPasillo(g);
+    corrido(drawPasillo)(g);
     drawPufs(g);
     luces(g);
     vignette(g, W, 144, 0.4);

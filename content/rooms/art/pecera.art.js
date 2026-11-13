@@ -1,30 +1,32 @@
 // SALA `pecera` (la Redacción) — ARTE Y GEOMETRÍA. Paquete P2 del rediseño (docs/GUIA_REDISENO.md §3, §6, §10-§12).
-// 940×144, planta 1, FL = 94. Ocho zonas de izquierda a derecha (content/lib/edificio.js PECERA_ZONAS), cada una con
-// las cuatro capas: suelo propio con canto de goma, pared con filete de su color, pilastra en el cambio y rótulo colgado.
+// 1260×144, planta 1, FL = 94. Zonas de izquierda a derecha (content/lib/edificio.js PECERA_ZONAS), cada una con las
+// cuatro capas: suelo propio con canto de goma, pared con filete de su color, pilastra en el cambio y rótulo colgado.
 //   NÚCLEO 0-96 ............ kit.nucleo: escalera que SUBE a P2 (arriba), que BAJA a P0 (abajo) y ascensor «1»
-//   PASILLO DE DIRECCIÓN ... 96-170: puerta de cristal de Dirección (100-130) y puerta de madera del Vending (136-166)
-//   PAPEL (bisagra) ........ 170-310: la Secretaría de Redacción (Custodia: ventanuco 179-215, cartel, timbre, cajonera
-//                            176-218) y la PUERTA DOBLE a la Redacción de papel (236-296) con su placa y el umbral de
-//                            latón: la frontera de la guerra fría papel/web. Parqué viejo (órdenes de dirección 2 y 3)
-//   WEB .................... 310-450: pantalla de métricas con su enchufe en el zócalo, sillas con chaqueta, la guardia,
-//                            la mesa de Yoli (tres monitores)
-//   ECONOMÍA ............... 450-526: la mesa de Bruno SIN silla (marcas de ruedas), el pósit «BRUNO / PELLIZCO»,
-//                            la mesa de Ramírez parada en marzo de 2019 y su silla con chaqueta en el plano medio
-//   INFOGRAFÍA ............. 526-620: mesa de dibujo con flexo, Herminia, quesitos; cartel «SOLO CÓDIGO» en la pilastra
-//   (cinta) ................ 620: la frontera de carrocero EN EL SUELO, sobre el cambio de moqueta (recta/doble/lazo)
-//   DESARROLLO ............. 620-820: kanban EXENTO con ruedas (plano medio), calendario, semáforo, pantalla de Anselmo,
-//                            el coro de espaldas y la taza «NO»
-//   DISEÑO Y PRODUCTO ...... 820-940: ventanal (Rubén en el Acto III; amanecer en el epílogo), bandeja ENTREGAS,
-//                            puesto de Valentín (la Redacción en miniatura); Valentín de pie, a cuerpo entero
-// De Web a Diseño, el dibujo y los objetos están escritos en las coordenadas de antes (sala de 800 px) y se pintan con
-// un desplazamiento de PECERA_DESPLAZ = 140 px (`desplazado`, `D`); el layout suma lo mismo (`mover`).
+//   VESTÍBULO DE PLANTA .... 96-344 (el reparto, orden del director «sin aire»): el tótem-directorio (100-148) y dos
+//                            huecos con pared lisa a los lados y UNA placa cada uno a la misma altura (y 16):
+//                            DESPACHOS (168-224): frente de CRISTAL por el que se ven el sofá blanco, la pared de pósits
+//                            y, al fondo, la puerta de la Sala de Reuniones; VENDING (260-316): ARCO ABIERTO por el que
+//                            se ven el azulejo, el resplandor de la máquina de vending y la silueta de Gertrudis.
+//                            En el suelo, una franja guía y un felpudo de color que lleva a cada hueco.
+//   PAPEL (bisagra) ........ 344-580: la Secretaría de Redacción en su propio hueco (ventanuco 370-406, cajonera, timbre,
+//                            placa «SECRETARÍA», el cartel a la derecha, sitio para Bruno al lado) y la PUERTA DOBLE a la
+//                            Redacción de papel (490-550) con el umbral de latón y aire a los dos lados
+//   WEB .................... 580-720 · ECONOMÍA 720-796 · INFOGRAFÍA 796-890 · (cinta en 890)
+//   DESARROLLO ............. 890-1140: kanban EXENTO, calendario, semáforo, pantalla de Anselmo, el coro de espaldas, la
+//                            taza «NO» y, en los 50 px nuevos, el rincón del «comité de igualdad»: el diploma «EQUIPO
+//                            100 % CONCIENCIADO», el logo morado del 8 de marzo y el buzón «COMPAÑERAS» con telarañas
+//   DISEÑO Y PRODUCTO ...... 1140-1260: ventanal (Rubén, Acto III; amanecer en el epílogo), bandeja ENTREGAS, Valentín
+// De Web a Desarrollo, el dibujo y los objetos están escritos en las coordenadas de la sala de 800 px y se pintan con
+// un desplazamiento de PECERA_DESPLAZ = 410 px (`desplazado`, `D`); Diseño y Producto, PECERA_DESPLAZ_DISENO = 460 (`D2`).
+// El layout suma lo mismo (`mover`).
 // Tres planos: fondo (pared), plano medio (kanban exento, silla de Ramírez: `layer: 'sorted'` + walkbox con muescas) y
-// primer plano (`foreground`: ficus del pasillo y canto de una mesa de Desarrollo, siempre por debajo de los torsos).
+// primer plano (`foreground`: ficus del vestíbulo de planta y canto de una mesa de Desarrollo, por debajo de los torsos).
 // Estados (se dibujan por el ESTADO del objeto o por el flag que la lógica pone ANTES de la línea que lo comenta):
 // pantalla_metricas / enchufe_pantalla (cms_vivo), ordenador_bruno + silla_ramirez (silla_libre), chaqueta (when),
 // kanban (posit_descopeado), frontera_carrocero (acto_2_iniciado / acto_3_iniciado / infografia_integrada),
 // semaforo_ruido (estado rojo/ambar/verde), bandeja_diseno (bandeja_diseno_abierta), pantalla_anselmo
-// (ruben_encontrado / infografia_integrada), ventana (estado `amanecer`, que pone el epílogo).
+// (ruben_encontrado / infografia_integrada), ventana (estado `amanecer`, que pone el epílogo), buzon_companeras
+// (acto_3_iniciado: la telaraña tiene ya una araña con acreditación).
 import {
   PAL, rect, hline, vline, frameRect, px, line, poly, ellipse, paint, bevel, ditherOverlay, gradV,
   glow, lightCone, shadowEllipse, ditherPick, hash2, rng, fadeRows, vignette, fluorescent, cityWindow, wallClock,
@@ -32,17 +34,18 @@ import {
 } from '../../../engine/draw.js';
 import { postit, POSTIT, lcd, JACKETS, chairBack, jacketOn, deskFront, blinds, rainOnGlass, rainyGlassStatic, cable, personBack } from './lib-oficina.js';
 import * as kit from '../../lib/kit.js';
-import { nucleoGeom, PECERA_ZONAS, PECERA_PUERTAS, PECERA_DESPLAZ, SALA } from '../../lib/edificio.js';
-import { hatchFrame, secretaria, drawCustodia, SECRETARIA_RECTS } from './lib-secretaria.js';
+import { nucleoGeom, PECERA_ZONAS, PECERA_PUERTAS, PECERA_DESPLAZ, PECERA_DESPLAZ_DISENO, PECERA_DIRECTORIO, ANCHO } from '../../lib/edificio.js';
+import { hatchFrame, secretaria, drawCustodia, SECRETARIA_RECTS, HATCH, CARTEL_LADO } from './lib-secretaria.js';
 
-const W = 940;
-const D = PECERA_DESPLAZ;            // 140: lo que se corren las zonas de Web a Diseño
-const SDX = 88;                      // la Secretaría, dibujada en coordenadas del antiguo Office, + 88 px
+const W = ANCHO.pecera;              // 1270
+const D = PECERA_DESPLAZ;            // 410: lo que se corren las zonas de Web a Desarrollo (arte en coordenadas de 800 px)
+const D2 = PECERA_DESPLAZ_DISENO;    // 470: Diseño y Producto (Desarrollo creció 60 px)
+const SDX = 370 - HATCH.x;           // la Secretaría, dibujada en coordenadas del antiguo Office: ventanuco en x 370
 /** pinta `fn` corrido D px a la derecha (dibujo escrito en las coordenadas de la sala de 800 px) */
 const desplazado = (fn, dx = D) => (g, ...a) => { g.save(); g.translate(dx, 0); try { return fn(g, ...a); } finally { g.restore(); } };
 const FL = 94;                       // línea pared/suelo (obligatoria en las salas con núcleo, §3)
 const DT = 80;                       // tapa de las mesas pegadas a la pared
-const VPX = 470, VPY = -150;         // fuga del suelo: juntas y cantos suaves que se abren desde el centro de la sala
+const VPX = W >> 1, VPY = -150;         // fuga del suelo: juntas y cantos suaves que se abren desde el centro de la sala
 const N = nucleoGeom('pecera', FL);
 const { micro } = kit;
 const INK = kit.INK;
@@ -57,7 +60,7 @@ const libre = (v) => !!v.flag('silla_libre');
 // ================================================================== SUELOS (una pasada: cada píxel sabe en qué zona cae)
 const RAMPA = {
   nucleo: ['#34363e', '#42444e', '#50525c', '#5e606a'],
-  pasillo_direccion: ['#3a3c42', '#46484e', '#52545a', '#5e6066'],
+  hall: ['#4a4c54', '#56585f', '#62646b', '#6e7077'],                              // linóleo claro del vestíbulo de planta
   // moquetas (de oscuro a claro): cada zona se distingue por color Y por tamaño de loseta
   web: { r: ['#28323e', '#303c4a', '#3a4858', '#465668'], loseta: 14 },             // azul pizarra
   economia: { r: ['#1c2a4c', '#243462', '#2e4078', '#3a4e8c'], loseta: 10 },        // azul
@@ -74,9 +77,9 @@ function suelos(g) {
       if (n > 0.965) return '#26282e';
       return ditherPick(x, y, RAMPA.nucleo, 0.2 + t * 0.6);
     }
-    if (z.id === 'pasillo_direccion') {    // linóleo gris liso con brillo de pasillo
-      const brillo = Math.abs(y - 112) < 3 ? 0.18 : 0;
-      return ditherPick(x, y, RAMPA.pasillo_direccion, 0.25 + t * 0.5 + brillo + (n < 0.03 ? -0.2 : 0));
+    if (z.id === 'hall') {                 // linóleo claro y liso, con brillo de pasillo
+      const brillo = Math.abs(y - 112) < 3 ? 0.14 : 0;
+      return ditherPick(x, y, RAMPA.hall, 0.3 + t * 0.45 + brillo + (n < 0.03 ? -0.2 : 0));
     }
     // moqueta en losetas: cada zona con la rampa de su departamento y la loseta girada al tresbolillo
     const M = RAMPA[z.id] || { r: kit.DEPTO[z.depto].suelo, loseta: 12 };
@@ -90,6 +93,7 @@ function suelos(g) {
     const xe = Math.round(deSuelo(z.x0, 144));
     line(g, z.x0, FL, xe, 144, '#c4c8d4'); line(g, z.x0 + 1, FL, xe + 1, 144, '#4a4e5c');
   }
+  guiasSuelo(g);
   // marquetería de latón en el terrazo del núcleo, ante el ascensor: «P1» (se sabe en qué planta se está al llegar)
   ellipse(g, 60, 126, 13, 5, '#5e606a'); ellipse(g, 60, 126, 12, 4, (xx, yy, d) => (d > 0.78 ? '#c8a050' : '#4a4c56'));
   micro(g, 'P1', 60, 124, '#e0c070', { align: 'center' });
@@ -117,15 +121,15 @@ function techo(g) {
   gradV(g, 0, 0, W, 15, [PAL.ink[0], PAL.ink[1], PAL.metal[1]]);
   for (let x = 0; x < W; x += 24) vline(g, x, 0, 14, PAL.ink[0]);
   hline(g, 0, 7, W, PAL.ink[0]); hline(g, 0, 14, W, PAL.ink[1]);
-  // fluorescentes por zona (en el pasillo de Dirección, focos cálidos)
-  for (const x of [190, 250, 326, 412, 500, 560, 620, 700, 760]) fluorescent(g, x + D, 10, 30, true);
+  // fluorescentes por zona (coordenadas de 800 px: Diseño y Producto, desde 680, va con D2)
+  const dx = (x) => x + (x >= 680 ? D2 : D);
+  for (const x of [190, 250, 326, 412, 500, 560, 620, 700, 760]) fluorescent(g, dx(x), 10, 30, true);
   // en la zona de papel, dos lámparas de campana de las de antes (la luz de la Redacción de papel asoma hasta aquí)
-  for (const x of [196, 270]) { vline(g, x, 0, 9, PAL.metal[2]); poly(g, [[x - 5, 13], [x + 5, 13], [x + 3, 9], [x - 3, 9]], PAL.green[3]); hline(g, x - 5, 13, 11, PAL.green[5]); hline(g, x - 3, 14, 7, '#fff2c0'); glow(g, x, 26, 18, 14, '#ffd890', 0.18, 3); }
-  for (const x of [112, 150]) { rect(g, x - 3, 12, 7, 2, PAL.metal[3]); hline(g, x - 2, 14, 5, '#fff2c0'); glow(g, x, 22, 14, 10, '#ffd890', 0.16, 3); }
+  for (const x of [388, 520]) { vline(g, x, 0, 9, PAL.metal[2]); poly(g, [[x - 5, 13], [x + 5, 13], [x + 3, 9], [x - 3, 9]], PAL.green[3]); hline(g, x - 5, 13, 11, PAL.green[5]); hline(g, x - 3, 14, 7, '#fff2c0'); glow(g, x, 26, 18, 14, '#ffd890', 0.18, 3); }
   // rejillas del aire, rociadores y la bandeja de cables de Desarrollo (con cables que cuelgan)
-  for (const x of [222 + D, 362 + D, 456 + D, 668 + D, 742 + D]) { rect(g, x, 2, 12, 5, PAL.metal[2]); for (let k = 0; k < 12; k += 2) vline(g, x + k, 3, 3, PAL.ink[1]); }
-  for (const x of [280 + D, 470 + D, 540 + D, 720 + D]) { px(g, x, 13, PAL.metal[5]); px(g, x - 1, 14, PAL.red[3]); px(g, x + 1, 14, PAL.red[3]); }
-  rect(g, 486 + D, 4, 190, 2, PAL.metal[3]); hline(g, 486 + D, 6, 190, PAL.ink[0]);
+  for (const x of [222, 362, 456, 668, 742]) { rect(g, dx(x), 2, 12, 5, PAL.metal[2]); for (let k = 0; k < 12; k += 2) vline(g, dx(x) + k, 3, 3, PAL.ink[1]); }
+  for (const x of [280, 470, 540, 720]) { px(g, dx(x), 13, PAL.metal[5]); px(g, dx(x) - 1, 14, PAL.red[3]); px(g, dx(x) + 1, 14, PAL.red[3]); }
+  rect(g, 486 + D, 4, 240, 2, PAL.metal[3]); hline(g, 486 + D, 6, 240, PAL.ink[0]);
   cable(g, 520 + D, 6, 548 + D, 6, 4, '#3a2a5a', 10); cable(g, 600 + D, 6, 640 + D, 6, 6, PAL.ink[0], 12); cable(g, 650 + D, 6, 672 + D, 6, 3, '#5a2a2a', 8);
 }
 function pilastras(g) {
@@ -139,59 +143,133 @@ function rotulos(g) {
   }
 }
 
-// ================================================================== NÚCLEO (kit) y PASILLO DE DIRECCIÓN
+// ================================================================== NÚCLEO (kit) y VESTÍBULO DE PLANTA (el reparto)
+const PLACA_Y = 16;                  // TODAS las placas del reparto, a la misma altura (una por acceso, nunca apiladas)
+const HUECO_Y = 40;                  // dintel común de los huecos (Despachos, Vending, puerta doble)
+const HALL = { x0: 96, x1: 344 };
 function nucleo(g) {
   kit.nucleo(g, 'pecera', FL, { sinSuelo: true });
-  // papelera y extintor al pie de la escalera (decorado, sin canto vivo)
+  // extintor al pie de la escalera (decorado, sin canto vivo)
   extinguisher(g, 92, 92);
 }
-function puertaDireccion(g) {
-  const [x, w] = PECERA_PUERTAS.pecera_a_pajarera, y = 38, h = FL - y;
-  kit.marcoPuerta(g, x, y, w, h);
-  // cristal: se intuye Dirección (nogal, la matriz de pósits y la luz cálida de sus lámparas)
-  paint(g, x, y, w, h, (xx, yy) => ditherPick(xx, yy, [PAL.wood[1], PAL.wood[2], PAL.wood[3], PAL.gold[2]], 0.15 + (yy - y) / h * 0.5 + 0.25 * (1 - Math.abs(xx - (x + w / 2)) / (w / 2))));
-  rect(g, x + 6, y + 18, 16, 12, PAL.paper[6]); frameRect(g, x + 6, y + 18, 16, 12, PAL.metal[3]);
-  for (let i = 0; i < 4; i++) postit(g, x + 7 + (i % 2) * 7, y + 19 + (i >> 1) * 5, [POSTIT.p, POSTIT.b, POSTIT.y, POSTIT.b][i], { w: 5, h: 4, lines: false });
-  glow(g, x + 20, y + 40, 14, 12, PAL.gold[5], 0.35);
-  rect(g, x + 2, y + 40, 26, 3, PAL.wood[5]); rect(g, x + 2, y + 43, 26, 10, PAL.wood[2]);   // la mesa grande, al fondo
-  // persiana a media altura (desde 2015) y reflejos del cristal
-  blinds(g, x, y + 1, w, 15, { down: 14, color: PAL.paper });
-  g.save(); g.globalAlpha = 0.14; poly(g, [[x + 2, y + h], [x + 8, y + h], [x + 22, y], [x + 16, y]], '#ffffff'); g.restore();
-  vline(g, x + (w >> 1), y + 16, h - 16, PAL.metal[4]);                        // junta de las dos hojas
-  rect(g, x + (w >> 1) - 3, y + 30, 2, 9, PAL.gold[5]); rect(g, x + (w >> 1) + 2, y + 30, 2, 9, PAL.gold[5]);   // tiradores de latón
-  hline(g, x, y + h - 1, w, PAL.gold[4]);
-  kit.umbral(g, x - 2, FL + 1, w + 4, 5, kit.DEPTO.direccion.c);
-  kit.cantoVivo(g, x - 3, y - 3, w + 6, h + 3);
+/** Franja guía y felpudos de color: cada acceso tiene su «alfombra» que baja hasta la franja del vestíbulo (y ≈ 117). */
+function guiasSuelo(g) {
+  const yA = FL + 7, yB = 117;
+  // la franja: una banda de linóleo más oscuro con filete claro a lo largo del reparto, del núcleo a la Redacción de papel
+  for (let y = yB - 3; y <= yB + 3; y++) {
+    const xa = Math.round(deSuelo(HALL.x0 + 4, y)), xb = Math.round(deSuelo(Z.papel.x1 - 30, y));
+    ditherOverlay(g, xa, y, xb - xa, 1, '#2a2c36', y === yB - 3 || y === yB + 3 ? 0 : 0.35);
+  }
+  line(g, Math.round(deSuelo(HALL.x0 + 4, yB - 4)), yB - 4, Math.round(deSuelo(Z.papel.x1 - 30, yB - 4)), yB - 4, '#8a8c96');
+  line(g, Math.round(deSuelo(HALL.x0 + 4, yB + 4)), yB + 4, Math.round(deSuelo(Z.papel.x1 - 30, yB + 4)), yB + 4, '#24262e');
+  // de cada acceso, una lengua del color de su destino hasta la franja
+  const lenguas = [
+    [PECERA_PUERTAS.pecera_a_pajarera, kit.DEPTO.direccion.c],
+    [PECERA_PUERTAS.pecera_a_office, kit.DEPTO.office.c],
+    [[HATCH.x + SDX, HATCH.w], kit.DEPTO.papel.c],
+    [PECERA_PUERTAS.pecera_a_catacumba, PAL.gold[4]],
+  ];
+  for (const [[x, w], c] of lenguas) {
+    const a = x + 8, b = x + w - 8;
+    const q = [[a, yA], [b, yA], [Math.round(deSuelo(b, yB - 5)), yB - 5], [Math.round(deSuelo(a, yB - 5)), yB - 5]];
+    poly(g, q, (xx, yy) => ditherPick(xx, yy, [shade(c, -0.5), shade(c, -0.36)], 0.35 + ((xx + yy) & 1) * 0.2));
+    line(g, q[0][0], yA, q[3][0], yB - 5, shade(c, -0.05)); line(g, q[1][0], yA, q[2][0], yB - 5, shade(c, -0.05));
+    const m = (a + b) / 2;                                                       // el filete central, como una flecha
+    for (let yy = yA + 2; yy < yB - 6; yy += 3) px(g, Math.round(deSuelo(m, yy)), yy, shade(c, 0.1));
+  }
 }
-function puertaOffice(g) {
-  const [x, w] = PECERA_PUERTAS.pecera_a_office, y = 38, h = FL - y;
-  kit.marcoPuerta(g, x, y, w, h);
-  paint(g, x, y, w, h, (xx, yy) => ditherPick(xx, yy, [PAL.wood[3], PAL.wood[4], PAL.wood[5]], 0.3 + ((xx - x) / w) * 0.4 + (hash2(xx, yy >> 2, 4) < 0.15 ? -0.25 : 0)));
-  // ojo de buey (se ve el azulejo del Office) y paneles
-  ellipse(g, x + 15, y + 15, 6, 6, PAL.metal[4]); ellipse(g, x + 15, y + 15, 5, 5, (xx, yy) => ((xx + yy) & 3 ? '#e8e0b0' : '#c8c098'));
-  glow(g, x + 15, y + 15, 7, 7, '#fff0a0', 0.3, 3);
-  frameRect(g, x + 4, y + 25, w - 8, 12, PAL.wood[2]); hline(g, x + 5, y + 36, w - 10, PAL.wood[6]);
-  frameRect(g, x + 4, y + 39, w - 8, 13, PAL.wood[2]); hline(g, x + 5, y + 51, w - 10, PAL.wood[6]);
-  rect(g, x + w - 6, y + 29, 3, 3, PAL.gold[3]); px(g, x + w - 6, y + 29, PAL.gold[6]);
-  rect(g, x + 1, y + h - 4, w - 2, 3, PAL.metal[5]); hline(g, x + 1, y + h - 4, w - 2, PAL.metal[7]);   // chapa de patadas
-  kit.umbral(g, x - 2, FL + 1, w + 4, 5, kit.DEPTO.office.c);
-  kit.cantoVivo(g, x - 3, y - 3, w + 6, h + 3);
+/** Pared lisa del vestíbulo de planta: yeso gris azulado, zócalo de piedra clara, junquillo a la altura del filete. */
+function paredHall(g) {
+  const { x0, x1 } = HALL;
+  const c = Z.hall.pared, r = [shade(c, -0.2), shade(c, -0.06), c, shade(c, 0.1)];
+  paint(g, x0, 15, x1 - x0, FL - 15, (x, y) => ditherPick(x, y, r, 0.85 - (y - 15) / 100 + (hash2(x >> 1, y >> 1, 21) < 0.04 ? -0.12 : 0)));
+  hline(g, x0, 66, x1 - x0, '#8a90a0'); hline(g, x0, 67, x1 - x0, '#363a46');
+  rect(g, x0, FL - 5, x1 - x0, 5, '#7a7c84'); hline(g, x0, FL - 5, x1 - x0, '#a8aab2'); hline(g, x0, FL - 1, x1 - x0, '#3a3c44');
+  // un foco por hueco: el charco de luz en la pared ayuda a leer cada acceso
+  for (const cx of [124, 196, 288]) {
+    rect(g, cx - 3, 13, 7, 2, PAL.metal[4]); hline(g, cx - 2, 15, 5, '#fff2c0');
+    lightCone(g, cx, 16, 4, 22, 20, '#fff0d0', 0.1);
+  }
 }
-function pasillo(g) {
-  // nogal en paneles con junquillo de latón (Dirección empieza aquí)
-  const x0 = 96, x1 = 170;
-  paint(g, x0, 15, x1 - x0, FL - 15, (x, y) => ditherPick(x, y, [PAL.wood[1], '#3e2818', '#4a3020', PAL.wood[3]], 0.35 + ((x * 7 + (y >> 3)) % 11) / 30 + (hash2(x, y >> 2, 3) < 0.12 ? 0.15 : 0)));
-  for (let x = x0 + 2; x < x1; x += 12) vline(g, x, 16, FL - 20, '#2e1c10');
-  hline(g, x0, 66, x1 - x0, PAL.gold[4]); hline(g, x0, 67, x1 - x0, PAL.gold[2]);
-  rect(g, x0, FL - 4, x1 - x0, 4, PAL.wood[1]); hline(g, x0, FL - 4, x1 - x0, PAL.gold[3]);
-  // aplique de latón entre las dos puertas
-  rect(g, 132, 30, 3, 5, PAL.gold[3]); poly(g, [[130, 26], [137, 26], [135, 30], [132, 30]], '#ffe6a0'); glow(g, 133, 30, 10, 8, '#ffe0a0', 0.25, 3);
-  puertaDireccion(g);
-  puertaOffice(g);
-  // las dos placas, apiladas a dos alturas (orden i: «DIRECCIÓN», nunca el apodo)
-  vline(g, 124, 0, 6, PAL.metal[3]); vline(g, 163, 0, 6, PAL.metal[3]);
-  kit.placaSala(g, 170 - 2 - kit.placaSalaW('office', { flecha: '>' }), 5, 'office', { flecha: '>' });
-  kit.placaSala(g, 98, 21, 'pajarera', { flecha: '<' });
+/** Placa común sobre el dintel, centrada en el hueco. */
+function placaHueco(g, cx, room, o = {}) {
+  const w = kit.placaSalaW(room, o);
+  vline(g, Math.round(cx - w / 2) + 4, 14, 2, PAL.metal[3]); vline(g, Math.round(cx + w / 2) - 5, 14, 2, PAL.metal[3]);
+  kit.placaSala(g, Math.round(cx - w / 2), PLACA_Y, room, o);
+}
+/** DESPACHOS: frente de cristal de suelo a techo con su puerta de cristal; dentro se VE la antesala de los despachos
+ *  (sofá blanco, pared de pósits, lámpara cálida) y, al fondo, la puerta de la Sala de Reuniones con su pilotito. */
+function huecoDespachos(g) {
+  const [x, w] = PECERA_PUERTAS.pecera_a_pajarera, y = HUECO_Y, h = FL - y;
+  kit.marcoPuerta(g, x, y, w, h, { ramp: [PAL.ink[1], '#3a3428', '#4a4232', '#5a5040', '#8a7a58', '#a89464', '#c8b078'] });
+  // dentro: nogal cálido, al fondo el pasillo con la puerta de la Sala de Reuniones
+  paint(g, x, y, w, h, (xx, yy) => ditherPick(xx, yy, ['#3a2416', '#4a3020', '#5a3c28', '#6a4830'], 0.45 + ((xx * 5 + (yy >> 2)) % 13) / 40 - (yy - y) / 160));
+  glow(g, x + w / 2, y + 12, w * 0.6, 14, '#ffe0a0', 0.18, 3);
+  rect(g, x, y + h - 12, w, 12, '#3a2a1e'); for (let k = 0; k < w; k += 6) vline(g, x + k, y + h - 12, 12, '#2e2016');   // parqué
+  // pared de pósits (la matriz de Íñigo, en pequeño) a la izquierda
+  rect(g, x + 4, y + 6, 22, 16, PAL.paper[6]); frameRect(g, x + 4, y + 6, 22, 16, PAL.metal[3]);
+  for (let i = 0; i < 8; i++) rect(g, x + 6 + (i % 4) * 5, y + 8 + (i >> 2) * 6, 4, 4, [POSTIT.p, POSTIT.y, POSTIT.b, POSTIT.g][(i * 3) % 4]);
+  // al fondo a la derecha: la puerta de la Sala de Reuniones (verde «libre» encendido) y su placa en pequeño
+  rect(g, x + w - 18, y + 14, 13, h - 26, '#1e140c'); frameRect(g, x + w - 19, y + 13, 15, h - 24, PAL.gold[3]);
+  rect(g, x + w - 16, y + 9, 9, 3, INK); hline(g, x + w - 15, y + 10, 7, '#c8c4d8'); px(g, x + w - 8, y + 18, '#4ae86a');
+  // el sofá blanco y una lámpara de pie
+  rect(g, x + 6, y + h - 20, 26, 9, '#e8e4dc'); rect(g, x + 6, y + h - 24, 26, 5, '#f6f2ea'); rect(g, x + 4, y + h - 22, 3, 11, '#d8d4cc'); rect(g, x + 31, y + h - 22, 3, 11, '#d8d4cc');
+  hline(g, x + 6, y + h - 11, 26, '#9a9488');
+  vline(g, x + 38, y + 12, h - 24, PAL.gold[3]); poly(g, [[x + 35, y + 12], [x + 41, y + 12], [x + 40, y + 8], [x + 36, y + 8]], '#fff0c0');
+  glow(g, x + 38, y + 18, 18, 14, '#ffd890', 0.35, 3);
+  // el cristal: reflejos, montantes, junta y persiana a media altura «desde 2015» (solo una franja arriba)
+  blinds(g, x, y + 1, w, 6, { down: 5, color: PAL.paper });
+  g.save(); g.globalAlpha = 0.16; poly(g, [[x + 2, y + h], [x + 10, y + h], [x + 30, y], [x + 22, y]], '#ffffff'); poly(g, [[x + 34, y + h], [x + 38, y + h], [x + 52, y + 12], [x + 48, y + 12]], '#ffffff'); g.restore();
+  g.save(); g.globalAlpha = 0.1; rect(g, x, y, w, h, '#bfe4ff'); g.restore();                   // el tinte del cristal
+  g.save(); g.globalAlpha = 0.35; rect(g, x, y + 27, w, 3, '#f4f8ff'); g.restore();               // banda esmerilada a la altura de los ojos
+  vline(g, x + (w >> 1), y, h, '#c8b078'); vline(g, x + (w >> 1) + 1, y, h, '#5a5040');            // junta de las dos hojas
+  rect(g, x + (w >> 1) - 4, y + 22, 2, 14, PAL.gold[5]); rect(g, x + (w >> 1) + 3, y + 22, 2, 14, PAL.gold[5]);   // tiradores
+  kit.umbral(g, x - 2, FL + 1, w + 4, 6, kit.DEPTO.direccion.c);
+  kit.cantoVivo(g, x - 3, y - 3, w + 6, h + 3);
+  placaHueco(g, x + w / 2, 'pajarera', { sub: 'SALA DE REUNIONES >' });
+}
+/** VENDING: arco abierto, sin puerta: se ven el azulejo, la máquina de vending con su resplandor y la silueta de
+ *  Gertrudis con su LCD verde. Nadie necesita leer la placa. */
+function huecoVending(g) {
+  const [x, w] = PECERA_PUERTAS.pecera_a_office, y = HUECO_Y, h = FL - y;
+  // jamba y arco de piedra clara
+  const r = 10;
+  rect(g, x - 4, y + r - 2, 4, h - r + 2, '#9a9ca4'); rect(g, x + w, y + r - 2, 4, h - r + 2, '#7a7c84');
+  vline(g, x - 4, y + r - 2, h - r + 2, '#c8cad2'); vline(g, x + w + 3, y + r - 2, h - r + 2, '#5a5c64');
+  const archY = (xx) => { const d = Math.abs(xx - (x + w / 2)) - (w / 2 - r); return d <= 0 ? y : y + r - Math.sqrt(Math.max(0, r * r - d * d)); };
+  for (let xx = x - 4; xx < x + w + 4; xx++) { const ya = Math.round(archY(Math.min(x + w - 1, Math.max(x, xx)))); vline(g, xx, ya - 4, 4, xx < x + w / 2 ? '#a4a6ae' : '#84868e'); px(g, xx, ya - 4, '#c8cad2'); }
+  // el interior: azulejo crema en cuadrícula, con el friso amarillo del Vending
+  paint(g, x, y, w, h, (xx, yy) => {
+    if (yy < archY(xx)) return null;
+    const jx = (xx - x) % 5 === 0, jy = (yy - y) % 5 === 0;
+    if (yy > y + h - 12) return ((xx >> 2) + (yy >> 1)) & 1 ? '#8a7a5a' : '#6a5c44';            // suelo de baldosa
+    return jx || jy ? '#b8b090' : ditherPick(xx, yy, ['#d8d0b0', '#e8e0c0', '#f4ecd0'], 0.6 - (yy - y) / 120);
+  });
+  hline(g, x, y + 24, w, kit.DEPTO.office.c); hline(g, x, y + 25, w, shade(kit.DEPTO.office.c, -0.3));
+  // la máquina de vending, a la izquierda: frente iluminado con filas de productos
+  const mx = x + 5, my = y + 10, mw = 18, mh = h - 12;
+  rect(g, mx - 1, my - 1, mw + 2, mh + 1, '#14121a'); rect(g, mx, my, mw, mh, '#2a2838');
+  rect(g, mx + 2, my + 3, 11, mh - 12, '#dff4ff');
+  for (let k = 0; k < 5; k++) for (let i = 0; i < 3; i++) rect(g, mx + 3 + i * 4, my + 4 + k * 5, 3, 3, [PAL.red[4], PAL.gold[5], PAL.teal[4], PAL.blue[4], PAL.leaf[5]][(k + i) % 5]);
+  rect(g, mx + 14, my + 4, 3, 10, '#4a4858'); for (let k = 0; k < 4; k++) hline(g, mx + 14, my + 5 + k * 2, 3, '#8a8898');
+  rect(g, mx + 2, my + mh - 7, 11, 4, '#0c0a12');
+  glow(g, mx + 8, my + 18, 22, 22, '#bfe8ff', 0.45, 3);
+  // Gertrudis, a la derecha: silueta cromada en contraluz, con su LCD verde
+  const gx = x + w - 22, gy = y + 20, gw = 17, gh = h - 22;
+  rect(g, gx, gy, gw, gh, '#3a3c46'); vline(g, gx, gy, gh, '#8a8c98'); vline(g, gx + 1, gy, gh, '#5a5c68'); hline(g, gx, gy, gw, '#9a9ca8');
+  rect(g, gx + 3, gy + 4, 11, 4, '#06140a'); for (let i = 0; i < 5; i++) rect(g, gx + 4 + i * 2, gy + 5, 1, 2, '#39ff14');
+  glow(g, gx + 8, gy + 6, 14, 8, '#39ff14', 0.3, 3);
+  rect(g, gx + 4, gy + 14, 9, 4, '#14121a'); rect(g, gx + 2, gy + gh - 4, 13, 3, '#24262e');
+  // la luz del Vending se derrama al vestíbulo
+  glow(g, x + w / 2, FL + 6, 34, 8, '#fff0b0', 0.22, 3);
+  kit.umbral(g, x - 2, FL + 1, w + 4, 6, kit.DEPTO.office.c);
+  kit.cantoVivo(g, x - 4, y - 4, w + 8, h + 4);
+  placaHueco(g, x + w / 2, 'office');
+}
+function vestibuloPlanta(g) {
+  paredHall(g);
+  huecoDespachos(g);
+  huecoVending(g);
 }
 
 // ================================================================== WEB
@@ -336,37 +414,51 @@ function plantita(g, x, y) {
   hline(g, x - 5, y - 9, 10, PAL.white || '#ffffff');
 }
 
-/** De Web a Diseño, en las coordenadas de la sala de 800 px (se pinta corrido D px). */
+/** De Web a Desarrollo, en las coordenadas de la sala de 800 px (se pinta corrido D px); Diseño y Producto, D2. */
 function zonasDeRedaccion(g) {
-  web(g);
-  economia(g);
-  infografia(g);
-  desarrollo(g);
-  diseno(g);
-  // charcos de luz de los fluorescentes y de las pantallas
-  for (const x of [205, 265, 341, 427, 515, 575, 635, 715, 775]) glow(g, x, 124, 34, 8, '#e8fff0', 0.06, 4);
-  glow(g, 226, 104, 50, 6, '#8ec8ff', 0.1, 3);
-  glow(g, 412, 106, 30, 6, '#ffd890', 0.12, 3);                    // el flexo de Infografía
-  glow(g, 636, 104, 40, 6, '#b48cff', 0.1, 3);                     // las pantallas del coro
-  // canaleta de cables en el suelo de Web (pisada mil veces) y papelera de latas en Desarrollo
-  poly(g, [[204, 101], [262, 104], [262, 106], [204, 103]], '#20242c'); line(g, 204, 101, 262, 104, '#4a505c');
-  rect(g, 597, 92, 6, 7, PAL.metal[3]); frameRect(g, 597, 92, 6, 7, PAL.metal[1]);
-  for (let k = 0; k < 2; k++) rect(g, 598 + k * 2, 90 + k, 2, 3, [PAL.red[4], PAL.teal[5]][k]);
+  desplazado((g) => {
+    web(g);
+    economia(g);
+    infografia(g);
+    desarrollo(g);
+    // charcos de luz de los fluorescentes y de las pantallas
+    for (const x of [205, 265, 341, 427, 515, 575, 635]) glow(g, x, 124, 34, 8, '#e8fff0', 0.06, 4);
+    glow(g, 226, 104, 50, 6, '#8ec8ff', 0.1, 3);
+    glow(g, 412, 106, 30, 6, '#ffd890', 0.12, 3);                    // el flexo de Infografía
+    glow(g, 636, 104, 40, 6, '#b48cff', 0.1, 3);                     // las pantallas del coro
+    // canaleta de cables en el suelo de Web (pisada mil veces) y papelera de latas en Desarrollo
+    poly(g, [[204, 101], [262, 104], [262, 106], [204, 103]], '#20242c'); line(g, 204, 101, 262, 104, '#4a505c');
+    rect(g, 597, 92, 6, 7, PAL.metal[3]); frameRect(g, 597, 92, 6, 7, PAL.metal[1]);
+    for (let k = 0; k < 2; k++) rect(g, 598 + k * 2, 90 + k, 2, 3, [PAL.red[4], PAL.teal[5]][k]);
+  })(g);
+  desplazado((g) => {
+    diseno(g);
+    for (const x of [715, 775]) glow(g, x, 124, 34, 8, '#e8fff0', 0.06, 4);
+  }, D2)(g);
+  rinconComite(g);
 }
 
 // ================================================================== ZONA DE PAPEL: Secretaría + puerta doble a la Redacción de papel
-/** La bisagra entre las dos redacciones (órdenes de dirección 2 y 3). Pared de nogal viejo con friso, la Secretaría de
- *  Redacción (Custodia) a la izquierda y la puerta doble, abierta, a la Redacción de papel a la derecha; en el suelo, el
- *  umbral de latón: de un lado moqueta y clic, del otro parqué y tinta. */
+/** La bisagra entre las dos redacciones (órdenes de dirección 2 y 3). Pared de nogal viejo con friso; la Secretaría de
+ *  Redacción (Custodia) en su propio hueco, con su placa encima y el cartel al lado; aire; y la puerta doble, abierta, a
+ *  la Redacción de papel con el umbral de latón: de un lado moqueta y clic, del otro parqué y tinta. */
 function zonaPapel(g) {
   const z = Z.papel;
   // friso de tablas bajo el filete (lo viejo empieza aquí)
   for (let x = z.x0 + 3; x < z.x1; x += 9) vline(g, x, 70, FL - 74, '#3a2614');
   hline(g, z.x0, 69, z.x1 - z.x0, '#8a6440');
-  // la Secretaría (dibujo del antiguo Office, + SDX)
-  desplazado((gg) => { hatchFrame(gg); secretaria(gg); }, SDX)(g);
+  // la Secretaría (dibujo del antiguo Office, + SDX), con el cartel A LA DERECHA del ventanuco
+  desplazado((gg) => { hatchFrame(gg, { cartel: CARTEL_LADO }); secretaria(gg); }, SDX)(g);
+  const hx = HATCH.x + SDX;
+  glow(g, hx + HATCH.w / 2, 30, 26, 14, '#ffe8b0', 0.12, 3);
+  {
+    const sub = 'DE REDACCIÓN', w = kit.placaW('SECRETARÍA', { sinPlanta: true, sub });
+    const px0 = Math.round(hx + HATCH.w / 2 - w / 2);
+    vline(g, px0 + 4, 14, 2, PAL.metal[3]); vline(g, px0 + w - 5, 14, 2, PAL.metal[3]);
+    kit.placa(g, px0, PLACA_Y, 'SECRETARÍA', { sinPlanta: true, sub, depto: 'papel' });
+  }
   // la PUERTA DOBLE (abierta de par en par) a la Redacción de papel
-  const [x, w] = PECERA_PUERTAS.pecera_a_catacumba, y = 40, h = FL - y;
+  const [x, w] = PECERA_PUERTAS.pecera_a_catacumba, y = HUECO_Y, h = FL - y;
   kit.marcoPuerta(g, x, y, w, h, { ramp: PAL.wood });
   // dentro: la Redacción de papel (pared de nicotina, galeradas colgadas, una lámpara de banquero y el reloj parado)
   gradV(g, x, y, w, h, ['#2c2016', '#45321f', '#5f4829']);
@@ -388,37 +480,35 @@ function zonaPapel(g) {
   line(g, x - 6, FL + 9, x + w + 6, FL + 9, PAL.gold[5]); line(g, x - 7, FL + 10, x + w + 7, FL + 10, PAL.gold[2]);
   kit.cantoVivo(g, x - 3, y - 3, w + 6, h + 3);
   // la placa del kit sobre el dintel: «1 REDACCIÓN / DE PAPEL · CIERRE» (nombre llano, orden de dirección)
-  const pw = kit.placaSalaW('catacumba');
-  kit.placaSala(g, Math.min(z.x1 - 4 - pw, x + (w >> 1) - (pw >> 1)), 17, 'catacumba');
-  void SALA;
+  placaHueco(g, x + w / 2, 'catacumba');
 }
 
 // ================================================================== FONDO
 function drawRoom(g) {
   techo(g);
-  for (const z of PECERA_ZONAS) if (z.id !== 'nucleo' && z.id !== 'pasillo_direccion') pared(g, z.x0, z.x1, z.pared, { depto: z.depto });
+  for (const z of PECERA_ZONAS) if (z.id !== 'nucleo' && z.id !== 'hall') pared(g, z.x0, z.x1, z.pared, { depto: z.depto });
   suelos(g);
   nucleo(g);
-  pasillo(g);
+  vestibuloPlanta(g);
   zonaPapel(g);
-  desplazado(zonasDeRedaccion)(g);
+  zonasDeRedaccion(g);
   pilastras(g);
   rotulos(g);
-  glow(g, 115, 104, 18, 5, PAL.gold[5], 0.18, 3);
-  glow(g, 266, 106, 30, 6, '#ffc870', 0.16, 3);                    // la luz ámbar de la Redacción de papel, en el umbral
+  glow(g, 520, 106, 30, 6, '#ffc870', 0.16, 3);                    // la luz ámbar de la Redacción de papel, en el umbral
   vignette(g, W, 144, 0.32);
 }
 
 /** Primer plano (cacheado): ficus del pasillo y el canto de una mesa de Desarrollo. Nunca por encima de y 118. */
 function drawFrente(g) {
-  // gran ficus en maceta en el pasillo de Dirección, recortado por el borde inferior (silueta oscura con luz de borde)
-  const x = 152, y = 144;
+  // gran ficus en maceta en el vestíbulo de planta, junto a la pilastra de la zona de papel (entre huecos, nunca delante
+  // de uno), recortado por el borde inferior (silueta oscura con luz de borde)
+  const x = 336, y = 144;
   const r = rng(8);
   for (let i = 0; i < 22; i++) {
     const a = -Math.PI / 2 + (r() - 0.5) * 2.2, len = 14 + r() * 16;
     for (let s2 = 4; s2 < len; s2++) {
       const lx = Math.round(x + Math.cos(a) * s2), ly = Math.round(y - 14 + Math.sin(a) * s2 + s2 * s2 / 50);
-      if (ly < 114 || ly > 140) continue;
+      if (ly < 116 || ly > 140) continue;
       const hoja = s2 > len - 6;
       px(g, lx, ly, hoja ? '#163420' : '#0c1c12'); px(g, lx + 1, ly, hoja ? '#0f2618' : '#08140c');
       if (hoja && s2 === Math.floor(len - 4)) { ellipse(g, lx, ly, 3, 1.5, '#183a22'); px(g, lx - 1, ly - 1, '#2e6a3a'); }
@@ -600,6 +690,7 @@ function drawCartelFrontera(g) {
 /** LA FRONTERA: cinta de carrocero EN EL SUELO sobre el cambio de moqueta. Acto I recta · Acto II doble (ha avanzado
  *  veinte píxeles hacia Infografía) · Acto III lazo que encierra Infografía · infografia_integrada: solo el pegamento */
 function drawFrontera(g, view) {
+  const dS = (xb, y) => deSuelo(xb + D, y) - D;          // la fuga del suelo, en las coordenadas de 800 px del dibujo
   const a2 = !!view.flag('acto_2_iniciado'), a3 = !!view.flag('acto_3_iniciado'), inte = !!view.flag('infografia_integrada');
   const tira = (x0, y0, x1, y1) => {
     const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
@@ -614,17 +705,17 @@ function drawFrontera(g, view) {
       if (horiz) px(g, x, y + w, '#3a3428'); else px(g, x + w, y, '#3a3428');
     }
   };
-  const recta = (xb) => tira(xb, FL + 1, Math.round(deSuelo(xb, 143)), 143);
+  const recta = (xb) => tira(xb, FL + 1, Math.round(dS(xb, 143)), 143);
   if (inte) {                                        // solo queda la marca del pegamento
-    for (let y = FL + 2; y < 144; y += 2) { const xx = Math.round(deSuelo(480, y)); ditherOverlay(g, xx, y, 3 + Math.floor((y - FL) / 22), 1, PAL.paper[2], 0.4); }
+    for (let y = FL + 2; y < 144; y += 2) { const xx = Math.round(dS(480, y)); ditherOverlay(g, xx, y, 3 + Math.floor((y - FL) / 22), 1, PAL.paper[2], 0.4); }
     return;
   }
   recta(480);
   if (a2 || a3) recta(460);                   // doble: la cinta nueva, 20 px más allá
   if (a3) {                                          // lazo: rodea Infografía por delante hasta la pilastra de 386
     const yl = 128;
-    tira(Math.round(deSuelo(460, yl)), yl, Math.round(deSuelo(386, yl)), yl);
-    tira(Math.round(deSuelo(386, yl)), yl, 386, FL + 1);
+    tira(Math.round(dS(460, yl)), yl, Math.round(dS(386, yl)), yl);
+    tira(Math.round(dS(386, yl)), yl, 386, FL + 1);
   }
 }
 
@@ -832,39 +923,121 @@ function drawMonitorValentin(g, view, t) {
   if (view.visible !== false) kit.cantoVivo(g, mx - 1, my - 1, mw + 2, mh + 2);
 }
 
+// ================================================================== TÓTEM-DIRECTORIO y RINCÓN DEL COMITÉ
+/** Tótem-directorio de la planta, de pie junto al núcleo: «PLANTA 1» y lo que hay en ella, cada cosa con el color de su
+ *  felpudo. Sin Infografía ni Diseño por separado: la Redacción entera es una línea (regla de la casa). */
+const DIRECTORIO = [
+  ['DESPACHOS', kit.DEPTO.direccion.c], ['>REUNIONES', kit.DEPTO.direccion.c], ['VENDING', kit.DEPTO.office.c],
+  ['SECRETARÍA', kit.DEPTO.papel.c], ['PAPEL', PAL.gold[4]], ['REDACCIÓN', kit.DEPTO.web.c],
+];
+function drawDirectorio(g) {
+  const { x, w } = PECERA_DIRECTORIO, y = 30, h = FL + 4 - y;
+  shadowEllipse(g, x + w / 2, FL + 5, w / 2 + 2, 2.5, 0.7);
+  rect(g, x + 6, FL - 2, w - 12, 6, '#2a2c34'); hline(g, x + 6, FL - 2, w - 12, '#5a5c66');            // peana
+  rect(g, x, y, w, h - 6, '#24262e'); frameRect(g, x, y, w, h - 6, '#6a6e7a'); vline(g, x + 1, y + 1, h - 8, '#8a8e9a');
+  // cabecera con la banda de la planta (verde agua, P1)
+  rect(g, x + 2, y + 2, w - 4, 11, kit.PLANTA['1'].c); hline(g, x + 2, y + 2, w - 4, kit.PLANTA['1'].l);
+  label(g, 'PLANTA 1', x + w / 2, y + 2, INK, { align: 'center' });
+  // la lista, en microfuente, con su punto de color
+  DIRECTORIO.forEach(([t, c], i) => {
+    const ly = y + 16 + i * 6;
+    rect(g, x + 3, ly + 1, 3, 3, c);
+    micro(g, t, x + 7, ly, '#e8eaf2');
+  });
+  hline(g, x + 3, y + h - 17, w - 6, '#4a4e5a');
+  ellipse(g, x + 6, y + h - 13, 2, 2, '#ff5a48'); micro(g, 'AQUÍ', x + 11, y + h - 15, '#ffb0a0');
+  kit.cantoVivo(g, x, y, w, h - 6);
+}
+/** fondo del rincón (60 px nuevos de Desarrollo): corcho viejo tras el logo morado y un pósit «JUEVES · COMITÉ» */
+function rinconComite(g) {
+  const x = 1092, y = 50;
+  rect(g, x, y, 54, 18, PAL.wood[2]); ditherOverlay(g, x, y, 54, 18, PAL.wood[4], 0.4); frameRect(g, x, y, 54, 18, PAL.wood[1]);
+  postit(g, x + 36, y + 3, POSTIT.y, { w: 15, h: 12, lines: false });
+  micro(g, 'JUE', x + 38, y + 5, INK); micro(g, 'COM', x + 38, y + 10, PAL.purple[2]);
+  glow(g, 1120, 60, 30, 26, '#b48cff', 0.06, 3);
+}
+/** el diploma que se dieron ellos mismos, en marco dorado: «EQUIPO 100 % CONCIENCIADO», firmado por los cuatro */
+function drawDiploma(g) {
+  const x = 1093, y = 21, w = 52, h = 26;
+  ditherOverlay(g, x + 1, y + 1, w + 1, h + 1, PAL.shadow, 0.5);
+  rect(g, x, y, w, h, PAL.gold[3]); frameRect(g, x, y, w, h, PAL.gold[1]); hline(g, x + 1, y + 1, w - 2, PAL.gold[6]);
+  rect(g, x + 2, y + 2, w - 4, h - 4, '#f8f0d8');
+  micro(g, 'EQUIPO 100 %', x + w / 2, y + 4, PAL.purple[2], { align: 'center' });
+  micro(g, 'CONCIENCIADO', x + w / 2, y + 10, PAL.purple[2], { align: 'center' });
+  for (let i = 0; i < 4; i++) line(g, x + 4 + i * 9, y + 20, x + 10 + i * 9, y + 19, PAL.ink[3]);    // cuatro firmas
+  ellipse(g, x + w - 7, y + h - 6, 3, 3, PAL.red[4]); px(g, x + w - 7, y + h - 6, PAL.gold[5]);           // el sello
+  kit.cantoVivo(g, x, y, w, h);
+}
+/** el logo del periódico impreso en morado el 8 de marzo, con dos chinchetas y el borde ya amarillo */
+function drawLogoMorado(g) {
+  const x = 1096, y = 49, w = 30, h = 21;
+  ditherOverlay(g, x + 1, y + 1, w, h, PAL.shadow, 0.5);
+  rect(g, x, y, w, h, '#f2ecd0'); ditherOverlay(g, x, y + h - 4, w, 4, '#d8c890', 0.5); vline(g, x + w - 1, y, h, '#d8cc9c');
+  ellipse(g, x + 9, y + 9, 6, 6, '#8a3ac8'); ellipse(g, x + 9, y + 9, 3, 3, '#f2ecd0'); rect(g, x + 4, y + 9, 11, 2, '#8a3ac8');   // la «e» morada
+  micro(g, '8M', x + 18, y + 4, '#8a3ac8');
+  micro(g, 'HECHO', x + 3, y + 15, PAL.leaf[3]);
+  px(g, x + 2, y + 1, PAL.red[4]); px(g, x + w - 3, y + 1, PAL.blue[5]);
+  kit.cantoVivo(g, x, y, w, h);
+}
+/** el buzón de sugerencias «COMPAÑERAS», con candado y telarañas; en el Acto III, con su araña */
+function drawBuzon(g, view) {
+  const x = 1098, y = 72, w = 46, h = 17;
+  const a3 = !!view.flag('acto_3_iniciado');
+  rect(g, x + 4, y + h, 2, FL - y - h, PAL.metal[2]); rect(g, x + w - 6, y + h, 2, FL - y - h, PAL.metal[2]);     // patas a la pared
+  ditherOverlay(g, x + 1, y + 1, w + 1, h + 1, PAL.shadow, 0.5);
+  rect(g, x, y, w, h, '#6a4aa0'); frameRect(g, x, y, w, h, '#3a2860'); hline(g, x + 1, y + 1, w - 2, '#9a7ad0');
+  rect(g, x + 10, y + 3, w - 20, 2, INK);                                                                 // la ranura
+  rect(g, x + 2, y + 8, w - 4, 7, '#f4f0e4'); micro(g, 'COMPAÑERAS', x + w / 2, y + 9, PAL.purple[2], { align: 'center' });
+  rect(g, x + w - 6, y + 3, 3, 3, PAL.gold[4]);                                                           // candado
+  // telarañas en las dos esquinas de arriba (y una hebra hasta el diploma)
+  for (const [cx, sgn] of [[x, 1], [x + w - 1, -1]]) {
+    line(g, cx, y, cx + sgn * 7, y + 5, '#d8d8e0'); line(g, cx + sgn * 3, y, cx + sgn * 2, y + 6, '#b8b8c4'); line(g, cx + sgn * 5, y + 1, cx + sgn * 1, y + 3, '#b8b8c4');
+  }
+  line(g, x + 20, y, x + 22, 45, '#9a9aa8');
+  if (a3) { ellipse(g, x + 22, y - 6, 1.5, 1.5, INK); for (const d of [-2, 2]) { px(g, x + 22 + d, y - 7, INK); px(g, x + 22 + d, y - 5, INK); } }
+  kit.cantoVivo(g, x, y, w, h);
+}
+
 // ================================================================== GEOMETRÍA
 /** [x, y, w, h] + dx */
 function mueveR(r, dx) { return [r[0] + dx, r[1], r[2], r[3]]; }
-/** Corre D px un grupo de entradas de layout (y envuelve sus dibujos para que se pinten corridos). */
-function mover(L) {
+/** Corre `dx` px (D por defecto) un grupo de entradas de layout (y envuelve sus dibujos para que se pinten corridos). */
+function mover(L, dx = D) {
   const out = {};
   for (const [k, v] of Object.entries(L)) {
     const o = { ...v };
-    if (o.rect) o.rect = mueveR(o.rect, D);
-    if (o.poly) o.poly = o.poly.map(([x, y]) => [x + D, y]);
-    if (o.walkTo) o.walkTo = [o.walkTo[0] + D, o.walkTo[1]];
-    if (o.at) o.at = [o.at[0] + D, ...o.at.slice(1)];
-    if (o.draw) o.draw = desplazado(o.draw);
-    if (o.sprites) o.sprites = Object.fromEntries(Object.entries(o.sprites).map(([st, fn]) => [st, desplazado(fn)]));
-    if (o.positions) o.positions = Object.fromEntries(Object.entries(o.positions).map(([pk, pv]) => [pk, pv && pv.at ? { ...pv, at: [pv.at[0] + D, ...pv.at.slice(1)] } : pv]));
+    if (o.rect) o.rect = mueveR(o.rect, dx);
+    if (o.poly) o.poly = o.poly.map(([x, y]) => [x + dx, y]);
+    if (o.walkTo) o.walkTo = [o.walkTo[0] + dx, o.walkTo[1]];
+    if (o.at) o.at = [o.at[0] + dx, ...o.at.slice(1)];
+    if (o.draw) o.draw = desplazado(o.draw, dx);
+    if (o.sprites) o.sprites = Object.fromEntries(Object.entries(o.sprites).map(([st, fn]) => [st, desplazado(fn, dx)]));
+    if (o.positions) o.positions = Object.fromEntries(Object.entries(o.positions).map(([pk, pv]) => [pk, pv && pv.at ? { ...pv, at: [pv.at[0] + dx, ...pv.at.slice(1)] } : pv]));
     out[k] = o;
   }
   return out;
 }
+const PD = PECERA_PUERTAS;
+const puertaR = ([x, w], y = HUECO_Y) => [x - 3, y - 3, w + 6, FL - y + 3];
 const layout = {
   // NÚCLEO (kit; geometría de content/lib/edificio.js nucleoGeom)
   pecera_a_ecosistema: { rect: N.escaleras.sube.rect, walkTo: N.escaleras.sube.walkTo, face: N.escaleras.sube.face },
   pecera_a_vestibulo: { rect: N.escaleras.baja.rect, walkTo: N.escaleras.baja.walkTo, face: N.escaleras.baja.face },
   ascensor_pecera: { rect: N.ascensor.rect, walkTo: N.ascensor.walkTo, face: 'up' },
-  // PASILLO DE DIRECCIÓN
-  pecera_a_pajarera: { rect: [97, 35, 36, 59], walkTo: [115, 108], face: 'up' },
-  pecera_a_office: { rect: [134, 35, 36, 59], walkTo: [151, 108], face: 'up' },
-  // ZONA DE PAPEL: la Secretaría de Redacción (Custodia, orden 3) y la puerta doble a la Redacción de papel (orden 2)
-  pecera_a_catacumba: { rect: [PECERA_PUERTAS.pecera_a_catacumba[0] - 3, 37, PECERA_PUERTAS.pecera_a_catacumba[1] + 6, 57], walkTo: [266, 108], face: 'up' },
-  cartel_material: { rect: mueveR(SECRETARIA_RECTS.cartel_material, SDX), walkTo: [198, 108], face: 'up' },
-  custodia_precinto: { rect: mueveR(SECRETARIA_RECTS.custodia_precinto, SDX), walkTo: [188, 108], face: 'up', priority: 1, draw: desplazado((g, v, t) => drawCustodia(g, v, t), SDX) },
-  timbre_secretaria: { rect: mueveR(SECRETARIA_RECTS.timbre_secretaria, SDX), walkTo: [202, 108], face: 'up', priority: 2 },
-  // DE WEB A DISEÑO: coordenadas de la sala de 800 px; `mover` les suma D (rects, walkTo, at, poly y el dibujo)
+  // VESTÍBULO DE PLANTA: tótem, Despachos (cristal) y Vending (arco abierto), cada uno en su hueco
+  directorio_planta: { rect: [PECERA_DIRECTORIO.x, 30, PECERA_DIRECTORIO.w, FL - 30], walkTo: [124, 110], face: 'up', draw: drawDirectorio },
+  pecera_a_pajarera: { rect: puertaR(PD.pecera_a_pajarera), walkTo: [PD.pecera_a_pajarera[0] + 28, 108], face: 'up' },
+  pecera_a_office: { rect: puertaR(PD.pecera_a_office), walkTo: [PD.pecera_a_office[0] + 28, 108], face: 'up' },
+  // ZONA DE PAPEL: la Secretaría de Redacción (Custodia, orden 3), en su hueco, y la puerta doble a la Redacción de papel
+  pecera_a_catacumba: { rect: puertaR(PD.pecera_a_catacumba), walkTo: [PD.pecera_a_catacumba[0] + 30, 108], face: 'up' },
+  cartel_material: { rect: [CARTEL_LADO[0] + SDX, CARTEL_LADO[1], 46, 22], walkTo: [CARTEL_LADO[0] + SDX + 23, 108], face: 'up' },
+  custodia_precinto: { rect: mueveR(SECRETARIA_RECTS.custodia_precinto, SDX), walkTo: [HATCH.x + SDX + 6, 108], face: 'up', priority: 1, draw: desplazado((g, v, t) => drawCustodia(g, v, t), SDX) },
+  timbre_secretaria: { rect: mueveR(SECRETARIA_RECTS.timbre_secretaria, SDX), walkTo: [HATCH.x + SDX + 23, 108], face: 'up', priority: 2 },
+  // DESARROLLO, rincón del comité (coordenadas de sala, ya corridas)
+  diploma_concienciado: { rect: [1093, 21, 52, 26], walkTo: [1118, 114], face: 'up', draw: drawDiploma },
+  logo_morado: { rect: [1096, 49, 30, 21], walkTo: [1112, 114], face: 'up', priority: 1, draw: drawLogoMorado },
+  buzon_companeras: { rect: [1098, 71, 46, 19], walkTo: [1122, 114], face: 'up', draw: drawBuzon },
+  // DE WEB A DESARROLLO: coordenadas de la sala de 800 px; `mover` les suma D (rects, walkTo, at, poly y el dibujo)
   ...mover({
   // WEB
     pantalla_metricas: { rect: [176, 29, 100, 42], walkTo: [226, 112], face: 'up', draw: drawMetricas },
@@ -890,22 +1063,24 @@ const layout = {
     pantalla_anselmo: { rect: [644, 27, 36, 25], walkTo: [658, 112], face: 'up', draw: drawAnselmoScreen },
     taza_no: { rect: [604, 68, 13, 14], walkTo: [610, 120], face: 'up', priority: 1, draw: drawTazaNo },
     coro_desarrollo: { rect: [618, 58, 52, 38], walkTo: [644, 116], face: 'up', draw: drawCoro },
-    // DISEÑO Y PRODUCTO
-    bandeja_diseno: { rect: [684, 56, 34, 42], walkTo: [700, 112], face: 'up', draw: drawBandeja },
-    ventana: { rect: [759, 27, 40, 46], walkTo: [778, 116], face: 'up',
-      sprites: { default: (g, view, t) => ventana(g, t, false), amanecer: (g, view, t) => ventana(g, t, true) } },
-    monitor_valentin: { rect: [721, 46, 38, 30], walkTo: [740, 114], face: 'up', prop: true, draw: drawMonitorValentin },
     // PNJ (docs/GUIA_REDISENO.md §10): Bruno siempre a un lado, a ≥ 24 px
     yoli_tendencias: { at: [309, 116, 'down'], walkTo: [284, 126], face: 'right' },
     leoncio_quesitos: { at: [434, 114, 'down'], walkTo: [410, 126], face: 'right' },
     nerea_backlog: { at: [598, 114, 'left'], walkTo: [624, 126], face: 'left' },
     anselmo_monolito: { at: [672, 118, 'left'], walkTo: [696, 128], face: 'left' },
-    // Valentín, de pie y a cuerpo entero, junto a su mesa mirando su monitor; Rubén (Acto III), en el ventanal
-    valentin_reticula: { at: [770, 112, 'left'], walkTo: [746, 126], face: 'right' },
-    ruben: { at: [788, 114, 'up'], walkTo: [764, 126], face: 'right' },
     // solo en la escena 7.2 (pecera.escenas.js): presenta bajo la pantalla de métricas, entre Bruno y Yoli
     inigo_sinergia: { at: [246, 122, 'down'] },
   }),
+  // DISEÑO Y PRODUCTO: coordenadas de 800 px + D2
+  ...mover({
+    bandeja_diseno: { rect: [684, 56, 34, 42], walkTo: [700, 112], face: 'up', draw: drawBandeja },
+    ventana: { rect: [759, 27, 40, 46], walkTo: [778, 116], face: 'up',
+      sprites: { default: (g, view, t) => ventana(g, t, false), amanecer: (g, view, t) => ventana(g, t, true) } },
+    monitor_valentin: { rect: [721, 46, 38, 30], walkTo: [740, 114], face: 'up', prop: true, draw: drawMonitorValentin },
+    // Valentín, de pie y a cuerpo entero, junto a su mesa mirando su monitor; Rubén (Acto III), en el ventanal
+    valentin_reticula: { at: [770, 112, 'left'], walkTo: [746, 126], face: 'right' },
+    ruben: { at: [788, 114, 'up'], walkTo: [764, 126], face: 'right' },
+  }, D2),
 };
 
 export default {
@@ -916,14 +1091,15 @@ export default {
   // suelo con muescas: el kanban exento (pies en 106) y la silla de Ramírez (pies en 112) quedan en el plano medio; la
   // muesca de la silla se mueve con ella (silla_libre)
   walkboxes: [
-    { id: 'suelo', poly: [[4, 100], [320 + D, 100], [320 + D, 115], [378 + D, 115], [378 + D, 100], [486 + D, 100], [486 + D, 108], [594 + D, 108], [594 + D, 100], [796 + D, 100], [798 + D, 142], [2, 142]] },
+    { id: 'suelo', poly: [[4, 100], [320 + D, 100], [320 + D, 115], [378 + D, 115], [378 + D, 100], [486 + D, 100], [486 + D, 108], [594 + D, 108], [594 + D, 100], [W - 4, 100], [W - 2, 142], [2, 142]] },
     { id: 'hueco_mesa_bruno', poly: [[319 + D, 100], [351 + D, 100], [351 + D, 116], [319 + D, 116]], when: '!silla_libre' },
     { id: 'hueco_silla_ramirez', poly: [[349 + D, 100], [379 + D, 100], [379 + D, 116], [349 + D, 116]], when: 'silla_libre' },
   ],
-  // entradas: se llaman como la sala de la que se viene (§9)
+  // entradas: se llaman como la sala de la que se viene (§9); Bruno aparece delante de su hueco, mirando a la sala
   entries: {
     vestibulo: N.escaleras.baja.entrada, ecosistema: N.escaleras.sube.entrada, ascensor: N.ascensor.entrada,
-    pajarera: [115, 110, 'down'], office: [151, 110, 'down'], catacumba: [266, 110, 'down'],
+    pajarera: [PD.pecera_a_pajarera[0] + 28, 110, 'down'], office: [PD.pecera_a_office[0] + 28, 110, 'down'],
+    catacumba: [PD.pecera_a_catacumba[0] + 30, 110, 'down'],
   },
   layout,
   draw: drawRoom,

@@ -43,9 +43,10 @@ async function encuadre(api, x) {
 async function presentacionVillano(api) {
   await api.cutscene(async (api) => {
     // (La Pecera. La pantalla gigante marca 3.418 y baja. Yoli se echa colirio.)
-    // Rediseño (docs/GUIA_REDISENO.md §3, §6): el núcleo (escaleras y ascensor) y el pasillo de Dirección están a la
-    // IZQUIERDA; las entradas caen en x < 300 (con la puerta de la Redacción de papel). La Web empieza en 310 (desde la
-    // orden 2, todo lo de Web a Diseño está 140 px más a la derecha: PECERA_DESPLAZ). Si Bruno estuviera lejos, fundido.
+    // Rediseño (docs/GUIA_REDISENO.md §3, §6): el núcleo (escaleras y ascensor) y el vestíbulo de planta (Despachos,
+    // Vending) están a la IZQUIERDA; luego la zona de papel (Secretaría y puerta doble). La Web empieza en 580: todo lo de
+    // Web a Desarrollo está escrito en coordenadas de 800 px y va PECERA_DESPLAZ más a la derecha. Si Bruno estuviera
+    // lejos, fundido.
     const SITIO_BRUNO = [184 + D, 124], SITIO_IN = (art.layout[I] && art.layout[I].at) || [246 + D, 122, 'down'];
     if (api.actorPos(api.player).x > 330 + D) {
       await api.fadeOut(250);
@@ -66,7 +67,12 @@ async function presentacionVillano(api) {
     api.placeActor(I, 'pecera', door[0] + 6, door[1] + 4, 'right');
     api.show(I);
     api.sfx('door');
-    api.cameraTo(150);
+    // sube por el núcleo y cruza el vestíbulo de planta (con la Redacción ya de 1270 px, el paseo entero se acorta: se le
+    // ve llegar al vestíbulo y, con la cámara de vuelta en la Web, entra por la izquierda del plano)
+    api.cameraTo(door[0] + 140);
+    await api.walkActor(I, door[0] + 230, at[1]);
+    api.placeActor(I, 'pecera', at[0] - 190, at[1], 'right');
+    api.cameraTo(232 + D);
     await api.walkActor(I, at[0], at[1]);
     api.cameraTo(232 + D);
     api.faceActor(I, 'down');
@@ -113,15 +119,17 @@ async function presentacionVillano(api) {
       [I, 'Coste cero, disponibilidad total.'],
       [I, 'Te tengo en la matriz, Vacante. Cuadrante "Ideal". No te muevas.'],
     ]);
-    // (Íñigo sale hacia la Pajarera.)
-    const exitP = art.layout.pecera_a_pajarera.walkTo || [115, 108];
-    api.cameraTo(170);
+    // (Íñigo sale hacia los Despachos.)
+    const exitP = art.layout.pecera_a_pajarera.walkTo || [196, 108];
+    await api.walkActor(I, at[0] - 190, at[1]);
+    api.placeActor(I, 'pecera', exitP[0] + 150, at[1], 'left');
+    api.cameraTo(exitP[0] + 60);
     await api.walkActor(I, exitP[0], exitP[1]);
     api.sfx('door');
     api.placeActor(I, null);
     await encuadre(api, 232 + D);            // de vuelta a Yoli (Web) antes de que hable
     await talk(api, [[Y, '¿Pósit rosa? El rosa es "emociones". Te ha clasificado como emoción.']]);
-    await encuadre(api, 452 + D);            // Yoli (Web, 449) y Nerea (Desarrollo, 738) en el mismo plano
+    await encuadre(api, 452 + D);            // Yoli (Web) y Nemesio (Desarrollo) en el mismo plano
     await api.wait(200);
     await talk(api, [
       [N, 'El CMS no es nuestro, es de Sistemas.'],

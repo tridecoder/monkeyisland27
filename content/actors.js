@@ -230,14 +230,18 @@ export default {
       'Ahí al lado imprimen lo que yo publiqué ayer. Con las faltas corregidas.',   // orden 2: la Redacción de papel, al lado
       'Busco "el Contable" y salen gestorías. Nos ganan en SEO.', 'Hacen más ruido que mi gráfica cuando baja.'],
   },
+  // Nemesio Backlog (id histórico `nerea_backlog`: el personaje se llamó Nerea hasta que dirección pidió que Desarrollo
+  // fuera solo de hombres; el id no se toca para no romper partidas, pruebas ni flags). El dueño del kanban: chaleco de
+  // punto MOSTAZA, pósits pegados en la manga, rotulador azul detrás de la oreja, pelo de punta y barba de tres días.
   nerea_backlog: {
-    name: 'Nerea', color: '#7FE08A', speed: 60,
+    name: 'Nemesio', color: '#7FE08A', speed: 60,
     doll: {
-      skin: '#e0aa84', hair: '#2e1c14', hairStyle: 'curlybun', hairPencil: '#e8c040', shirt: '#ece4d4', vest: '#d4a020',
-      sleeveNotes: '#f0e050', pencil: true, pencilColor: '#3070d0', pants: '#4a3a32', shoes: '#2a1a14', height: 1.0,
+      skin: '#e0aa84', hair: '#2e1c14', hairStyle: 'spiky', beard: 'stubble', shirt: '#ece4d4', vest: '#d4a020',
+      sleeveNotes: '#f0e050', pencil: true, pencilColor: '#3070d0', pants: '#4a3a32', shoes: '#2a1a14', height: 1.02, build: 'normal',
     },
     murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.',
-      'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.'],
+      'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.',
+      'Igualdad: EN CURSO desde 2016. Va a muy buen ritmo.'],
   },
   teodoro_cuerpodoce: {
     // No habla: sus líneas salen del fax (prefijo «TEODORO (fax):», §3.4). Solo habla en voz alta al teléfono rojo.

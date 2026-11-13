@@ -11,21 +11,23 @@ export const PLANTA_DE = {
   ecosistema: 2, eventos: 2, administracion: 2,
 };
 
-/** Ancho final de cada sala (px). Ecosistema pasa de 320 a 400 (D3). */
+/** Ancho final de cada sala (px). Ecosistema: 320 → 400 (D3) → 432 (aire entre placas); Redacción: 1270 (vestíbulo de planta). */
 export const ANCHO = {
-  vestibulo: 320, pecera: 940, office: 320, catacumba: 320, pajarera: 320, sala_amazonas: 320,
-  ecosistema: 400, eventos: 512, administracion: 320, cpd: 320,
+  vestibulo: 320, pecera: 1270, office: 320, catacumba: 320, pajarera: 320, sala_amazonas: 320,
+  ecosistema: 432, eventos: 512, administracion: 320, cpd: 320,
 };
 
 /** NOMBRE VISIBLE de cada sala en placas, rótulos, botonera y frases (orden de dirección): el apodo puede ir debajo
  *  o en boca de los personajes, pero la placa lleva SIEMPRE el nombre llano. «Pajarera» NO se enseña nunca: es
- *  «Dirección». `placa` ≤ 12 caracteres (fuente del juego); `sub` = segunda línea en microfuente 3×5 (≤ 18). */
+ *  «Despachos» (antes «Dirección»: la sala es la antesala de los despachos que lleva a la Sala de Reuniones; la reunión
+ *  sigue siendo la «Reunión de Dirección»). `placa` ≤ 12 caracteres (fuente del juego); `sub` = segunda línea en
+ *  microfuente 3×5 (≤ 19). */
 export const SALA = {
   vestibulo: { placa: 'VESTÍBULO', sub: null, depto: null, apodo: null },
   pecera: { placa: 'REDACCIÓN', sub: 'REDACCIÓN WEB', depto: 'redaccion', apodo: 'la Pecera' },
   office: { placa: 'VENDING', sub: null, depto: 'office', apodo: null },          // «Vending» (orden 1; id interno `office`)
   catacumba: { placa: 'REDACCIÓN', sub: 'DE PAPEL · CIERRE', depto: 'papel', apodo: 'la Catacumba' },
-  pajarera: { placa: 'DIRECCIÓN', sub: null, depto: 'direccion', apodo: null },        // «Pajarera»: solo id interno
+  pajarera: { placa: 'DESPACHOS', sub: null, depto: 'direccion', apodo: null },        // «Pajarera»: solo id interno
   sala_amazonas: { placa: 'AMAZONAS', sub: 'SALA DE REUNIONES', depto: 'direccion', apodo: null },
   ecosistema: { placa: 'MARKETING', sub: 'Y COMERCIAL', depto: 'marketing', apodo: 'el Ecosistema' },
   eventos: { placa: 'EVENTOS', sub: 'SALA POLIVALENTE', depto: 'eventos', apodo: null },
@@ -82,34 +84,40 @@ export function nucleoGeom(room, FL, width = ANCHO[room] || 320) {
 }
 
 // ------------------------------------------------------------------ PECERA (D2): zonas de izquierda a derecha
-// x0-x1 en px de sala (ancho total 800). `depto` = clave de DEPTO del kit (color de suelo, filete y rótulo colgado).
+// x0-x1 en px de sala (ancho total 1270). `depto` = clave de DEPTO del kit (color de suelo, filete y rótulo colgado).
+// El VESTÍBULO DE PLANTA (hall, 96-344) es el reparto: cada acceso en su propio hueco, con pared lisa a los dos lados
+// (≥ 24 px entre huecos), UNA placa por acceso a la misma altura (y 14) y un tótem-directorio junto al núcleo.
 export const PECERA_ZONAS = [
   { id: 'nucleo', x0: 0, x1: 96, depto: null, rotulo: null, pared: '#3a3e4a', suelo: 'terrazo' },
-  { id: 'pasillo_direccion', x0: 96, x1: 170, depto: 'direccion', rotulo: null, pared: '#4a3020', suelo: 'linoleo' },
-  // la bisagra entre las dos redacciones (orden 2 y 3): la Secretaría de Redacción (Custodia) y la puerta doble a la
+  { id: 'hall', x0: 96, x1: 344, depto: null, rotulo: null, pared: '#4c5260', suelo: 'linoleo' },
+  // la bisagra entre las dos redacciones (órdenes 2 y 3): la Secretaría de Redacción (Custodia) y la puerta doble a la
   // Redacción de papel, con el umbral de latón como frontera
-  { id: 'papel', x0: 170, x1: 310, depto: 'papel', rotulo: null, pared: '#5a3e26', suelo: 'parque' },
-  { id: 'web', x0: 310, x1: 450, depto: 'web', rotulo: 'WEB', pared: '#2c6a66', suelo: 'moqueta' },
-  { id: 'economia', x0: 450, x1: 526, depto: 'economia', rotulo: 'ECONOMÍA', pared: '#3a5a6c', suelo: 'moqueta' },
-  { id: 'infografia', x0: 526, x1: 620, depto: 'infografia', rotulo: 'INFOGRAFÍA', pared: '#7a6448', suelo: 'moqueta' },
-  { id: 'desarrollo', x0: 620, x1: 820, depto: 'desarrollo', rotulo: 'DESARROLLO', pared: '#3e3656', suelo: 'moqueta' },
-  { id: 'diseno', x0: 820, x1: 940, depto: 'diseno', rotulo: 'DISEÑO Y PROD.', pared: '#c8c8c0', suelo: 'moqueta' },
+  { id: 'papel', x0: 344, x1: 580, depto: 'papel', rotulo: null, pared: '#5a3e26', suelo: 'parque' },
+  { id: 'web', x0: 580, x1: 720, depto: 'web', rotulo: 'WEB', pared: '#2c6a66', suelo: 'moqueta' },
+  { id: 'economia', x0: 720, x1: 796, depto: 'economia', rotulo: 'ECONOMÍA', pared: '#3a5a6c', suelo: 'moqueta' },
+  { id: 'infografia', x0: 796, x1: 890, depto: 'infografia', rotulo: 'INFOGRAFÍA', pared: '#7a6448', suelo: 'moqueta' },
+  { id: 'desarrollo', x0: 890, x1: 1150, depto: 'desarrollo', rotulo: 'DESARROLLO', pared: '#3e3656', suelo: 'moqueta' },
+  { id: 'diseno', x0: 1150, x1: 1270, depto: 'diseno', rotulo: 'DISEÑO Y PRODUCTO', pared: '#c8c8c0', suelo: 'moqueta' },
 ];
-/** Desplazamiento de las zonas de Web a Diseño al meter la de papel (140 px): el arte de la Redacción las pinta con
- *  sus coordenadas de antes + PECERA_DESPLAZ. */
-export const PECERA_DESPLAZ = 140;
-/** Puertas de la Redacción (hueco de puerta, sin marco; el marco del kit va por fuera). [x, ancho] */
-export const PECERA_PUERTAS = { pecera_a_pajarera: [100, 30], pecera_a_office: [136, 30], pecera_a_catacumba: [236, 60] };
-/** La Secretaría de Redacción (Custodia): el ventanuco con persiana, en la zona de papel, junto a la puerta doble. */
-export const PECERA_SECRETARIA = { x: 179, y: 40, w: 36, h: 18 };
+/** Desplazamiento de las zonas de Web a Desarrollo: su arte está escrito en las coordenadas de la sala de 800 px (Web
+ *  empezaba en 170) y se pinta corrido PECERA_DESPLAZ. Diseño y Producto va además PECERA_DESPLAZ_DISENO px más allá
+ *  (Desarrollo creció 60 px para su rincón del «comité de igualdad»). */
+export const PECERA_DESPLAZ = 410;
+export const PECERA_DESPLAZ_DISENO = 470;
+/** Accesos de la Redacción (hueco, sin marco; el marco del kit va por fuera). [x, ancho] */
+export const PECERA_PUERTAS = { pecera_a_pajarera: [168, 56], pecera_a_office: [260, 56], pecera_a_catacumba: [490, 60] };
+/** La Secretaría de Redacción (Custodia): el ventanuco con persiana, en su propio hueco de la zona de papel. */
+export const PECERA_SECRETARIA = { x: 370, y: 40, w: 36, h: 18 };
+/** El tótem-directorio de la planta, junto al núcleo. */
+export const PECERA_DIRECTORIO = { x: 100, w: 48 };
 
-// ------------------------------------------------------------------ ECOSISTEMA (D3): 400 px
+// ------------------------------------------------------------------ ECOSISTEMA (D3): 432 px (Comercial ganó 32 px de pared)
 export const ECOSISTEMA_ZONAS = [
   { id: 'nucleo', x0: 0, x1: 96, depto: null },
   { id: 'marketing', x0: 96, x1: 190, depto: 'marketing', rotulo: 'MARKETING' },
   { id: 'puerta_eventos', x0: 190, x1: 242, depto: 'eventos', rotulo: null },
-  { id: 'comercial', x0: 242, x1: 352, depto: 'comercial', rotulo: 'COMERCIAL' },
-  { id: 'pasillo', x0: 352, x1: 400, depto: 'administracion', rotulo: null },
+  { id: 'comercial', x0: 242, x1: 384, depto: 'comercial', rotulo: 'COMERCIAL' },
+  { id: 'pasillo', x0: 384, x1: 432, depto: 'administracion', rotulo: null },
 ];
 
 /** Salas rediseñadas: las herramientas aplican las reglas estrictas (≥ 12×10, solapes ≤ 30 %, rótulos enteros…) a las

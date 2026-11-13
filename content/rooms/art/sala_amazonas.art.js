@@ -12,7 +12,7 @@
 //    planillo queda en la mesa; el orden del día, tachado.
 //  · Acto III: penumbra del motor (`penumbra`, nunca un overlay que oscurezca actores): quedan iluminados la pantalla
 //    (diapositiva 247 → 248), el Lector Medio y, tenue, el sillón vacío. La tele, muerta; la caja de cables, quieta.
-//  · Señalética común: placa «1 DIRECCIÓN ◄» del kit sobre la puerta (nunca «Pajarera»), marco y umbral de Dirección.
+//  · Señalética común: placa «1 DESPACHOS ◄» del kit sobre la puerta (nunca «Pajarera»), marco y umbral de Despachos.
 // Mobiliario que tapa actores: la mesa y las sillas cercanas las pinta el objeto `botellines` (`layer: 'sorted'`,
 // `prop: true`); el sillón presidencial y las sillas lejanas son fondo (detrás de todo el que está de pie).
 import {
@@ -159,7 +159,7 @@ function puerta(g) {
   glow(g, x + 15, y + 26, 8, 6, '#ffe0a0', 0.25, 3);
   // cuña que la mantiene abierta (nadie la usa)
   poly(g, [[x + 2, y + h + 1], [x + 9, y + h + 1], [x + 9, y + h + 3], [x, y + h + 3]], PAL.wood[5]);
-  // placa común de destino: «1 DIRECCIÓN ◄» (nombre llano, orden de dirección i)
+  // placa común de destino: «1 DESPACHOS ◄» (nombre llano, orden de dirección i)
   kit.placaSala(g, 4, 14, 'pajarera', { flecha: '<' });
 }
 function cartelSalida(g) {

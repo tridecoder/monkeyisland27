@@ -54,7 +54,7 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'sala_a_pajarera', name: 'puerta de Dirección', exit: { room: 'pajarera' }, handlers: {
+    { id: 'sala_a_pajarera', name: 'puerta de los Despachos', exit: { room: 'pajarera' }, handlers: {
       ir: salir,
       usar: salir,
       abrir: 'Ya está abierta. Nadie sale. Es un hecho cultural.',
