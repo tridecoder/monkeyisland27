@@ -67,8 +67,8 @@ const ROWS = {
   A: ['.#.', '#.#', '###', '#.#', '#.#'], B: ['##.', '#.#', '##.', '#.#', '##.'], C: ['.##', '#..', '#..', '#..', '.##'],
   D: ['##.', '#.#', '#.#', '#.#', '##.'], E: ['###', '#..', '##.', '#..', '###'], F: ['###', '#..', '##.', '#..', '#..'],
   G: ['.##', '#..', '#.#', '#.#', '.##'], H: ['#.#', '#.#', '###', '#.#', '#.#'], I: ['###', '.#.', '.#.', '.#.', '###'],
-  J: ['..#', '..#', '..#', '#.#', '.#.'], K: ['#.#', '#.#', '##.', '#.#', '#.#'], L: ['#..', '#..', '#..', '#..', '###'],
-  M: ['#.#', '###', '###', '#.#', '#.#'], N: ['##.', '#.#', '#.#', '#.#', '#.#'], O: ['.#.', '#.#', '#.#', '#.#', '.#.'],
+  J: ['..#', '..#', '..#', '#.#', '.#.'], K: ['#.#', '##.', '#..', '##.', '#.#'], L: ['#..', '#..', '#..', '#..', '###'],
+  M: ['#.#', '###', '###', '#.#', '#.#'], N: ['###', '#.#', '#.#', '#.#', '#.#'], O: ['.#.', '#.#', '#.#', '#.#', '.#.'],
   P: ['##.', '#.#', '##.', '#..', '#..'], Q: ['.#.', '#.#', '#.#', '##.', '.##'], R: ['##.', '#.#', '##.', '#.#', '#.#'],
   S: ['.##', '#..', '.#.', '..#', '##.'], T: ['###', '.#.', '.#.', '.#.', '.#.'], U: ['#.#', '#.#', '#.#', '#.#', '###'],
   V: ['#.#', '#.#', '#.#', '#.#', '.#.'], W: ['#.#', '#.#', '###', '###', '#.#'], X: ['#.#', '#.#', '.#.', '#.#', '#.#'],
@@ -180,7 +180,7 @@ export function texto(g, text, x, y, w, h, o = {}) {
 // ================================================================== PLACA DE DESTINO (una sola para todo el edificio)
 // Fondo tinta, marco claro de 1 px, banda izquierda con el color y el número de la PLANTA, nombre en la fuente del juego
 // (mayúsculas, caja de 7 px), flecha opcional (◄ ► ▲ ▼ = '<' '>' '^' 'v') y, si hay `sub`, una segunda línea en 3×5.
-// Alto 13 px (19 con sub). Devuelve el ancho. Va sobre el dintel; dos puertas juntas: placas apiladas a 2 alturas.
+// Alto 13 px (20 con sub: 1 px de aire entre la 2.ª línea y el marco). Devuelve el ancho. Va sobre el dintel; dos puertas juntas: placas apiladas a 2 alturas.
 export function placa(g, x, y, text, o = {}) {
   const planta = String(o.planta ?? '1');
   const pl = PLANTA[planta] || PLANTA['1'];
@@ -190,7 +190,7 @@ export function placa(g, x, y, text, o = {}) {
   const band = o.sinPlanta ? 0 : 11;
   const fw = flecha ? 8 : 0;
   const w = band + 4 + tw + 4 + fw;
-  const h = sub ? 19 : 13;
+  const h = sub ? 20 : 13;
   if (String(text).length > 14) registro.mal(`placa «${text}»: más de 12-14 caracteres (usa \`sub\` para la segunda línea)`);
   ditherOverlay(g, x + 1, y + 1, w, h, PAL.shadow, 0.55);
   rect(g, x, y, w, h, INK);
@@ -209,7 +209,7 @@ export function placa(g, x, y, text, o = {}) {
   return w;
 }
 export function placaW(text, o = {}) { return (o.sinPlanta ? 0 : 11) + 8 + Math.max(measureText(text), o.sub ? microW(o.sub) : 0) + (o.flecha ? 8 : 0); }
-export function placaH(o = {}) { return o.sub ? 19 : 13; }
+export function placaH(o = {}) { return o.sub ? 20 : 13; }
 /** La placa de una SALA de destino con su nombre llano (content/lib/edificio.js SALA): placaSala(g, x, y, 'pajarera', { flecha: '<' }). */
 export function placaSala(g, x, y, room, o = {}) {
   const S = SALA[room];
@@ -286,14 +286,15 @@ export function huecoAbierto(g, x, y, w, h, o = {}) {
 /** Tres peldaños con nariz amarilla en el umbral de una puerta de MEDIO NIVEL (D6: Office ↔ Catacumba).
  *  dir 'baja' (desde el Office: los peldaños se hunden tras la puerta) | 'sube' (desde la Catacumba: suben hacia ella). */
 export function peldanos(g, x, yBase, w, dir = 'baja', o = {}) {
+  // pirámide: el peldaño de ABAJO es el más ancho y cada uno de encima entra 2 px por lado (en los dos sentidos); el
+  // de abajo, más oscuro (en 'baja' es el más hondo; en 'sube', el que queda en la sombra del suelo)
   const n = 3, sh = o.alto ?? 3;
-  for (let i = 0; i < n; i++) {
-    const k = dir === 'baja' ? i : n - 1 - i;
-    const yy = dir === 'baja' ? yBase - (n - i) * sh : yBase - (i + 1) * sh;
-    const inset = dir === 'baja' ? i * 2 : (n - 1 - i) * 2;
+  for (let L = 0; L < n; L++) {                     // L = 0: el peldaño de abajo
+    const yy = yBase - (L + 1) * sh, inset = L * 2, k = n - 1 - L;
     rect(g, x + inset, yy, w - inset * 2, sh, shade(o.color || PAL.metal[3], -0.12 * k));
     hline(g, x + inset, yy, w - inset * 2, '#e8c030');
   }
+  void dir;
 }
 
 // ================================================================== ASCENSOR y ESCALERA (mismos en las 4 plantas)

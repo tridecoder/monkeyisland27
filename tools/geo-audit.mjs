@@ -1,6 +1,8 @@
 // AUDITORÍA DE GEOMETRÍA de la sala actual (se ejecuta DENTRO de la página: page.evaluate(auditRoom, opts)).
 // La comparten tools/play-mouse.mjs (--solo=geometria) y tools/sala.mjs. opts: { tag, estricto, kit: URL de content/lib/kit.js }.
-// Comprueba (errores): aproximación en el suelo y alcanzable desde cada entrada; cobertura (ningún hotspot tapado
+// Comprueba (errores): aproximación en el suelo y alcanzable desde cada entrada (lo que solo separa un walkbox
+// condicional cerrado —`when`, p. ej. el torno del vestíbulo en a0— se devuelve en `condicionales`, no es error; y lo
+// listado en SEPARADOS DEBE ser inalcanzable mientras su condicional esté cerrado); cobertura (ningún hotspot tapado
 // entero); PNJ con ≥ 80 % de cabeza y torso a la vista (también con Bruno en su punto de conversación) y zona de clic
 // propia. Reglas de la propuesta (errores si la sala es rediseñada —arte `rediseno: true`— o con `estricto`; si no,
 // avisos): R1 interactivo ≥ 12×10 px · R2 solapes ≤ 30 % · R3 Bruno habla desde un lado (≥ 24 px) · R4 placas y
@@ -16,6 +18,15 @@ export const auditRoom = async (o) => {
     const entries = Object.entries(def.entries || {}).map(([k, e]) => [k, Array.isArray(e) ? [e[0], e[1]] : [e.x, e.y]]);
     const camSave = g.camX, W = rt.width;
     const pickRoom = (x, y) => { g.camX = Math.max(0, Math.min(W - 320, x - 160)); const t = g.pickAt(x - Math.round(g.camX), y); return t ? t.id : null; };
+    // walkboxes condicionales (`when`) cerrados ahora: el mapa con todos abiertos sirve para distinguir «separado a
+    // propósito» de «inalcanzable». ESPERADOS: lo que DEBE quedar al otro lado mientras un condicional esté cerrado.
+    const cerrados = rt.walk.boxes.filter(b => b.when != null && !b.enabled);
+    const abierta = cerrados.length ? new rt.walk.constructor(rt.walk.boxes.map(b => ({ ...b, enabled: b.enabled || b.when != null }))) : null;
+    const alcanza = (wm, e, ap, nearest) => { const path = wm.findPath(e, [ap.x, ap.y]); const end = path.length ? path[path.length - 1] : e; return Math.hypot(end[0] - nearest[0], end[1] - nearest[1]) <= 3; };
+    const SEPARADOS = { vestibulo: { paso_torno: { desde: ['inicio'], detras: ['ascensor_vestibulo', 'vestibulo_a_redaccion'] } } };
+    const ESPERA_CERRADO = (id, k) => cerrados.some(b => { const S = (SEPARADOS[def.id] || {})[b.id]; return S && S.desde.includes(k) && S.detras.includes(id); });
+    const condicionales = [];
+    for (const b of cerrados) { const S = (SEPARADOS[def.id] || {})[b.id]; if (S) for (const id of S.detras) if (!g.roomObjects().some(o => o.id === id)) out.push(`${tag} ${def.id}: «${id}» (detrás de ${b.id}) no existe`); }
     const targets = [];
     for (const o of g.roomObjects()) { const st = g.getObjState(o.id); if (st.visible && o.hotspot !== false) targets.push(g.objectTarget(o)); }
     for (const a of Object.values(g.actors)) if (a.room === def.id && a.visible && a.id !== g.G.player && a.def.hotspot !== false) targets.push(g.actorTarget(a));
@@ -28,9 +39,11 @@ export const auditRoom = async (o) => {
         const off = Math.hypot(nearest[0] - ap.x, nearest[1] - ap.y);
         if (!inside && off > 1.5) out.push(`${tag} ${def.id}: «${t.id}» walkTo (${Math.round(ap.x)},${Math.round(ap.y)}) fuera del suelo (a ${off.toFixed(1)} px)`);
         for (const [k, e] of entries) {
-          const path = rt.walk.findPath(e, [ap.x, ap.y]);
-          const end = path.length ? path[path.length - 1] : e;
-          if (Math.hypot(end[0] - nearest[0], end[1] - nearest[1]) > 3) out.push(`${tag} ${def.id}: «${t.id}» inalcanzable desde la entrada '${k}'`);
+          if (alcanza(rt.walk, e, ap, nearest)) { if (ESPERA_CERRADO(t.id, k)) out.push(`${tag} ${def.id}: «${t.id}» se alcanza desde '${k}' con ${cerrados.map(b => b.id).join(', ')} cerrado (debía quedar al otro lado)`); continue; }
+          // ¿lo separa solo un walkbox condicional cerrado (`when`)? Entonces es a propósito (el torno del vestíbulo
+          // en a0): no es error si con los condicionales abiertos se llega
+          if (abierta && alcanza(abierta, e, ap, abierta.nearest(ap.x, ap.y))) { condicionales.push(`«${t.id}» desde '${k}'`); continue; }
+          out.push(`${tag} ${def.id}: «${t.id}» inalcanzable desde la entrada '${k}'`);
         }
       }
       // 2) cobertura: algún píxel de su área se elige como este objetivo
@@ -151,5 +164,5 @@ export const auditRoom = async (o) => {
       if (fc < CLICK_MIN || mine < CLICK_PX) out.push(`${tag} ${def.id}: PNJ «${a.id}» con poca zona de clic propia (${mine} px, ${Math.round(fc * 100)} % de su caja)`);
     }
     g.camX = camSave;
-    return { n: targets.length, issues: out, avisos, vis, estricto };
+    return { n: targets.length, issues: out, avisos, vis, estricto, condicionales, cerrados: cerrados.map(b => b.id) };
   };

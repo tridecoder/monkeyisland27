@@ -58,10 +58,9 @@ async function final(api) {
     // --- reparto del amanecer en el vestíbulo (sitios del arte: vestArt.epilogo)
     await api.goto('vestibulo', 'inicio');
     await api.fadeOut(0);
-    // el amanecer se dibuja por el ESTADO de los objetos de cristal (§11), no por un flag tardío: puerta de la calle y
-    // ventana de la Pecera (P2 dibuja su estado `amanecer`)
+    // el amanecer se dibuja por el ESTADO de los objetos de cristal (§11), no por un flag tardío: aquí, la puerta de la
+    // calle; el ventanal de la Redacción, al empezar su parte (abajo)
     api.setState('vestibulo.puerta_calle', 'amanecer');
-    if (G.content.rooms.pecera && (G.content.rooms.pecera.objects || []).some(o => o.id === 'ventana')) api.setState('pecera.ventana', 'amanecer');
     const pc = at(L, C, [224, 98, 'down']);
     api.placeActor(C, 'vestibulo', pc[0], pc[1], 'down');
     const pr = EP.ruben;
@@ -155,6 +154,7 @@ async function final(api) {
 
     // --- corte a la Pecera
     await api.fadeOut(500);
+    api.setState('pecera.ventana', 'amanecer');                          // amanecer en el ventanal de Diseño y Producto
     await api.goto('pecera', 'vestibulo');
     for (const id of ['nerea_backlog', 'leoncio_quesitos', 'anselmo_monolito', R, I, GV, 'lector_medio']) if (G.actors[id]) api.hide(id);
     const py = at(G.content.rooms.pecera && G.content.rooms.pecera.layout, Y, [282, 112, 'down']);
@@ -168,6 +168,12 @@ async function final(api) {
     if (api.flag('infografia_integrada')) {                                // adenda 9.8c
       await api.sayAs(Y, ['La infografía de la opa: permanencia, más de un 40 %.', 'Firmada por dos departamentos. Bueno, firmada no. Reclamada.']);
     }
+    // el coro está en Desarrollo (x 612-676): Bruno se acerca para que el coro, él y el ventanal del amanecer salgan
+    // en el mismo plano
+    const pcoro = (G.content.rooms.pecera.layout || {}).coro_desarrollo;
+    const cx = pcoro && pcoro.walkTo ? pcoro.walkTo[0] - 46 : 598;
+    await api.walkTo(cx, 124);
+    api.face('right');
     const coro = async (t) => { await api.sayFrom('pecera.coro_desarrollo', t, { color: CORO }); };
     await coro('DEV 1: La web ha publicado la opa a las 00:01. Sin un fallo.');
     await coro('DEV 2: Ni uno.');
@@ -204,12 +210,12 @@ function creditos(api) {
     { text: 'Música', title: true }, 'Asignado a: un secuenciador de onda cuadrada',
     ...Array(PLANO_N).fill(''),                                               // hueco: plano de la Catacumba (Aurora)
     ...asig('Infografía', 'Asignado a: Herminia.', f('infografia_integrada') ? '(becaria de Desarrollo, alta en 40 segundos)' : 'Integración: pendiente de revisión (marzo).'),
-    ...asig('Diseño y Producto', 'Asignado a: Diseño y Producto. Entregado a las 18:29.'),
     ...asig('Eventos', 'Asignado a: Pilar Escaleta. Empezamos en cinco minutos.'),
     ...asig('Marketing', 'Asignado a: Borja Engagement (en vertical).'),
     ...asig('Errores', 'Asignado a: Diseño (que no fue).'),
     ...asig('Controlling', f('correo_evaristo_listo') ? 'Asignado a: el único que leyó hasta el final.' : 'Asignado a: un correo que nadie quiso oír.'),
     ...asig('Material', 'Asignado a: Custodia Precinto. Devuélvanle el boli.'),
+    ...asig('Diseño y Producto', 'Asignado a: Diseño y Producto. Entregado a las 18:29.'),   // lejos de «Infografía» (regla de dirección)
     ...asig('Salas', 'Asignado a: Ramírez (viernes, 20:59, recurrente).'),
     ...asig('Reenvíos', 'Asignado a: la impresora de la tercera, la única que leía a Tadeo.'),
     ...asig('Rumores', 'Asignado a: la planta del vestíbulo (micrófono de 1994).'),
@@ -350,6 +356,7 @@ async function creditosYPoscreditos(api) {
   await api.fadeOut(0);
   api.music(null, 1);
   await api.cutscene(async () => {
+    api.setState('pecera.ventana', 'amanecer');                        // sigue amaneciendo (sábado por la mañana)
     const Lp = (G.content.rooms.pecera && G.content.rooms.pecera.layout) || {};
     const silla = (Lp.silla_ramirez && Lp.silla_ramirez.walkTo) || [346, 116];
     for (const id of [Y, 'bruno', 'nerea_backlog', 'leoncio_quesitos', 'anselmo_monolito', R]) if (G.actors[id]) api.hide(id);

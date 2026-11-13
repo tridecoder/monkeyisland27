@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// PARTIDA CON RATÓN REAL (QA): juega el Acto I completo (pasos 1-16 de la biblia §5.4) y el duelo D1 (paso 29) SOLO con
+// PARTIDA CON RATÓN REAL (QA): juega la partida ENTERA (pasos 1-46 de la biblia §5.4: Actos I-III, los cuatro duelos,
+// el clímax y el final) SOLO con
 // eventos de ratón reales sobre el canvas (clic en verbo, clic en objeto / icono del inventario, clic en opciones de
 // diálogo con sus flechas de scroll, clic derecho = verbo por defecto, clics para pasar los globos). `window.__game` solo
 // se LEE para calcular dónde hacer clic (geometría de los hotspots) y para comprobar resultados.
@@ -148,7 +149,11 @@ async function clickTarget(id, button = 'left') {
   if (r.inv != null) { await clickInventory(id); return; }
   await vclick(r.pt[0], r.pt[1], button);
 }
-async function verbOn(v, id) { await settle(); await clickVerb(v); await clickTarget(id); await settle(); }
+async function verbOn(v, id) {
+  await settle();
+  await pointFor(id).catch(() => {});    // primero poner el objetivo en pantalla (andar con un clic cancela el verbo)
+  await clickVerb(v); await clickTarget(id); await settle();
+}
 async function itemOn(v, item, id) {
   await settle();
   await pointFor(id).catch(() => {});    // primero poner el objetivo en pantalla (andar puede cancelar la selección)
@@ -254,7 +259,7 @@ try {
   await wait(400);
 
   if (!args.solo || args.solo === 'raton') {
-    console.log('Partida con ratón real: Acto I (pasos 1-16) + duelo D1\n');
+    console.log('Partida con ratón real: pasos 1-46 (la partida entera)\n');
     // título: clic real en «Nueva partida»
     const it = await G(() => { const it = __game.game.titleLayout[0]; return [it.x + 8, it.y + 5]; });
     await vclick(...it);
@@ -275,7 +280,7 @@ try {
     ok(!(await inner()) && !(await G(() => __game.currentDialogOptions())) && (await state()).room === 'vestibulo', 'clic real en el ascensor antes de abrir el torno: no llega, no hay botonera');
     await clickTarget('vestibulo_a_redaccion'); await settle();
     ok(!(await inner()) && (await state()).room === 'vestibulo', 'clic real en la escalera de la Redacción antes de abrir el torno: no llega');
-    for (const s of STEPS.filter(s => s.n >= 2 && s.n <= 16)) {
+    for (const s of STEPS.filter(s => s.n >= 2)) {
       for (const a of s.acc) await runMouse(a);
       await settle();
       await R.check(s.esp);
@@ -285,25 +290,69 @@ try {
         ok(await inner() && !!(await G(() => __game.currentDialogOptions())), 'torno abierto: clic real en el ascensor → Bruno cruza el carril y se abre la botonera');
         await chooseOption('Nada, me quedo en esta planta.');
       }
+      if (s.n === 16) {                  // clic derecho sobre una salida = Ir a (y vuelta, con clics)
+        await settle();
+        const r0 = (await state()).room;
+        await clickTarget('catacumba_a_office', 'right'); await settle();
+        ok((await state()).room === 'office' && r0 === 'catacumba', 'clic derecho en una salida = «Ir a» (catacumba → office)');
+        await travelMouse('catacumba');
+      }
       if (args.lento) await page.screenshot({ path: path.join(here, 'shots', `raton-${String(s.n).padStart(2, '0')}.png`) });
     }
-    // clic derecho sobre una salida = Ir a
-    await settle();
-    const r0 = (await state()).room;
-    await clickTarget('catacumba_a_office', 'right'); await settle();
-    ok((await state()).room === 'office' && r0 === 'catacumba', 'clic derecho en una salida = «Ir a» (catacumba → office)');
-    // pasos 17-28 por la API en modo rápido, y el duelo D1 (paso 29) otra vez con el ratón
+    ok(maxOptLines > 5 && scrolledMenus > 0, `menús más largos que el panel se desplazan con sus flechas (máx. ${maxOptLines} líneas; ${scrolledMenus} elecciones tras desplazar)`);
+    ok(true, 'partida COMPLETA con el ratón: Actos I-III, los cuatro duelos, el clímax, el epílogo y los créditos');
+  }
+
+  if (!args.solo || args.solo === 'conexiones') {
+    // CONEXIONES: cada salida de cada sala (y cada parada del ascensor) con un clic real; se llega a la sala que dice la
+    // salida, en su entrada (la que se llama como la sala de origen), y esa entrada está junto a la salida de vuelta
+    console.log('\nConexiones (clic real en cada salida, Acto III con Rubén libre)\n');
+    await page.goto(base);
+    await page.waitForFunction(() => !!window.__game);
     await G(() => __game.skipText(true));
     await R.startDismisser();
-    await R.travel('catacumba');
-    for (const s of STEPS.filter(s => s.n >= 17 && s.n <= 28)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }
-    await G(() => { clearInterval(window.__dismisser); window.__dismisser = null; __game.skipText(false); });
-    const d1 = STEPS.find(s => s.n === 29);
-    for (const a of d1.acc) await runMouse(a);
-    await settle();
-    await R.check(d1.esp);
-    ok(true, `29 [${d1.sala}] ${d1.txt} — con el ratón`);
-    ok(maxOptLines > 5 && scrolledMenus > 0, `menús más largos que el panel se desplazan con sus flechas (máx. ${maxOptLines} líneas; ${scrolledMenus} elecciones tras desplazar)`);
+    await G(() => __game.newGame());
+    for (const s of STEPS.filter(s => s.n > 1 && s.n <= 42)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }
+    await G(() => { clearInterval(window.__dismisser); window.__dismisser = null; });
+    const exits = await G(() => { const out = []; for (const [rid, r] of Object.entries(__game.game.content.rooms)) for (const o of r.objects || []) { if (o.exit) out.push({ room: rid, id: o.id, to: o.exit.room, entry: o.exit.entry || rid }); if (o.ascensor) out.push({ room: rid, id: o.id, lift: true }); } return out; });
+    const lifts = exits.filter(e => e.lift);
+    const malC = [];
+    for (const e of exits) {
+      const dests = e.lift ? lifts.filter(l => l.room !== e.room).map(l => ({ to: l.room, entry: 'ascensor' })) : [{ to: e.to, entry: e.entry }];
+      for (const d of dests) {
+        await G(() => __game.skipText(true));
+        try { await R.travel(e.room); }
+        catch (err) {   // la lógica no deja entrar ahora (la Sala, con la reunión en curso): se entra directamente
+          await G(async (room) => { const g = __game.game; await g.runScript(async () => { await g.enterRoom(room, Object.keys(g.content.rooms[room].entries || {})[0]); }, { label: 'conexiones' }); }, e.room);
+        }
+        await G(() => __game.waitIdle()); await G(() => __game.skipText(false));
+        await settle();
+        await clickTarget(e.id);
+        await settle();
+        if (e.lift) { const label = await G((to) => (__game.game.content.rooms[to].objects.find(o => o.ascensor) || {}).ascensor.label, d.to); await chooseOption(label); }
+        await settle();
+        const r = await G(({ d, from }) => {
+          const g = __game.game, p = g.player, def = g.room.def;
+          const en = (def.entries || {})[d.entry]; const ep = Array.isArray(en) ? en : en ? [en.x, en.y] : null;
+          // la salida de vuelta: la que lleva a la sala de origen (o el ascensor)
+          const back = (def.objects || []).find(o => (d.entry === 'ascensor' ? o.ascensor : o.exit && o.exit.room === from));
+          const bt = back ? g.objectTarget(back) : null; const ap = bt ? g.approachPoint(bt) : null;
+          return { room: g.state.room, at: [Math.round(p.x), Math.round(p.y)], ep, back: back && back.id, ap: ap && [Math.round(ap.x), Math.round(ap.y)], inside: g.room.walk.inside(p.x, p.y) };
+        }, { d, from: e.room });
+        const tag = `${e.room} —${e.id}${e.lift ? ' → ' + d.to : ''}→ ${r.room}`;
+        if (r.room === e.room && !e.lift) { console.log(`    ${tag}: cerrada ahora por la lógica (se comprueba en la partida)`); continue; }
+        const errs = [];
+        if (r.room !== d.to) errs.push(`llega a ${r.room}, la salida dice ${d.to}`);
+        if (!r.ep) errs.push(`${d.to} no tiene la entrada '${d.entry}'`);
+        else if (Math.hypot(r.at[0] - r.ep[0], r.at[1] - r.ep[1]) > 12) errs.push(`aparece en ${r.at} y la entrada '${d.entry}' es ${r.ep}`);
+        if (!r.inside) errs.push(`aparece fuera del suelo (${r.at})`);
+        if (!r.back) errs.push(`${d.to} no tiene salida de vuelta a ${e.room}`);
+        else if (r.ap && Math.hypot(r.at[0] - r.ap[0], r.at[1] - r.ap[1]) > 40) errs.push(`aparece a ${Math.round(Math.hypot(r.at[0] - r.ap[0], r.at[1] - r.ap[1]))} px de la salida de vuelta «${r.back}» (${r.ap})`);
+        if (errs.length) malC.push(`${tag}: ${errs.join('; ')}`);
+        else console.log(`    ${tag} en ${r.at} (vuelta «${r.back}» en ${r.ap})`);
+      }
+    }
+    ok(!malC.length, `conexiones: ${exits.filter(e => !e.lift).length} salidas y ${lifts.length}×${lifts.length - 1} viajes en ascensor con clic real${malC.length ? '\n      ' + malC.join('\n      ') : ''}`);
   }
 
   if (!args.solo || args.solo === 'geometria') {

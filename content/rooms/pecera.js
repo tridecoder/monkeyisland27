@@ -69,7 +69,7 @@ const MONITORES = [
 
 export default buildRoom({
   id: 'pecera',
-  name: 'La Pecera',
+  name: 'Redacción',
   music: 'm_pecera',
   flags: {
     pecera_figurantes_n: 'int · B · +1 por Mirar figurantes_web (biblia, 8.7, monitores 8.3)',

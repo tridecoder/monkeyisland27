@@ -711,7 +711,7 @@ const epilogo = {
   ruben: [64, 116, 'right'],
   bruno: [112, 124, 'left'],
   inigo_sinergia: { from: [N.ascensor.entrada[0], N.ascensor.entrada[1], 'left'], at: [150, 118, 'right'] },
-  gervasio_acta: { from: [258, 112, 'left'], at: [216, 128, 'left'], salida: [30, 124] },
+  gervasio_acta: { from: [258, 112, 'left'], at: [188, 116, 'left'], salida: [30, 124] },   // ya cruzado el torno, lejos del carril «AVERIADO»
   salida: [10, 118],
   periodicos: [150, 122],
 };

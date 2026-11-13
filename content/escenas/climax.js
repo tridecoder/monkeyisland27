@@ -277,7 +277,7 @@ function insertoTeodoro(game) {
       auricularRojo(g, tx - 9, Math.round(top + 5));
       cableRizado(g, tx - 8, Math.round(top + 15), bx + 17, by + 2);
     }
-    label(g, 'CATACUMBA', x + 3, y - 1, '#f4e4b0');
+    label(g, 'CIERRE', x + 3, y - 1, '#f4e4b0');
     g.restore();
   };
 }

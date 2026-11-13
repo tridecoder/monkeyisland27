@@ -158,7 +158,7 @@ const celestinoDialog = {
 
 export default buildRoom({
   id: 'vestibulo',
-  name: 'Vestíbulo y torno',
+  name: 'Vestíbulo',
   music: 'm_vestibulo',
   dynamic: true,
   flags: {

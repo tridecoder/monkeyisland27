@@ -44,7 +44,7 @@ async function salir(api) {
 
 export default buildRoom({
   id: 'sala_amazonas',
-  name: 'Sala de Reuniones «Amazonas»',
+  name: 'Sala Amazonas',
   music: 'm_sala_amazonas',
   flags: {
     sala_amazonas_climax_visto: 'bool · D · primera entrada del clímax 7.4 · D (versión corta al volver)',

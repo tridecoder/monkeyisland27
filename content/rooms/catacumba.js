@@ -377,7 +377,7 @@ const dueloTeodoro = {
 // ------------------------------------------------------------------ la sala
 export default buildRoom({
   id: 'catacumba',
-  name: 'La Catacumba',
+  name: 'Cierre',
   music: 'm_catacumba',
   flags: {
     catacumba_galeradas_n: 'int · catacumba · +1 por Mirar galeradas (la 2.ª, titular de los áridos, §8.3)',

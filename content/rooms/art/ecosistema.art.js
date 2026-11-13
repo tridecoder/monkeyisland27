@@ -206,10 +206,10 @@ function drawEmbudo(g) {
   kit.micro(g, '?', x + w / 2, y + 28, PAL.white, { align: 'center' });
   rect(g, x + 15, y + 35, 3, 2, PAL.dusk[2]);
   line(g, x + 2, y + 6, x + 2, y + 30, PAL.dusk[4]); poly(g, [[x, y + 29], [x + 5, y + 29], [x + 2, y + 33]], PAL.dusk[4]);
-  // el neón «ECOSISTEMA» (decoración de Marketing): pequeño, sobre el embudo, en fucsia
+  // el neón «MARKETING» (los apodos solo en boca de los personajes): pequeño, sobre el embudo, en fucsia
   rect(g, x - 3, y - 13, 42, 10, PAL.ink[1]); frameRect(g, x - 3, y - 13, 42, 10, PAL.ink[3]);
   glow(g, x + w / 2, y - 8, 26, 7, '#ff4aa8', 0.16, 4);
-  kit.texto(g, 'ECOSISTEMA', x - 3, y - 13, 42, 10, { color: '#ff6ec0', id: 'neón' });
+  kit.texto(g, 'MARKETING', x - 3, y - 13, 42, 10, { color: '#ff6ec0', id: 'neón' });
 }
 /** La pizarra SINERGIA (con su velero) sobre la mesa vacía de Tadeo. */
 function drawPizarra(g) {

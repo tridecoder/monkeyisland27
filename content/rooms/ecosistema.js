@@ -95,7 +95,7 @@ const impresoraPapel = Object.fromEntries(PAPELES.map(i => ['usar:' + i, '«ATAS
 
 export default buildRoom({
   id: 'ecosistema',
-  name: 'El Ecosistema',
+  name: 'Marketing y Comercial',
   music: 'm_ecosistema',
   flags: {
     ecosistema_portatil_cerrado: 'bool · D · Cerrar portátil de Tadeo (Acto III) · D (Mirar portátil, impresora)',
@@ -103,7 +103,7 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'ecosistema_a_pecera', name: 'escalera', exit: { room: 'pecera' }, handlers: {
+    { id: 'ecosistema_a_pecera', name: 'escalera a la Redacción', exit: { room: 'pecera' }, handlers: {
       mirar: 'La escalera de bajada. A Redacción, donde la moqueta es de verdad.',
       usar: async (api) => { api.sfx('door'); await api.goto('pecera', 'ecosistema'); },
       empujar: 'Empujar una escalera es bajar sin decidirlo. Aquí se decide todo en Q3.',

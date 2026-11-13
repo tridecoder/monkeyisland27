@@ -421,7 +421,7 @@ export default {
   // ---------------------------------------------------------------- objetos con carácter (§2.14)
   gertrudis: {
     // LCD verde, SIEMPRE EN MAYÚSCULAS. Es un actor para que su texto salga encima con su color.
-    name: 'Gertrudis', color: '#39FF14', sprite: gertrudisSprite, scale: 1, defaultVerb: 'hablar',
+    name: 'Gertrudis', color: '#39FF14', sprite: gertrudisSprite, scale: 1.5, defaultVerb: 'hablar',
     murmurs: ['PRECALENTANDO RENCOR...', 'LIMPIEZA AUTOMÁTICA: NADIE ME LIMPIA.'],
   },
   lector_medio: {

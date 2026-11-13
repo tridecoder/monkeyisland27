@@ -80,7 +80,7 @@ async function tocarSilla(api) {
 
 export default buildRoom({
   id: 'eventos',
-  name: 'Sala Polivalente',
+  name: 'Eventos',
   music: 'm_eventos',
   flags: {
     eventos_tema_n: 'int · D · eventos · +1 por «¿Y de qué va el evento?» (escala)',

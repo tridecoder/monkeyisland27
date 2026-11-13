@@ -290,7 +290,7 @@ const dueloGervasio = {
 // ------------------------------------------------------------------ la sala
 export default buildRoom({
   id: 'office',
-  name: 'El Office',
+  name: 'Office',
   music: 'm_office',
   flags: {
     office_e51_visto: 'bool · office · Bruno ya comentó el primer E-51 de Gertrudis (§7.7.3)',
@@ -301,7 +301,7 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'office_a_pecera', name: 'puerta de la Pecera', exit: { room: 'pecera' }, handlers: {
+    { id: 'office_a_pecera', name: 'puerta de la Redacción', exit: { room: 'pecera' }, handlers: {
       mirar: 'La Pecera. Se oye teclear "pensiones".',
       abrir: async (api) => { api.sfx('door'); await api.goto('pecera'); },
       usar: async (api) => { api.sfx('door'); await api.goto('pecera'); },
@@ -368,7 +368,7 @@ export default buildRoom({
     } },
     // mueble de plano medio (solo dibujo: tapa lo que queda tras su tablero; sin hotspot)
     { id: 'mesa_alta', name: 'mesa alta', hotspot: false },
-    { id: 'office_a_catacumba', name: 'puerta de TALLERES', exit: { room: 'catacumba' }, handlers: {
+    { id: 'office_a_catacumba', name: 'puerta del Cierre', exit: { room: 'catacumba' }, handlers: {
       mirar: 'Una puerta de madera: "TALLERES". Huele a tinta y a 1994.',
       abrir: async (api) => { api.sfx('door'); await api.goto('catacumba'); },
       usar: async (api) => { api.sfx('door'); await api.goto('catacumba'); },
@@ -469,9 +469,7 @@ export default buildRoom({
   ambient: [],
 
   async onEnter(api) {
-    // Gertrudis es una máquina de 66 px (rediseño): escala 1,5 sobre el sprite de 44 px, solo mientras está en esta sala
-    const ger = api.game.actors[GER];
-    if (ger) ger.scale = 1.5;
+    // (Gertrudis mide 66 px: escala 1,5 en su definición, content/actors.js)
     // sin escenas de entrada: deja pasar los avisos automáticos (adenda §2)
   },
 }, art);

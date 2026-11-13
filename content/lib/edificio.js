@@ -21,7 +21,7 @@ export const ANCHO = {
  *  «Dirección». `placa` ≤ 12 caracteres (fuente del juego); `sub` = segunda línea en microfuente 3×5 (≤ 18). */
 export const SALA = {
   vestibulo: { placa: 'VESTÍBULO', sub: null, depto: null, apodo: null },
-  pecera: { placa: 'REDACCIÓN', sub: 'LA PECERA', depto: 'redaccion', apodo: 'la Pecera' },
+  pecera: { placa: 'REDACCIÓN', sub: null, depto: 'redaccion', apodo: 'la Pecera' },
   office: { placa: 'OFFICE', sub: null, depto: 'office', apodo: null },
   catacumba: { placa: 'CIERRE', sub: 'REDACCIÓN DE PAPEL', depto: 'papel', apodo: 'la Catacumba' },
   pajarera: { placa: 'DIRECCIÓN', sub: null, depto: 'direccion', apodo: null },        // «Pajarera»: solo id interno

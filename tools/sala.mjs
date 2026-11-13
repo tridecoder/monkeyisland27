@@ -101,6 +101,14 @@ try {
     const poses = await G(() => __game.state().poses);
     console.log(`■ ${id} · ${txt}${r.estricto ? ' · REGLAS ESTRICTAS (rediseño)' : ''}`);
     console.log(`  PNJ (cabeza+torso visibles / zona de clic / hablando): ${r.vis.join(' · ') || '—'}${Object.keys(poses).length ? '\n  poses: ' + JSON.stringify(poses) : ''}`);
+    if (r.cerrados.length) console.log(`  walkboxes condicionales cerrados: ${r.cerrados.join(', ')} → al otro lado (a propósito): ${r.condicionales.length ? r.condicionales.join(' · ') : '—'}`);
+    // el torno del vestíbulo: en a0 (cerrado) el núcleo queda al otro lado; desde a1, todo se alcanza
+    if (room === 'vestibulo') {
+      const sep = r.condicionales.filter(c => /desde 'inicio'/.test(c));
+      if (id === 'a0' && !(r.cerrados.includes('paso_torno') && ['ascensor_vestibulo', 'vestibulo_a_redaccion'].every(h => sep.some(c => c.includes(`«${h}»`))))) r.issues.push(`${id} vestibulo: con el torno cerrado, el ascensor y la escalera deberían quedar al otro lado (${sep.join(' · ') || 'nada separado'})`);
+      if (id !== 'a0' && (r.cerrados.length || r.condicionales.length)) r.issues.push(`${id} vestibulo: con el torno abierto todo debe alcanzarse (cerrados: ${r.cerrados.join(', ') || '—'}; separados: ${r.condicionales.join(' · ') || '—'})`);
+      if (!r.issues.length) console.log(`  ✓ torno ${id === 'a0' ? 'cerrado: núcleo inalcanzable desde la calle' : 'abierto: todo alcanzable desde todas las entradas'}`);
+    }
     for (const m of r.issues) { failures++; console.log('  ✗ ' + m); }
     for (const m of r.avisos) console.log('  · aviso: ' + m);
     if (!r.issues.length) console.log(`  ✓ ${r.n} hotspots/PNJ sin errores de geometría`);

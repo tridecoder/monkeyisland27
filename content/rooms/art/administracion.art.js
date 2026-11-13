@@ -205,7 +205,8 @@ function drawRechazadas(g) {
 }
 
 function drawRecorte(g) {
-  // aviso del recorte del 26 % (pista de P11): entero, con la firma «— LA DIRECCIÓN (TAMBIÉN RECORTADA)» en 2 líneas
+  // aviso del recorte del 26 % (pista de P11): entero, con la firma «— ADMINISTRACIÓN (TAMBIÉN RECORTADA)» en 2 líneas
+  // (nunca «LA DIRECCIÓN»: el juego no alude a ninguna dirección de periódico)
   const x = 79, y = 39, w = 78, h = 52;
   dropShadow(g, x, y, w, h, 2, 2, 0.5);
   rect(g, x, y, w, h, PAL.paper[6]); frameRect(g, x, y, w, h, PAL.red[3]); hline(g, x + 1, y + h - 2, w - 2, PAL.paper[4]);
@@ -216,7 +217,7 @@ function drawRecorte(g) {
   kit.texto(g, 'ESTÁNDAR (26 %)', x + 2, y + 20, w - 4, 10, { color: PAL.red[3], fuente: 'juego', pad: 0 });
   kit.texto(g, 'SIN EXCEPCIONES', x + 2, y + 31, w - 4, 6, { color: PAL.ink[1], fuente: 'micro', pad: 0 });
   hline(g, x + 6, y + 37, w - 12, PAL.paper[3]);
-  kit.texto(g, '- LA DIRECCIÓN', x + 2, y + 39, w - 4, 6, { color: PAL.metal[3], fuente: 'micro', pad: 0 });
+  kit.texto(g, '- ADMINISTRACIÓN', x + 2, y + 39, w - 4, 6, { color: PAL.metal[3], fuente: 'micro', pad: 0 });
   kit.texto(g, '(TAMBIÉN RECORTADA)', x + 1, y + 44, w - 2, 6, { color: PAL.metal[3], fuente: 'micro', pad: 0 });
   pin(g, x + 3, y + 4, PAL.metal[7]); pin(g, x + w - 4, y + 4, PAL.metal[7]);
   // el aviso ya está recortado por abajo: borde dentado

@@ -43,7 +43,7 @@ const hablarEvaristo = async (api) => {
 
 export default buildRoom({
   id: 'administracion',
-  name: 'Administración, «La Ventanilla»',
+  name: 'Administración',
   music: 'm_administracion',
   flags: {
     administracion_pared_n: 'int · D · administracion · +1 por Mirar pared_rechazadas · D (rotación)',
@@ -83,7 +83,7 @@ export default buildRoom({
       'usar:copias_rechazadas': 'Las mías no son de pared. Son de archivo personal. Lo dijo ella.',
     } },
     { id: 'cartel_recorte', name: 'cartel del recorte', handlers: {
-      mirar: async (api) => { await api.say(['«TODA PIEZA O NOTA SUFRE EL RECORTE ESTÁNDAR (26 %). SIN EXCEPCIONES».', '«Firmado: la Dirección (también recortada)».']); },
+      mirar: async (api) => { await api.say(['«TODA PIEZA O NOTA SUFRE EL RECORTE ESTÁNDAR (26 %). SIN EXCEPCIONES».', '«Firmado: Administración (también recortada)».']); },
       coger: 'Si lo quito, el cartel sufre el recorte. Un 26 % de cartel no se entiende.',
       tirar: 'Tiro de una esquina. Se recorta sola. Un 26 %. Exacto.',
     } },

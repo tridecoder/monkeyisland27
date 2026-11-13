@@ -211,7 +211,7 @@ const REJILLA = [
 
 export default buildRoom({
   id: 'cpd',
-  name: 'Sistemas y CPD',
+  name: 'Sistemas',
   music: 'm_cpd',
   flags: {
     cpd_cms_sumado: 'bool · ya se sumaron los +318 tickets del CMS (primera entrada tras cms_vivo)',
