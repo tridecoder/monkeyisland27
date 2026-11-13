@@ -77,6 +77,14 @@ export function makeApi(game, ctx = {}) {
         try { if (ok !== false || game.instant) await fn(api); }
         finally { await Phone.close(game); }
       },
+      /** MODO APLICACIÓN (sin llamada): abre o cambia la pantalla del móvil { title, rows: [{ text, sub, dot, icon, color }], body }. */
+      app: (screen) => Phone.app(game, ctx, screen),
+      /** Un globo anclado al móvil (p. ej. el texto de un correo), de `who` (id de actor o null). */
+      read: async (who, text, opts = {}) => {
+        if (!game.phone) { game.error('phone.read: el móvil no está abierto'); return; }
+        const lines = Array.isArray(text) ? text : [text];
+        for (const l of lines) { if (gone()) return; await game.speak(who && game.actors[who] ? who : null, l, { blocking, ...Phone.anchor(game), who: who || 'movil', ...opts }); }
+      },
       get active() { return !!game.phone; },
       get caller() { return game.phone ? game.phone.caller : null; },
     },
@@ -212,7 +220,8 @@ export function makeApi(game, ctx = {}) {
     // flow
     goto: (room, entry) => game.enterRoom(room, entry),
     dialog: (id, node) => { game.sceneTicks = (game.sceneTicks || 0) + 1; return game.dialog(id, node, api); },
-    choose: (options) => game.choose(options),
+    /** opts.escape = índice que elige Esc o un toque fuera del panel (p. ej. «Guardar el móvil»). */
+    choose: (options, opts) => game.choose(options, opts),
     duel: (id) => { game.sceneTicks = (game.sceneTicks || 0) + 1; return game.duel(id, api); },
     pickItem: (prompt) => game.pickItem(prompt),
     scene: (name, ...args) => {
@@ -238,8 +247,13 @@ export function makeApi(game, ctx = {}) {
             } else await api.narrate(l);
           }
         }
-        if (!opts.lines && typeof body !== 'function') await Detalle.hold(game, opts.ms ?? 1800);
-        else if (opts.ms) await Detalle.hold(game, opts.ms);
+        // el plano no se cierra antes de que dé tiempo a leer lo que enseña (su rótulo + `texto`, si lo pinta): lo que
+        // falte se espera (un clic lo salta); sin líneas ni cuerpo, `ms` (y nunca menos que eso)
+        const leer = [opts.titulo, opts.texto].filter(Boolean).join(' ');
+        const minMs = leer ? game.timedMs('detalle', leer, opts.ms || 0) : (opts.ms || 0);
+        const abierto = game.time - D.t0;
+        if (!opts.lines && typeof body !== 'function') await Detalle.hold(game, Math.max(opts.ms ?? 1800, minMs));
+        else if (minMs > abierto) await Detalle.hold(game, minMs - abierto);
       } finally { if (game.detalle === D) Detalle.close(game); }
     },
     /** Alias del plano detalle con el nombre de la propuesta (M2). */

@@ -295,6 +295,11 @@ function drawTitulator(g, view, t) {
     kit.cantoVivo(g, x + 8, y, 18, 6);
     return;
   }
+  // ya vista la súplica y mientras Rubén siga dentro: cada 15 s, 2,6 s de «AYÚDAME / ARMARIO / 27» en rojo
+  if (view.flag('vio_armario_27') && !view.flag('ruben_encontrado') && (t % 15000) > 12400) {
+    laptop(g, t, ['AYÚDAME', 'ARMARIO', '27'], '#ff4a3a', true);
+    return;
+  }
   const k = Math.floor(t / 2600) % TITULARES.length;
   const glitch = (Math.floor(t / 7000) % 5) === 4 && (t % 7000) < 400;
   laptop(g, t, glitch ? null : TITULARES[k], '#B6FF4D', glitch);

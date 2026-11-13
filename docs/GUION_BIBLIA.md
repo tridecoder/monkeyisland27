@@ -148,7 +148,7 @@ La partida empieza un viernes a las 18:30 y **a esa hora ya se ha ido casi todo 
 | Marketing | Borja Engagement |
 | Eventos | Pilar Escaleta (adenda §13) |
 | Sistemas | Paco Ticket |
-| Desarrollo | Nerea Backlog |
+| Desarrollo | Nemesio Backlog |
 | Comercial | Maripaz Remitido |
 | Otros | Celestino (conserje), Íñigo Sinergia (villano), Rubén (la «IA»), abuela Remedios (teléfono); y el Lector Medio, de cartón (no es PNJ) |
 
@@ -189,10 +189,10 @@ La partida empieza un viernes a las 18:30 y **a esa hora ya se ha ido casi todo 
 - **Da:** réplica `rep_08` (tras `cms_vivo`). En el epílogo, la revelación de la lectora.
 - **Quiere:** que la gráfica suba. Si no puede ser, que alguien la mire.
 
-### 2.3 `nerea_backlog` — Nerea Backlog
+### 2.3 `nerea_backlog` — Nemesio Backlog
 - **Departamento / sala:** Desarrollo · rincón de Desarrollo de la `pecera`.
-- **Aspecto:** cuarenta y tantos, pelo rizado recogido con un lápiz, chaleco de punto mostaza, pósits pegados en la manga, rotulador sin capuchón detrás de la oreja. **Color: `#7FE08A`**.
-- **Voz/tic:** si algo no está en el tablero, no existe. Siente un cariño maternal por los pósits viejos. Solo se fía del calendario de papel de una ferretería.
+- **Aspecto:** cuarenta y tantos, pelo de punta y barba de tres días, chaleco de punto mostaza, pósits pegados en la manga, rotulador sin capuchón detrás de la oreja. **Color: `#7FE08A`**. (Hasta el encargo de dirección «Desarrollo, solo hombres» se llamaba Nerea; el id `nerea_backlog` se conserva.)
+- **Voz/tic:** si algo no está en el tablero, no existe. Siente un cariño paternal por los pósits viejos. Solo se fía del calendario de papel de una ferretería.
 - **Muestras:**
   - «Si vienes a pedirme algo, está en el tablero.» // «Si no está en el tablero, no existe.»
   - «El CMS no es nuestro, es de Sistemas.» (y Paco dice lo contrario)
@@ -413,7 +413,7 @@ flowchart LR
 | Sala | Acto I | Acto II | Acto III | Epílogo |
 |---|---|---|---|---|
 | `vestibulo` | Celestino | Celestino | Celestino | Celestino, Rubén, Íñigo (con su caja), Gervasio |
-| `pecera` | Yoli, Nerea, Leoncio, Anselmo, Valentín, Custodia (Secretaría) (+ Íñigo en la presentación) | ídem | ídem; Rubén en la ventana si `ruben_libre` | Yoli, Bruno, el coro; poscréditos: Ramírez y el Lector Medio caído |
+| `pecera` | Yoli, Nemesio, Leoncio, Anselmo, Valentín, Custodia (Secretaría) (+ Íñigo en la presentación) | ídem | ídem; Rubén en la ventana si `ruben_libre` | Yoli, Bruno, el coro; poscréditos: Ramírez y el Lector Medio caído |
 | `office` | Gertrudis | Gertrudis | Gertrudis, **Gervasio** | — |
 | `catacumba` | Teodoro, Aurora | Teodoro, Aurora | Teodoro, Aurora | Aurora (créditos) |
 | `pajarera` | Íñigo (sofá), Lector Medio | Íñigo, Lector Medio; Gervasio en su mesa si `reunion_terminada` | vacía (todos en la Sala) | — |
@@ -459,14 +459,14 @@ flowchart LR
 > puerta del Vending x 136-166); la ZONA DE PAPEL (x 170-310): la **Secretaría de Redacción** de Custodia (ventanuco con
 > persiana, timbre «NO», cartel «EL MATERIAL NO SE PIDE. SE MERECE.», x 174-220) y la **puerta doble abierta a la Redacción
 > de papel** (x 236-296, placa «1 REDACCIÓN / DE PAPEL · CIERRE», umbral de latón: la frontera de la guerra fría); luego
-> Web (Yoli), Economía (Bruno, Ramírez), Infografía (Leoncio, Herminia), la cinta en el suelo, Desarrollo (kanban, Nerea,
+> Web (Yoli), Economía (Bruno, Ramírez), Infografía (Leoncio, Herminia), la cinta en el suelo, Desarrollo (kanban, Nemesio,
 > el coro, Anselmo) y Diseño y Producto (Valentín, el ventanal). La descripción de abajo es la original de la biblia.
 
 **Fondo (800×144, scroll horizontal):** de izquierda a derecha.
 - **0-80 px:** la **escalera que baja al vestíbulo** (planta 0): hueco en la pared, rellano a ras de suelo, barandilla que se hunde y rótulo «↓ VESTÍBULO · PLANTA 0». *(Revisión de dirección: la Redacción está en la planta 1; ya no hay puerta de cristal con el torno detrás. Ver el mapa de §3.0 y la adenda §14.)*
 - **80-260 px:** filas de mesas con monitores dobles llenos de gráficas, casi todas **vacías**: sillas con la chaqueta colgada y pantallas encendidas sin nadie (1.4b); dos figurantes al fondo tecleando. En la pared, una **pantalla gigante** «LECTORES CONCURRENTES: 3.418» con una línea roja que baja. Debajo, en el zócalo, una regleta y un **enchufe** con cinta de carrocero: «NO DESENCHUFAR – PANTALLA DE DIRECCIÓN».
 - **260-420 px:** la mesa de **Yoli** (tres monitores, un colirio, pósit «KEYWORD DEL DÍA»); al lado, la **mesa de Bruno** (monitor viejo con un pósit «Bruno Pellizco», **sin silla**); pegada a ella, la mesa vacía de Ramírez con **la única silla libre**, que tiene colgada una **chaqueta beige**. Una taza abandonada en una mesa. Al fondo, en el centro, la **puerta de cristal de la Pajarera** (se ven las persianas a media altura) y la puerta con letrero «VENDING».
-- **420-600 px:** **rincón de Desarrollo**: la mesa de Nerea; una **pizarra kanban** con ruedas (columnas POR HACER · EN CURSO · BLOQUEADO · HECHO · HECHO (PERO NO)), con un pósit amarillísimo y viejo en la última columna; un **calendario de papel** de «Ferretería Hermanos Tornillo» en la pared; al fondo, la **ventana** con la ciudad de noche; en el extremo derecho, una **escalera** que sube con el cartel «PLANTA 2 – COMERCIAL · MARKETING · ADMINISTRACIÓN».
+- **420-600 px:** **rincón de Desarrollo**: la mesa de Nemesio; una **pizarra kanban** con ruedas (columnas POR HACER · EN CURSO · BLOQUEADO · HECHO · HECHO (PERO NO)), con un pósit amarillísimo y viejo en la última columna; un **calendario de papel** de «Ferretería Hermanos Tornillo» en la pared; al fondo, la **ventana** con la ciudad de noche; en el extremo derecho, una **escalera** que sube con el cartel «PLANTA 2 – COMERCIAL · MARKETING · ADMINISTRACIÓN».
 
 - **600-800 px (ampliación):** **Diseño y Producto**: la bandeja de entregas, el puesto de **Valentín Retícula** (cameo, adenda §1.9) a dos metros del coro de Desarrollo, el **ascensor** y la escalera a la planta 2 («MARKETING · EVENTOS · COMERCIAL · ADMINISTRACIÓN»).
 
@@ -480,14 +480,14 @@ flowchart LR
 | `ordenador_bruno` | Sin `silla_libre`: «Mi ordenador. De pie no se ve. Sin silla soy un becario de pie.» · Con `silla_libre`: «Bandeja de entrada. Un hilo de 2019.» // «Ramírez: "Quedo a la espera de tus comentarios".» // «Respuesta: "Espera sentado. Si encuentras silla". Me la apunto.» → `rep_11`. // «Y una autorrespuesta de Rubén, de Sistemas:» // «"Estoy fuera de la oficina desde julio".» // «"Bueno, fuera no. Dentro. Muy dentro".» | **Usar** sin `silla_libre`: «Sin silla no hay ordenador. Lo dice la ergonomía y lo dice Begoña.» · Con `silla_libre` y sin `casilla_fuente`: «Abro un documento en blanco. Me mira. Sin fuentes no escribo.» · Con `casilla_fuente` y sin `pieza_escrita`: **P10b** → `pieza_opa` (31 líneas), `pieza_escrita`. «Lo escribo fuera del CMS: ahí dentro vive el Titulator.» // «Treinta y una líneas. Sin adjetivos. Bueno, con uno.» · Con `pieza_escrita`: «Ya está escrita. Si la toco más, le salen adjetivos.» |
 | `silla_ramirez` | Con chaqueta: «La única silla libre. Tiene una chaqueta: Ramírez, el de Bolsa.» // «Bajó a desayunar en 2019. No ha vuelto.» · Sin chaqueta: «Una silla. Libre. Me tiembla algo que no sabía que tenía.» | **Usar** con la chaqueta puesta: «No. Chaqueta en silla es propiedad privada. Lo sabe todo el mundo.» · Con `chaqueta_ramirez` en el inventario: «Si me siento con su chaqueta en la mano, Ramírez vuelve. Es tradición.» · Con `silla_libre`: «La arrimo a mi mesa. Primera silla en seis años. Huele a 2019.» |
 | `chaqueta_ramirez_hotspot` (solo mientras está en la silla) | «Chaqueta beige de entretiempo. Del bolsillo asoma un sobre de azúcar.» | **Coger:** YOLI: «¡Quieto! Una chaqueta en una silla es propiedad.» // YOLI: «Si la quitas, que sea para dejarla en un sitio con más autoridad.» → Bruno la coge igual: `chaqueta_ramirez` y `sobre_azucar` al inventario, `chaqueta_cogida`. «Del bolsillo cae un sobre de azúcar. Me lo quedo. Todo aquí es de 2019.» |
-| `kanban` | «Columnas: POR HACER, EN CURSO, BLOQUEADO, HECHO y HECHO (PERO NO).» · Acto III, antes de `posit_descopeado`: «En POR HACER, desde julio: "Baja becario Rubén".» · Después: «En el hueco, un pósit nuevo: "Aquí estuvo Rubén. Descopeado con amor".» | **Coger** (cualquier pósit): NEREA: «Ni se te ocurra. Un pósit solo sale del tablero hecho o muerto.» |
+| `kanban` | «Columnas: POR HACER, EN CURSO, BLOQUEADO, HECHO y HECHO (PERO NO).» · Acto III, antes de `posit_descopeado`: «En POR HACER, desde julio: "Baja becario Rubén".» · Después: «En el hueco, un pósit nuevo: "Aquí estuvo Rubén. Descopeado con amor".» | **Coger** (cualquier pósit): NEMESIO: «Ni se te ocurra. Un pósit solo sale del tablero hecho o muerto.» |
 | `posit_1998` | «Un pósit amarillísimo: "Contratar al becario de marzo – 1998".» // «Está en HECHO (PERO NO). Nadie lo hizo.» | — (siembra del guiño del epílogo) |
-| `calendario_ferreteria` | «Calendario de Ferretería Hermanos Tornillo. Nerea solo se fía de este.» // «Trae santoral, fases de la luna y una oferta de tacos del 8.» | **Tirar:** NEREA: «¡Quieto! Es la única fuente fiable de este departamento.» |
+| `calendario_ferreteria` | «Calendario de Ferretería Hermanos Tornillo. Nemesio solo se fía de este.» // «Trae santoral, fases de la luna y una oferta de tacos del 8.» | **Tirar:** NEMESIO: «¡Quieto! Es la única fuente fiable de este departamento.» |
 | `ventana` | «Ahí fuera hay un mundo real. Bajísimo tiempo de permanencia.» | **Abrir:** «No se abre. El aire acondicionado lo consideraría una amenaza.» |
 | `taza_abandonada` | «Una taza con costra de café de la crisis de la deuda. Debería cotizar.» | **Coger:** «Es de alguien. O de algo que ahora vive en ella.» |
 | `figurantes_web` | «Dos redactores. Teclean desde las tres. Uno escribe "pensiones" en bucle.» | **Hablar:** «Ni me miran. Están en directo desde 2020.» |
 | `yoli_tendencias` (PNJ) | «Yoli, audiencias. Le tiembla el párpado al ritmo de la gráfica.» | **Hablar:** árbol 7.7.2. |
-| `nerea_backlog` (PNJ) | «Nerea, Desarrollo. Mueve pósits con precisión de cirujana.» | **Hablar:** árbol 7.6.3. · **Dar `album_eventos`:** entra en el nodo N_ALBUM del árbol. |
+| `nerea_backlog` (PNJ) | «Nemesio, Desarrollo. Mueve pósits con precisión de cirujano.» | **Hablar:** árbol 7.6.3. · **Dar `album_eventos`:** entra en el nodo N_ALBUM del árbol. |
 | `ruben` (PNJ, si `ruben_libre`) | «Rubén mira por la ventana. Espera al sol como quien espera una nómina.» | **Hablar:** «Estoy esperando a que salga el sol. Me han dicho que existe.» |
 
 ---
@@ -695,7 +695,7 @@ flowchart LR
 | 13 | `manual_fax` | Manual del fax | Paco, con `cms_vivo` (árbol 7.6.4) | «Manual del fax de la Catacumba. Página 9: "Respuesta automática".» // «Las demás páginas son fotos del fax. Posando.» | **[Usar objeto]** en el remate del duelo D2 (P12). No se gasta. |
 | 14 | `pieza_opa` | Mi exclusiva | `ordenador_bruno` (P10b) | Sin `pieza_recortada`: «Mi exclusiva. Treinta y una líneas. El faldón tiene veintitrés.» · Con: «Veintitrés líneas exactas. Begoña ha quitado la conclusión.» // «Y una coma que le caía mal.» | Dar a `begona_triplicado` (P11). Dar a `teodoro_cuerpodoce` junto con la ficha (P12). **Se gasta en el cierre.** |
 | 15 | `album_eventos` | Álbum de Eventos | Pilar (Eventos), con `ruben_encontrado` (adenda §13.2) | «En todas las fotos, al fondo, Rubén. Cena de Navidad, presentación, photocall.» // «Siempre yendo al baño. Siempre con un táper.» | Dar a `nerea_backlog` (P14). **Se gasta** («Se lo devuelvo yo a Pilar. Con acuse de recibo.»). |
-| 16 | `posit_baja_ruben` | Pósit «Baja becario Rubén» | Nerea, al descopear (P14) | «"Baja becario Rubén". Descopeado. Es el pósit más importante de mi vida.» | Dar a `paco_ticket` (P14). **Se gasta.** |
+| 16 | `posit_baja_ruben` | Pósit «Baja becario Rubén» | Nemesio, al descopear (P14) | «"Baja becario Rubén". Descopeado. Es el pósit más importante de mi vida.» | Dar a `paco_ticket` (P14). **Se gasta.** |
 | 17 | `ticket_n1` | Ticket nº 1 | Paco, al cerrar la baja (P14) | «Ticket nº 1: "Alta becario Rubén". Asignado a: Titulator 3000.» // «Estado: CERRADO. El primer ticket que cierra Paco en su vida.» | **[Usar objeto]** en el remate A del duelo D4 (P16). |
 | 18 | `acta_reunion` | Acta de la reunión | Gervasio, al perder el duelo D3 (P15) | «Acta de la última Reunión de Dirección: "1. Pedir más café. 2. Nada más".» // «La primera acta en diecinueve años. Tiene dos faltas. Aurora lloraría.» | **[Usar objeto]** en el remate B del duelo D4 (P16). |
 
@@ -736,7 +736,7 @@ flowchart LR
 **P05 · La pantalla que tumba el CMS** — `cpd` + `pecera`
 - **Precondiciones:** `torno_abierto`.
 - **Acciones:** (a) **Mirar `registro_tickets`** (CPD) → `vio_ticket_3`. (b) **Tirar de `enchufe_pantalla`** (Pecera).
-- **Resultado:** `cms_vivo`. La pantalla gigante se apaga; YOLI: «¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?» // YOLI: «...Ha entrado una pieza. Y otra. ¿El CMS va?» `paco_tickets` +318. Paco pasa a atender (árbol 7.6.4), Yoli y Nerea abren opciones nuevas.
+- **Resultado:** `cms_vivo`. La pantalla gigante se apaga; YOLI: «¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?» // YOLI: «...Ha entrado una pieza. Y otra. ¿El CMS va?» `paco_tickets` +318. Paco pasa a atender (árbol 7.6.4), Yoli y Nemesio abren opciones nuevas.
 - **Pista justa:** PACO (sin `cms_vivo`): «¿Por qué no va? Si lo supiera, tendría 311 tickets.» // «Está todo en el registro. Nadie lo lee.» Mirar la pantalla: «Se refresca cada segundo.»
 
 **P06 · La reunión infinita** — `sala_amazonas`
@@ -791,7 +791,7 @@ flowchart LR
 - **Precondiciones:** `ruben_encontrado`.
 - **Acciones:** (a) Hablar `pilar_escaleta` (Eventos) → «¿Me prestas el álbum?» → `album_eventos`, `oyo_descopear`. (b) **Dar `album_eventos` a `nerea_backlog`** → opción **«¿Y si... lo descopeamos?»** → `posit_baja_ruben`, `posit_descopeado`. (c) **Dar `posit_baja_ruben` a `paco_ticket`** → `ticket_n1`, `ruben_libre`.
 - **Resultado:** se gastan álbum y pósit; Rubén sale del armario y se va a la ventana de la Pecera.
-- **Pista justa:** RUBÉN: «Nerea no mueve un pósit sin pruebas de que el becario existió.» // «Nadie me ha hecho nunca una foto. Bueno, la de Eventos. Pero salgo al fondo.» NEREA: «Un pósit solo sale hecho o muerto.» BORJA, que lo oye desde Marketing y **se asoma por la puerta de la Sala Polivalente** cuando Pilar presta el álbum: «Hemos descopeado la ética del Q3.» (Borja, en el Ecosistema, también remite a Pilar: «Pídeselo a Pilar.»; la abuela, sin `oyo_descopear`: «Las fotos de las fiestas las guarda la que las organiza.»)
+- **Pista justa:** RUBÉN: «Nemesio no mueve un pósit sin pruebas de que el becario existió.» // «Nadie me ha hecho nunca una foto. Bueno, la de Eventos. Pero salgo al fondo.» NEMESIO: «Un pósit solo sale hecho o muerto.» BORJA, que lo oye desde Marketing y **se asoma por la puerta de la Sala Polivalente** cuando Pilar presta el álbum: «Hemos descopeado la ética del Q3.» (Borja, en el Ecosistema, también remite a Pilar: «Pídeselo a Pilar.»; la abuela, sin `oyo_descopear`: «Las fotos de las fiestas las guarda la que las organiza.»)
 
 **P15 · El acta: duelo con Gervasio** — `office`
 - **Precondiciones:** `acto_3_iniciado`.
@@ -830,7 +830,7 @@ flowchart TD
   P12 --> A3([Acto III 7.3a])
   A3 --> P13[P13 Tirar papel continuo · Rubén]
   A3 --> P15[P15 Duelo Gervasio · acta]
-  P13 --> P14[P14 Álbum → Nerea → Paco · ticket nº 1]
+  P13 --> P14[P14 Álbum → Nemesio → Paco · ticket nº 1]
   P14 --> P16[P16 Duelo Íñigo + empujar al Lector Medio]
   P15 --> P16
   P16 --> FIN([Final y créditos 7.5])
@@ -908,7 +908,7 @@ Todos booleanos salvo los marcados `int`. **Paquete** = quién lo implementa (se
 | `chaqueta_en_lector` | bool | B · pajarera · P04b | B (sprite y Mirar del Lector Medio) · D (sprite del Lector Medio en la Sala, Acto III) · D (poscréditos) |
 | `silla_libre` | bool | B · pajarera · P04b | B (`ordenador_bruno`, `silla_ramirez`) · pistas |
 | `vio_ticket_3` | bool | A · cpd · Mirar registro_tickets | B (`enchufe_pantalla`) · pistas |
-| `cms_vivo` | bool | B · pecera · P05b | A (árbol de Paco, contador) · B (Yoli, Nerea, pantalla) · pistas |
+| `cms_vivo` | bool | B · pecera · P05b | A (árbol de Paco, contador) · B (Yoli, Nemesio, pantalla) · pistas |
 | `gertrudis_saludada` | bool | C · office · primer «Buenas noches» | C · pistas |
 | `chisme_indice` | int | C · office · +1 por saludo | C |
 | `gertrudis_error_indice` | int | C · office · +1 por «Un café, por favor» | C |
@@ -932,8 +932,8 @@ Todos booleanos salvo los marcados `int`. **Paquete** = quién lo implementa (se
 | `acto_3_iniciado` | bool | C · catacumba · P12b | A (`papel_continuo`, `armario_27`) · B (`puerta_sala` OCUPADO; Pajarera vacía) · C (Gervasio en el Vending; Aurora A6) · D (Sala del clímax) · pistas |
 | `vio_armario_27` | bool | B · pajarera · 3.ª Mirar a `pantalla_titulator` | B (Íñigo I4) · pistas |
 | `titulator_mirar_n` | int | B · pajarera · +1 por Mirar | B |
-| `ruben_encontrado` | bool | A · cpd · P13 | A · D (Pilar presta el álbum; `album_eventos_hotspot`) · B (Nerea N4) · pistas |
-| `oyo_descopear` | bool | D · eventos · Pilar «¿Me prestas el álbum?» (Borja se asoma y dice «descopear») | B (opción «¿Y si... lo descopeamos?» de Nerea) |
+| `ruben_encontrado` | bool | A · cpd · P13 | A · D (Pilar presta el álbum; `album_eventos_hotspot`) · B (Nemesio N4) · pistas |
+| `oyo_descopear` | bool | D · eventos · Pilar «¿Me prestas el álbum?» (Borja se asoma y dice «descopear») | B (opción «¿Y si... lo descopeamos?» de Nemesio) |
 | `posit_descopeado` | bool | B · pecera · P14b | B (Mirar kanban) |
 | `ruben_libre` | bool | A · cpd · P14c | B (Rubén en la Pecera; `puerta_sala`) · A (armario vacío) · D (escena 7.4) · pistas |
 | `duelo_gervasio_ganado` | bool | C · office · fin D3 | C |
@@ -1013,7 +1013,7 @@ En esta casa los conflictos no se resuelven a gritos: alguien dice **«Te lo pon
 | R06 | «¿Esto lo has contrastado?» | «Con dos fuentes y media. La media dijo "yo no te he dicho nada".» | `rep_06` | Mirar `fax_enmarcado` | catacumba | D2 |
 | R07 | «Me consta que esto ya lo hablamos.» | «A ti te consta. A mí me consta que hablabas tú.» | `rep_07` | Mirar `ordenador_gervasio` (Enviados) | pajarera | D3, D4 |
 | R08 | «Te escribo desde el más absoluto cariño.» | «Y yo te leo desde el más absoluto modo avión.» | `rep_08` | Yoli, opción Y2 (con `cms_vivo`) | pecera | D1 |
-| R09 | «Ese dato está sacado de contexto.» | «Dame el contexto y lo pongo en el subtítulo, que ahí no lo lee nadie.» | `rep_09` | Nerea, opción N3 (con `cms_vivo`) | pecera | D2 |
+| R09 | «Ese dato está sacado de contexto.» | «Dame el contexto y lo pongo en el subtítulo, que ahí no lo lee nadie.» | `rep_09` | Nemesio, opción N3 (con `cms_vivo`) | pecera | D2 |
 | R10 | «Estamos analizando todas las opciones.» | «O sea, que no sabéis qué hacer, pero en tabla dinámica.» | `rep_10` | Gertrudis, chisme nº 3 | office | D4 |
 | R11 | «Quedo a la espera de tus comentarios.» | «Espera sentado. Si encuentras silla.» | `rep_11` | Mirar `ordenador_bruno` (con `silla_libre`) | pecera | D1 |
 | R12 | «Hay que poner las luces largas.» | «Las pongo, pero el coche es de empresa y no pasa la ITV.» | `rep_12` | Paco, opción P3 (con `cms_vivo`) | cpd | D4 |
@@ -1027,7 +1027,7 @@ En esta casa los conflictos no se resuelven a gritos: alguien dice **«Te lo pon
 | nº | Pantalla 1 | Pantalla 2 | Aprende |
 |---|---|---|---|
 | 1 | «CHISME: EL DE BOLSA A YOLI: "ESTO LO NECESITABA PARA AYER".» | «YOLI: "AYER ESTABA CON LO DE ANTEAYER. PÍDESELO A MAÑANA, QUE ESTÁ LIBRE".» | `rep_03` |
-| 2 | «CHISME: GERVASIO A NEREA: "ES QUE TÚ ERES LA QUE MEJOR ESCRIBE".» | «NEREA: "Y TÚ EL QUE MEJOR DELEGA. CADA UNO CON SU DON".» | `rep_04` |
+| 2 | «CHISME: GERVASIO A NEMESIO: "ES QUE TÚ ERES EL QUE MEJOR ESCRIBE".» | «NEMESIO: "Y TÚ EL QUE MEJOR DELEGA. CADA UNO CON SU DON".» | `rep_04` |
 | 3 | «CHISME: ÍÑIGO A PACO: "ESTAMOS ANALIZANDO TODAS LAS OPCIONES".» | «PACO: "O SEA, QUE NO SABÉIS QUÉ HACER, PERO EN TABLA DINÁMICA".» | `rep_10` |
 | 4 | «CHISME: MARIPAZ A BORJA: "ESTO LO PODEMOS VER EN UNA REUNIÓN RÁPIDA".» | «BORJA: "O EN UN CORREO DE UNA LÍNEA. ESTE. DE NADA".» | `rep_14` |
 | 5+ (rotan) | «CHISME: EL MICROONDAS Y YO NO NOS HABLAMOS. ÉL SABE POR QUÉ.» · «CHISME: LA PLANTA DEL VESTÍBULO ES DE PLÁSTICO. NO SE LO DIGÁIS.» · «CHISME: TEODORO DUERME AQUÍ. LA ROTATIVA LO SABE Y CALLA.» | — | — |
@@ -1175,9 +1175,9 @@ BRUNO: Bruno Pellejo. Becario senior. Senior en becario.
 ÍÑIGO: Te tengo en la matriz, Vacante. Cuadrante "Ideal". No te muevas.
 (Íñigo sale hacia la Pajarera.)
 YOLI: ¿Pósit rosa? El rosa es "emociones". Te ha clasificado como emoción.
-NEREA (desde su rincón): El CMS no es nuestro, es de Sistemas.
+NEMESIO (desde su rincón): El CMS no es nuestro, es de Sistemas.
 YOLI: ¡Paco dice que es vuestro!
-NEREA: Paco dice muchas cosas. Por ticket.
+NEMESIO: Paco dice muchas cosas. Por ticket.
 (→ inigo_presentado)
 ```
 
@@ -1233,9 +1233,9 @@ BRUNO: Llevo seis años.
 RUBÉN: Ah. Yo, cuatro meses. Entonces el nuevo soy yo.
 RUBÉN: (pausa) Qué ilusión. Nunca había sido el nuevo de nada.
 BRUNO: Sal de ahí. Vámonos.
-RUBÉN: No puedo. Mi baja es un pósit en el tablero de Nerea. Desde julio.
+RUBÉN: No puedo. Mi baja es un pósit en el tablero de Nemesio. Desde julio.
 RUBÉN: Si salgo sin baja, Íñigo me factura las horas de sol.
-RUBÉN: Y Nerea no mueve un pósit sin pruebas de que el becario existió.
+RUBÉN: Y Nemesio no mueve un pósit sin pruebas de que el becario existió.
 RUBÉN: Nadie me ha hecho nunca una foto.
 RUBÉN: (pausa) Bueno. La de Eventos. Pero salgo al fondo. Yendo al baño.
 RUBÉN: ¿Me traes un táper, ya que vas?
@@ -1538,58 +1538,58 @@ Formato: `[NODO] condición` · opciones numeradas · `→` salto · `{efecto}`.
   (Si se le da la pieza ya recortada: BEGOÑA: Recortar dos veces es de Marketing.)
 ```
 
-#### 7.6.3 `nerea_backlog` — Nerea (pecera, rincón de Desarrollo)
+#### 7.6.3 `nerea_backlog` — Nemesio (pecera, rincón de Desarrollo)
 
 ```
 [N0]
   si !cms_vivo:
-    NEREA: El CMS no es nuestro, es de Sistemas. Y no, no tengo un momento.  → FIN
+    NEMESIO: El CMS no es nuestro, es de Sistemas. Y no, no tengo un momento.  → FIN
   si cms_vivo:
-    NEREA: Si vienes a pedirme algo, está en el tablero.
-    NEREA: Si no está en el tablero, no existe.
+    NEMESIO: Si vienes a pedirme algo, está en el tablero.
+    NEMESIO: Si no está en el tablero, no existe.
   1. «¿Qué es ese pósit tan amarillo?»
-     NEREA: "Contratar al becario de marzo, 1998". Alguien lo movió a HECHO (PERO NO).
-     NEREA: Nadie lo hizo. Le tenemos cariño.  → N0
+     NEMESIO: "Contratar al becario de marzo, 1998". Alguien lo movió a HECHO (PERO NO).
+     NEMESIO: Nadie lo hizo. Le tenemos cariño.  → N0
   2. «¿Por qué un calendario de ferretería?»
-     NEREA: El del ordenador miente. Este no: trae santoral y tacos del 8.  → N0
+     NEMESIO: El del ordenador miente. Este no: trae santoral y tacos del 8.  → N0
   3. «¿Qué tal con Yoli?»
-     NEREA: Me dijo que mi dato de tráfico estaba "sacado de contexto".
-     NEREA: Le contesté: "Dame el contexto y lo pongo en el subtítulo".
-     NEREA: "Que ahí no lo lee nadie". No hemos vuelto a comer juntas.
-     NEREA: Bueno, ella no come. Mide.  {rep_09}  → N0
+     NEMESIO: Me dijo que mi dato de tráfico estaba "sacado de contexto".
+     NEMESIO: Le contesté: "Dame el contexto y lo pongo en el subtítulo".
+     NEMESIO: "Que ahí no lo lee nadie". No hemos vuelto a comer juntos.
+     NEMESIO: Bueno, ella no come. Mide.  {rep_09}  → N0
   4. [ruben_encontrado Y !album_eventos Y !posit_descopeado] «Necesito la baja de Rubén.»
-     NEREA: ¿Rubén? (busca) Ah. "Baja becario Rubén". Por Hacer. Desde julio.
-     NEREA: Un pósit solo sale del tablero de dos formas: hecho o muerto.
-     NEREA: Y para darlo por hecho necesito pruebas de que el becario existió.
-     NEREA: No sale en ninguna foto, ninguna acta, ningún sitio. Es como tú.  → N0
+     NEMESIO: ¿Rubén? (busca) Ah. "Baja becario Rubén". Por Hacer. Desde julio.
+     NEMESIO: Un pósit solo sale del tablero de dos formas: hecho o muerto.
+     NEMESIO: Y para darlo por hecho necesito pruebas de que el becario existió.
+     NEMESIO: No sale en ninguna foto, ninguna acta, ningún sitio. Es como tú.  → N0
   5. [lleva album_eventos] «Mira este álbum.»  → N_ALBUM
   6. «Nada, ya me voy.»
-     NEREA: Cierra la puerta al salir. No hay puerta. Ciérrala igual.  → FIN
+     NEMESIO: Cierra la puerta al salir. No hay puerta. Ciérrala igual.  → FIN
 
 [N_ALBUM] (también al Dar album_eventos)
-  NEREA: (hojea) Al fondo... en todas. Un chico pálido. Con un táper.
-  NEREA: En la cena de Navidad, yendo al baño. En el photocall, yendo al baño.
-  NEREA: Existió. Existe. Va mucho al baño.
-  NEREA: Pero sigue sin estar hecho. Y muerto no está. Creo.
+  NEMESIO: (hojea) Al fondo... en todas. Un chico pálido. Con un táper.
+  NEMESIO: En la cena de Navidad, yendo al baño. En el photocall, yendo al baño.
+  NEMESIO: Existió. Existe. Va mucho al baño.
+  NEMESIO: Pero sigue sin estar hecho. Y muerto no está. Creo.
   1. «¿Y si lo damos por hecho?» (se queda)
-     NEREA: Hecho sería que alguien le hubiera dado de baja. Nadie lo ha hecho.  → N_ALBUM
+     NEMESIO: Hecho sería que alguien le hubiera dado de baja. Nadie lo ha hecho.  → N_ALBUM
   2. «¿Y si le hacemos un funeral? Con flores. Y diapositivas.» (se queda)
-     NEREA: No me tientes. Ya tengo la plantilla.  → N_ALBUM
+     NEMESIO: No me tientes. Ya tengo la plantilla.  → N_ALBUM
   3. [oyo_descopear] «¿Y si... lo descopeamos?»  → N_DESCOPE
   4. «Lo pienso y vuelvo.»
-     NEREA: Eso dijo Rubén en julio.  → FIN
+     NEMESIO: Eso dijo Rubén en julio.  → FIN
 
 [N_DESCOPE]
-  (Nerea se queda quieta. De su ordenador salen violines que nadie ha puesto.)
-  NEREA: Nadie... nadie se había atrevido a decirlo en voz alta.
-  NEREA: Descopear. Es lo más bonito que me han dicho delante del tablero.
+  (Nemesio se queda quieto. De su ordenador salen violines que nadie ha puesto.)
+  NEMESIO: Nadie... nadie se había atrevido a decirlo en voz alta.
+  NEMESIO: Descopear. Es lo más bonito que me han dicho delante del tablero.
   (Despega el pósit con dos dedos, como quien retira una medalla.)
   {+posit_baja_ruben, −album_eventos, posit_descopeado}
-  NEREA: El álbum se lo devuelvo yo a Pilar. Con acuse de recibo.
+  NEMESIO: El álbum se lo devuelvo yo a Pilar. Con acuse de recibo.
   1. «Prometo cuidarlo.»
-     NEREA: No lo cuides. Llévaselo a Paco. Es lo que Rubén habría querido.  → FIN
+     NEMESIO: No lo cuides. Llévaselo a Paco. Es lo que Rubén habría querido.  → FIN
   2. «¿Le digo algo a la familia?»
-     NEREA: Diles que en nuestros corazones está en Hecho.  → FIN
+     NEMESIO: Diles que en nuestros corazones está en Hecho.  → FIN
 ```
 
 #### 7.6.4 `paco_ticket` — Paco (cpd)
@@ -1678,7 +1678,7 @@ Formato: `[NODO] condición` · opciones numeradas · `→` salto · `{efecto}`.
 ```
 [Y0] si !cms_vivo:
   YOLI: ¡No entra nada! El CMS no va. Paco dice que es de Desarrollo.
-  NEREA (de fondo): El CMS no es nuestro, es de Sistemas.  → FIN
+  NEMESIO (de fondo): El CMS no es nuestro, es de Sistemas.  → FIN
 [Y0] si cms_vivo:
   YOLI: Hola Bruno, Bruno becario, becario elContable, cuánto cobra un becario.
   YOLI: Perdona, me sale solo.
@@ -2041,8 +2041,8 @@ Cada autor implementa **sus salas completas** (fondo descrito, hotspots, Mirar, 
 | `mensaje_fp` | C (fax, P09) | C (Aurora, P10a); A (su Mirar, inventario común) |
 | `manual_fax` | A (Paco) | C (remate de D2) |
 | `pieza_opa` | B (ordenador, P10b) | D (Begoña, P11) → C (Teodoro, P12) |
-| `album_eventos` | D (Pilar, P14a) | B (Nerea, P14b) |
-| `posit_baja_ruben` | B (Nerea, P14b) | A (Paco, P14c) |
+| `album_eventos` | D (Pilar, P14a) | B (Nemesio, P14b) |
+| `posit_baja_ruben` | B (Nemesio, P14b) | A (Paco, P14c) |
 | `ticket_n1` | A (Paco, P14c) | D (remate A de D4) |
 | `acta_reunion` | C (Gervasio, D3) | D (remate B de D4) |
 | `cafe` | C (Gertrudis) | C (Aurora); B/A/D solo en combinaciones tontas (8.1) |
@@ -2067,8 +2067,8 @@ Cada autor implementa **sus salas completas** (fondo descrito, hotspots, Mirar, 
 | `casilla_firma` | C | A (Mirar ficha) |
 | `acto_3_iniciado` | C | A (papel continuo), B (Pajarera vacía, puerta OCUPADO), D (Sala del clímax) |
 | `vio_armario_27` | B | pistas (A) |
-| `ruben_encontrado` | A | D (Pilar, álbum), B (Nerea) |
-| `oyo_descopear` | D | B (Nerea) |
+| `ruben_encontrado` | A | D (Pilar, álbum), B (Nemesio) |
+| `oyo_descopear` | D | B (Nemesio) |
 | `ruben_libre` | A | B (Rubén en la Pecera, `puerta_sala`), D (escena 7.4) |
 | `sala_abierta` | C | B (`puerta_sala`) |
 | `duelo_inigo_ganado`, `lector_derribado` | D | A (escena final 7.5) |

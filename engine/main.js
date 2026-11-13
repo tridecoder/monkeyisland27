@@ -58,7 +58,7 @@ function makeTestApi(game) {
         music: game.audio.requestedId ?? game.audio.currentId ?? null,
         menu: game.menu ? game.menu.page : null,
         speaking: game.speeches.map(s => ({ who: s.actor, text: s.text })),
-        phone: game.phone ? { caller: game.phone.caller, label: game.phone.label, state: game.phone.state, side: game.phone.side } : null,   // llamada en curso (api.phone)
+        phone: game.phone ? { caller: game.phone.caller, label: game.phone.label, state: game.phone.state, side: game.phone.side, mode: game.phone.mode || 'llamada', title: game.phone.app ? game.phone.app.title || null : null } : null,   // llamada en curso (api.phone)
         detalle: game.detalle ? { titulo: game.detalle.titulo } : null,   // plano detalle abierto (api.detalle)
         hotspotsShown: !!game.hsShow,       // «ver hotspots» en pantalla
         poses: Object.fromEntries(Object.values(game.actors).filter(a => game.room && a.room === game.room.def.id).map(a => [a.id, game.poseOf(a)]).filter(([, p]) => p)),

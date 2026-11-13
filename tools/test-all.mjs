@@ -45,6 +45,7 @@ if (salas) {
   add('check', 'check.mjs');
   add('motor', 'test-motor.mjs');
   add('smoke', 'smoke.mjs', rapido ? ['--rapido'] : []);
+  add('movil', 'test-movil.mjs');                     // el móvil de Bruno con ratón y dedo (menú, correo, abuela)
   add('walkthrough', 'walkthrough.mjs');
   add('walkthrough --alt', 'walkthrough.mjs', ['--alt']);
   add('extras', 'extras.mjs');

@@ -65,7 +65,7 @@ try {
   await expectFlags({ inigo_presentado: true }, '7.2');
   must(await logHas('Vengo a reimaginar el perímetro.'), '7.2: falta la línea de Íñigo');
   must(await logHas('CORO: ¡Ha sido Diseño!'), '7.2: falta el inserto 9.1 del coro');
-  must(await logHas('Paco dice muchas cosas. Por ticket.'), '7.2: falta el cierre de Nerea');
+  must(await logHas('Paco dice muchas cosas. Por ticket.'), '7.2: falta el cierre de Nemesio');
   must(await logHas('Las pantallas no se han enterado.'), '7.2: falta la línea de entrada 8.7');
   must((await roomOf('inigo_sinergia')) !== 'pecera', '7.2: Íñigo sigue en la Pecera');
   must((await flag('evaristo_llamadas')) === 0, '7.2: salió un aviso en la entrada de la escena');
@@ -131,14 +131,14 @@ try {
   must(!vb.hs.length, `Valentín tapa/está tapado por hotspots: ${vb.hs.join(', ')}`);
   ok('cameo en la Pecera: diálogo de Valentín (nuevo «aquí, al lado de Desarrollo»), monitor con la Pecera en miniatura, sin solapes');
 
-  // ------------------------------------------------------------ Yoli y Nerea sin CMS + rumor C2
+  // ------------------------------------------------------------ Yoli y Nemesio sin CMS + rumor C2
   await setFlag('rumor_teodoro_n', 1);
   await hablar('yoli_tendencias');
   must(!(await state()).dialog, 'Yoli sin cms_vivo no debería abrir menú');
   await expectFlags({ rumor_teodoro_n: 2 }, 'rumor C2 (Yoli)');
   await hablar('nerea_backlog');
-  must(!(await state()).dialog, 'Nerea sin cms_vivo no debería abrir menú');
-  ok('Yoli/Nerea sin cms_vivo: solo su línea; rumor C paso 2 → rumor_teodoro_n = 2');
+  must(!(await state()).dialog, 'Nemesio sin cms_vivo no debería abrir menú');
+  ok('Yoli/Nemesio sin cms_vivo: solo su línea; rumor C paso 2 → rumor_teodoro_n = 2');
 
   // ------------------------------------------------------------ Pajarera, Actos I-II
   await R.travel('pajarera'); await idle();
@@ -160,7 +160,9 @@ try {
   const tit = await G(() => __game.log.filter(l => l.who === 'pantalla_titulator').map(l => l.text));
   must(tit[0].includes('LA CHAQUETA QUE LO CAMBIÓ TODO') && tit[1].includes('ORGANIGRAMA') && tit[2] === 'AYÚDAME ESTOY EN EL ARMARIO 27', 'Titulator: orden inesperado ' + JSON.stringify(tit));
   must(await logHas('Alucinaciones. Es normal en modelos tan avanzados.'), 'Titulator: falta Íñigo');
-  for (let i = 0; i < 8; i++) await verb('mirar', 'pantalla_titulator');
+  // (hasta ruben_encontrado, cada Mirar par repite la súplica: hacen falta 7 genéricos → 14 miradas)
+  for (let i = 0; i < 14; i++) await verb('mirar', 'pantalla_titulator');
+  must((await G(() => __game.log.filter(l => l.who === 'pantalla_titulator' && l.text === 'AYÚDAME ESTOY EN EL ARMARIO 27').length)) >= 2, 'Titulator: la súplica no se repite');
   must(await logHas('Son nueve razones. La séptima está repetida.'), 'Titulator: falta la línea del titular 7');
   ok('Titulator: hazañas (más reciente primero), 3.ª mirada AYÚDAME → vio_armario_27, genéricos y titular 7');
   await setFlag('rumor_atun_n', 2);
@@ -198,10 +200,10 @@ try {
   await closeDialog(); await idle();
   await hablar('nerea_backlog');
   await opcion('¿Qué tal con Yoli?');
-  await expectFlags({ rep_09: true }, 'Nerea N3');
+  await expectFlags({ rep_09: true }, 'Nemesio N3');
   await opcion('¿Por qué está bloqueado lo de Herminia?');
   await closeDialog(); await idle();
-  ok('Yoli «¿Algún hilo bueno esta noche?» → rep_08; Nerea «¿Qué tal con Yoli?» → rep_09');
+  ok('Yoli «¿Algún hilo bueno esta noche?» → rep_08; Nemesio «¿Qué tal con Yoli?» → rep_09');
 
   // ------------------------------------------------------------ MP1 · la becaria Herminia (partes de B)
   await hablar('leoncio_quesitos'); await opcion('¿Qué es Herminia?'); await closeDialog(); await idle();
@@ -218,8 +220,8 @@ try {
   ok('MP1: anselmo_dijo_regla → leoncio_acepta_alta → (A) herminia_de_alta → infografia_integrada; CO_HERMINIA');
   await setFlag('rumor_atun_n', 1);
   await hablar('nerea_backlog'); await closeDialog(); await idle();
-  await expectFlags({ rumor_atun_n: 2 }, 'rumor B2 (Nerea)');
-  ok('Nerea: rumor B paso 2');
+  await expectFlags({ rumor_atun_n: 2 }, 'rumor B2 (Nemesio)');
+  ok('Nemesio: rumor B paso 2');
 
   // ------------------------------------------------------------ P10b escribir la pieza
   await setFlag('acto_2_iniciado'); await setFlag('casilla_fuente');
@@ -255,7 +257,7 @@ try {
   await give('album_eventos'); await setFlag('oyo_descopear');
   await setFlag('rumor_plaza_n', 2);
   await hablar('nerea_backlog');
-  await expectFlags({ rumor_plaza_n: 3 }, 'rumor D3 (Nerea)');
+  await expectFlags({ rumor_plaza_n: 3 }, 'rumor D3 (Nemesio)');
   await closeDialog(); await idle();
   await verb('dar', 'nerea_backlog', 'album_eventos');
   await opcion('¿Y si... lo descopeamos?');
@@ -264,7 +266,7 @@ try {
   await closeDialog(); await idle();
   await clearLog(); await verb('mirar', 'kanban');
   must(await logHas('Descopeado con amor'), 'kanban tras posit_descopeado');
-  ok('P14b Dar album_eventos a Nerea → «¿Y si... lo descopeamos?» → posit_baja_ruben, posit_descopeado; rumor D3');
+  ok('P14b Dar album_eventos a Nemesio → «¿Y si... lo descopeamos?» → posit_baja_ruben, posit_descopeado; rumor D3');
   await setFlag('ruben_libre'); await G(() => __game.takeItem('posit_baja_ruben')); await give('ticket_n1');
   await R.travel('pajarera'); await R.travel('pecera'); await idle();
   must((await roomOf('ruben')) === 'pecera', 'Rubén no está en la ventana con ruben_libre');

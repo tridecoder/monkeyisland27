@@ -15,7 +15,7 @@ const repInfo = {
   rep_01: 'C · office · Mirar tablon', rep_02: 'C · catacumba · Aurora A3', rep_03: 'C · office · chisme nº 1 de Gertrudis',
   rep_04: 'C · office · chisme nº 2', rep_05: 'A · vestibulo · Celestino C4', rep_06: 'C · catacumba · Mirar fax_enmarcado',
   rep_07: 'B · pajarera · Mirar ordenador_gervasio (C también en el Acto III)', rep_08: 'B · pecera · Yoli Y2 (con cms_vivo)',
-  rep_09: 'B · pecera · Nerea N3 (con cms_vivo)', rep_10: 'C · office · chisme nº 3', rep_11: 'B · pecera · Mirar ordenador_bruno (con silla_libre)',
+  rep_09: 'B · pecera · Nemesio N3 (con cms_vivo)', rep_10: 'C · office · chisme nº 3', rep_11: 'B · pecera · Mirar ordenador_bruno (con silla_libre)',
   rep_12: 'A · cpd · Paco P3 (con cms_vivo)', rep_13: 'A · cpd · Rubén R2 (Acto III)', rep_14: 'C · office · chisme nº 4',
   // adenda 7.1 (R15/R16; Íñigo D4 al final del mazo)
   rep_15: 'D · ecosistema · 2.ª Mirar de portatil_tadeo (hilo de Tadeo y Leoncio)',
@@ -45,7 +45,7 @@ export default {
   chaqueta_en_lector: 'bool · B · pajarera · P04b · B (sprite y Mirar del Lector Medio), D (Lector Medio en la Sala), A (poscréditos); actors.js (variante del Lector Medio)',
   silla_libre: 'bool · B · pajarera · P04b · B (ordenador_bruno, silla_ramirez), pistas',
   vio_ticket_3: 'bool · A · cpd · Mirar registro_tickets · B (enchufe_pantalla), pistas',
-  cms_vivo: 'bool · B · pecera · P05b · A (Paco, contador), B (Yoli, Nerea, pantalla), pistas',
+  cms_vivo: 'bool · B · pecera · P05b · A (Paco, contador), B (Yoli, Nemesio, pantalla), pistas',
   gertrudis_saludada: 'bool · C · office · primer «Buenas noches» · C, pistas, B (titular)',
   chisme_indice: 'int · C · office · +1 por saludo · C',
   gertrudis_error_indice: 'int · C · office · +1 por «Un café, por favor» · C',
@@ -73,8 +73,8 @@ export default {
   acto_3_iniciado: 'bool · C · catacumba · P12b · A (papel_continuo, armario_27), B (puerta_sala, Pajarera vacía), C (Gervasio en el Office), D (Sala del clímax), pistas',
   vio_armario_27: 'bool · B · pajarera · 3.ª Mirar a pantalla_titulator · B (Íñigo I4), pistas',
   titulator_mirar_n: 'int · B · pajarera · +1 por Mirar pantalla_titulator · B',
-  ruben_encontrado: 'bool · A · cpd · P13 · A, D (Pilar de Eventos; album_eventos_hotspot), B (Nerea N4), pistas',
-  oyo_descopear: 'bool · D · ecosistema · Pilar «¿Me prestas el álbum?» (Borja dice «descopear») · B (opción «¿Y si... lo descopeamos?» de Nerea)',
+  ruben_encontrado: 'bool · A · cpd · P13 · A, D (Pilar de Eventos; album_eventos_hotspot), B (Nemesio N4), pistas',
+  oyo_descopear: 'bool · D · ecosistema · Pilar «¿Me prestas el álbum?» (Borja dice «descopear») · B (opción «¿Y si... lo descopeamos?» de Nemesio)',
   posit_descopeado: 'bool · B · pecera · P14b · B (Mirar kanban)',
   ruben_libre: 'bool · A · cpd · P14c · B (Rubén en la Pecera, puerta_sala), A (armario vacío), D (escena 7.4), pistas; actors.js (murmullos)',
   duelo_gervasio_ganado: 'bool · C · office · fin D3 · C',
@@ -129,6 +129,9 @@ export default {
   // ---------------------------------------------------------------- ascensor con botonera (content/lib/ascensor.js)
   ascensor_viajes_n: 'int · común (lib/ascensor.js) · +1 por viaje en ascensor · rotación de las frases del ascensor',
   ascensor_negativas_n: 'int · común (lib/ascensor.js) · +1 por planta denegada · rotación de las negativas',
+
+  // ---------------------------------------------------------------- el móvil de Bruno (content/lib/movil.js)
+  movil_leidos: 'int · común (lib/movil.js) · bits de los correos leídos en el móvil (0-4 RV: de Tadeo, 8-10 fijos) · el menú del móvil',
 
   // ---------------------------------------------------------------- réplicas del duelo (§6.3 + adenda 7.1)
   ...reps,

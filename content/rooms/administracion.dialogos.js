@@ -48,6 +48,9 @@ export default {
           { text: '¿Le han pedido algo raro hoy?',
             reply: ['Un yunque. Por nota de gasto. Concepto: «Sucesión, plaza 7».',
               'Rechazado. Si lo aprobara, tendría que justificar la caída.'] },
+          // adenda §17
+          { text: 'Desarrollo dice que son muy feministas.', once: true,
+            reply: 'Su comité de igualdad me manda las actas por triplicado. Iguales. Como ellos.' },
           { text: 'Nada. Me iba.', exit: true, reply: 'Es lo más eficiente que ha hecho hoy.' },
         ],
       },

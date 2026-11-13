@@ -240,6 +240,9 @@ const dialogoAurora = {
           } },
         { text: '¿Ha oído cómo pregunta Custodia?', if: 'custodia_regla',
           do: async (api) => { await aurora(api, ['Abre interrogación y cierra con punto.', 'Eso no es una pregunta, criatura. Es una sentencia.']); } },
+        // adenda §17: el comité de igualdad de Desarrollo (una línea seca; el chiste, sobre ellos)
+        { text: 'Desarrollo dice que son muy feministas.', once: true,
+          do: async (api) => { await aurora(api, 'Me llaman «compañera» para interrumpirme con más cariño.'); } },
         { text: 'Nada, Aurora. Gracias.', exit: true, reply: 'Lo has dicho bien. Me has descolocado.' },
       ],
     },

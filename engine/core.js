@@ -16,7 +16,7 @@ import * as Pose from './pose.js';
 import * as Detalle from './detalle.js';
 import * as Ver from './hotspots.js';
 /** Versión de las partidas guardadas: 2 = tras el rediseño de las salas (las posiciones de los PNJ cambiaron). */
-const SAVE_V = 2;
+const SAVE_V = 3;                    // 3: la Redacción pasó a 1270 px (vestíbulo de planta): los PNJ vuelven a su sitio
 
 export const SCREEN_W = 320, SCREEN_H = 200, VIEW_H = 144;
 
@@ -191,8 +191,20 @@ export class Game {
   /** Non-blocking notice at the bottom of the room view (e.g. "Réplica apuntada en la libreta."). */
   notice(text, opts = {}) {
     this.log.push({ who: 'aviso', name: null, text: String(text), room: this.state && this.state.room, t: Math.round(this.time) });
+    // nunca menos que el tiempo de lectura de su texto (con la velocidad del texto elegida)
+    const ms = this.timedMs('aviso', text, opts.ms || 2600);
     if (this.fast) return;
-    this.notices.push({ text: String(text), color: opts.color || '#f2d468', until: this.realTime + (opts.ms || 2600) });
+    this.notices.push({ text: String(text), color: opts.color || '#f2d468', until: this.realTime + ms });
+  }
+  /** TEXTO CON TEMPORIZADOR (avisos, globos con `ms`, el hilo del duelo, mensajes del menú): devuelve su duración, que
+   *  nunca baja del tiempo de lectura (`speechDuration`, que escala con la velocidad del texto), y lo apunta en
+   *  `timedTexts` para tools/text-audit.mjs. */
+  timedMs(kind, text, ms) {
+    const need = this.speechDuration(text);
+    const out = Math.max(Number(ms) || 0, need);
+    (this.timedTexts || (this.timedTexts = [])).push({ kind, text: String(text), pedido: Math.round(Number(ms) || 0), ms: Math.round(out), need: Math.round(need) });
+    if (this.timedTexts.length > 4000) this.timedTexts.splice(0, 1000);
+    return out;
   }
   /** Run a named scene registered by any room (`scenes: {...}`) or game.js. Missing scenes only warn. */
   async runScene(name, api, ...args) {
@@ -244,12 +256,22 @@ export class Game {
     this.state = d.state;
     // partidas de antes del rediseño (v < 2): las posiciones guardadas de los PNJ son las de las salas viejas (la Redacción
     // medía 800 px, los mostradores y las mesas estaban en otro sitio). Cada PNJ vuelve a su sitio de la sala donde está.
+    if ((d.v || 1) < 3) this.migrarJugadorV2();
     if ((d.v || 1) < SAVE_V) this.migrarPosiciones();
     this.buildActors();
     this.mode = 'play';
     await this.runScript(async () => { await this.enterRoom(this.state.room, null, { restore: true }); }, { label: 'cargar' });
     this.anclarJugador();
     return true;
+  }
+  /** Partida v2 (Redacción de 940 px): el jugador, si estaba en la Redacción, pasa a la x equivalente de la sala de 1270
+   *  (vestíbulo de planta 96-344, zona de papel 344-580, Web… +270, Diseño +330). Contenido de content/lib/edificio.js. */
+  migrarJugadorV2() {
+    const s = this.state.actors && this.state.actors[this.G.player];
+    if (!s || s.room !== 'pecera' || typeof s.x !== 'number') return;
+    const x = s.x;
+    s.x = x < 96 ? x : x < 170 ? 96 + (x - 96) * 248 / 74 : x < 310 ? 344 + (x - 170) * 236 / 140 : x < 820 ? x + 270 : x + 330;
+    s.x = Math.round(s.x);
   }
   /** Partida vieja: cada PNJ (no el jugador) que está en una sala donde tiene sitio en el arte vuelve a ese sitio (y a su
    *  pose); una sala que ya no existe en la geografía (salida retirada) no importa: el sitio es el de la sala. */
@@ -278,6 +300,8 @@ export class Game {
   resetRuntime() {
     this.speeches.forEach(s => s.resolve && s.resolve());
     this.speeches = []; this.timers.forEach(t => t.resolve()); this.timers = [];
+    // un menú con salida (`escape`, p. ej. el del móvil) se cierra por su salida: su guion termina y suelta la entrada
+    if (this.choice && this.choice.escape != null) { const ch = this.choice; ch.resolve(ch.escape); }
     this.choice = null; this.menu = null; this.hud = null; this.phone = null; this.detalle = null; this.hsShow = null; this.hsHold = false; this.hudTop = 0; this.cutscene = 0; this.skipCut = false; this.inDialog = 0;
     if (this.itemPick) { const r = this.itemPick.resolve; this.itemPick = null; r(null); }
     this.notices = []; this.idleMs = 0; this.idleFired = false; this.comboFails = 0; this.duelInfo = null;
@@ -543,12 +567,13 @@ export class Game {
     if (this.debug.on) console.log(`[diálogo] ${a ? a.name : '—'}: ${text}`);
     // el que llama por el móvil habla SIEMPRE anclado al teléfono (aunque el contenido no lo pida)
     if (this.phone && a && a.id === this.phone.caller && !opts.at && !opts.narrator) opts = { ...opts, ...Phone.anchor(this) };
+    const durMs = opts.ms ? this.timedMs('globo', text, opts.ms) : this.speechDuration(text);   // nunca menos que leerlo
     if (this.instant) return Promise.resolve();
     for (const s of this.speeches.filter(s => s.actor === (a ? a.id : null) && !s.at === !opts.at)) this.endSpeech(s);
     return new Promise(resolve => {
       const color = opts.color || (a ? a.color : (this.G.narratorColor || '#f0e8c0'));
       const lines = wrap(text, opts.width || 210);
-      const sp = { actor: a ? a.id : null, at: opts.at || null, text, lines, color, end: this.time + (opts.ms || this.speechDuration(text)), blocking: opts.blocking !== false, tail: opts.tail || null, phone: !!opts.phone, resolve };
+      const sp = { actor: a ? a.id : null, at: opts.at || null, text, lines, color, end: this.time + durMs, blocking: opts.blocking !== false, tail: opts.tail || null, phone: !!opts.phone, resolve };
       this.speeches.push(sp);
     });
   }
@@ -711,6 +736,11 @@ export class Game {
   pickAt(sx, sy) {
     if (!this.room || sy >= VIEW_H) return null;
     const x = sx + Math.round(this.camX), y = sy;
+    // con un objeto «solo» en la mano (el móvil), Bruno gana a lo que tenga detrás: «Usar móvil con Bruno»
+    if (this.ui.item && this.isSolo(this.ui.item) && this.player && this.player.visible) {
+      const b = this.actorBox(this.player);
+      if (x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h) return this.actorTarget(this.player);
+    }
     const acts = Object.values(this.actors).filter(a => a.room === this.room.def.id && a.visible && a.id !== this.G.player && a.def.hotspot !== false)
       .sort((a, b) => b.y - a.y);
     for (const a of acts) { const b = this.actorBox(a); if (x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h) return this.actorTarget(a); }
@@ -760,10 +790,13 @@ export class Game {
     if (!t) return null;
     if (t.def.defaultVerb) return t.def.defaultVerb;
     if (t.kind === 'actor') return 'hablar';
-    if (t.kind === 'inv') return 'mirar';
+    if (t.kind === 'inv') return this.isSolo(t.id) ? 'usar' : 'mirar';
     if (t.def.exit) return 'ir';
     return 'mirar';
   }
+  /** Objeto de inventario que se usa SOLO (`solo: true` en items.js: el móvil, la libreta): «Usar» actúa ya, sin «con…»;
+   *  «Usar X con Bruno», clic derecho y doble toque también lo abren. */
+  isSolo(id) { const it = id && this.content.items[id]; return !!(it && it.solo); }
   verbLabel(id) {
     if (id === 'ir' || !id) return this.walkVerb.label;
     const v = this.verbs.find(v => v.id === id);
@@ -821,6 +854,8 @@ export class Game {
   /** Execute verb on target (optionally with inventory item). Resolves when done (false if cancelled). */
   async execute(verb, target, itemId = null) {
     if (this.busy || this.mode !== 'play') return false;
+    // un objeto que se usa solo, «usado con» el propio Bruno, es usarlo (el gesto natural: «Usar móvil con Bruno»)
+    if (itemId && verb === 'usar' && this.isSolo(itemId) && target && target.id === this.G.player) { target = this.itemTarget(itemId); itemId = null; }
     this.acting = (this.acting || 0) + 1;
     try { return await this.executeInner(verb, target, itemId); }
     finally { this.acting--; this.checkIdle(); }
@@ -923,12 +958,15 @@ export class Game {
     return api;
   }
   /** Show options in the panel. Each option is a string or { text, disabled } (disabled = grey, not selectable). */
-  choose(options) {
+  choose(options, opts = {}) {
     if (this.choice) { this.choice.resolve(-1); }
     return new Promise(res => {
       const texts = options.map(o => (o && typeof o === 'object') ? String(o.text) : String(o));
       const disabled = new Set(options.map((o, i) => (o && typeof o === 'object' && o.disabled) ? i : -1).filter(i => i >= 0));
-      this.choice = { options: texts, disabled, resolve: i => { this.choice = null; res(i); this.checkIdle(); }, scroll: 0, hover: -1 };
+      // `escape`: la opción que eligen Esc y un toque en la sala (fuera del panel y del móvil); `t0`: los toques de los
+      // primeros 250 ms no cuentan (el segundo toque de un doble toque no elige una opción por accidente)
+      const escape = Number.isInteger(opts.escape) ? opts.escape : null;
+      this.choice = { options: texts, disabled, escape, t0: this.realTime, resolve: i => { this.choice = null; res(i); this.checkIdle(); }, scroll: 0, hover: -1 };
       this.checkIdle();
     });
   }
@@ -1372,6 +1410,7 @@ export class Game {
       this.inputActivity();
       if (this.debug.consoleFocused()) return;
       if (e.key === 'Escape') {
+        if (this.choice && this.choice.escape != null && !this.menu) { this.choice.resolve(this.choice.escape); e.preventDefault(); return; }
         if (this.cutscene > 0 && !this.choice) { this.skipCutscene(); e.preventDefault(); return; }
         if (this.mode === 'play' || this.menu) { this.toggleMenu(); e.preventDefault(); }
         return;
@@ -1435,7 +1474,12 @@ export class Game {
     if (this.mode === 'title') { Screens.titleClick(this, x, y); return; }
     if (this.mode === 'ending') { Screens.endingClick(this, x, y); return; }
     if (this.mode !== 'play' || !this.room) return;
-    if (this.choice) { UI.choiceClick(this, x, y); return; }
+    if (this.choice) {
+      const ch = this.choice;
+      if (ch.escape != null && this.realTime - ch.t0 < 250) return;                 // segundo toque de un doble toque
+      if (ch.escape != null && y < VIEW_H && !Phone.contains(this, x, y)) { this.audio.sfx('click'); ch.resolve(ch.escape); return; }
+      UI.choiceClick(this, x, y); return;
+    }
     if (this.itemPick) { if (!this.skipSpeech()) UI.itemPickClick(this, x, y); return; }
     if (this.busy) { if (!this.skipSpeech() && this.detalle) Detalle.skip(this); return; }
     this.audio.unlock();
@@ -1456,6 +1500,7 @@ export class Game {
           if (this.ui.item === id) { if (v === 'usar') this.execute('usar', t); else { this.ui.item = null; } return; }
           this.execute(v, t, this.ui.item); return;
         }
+        if ((!v || v === 'usar') && this.isSolo(id)) { this.execute('usar', t); return; }     // el móvil: se abre ya
         if (!v || v === 'usar' || v === 'dar') { this.ui.verb = v || 'usar'; this.ui.item = id; return; }
         this.execute(v, t); return;
       }

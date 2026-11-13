@@ -264,7 +264,7 @@ automatically.
 | `kit.PLANTA`, `kit.DEPTO` | código de color: banda de placa por planta (P−1 azul, P0 verde, P1 verde agua, P2 lila) y acento por departamento (`c`, rampa `suelo`) |
 | `kit.micro(g, txt, x, y, c, { align, sombra })`, `kit.microW`, `kit.microLineas` | microfuente 3×5 canónica (4 px por carácter, tildes y Ñ; sin «¿¡»). Sustituye a las tres copias de `lib-oficina.js`, `lib-vestibulo-micro.js`, `lib-catacumba-util.js` (que siguen funcionando) |
 | `kit.texto(g, txt, x, y, w, h, { color, align, fuente })`, `kit.cabe(txt, w, h)` | texto ENTERO sobre su soporte: fuente del juego si cabe, si no 3×5 partido por palabras; si no cabe ni así lo apunta en `kit.registro.problemas` (la auditoría falla) |
-| `kit.placa(g, x, y, txt, { planta, flecha: '<' '>' '^' 'v', sub, depto })`, `kit.placaSala(g, x, y, roomId, { flecha })` | LA placa de destino del edificio (13 px; 19 con `sub`); `placaSala` usa el nombre llano de `content/lib/edificio.js` (`pajarera` → «DIRECCIÓN») |
+| `kit.placa(g, x, y, txt, { planta, flecha: '<' '>' '^' 'v', sub, depto })`, `kit.placaSala(g, x, y, roomId, { flecha })` | LA placa de destino del edificio (13 px; 19 con `sub`); `placaSala` usa el nombre llano de `content/lib/edificio.js` (`pajarera` → «DESPACHOS»); una placa por acceso, todas a la misma altura, nunca apiladas (vestíbulo de planta de la Redacción, `docs/GUIA_REDISENO.md` §6) |
 | `kit.rotuloDepto(g, x, y, depto, { texto, colgado })`, `kit.rotuloZona(g, cx, y, depto)` | rótulo de departamento colgado del techo (filete de color arriba), centrado en su zona |
 | `kit.umbral(g, x, y, w, h, color)`, `kit.marcoPuerta(g, x, y, w, h)`, `kit.huecoAbierto(...)`, `kit.peldanos(g, x, yBase, w, 'baja' \| 'sube')` | felpudo del color del destino, marco metálico común (la hoja la pintas tú), puerta abierta, tres peldaños de medio nivel (Vending ↔ Catacumba) |
 | `kit.ascensor(g, x, y, w, h, planta)`, `kit.escalera(g, x, y, w, h, 'sube' \| 'baja')`, **`kit.nucleo(g, room, FL)`** | el núcleo completo e idéntico en las 4 plantas (devuelve la geometría `nucleoGeom` para `layout` y `entries`) |
@@ -281,6 +281,6 @@ Ejemplo completo (núcleo, zonas, placas, mesa con walkbox en U, PNJ sentado y t
 | penumbra | `penumbra(view, t) → { color, alpha, spots: [[cx, cy, rx, ry], { rect }], actor, actores } \| null`; NPC `luz: 0..1` | se oscurece todo menos los focos; los actores, al 22 % |
 | walkbox con forma | varios polígonos (unión); `scale` propia por walkbox | se puede estar detrás, delante y a la cabecera de un mueble; ordénalo con `layer: 'sorted'` + `zy` |
 | oclusores | `foreground` · `layer: 'front'` · `layer: 'sorted'` + `zy` · `prop: true` | nunca tapan una cara ni > 20 % de cabeza+torso de quien habla |
-| ver hotspots | — (automático) | lo interactivo debe verse sin él; con él, se resalta con el canto vivo y el nombre |
+| ver hotspots | — (automático) | lo interactivo debe verse sin él; con él, se resalta con el canto vivo y el nombre; los rótulos no se pisan (se apartan y llevan línea guía) |
 | tamaño mínimo | — (automático: 12×10 ratón, 16×12 táctil) | aun así, dibuja lo interactivo ≥ 12×10 (regla R1 de la auditoría) |
 | `rediseno: true` | en el `export default` del arte | activa las reglas estrictas de la auditoría para tu sala |

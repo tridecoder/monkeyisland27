@@ -7,6 +7,7 @@
 import { buildRoom } from '../lib/room.js';
 import art from './art/pajarera.art.js';
 import { talk, seq, here, num } from './pecera.voces.js';
+import { PAL, rect, hline, glow, ditherOverlay, label } from '../../engine/draw.js';
 
 const I = 'inigo_sinergia', G = 'gervasio_acta', LM = 'lector_medio';
 const GRABACION = 'A mí lo que me interesa es la economía. Y ahorrar.';
@@ -37,23 +38,70 @@ const GENERICOS = [
   '10 RAZONES POR LAS QUE EL PAPEL HA MUERTO. LA 7 ES LA 3 OTRA VEZ',
 ];
 
+// La SÚPLICA de Rubén (G4, orden del director: «no da tiempo a leerla»): plano detalle de la pantalla del Titulator; el
+// titular se rompe y se convierte en «AYÚDAME / ESTOY EN EL / ARMARIO 27», que se queda hasta que el jugador hace clic
+// (al menos ~4 s, por la velocidad del texto). Después, hasta que aparece Rubén, cada Mirar alterno la repite y la
+// pantalla del atril la enseña 2,6 s cada 15 s (pajarera.art.js).
+const SUPLICA = 'AYÚDAME ESTOY EN EL ARMARIO 27';
+const ROTURA_MS = 1100;
+function pantallaSuplica(g, r, t) {
+  const { x, y, w, h } = r;
+  const roto = t >= ROTURA_MS;
+  rect(g, x, y, w, h, roto ? '#2a0606' : '#06140a');
+  for (let yy = y; yy < y + h; yy += 2) hline(g, x, yy, w, roto ? '#1a0404' : '#041008');   // líneas de barrido (debajo del texto)
+  if (!roto) {
+    // el titular de siempre, cada vez más roto: filas que se desplazan
+    const k = t / ROTURA_MS;
+    ['EL IBEX ABRE', 'PLANO. PLANO.', '¿POR QUÉ NADIE?'].forEach((l, i) => {
+      const dx = Math.round(Math.sin(t / 37 + i * 2) * 10 * k * k);
+      label(g, l, x + 10 + dx, y + 12 + i * 14, '#B6FF4D');
+    });
+    if (k > 0.5) for (let i = 0; i < 6; i++) ditherOverlay(g, x, y + ((i * 13 + Math.floor(t / 40) * 7) % h), w, 2, '#ff4a3a', 0.5 * k);
+  } else {
+    const parpadeo = (Math.floor(t / 90) % 23) === 0;
+    ['AYÚDAME', 'ESTOY EN EL', 'ARMARIO 27'].forEach((l, i) => {
+      label(g, l, x + w / 2 + (parpadeo ? 2 : 0), y + 10 + i * 18, i === 2 ? '#ffe0d8' : '#ff6a5a', { align: 'center', scale: 1 });
+    });
+    glow(g, x + w / 2, y + h / 2, w * 0.6, h * 0.5, '#ff3a30', 0.18, 3);
+  }
+  void PAL;
+}
+async function suplica(api, primera) {
+  api.sfx('beep');
+  api.setState('pantalla_titulator', 'ayudame');                 // la pantalla del atril lo enseña mientras dura (§11)
+  const lectura = 4200 * ((api.game.settings && api.game.settings.textSpeed) || 1);
+  try {
+    await api.detalle({ titulo: 'EL TITULATOR', texto: SUPLICA, w: 176, h: 64, color: '#ff8a7a', draw: pantallaSuplica }, async (api) => {
+      await api.wait(ROTURA_MS);
+      api.sfx('bad');
+      await talk(api, [['T', SUPLICA, { ms: lectura, color: '#ff6a5a' }]]);   // se queda hasta el clic (o ≥ 4,2 s)
+    });
+  } finally { api.setState('pantalla_titulator', 'rotando'); }
+  if (primera) {
+    await api.say('Un titular pidiendo socorro. Con número de armario. Eso no es clickbait.');
+    if (here(api, I)) await api.sayAs(I, 'Alucinaciones. Es normal en modelos tan avanzados.');
+  } else {
+    await api.say('Otra vez: «ARMARIO 27». Los titulares no se repiten. Las personas, sí.');
+    if (here(api, I)) await api.sayAs(I, 'Sigue alucinando. Eso es que aprende.');
+  }
+}
+
 async function mirarTitulator(api) {
   if (acto3(api)) {
     await api.say(['El atril está vacío. Íñigo se ha llevado el Titulator a la reunión.', 'Sin titulares, los Despachos parecen una oficina normal.']);
     return;
   }
   const n = api.inc('titulator_mirar_n');
-  if (n === 3) {                                                    // G4: la 3.ª mirada, medio segundo
-    api.sfx('beep');
-    api.setState('pantalla_titulator', 'ayudame');                 // la pantalla lo enseña mientras dura la línea (§11)
-    await talk(api, [['T', 'AYÚDAME ESTOY EN EL ARMARIO 27', { ms: 500 }]]);
-    api.setState('pantalla_titulator', 'rotando');
-    if (here(api, I)) await api.sayAs(I, 'Alucinaciones. Es normal en modelos tan avanzados.');
+  if (n === 3) {                                                    // G4: la 3.ª mirada
+    await suplica(api, true);
     api.setFlag('vio_armario_27', true);
     return;
   }
   const vistos = Array.isArray(api.flag('pajarera_titulares_vistos')) ? api.flag('pajarera_titulares_vistos') : [];
   const nuevo = HAZANAS.filter(([f]) => api.flag(f) && !vistos.includes(f)).pop();
+  // hasta que aparece Rubén, cada Mirar par (4.ª, 6.ª...) repite la súplica (el que se la perdió, la vuelve a ver); un
+  // titular de hazaña recién ganado sale antes
+  if (!nuevo && n > 3 && n % 2 === 0 && !api.flag('ruben_encontrado')) { await suplica(api, false); return; }
   if (nuevo) {
     api.setFlag('pajarera_titulares_vistos', [...vistos, nuevo[0]]);
     await talk(api, [['T', nuevo[1]]]);
@@ -168,7 +216,7 @@ export default buildRoom({
       mirar: async (api) => leerEnviados(api),
       usar: async (api) => leerEnviados(api),
       hablar: 'Le hablo. Me contesta con una notificación: "Lo hablamos".',
-      cerrar: 'No lo cierro. Una sesión abierta en estos despachos es lo más parecido a un acta.',
+      cerrar: 'No lo cierro. Una sesión abierta aquí es lo más parecido a un acta.',
     } },
     { id: 'puerta_sala', name: 'puerta de la Sala Amazonas', exit: { room: 'sala_amazonas' }, handlers: {
       mirar: async (api) => {

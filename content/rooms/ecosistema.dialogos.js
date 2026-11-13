@@ -69,6 +69,9 @@ export default {
           { text: 'La página 7 está pendiente desde marzo.', if: ['has:planillo', '!duelo_maripaz_ganado'],
             do: async (api) => { await abrirDueloMaripaz(api, false); return 'exit'; } },
           { text: '¿Qué tal con Siestatón?', if: 'duelo_maripaz_ganado', reply: 'Encantados. Ahora la web respira. El banner, digo.' },
+          // adenda §17
+          { text: 'Desarrollo dice que son muy feministas.', once: true,
+            do: async (api) => { await sayM(api, 'Desde el más absoluto cariño: su feminismo cabe en un diploma. Y sobra marco.'); } },
           { text: 'Me voy.', exit: true, do: async (api) => { gong(api); await sayM(api, 'Eso ha sido una despedida. La facturo.'); } },
         ],
       },

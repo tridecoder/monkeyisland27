@@ -6,6 +6,16 @@
 // Regla anti-callejón (§4): ningún objeto se gasta salvo en su uso correcto.
 import { PAL, rect, px, hline, vline, ellipse, poly, ditherPick, frameRect, line } from '../engine/draw.js';
 import { drawText } from '../engine/font.js';
+import { menuMovil } from './lib/movil.js';
+
+/** La libreta de réplicas: cuántas llevo y la lista en el panel (cualquier opción, Esc o un toque fuera la cierran). */
+async function abrirLibreta(api) {
+  const D = api.game.content.duels;
+  const learned = (D.pairs || []).filter(p => api.flag(p.flag));
+  await api.say(`Mi libreta de réplicas: ${learned.length} de ${N_REPLICAS}. En otra empresa esto sería un máster.`);
+  if (!learned.length) return;
+  await api.choose(learned.map(p => '«' + p.reply + '»').concat(['[Cerrar la libreta]']), { escape: learned.length });
+}
 
 // ------------------------------------------------------------------ icon helpers
 const P = PAL;
@@ -192,19 +202,15 @@ export default {
   },
   libreta_replicas: {
     name: 'libreta de réplicas', icon: icons.libreta_replicas,
+    solo: true,                     // se usa sola: «Usar libreta» la abre (como Mirar), sin «con…»
     handlers: {
-      mirar: async (api) => {
-        const D = api.game.content.duels;
-        const learned = (D.pairs || []).filter(p => api.flag(p.flag));
-        await api.say(`Mi libreta de réplicas: ${learned.length} de ${N_REPLICAS}. En otra empresa esto sería un máster.`);
-        if (!learned.length) return;
-        // la lista de réplicas aprendidas, en el panel (cualquier opción cierra la libreta)
-        await api.choose(learned.map(p => '«' + p.reply + '»').concat(['[Cerrar la libreta]']));
-      },
+      usar: async (api) => abrirLibreta(api),
+      mirar: async (api) => abrirLibreta(api),
     },
   },
   movil: {
     name: 'móvil', icon: icons.movil,
+    solo: true,                     // se usa solo: Usar, Usar con Bruno, clic derecho y doble toque abren su menú
     handlers: {
       // adenda 2.2: con `tadeo_rv_n` ≥ 1 sustituye a la línea de la biblia
       mirar: async (api) => {
@@ -212,7 +218,7 @@ export default {
         if (n >= 1) await api.say(['Mi móvil. Una llamada perdida de la abuela.', `Y ${n} correos de Tadeo. Todos «RV:». Ninguno leído. Ni por él.`]);
         else await api.say('Mi móvil. Una llamada perdida de la abuela. Siempre hay una.');
       },
-      usar: async (api) => { await api.scene('pistas'); },            // §5.6: llamar a la abuela (game.js)
+      usar: async (api) => { await menuMovil(api); },                 // el menú del móvil: abuela (§5.6), correo, llamadas
       'usar:*': 'No le hago fotos. Luego me pide derechos de imagen.',
     },
   },

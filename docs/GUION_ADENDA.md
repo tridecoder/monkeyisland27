@@ -79,7 +79,7 @@ Colores elegidos para no confundirse con los de la biblia (sección 2).
 - Leoncio le puso nombre de persona «porque a las herramientas con nombre de persona no se las desenchufa». Es el criterio de Teodoro con la Goyita; nadie lo comenta.
 
 ### 1.3 `anselmo_monolito` — Anselmo Monolito (PNJ con sprite)
-- **Departamento / sala:** director de Desarrollo (jefe de Nerea y del coro) · `pecera`, zona **560-610 px**, de pie junto a su mesa, entre el kanban y la ventana.
+- **Departamento / sala:** director de Desarrollo (jefe de Nemesio y del coro) · `pecera`, zona **560-610 px**, de pie junto a su mesa, entre el kanban y la ventana.
 - **Aspecto (solo ropa y atrezo):** chaleco acolchado gris con muchos bolsillos, un **rollo de cinta de carrocero** colgado del cinturón como una pistolera, un termo con la pegatina «PROPIEDAD DE DESARROLLO» y, bajo el brazo, un archivador con el lomo «PROTOCOLO DE INTEGRACIÓN v.1 (2009)». Idle: vigila la cinta del suelo.
 - **Color de texto:** `#D96CFF`.
 - **Voz / tic:** «Eso no ha pasado por Desarrollo.» Lo que otros hacen con IA es «de fuera»; lo que él mete con IA en los departamentos de los demás es **«transversalidad»**. Todo lo aplaza a «mi revisión, que es en marzo».
@@ -113,7 +113,7 @@ Colores elegidos para no confundirse con los de la biblia (sección 2).
 - **Por qué es querible:** no tiene maldad, tiene ganas. Y en cuatro meses es el único que le ha escrito a Rubén.
 
 ### 1.7 `coro_desarrollo` — El coro del rincón (3 figurantes, presencia sin árbol largo)
-- **Sala:** `pecera`, rincón de Desarrollo (**≈450-540 px**), entre la mesa de Nerea y Anselmo.
+- **Sala:** `pecera`, rincón de Desarrollo (**≈450-540 px**), entre la mesa de Nemesio y Anselmo.
 - **Aspecto:** **de espaldas**, tres sillas giratorias, tres pares de cascos y, por encima de los monitores, solo **las manos**, que gesticulan. Tres tazas: «DEV», «DEV» y «NO». En la pared, un **semáforo de ruido** de Prevención, siempre en rojo.
 - **Prefijos:** `DEV 1:` (indignado), `DEV 2:` (más indignado), `DEV 3:` (solo dice «No.»; dos veces en todo el juego dice otra cosa). A la vez: `CORO:`. Color `#7FFFD4` los tres.
 - **Tic:** juntos discuten a gritos por todo y con todos; ante cualquier fallo, **«¡Ha sido Diseño!»**
@@ -217,9 +217,9 @@ Colores elegidos para no confundirse con los de la biblia (sección 2).
 | `anselmo_monolito` (PNJ) | «Anselmo Monolito, director de Desarrollo.» // «Lleva cinta de carrocero en el cinto. Por si alguien integra algo.» | **Hablar:** árbol 4.2. · Dar: ver 4.10. |
 | `pantalla_anselmo` | Sin `ruben_encontrado`: «"ACCESO DENEGADO: HERMINIA (INFOGRAFÍA)".» // «Debajo: "ACCESO CONCEDIDO: TITULATOR 3000 (USUARIO INTERNO)".» · Con `acto_2_iniciado`, 2.ª Mirar y siguientes, rota: «Un gráfico de Desarrollo: un quesito que suma 130 %.» · «"Lectores por continente". Gana la Antártida, con un 40 %.» · Con `ruben_encontrado`: «"ACCESO REVOCADO: TITULATOR 3000". Con fecha de hoy. Y de julio.» · Con `infografia_integrada` (manda sobre todo): «"ACCESO CONCEDIDO: HERMINIA (DESARROLLO)". Lo de Infografía, tachado.» | **Usar:** ANSELMO: «Esa sesión es mía. Hasta el salvapantallas pasó revisión.» |
 | `coro_desarrollo` | «Tres espaldas de Desarrollo. Se les ven las manos.» // «Las manos están enfadadas.» | **Hablar:** árbol 4.3. · **Dar `cafe`:** CORO: «¿De quién es?» // «De Gertrudis.» // DEV 1: «Taza mal diseñada.» // CORO: «¡Diseño!» · **Empujar:** «La silla gira. Su dueño sigue gritando. No se ha dado cuenta.» |
-| `semaforo_ruido` | «Semáforo de ruido de Prevención. Rojo.» // «Pósit de Nerea: "Verde: 14 de agosto. Estaban de vacaciones".» | **Usar:** «Lo toco. Se pone más rojo. Existe un rojo más rojo.» · **Tirar:** NEREA: «No. Es lo único que les mide sin que se enfaden.» |
+| `semaforo_ruido` | «Semáforo de ruido de Prevención. Rojo.» // «Pósit de Nemesio: "Verde: 14 de agosto. Estaban de vacaciones".» | **Usar:** «Lo toco. Se pone más rojo. Existe un rojo más rojo.» · **Tirar:** NEMESIO: «No. Es lo único que les mide sin que se enfaden.» |
 | `taza_no` | «Una taza que pone "NO". Es de la tercera espalda. La define.» | **Coger:** DEV 3: «No.» |
-| `bandeja_diseno` | «Una bandeja: "ENTREGAS DE DISEÑO Y PRODUCTO". Llena hasta arriba.» // «Todo con fecha y a su hora. Desde este lado no la abre nadie.» | **Abrir** (pone `bandeja_diseno_abierta`): «Arriba: "Entregado a las 18:29. Todo en la carpeta. Buen fin de semana".» // «Al fondo, de 2017: "La pantalla de Dirección tumbará el CMS".» // «Sello de Desarrollo: "LEÍDO (PERO NO)".» · Siguientes: «Diseño se fue a las seis y media. Con todo entregado. Como la gente sana.» · **Coger:** NEREA: «Déjala. Es lo único ordenado del rincón. Y no es nuestro.» |
+| `bandeja_diseno` | «Una bandeja: "ENTREGAS DE DISEÑO Y PRODUCTO". Llena hasta arriba.» // «Todo con fecha y a su hora. Desde este lado no la abre nadie.» | **Abrir** (pone `bandeja_diseno_abierta`): «Arriba: "Entregado a las 18:29. Todo en la carpeta. Buen fin de semana".» // «Al fondo, de 2017: "La pantalla de Dirección tumbará el CMS".» // «Sello de Desarrollo: "LEÍDO (PERO NO)".» · Siguientes: «Diseño se fue a las seis y media. Con todo entregado. Como la gente sana.» · **Coger:** NEMESIO: «Déjala. Es lo único ordenado del rincón. Y no es nuestro.» |
 | `enchufe_pantalla` (existe; **añadido**) | — | **Tirar** con `bandeja_diseno_abierta` y sin `vio_ticket_3` (sustituye a la 2.ª línea de la biblia): «Pone NO DESENCHUFAR. Diseño avisó, pero un aviso no es un ticket.» // «Paco tendrá el número.» (no pone flags) |
 
 **Murmullos nuevos (8.5):**
@@ -419,7 +419,7 @@ Formato de la biblia (7.6): `[NODO] condición` · opciones · `→` salto · `{
   ANSELMO: Ya no hace falta frontera. Ahora todo esto es Desarrollo.
   LEONCIO: (desde lejos) Me han anexionado.
   LEONCIO: ...Pero integrada. Que es lo que quería. Creo.
-  NEREA: Si no está en el tablero, no existe. (pega un pósit: "HERMINIA — HECHO")
+  NEMESIO: Si no está en el tablero, no existe. (pega un pósit: "HERMINIA — HECHO")
   {infografia_integrada}  → FIN
 ```
 
@@ -434,8 +434,8 @@ Formato de la biblia (7.6): `[NODO] condición` · opciones · `→` salto · `{
   1. «¿Por qué gritáis tanto?» (se queda)
      DEV 2: ¡No gritamos!
      DEV 1: ¡Es que juntos no nos oímos!
-     NEREA: (sin levantar la vista) Juntos son un incendio. Por separado, santos.
-     NEREA: El problema es que nunca están por separado.  → CO0
+     NEMESIO: (sin levantar la vista) Juntos son un incendio. Por separado, santos.
+     NEMESIO: El problema es que nunca están por separado.  → CO0
   2. «¿Con quién estáis enfadados?»
      DEV 1: Con el navegador. Con los lectores. Con la lluvia.
      DEV 2: Con el de al lado.
@@ -444,7 +444,7 @@ Formato de la biblia (7.6): `[NODO] condición` · opciones · `→` salto · `{
      DEV 3: No.  → CO0
   3. [!cms_vivo] «¿Por qué se ha caído el CMS?»
      CORO: ¡Diseño!
-     NEREA: El CMS no es nuestro, es de Sistemas.
+     NEMESIO: El CMS no es nuestro, es de Sistemas.
      DEV 1: Pues Sistemas lo habrá diseñado mal. ¡Diseño!  → CO0
   4. [cms_vivo] «El CMS lo he arreglado yo.» (se queda)
      DEV 2: Lo hemos arreglado nosotros.
@@ -474,9 +474,9 @@ Formato de la biblia (7.6): `[NODO] condición` · opciones · `→` salto · `{
   DEV 1: "...Lo tumbará. Proponemos apagarla."
   (Silencio. El semáforo de ruido baja a ámbar.)
   DEV 2: ...Lo entregaron a su hora.
-  NEREA: Lo tengo en HECHO (PERO NO). Desde 2017. Lo moví yo.
+  NEMESIO: Lo tengo en HECHO (PERO NO). Desde 2017. Lo moví yo.
   ANSELMO: (de fondo) Eso no pasó por Desarrollo.
-  NEREA: Sí pasó. Por la bandeja.
+  NEMESIO: Sí pasó. Por la bandeja.
   DEV 3: ...Perdón.
   CORO: (muy bajito, a la vez) Perdón, Diseño.
   DEV 1: No se lo digáis. Ya se han ido.  → FIN
@@ -765,7 +765,7 @@ Habla con el color de Tadeo. Todo lo contesta con ganas.
 ```
 **Murmullos de `valentin_reticula`:** «Margen superior, ocho. Inferior, ocho. Paz.» · ««¡Diseño!». Sí, hola. Está en la bandeja.» · «Lo entregué a las 18:29. Lo demás es literatura.»
 
-**Lo que se dice de él (líneas nuevas para otros):** CELESTINO (murmullo, A): «El de Diseño. Es de Diseño: hasta su sombra está maquetada.» · PACO (murmullo, A): «Me abrió un ticket con márgenes. Lo tengo enmarcado.» · BORJA (murmullo, D): «¡Valentín no necesita filtro! ¡El filtro necesita a Valentín!» · NEREA (murmullo, B): «Diseño entrega antes de que lo pida el tablero. Me descoloca.» · Coro, discusiones de fondo (B; Valentín trabaja **a dos metros**: el coro baja la voz, se corrige o le culpa sin que él levante la vista):
+**Lo que se dice de él (líneas nuevas para otros):** CELESTINO (murmullo, A): «El de Diseño. Es de Diseño: hasta su sombra está maquetada.» · PACO (murmullo, A): «Me abrió un ticket con márgenes. Lo tengo enmarcado.» · BORJA (murmullo, D): «¡Valentín no necesita filtro! ¡El filtro necesita a Valentín!» · NEMESIO (murmullo, B): «Diseño entrega antes de que lo pida el tablero. Me descoloca.» · Coro, discusiones de fondo (B; Valentín trabaja **a dos metros**: el coro baja la voz, se corrige o le culpa sin que él levante la vista):
   - DEV 1: «¡Diseño sigue en el edificio!» // DEV 2: «¡Su director! ¡A dos metros!» // DEV 1: «...Pues que arregle el CMS.» // DEV 2: «Más bajo, que te oye.» // DEV 3: «No.»
   - DEV 2: «¡Esto es culpa de Dis...!» // DEV 1: «¡Chsss! Que está ahí.» // DEV 2: «...de Dirección. Culpa de Dirección.»
   - DEV 1: «¡Diseño tiene la culpa!» // VALENTÍN (sin levantar la vista): «Está en la bandeja.» // DEV 1: «...» // DEV 3: «No.»
@@ -791,7 +791,7 @@ Habla con el color de Tadeo. Todo lo contesta con ganas.
 | `gervasio_acta` 7.7.6 (D) | GV_REUNION | «¿Quién tiene reservada la sala?» | GERVASIO: «Ramírez. Los viernes a las 20:59.» // «¿Y dónde está Ramírez?» // GERVASIO: «Desayunando. Desde 2019. Pero la reserva se respeta. Lo hablamos.» → GV_REUNION |
 | `teodoro_cuerpodoce` 7.7.5 (C) | T0 | «¿Conoce a Herminia, la de Infografía?» | TEODORO (fax): «LA MÁQUINA DE LEONCIO RESPETA EL CUERPO 9. ES LA ÚNICA.» // TEODORO (fax): «LE MANDO FAXES. ME CONTESTA CON UN QUESITO. NOS ENTENDEMOS.» → T0 |
 | `teodoro_cuerpodoce` (C) | T0 | «¿Conoce a don Evaristo?» | TEODORO (fax): «ES DE LOS NUESTROS. ÉL CUENTA COMAS. YO, LÍNEAS.» // TEODORO (fax): «UNA VEZ ME DEVOLVIÓ UN FAX CORREGIDO. LO TENGO ENMARCADO.» → T0 |
-| `nerea_backlog` 7.6.3 (B) | N0 (con cms_vivo) | «¿Por qué está bloqueado lo de Herminia?» (se queda) | NEREA: «Lo bloquea Anselmo. Y a Anselmo lo bloquea Anselmo.» // NEREA: «Es la dependencia más estable del tablero.» → N0 |
+| `nerea_backlog` 7.6.3 (B) | N0 (con cms_vivo) | «¿Por qué está bloqueado lo de Herminia?» (se queda) | NEMESIO: «Lo bloquea Anselmo. Y a Anselmo lo bloquea Anselmo.» // NEMESIO: «Es la dependencia más estable del tablero.» → N0 |
 | `begona_triplicado` 7.6.2 (D) | B0 | «¿Qué le parece Custodia, la de Secretaría?» (se queda) | BEGOÑA: «¿Custodia? No es burocracia, niño. Es temperamento.» // BEGOÑA: «Eso no se sella.» → B0 |
 
 ### 4.8 Combinaciones nuevas (Dar / Usar)
@@ -960,7 +960,7 @@ Origen: Bruno le cuenta lo de la firma a la planta del vestíbulo (Hablar `plant
 | Paso | Lo cuenta (paquete) | Condición | Versión |
 |---|---|---|---|
 | 1 | PACO (A, P0 o P1) | sin `acto_3_iniciado` | «Por la rejilla del 27 se oye masticar. A deshoras.» |
-| 2 | NEREA (B, al empezar N0) | paso 1 | «Dicen que el Titulator consume mucho. Lo ha oído Paco.» |
+| 2 | NEMESIO (B, al empezar N0) | paso 1 | «Dicen que el Titulator consume mucho. Lo ha oído Paco.» |
 | 3 | ÍÑIGO (B, I0, Actos I-II) | paso 2 | «Es un modelo muy hambriento. Señal de calidad.» |
 | Corrección | EVARISTO (A, aviso L4) | — | «Veinticuatro bocadillos al mes. En Sistemas no come atún nadie.» |
 | Desmentido | RUBÉN (A, R0 en el CPD) | paso 3 y `ruben_encontrado` | «Me han dicho que mi consumo es altísimo. Es atún. Del de máquina.» |
@@ -980,7 +980,7 @@ Origen: Bruno le cuenta lo de la firma a la planta del vestíbulo (Hablar `plant
 |---|---|---|---|
 | 1 | BORJA (D, al empezar a hablar) | `acto_2_iniciado` | «¡Dicen que Gervasio deja la plaza 7! ¡Se ha comprado una bici!» |
 | 2 | PACO (A, P0 o P1) | paso 1 | «Dicen que Gervasio se va a vivir al garaje. Para no perder la plaza.» |
-| 3 | NEREA (B, al empezar N0) | paso 2 | «Dicen que la plaza de Ramírez sale a subasta. Ya tiene columna en el tablero.» |
+| 3 | NEMESIO (B, al empezar N0) | paso 2 | «Dicen que la plaza de Ramírez sale a subasta. Ya tiene columna en el tablero.» |
 | Desmentido | CELESTINO (A, al empezar C0) | paso 3 | «Nadie deja una plaza. Las plazas dejan a la gente. Cuando se jubilan.» |
 
 ---
@@ -1225,7 +1225,7 @@ La regla de la 3.ª mirada («AYÚDAME ESTOY EN EL ARMARIO 27») manda sobre est
 | Paquete | Salas | Elementos nuevos |
 |---|---|---|
 | **A · vestíbulo + CPD + común/final** | `vestibulo`, `cpd` | Menciones del cameo por Celestino y Paco (el cameo, `valentin_reticula`, y `monitor_valentin` pasaron a la Pecera, paquete B). Ascensor con botonera (14). Garaje: `cuadro_plazas`, opción y murmullo de Celestino, rumor D paso 2 (Paco) y desmentido (Celestino), remate 8bis.2. Hotspots `altavoz_ibex`, `rama_diseno`, añadidos de `planta_plastico` (Hablar → `planta_oyo`, Empujar), `rejilla_cpd`. Línea del Ibex nueva. Opciones nuevas de Paco (alta de Herminia, rejilla, Tadeo) y de Rubén (Tadeo). Rumor A paso 1 (Celestino), rumor B paso 1 (Paco) y desmentido (Rubén). **Común:** cola de avisos (2.1 llamadas, 2.2 RV:), saludo nuevo de la abuela, Mirar de `movil` y `libreta_replicas`, objeto `boli_muerto` y su combinación con la ficha, datos de duelo (7.1-7.5). **Final:** insertos 9.8 a-d (epílogo, créditos, hilo de esquina). |
-| **B · Pecera + Pajarera** | `pecera`, `pajarera` | PNJ `leoncio_quesitos`, `anselmo_monolito`; presencias `herminia`, `coro_desarrollo`. Hotspots de 3.3 y 3.4. Árboles 4.1, 4.2, 4.3. Opciones nuevas de Íñigo y Nerea. Añadido de `enchufe_pantalla`. Línea de Rubén en la Pecera. Rumores: A paso 4 (Yoli), B pasos 2-3 (Nerea, Íñigo), C paso 2 (Yoli). Insertos 9.1 y 9.2. Titulares 9.9. Combinaciones de 4.8 marcadas B. Murmullos nuevos de Nerea y Yoli. Garaje: pésames de `figurantes_web`, rumor D paso 3 (Nerea), murmullo de Gervasio en la Pajarera. Cameo: murmullo de Nerea y discusión del coro sobre Valentín. |
+| **B · Pecera + Pajarera** | `pecera`, `pajarera` | PNJ `leoncio_quesitos`, `anselmo_monolito`; presencias `herminia`, `coro_desarrollo`. Hotspots de 3.3 y 3.4. Árboles 4.1, 4.2, 4.3. Opciones nuevas de Íñigo y Nemesio. Añadido de `enchufe_pantalla`. Línea de Rubén en la Pecera. Rumores: A paso 4 (Yoli), B pasos 2-3 (Nemesio, Íñigo), C paso 2 (Yoli). Insertos 9.1 y 9.2. Titulares 9.9. Combinaciones de 4.8 marcadas B. Murmullos nuevos de Nemesio y Yoli. Garaje: pésames de `figurantes_web`, rumor D paso 3 (Nemesio), murmullo de Gervasio en la Pajarera. Cameo: murmullo de Nemesio y discusión del coro sobre Valentín. |
 | **C · Vending + Catacumba** | `office`, `catacumba` | Presencia `custodia_precinto` (árbol 4.4) y hotspots de 3.5; hotspots `bolis_aurora`, `corrector_aurora` (3.6). Opciones nuevas de Aurora (coma, Custodia) y Teodoro (Herminia, Evaristo). Murmullo de Aurora por los «!!». Chismes de relleno nuevos de Gertrudis. Rumores: A paso 2 (Gertrudis), C paso 1 (Aurora) y desmentido (Teodoro). Inserto 9.3. Combinaciones C. Garaje: `porra_plazas`, chisme nuevo de Gertrudis, murmullo de Gervasio en el Vending. |
 | **D · Ecosistema + Eventos + Administración + Sala Amazonas** | `ecosistema`, `eventos`, `administracion`, `sala_amazonas` | PNJ `evaristo_salvedad` (árbol 4.6) y hotspots de 3.8; presencia `tadeo_adjunto` vía `portatil_tadeo` (3.7, árbol 4.5); hotspots de la Sala (3.9). Opciones nuevas de Gervasio (reunión) y Begoña. Murmullos de Begoña, Maripaz, Borja y Mercados. Rumores: A paso 3 (Borja), C paso 3 (Maripaz). Insertos 9.4, 9.5, 9.6 (A y B). Cameo 7.4 y `hurt` nuevos de Íñigo en D4. Combinaciones D. Garaje: `piel_platano`, yunque en `pared_rechazadas`, opción de Begoña, murmullos de Maripaz, Borja, Evaristo y Gervasio (Sala), rumor D paso 1 (Borja). Cameo: murmullo de Borja. |
 
@@ -1399,7 +1399,7 @@ líneas, y el Ecosistema queda para Marketing y Comercial.
 - **Árbol de Borja:** entrada «¡Bruno! ¡Justo hablábamos de tu marca personal!» · rumor A3: «¡Me dicen que vas a comprar el periódico! ¡Eso es un lanzamiento!» // «Te hago la campaña: "Sonríe como si tuvieras liquidez".» · rumor D1 sin cambios · opciones: «¿Qué hace Marketing?» → «¡Engagement! Que la gente quiera lo que ya tiene.» // «Pero en vertical. Y con un emoji de fuego.» · «¿Qué evento hay hoy?» → «¡Eso es de Eventos! Yo solo lo cuento. Antes de que pase.» · [ruben_encontrado Y !oyo_descopear] «¿Me prestas el álbum?» → «El álbum es de Eventos. Yo solo lo viralizo.» // «Pídeselo a Pilar. Con acreditación, que se pone tensa.» · «Me voy.» → «¡Salida de escena! ¡Eso es un cierre de embudo!»
 - **Respuestas de Borja sin flash:** Coger: «¡Me has cogido del brazo! ¡Eso es una alianza estratégica!» · Empujar: «¡Contacto físico! ¡Eso es engagement orgánico!» · Dar `cafe`: «¡Café en mano! ¡Eso es un post! Quédatelo, que tú conviertes mejor.» · Dar `tarjeta_becario`: «¿"Pellizco"? ¡Eso es un naming! Te lo registro como marca.» · Dar `ficha_pagina_7`: «¿Una ficha? Hazle un carrusel. Si no, no la firma nadie.» · Usar `movil`: «¡Me grabas! ¡Eso es contenido generado por becario!» · Murmullos nuevos: «Hay que hablarle al lector de tú. Y en vertical. Y con un emoji.» · «Tadeo y yo hacemos sinergia. Él reenvía. Yo lo convierto en hilo.» · «Si alguien deja su plaza, el post del pésame lo escribo yo.» · «¡Valentín no necesita filtro! ¡El filtro necesita a Valentín!» · «Si no está en vertical, no ha pasado.»
 - **Objetos:** `photocall` (Usar: ¡FLASH! + PILAR: «¡Foto de acreditación! Ya constas en un evento.»; con la tarjeta: PILAR: «"Pellizco", acreditado. Con foto. Acceso: hasta el canapé.»; Coger: «¿Me llevo el photocall? Sin él, Eventos dejaría de existir.») · `cajas_lanyards` (Mirar: «Lanyards de Eventos. Para acreditar dos veces a la ONU.»; Coger: «Si me pongo uno más, Pilar me cuenta como asistente.») · `gong` (Mirar: «El gong de Eventos: suena para empezar. Maripaz lo usa por cada venta.»; Usar: PILAR: «¡Ese gong es de Eventos! ¡Y aún faltan cinco minutos!» // MARIPAZ: «Si suena, cariño, yo facturo. Es el acuerdo.»; Coger: PILAR: «El gong no se mueve. Tiene la marca de cinta en el suelo.») · **`album_eventos_hotspot`** (antes `album_borja_hotspot`): «El álbum de Eventos. En todas las fotos sale al fondo un chico pálido.» // «Siempre yendo al baño. Con un táper. Pilar lo llama "el extra".»; Coger: PILAR: «¡Eh! Ese álbum está acreditado. Pídemelo con un motivo.» (con `ruben_encontrado`: «Mejor se lo pido a Pilar. Lo tiene acreditado. Con foto.»).
-- **Objeto de inventario:** `album_eventos` (antes `album_borja`), «álbum de Eventos». Nerea, al cerrar P14b: «El álbum se lo devuelvo yo a Pilar. Con acuse de recibo.»
+- **Objeto de inventario:** `album_eventos` (antes `album_borja`), «álbum de Eventos». Nemesio, al cerrar P14b: «El álbum se lo devuelvo yo a Pilar. Con acuse de recibo.»
 - **P14a (walkthrough, paso 40):** Hablar `pilar_escaleta` → «¿Me prestas el álbum?» (antes, a Borja; los pasos siguen siendo los mismos), ahora en la Sala Polivalente (§13.6).
 - **Carteles:** la planta 2 es «Marketing · Eventos · Comercial · Administración» (escalera de la Pecera, botonera del ascensor; el ascensor llega al Ecosistema y a Eventos se pasa por su puerta); en el organigrama del vestíbulo, un pósit pegado con cinta: «+EVENTOS». **Créditos:** «Eventos — Asignado a: Pilar Escaleta. Empezamos en cinco minutos.» · «Marketing — Asignado a: Borja Engagement (en vertical).»
 
@@ -1566,3 +1566,106 @@ Gervasio con Hidrovoltia**: BEGOÑA: «Esto. Esto es una nota de gasto. Como Dio
 Hidrovoltia. 312,00 euros. Firmado: Gervasio."» // BRUNO: «¿Gervasio come con Hidrovoltia?» // BEGOÑA: «Gervasio come
 con quien haga falta. Y lo justifica. Es su gran talento.»
 
+
+---
+
+## 17. «Equipo 100 % concienciado» — running gag de Desarrollo (encargo de dirección)
+**Premisa.** En esta casa Desarrollo son todo hombres (Anselmo, Nemesio y las tres espaldas del coro) y se creen muy
+feministas sin serlo. El chiste es **siempre sobre ellos** (su punto ciego, su autobombo, su «aliado» de diploma), nunca
+sobre las mujeres; sin groserías, sin acoso, nada sexual. Convive con «¡Ha sido Diseño!»: una de cada tres discusiones de
+fondo del coro es de este gag, y dos de ellas acaban culpando a Diseño. Escala por actos y remata en el epílogo y los créditos.
+
+**Coro (ambiente rotatorio, `pecera.js` `CONCIENCIADOS`; se intercalan con `DISCUSIONES`).**
+- Acto I:
+  - DEV 1: «Somos un equipo feminista. Lo pone el diploma.» // DEV 2: «Nos lo dimos nosotros. Por unanimidad.» // DEV 3: «No.» // DEV 2: «Por mayoría.»
+  - DEV 2: «¿Diversidad? Aquí hay muchísima.» // DEV 1: «Él usa Linux.» // DEV 2: «Y yo, modo oscuro.» // DEV 3: «No.»
+  - DEV 1: «El 8 de marzo pusimos el logo en morado. Todo el día.» // DEV 2: «Sin que nadie lo pidiera.» // DEV 1: «Ese tema ya está cerrado.» // NEMESIO: «Lo tengo en HECHO (PERO NO).»
+  - DEV 1: «Le he explicado a Yoli su propio artículo de SEO.» // DEV 2: «¿Y?» // DEV 1: «Me ha corregido tres cosas. Le he dado las gracias por escuchar.» // DEV 2: «Eso es dar voz.»
+- Acto II (`acto_2_iniciado`):
+  - DEV 2: «La oferta pedía un "ninja del backend". Solo se apuntan chicos.» // DEV 1: «Qué raro. Con lo neutro que es "ninja".» // DEV 2: «Y "rockstar". Y "partirse la cara por el producto".» // DEV 1: «Será el diseño del anuncio.» // CORO: «¡Diseño!»
+  - DEV 1: «Mañana es jueves. Comité de igualdad.» // DEV 2: «¿Quién viene?» // DEV 1: «Los de siempre. Los cuatro.» // DEV 2: «Qué gusto que estemos todos de acuerdo.»
+  - DEV 2: «Hoy le he dicho "compañera" a Aurora. Con muchísimo respeto.» // DEV 1: «¿Y qué te ha contestado?» // DEV 2: «No sé. La he interrumpido para explicarle una tilde.» // DEV 3: «No.»
+- Acto III (`acto_3_iniciado`):
+  - DEV 1: «El comité ha aprobado contratar a una mujer.» // DEV 2: «¿Para qué puesto?» // DEV 1: «Para que el comité tenga sentido.» // DEV 3: «No.»
+  - DEV 2: «¿Y si la brecha es culpa de Diseño?» // DEV 1: «Diseño tiene más mujeres que nosotros.» // DEV 2: «¡Pues eso! ¡Provocadores!» // CORO: «¡Diseño!»
+
+**Opciones de diálogo nuevas (`pecera.dialogos.js`).**
+- Nemesio, «¿En Desarrollo no hay ninguna mujer?» (una vez): NEMESIO: «Ninguna. Pero tenemos un comité de igualdad. Se reúne los jueves.» // «Lo tengo en el tablero: "Igualdad", EN CURSO. Desde 2016.» // BRUNO: «¿Y quién está en el comité?» // NEMESIO: «Los cuatro. Por eso funciona tan bien: nadie nos lleva la contraria.»
+- Nemesio, Acto III, «¿Qué ha decidido el comité de igualdad?» (una vez): NEMESIO: «Contratar a una mujer. Por fin. Votación reñida: cuatro a cero.» // BRUNO: «¿Y ahora?» // NEMESIO: «Ahora debatimos quién le explica a ella lo de la igualdad.»
+- Anselmo, «¿Hay brecha salarial en Desarrollo?» (una vez): ANSELMO: «En mi equipo no hay brecha salarial.» // «No hay nadie con quien compararla.» // BRUNO: «Eso no es un logro.» // ANSELMO: «Es un dato. Y los datos no discriminan. Los hemos hecho nosotros.»
+- Coro, «¿Vosotros sois feministas?» (una vez): CORO: «¡Muchísimo!» // DEV 1: «Tenemos diploma.» // DEV 2: «Y pusimos el logo en morado. Un día entero.» // BRUNO: «¿Y alguna compañera en el equipo?» // DEV 1: «Estamos en ello. Lo lleva el comité.» // DEV 3: «No.»
+
+**Las que los desmontan (una línea seca cada una; opción nueva «Desarrollo dice que son muy feministas.», una vez, añadida al
+final de su árbol sin tocar lo que había; a Yoli, «Desarrollo dice que te da voz.»).**
+- AURORA (Redacción de papel): «Me llaman "compañera" para interrumpirme con más cariño.»
+- BEGOÑA (Administración): «Su comité de igualdad me manda las actas por triplicado. Iguales. Como ellos.»
+- PILAR (Eventos): «Les monté su jornada de igualdad. Cartel: cuatro señores y un logo morado.»
+- MARIPAZ (Comercial): «Desde el más absoluto cariño: su feminismo cabe en un diploma. Y sobra marco.»
+- CUSTODIA (Secretaría): «Me pidieron un buzón "para compañeras". El material no se pide. Que contraten.»
+- YOLI (Redacción): «Me explicaron mi propio artículo de SEO. Luego me agradecieron que lo escuchara.»
+
+**Atrezo en Desarrollo (rincón del comité, x 1090-1150; Mirar + 2-3 verbos).**
+| objeto | Mirar | otros verbos |
+|---|---|---|
+| `diploma_concienciado` «diploma "100 % concienciado"» | «"EQUIPO 100 % CONCIENCIADO". Expedido por: el equipo. Para: el equipo.» // «Cuatro firmas. Todas de los premiados.» | **Coger:** NEMESIO: «Ni lo toques. Nos costó mucho dárnoslo.» · **Usar:** «Lo leo dos veces. Sigue sin firmarlo ninguna compañera. Ni para aprobarlo.» · **Tirar:** ANSELMO: «Quieto. Es el único premio que hemos ganado por unanimidad.» |
+| `logo_morado` «logo morado» | «El logo del periódico, en morado. Impreso el 8 de marzo. Sigue en el corcho.» // «Debajo, a boli: "IGUALDAD: HECHO".» | **Coger:** DEV 1: «¡Eh! Eso es nuestra política de igualdad.» // DEV 2: «Entera.» · **Empujar:** «Lo enderezo. Se vuelve a torcer. Lleva así desde marzo.» · **Usar:** NEMESIO: «Lo descolgamos el 9. Volvió a subir solo. Como el café.» |
+| `buzon_companeras` «buzón "COMPAÑERAS"» | «Buzón de sugerencias: "COMPAÑERAS". Con candado y telarañas.» // «Dentro hay una sola nota. Es de Anselmo: "Más buzones".» · Acto III: «El buzón "COMPAÑERAS". Ha aparecido una araña.» // «Es la primera incorporación del año.» | **Abrir:** NEMESIO: «La llave la tiene el comité. Somos cuatro. No la encuentra ninguno.» · **Usar:** «Echo una sugerencia: "Contratad". Cae al fondo. Hace eco.» · **Usar `pieza_opa`:** «Si la echo ahí, Desarrollo la contesta explicándome mi propia pieza.» · **Empujar:** «Suena hueco. Es el sonido oficial del comité de igualdad.» |
+
+**Murmullos.** NEMESIO: «Igualdad: EN CURSO desde 2016. Va a muy buen ritmo.» · ANSELMO: «Brecha salarial cero. Lo he medido yo. Conmigo mismo.»
+
+**Remate (epílogo, `final.js`, tras «Enhorabuena, Diseño»).** DEV 1: «Otra cosa. El lunes entra la primera compañera de
+Desarrollo.» // DEV 2: «Encarna Kernel. La ha traído el comité. Es vecina de tu abuela.» // BRUNO: «Mi abuela dice que le
+arregló el CMS del pueblo en una mañana.» // DEV 1: «...Pues se lo explicaremos todo. Con paciencia.» // DEV 3: «No.»
+**Créditos:** «Comité de igualdad de Desarrollo — Asignado a: cuatro señores (los jueves). / Primera contratación: Encarna
+Kernel, vecina de la abuela. / Arregló el CMS en una mañana. / Pidió el traslado a Diseño. Entrega a las 18:29.» (lejos de
+«Infografía», como manda la regla de la casa).
+
+## 18. Nemesio Backlog, los Despachos y el vestíbulo de planta (encargo de dirección)
+- **Desarrollo, solo hombres:** Nerea Backlog pasa a ser **Nemesio Backlog** (id `nerea_backlog` SIN cambiar: flags,
+  árbol `nerea`, pruebas y partidas guardadas siguen valiendo). Sprite: hombre de pelo de punta y barba de tres días, con el
+  chaleco de punto mostaza, los pósits en la manga y el rotulador azul detrás de la oreja. Cambios de género en sus líneas:
+  «Mueve pósits con precisión de cirujano.», «No hemos vuelto a comer juntos.», «(Nemesio se queda quieto…)»; el resto de
+  sus líneas, iguales (con «Nemesio» donde decía «Nerea»: semáforo, kanban, calendario, Rubén en el CPD).
+- **«Despachos»:** la sala `pajarera` deja de llamarse «Dirección» en todo lo visible (placa «1 DESPACHOS / SALA DE
+  REUNIONES >» en la Redacción, «1 DESPACHOS ◄» en la Sala Amazonas, botonera «Planta 1 · Redacción · Despachos · Vending»,
+  salida «Despachos», ranuras de guardado). Frases: «Los Despachos. Cristal de arriba abajo: se ven las broncas, pero no
+  se oyen.» // «Al fondo, la puerta de la Sala de Reuniones.» · «Ya está cerrada. En los Despachos las puertas no se
+  cierran: se delegan.» · «Sin titulares, los Despachos parecen una oficina normal.» · «El perchero de los Despachos.
+  Vacío.» · «Es el único mueble de los Despachos sin pósit. No pienso estropearlo.» · «No lo cierro. Una sesión abierta
+  aquí es lo más parecido a un acta.» · rejilla del CPD: «(Despachos) "Amarillo, facturación. Verde, oportunidades..."».
+  La **Reunión de Dirección** y la «PANTALLA DE DIRECCIÓN» no cambian.
+- **Vending (arco abierto):** «El Vending. Un arco sin puerta: se ve la máquina y a Gertrudis. Ahí vive ella.» · **Cerrar:**
+  «No tiene puerta. Gertrudis no necesita puertas: necesita público.»
+- **Tótem `directorio_planta`:** Mirar: «Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.» //
+  «Un punto rojo: "ESTÁ AQUÍ". Es la primera vez que algo me ubica.» · **Usar:** «Busco "becario" en la lista. No sale.
+  Será que va dentro de "Redacción".» · **Empujar:** «No se mueve. Es lo único de esta planta que está donde dice que
+  está.» · **Coger:** «Es un tótem. Se consulta, no se adopta.»
+
+## 19. El móvil de Bruno (encargo de dirección: «no accedo a llamar a la abuela ni a ver el correo»)
+«Usar móvil» abre YA el menú del móvil (objeto `solo`: también con «Usar móvil con Bruno», clic derecho y doble toque):
+«Llamar a la abuela» (las pistas de §5.6, sin cambios) · «Correo (N sin leer)» · «Llamadas perdidas» · «Guardar el móvil».
+La primera vez que suena el móvil o llega un correo, aviso: «Usa el móvil para llamar a la abuela o leer el correo».
+- **Correo:** los «RV:» de Tadeo que ya han llegado (su texto real, del más nuevo al más viejo, con el comentario de Bruno
+  de su aviso) y tres fijos:
+  - EVENTOS (Pilar), «¡Empezamos en 5 minutos!»: «Recordatorio: la presentación empieza en 5 minutos.» // «Enviado el 3 de
+    marzo. Reenviado cada cinco minutos desde entonces.» // BRUNO: «Son las 20:59. Llevo ocho meses llegando tarde a algo.»
+  - ADMINISTRACIÓN (Begoña), «Nota de gasto RECHAZADA (se adjunta duplicado)»: «Su nota "Café para pensar" queda
+    RECHAZADA.» // «Motivo: pensar no es un gasto deducible. Triplicado, por correo interno.» // BRUNO: «Pienso gratis,
+    entonces. Como siempre.»
+  - ELCONTABLE.ES (hace 6 años, sin leer), «¡Bienvenido a elContable.es, Bruno!»: «¡Bienvenido, Bruno! Tu acceso estará
+    listo en 24 horas.» // «Mientras, lee el libro de estilo: página 1 de 412. Un abrazo, Personal.» // BRUNO: «Sin leer
+    desde hace seis años. Ya casi me ha llegado el acceso.»
+- **Llamadas perdidas:** «Abuela · perdida · siempre» y las de Evaristo hasta ahora. BRUNO: «Una perdida de la abuela.
+  Siempre hay una.» // «Y una de Evaristo. Era solo eso.» / «Y N de Evaristo. Todas eran solo eso.» → «Devolver la llamada
+  a la abuela» (pistas) o «Volver».
+- **Pausa → «Cómo se juega»**: explica verbos, clic derecho, ver objetos, el móvil y la libreta.
+
+## 20. La súplica del Titulator y los textos con temporizador (encargo de dirección: «no da tiempo a leerla»)
+- 3.ª Mirar a `pantalla_titulator`: plano detalle «EL TITULATOR»; el titular se rompe y queda «AYÚDAME / ESTOY EN EL /
+  ARMARIO 27» hasta el clic (≥ 4,2 s × velocidad del texto). BRUNO: «Un titular pidiendo socorro. Con número de armario.
+  Eso no es clickbait.» // ÍÑIGO: «Alucinaciones. Es normal en modelos tan avanzados.» Hasta `ruben_encontrado`, cada Mirar
+  par la repite (BRUNO: «Otra vez: "ARMARIO 27". Los titulares no se repiten. Las personas, sí.» // ÍÑIGO: «Sigue
+  alucinando. Eso es que aprende.») y la pantalla del atril la enseña en rojo 2,6 s cada 15 s.
+- Motor: todo texto con temporizador (avisos, globos con `ms`, el hilo del duelo, el mensaje de guardar, el plano detalle con
+  `titulo`/`texto`) dura como mínimo el tiempo de lectura (`speechDuration`, que escala con la velocidad del texto); los
+  créditos se desplazan al ritmo de esa misma velocidad. `tools/text-audit.mjs` lo comprueba en toda la partida.

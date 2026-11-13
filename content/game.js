@@ -7,6 +7,7 @@ import { PAL, rect, px, hline, vline, gradV, glow, rng, ditherPick, frameRect, l
 import { drawText, measure } from '../engine/font.js';
 import music from './music.js';
 import flags, { ADENDA_FLAGS } from './flags.js';
+import { RV_TADEO } from './lib/movil.js';
 
 // ------------------------------------------------------------------ §8.2 respuestas por defecto (rotan en orden)
 const DEFAULTS = {
@@ -139,13 +140,7 @@ const rv = (cond, asunto, bruno) => ({ cond, run: async (api) => {
   await api.sayAs(TA, asunto, { at: topAt(api) });
   await api.say(bruno);
 } });
-const RVS = [
-  rv('inigo_presentado', 'RV: Mejora tus Core Web Vitals en 5 pasos (40 págs.). Por si os sirve!!', 'Para Redacción, Sistemas, Papel y Conserjería. Celestino, en copia.'),
-  rv('gertrudis_saludada', 'RV: RV: Cómo instalar una bandeja 2 en una impresora sin bandeja 2.', 'La impresora de la tercera está en copia. Me identifico con ella.'),
-  rv('acto_2_iniciado', 'RV: RV: RV: La IA dice que el LCP baja quitando lo más grande!!', 'Lo más grande de un periódico es la portada. Mal asunto.'),
-  rv('cms_vivo', 'RV x4: ¿Qué es un CMS? Lo reenvío a los del CMS!!', 'Paco tendrá un ticket nuevo. Le contestará su mejor empleada.'),
-  rv('acto_3_iniciado', 'RV x5: Reflexión sobre armarios: "AYÚDAME ESTOY EN EL ARMARIO 27"', 'Lo ha visto toda la empresa. Y nadie lo ha leído.'),
-];
+const RVS = RV_TADEO.map(([cond, asunto, bruno]) => rv(cond, asunto, bruno));   // textos: content/lib/movil.js (los lee el correo)
 /** Escena común `avisos`: un aviso como mucho por entrada en sala. La lanza el motor (`afterEnter`); también se puede
  *  invocar a mano con `await api.scene('avisos')` (p. ej. al acabar una escena larga que quieras dejar pasar). */
 async function avisos(api) {
@@ -163,6 +158,8 @@ async function avisos(api) {
     api.inc(pick[0]);
     if (pick[0] === 'evaristo_llamadas' && api.flag('evaristo_llamadas') === 2) api.setFlag('evaristo_convoco', true);   // L2
     await pick[1].run(api);
+    // la primera vez que suena el móvil o llega un correo: cómo se usa (orden del director: que se descubra)
+    if (api.once('movil_pista_uso')) api.notice('Usa el móvil para llamar a la abuela o leer el correo', { color: '#9fd8ff', ms: 4200 });
   } finally { g.avisoActive = false; }
   return true;
 }
@@ -281,6 +278,16 @@ export default {
   saveMessages: ['Guardando... (original)', 'Guardando... (duplicado)', 'Guardando... (triplicado)'],
   saveFirstLine: { text: 'BEGOÑA: «Por triplicado, como debe ser.»', color: '#C0A2F6' },
   difficulty: ['Normal', 'Difícil', 'Cierre en viernes'],
+  // menú de pausa → «Cómo se juega» (motor: game.G.help)
+  help: [
+    'Elige un verbo y haz clic en algo. Sin verbo, el clic anda o mira.',
+    'Clic derecho (o pulsación larga): la acción más obvia.',
+    'H, Espacio o el ojo del panel: ver los objetos de la sala.',
+    '· El MÓVIL: clic en su icono (o clic derecho): llamar a la abuela,',
+    '  que da pistas, o leer el correo.',
+    '· La LIBRETA: clic en su icono para repasar las réplicas.',
+    'Esc: pausa. F: pantalla completa. Toque largo: ver objetos.',
+  ],
   quitConfirm: { text: '¿Seguro que quiere salir?', yes: 'Sí', no: 'Lo hablamos' },
 
   // §5.5: aviso al aprender una réplica (api.learnReply('rep_XX')); solo la primera vez

@@ -199,7 +199,7 @@ try {
 
   // ---------------------------------------------------------------- registro del kit
   const reg = await G(async (base) => { const K = await import(base + 'content/lib/kit.js'); K.registro.reset(); __game.game.paintRoom(); return { items: K.registro.items.map(i => i.tipo + ':' + i.texto), mal: K.registro.problemas }; }, base);
-  ok(reg.items.some(i => /placa:DIRECCIÓN/.test(i)) && !reg.items.some(i => /PAJARERA/i.test(i)), `placa de la sala «pajarera» = «DIRECCIÓN» (${reg.items.filter(i => i.startsWith('placa')).join(', ')})`);
+  ok(reg.items.some(i => /placa:DESPACHOS/.test(i)) && !reg.items.some(i => /PAJARERA|placa:DIRECCI/i.test(i)), `placa de la sala «pajarera» = «DESPACHOS» (${reg.items.filter(i => i.startsWith('placa')).join(', ')})`);
   ok(!reg.mal.length, 'todos los textos del kit caben enteros' + (reg.mal.length ? ': ' + reg.mal.join(' | ') : ''));
   await shot(page, 'demo-final');
   await ctx.close();

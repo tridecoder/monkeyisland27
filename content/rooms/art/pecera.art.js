@@ -1,5 +1,5 @@
 // SALA `pecera` (la Redacción) — ARTE Y GEOMETRÍA. Paquete P2 del rediseño (docs/GUIA_REDISENO.md §3, §6, §10-§12).
-// 1260×144, planta 1, FL = 94. Zonas de izquierda a derecha (content/lib/edificio.js PECERA_ZONAS), cada una con las
+// 1270×144, planta 1, FL = 94. Zonas de izquierda a derecha (content/lib/edificio.js PECERA_ZONAS), cada una con las
 // cuatro capas: suelo propio con canto de goma, pared con filete de su color, pilastra en el cambio y rótulo colgado.
 //   NÚCLEO 0-96 ............ kit.nucleo: escalera que SUBE a P2 (arriba), que BAJA a P0 (abajo) y ascensor «1»
 //   VESTÍBULO DE PLANTA .... 96-344 (el reparto, orden del director «sin aire»): el tótem-directorio (100-148) y dos
@@ -12,12 +12,12 @@
 //                            placa «SECRETARÍA», el cartel a la derecha, sitio para Bruno al lado) y la PUERTA DOBLE a la
 //                            Redacción de papel (490-550) con el umbral de latón y aire a los dos lados
 //   WEB .................... 580-720 · ECONOMÍA 720-796 · INFOGRAFÍA 796-890 · (cinta en 890)
-//   DESARROLLO ............. 890-1140: kanban EXENTO, calendario, semáforo, pantalla de Anselmo, el coro de espaldas, la
-//                            taza «NO» y, en los 50 px nuevos, el rincón del «comité de igualdad»: el diploma «EQUIPO
+//   DESARROLLO ............. 890-1150: kanban EXENTO, calendario, semáforo, pantalla de Anselmo, el coro de espaldas, la
+//                            taza «NO» y, en los 60 px nuevos, el rincón del «comité de igualdad»: el diploma «EQUIPO
 //                            100 % CONCIENCIADO», el logo morado del 8 de marzo y el buzón «COMPAÑERAS» con telarañas
-//   DISEÑO Y PRODUCTO ...... 1140-1260: ventanal (Rubén, Acto III; amanecer en el epílogo), bandeja ENTREGAS, Valentín
+//   DISEÑO Y PRODUCTO ...... 1150-1270: ventanal (Rubén, Acto III; amanecer en el epílogo), bandeja ENTREGAS, Valentín
 // De Web a Desarrollo, el dibujo y los objetos están escritos en las coordenadas de la sala de 800 px y se pintan con
-// un desplazamiento de PECERA_DESPLAZ = 410 px (`desplazado`, `D`); Diseño y Producto, PECERA_DESPLAZ_DISENO = 460 (`D2`).
+// un desplazamiento de PECERA_DESPLAZ = 410 px (`desplazado`, `D`); Diseño y Producto, PECERA_DESPLAZ_DISENO = 470 (`D2`).
 // El layout suma lo mismo (`mover`).
 // Tres planos: fondo (pared), plano medio (kanban exento, silla de Ramírez: `layer: 'sorted'` + walkbox con muescas) y
 // primer plano (`foreground`: ficus del vestíbulo de planta y canto de una mesa de Desarrollo, por debajo de los torsos).

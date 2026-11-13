@@ -44,7 +44,7 @@ export async function runDuel(game, api, idOrDef) {
   const ctl = {   // handed to finisher scripts and onHit
     get hits() { return S.hits; }, get misses() { return S.misses; },
     setAssigned: (t) => { S.assigned = t; }, setSubject: (t) => { S.subject = t; }, setCc: (t) => { S.cc = t; },
-    thread: (from, text, ms = 3200) => { S.thread = { from, text, until: game.realTime + ms }; },
+    thread: (from, text, ms = 3200) => { S.thread = { from, text, until: game.realTime + game.timedMs('hilo', `${from} ${text}`, ms) }; },
     hide: () => { game.hud = null; }, show: () => { game.hud = hud; },
   };
 

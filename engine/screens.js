@@ -106,7 +106,8 @@ function slotPickerClick(game, x, y, kind) {
     const seq = (game.G.saveMessages || []).map((t, i) => ({ text: t, at: game.realTime + i * 450 }));
     let tEnd = game.realTime + seq.length * 450;
     if (game.G.saveFirstLine && !game.settings.savedOnce) {
-      seq.push({ text: game.G.saveFirstLine.text, color: game.G.saveFirstLine.color, at: tEnd, ms: 2600 }); tEnd += 2600;
+      const ms = game.timedMs('menú', game.G.saveFirstLine.text, 2600);
+      seq.push({ text: game.G.saveFirstLine.text, color: game.G.saveFirstLine.color, at: tEnd, ms }); tEnd += ms;
       game.settings.savedOnce = true; game.saveSettings();
     }
     seq.push({ text: 'Partida guardada.', at: tEnd });
@@ -128,6 +129,7 @@ function menuItems(game) {
     { label: 'Ver objetos de la sala (H)', act: 'hotspots', enabled: !!game.room && game.mode === 'play' },
     { label: 'Guardar partida', act: 'save', enabled: !game.busy },
     { label: 'Cargar partida', act: 'load', enabled: !game.busy },
+    ...(game.G.help ? [{ label: 'Cómo se juega', act: 'help' }] : []),
     { label: `Velocidad del texto: ${sp}`, act: 'speed' },
     { label: `Música: ${Math.round(s.music * 100)}%`, act: 'music' },
     { label: `Efectos: ${Math.round(s.sfx * 100)}%`, act: 'sfx' },
@@ -152,6 +154,18 @@ export function drawMenu(game, g) {
     drawItems(g, game, lay);
     return;
   }
+  if (m.page === 'help') {
+    const H = game.G.help || [];
+    drawBox(g, 16, 14, 288, 172);
+    drawText(g, 'Cómo se juega', 160, 20, C.title, { align: 'center', bold: true });
+    hline(g, 36, 34, 248, '#2a2444');
+    let yy = 38;
+    for (const l of H) for (const w of wrap(l, 270)) { drawText(g, w, 26, yy, /^[·\s]/.test(l) ? C.item : '#c8c4d8'); yy += 11; }
+    const lab = '[ Volver ]', w = measure(lab);
+    m.layout = [{ label: lab, act: 'back', x: Math.round(160 - w / 2), y: 168, w, h: 12 }];
+    drawItems(g, game, m.layout);
+    return;
+  }
   const items = menuItems(game);
   const lh = items.length > 10 ? 12 : 13, by = items.length > 10 ? 14 : 24;
   const bh = 30 + items.length * lh + 6;
@@ -174,7 +188,9 @@ export function menuClick(game, x, y) {
   const s = game.settings;
   m.msg = null; m.msgSeq = null;
   if (m.page === 'quit') { if (it.act === 'yes') { game.menu = null; goTitle(game); } else m.page = 'main'; return; }
+  if (m.page === 'help') { m.page = 'main'; return; }
   switch (it.act) {
+    case 'help': m.page = 'help'; break;
     case 'difficulty': s.difficulty = ((s.difficulty || 0) + 1) % game.G.difficulty.length; game.saveSettings(); break;
     case 'resume': game.toggleMenu(); break;
     case 'hotspots': game.toggleMenu(); game.showHotspots(); break;
@@ -223,6 +239,7 @@ export function drawIosHelp(game, g) {
 export function startEnding(game, opts = {}, keep = false) {
   return new Promise(resolve => {
     const E = { ...(game.G.ending || {}), ...opts };
+    E.speed = (E.speed || 14) / (game.settings.textSpeed || 1);     // los créditos van al ritmo de la velocidad del texto
     game.ending = { def: E, t: 0, resolve, lines: [], keep, prevMode: game.mode };
     for (const c of E.credits || game.G.credits || []) {
       if (typeof c === 'string') game.ending.lines.push(...(c ? wrap(c, E.textW || 280).map(t => ({ t, col: '#d8d0f0' })) : [{ t: '', col: '' }]));

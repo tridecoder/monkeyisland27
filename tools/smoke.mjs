@@ -267,8 +267,10 @@ try {
   await G(() => __game.doVerb('usar', 'cafe', 'sobre_azucar'));
   ok((await state()).inventory.includes('sobre_azucar'), 'combinación tonta: no se gasta nada');
 
-  step('Pistas: Usar móvil (§5.6)');
+  step('Pistas: Usar móvil (§5.6) → menú del móvil → «Llamar a la abuela»');
   await G(() => __game.doVerb('usar', 'movil'));
+  ok(await G(() => !!__game.state().dialog && __game.state().dialog[0] === 'Llamar a la abuela'), 'Usar móvil abre su menú (sin «con…»)');
+  await G(() => __game.chooseText('Llamar a la abuela'));
   const sp = await state();
   ok(sp.flags.abuela_llamadas === 1, 'abuela_llamadas = 1');
   ok(await G(() => __game.log.some(l => l.who === 'abuela_remedios' && l.text.startsWith('En el pueblo'))), 'primera pista: sin torno_abierto');
@@ -399,7 +401,7 @@ try {
   if (RAPIDO) console.log('  (--rapido: se salta la parte en tiempo real)');
   else {
   await fast(false);
-  await G(() => { __game.setFlag('torno_abierto', true); __game.clearLog(); __game.doVerb('usar', 'movil'); });
+  await G(async () => { __game.setFlag('torno_abierto', true); __game.clearLog(); await __game.doVerb('usar', 'movil'); __game.chooseText('Llamar a la abuela'); });
   ok(await waitFor(() => !!__game.state().phone && __game.state().phone.caller === 'abuela_remedios', null, 4000), 'pista: se abre el móvil con la abuela');
   await waitFor(() => __game.state().phone && __game.state().phone.state === 'talk', null, 6000);
   await G(() => __game.waitIdle());

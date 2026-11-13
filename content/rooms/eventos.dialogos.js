@@ -92,6 +92,9 @@ export default {
             reply: ['¿Por teléfono? Tú, ella y la compañía: tres. ¡Evento!', 'Acreditada: «Abuela de Bruno. Acceso: todo. Que se abrigue».'] },
           { id: 'croqueta', text: 'Gracias por la croqueta.', once: true, if: 'eventos_croqueta',
             reply: ['No me las des. Te he apuntado como catering.', 'Y si alguien pregunta, a las 21:05 estaban todas.'] },
+          // adenda §17
+          { text: 'Desarrollo dice que son muy feministas.', once: true,
+            reply: 'Les monté su jornada de igualdad. Cartel: cuatro señores y un logo morado.' },
           { text: 'Me voy.', exit: true, reply: '¡Hasta ahora! Te guardo la silla ciento trece.' },
         ],
       },

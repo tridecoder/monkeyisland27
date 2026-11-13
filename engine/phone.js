@@ -6,8 +6,14 @@
 //   await api.phone.call(opts, async (api) => { ... })                    // open + try/finally close
 // Estado: game.phone (no se guarda; los scripts en marcha tampoco). Se retira SIEMPRE: al cerrar, al saltar la cinemática,
 // al acabar el script que lo abrió (aunque lance una excepción) y al cargar partida.
+//
+// MODO APLICACIÓN (el móvil de Bruno abierto a mano, «Usar móvil»): el mismo primer plano, sin llamada, con una pantalla
+// de lista o de lectura. El contenido (content/lib/movil.js) la cambia y elige con api.choose en el panel:
+//   await api.phone.app({ title: 'Correo', rows: [{ text, sub?, dot?, color? }], body?: ['línea', ...] })   // abre o cambia
+//   await api.phone.read('tadeo_adjunto', 'texto', { color })   // un globo anclado al móvil (quien escribe el correo)
+//   await api.phone.close()
 import { PAL, rect, hline, vline, px, line, ellipse, ditherOverlay, gradV, glow } from './draw.js';
-import { drawText, measure } from './font.js';
+import { drawText, measure, wrap } from './font.js';
 import { getFrame } from './sprites.js';
 
 export const PW = 96, PH = 146, PY = 2;       // cuerpo del móvil (px), y de su borde superior
@@ -43,6 +49,13 @@ export function anchor(game) {
   const tx = P.side === 'right' ? restX(P) + 4 : restX(P) + PW - 4;
   return { at: [cx + Math.round(game.camX), 56], width, tail: [tx, PY + 70], phone: true };
 }
+/** ¿Cae el punto de pantalla (x, y) sobre el móvil abierto? */
+export function contains(game, x, y) {
+  const P = game.phone;
+  if (!P) return false;
+  const x0 = restX(P);
+  return x >= x0 - 2 && x < x0 + PW + 4 && y >= PY - 2 && y < PY + PH + 4;
+}
 export const talking = (game) => !!(game.phone && game.isTalking(game.phone.caller));
 
 // ------------------------------------------------------------------ ciclo de vida
@@ -74,9 +87,32 @@ export async function open(game, ctx, opts = {}) {
   await game.sleep(320);
   return game.phone === P;
 }
+/** Abre (o actualiza) el móvil en MODO APLICACIÓN: sin timbre, se desliza y enseña una pantalla de lista o de lectura. */
+export async function app(game, ctx, screen = {}) {
+  const P0 = game.phone;
+  if (P0 && P0.mode === 'app' && P0.state !== 'out') { P0.app = screen; P0.caller = screen.caller || P0.caller; return true; }
+  if (P0) kill(game);
+  const pl = game.player;
+  const sx = pl ? pl.x - game.camX : 160;
+  const P = game.phone = {
+    mode: 'app', caller: screen.caller || null, label: screen.title || 'Móvil', color: '#9fd8ff', app: screen,
+    side: sx < 165 ? 'right' : 'left', state: 'app', t0: game.time, tState: game.time, callT0: game.time, ear: false, owner: ctx,
+  };
+  if (game.instant) { P.t0 = game.time - SLIDE_MS * 2; return true; }
+  game.audio.sfx(SFX.pick);
+  await game.sleep(SLIDE_MS);
+  return game.phone === P;
+}
 export async function close(game, opts = {}) {
   const P = game.phone;
   if (!P) return false;
+  if (P.mode === 'app') {                                          // guardar el móvil: se desliza fuera, sin colgar
+    if (game.instant || opts.instant) { game.phone = null; return true; }
+    P.state = 'out'; P.tState = game.time;
+    await game.sleep(SLIDE_MS);
+    if (game.phone === P) game.phone = null;
+    return true;
+  }
   game.log.push({ who: 'aviso', name: null, text: 'Cuelga: ' + P.label, room: game.state && game.state.room, t: Math.round(game.time) });
   if (game.instant || opts.instant) { game.phone = null; return true; }
   P.state = 'hang'; P.tState = game.time; P.ear = false;
@@ -165,6 +201,7 @@ export function draw(g, game) {
   g.save(); g.beginPath(); g.rect(sx, sy, sw, sh); g.clip();
   const hang = P.state === 'hang';
   gradV(g, sx, sy, sw, sh, hang ? [PAL.red[1], PAL.ink[1], PAL.ink[0]] : [PAL.night[2], PAL.night[1], PAL.night[0], PAL.ink[1]]);
+  if (P.mode === 'app') { drawApp(g, game, P, sx, sy, sw, sh); g.restore(); crack(g, sx, sy, sw); g.restore(); return; }
   // barra de estado: cobertura · nombre · batería casi muerta
   for (let i = 0; i < 4; i++) rect(g, sx + 3 + i * 2, sy + 9 - i * 2, 1, 1 + i * 2, i < 3 ? '#e8ecf8' : '#4a5070');
   rect(g, sx + sw - 12, sy + 3, 9, 5, '#e8ecf8'); rect(g, sx + sw - 11, sy + 4, 7, 3, '#10101a'); rect(g, sx + sw - 11, sy + 4, 1, 3, '#ff5040'); rect(g, sx + sw - 3, sy + 4, 1, 3, '#e8ecf8');
@@ -220,14 +257,52 @@ export function draw(g, game) {
     ellipse(g, cx, by + 19, 17, 6, hang ? '#7a1c14' : '#d83a2a'); handset(g, Math.round(cx - 3), by + 17, '#ffffff', true);
   }
   g.restore();
-  // pantalla rota: esquina superior derecha
+  crack(g, sx, sy, sw);
+  g.restore();
+}
+/** pantalla rota: esquina superior derecha */
+function crack(g, sx, sy, sw) {
   const cxk = sx + sw - 1, cyk = sy;
   g.fillStyle = '#17151f'; g.fillRect(cxk - 7, cyk, 8, 1); g.fillRect(cxk - 5, cyk + 1, 6, 1); g.fillRect(cxk - 3, cyk + 2, 4, 1); g.fillRect(cxk - 1, cyk + 3, 2, 1);
   const crack = '#d8def0', crack2 = '#7d86a8';
   line(g, cxk - 3, cyk + 3, cxk - 20, cyk + 14, crack); line(g, cxk - 3, cyk + 3, cxk - 9, cyk + 22, crack2); line(g, cxk - 2, cyk + 4, cxk - 2, cyk + 28, crack);
   line(g, cxk - 14, cyk + 10, cxk - 24, cyk + 6, crack2); line(g, cxk - 7, cyk + 14, cxk - 18, cyk + 22, crack2); line(g, cxk - 2, cyk + 14, cxk - 12, cyk + 17, crack2);
   px(g, cxk - 6, cyk + 9, '#ffffff'); px(g, cxk - 11, cyk + 12, '#ffffff');
-  g.restore();
+}
+/** La pantalla en MODO APLICACIÓN: barra de estado, título y una lista (con punto de «no leído») o un texto. */
+function drawApp(g, game, P, sx, sy, sw, sh) {
+  const A = P.app || {};
+  for (let i = 0; i < 4; i++) rect(g, sx + 3 + i * 2, sy + 9 - i * 2, 1, 1 + i * 2, i < 3 ? '#e8ecf8' : '#4a5070');
+  rect(g, sx + sw - 12, sy + 3, 9, 5, '#e8ecf8'); rect(g, sx + sw - 11, sy + 4, 7, 3, '#10101a'); rect(g, sx + sw - 11, sy + 4, 1, 3, '#ff5040');
+  const hora = A.hora || '20:59';
+  drawText(g, hora, sx + (sw >> 1), sy + 1, '#c8d0e8', { align: 'center' });
+  rect(g, sx, sy + 12, sw, 12, '#22305a'); hline(g, sx, sy + 24, sw, '#4a6ab0');
+  drawText(g, fit(A.title || 'Móvil', sw - 6), sx + 3, sy + 13, '#ffffff', { bold: true });
+  let y = sy + 27;
+  if (A.rows) {
+    for (const r of A.rows) {
+      if (y > sy + sh - 10) break;
+      if (r.dot) { rect(g, sx + 2, y + 4, 3, 3, '#4ab0ff'); }
+      if (r.icon) { rect(g, sx + 2, y + 2, 5, 6, r.icon); }
+      drawText(g, fit(r.text, sw - 10), sx + 8, y, r.color || (r.dot ? '#ffffff' : '#b8c0d8'), r.dot ? { bold: true } : {});
+      y += 10;
+      if (r.sub) { drawText(g, fit(r.sub, sw - 10), sx + 8, y, '#7a86a8'); y += 10; }
+      hline(g, sx + 2, y, sw - 4, '#1e2440'); y += 2;
+    }
+  }
+  if (A.body) {
+    for (const l of [].concat(A.body)) for (const w of wrap(String(l), sw - 6)) {
+      if (y > sy + sh - 10) break;
+      drawText(g, w, sx + 3, y, '#d8dcec'); y += 10;
+    }
+  }
+}
+/** recorta un texto con «…» para que quepa en `w` px */
+function fit(t, w) {
+  t = String(t);
+  if (measure(t) <= w) return t;
+  while (t.length > 1 && measure(t + '…') > w) t = t.slice(0, -1);
+  return t + '…';
 }
 
 /** Bruno con el móvil en la oreja: brazo levantado y teléfono sobre el sprite (a = actor, s = escala). */

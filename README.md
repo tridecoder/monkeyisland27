@@ -78,8 +78,8 @@ Diez salas en cuatro plantas, con un mismo núcleo (escalera + ascensor) en cada
 `docs/CONTENT_SCHEMA.md` §2.6; rediseño: `docs/GUIA_REDISENO.md`):
 
 - **Planta 2:** Marketing y Comercial (con la puerta de Eventos / Sala Polivalente y el pasillo de Administración).
-- **Planta 1:** la Redacción (940 px: Dirección, el Vending, la Secretaría de Redacción y, al lado, tras una puerta doble,
-  la Redacción de papel / Cierre; de Dirección se pasa a la Sala Amazonas).
+- **Planta 1:** la Redacción (1270 px; al llegar, un vestíbulo de planta con los Despachos, el Vending, la Secretaría de
+  Redacción y, tras una puerta doble, la Redacción de papel / Cierre; de los Despachos se pasa a la Sala Amazonas).
 - **Planta 0:** el Vestíbulo (tornos). **Planta −1:** Sistemas (solo en ascensor).
 
 ## Estructura

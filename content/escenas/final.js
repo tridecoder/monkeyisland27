@@ -182,6 +182,12 @@ async function final(api) {
     await api.say('Diseño soy yo. Lo pone el organigrama.');
     await coro('DEV 2: Pues enhorabuena, Diseño.');
     await coro('CORO: Enhorabuena, Diseño.');
+    // adenda §17, remate del comité de igualdad: por fin contratan a una mujer (y el chiste sigue siendo sobre ellos)
+    await coro('DEV 1: Otra cosa. El lunes entra la primera compañera de Desarrollo.');
+    await coro('DEV 2: Encarna Kernel. La ha traído el comité. Es vecina de tu abuela.');
+    await api.say('Mi abuela dice que le arregló el CMS del pueblo en una mañana.');
+    await coro('DEV 1: ...Pues se lo explicaremos todo. Con paciencia.');
+    await coro('DEV 3: No.');
     api.face('down');
     await api.say(['Por fin tengo departamento. Y es el que tenía razón.',
       'Si has llegado hasta aquí...', '...tu tiempo de permanencia es mejor que el de la portada.']);
@@ -220,6 +226,10 @@ function creditos(api) {
     ...asig('Reenvíos', 'Asignado a: la impresora de la tercera, la única que leía a Tadeo.'),
     ...asig('Rumores', 'Asignado a: la planta del vestíbulo (micrófono de 1994).'),
     ...asig('Plazas de garaje', 'Asignado a: Bruno Pellejo (plaza 1, sin coche).'),
+    // adenda §17: el remate del comité de igualdad (lejos de «Infografía», como el resto de menciones a Diseño)
+    ...asig('Comité de igualdad de Desarrollo', 'Asignado a: cuatro señores (los jueves).',
+      'Primera contratación: Encarna Kernel, vecina de la abuela.', 'Arregló el CMS en una mañana.',
+      'Pidió el traslado a Diseño. Entrega a las 18:29.'),
     ...asig('Dirección de arte', 'Asignado a: Valentín Retícula (lo entregó a las 18:29).'),
     '',
     'Ninguna rotativa fue apagada durante el desarrollo de este juego.',

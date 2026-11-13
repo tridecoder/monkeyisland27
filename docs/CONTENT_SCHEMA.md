@@ -8,7 +8,7 @@ Authoritative reference for writing content on this engine. Everything here matc
   punctuation. `“”` become `"`, `’` becomes `'`, `…` becomes `...`. Unknown characters render as `?`.
 - Plain ES modules, no build step. Import with **relative** paths (`'../lib/room.js'` from `content/rooms/`,
   `'../../engine/draw.js'` from `content/rooms/`, `'../../../engine/draw.js'` from `content/rooms/art/`).
-- Screen 320×200. Room viewport 320×144 (y 0–143); UI panel y 144–199. Rooms may be wider than 320 (`pecera` is 940, `eventos` 512, `ecosistema` 400).
+- Screen 320×200. Room viewport 320×144 (y 0–143); UI panel y 144–199. Rooms may be wider than 320 (`pecera` is 1270, `eventos` 512, `ecosistema` 432).
 - Bible rules that the tools enforce: ids in `snake_case` without accents; **no spoken line over 80 characters**
   (`tools/check.mjs` warns); a bible ` // ` means two separate lines (two balloons); stage directions in brackets
   are never shown as text.
@@ -152,7 +152,7 @@ const layout = {
 };
 export default {
   room: '<id>',
-  width: 320,                       // 940 for pecera
+  width: 320,                       // 1270 for pecera
   scale: { yFar: 100, far: 0.86, yNear: 142, near: 1.0 },   // or a number, or (y) => scale
   walkboxes: [{ id: 'suelo', poly: [[4, 104], [316, 104], [318, 142], [2, 142]] }],
   entries: { pecera: [160, 108, 'down'], cpd: [278, 112, 'down'] },   // named after the room you come FROM
@@ -224,30 +224,30 @@ for any entry. Lift objects carry `ascensor: { planta, label }` (no `exit`): `to
 Fuente única de la geografía (biblia §3.0, adenda §14, `content/lib/edificio.js`, órdenes de dirección 1-3 del cierre del
 rediseño). Toda placa, indicador de ascensor y escalera debe cuadrar con esto; una salida nueva se añade aquí primero.
 Las placas son las del kit (`kit.placaSala`: banda con el número y el color de la planta, nombre llano, flecha); los
-apodos (Pecera, Catacumba, Ecosistema) solo en boca de los personajes; «Pajarera» y «Vending» no se ven nunca (son ids).
+apodos (Pecera, Catacumba, Ecosistema) solo en boca de los personajes; «Pajarera», «Office» y «Nerea» no se ven nunca (son ids); la sala `pajarera` se llama «Despachos».
 
 | planta | salas (id → nombre visible) | cómo se llega / se sale |
 |---|---|---|
-| **2** (lila) | `ecosistema` → Marketing y Comercial · `eventos` → Eventos / Sala Polivalente · `administracion` → Administración | `ecosistema` (400 px): a la IZQUIERDA el NÚCLEO (x 0-96): escalera que BAJA (placa «1 REDACCIÓN ▼», `ecosistema_a_pecera`) y ascensor «2»; puerta doble con ojos de buey (placa «2 EVENTOS», x 194-238) → `eventos`; al fondo a la derecha el pasillo (placa «2 ADMINISTRACIÓN ►», x 352-398) → `administracion`. |
-| **1** (verde agua) | `pecera` → Redacción · `catacumba` → Redacción de papel / Cierre · `office` → Vending · `pajarera` → Dirección · `sala_amazonas` → Sala Amazonas | `pecera` (940 px): a la IZQUIERDA el NÚCLEO (x 0-96): escalera que SUBE (placa «2 MARKETING ▲», arriba), escalera que BAJA (placa «0 VESTÍBULO ▼», abajo) y ascensor «1»; pasillo de Dirección (x 96-170): puerta de cristal «1 DIRECCIÓN ◄» (x 100-130) → `pajarera` → `puerta_sala` («1 AMAZONAS / SALA DE REUNIONES ►») → `sala_amazonas`; puerta de madera «1 VENDING ►» (x 136-166) → `office` (sala sin más salidas); zona de papel (x 170-310): la Secretaría de Redacción (Custodia, ventanuco x 179-215) y la PUERTA DOBLE abierta (x 236-296, placa «1 REDACCIÓN / DE PAPEL · CIERRE», umbral de latón) → `catacumba`, al MISMO nivel (por dentro, placa «1 REDACCIÓN ◄ / REDACCIÓN WEB»). |
+| **2** (lila) | `ecosistema` → Marketing y Comercial · `eventos` → Eventos / Sala Polivalente · `administracion` → Administración | `ecosistema` (432 px): a la IZQUIERDA el NÚCLEO (x 0-96): escalera que BAJA (placa «1 REDACCIÓN ▼», `ecosistema_a_pecera`) y ascensor «2»; puerta doble con ojos de buey (placa «2 EVENTOS», x 194-238) → `eventos`; al fondo a la derecha el pasillo (placa «2 ADMINISTRACIÓN ►», x 384-430) → `administracion`. |
+| **1** (verde agua) | `pecera` → Redacción · `catacumba` → Redacción de papel / Cierre · `office` → Vending · `pajarera` → Despachos · `sala_amazonas` → Sala Amazonas | `pecera` (1270 px): a la IZQUIERDA el NÚCLEO (x 0-96): escalera que SUBE (placa «2 MARKETING ▲», arriba), escalera que BAJA (placa «0 VESTÍBULO ▼», abajo) y ascensor «1»; VESTÍBULO DE PLANTA (x 96-344, un hueco y una placa por acceso, a la misma altura): tótem-directorio (x 100-148); frente de cristal «1 DESPACHOS / SALA DE REUNIONES >» (x 168-224) → `pajarera` → `puerta_sala` («1 AMAZONAS / SALA DE REUNIONES») → `sala_amazonas`; arco abierto «1 VENDING» (x 260-316) → `office` (sala sin más salidas); zona de papel (x 344-580): la Secretaría de Redacción en su hueco (placa «SECRETARÍA», ventanuco x 370-406) y la PUERTA DOBLE abierta (x 490-550, placa «1 REDACCIÓN / DE PAPEL · CIERRE», umbral de latón) → `catacumba`, al MISMO nivel (por dentro, placa «1 REDACCIÓN ◄ / REDACCIÓN WEB»). |
 | **0** (verde) | `vestibulo` → Vestíbulo | puerta de la calle (no se sale) · línea de tornos (el carril delantero, «AVERIADO») · a la DERECHA, detrás de los tornos, el NÚCLEO (x 224-320): escalera que SUBE (placa «1 REDACCIÓN ▲», `vestibulo_a_redaccion` / `torno`) y ascensor «0». Con el torno cerrado, el núcleo queda al otro lado (walkbox condicional `paso_torno`). |
 | **−1** (azul) | `cpd` → Sistemas | a la IZQUIERDA el NÚCLEO: ascensor «−1» y la caja de escalera CERRADA («SOLO EVACUACIÓN», sin hotspot): solo se llega en ascensor. |
 
 ```
 P2   núcleo[▼ escalera · ascensor 2] [ecosistema: Marketing · puerta EVENTOS · Comercial · pasillo] ─┬─ [eventos]
                                                                                                     └─ [administracion]
-P1   núcleo[▲ ▼ escaleras · ascensor 1] [pecera: pasillo de Dirección · zona de papel · Web … Diseño]
-            ├─ cristal DIRECCIÓN ─ [pajarera] ─ puerta AMAZONAS ─ [sala_amazonas]
-            ├─ puerta VENDING ─ [office]                        (sin más salidas)
+P1   núcleo[▲ ▼ escaleras · ascensor 1] [pecera: vestíbulo de planta · zona de papel · Web … Diseño]
+            ├─ cristal DESPACHOS ─ [pajarera] ─ puerta AMAZONAS ─ [sala_amazonas]
+            ├─ arco VENDING ─ [office]                          (sin más salidas)
             └─ puerta doble (umbral de latón, mismo nivel) ─ [catacumba]   (sin más salidas)
 P0   [vestibulo: calle · tornos] ─torno─ núcleo[▲ escalera · ascensor 0]
 P−1  núcleo[ascensor −1 · escalera cerrada] [cpd]
 ```
 Entradas (se llaman como la sala de origen; Bruno aparece dentro del suelo, delante de la salida de vuelta):
-`pecera.entries` = `vestibulo`/`ecosistema` [31, 112] (pie de las escaleras), `ascensor` [69, 110], `pajarera` [115, 110],
-`office` [151, 110], `catacumba` [266, 110]; `catacumba.entries.pecera` [32, 116]; `office.entries.pecera` [30, 112];
+`pecera.entries` = `vestibulo`/`ecosistema` [31, 112] (pie de las escaleras), `ascensor` [69, 110], `pajarera` [196, 110],
+`office` [288, 110], `catacumba` [520, 110]; `catacumba.entries.pecera` [32, 116]; `office.entries.pecera` [30, 112];
 `vestibulo.entries.pecera` [289, 112] (pie de la escalera, detrás de los tornos), `ascensor`/`cpd` [251, 110];
-`ecosistema.entries.pecera` [31, 112], `ascensor` [69, 110], `eventos` [216, 114], `administracion` [372, 116].
+`ecosistema.entries.pecera` [31, 112], `ascensor` [69, 110], `eventos` [216, 114], `administracion` [404, 116].
 `tools/smoke.mjs` comprueba plantas, escaleras y vecindad; `tools/play-mouse.mjs --solo=conexiones` recorre cada salida en
 los dos sentidos con clics reales y mide dónde se aparece.
 
@@ -433,7 +433,7 @@ All optional; colours are hex; shading is derived.
 | `skin`, `hair`, `eyes` | colour | |
 | `hairStyle` | `short` `parted` `long` `bob` `bald` `balding` `ponytail` `bun` `curly` `afro` `mohawk` `spiky` `buzz` `cowlick` `combover` `bouffant` `quiff` `highponytail` `mane` `curlybun` | |
 | `hairStreak` | colour | streaks (Yoli's fuchsia) |
-| `hairPencil` | colour | pencil/pen through a bun (Nerea, Aurora) |
+| `hairPencil` | colour | pencil/pen through a bun (Aurora) |
 | `shirt`, `jacket`, `vest`, `stripes` | colour \| null | `untucked: true` = shirt hanging out (no belt) |
 | `sleeves` | `'long'` \| `'short'` | |
 | `tie`, `bowtie`, `scarf`, `scarfStripe` | colour \| null | |
@@ -514,6 +514,9 @@ Bruno habla sobre Bruno (con el móvil en la oreja) y los demás globos se acomo
 | `await api.phone.close()` | pitidos de colgar, «fin de llamada» y el móvil se desliza fuera |
 | `await api.phone.call(opts, async (api) => {...})` | `open` + cuerpo + `close` garantizado (también si el cuerpo lanza). **Úsalo siempre que puedas** |
 | `api.phone.active`, `api.phone.caller` | estado |
+| `await api.phone.app({ title, rows: [{ text, sub?, dot?, icon?, color? }], body?: [líneas], caller? })` | MODO APLICACIÓN (sin llamada): abre el móvil, o cambia su pantalla, con una lista o un texto. El menú se elige con `api.choose(opciones, { escape: i })` en el panel |
+| `await api.phone.read(who, text \| [lines], opts?)` | un globo anclado al móvil (el texto de un correo); `who` = id de actor o `null` |
+| `await api.choose(options, { escape })` | (general) `escape` = la opción que eligen Esc y un toque en la sala fuera del móvil; los toques de los primeros 250 ms no cuentan (doble toque seguro). Al cargar partida, un menú con `escape` se cierra por ella |
 Retratos: `portrait(g, w=72, h=54, { mouth: 0..2, blink, t })` en la definición del actor (ver `content/lib/retratos.js`: Abuela y
 Evaristo). Cualquier `sayAs(caller)` con el móvil abierto se ancla solo al móvil. El móvil se retira siempre: al cerrar, con
 Esc (cinemática saltada), en modo rápido (`skipText`, instantáneo), al terminar el script que lo abrió aunque falle, y al
@@ -695,7 +698,8 @@ Start a duel from a dialog option: `{ text: 'Quiero firmar en tu página 7.', do
 ## 11. Inventory items (shared)
 
 `content/items.js` has the 18 items of bible §4 plus `boli_muerto` (#19, addendum 6.1) (ids, names, icons, Mirar with states) and the behaviour that does not
-depend on a room: Usar `movil` (hints) and «Usar móvil con cualquier cosa», the libreta's list of learned replies,
+depend on a room: Usar `movil` (the PHONE MENU, `content/lib/movil.js`: call the grandmother = hints, read the e-mail,
+missed calls) and «Usar móvil con cualquier cosa» (refusal), the libreta's list of learned replies,
 Mirar `mensaje_fp` → `vio_borde_perforado`, **Usar chicle con tarjeta_becario** (P01b → `tarjeta_con_chicle`, the gum
 is used up), «Usar sobre_azucar con café» (§8.1). Everything else involving an item is a handler on the room object or
 NPC (§6). Ids: `tarjeta_becario`, `libreta_replicas`, `movil`, `chicle`, `cafe`, `chaqueta_ramirez`, `sobre_azucar`,
@@ -704,7 +708,10 @@ NPC (§6). Ids: `tarjeta_becario`, `libreta_replicas`, `movil`, `chicle`, `cafe`
 
 Item definition keys: `name` (string or `(view) => string`), `icon(g, x, y, view, variant)` (28×18 box, outlined
 automatically), `iconKey(view) => string` (icon variant, part of the cache key: tarjeta without photo, ficha's ticks,
-pieza recortada), `defaultVerb`, `desc`, `handlers`, `combine: { otherItem: handler }`.
+pieza recortada), `defaultVerb`, `desc`, `handlers`, `combine: { otherItem: handler }`, **`solo: true`** (an item used
+on its own: «Usar» + its icon, a click on the icon with no verb, right-click/long press and a double tap all run its `usar`
+handler AT ONCE, without the «Usar X con…» step; «Usar X con Bruno» is the same as «Usar X»; «Usar X con otra cosa» and
+«Dar X a alguien» keep working as usual. In the game: `movil` and `libreta_replicas`. Engine: `Game.isSolo(id)`).
 Anti-dead-end rule (§4): an item is only removed (`api.take`) by its correct use; `cafe` is infinite (Gertrudis).
 
 ---
@@ -757,6 +764,7 @@ game by itself; `api.ending(opts)` ends the game (a click fast-forwards; at the 
 | `node tools/sala.mjs <id> [--actos=a0,a1,…] [--escala=2] [--estricto]` | the artists' preview: the room in every act state (a0 start … a3b Rubén free) clean / debug / «ver hotspots», panorama of wide rooms, contact sheet and the NPC visibility + talk-spot report → `tools/shots/sala/<id>/` |
 | `node tools/test-motor.mjs` | redesign engine + kit test on the throwaway demo room `tools/demo-rediseno.js` (poses, U walkbox, per-area scale, penumbra, detalle, ver hotspots, hit-slop, 14 px touch rows, held object, kit registry) and, in the real game, «ver hotspots» in the 10 rooms and Gervasio seated |
 | `node tools/smoke.mjs [--rapido]` | full UI smoke test (title, 10 rooms, inventory, sample duel, save/load, menu, credits, debug, touch); `--rapido` skips the real-time phone part and the device viewports |
+| `node tools/test-movil.mjs` | Bruno's phone (`solo` item) with a real mouse and finger: Usar+icon, icon alone, «Usar móvil con Bruno», right-click, double tap on iPhone landscape; the mail (reading only touches `movil_leidos`), the grandmother call, Esc / tap outside, load with the menu open |
 | `node tools/walkthrough.mjs [--alt] [--hasta=N] [--lento]` | bible §5.4 step by step (data in the file); stops at the first failing step and says why. Fails while rooms are unfinished: expected |
 | `node tools/extras.mjs [--hasta=X10] [--lento]` | walkthrough 5.4 + the «extras» X1…X26 of addendum §12 interleaved (data in the file; fails at the first unimplemented X step: expected). Shares `walk-data.mjs` / `walk-lib.mjs` with the walkthrough; both **dismiss the automatic notices** and keep going |
 | `node tools/play-mouse.mjs [--solo=raton\|geometria] [--vis]` | Act I + duel D1 with REAL mouse events only (incl. the vestíbulo barrier: the lift is unreachable before `torno_abierto`, reachable after; the lift panel by clicks), and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, is not fully covered by another hotspot, and every talkable NPC shows ≥ 80 % of head+torso (silhouette render) with ≥ 120 px of own click area — also **with Bruno standing at its talk spot** (talk spots go to the SIDE of the NPC, never in front) (`--vis` prints the figures). Shared with `tools/sala.mjs` (`tools/geo-audit.mjs`), plus the redesign rules R1-R5 (≥ 12×10, overlaps ≤ 30 %, talk spot ≥ 24 px, kit signs whole, inside the room): errors in rooms whose art has `rediseno: true` (or with `--estricto`), warnings elsewhere (`--avisos` lists them); `--sala=a,b` limits the audit |

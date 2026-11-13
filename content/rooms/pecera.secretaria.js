@@ -48,6 +48,9 @@ export const dialogoCustodia = {
           do: async (api) => { await cu(api, 'Todo. Siguiente.'); } },
         { text: '¿Dónde está...?', if: 'custodia_ablandada', goto: 'CU_DONDE' },
         { text: 'Le traigo un muerto.', if: 'has:boli_muerto', goto: 'CU_CADAVER' },
+        // adenda §17
+        { text: 'Desarrollo dice que son muy feministas.', once: true,
+          do: async (api) => { await cu(api, 'Me pidieron un buzón «para compañeras». El material no se pide. Que contraten.'); } },
         { text: 'Nada, perdone.', exit: true, do: async (api) => { await cu(api, 'Perdonado. Siguiente.'); } },
       ],
     },

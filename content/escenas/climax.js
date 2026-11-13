@@ -180,7 +180,7 @@ export async function climaxEmpujon(api) {
     await api.walkTo(SITIO_TRAS_EMPUJON[0], SITIO_TRAS_EMPUJON[1]);
     api.face('right');
     // plano detalle (guía §13.3): el reverso del cartón caído, con su pegatina, mientras suena su grabación
-    await api.detalle({ titulo: 'EL REVERSO DEL LECTOR MEDIO', x: 98, y: 4, w: 150, h: 60, draw: detalleAtrezo }, async (api) => {
+    await api.detalle({ titulo: 'EL REVERSO DEL LECTOR MEDIO', texto: 'Atrezo – Focus group 2014', x: 98, y: 4, w: 150, h: 60, draw: detalleAtrezo }, async (api) => {
       await api.wait(700);
       await api.sayAs(LECTOR, 'A mí lo que me interesa es la economía. Y ahorrar.');
     });
