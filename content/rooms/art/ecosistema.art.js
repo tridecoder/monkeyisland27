@@ -8,9 +8,10 @@
 //   puerta de EVENTOS 190-242 doble hoja ciruela con ojos de buey por los que se escapan los focos, piloto «5 MIN»,
 //                           placa «2 EVENTOS» (en la fila de placas y rótulos, y 2) y umbral granate.
 //   COMERCIAL 242-384 ..... roll-up «SU ANUNCIO AQUÍ» (desplegado / enrollado), termómetro de ventas al 97 %, el lema
-//                           ENTERO en 4 líneas, la mesa de Maripaz y, en el suelo, la piel de plátano de la plaza 7.
+//                           ENTERO en 4 líneas, la mesa de Maripaz.
 //   PASILLO 384-432 ....... boca de 46 px (dibujada en coordenadas de 400 px, `corrido` +32) en perspectiva hacia Administración (ventanilla al fondo, placa
-//                           «2 ADMINISTRACIÓN ►»), con la impresora de la tercera ENTERA dentro.
+//                           «2 ADMINISTRACIÓN ►»), con la impresora de la tercera ENTERA dentro y, en el suelo delante
+//                           de su bandeja, la piel de plátano de la plaza 7.
 // Paleta: lila y fucsia (Marketing), ciruela y granate (Eventos), naranja melocotón (Comercial), verde oliva (pasillo).
 import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, ditherPick, ditherOverlay, glow, gradV,
   rng, hash2, shade, shadowEllipse, bevel, vignette, mug, label } from '../../../engine/draw.js';
@@ -46,7 +47,9 @@ const layout = {
     sprites: { desplegado: (g) => drawRollup(g, false), enrollado: (g) => drawRollup(g, true), default: (g) => drawRollup(g, false) } },
   termometro_ventas: { rect: [267, 30, 22, 52], walkTo: [278, 112], face: 'up' },
   lema_enmarcado: { rect: [290, 18, 62, 33], walkTo: [318, 114], face: 'up' },
-  piel_platano: { rect: [334, 118, 18, 10], walkTo: [360, 126], face: 'left', priority: 2, draw: drawPlatano },
+  // la piel de plátano, en el suelo JUSTO delante de la bandeja de la impresora (donde se para quien recoge un folio);
+  // Bruno la mira desde su izquierda, sin tapar a Maripaz ni la impresora
+  piel_platano: { rect: [377, 100, 19, 10], walkTo: [366, 112], face: 'right', priority: 2, draw: drawPlatano },
   // el pasillo a Administración, con la impresora dentro (la impresora, a la izquierda de la boca; la salida, el resto)
   impresora_tercera: { rect: [354 + PX, 56, 20, 40], walkTo: [366 + PX, 108], face: 'up', priority: 1, draw: (g, v, t) => corrido(drawImpresora)(g, v, t) },
   ecosistema_a_administracion: { rect: [370 + PX, 20, 28, 80], walkTo: [384 + PX, 108], face: 'right' },
@@ -58,7 +61,7 @@ const layout = {
 // ------------------------------------------------------------ objetos dibujados por su hotspot
 function drawPlatano(g) {
   // piel de plátano de 16×8, amarillo saturado, con canto vivo (y su pósit «PLAZA 7»)
-  const x = 335, y = 119;
+  const x = 378, y = 101;
   shadowEllipse(g, x + 8, y + 7, 9, 2, 0.6);
   poly(g, [[x + 1, y + 4], [x + 8, y + 1], [x + 15, y + 4], [x + 9, y + 7], [x + 4, y + 7]], '#ffd21e');
   poly(g, [[x + 6, y + 4], [x + 11, y + 6], [x + 15, y + 8], [x + 9, y + 8]], '#e8b010');

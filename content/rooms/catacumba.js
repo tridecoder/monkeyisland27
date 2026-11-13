@@ -240,9 +240,6 @@ const dialogoAurora = {
           } },
         { text: '¿Ha oído cómo pregunta Custodia?', if: 'custodia_regla',
           do: async (api) => { await aurora(api, ['Abre interrogación y cierra con punto.', 'Eso no es una pregunta, criatura. Es una sentencia.']); } },
-        // adenda §17: el comité de igualdad de Desarrollo (una línea seca; el chiste, sobre ellos)
-        { text: 'Desarrollo dice que son muy feministas.', once: true,
-          do: async (api) => { await aurora(api, 'Me llaman «compañera» para interrumpirme con más cariño.'); } },
         { text: 'Nada, Aurora. Gracias.', exit: true, reply: 'Lo has dicho bien. Me has descolocado.' },
       ],
     },
@@ -389,7 +386,7 @@ export default buildRoom({
 
   objects: [
     // orden de dirección 2: la Redacción (web) está AL LADO, al mismo nivel, tras la puerta doble y el umbral de latón
-    { id: 'catacumba_a_pecera', name: 'Redacción', exit: { room: 'pecera' }, handlers: {
+    { id: 'catacumba_a_pecera', name: 'Redacción', exit: { room: 'pecera', tipo: 'puerta_doble' }, handlers: {
       mirar: 'Vuelta a la Redacción web. Al otro lado del latón, el siglo XXI. Con escalas.',
       abrir: 'Está abierta de par en par. Aquí lo que se cierra son páginas.',
       usar: async (api) => api.goto('pecera', 'catacumba'),

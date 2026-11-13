@@ -103,9 +103,9 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'ecosistema_a_pecera', name: 'escalera a la Redacción', exit: { room: 'pecera' }, handlers: {
+    { id: 'ecosistema_a_pecera', name: 'escalera a la Redacción', exit: { room: 'pecera', tipo: 'escalera' }, handlers: {
       mirar: 'La escalera de bajada. A Redacción, donde la moqueta es de verdad.',
-      usar: async (api) => { api.sfx('door'); await api.goto('pecera', 'ecosistema'); },
+      usar: async (api) => { api.sfx('step'); await api.goto('pecera', 'ecosistema'); },
       empujar: 'Empujar una escalera es bajar sin decidirlo. Aquí se decide todo en Q3.',
     } },
     ascensorObjeto('ascensor_ecosistema', {
@@ -116,7 +116,7 @@ export default buildRoom({
       hablar: '«¿Bajas?». Hace «tin». Maripaz me lo factura como conversación.',
     }),
     // ---- la puerta de EVENTOS (Sala Polivalente) y lo que llena la pared que dejó el photocall
-    { id: 'ecosistema_a_eventos', name: 'puerta de Eventos', exit: { room: 'eventos' }, handlers: {
+    { id: 'ecosistema_a_eventos', name: 'puerta de Eventos', exit: { room: 'eventos', tipo: 'puerta_doble' }, handlers: {
       mirar: async (api) => api.say(['La puerta de Eventos. Por la rendija salen focos, un gong y prisa.',
         'Encima, un piloto verde: «PRÓXIMO EVENTO: 5 MIN». No se apaga nunca.']),
       usar: async (api) => { api.sfx('door'); await api.goto('eventos', 'ecosistema'); },
@@ -186,9 +186,10 @@ export default buildRoom({
       'usar:copias_rechazadas': 'Le doy papel. Dice «ATASCO EN BANDEJA 2». Le da igual: es de principios.',
       'usar:manual_fax': 'El manual es del fax. La impresora no se deja ayudar por un fax.',
     } },
-    { id: 'ecosistema_a_administracion', name: 'pasillo a Administración', exit: { room: 'administracion' }, handlers: {
+    { id: 'ecosistema_a_administracion', name: 'pasillo a Administración', exit: { room: 'administracion', tipo: 'pasillo' }, handlers: {
       mirar: 'Pasillo a Administración. Al fondo, una ventanilla brilla como un faro.',
-      usar: async (api) => { api.sfx('door'); await api.goto('administracion', 'ecosistema'); },
+      usar: async (api) => { await api.goto('administracion', 'ecosistema'); },
+      abrir: 'Es un pasillo. Ya viene abierto. Lo que se abre al fondo es un expediente.',
       empujar: 'El pasillo no se empuja. Se recorre. Como el procedimiento.',
     } },
     // ADENDA §3.7 · portátil de Tadeo (presencia sin sprite: habla en su color, encima del portátil)

@@ -13,8 +13,8 @@
 //                            Redacción de papel (490-550) con el umbral de latón y aire a los dos lados
 //   WEB .................... 580-720 · ECONOMÍA 720-796 · INFOGRAFÍA 796-890 · (cinta en 890)
 //   DESARROLLO ............. 890-1150: kanban EXENTO, calendario, semáforo, pantalla de Anselmo, el coro de espaldas, la
-//                            taza «NO» y, en los 60 px nuevos, el rincón del «comité de igualdad»: el diploma «EQUIPO
-//                            100 % CONCIENCIADO», el logo morado del 8 de marzo y el buzón «COMPAÑERAS» con telarañas
+//                            taza «NO» y, en los 60 px de la derecha, un rincón DECORADO (sin hotspots): el póster
+//                            «FUNCIONA EN MI MÁQUINA», la balda del patito de goma y la pizarrita «DÍAS SIN CAÍDAS: 0»
 //   DISEÑO Y PRODUCTO ...... 1150-1270: ventanal (Rubén, Acto III; amanecer en el epílogo), bandeja ENTREGAS, Valentín
 // De Web a Desarrollo, el dibujo y los objetos están escritos en las coordenadas de la sala de 800 px y se pintan con
 // un desplazamiento de PECERA_DESPLAZ = 410 px (`desplazado`, `D`); Diseño y Producto, PECERA_DESPLAZ_DISENO = 470 (`D2`).
@@ -25,8 +25,7 @@
 // pantalla_metricas / enchufe_pantalla (cms_vivo), ordenador_bruno + silla_ramirez (silla_libre), chaqueta (when),
 // kanban (posit_descopeado), frontera_carrocero (acto_2_iniciado / acto_3_iniciado / infografia_integrada),
 // semaforo_ruido (estado rojo/ambar/verde), bandeja_diseno (bandeja_diseno_abierta), pantalla_anselmo
-// (ruben_encontrado / infografia_integrada), ventana (estado `amanecer`, que pone el epílogo), buzon_companeras
-// (acto_3_iniciado: la telaraña tiene ya una araña con acreditación).
+// (ruben_encontrado / infografia_integrada), ventana (estado `amanecer`, que pone el epílogo).
 import {
   PAL, rect, hline, vline, frameRect, px, line, poly, ellipse, paint, bevel, ditherOverlay, gradV,
   glow, lightCone, shadowEllipse, ditherPick, hash2, rng, fadeRows, vignette, fluorescent, cityWindow, wallClock,
@@ -435,7 +434,7 @@ function zonasDeRedaccion(g) {
     diseno(g);
     for (const x of [715, 775]) glow(g, x, 124, 34, 8, '#e8fff0', 0.06, 4);
   }, D2)(g);
-  rinconComite(g);
+  rinconDesarrollo(g);
 }
 
 // ================================================================== ZONA DE PAPEL: Secretaría + puerta doble a la Redacción de papel
@@ -923,7 +922,7 @@ function drawMonitorValentin(g, view, t) {
   if (view.visible !== false) kit.cantoVivo(g, mx - 1, my - 1, mw + 2, mh + 2);
 }
 
-// ================================================================== TÓTEM-DIRECTORIO y RINCÓN DEL COMITÉ
+// ================================================================== TÓTEM-DIRECTORIO y RINCÓN DE DESARROLLO
 /** Tótem-directorio de la planta, de pie junto al núcleo: «PLANTA 1» y lo que hay en ella, cada cosa con el color de su
  *  felpudo. Sin Infografía ni Diseño por separado: la Redacción entera es una línea (regla de la casa). */
 const DIRECTORIO = [
@@ -948,54 +947,45 @@ function drawDirectorio(g) {
   ellipse(g, x + 6, y + h - 13, 2, 2, '#ff5a48'); micro(g, 'AQUÍ', x + 11, y + h - 15, '#ffb0a0');
   kit.cantoVivo(g, x, y, w, h - 6);
 }
-/** fondo del rincón (60 px nuevos de Desarrollo): corcho viejo tras el logo morado y un pósit «JUEVES · COMITÉ» */
-function rinconComite(g) {
-  const x = 1092, y = 50;
-  rect(g, x, y, 54, 18, PAL.wood[2]); ditherOverlay(g, x, y, 54, 18, PAL.wood[4], 0.4); frameRect(g, x, y, 54, 18, PAL.wood[1]);
-  postit(g, x + 36, y + 3, POSTIT.y, { w: 15, h: 12, lines: false });
-  micro(g, 'JUE', x + 38, y + 5, INK); micro(g, 'COM', x + 38, y + 10, PAL.purple[2]);
-  glow(g, 1120, 60, 30, 26, '#b48cff', 0.06, 3);
-}
-/** el diploma que se dieron ellos mismos, en marco dorado: «EQUIPO 100 % CONCIENCIADO», firmado por los cuatro */
-function drawDiploma(g) {
-  const x = 1093, y = 21, w = 52, h = 26;
-  ditherOverlay(g, x + 1, y + 1, w + 1, h + 1, PAL.shadow, 0.5);
-  rect(g, x, y, w, h, PAL.gold[3]); frameRect(g, x, y, w, h, PAL.gold[1]); hline(g, x + 1, y + 1, w - 2, PAL.gold[6]);
-  rect(g, x + 2, y + 2, w - 4, h - 4, '#f8f0d8');
-  micro(g, 'EQUIPO 100 %', x + w / 2, y + 4, PAL.purple[2], { align: 'center' });
-  micro(g, 'CONCIENCIADO', x + w / 2, y + 10, PAL.purple[2], { align: 'center' });
-  for (let i = 0; i < 4; i++) line(g, x + 4 + i * 9, y + 20, x + 10 + i * 9, y + 19, PAL.ink[3]);    // cuatro firmas
-  ellipse(g, x + w - 7, y + h - 6, 3, 3, PAL.red[4]); px(g, x + w - 7, y + h - 6, PAL.gold[5]);           // el sello
-  kit.cantoVivo(g, x, y, w, h);
-}
-/** el logo del periódico impreso en morado el 8 de marzo, con dos chinchetas y el borde ya amarillo */
-function drawLogoMorado(g) {
-  const x = 1096, y = 49, w = 30, h = 21;
-  ditherOverlay(g, x + 1, y + 1, w, h, PAL.shadow, 0.5);
-  rect(g, x, y, w, h, '#f2ecd0'); ditherOverlay(g, x, y + h - 4, w, 4, '#d8c890', 0.5); vline(g, x + w - 1, y, h, '#d8cc9c');
-  ellipse(g, x + 9, y + 9, 6, 6, '#8a3ac8'); ellipse(g, x + 9, y + 9, 3, 3, '#f2ecd0'); rect(g, x + 4, y + 9, 11, 2, '#8a3ac8');   // la «e» morada
-  micro(g, '8M', x + 18, y + 4, '#8a3ac8');
-  micro(g, 'HECHO', x + 3, y + 15, PAL.leaf[3]);
-  px(g, x + 2, y + 1, PAL.red[4]); px(g, x + w - 3, y + 1, PAL.blue[5]);
-  kit.cantoVivo(g, x, y, w, h);
-}
-/** el buzón de sugerencias «COMPAÑERAS», con candado y telarañas; en el Acto III, con su araña */
-function drawBuzon(g, view) {
-  const x = 1098, y = 72, w = 46, h = 17;
-  const a3 = !!view.flag('acto_3_iniciado');
-  rect(g, x + 4, y + h, 2, FL - y - h, PAL.metal[2]); rect(g, x + w - 6, y + h, 2, FL - y - h, PAL.metal[2]);     // patas a la pared
-  ditherOverlay(g, x + 1, y + 1, w + 1, h + 1, PAL.shadow, 0.5);
-  rect(g, x, y, w, h, '#6a4aa0'); frameRect(g, x, y, w, h, '#3a2860'); hline(g, x + 1, y + 1, w - 2, '#9a7ad0');
-  rect(g, x + 10, y + 3, w - 20, 2, INK);                                                                 // la ranura
-  rect(g, x + 2, y + 8, w - 4, 7, '#f4f0e4'); micro(g, 'COMPAÑERAS', x + w / 2, y + 9, PAL.purple[2], { align: 'center' });
-  rect(g, x + w - 6, y + 3, 3, 3, PAL.gold[4]);                                                           // candado
-  // telarañas en las dos esquinas de arriba (y una hebra hasta el diploma)
-  for (const [cx, sgn] of [[x, 1], [x + w - 1, -1]]) {
-    line(g, cx, y, cx + sgn * 7, y + 5, '#d8d8e0'); line(g, cx + sgn * 3, y, cx + sgn * 2, y + 6, '#b8b8c4'); line(g, cx + sgn * 5, y + 1, cx + sgn * 1, y + 3, '#b8b8c4');
-  }
-  line(g, x + 20, y, x + 22, 45, '#9a9aa8');
-  if (a3) { ellipse(g, x + 22, y - 6, 1.5, 1.5, INK); for (const d of [-2, 2]) { px(g, x + 22 + d, y - 7, INK); px(g, x + 22 + d, y - 5, INK); } }
-  kit.cantoVivo(g, x, y, w, h);
+/** el rincón de Desarrollo (60 px de pared tras Anselmo): DECORADO, sin hotspots ni canto vivo, con menos contraste.
+ *  El póster «FUNCIONA EN MI MÁQUINA», una balda con el patito de goma de depurar, tres manuales sin abrir y un cactus
+ *  en una taza, y la pizarrita «DÍAS SIN CAÍDAS: 0» (con las rayitas de los ceros anteriores). */
+function rinconDesarrollo(g) {
+  // póster enmarcado
+  { const x = 1095, y = 21, w = 48, h = 26;
+    ditherOverlay(g, x + 1, y + 1, w + 1, h + 1, PAL.shadow, 0.4);
+    rect(g, x, y, w, h, '#4a3e6a'); frameRect(g, x, y, w, h, '#2a2240'); hline(g, x + 1, y + 1, w - 2, '#5e5084');
+    micro(g, 'FUNCIONA', x + w / 2, y + 3, '#aaa2c6', { align: 'center' });
+    micro(g, 'EN MI', x + w / 2, y + 10, '#aaa2c6', { align: 'center' });
+    micro(g, 'MÁQUINA', x + w / 2, y + 17, '#cabc7c', { align: 'center' });
+    px(g, x + 2, y + 2, PAL.metal[4]); px(g, x + w - 3, y + 2, PAL.metal[4]); }
+  // balda con el patito, los manuales y el cactus
+  { const y = 62;
+    rect(g, 1094, y, 50, 2, PAL.wood[3]); hline(g, 1094, y + 2, 50, PAL.wood[1]);
+    rect(g, 1097, y + 2, 1, 3, PAL.metal[2]); rect(g, 1140, y + 2, 1, 3, PAL.metal[2]);
+    // patito de goma (de cara al monitor, como manda la depuración)
+    ellipse(g, 1103, y - 3, 4, 2.5, '#e8c840'); ellipse(g, 1106, y - 7, 2.5, 2.5, '#e8c840');
+    px(g, 1109, y - 7, '#e07830'); px(g, 1110, y - 7, '#e07830'); px(g, 1106, y - 8, INK);
+    // tres manuales, de lomo, sin estrenar
+    [['#6a3a3a', 12], ['#3a4a6a', 10], ['#4a5a3a', 11]].forEach(([c, hh], i) => {
+      rect(g, 1114 + i * 4, y - hh, 4, hh, c); vline(g, 1114 + i * 4, y - hh, hh, shade(c, -0.3));
+      hline(g, 1115 + i * 4, y - hh + 3, 2, '#c8c0a8');
+    });
+    // cactus en una taza
+    rect(g, 1131, y - 5, 6, 5, '#d8d4c8'); frameRect(g, 1131, y - 5, 6, 5, '#9a968c');
+    rect(g, 1133, y - 11, 2, 6, '#4a7a3a'); rect(g, 1131, y - 9, 2, 1, '#4a7a3a'); rect(g, 1131, y - 10, 1, 1, '#4a7a3a');
+    rect(g, 1135, y - 8, 2, 1, '#4a7a3a'); rect(g, 1136, y - 9, 1, 1, '#4a7a3a'); }
+  // pizarrita de contador
+  { const x = 1098, y = 70, w = 46, h = 18;
+    rect(g, x + 4, y + h, 2, FL - y - h, PAL.metal[2]); rect(g, x + w - 6, y + h, 2, FL - y - h, PAL.metal[2]);
+    ditherOverlay(g, x + 1, y + 1, w + 1, h + 1, PAL.shadow, 0.4);
+    rect(g, x, y, w, h, '#d8d8d0'); frameRect(g, x, y, w, h, '#7a7a84');
+    micro(g, 'DÍAS SIN', x + 3, y + 3, '#3a3a48');
+    micro(g, 'CAÍDAS:', x + 3, y + 10, '#3a3a48');
+    label(g, '0', x + w - 8, y + 5, '#b83a30');
+    for (let k = 0; k < 4; k++) line(g, x + 32 + k * 2, y + 14, x + 33 + k * 2, y + 16, '#9a9aa4');   // los ceros de antes
+    hline(g, x + 2, y + h - 1, w - 4, '#a8a8b0'); }
+  glow(g, 1120, 60, 30, 26, '#b48cff', 0.04, 3);
 }
 
 // ================================================================== GEOMETRÍA
@@ -1033,10 +1023,6 @@ const layout = {
   cartel_material: { rect: [CARTEL_LADO[0] + SDX, CARTEL_LADO[1], 46, 22], walkTo: [CARTEL_LADO[0] + SDX + 23, 108], face: 'up' },
   custodia_precinto: { rect: mueveR(SECRETARIA_RECTS.custodia_precinto, SDX), walkTo: [HATCH.x + SDX + 6, 108], face: 'up', priority: 1, draw: desplazado((g, v, t) => drawCustodia(g, v, t), SDX) },
   timbre_secretaria: { rect: mueveR(SECRETARIA_RECTS.timbre_secretaria, SDX), walkTo: [HATCH.x + SDX + 23, 108], face: 'up', priority: 2 },
-  // DESARROLLO, rincón del comité (coordenadas de sala, ya corridas)
-  diploma_concienciado: { rect: [1093, 21, 52, 26], walkTo: [1118, 114], face: 'up', draw: drawDiploma },
-  logo_morado: { rect: [1096, 49, 30, 21], walkTo: [1112, 114], face: 'up', priority: 1, draw: drawLogoMorado },
-  buzon_companeras: { rect: [1098, 71, 46, 19], walkTo: [1122, 114], face: 'up', draw: drawBuzon },
   // DE WEB A DESARROLLO: coordenadas de la sala de 800 px; `mover` les suma D (rects, walkTo, at, poly y el dibujo)
   ...mover({
   // WEB

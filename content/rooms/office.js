@@ -159,13 +159,15 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'office_a_pecera', name: 'puerta de la Redacción', exit: { room: 'pecera' }, handlers: {
-      mirar: 'La Redacción. Se oye teclear "pensiones".',
-      abrir: async (api) => { api.sfx('door'); await api.goto('pecera'); },
-      usar: async (api) => { api.sfx('door'); await api.goto('pecera'); },
-      cerrar: 'Ya está cerrada. La web se escapa igual.',
+    // un ARCO sin puerta, igual que se ve desde el vestíbulo de planta de la Redacción (tipo 'arco' en content/lib/edificio.js)
+    { id: 'office_a_pecera', name: 'Redacción', exit: { room: 'pecera', tipo: 'arco' }, handlers: {
+      mirar: 'La Redacción, por el arco. Se oye teclear "pensiones".',
+      usar: async (api) => { await api.goto('pecera'); },
+      abrir: 'Más abierto no puede estar. Es un arco: lo único de esta planta sin cerradura.',
+      cerrar: 'Para cerrar un arco hace falta una puerta y un presupuesto. No hay ninguno.',
+      empujar: 'Empujo el aire del arco. Cede. Es lo único que cede en esta planta.',
       hablar: 'Le digo a la Pecera que ahora vuelvo. Nadie levanta la vista. Es la web.',
-      coger: 'La puerta se queda. Yo, de momento, también.',
+      coger: 'El arco se queda. Yo, de momento, también.',
     } },
     { id: 'nevera', name: 'nevera', handlers: {
       mirar: 'Nevera con imanes y un cartel: "ETIQUETAD VUESTROS TUPPERS". Nadie lo hace.',

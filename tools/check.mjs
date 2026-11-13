@@ -3,7 +3,8 @@
 //  ERRORES (exit 1): imports que no resuelven; ids de lógica y arte que no casan (buildRoom); sala sin archivo de arte;
 //    salidas a salas/entradas inexistentes; flags usados en content/ que no están en content/flags.js ni en los
 //    `flags` locales de una sala; items/actores/escenas/réplicas referenciados que no existen; mazos de duelo
-//    con parejas u objetos inexistentes.
+//    con parejas u objetos inexistentes; salidas sin `tipo` o con un tipo distinto en cada extremo de la conexión
+//    (content/lib/edificio.js TIPOS_SALIDA) y huecos sin hoja que se llaman «puerta» o suenan a puerta.
 //  AVISOS: líneas habladas de más de 80 caracteres (biblia §0); flags locales sin el prefijo de su sala.
 import path from 'node:path';
 import fs from 'node:fs';
@@ -65,6 +66,27 @@ if (content) {
       for (const p of d.deck || []) if (!pairs.has(p)) err(`duelo ${did} (${id}): pareja desconocida ${p}`);
       for (const f of d.finishers || []) if (f.object && !items[f.object]) err(`duelo ${did} (${id}): el remate pide un objeto inexistente ${f.object}`);
     }
+  }
+  // conexiones: cada salida declara su `tipo` (content/lib/edificio.js TIPOS_SALIDA) y una conexión se ve IGUAL desde sus
+  // dos salas (mismos tipos A→B que B→A; el torno, de un solo sentido, no cuenta). Un hueco sin hoja (arco, pasillo,
+  // escalera) no se llama «puerta» ni hace sonar una puerta al cruzarlo.
+  const { TIPOS_SALIDA, SIN_HOJA } = await import(pathToFileURL(path.join(C, 'lib', 'edificio.js')).href);
+  const tiposDe = (a, b) => (rooms[a].objects || []).filter(o => o.exit && o.exit.room === b && o.exit.tipo !== 'torno').map(o => o.exit.tipo).sort().join(',');
+  const pares = new Set();
+  for (const [id, r] of Object.entries(rooms)) for (const o of r.objects || []) if (o.exit) {
+    if (!o.exit.tipo) { err(`sala ${id}: la salida ${o.id} no declara \`tipo\` (${Object.keys(TIPOS_SALIDA).join(' / ')})`); continue; }
+    if (!TIPOS_SALIDA[o.exit.tipo]) { err(`sala ${id}: la salida ${o.id} tiene un tipo desconocido '${o.exit.tipo}'`); continue; }
+    if (o.exit.tipo === 'torno' || !rooms[o.exit.room]) continue;
+    pares.add([id, o.exit.room].sort().join('|'));
+    if (SIN_HOJA.includes(o.exit.tipo)) {
+      if (/puerta/i.test(String(o.name || ''))) err(`sala ${id}: la salida ${o.id} es un ${o.exit.tipo} (sin hoja) y se llama «${o.name}»`);
+      for (const [v, h] of Object.entries(o.handlers || {})) if (typeof h === 'function' && /sfx\(\s*['"]door['"]/.test(String(h))) err(`sala ${id}: la salida ${o.id} es un ${o.exit.tipo} (sin hoja) y «${v}» hace sonar una puerta`);
+      if (o.exit.sfx === 'door') err(`sala ${id}: la salida ${o.id} es un ${o.exit.tipo} (sin hoja) y suena a puerta`);
+    }
+  }
+  for (const p of pares) {
+    const [a, b] = p.split('|'), ab = tiposDe(a, b), ba = tiposDe(b, a);
+    if (ab !== ba) err(`conexión ${a} ↔ ${b}: desde ${a} se ve «${ab || 'nada'}» y desde ${b} «${ba || 'nada'}» (deben ser iguales)`);
   }
   // ascensor con botonera (content/lib/ascensor.js): cada sala con un objeto `ascensor` es una planta; une con todas
   const { PLANTAS } = await import(pathToFileURL(path.join(C, 'lib', 'ascensor.js')).href);

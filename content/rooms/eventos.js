@@ -91,10 +91,10 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'eventos_a_ecosistema', name: 'puerta a Marketing', exit: { room: 'ecosistema' }, handlers: {
-      mirar: 'La puerta a Marketing y Comercial. Por ahí entra la luz lila y sale el gong.',
+    { id: 'eventos_a_ecosistema', name: 'puerta a Marketing', exit: { room: 'ecosistema', tipo: 'puerta_doble' }, handlers: {
+      mirar: 'La puerta a Marketing y Comercial. Por la rendija entra luz lila y sale el gong.',
       usar: async (api) => { api.sfx('door'); await api.goto('ecosistema', 'eventos'); },
-      abrir: 'Está abierta. Pilar la deja así: «para que fluya el público».',
+      abrir: 'Está entornada. Pilar la deja así: «para que fluya el público».',
       cerrar: async (api) => { await sayP(api, '¡No! Una puerta cerrada es un evento privado. Y no hay presupuesto.'); },
       empujar: 'La empujo. Pilar me acredita al salir. Y al volver, por si acaso.',
       hablar: '«¿Hay alguien?». Desde Comercial: «Depende de lo que pagues, cariño».',

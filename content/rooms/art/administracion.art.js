@@ -1,6 +1,6 @@
 // SALA `administracion` — Administración, «La Ventanilla». Arte y geometría (rediseño, docs/GUIA_REDISENO.md §4, §10).
 // Biblia §3.8 + adenda §3.8. Oficina institucional verde sanatorio, fluorescente enfermo. Cuatro zonas con su suelo, filete y
-// pilastra: ESPERA (puerta al pasillo con la placa «2 MARKETING ◄ / Y COMERCIAL», horario, dispensador de turnos, pared de
+// pilastra: ESPERA (la boca del pasillo, sin puerta, con la placa «2 MARKETING ◄ / Y COMERCIAL», horario, dispensador de turnos, pared de
 // trofeos de notas rechazadas sobre el aviso del 26 % y el banco), VENTANILLA (cabina de cristal con BEGOÑA sentada tras el
 // mostrador y el agujerito a 14 px de su cara), CONTROLLING (despacho acristalado: don EVARISTO sentado con su lupa, la coma
 // enmarcada como una coma y las torres de contratos leídos) y ARCHIVO (EJEMPLARES entero).
@@ -138,21 +138,32 @@ function drawFloor(g) {
 }
 
 function drawExitDoor(g) {
-  // puerta metálica al pasillo del Ecosistema (marco común del kit), con barra antipánico y ventanuco con alambre
-  const x = 6, y = 34, w = 32, h = FL - 34;
-  kit.marcoPuerta(g, x, y, w, h);
-  gradV(g, x, y, w, h, [PAL.metal[4], PAL.metal[3], PAL.metal[2]]);
-  vline(g, x, y, h, PAL.metal[6]); vline(g, x + w - 1, y, h, PAL.metal[1]);
-  rect(g, x + 7, y + 6, 15, 18, PAL.ink[0]); gradV(g, x + 8, y + 7, 13, 16, [PAL.teal[3], PAL.teal[5]]);
-  for (let i = 0; i < 13; i += 3) vline(g, x + 8 + i, y + 7, 16, PAL.metal[6]);
-  for (let j = 0; j < 16; j += 3) hline(g, x + 8, y + 7 + j, 13, PAL.metal[6]);
-  rect(g, x + 2, y + 38, 28, 4, PAL.red[3]); hline(g, x + 2, y + 38, 28, PAL.red[5]); hline(g, x + 2, y + 41, 28, PAL.red[1]);   // barra antipánico
-  rect(g, x + 2, y + h - 10, 28, 8, PAL.metal[2]); hline(g, x + 2, y + h - 10, 28, PAL.metal[5]);                               // chapa de patada
-  kit.micro(g, 'EMPUJE', x + 16, y + 28, PAL.ink[1], { align: 'center' });
-  kit.cantoVivo(g, x, y, w, h);
-  // sobre el dintel: placa del kit «2 MARKETING ◄ / Y COMERCIAL» y, bajo la puerta, el umbral del destino
+  // la BOCA DEL PASILLO (sin puerta), la misma que se ve desde Marketing y Comercial (ecosistema.art.js `drawPasillo`):
+  // marco común, el pasillo verde oliva en perspectiva y, al fondo, el Ecosistema (pared melocotón de Comercial y luz
+  // lila) con la impresora de la tercera a la entrada
+  const x0 = 4, x1 = 40, top = 30;
+  const fx0 = 15, fx1 = 30, ftop = 46, fbot = 80;
+  const OL = ['#2e3a2c', '#3a4a36', '#4a5c42', '#5c704e'];
+  kit.marcoPuerta(g, x0, top, x1 - x0, FL - top, { ramp: [PAL.metal[0], PAL.metal[1], PAL.metal[2], PAL.metal[3], PAL.metal[4], PAL.metal[5], PAL.metal[6], PAL.metal[7]] });
+  poly(g, [[x0, top], [x1, top], [fx1, ftop], [fx0, ftop]], OL[0]);
+  poly(g, [[x0, top], [fx0, ftop], [fx0, fbot], [x0, FL]], (xx, yy) => ditherPick(xx, yy, OL, 0.35 + (xx - x0) / 40));
+  poly(g, [[x1, top], [fx1, ftop], [fx1, fbot], [x1, FL]], (xx, yy) => ditherPick(xx, yy, OL, 0.55 - (x1 - xx) / 30));
+  poly(g, [[x0, FL], [fx0, fbot], [fx1, fbot], [x1, FL]], (xx, yy) => ditherPick(xx, yy, kit.DEPTO.administracion.suelo, 0.3 + (yy - fbot) / 20));
+  for (let k = 1; k < 3; k++) { const t = k / 3; line(g, Math.round(x0 + (fx0 - x0) * t), Math.round(FL + (fbot - FL) * t), Math.round(x1 + (fx1 - x1) * t), Math.round(FL + (fbot - FL) * t), OL[1]); }
+  for (const t of [0.3, 0.65]) { const yy = Math.round(top + (ftop - top) * t), xa = Math.round(x0 + (fx0 - x0) * t) + 6, xb = Math.round(x1 + (fx1 - x1) * t) - 6; hline(g, xa, yy + 1, xb - xa, '#e8ffe0'); }
+  // el fondo: Comercial (pared melocotón, filete naranja), con la luz lila de Marketing que se escapa por un lado
+  paint(g, fx0, ftop, fx1 - fx0, fbot - ftop, (xx, yy) => ditherPick(xx, yy, ['#8e5a46', '#a26a52', '#b67c60'], 0.6 - (yy - ftop) / 60));
+  hline(g, fx0, ftop + 14, fx1 - fx0, kit.DEPTO.comercial.c);
+  rect(g, fx0, fbot - 5, fx1 - fx0, 5, '#4a3a4e');
+  glow(g, fx0 + 2, ftop + 18, 10, 18, '#c8a0e8', 0.35, 3);
+  // la impresora de la tercera, a la entrada del pasillo (su piloto rojo de atasco)
+  rect(g, fx1 - 7, fbot - 15, 6, 11, PAL.paper[5]); hline(g, fx1 - 7, fbot - 15, 6, PAL.paper[7]); rect(g, fx1 - 6, fbot - 12, 4, 2, PAL.ink[1]); px(g, fx1 - 5, fbot - 12, PAL.red[4]);
+  glow(g, (fx0 + fx1) / 2, fbot - 4, 14, 6, '#ffd8b0', 0.2, 3);
+  ditherOverlay(g, x0, FL - 3, x1 - x0, 3, PAL.ink[0], 0.3);
+  kit.cantoVivo(g, x0 - 2, top - 2, x1 - x0 + 4, FL - top + 2);
+  // sobre el dintel: placa del kit «2 MARKETING ◄ / Y COMERCIAL» y, en el suelo, el umbral del destino
   kit.placaSala(g, 4, 9, 'ecosistema', { flecha: '<' });
-  kit.umbral(g, x - 2, FL + 1, w + 4, 6, kit.DEPTO.marketing.c, { chevron: true });
+  kit.umbral(g, x0, FL + 1, x1 - x0, 6, kit.DEPTO.marketing.c, { chevron: true });
 }
 
 function drawHorario(g) {

@@ -101,9 +101,23 @@ export const PECERA_ZONAS = [
 ];
 /** Desplazamiento de las zonas de Web a Desarrollo: su arte está escrito en las coordenadas de la sala de 800 px (Web
  *  empezaba en 170) y se pinta corrido PECERA_DESPLAZ. Diseño y Producto va además PECERA_DESPLAZ_DISENO px más allá
- *  (Desarrollo creció 60 px para su rincón del «comité de igualdad»). */
+ *  (Desarrollo creció 60 px: el rincón decorado tras Anselmo). */
 export const PECERA_DESPLAZ = 410;
 export const PECERA_DESPLAZ_DISENO = 470;
+/** Tipos de hueco de una salida (`exit: { room, tipo }`): lo que el jugador VE en cada lado. Una conexión se pinta igual
+ *  desde sus dos salas (`tools/check.mjs` lo exige): mismo tipo en los dos extremos; los huecos sin hoja (arco, pasillo,
+ *  escalera) no se llaman «puerta» ni suenan a puerta. `torno` es la barrera del vestíbulo (un solo sentido: se llega a
+ *  la Redacción por la escalera del núcleo). */
+export const TIPOS_SALIDA = {
+  escalera: 'tramo de escalera del núcleo, sin hoja',
+  arco: 'arco abierto, sin hoja (el Vending)',
+  cristal: 'frente de cristal con puerta de cristal (los Despachos)',
+  puerta: 'puerta de una hoja',
+  puerta_doble: 'puerta de dos hojas',
+  pasillo: 'boca de pasillo en perspectiva, sin hoja',
+  torno: 'torno de acceso (solo en el vestíbulo, un sentido)',
+};
+export const SIN_HOJA = ['escalera', 'arco', 'pasillo'];
 /** Accesos de la Redacción (hueco, sin marco; el marco del kit va por fuera). [x, ancho] */
 export const PECERA_PUERTAS = { pecera_a_pajarera: [168, 56], pecera_a_office: [260, 56], pecera_a_catacumba: [490, 60] };
 /** La Secretaría de Redacción (Custodia): el ventanuco con persiana, en su propio hueco de la zona de papel. */

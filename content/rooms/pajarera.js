@@ -5,7 +5,7 @@
 // `puerta_sala`: Actos I-II, libre. Acto III: exige sala_abierta + ruben_libre + acta_reunion + ticket_n1; entonces entra
 // en la Sala Amazonas, cuyo onEnter (paquete D) lanza el clímax 7.4.
 import { buildRoom } from '../lib/room.js';
-import art from './art/pajarera.art.js';
+import art, { salaCerrada } from './art/pajarera.art.js';
 import { talk, seq, here, num } from './pecera.voces.js';
 import { PAL, rect, hline, glow, ditherOverlay, label } from '../../engine/draw.js';
 
@@ -160,10 +160,10 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'pajarera_a_pecera', name: 'cristal de la Redacción', exit: { room: 'pecera' }, handlers: {
-      mirar: 'La Pecera, a través del cristal. Desde aquí parecen peces de verdad.',
+    { id: 'pajarera_a_pecera', name: 'cristal de la Redacción', exit: { room: 'pecera', tipo: 'cristal' }, handlers: {
+      mirar: 'El vestíbulo de la Redacción, tras el cristal. Más allá, la Pecera. Con peces.',
       abrir: async (api) => api.goto('pecera', 'pajarera'), usar: async (api) => api.goto('pecera', 'pajarera'),
-      hablar: 'Le hago gestos a Yoli por el cristal. Me contesta con una gráfica.',
+      hablar: 'Le hago gestos al tótem del vestíbulo. Me contesta: «AQUÍ». Ya lo sé.',
       empujar: 'Empujo el cristal. Desde la Pecera parece que estoy pidiendo auxilio.',
     } },
     { id: 'persiana', name: 'persiana', handlers: {
@@ -218,15 +218,16 @@ export default buildRoom({
       hablar: 'Le hablo. Me contesta con una notificación: "Lo hablamos".',
       cerrar: 'No lo cierro. Una sesión abierta aquí es lo más parecido a un acta.',
     } },
-    { id: 'puerta_sala', name: 'puerta de la Sala Amazonas', exit: { room: 'sala_amazonas' }, handlers: {
+    { id: 'puerta_sala', name: 'puerta de la Sala Amazonas', exit: { room: 'sala_amazonas', tipo: 'puerta' }, handlers: {
       mirar: async (api) => {
         if (acto3(api)) await api.say('"OCUPADO – hasta 2031".');
         else if (api.flag('reunion_terminada')) await api.say('"LIBRE". Es la primera vez que lo veo.');
         else await api.say('Pantallita: "REUNIÓN EN CURSO – DESDE MARZO".');
       },
       ir: entrarSala, usar: entrarSala, abrir: entrarSala, empujar: entrarSala,
-      hablar: async (api) => api.say(acto3(api) ? 'Toc, toc. Desde dentro: "Siguiente diapositiva". No era a mí.' : 'Toc, toc. Desde dentro: "Lo hablamos".'),
-      cerrar: 'Está cerrada desde marzo. Por dentro. Como las buenas ideas.',
+      hablar: async (api) => api.say(acto3(api) ? 'Toc, toc. Desde dentro: "Siguiente diapositiva". No era a mí.' : 'Toc, toc en el marco. Desde dentro: "Lo hablamos".'),
+      cerrar: async (api) => api.say(salaCerrada(api) ? 'Ya está cerrada. Por dentro. Como las buenas ideas.'
+        : 'Tiene una cuña desde marzo. Si la quito, alguien tendría que salir.'),
     } },
     { id: 'hoja_reservas', name: 'hoja de reservas', handlers: {
       mirar: async (api) => {

@@ -51,11 +51,13 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'administracion_a_ecosistema', name: 'puerta del pasillo', exit: { room: 'ecosistema' }, handlers: {
-      mirar: 'Vuelta al Ecosistema. Se oye un gong.',
-      usar: async (api) => { api.sfx('door'); await api.goto('ecosistema', 'administracion'); },
-      abrir: async (api) => { api.sfx('door'); await api.goto('ecosistema', 'administracion'); },
-      cerrar: 'Si la cierro, Begoña me pide el F-3 de Puertas. Por triplicado.',
+    // la boca del pasillo, SIN puerta: la misma que se ve desde Marketing y Comercial (tipo 'pasillo')
+    { id: 'administracion_a_ecosistema', name: 'pasillo a Marketing', exit: { room: 'ecosistema', tipo: 'pasillo' }, handlers: {
+      mirar: 'El pasillo, de vuelta al Ecosistema. Al fondo, la impresora. Se oye un gong.',
+      usar: async (api) => { await api.goto('ecosistema', 'administracion'); },
+      abrir: 'Es un pasillo: viene abierto de serie. Begoña lo tiene en revisión.',
+      cerrar: 'Si cierro el pasillo, Begoña me pide el F-3 de Pasillos. Por triplicado.',
+      empujar: 'El pasillo no se empuja. Se recorre. Con número de turno.',
     } },
     { id: 'cartel_horario', name: 'cartel del horario', handlers: {
       mirar: async (api) => { await api.say(['«ATENCIÓN: 19:00 A 19:15». Según Begoña son las 19:07.', 'Llevan siéndolo toda la tarde.']); },

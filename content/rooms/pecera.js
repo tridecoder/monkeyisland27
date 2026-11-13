@@ -59,32 +59,29 @@ const DISCUSIONES = [
   [['CORO', '¡Diseño!'], ['D3', 'Ni nos mira.'], ['D1', 'Nunca mira.'], ['D2', 'Es que lo entregó todo.']],
   [['D2', '¿Le abrimos una incidencia a Diseño?'], ['D1', '¿Con qué? Lo tiene todo en la bandeja.'], ['D2', 'Pues a la bandeja.']],
 ];
-// RUNNING GAG (adenda §16): Desarrollo es machista SIN SABERLO y se cree feminista. El chiste es siempre SOBRE ELLOS (su
-// punto ciego y su autobombo), nunca sobre las mujeres. Se intercala con las de «¡Diseño!» (una de cada tres) y escala
-// por actos: Acto I autobombo · Acto II el comité y la oferta · Acto III el comité decide contratar (remate: epílogo).
-const N_ = 'nerea_backlog', A_ = 'anselmo_monolito';
-const CONCIENCIADOS = [
-  { if: null, l: [['D1', 'Somos un equipo feminista. Lo pone el diploma.'], ['D2', 'Nos lo dimos nosotros. Por unanimidad.'], ['D3', 'No.'], ['D2', 'Por mayoría.']] },
-  { if: null, l: [['D2', '¿Diversidad? Aquí hay muchísima.'], ['D1', 'Él usa Linux.'], ['D2', 'Y yo, modo oscuro.'], ['D3', 'No.']] },
-  { if: null, l: [['D1', 'El 8 de marzo pusimos el logo en morado. Todo el día.'], ['D2', 'Sin que nadie lo pidiera.'], ['D1', 'Ese tema ya está cerrado.'], [N_, 'Lo tengo en HECHO (PERO NO).']] },
-  { if: null, l: [['D1', 'Le he explicado a Yoli su propio artículo de SEO.'], ['D2', '¿Y?'], ['D1', 'Me ha corregido tres cosas. Le he dado las gracias por escuchar.'], ['D2', 'Eso es dar voz.']] },
-  { if: 'acto_2_iniciado', l: [['D2', 'La oferta pedía un «ninja del backend». Solo se apuntan chicos.'], ['D1', 'Qué raro. Con lo neutro que es «ninja».'], ['D2', 'Y «rockstar». Y «partirse la cara por el producto».'], ['D1', 'Será el diseño del anuncio.'], ['CORO', '¡Diseño!']] },
-  { if: 'acto_2_iniciado', l: [['D1', 'Mañana es jueves. Comité de igualdad.'], ['D2', '¿Quién viene?'], ['D1', 'Los de siempre. Los cuatro.'], ['D2', 'Qué gusto que estemos todos de acuerdo.']] },
-  { if: 'acto_2_iniciado', l: [['D2', 'Hoy le he dicho «compañera» a Aurora. Con muchísimo respeto.'], ['D1', '¿Y qué te ha contestado?'], ['D2', 'No sé. La he interrumpido para explicarle una tilde.'], ['D3', 'No.']] },
-  { if: 'acto_3_iniciado', l: [['D1', 'El comité ha aprobado contratar a una mujer.'], ['D2', '¿Para qué puesto?'], ['D1', 'Para que el comité tenga sentido.'], ['D3', 'No.']] },
-  { if: 'acto_3_iniciado', l: [['D2', '¿Y si la brecha es culpa de Diseño?'], ['D1', 'Diseño tiene más mujeres que nosotros.'], ['D2', '¡Pues eso! ¡Provocadores!'], ['CORO', '¡Diseño!']] },
+// Fondo (adenda §17, VELADO): cuatro escenas cortas en las que Desarrollo explica a las demás lo que ya saben. Nadie lo
+// comenta, nadie lo nombra y no hay opción de diálogo ni objeto que lo saque: el jugador lo ve o no. Cada una sale UNA
+// vez por partida (api.once), como mucho una de cada cuatro discusiones; el resto, «¡Diseño!».
+const DE_FONDO = [
+  { id: 'fondo_yoli', if: null, l: [['D1', 'Le he explicado a Yoli su artículo de SEO.'], ['D2', '¿Y?'],
+    ['D1', 'Lo ha entendido a la primera.'], [Y, 'Es que lo escribí yo. Ayuda bastante.']] },
+  { id: 'fondo_aurora', if: 'acto_2_iniciado', l: [['D2', 'He cortado a Aurora para explicarle una tilde.'], ['D1', '¿Y qué ha dicho?'],
+    ['D2', 'Ha seguido la frase por donde iba. Con tilde.'], ['D3', 'No.']] },
+  { id: 'fondo_ninja', if: 'acto_2_iniciado', l: [['D2', 'A la oferta de «ninja del backend» se han apuntado tres.'], ['D1', '¿Quiénes?'],
+    ['D2', 'Javier, Javi y Javier Ignacio. Será el diseño del anuncio.'], ['CORO', '¡Diseño!']] },
+  { id: 'fondo_pilar', if: 'acto_3_iniciado', l: [['D1', 'Le he explicado a Pilar cómo funciona su escaleta.'], ['D2', '¿Y?'],
+    ['D1', 'Me ha dado las gracias. Dice que empiezo en cinco minutos.'], ['D3', 'No.']] },
 ];
-let discusionN = 0, concienciadoN = 0;
-/** La siguiente discusión del coro: dos de «¡Diseño!» y una de «conciencia» (la siguiente de su acto, en orden). */
+let discusionN = 0;
+/** La siguiente discusión del coro: casi siempre de «¡Diseño!»; una de cada cuatro, si queda alguna de fondo sin salir. */
 function siguienteDiscusion(api) {
   const n = discusionN++;
-  if (n % 3 === 2) {
-    const ok = CONCIENCIADOS.filter(c => !c.if || api.flag(c.if));
-    if (ok.length) return ok[concienciadoN++ % ok.length].l;
+  if (n % 4 === 3) {
+    for (const c of DE_FONDO) if ((!c.if || api.flag(c.if)) && api.once('coro_' + c.id)) return c.l;
   }
-  return DISCUSIONES[(n - Math.floor(n / 3)) % DISCUSIONES.length];
+  return DISCUSIONES[(n - Math.floor(n / 4)) % DISCUSIONES.length];
 }
-export { CONCIENCIADOS };
+export { DE_FONDO };
 
 
 // ------------------------------------------------------------------ biblia 8.3: monitores de la Pecera (Mirar figurantes_web)
@@ -108,27 +105,27 @@ export default buildRoom({
   objects: [
     // ---------------------------------------------------------------- salidas (biblia 3.0: ninguna bloqueada)
     // geografía (adenda §14): la Redacción está en la planta 1; al vestíbulo (planta 0) se BAJA por esta escalera
-    { id: 'pecera_a_vestibulo', name: 'escalera al vestíbulo', exit: { room: 'vestibulo' }, handlers: {
+    { id: 'pecera_a_vestibulo', name: 'escalera al vestíbulo', exit: { room: 'vestibulo', tipo: 'escalera' }, handlers: {
       mirar: async (api) => { await api.say(['La escalera de bajada al vestíbulo. Planta 0.', 'Abajo espera el torno. Ya no me da miedo. Un poco.']); },
       abrir: 'Es una escalera. Está abierta desde 1987. Lo cerrado es el torno de abajo.',
       usar: async (api) => api.goto('vestibulo', 'pecera'),
       cerrar: 'Una escalera no se cierra. Para eso ya está el torno, abajo.',
       empujar: 'Empujar a alguien escaleras abajo sería una salida en valor. No.',
     } },
-    { id: 'pecera_a_pajarera', name: 'Despachos', exit: { room: 'pajarera' }, handlers: {
+    { id: 'pecera_a_pajarera', name: 'Despachos', exit: { room: 'pajarera', tipo: 'cristal' }, handlers: {
       mirar: async (api) => { await api.say(['Los Despachos. Cristal de arriba abajo: se ven las broncas, pero no se oyen.', 'Al fondo, la puerta de la Sala de Reuniones.']); },
       abrir: async (api) => api.goto('pajarera', 'pecera'), usar: async (api) => api.goto('pajarera', 'pecera'),
       hablar: 'Golpeo el cristal con los nudillos. Al otro lado lo apuntan en un pósit.',
       cerrar: 'Ya está cerrada. En los Despachos las puertas no se cierran: se delegan.',
     } },
-    { id: 'pecera_a_office', name: 'Vending', exit: { room: 'office' }, handlers: {
+    { id: 'pecera_a_office', name: 'Vending', exit: { room: 'office', tipo: 'arco' }, handlers: {
       mirar: 'El Vending. Un arco sin puerta: se ve la máquina y a Gertrudis. Ahí vive ella.',
       cerrar: 'No tiene puerta. Gertrudis no necesita puertas: necesita público.',
       abrir: async (api) => api.goto('office', 'pecera'), usar: async (api) => api.goto('office', 'pecera'),
       hablar: '¡Buenas noches, Gertrudis! No contesta. Habrá que decírselo a la cara.',
     } },
     // orden de dirección 2: la Redacción de papel, AL LADO, por la puerta doble (el umbral de latón es la frontera)
-    { id: 'pecera_a_catacumba', name: 'Redacción de papel', exit: { room: 'catacumba' }, handlers: {
+    { id: 'pecera_a_catacumba', name: 'Redacción de papel', exit: { room: 'catacumba', tipo: 'puerta_doble' }, handlers: {
       mirar: async (api) => { await api.say(['La Redacción de papel. Misma planta, otro siglo.', 'El umbral de latón es la frontera. Nadie lo pisa sin motivo.']); },
       abrir: 'Está abierta de par en par. Desde 1994. Nadie se atreve a cerrarla.',
       cerrar: 'Si cierro esa puerta, Teodoro lo publica en la página 7.',
@@ -152,7 +149,7 @@ export default buildRoom({
       tirar: 'Tiro de la puerta. Nada. Va por botonera, como los adultos.',
       hablar: '«¿Sube o baja?». Hace «tin». Es la conversación más clara de la planta.',
     }),
-    { id: 'pecera_a_ecosistema', name: 'escalera a la planta 2', exit: { room: 'ecosistema' }, handlers: {
+    { id: 'pecera_a_ecosistema', name: 'escalera a la planta 2', exit: { room: 'ecosistema', tipo: 'escalera' }, handlers: {
       mirar: 'Escalera a la planta 2. La moqueta engorda dos centímetros: ahí está el dinero.',
       usar: async (api) => api.goto('ecosistema', 'pecera'),
       hablar: '"¿Hay alguien arriba?" Me contesta un gong. Eso es que sí.',
@@ -400,29 +397,6 @@ export default buildRoom({
       coger: 'Si me lo llevo, Nemesio no sabría en qué día vive.',
       abrir: 'Lo hojeo. En diciembre regalan una llave inglesa. Hay que llegar a diciembre.',
     } },
-    // ---------------------------------------------------------------- DESARROLLO: el rincón del comité de igualdad (adenda §16)
-    { id: 'diploma_concienciado', name: 'diploma «100 % concienciado»', handlers: {
-      mirar: seq([['B', '«EQUIPO 100 % CONCIENCIADO». Expedido por: el equipo. Para: el equipo.'], ['B', 'Cuatro firmas. Todas de los premiados.']]),
-      coger: async (api) => api.sayAs(N, 'Ni lo toques. Nos costó mucho dárnoslo.'),
-      usar: 'Lo leo dos veces. Sigue sin firmarlo ninguna compañera. Ni para aprobarlo.',
-      tirar: async (api) => api.sayAs(A, 'Quieto. Es el único premio que hemos ganado por unanimidad.'),
-    } },
-    { id: 'logo_morado', name: 'logo morado', handlers: {
-      mirar: seq([['B', 'El logo del periódico, en morado. Impreso el 8 de marzo. Sigue en el corcho.'], ['B', 'Debajo, a boli: «IGUALDAD: HECHO».']]),
-      coger: seq([['D1', '¡Eh! Eso es nuestra política de igualdad.'], ['D2', 'Entera.']]),
-      empujar: 'Lo enderezo. Se vuelve a torcer. Lleva así desde marzo.',
-      usar: async (api) => api.sayAs(N, 'Lo descolgamos el 9. Volvió a subir solo. Como el café.'),
-    } },
-    { id: 'buzon_companeras', name: 'buzón «COMPAÑERAS»', handlers: {
-      mirar: async (api) => {
-        if (api.flag('acto_3_iniciado')) await api.say(['El buzón «COMPAÑERAS». Ha aparecido una araña.', 'Es la primera incorporación del año.']);
-        else await api.say(['Buzón de sugerencias: «COMPAÑERAS». Con candado y telarañas.', 'Dentro hay una sola nota. Es de Anselmo: «Más buzones».']);
-      },
-      abrir: async (api) => api.sayAs(N, 'La llave la tiene el comité. Somos cuatro. No la encuentra ninguno.'),
-      usar: 'Echo una sugerencia: «Contratad». Cae al fondo. Hace eco.',
-      'usar:pieza_opa': 'Si la echo ahí, Desarrollo la contesta explicándome mi propia pieza.',
-      empujar: 'Suena hueco. Es el sonido oficial del comité de igualdad.',
-    } },
     { id: 'ventana', name: 'ventana', handlers: {
       mirar: 'Ahí fuera hay un mundo real. Bajísimo tiempo de permanencia.',
       abrir: 'No se abre. El aire acondicionado lo consideraría una amenaza.',
@@ -463,8 +437,7 @@ export default buildRoom({
       'dar:album_eventos': async (api) => api.dialog('nerea', 'N_ALBUM_INTRO'),     // P14b
     },
       murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.',
-        'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.',
-        'Igualdad: EN CURSO desde 2016. Va a muy buen ritmo.'] },
+        'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.'] },
     { id: R, when: ['ruben_libre', '!lector_derribado'], handlers: {
       mirar: 'Rubén mira por la ventana. Espera al sol como quien espera una nómina.',
       hablar: async (api) => {
@@ -512,8 +485,7 @@ export default buildRoom({
       empujar: 'Ni hablar. Está detrás de su cinta. Empujarlo sería invadir.',
     },
       murmurs: ['Esto no ha pasado por Desarrollo. Esto tampoco. Esto sí, de refilón.', 'Transversal. No invasivo. Transversal.',
-        'Revisión: marzo. Qué bien suena marzo.', '(al termo) Tú sí eres de Desarrollo.',
-        'Brecha salarial cero. Lo he medido yo. Conmigo mismo.'] },
+        'Revisión: marzo. Qué bien suena marzo.', '(al termo) Tú sí eres de Desarrollo.'] },
   ],
 
   dialogs: { ...dialogos, custodia: dialogoCustodia },

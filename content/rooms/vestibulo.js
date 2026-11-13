@@ -101,7 +101,7 @@ async function cruzarTorno(api) {
 async function subirRedaccion(api) {
   if (!api.flag('torno_abierto')) { await api.say('La escalera está al otro lado del torno. Y el torno, de su lado.'); return; }
   await api.walkTo('vestibulo_a_redaccion');
-  api.sfx('door');
+  api.sfx('step');
   await api.goto('pecera', 'vestibulo');
 }
 // el ascensor está detrás de los tornos: sin torno_abierto, Bruno se queda en la línea y no hay botonera
@@ -215,7 +215,7 @@ export default buildRoom({
       empujar: 'No llego. Y si llego, la «e» se cae con todo su tornillo.',
       hablar: 'Le digo «buenas noches, Contable». No me cuenta. Como siempre.',
     } },
-    { id: 'torno', name: 'torno', color: LED, exit: { room: 'pecera' }, handlers: {
+    { id: 'torno', name: 'torno', color: LED, exit: { room: 'pecera', tipo: 'torno' }, handlers: {
       ir: async (api) => {
         if (api.flag('torno_abierto')) { await cruzarTorno(api); return; }
         await api.say(api.flag('foto_en_organigrama') ? 'Primero la tarjeta. El torno es muy de protocolo.' : 'El torno no gira. Para él, no existo. Tendría que constar en algún sitio.');
@@ -289,7 +289,7 @@ export default buildRoom({
       hablar: '¿Baja? Hace «tin». Es lo más amable que me han dicho hoy.',
     }, ascensorBloqueado),
     // la escalera del vestíbulo interior (detrás de los tornos): sube a la Redacción, como el torno abierto
-    { id: 'vestibulo_a_redaccion', name: 'escalera a la Redacción', exit: { room: 'pecera' }, handlers: {
+    { id: 'vestibulo_a_redaccion', name: 'escalera a la Redacción', exit: { room: 'pecera', tipo: 'escalera' }, handlers: {
       ir: subirRedaccion, usar: subirRedaccion,
       mirar: async (api) => api.say(api.flag('torno_abierto')
         ? 'La escalera a la Redacción. Moqueta roja: aquí ya se nota que constas.'

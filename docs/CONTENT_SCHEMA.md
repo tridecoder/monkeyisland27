@@ -348,7 +348,7 @@ Logic keys (in `content/rooms/<id>.js`):
   desc: 'Texto de Mirar.',         // = handlers.mirar
   pickup: 'planillo',              // = handlers.coger: reach anim, give item, hide object, sfx
   pickupText: '...',
-  exit: { room: 'pecera', entry: 'catacumba', sfx: 'door' },   // = handlers.ir (entry defaults to this room id)
+  exit: { room: 'pecera', tipo: 'puerta_doble', entry: 'catacumba', sfx: 'door' },   // = handlers.ir (entry defaults to this room id)
   handlers: { ... },               // §6
   walk: false, walkTo: [x, y], face: 'up', priority: 0,         // usually in the art; the logic may override
 }
@@ -365,6 +365,14 @@ exit graph). Put the lock in `handlers.ir`, which runs before the `exit` shortcu
     'usar:tarjeta_becario': async (api) => { ... } } }
 ```
 Clicking an exit with no verb is «Ir a <exit>». If "Usar/Abrir puerta" should also move, add those handlers.
+
+**Exit type (`exit.tipo`, required).** Every exit declares what the player SEES: `escalera`, `arco`, `cristal`,
+`puerta`, `puerta_doble`, `pasillo` or `torno` (`content/lib/edificio.js` `TIPOS_SALIDA`). A connection must look the same
+from both rooms: `tools/check.mjs` fails if the types A→B and B→A differ (the one-way `torno` aside), or if an opening
+without a leaf (`arco`, `pasillo`, `escalera`) is named «puerta…» or plays the `door` sfx. Current map: vestíbulo ↔
+Redacción and Redacción ↔ Marketing `escalera`; Redacción ↔ Vending `arco`; Redacción ↔ Despachos `cristal`; Redacción ↔
+Redacción de papel `puerta_doble` (open); Despachos ↔ Sala Amazonas `puerta` (wedged open; shut only in Act III until the
+climax); Marketing ↔ Eventos `puerta_doble` (ajar, portholes); Marketing ↔ Administración `pasillo`.
 
 Object state & visibility are saved (`state.objects['room.id']`). Other rooms' objects: `'room.objId'`.
 

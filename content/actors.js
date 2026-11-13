@@ -240,8 +240,7 @@ export default {
       sleeveNotes: '#f0e050', pencil: true, pencilColor: '#3070d0', pants: '#4a3a32', shoes: '#2a1a14', height: 1.02, build: 'normal',
     },
     murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.',
-      'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.',
-      'Igualdad: EN CURSO desde 2016. Va a muy buen ritmo.'],
+      'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.'],
   },
   teodoro_cuerpodoce: {
     // No habla: sus líneas salen del fax (prefijo «TEODORO (fax):», §3.4). Solo habla en voz alta al teléfono rojo.

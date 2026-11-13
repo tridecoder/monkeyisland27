@@ -1,7 +1,7 @@
 // SALA `office` — en pantalla «VENDING» (orden de dirección 1). ARTE Y GEOMETRÍA (rediseño, docs/GUIA_REDISENO.md §4,
-// §10). Biblia §3.3 + adenda §8bis. La sala del café, sin más: una sola puerta, a la Redacción (orden 2: la Redacción de
+// §10). Biblia §3.3 + adenda §8bis. La sala del café, sin más: una sola salida, el arco a la Redacción (orden 2: la Redacción de
 // papel ya no se alcanza desde aquí; la Secretaría de Custodia se mudó a la Redacción, orden 3). De izquierda a derecha:
-// puerta de la Redacción (placa «1 REDACCIÓN ◄ / REDACCIÓN WEB»), nevera con su cartel, la MÁQUINA DE VENDING (la que da
+// el ARCO ABIERTO a la Redacción, sin hoja (placa «1 REDACCIÓN ◄ / REDACCIÓN WEB»; por él se ve el vestíbulo de planta), nevera con su cartel, la MÁQUINA DE VENDING (la que da
 // nombre a la sala: le queda una bolsa de pipas), pilastra, GERTRUDIS grande (66 px) en el centro y sin nada delante,
 // pilastra, tablón (hilo del yogur, porra, hoja de firmas) sobre la encimera con la COLA DE NUEVE TUPPERS ante el
 // microondas y el fregadero, y en el rincón la fuente de agua que gotea (de ahí el cartel de «suelo mojado» del primer
@@ -78,25 +78,54 @@ function paintBackground(g) {
   vignette(g, W, 144, 0.55);
 }
 
-// ------------------------------------------------------------------ puerta de la Pecera (placa del kit + umbral)
+// ------------------------------------------------------------------ ARCO ABIERTO a la Redacción (placa del kit + umbral)
+// El mismo hueco que se ve desde el vestíbulo de planta de la Redacción (pecera.art.js `huecoVending`): jamba y arco de
+// piedra clara, SIN HOJA. Por él se ve lo que hay de verdad al otro lado: el vestíbulo de planta con sus colores reales
+// (yeso gris azulado con junquillo, zócalo de piedra, linóleo claro con la franja guía y la lengua amarilla del Vending,
+// el foco del hueco y el ficus del pasillo).
+const ARCO = { x: 6, y: 36, w: 32, r: 9 };
+const HALL = { pared: '#4c5260', suelo: ['#4a4c54', '#56585f', '#62646b', '#6e7077'] };   // = PECERA_ZONAS.hall / RAMPA.hall
 function doorLeft(g) {
-  const x = 6, y = 36, w = 32, h = FL - 36;
-  kit.marcoPuerta(g, x, y, w, h);
-  gradH(g, x, y, w, h, [PAL.green[5], PAL.green[4], PAL.green[3]]);
-  // ventanilla con cristal armado: se ve el resplandor azul de las pantallas de la Pecera
-  const gx = x + 5, gy = y + 6, gw = w - 10, gh = 22;
-  rect(g, gx - 1, gy - 1, gw + 2, gh + 2, PAL.green[1]);
-  paint(g, gx, gy, gw, gh, (xx, yy) => ditherPick(xx, yy, [PAL.night[2], PAL.night[3], PAL.blue[4], PAL.blue[5]], 0.2 + (yy - gy) / gh * 0.4 + (xx - gx) / gw * 0.15));
-  for (let k = 0; k < 3; k++) rect(g, gx + 2 + k * 7, gy + 11, 5, 6, PAL.crt[3 + (k % 2)]);
-  for (let i = 0; i <= gw; i += 4) vline(g, gx + i, gy, gh, PAL.night[1]);
-  for (let j = 0; j <= gh; j += 4) hline(g, gx, gy + j, gw, PAL.night[1]);
-  tint(g, [[gx + 2, gy], [gx + 8, gy], [gx, gy + 14], [gx - 2, gy + 14]], '#ffffff', 0.14);
-  rect(g, x + 4, y + 34, w - 8, 16, PAL.green[3]); frameRect(g, x + 4, y + 34, w - 8, 16, PAL.green[2]);
-  hline(g, x + 5, y + 35, w - 10, PAL.green[6]);
-  rect(g, x + w - 7, y + 26, 2, 5, PAL.gold[3]); px(g, x + w - 7, y + 26, PAL.gold[6]);
-  rect(g, x + 2, y + h - 8, w - 4, 6, PAL.metal[4]); hline(g, x + 2, y + h - 8, w - 4, PAL.metal[6]);   // chapa antipatadas
-  glow(g, x + w + 6, y + 30, 10, 26, '#6aa0ff', 0.07, 3);
-  kit.cantoVivo(g, x, y, w, h);
+  const { x, y, w, r } = ARCO, h = FL - y;
+  const archY = (xx) => { const d = Math.abs(xx - (x + w / 2)) - (w / 2 - r); return d <= 0 ? y : y + r - Math.sqrt(Math.max(0, r * r - d * d)); };
+  // jambas de piedra clara (la luz del Vending da en la de la derecha)
+  rect(g, x - 4, y + r - 2, 4, h - r + 2, '#7a7c84'); rect(g, x + w, y + r - 2, 4, h - r + 2, '#9a9ca4');
+  vline(g, x - 4, y + r - 2, h - r + 2, '#5a5c64'); vline(g, x + w + 3, y + r - 2, h - r + 2, '#c8cad2');
+  for (let xx = x - 4; xx < x + w + 4; xx++) {
+    const ya = Math.round(archY(Math.min(x + w - 1, Math.max(x, xx))));
+    vline(g, xx, ya - 4, 4, xx < x + w / 2 ? '#84868e' : '#a4a6ae'); px(g, xx, ya - 4, '#c8cad2');
+  }
+  // al otro lado: el vestíbulo de planta de la Redacción
+  const c = HALL.pared, pr = [shade(c, -0.2), shade(c, -0.06), c, shade(c, 0.1)];
+  const yZ = FL - 18, yS = FL - 12;                                   // zócalo y suelo, vistos a través del arco
+  paint(g, x, y, w, h, (xx, yy) => {
+    if (yy < archY(xx)) return null;
+    if (yy >= yS) {                                                    // linóleo claro con la franja guía
+      const t = (yy - yS) / 12;
+      if (yy === yS + 5) return '#8a8c96';
+      if (yy > yS + 5 && yy < yS + 9) return ditherPick(xx, yy, ['#2a2c36', '#34363f'], 0.4);
+      return ditherPick(xx, yy, HALL.suelo, 0.3 + t * 0.5 + (Math.abs(yy - (yS + 3)) < 1 ? 0.14 : 0));
+    }
+    if (yy >= yZ) return yy === yZ ? '#a8aab2' : yy === yS - 1 ? '#3a3c44' : '#7a7c84';     // zócalo de piedra
+    return ditherPick(xx, yy, pr, 0.85 - (yy - y) / 100 + (hash2(xx >> 1, yy >> 1, 21) < 0.04 ? -0.12 : 0));
+  });
+  hline(g, x, y + 18, w, '#8a90a0'); hline(g, x, y + 19, w, '#363a46');                  // junquillo del vestíbulo
+  // la lengua amarilla del Vending que lleva a la franja
+  poly(g, [[x + 10, yS], [x + w - 10, yS], [x + w - 8, yS + 5], [x + 8, yS + 5]], (xx, yy) => ditherPick(xx, yy, [shade(kit.DEPTO.office.c, -0.5), shade(kit.DEPTO.office.c, -0.36)], 0.4));
+  // el foco del hueco, desde arriba, y su charco en el yeso
+  glow(g, x + w / 2, y + 14, 16, 14, '#fff0d0', 0.16, 3);
+  // el ficus del pasillo, a la derecha, en primer plano del otro lado
+  const fx = x + w - 7;
+  rect(g, fx - 3, yS - 4, 7, 6, '#6a4a34'); hline(g, fx - 3, yS - 4, 7, '#8a6a4a');
+  for (const [lx, ly, lw] of [[-6, -22, 6], [-2, -26, 5], [1, -18, 6], [-7, -14, 6], [0, -11, 5], [-4, -8, 5]]) {
+    ellipse(g, fx + lx + lw / 2, yS + ly, lw / 2, 2, '#2e5a34'); px(g, fx + lx + 1, yS + ly - 1, '#4a8a4a');
+  }
+  vline(g, fx, yS - 24, 20, '#4a3a2a');
+  // la sombra del dintel por dentro del arco y la del suelo junto al umbral
+  ditherOverlay(g, x, y, w, 3, PAL.ink[0], 0.35);
+  ditherOverlay(g, x, FL - 3, w, 3, PAL.ink[0], 0.3);
+  glow(g, x + w + 6, y + 30, 10, 26, '#fff0d0', 0.05, 3);
+  kit.cantoVivo(g, x - 4, y - 4, w + 8, h + 4);
   kit.placaSala(g, 4, 11, 'pecera', { flecha: '<' });
   kit.umbral(g, x - 2, FL + 1, w + 4, 6, kit.DEPTO.redaccion.c, { chevron: true });
 }

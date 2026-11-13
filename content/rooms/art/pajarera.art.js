@@ -2,14 +2,16 @@
 // Paquete P2 del rediseño (docs/GUIA_REDISENO.md §2, §4, §9-§12; propuesta §4.5). 320×144, planta 1, FL = 96.
 // De izquierda a derecha:
 //   · el TABIQUE DE CRISTAL hacia la Redacción (con la puerta: `pajarera_a_pecera`; placa «1 REDACCIÓN ◄ / REDACCIÓN WEB»):
-//     a través se ven la pantalla de métricas, mesas con pantallas encendidas y sillas con chaqueta; persiana a media
-//     altura desde 2015 (`persiana`) en el cristal
+//     a través se ve lo que hay de verdad al otro lado, el VESTÍBULO DE PLANTA de la Redacción (yeso gris azulado,
+//     zócalo de piedra, linóleo con la franja guía, el tótem «PLANTA 1» y el ficus); persiana a media altura desde 2015
+//     (`persiana`) en el cristal
 //   · la ZONA DEL CONSULTOR: pared de pósits, la matriz 2×2 (COSTE entero), el pósit de Evaristo asomando por la esquina
 //     de PRESCINDIBLE; el sofá blanco con Íñigo SENTADO; el Lector Medio aparcado como expositor de Marketing delante de
 //     los pósits (nunca junto a una mesa de mando); el Titulator en su ATRIL propio, pantalla de 30×19 legible
 //   · DIRECCIÓN: la mesa grande con su cartelito «RESERVADO», el cuenco y el informe en blanco; el ventanal a la ciudad
 //     detrás; el perchero de latón; la mesa de Gervasio (sentado tras ella en el Acto II) con tres móviles; la puerta
-//     de la Sala con su pantallita de estado y la placa «1 AMAZONAS / SALA DE REUNIONES»; la hoja de reservas.
+//     de la Sala (ABIERTA con su cuña, como se ve desde dentro; cerrada solo en el Acto III hasta el clímax) con su
+//     pantallita de estado y la placa «1 AMAZONAS / SALA DE REUNIONES»; la hoja de reservas.
 // En esta planta no hay director de periódico: ni retrato, ni placa, ni alusión.
 // Estados: pantalla_titulator (estado `ayudame` medio segundo en la 3.ª mirada; vacía en el Acto III), puerta_sala
 // (EN CURSO / LIBRE / OCUPADO HASTA 2031), hoja_reservas (folio del Acto III), persiana (fija, a media altura).
@@ -65,22 +67,36 @@ function suelo(g) {
 /** la Redacción vista a través del cristal (se pinta dos veces: en el tabique y dentro de la hoja de la puerta) */
 function vistaRedaccion(g) {
   const x = 0, y = 12, w = 42, h = FL - 12;
-  // la Redacción al otro lado, iluminada en frío: pared verde agua con su filete, la pantalla de métricas (con su
-  // línea roja que baja), mesas con pantallas encendidas y sillas con chaqueta, y su moqueta azul pizarra
-  paint(g, x, y, w, h, (xx, yy) => ditherPick(xx, yy, ['#2c6a66', '#347a74', '#3e8a82'], 0.7 - (yy - y) / h * 0.6));
-  rect(g, x, y, w, 3, PAL.ink[1]); for (let i = 0; i < 2; i++) { rect(g, x + 3 + i * 21, y + 1, 14, 2, '#eaffee'); glow(g, x + 10 + i * 21, y + 6, 12, 5, '#eaffee', 0.2, 3); }
-  rect(g, x + 4, y + 18, 32, 14, PAL.ink[0]); rect(g, x + 5, y + 19, 30, 12, PAL.blue[1]);                 // la pantalla de métricas
-  rect(g, x + 7, y + 21, 10, 3, '#fff4c8'); for (let i = 0; i < 26; i++) px(g, x + 7 + i, y + 26 + Math.round(i / 9), '#ff5a48');
-  glow(g, x + 20, y + 25, 24, 12, '#8ec8ff', 0.22, 3);
-  hline(g, x, y + 40, w, kit.DEPTO.web.c); hline(g, x, y + 41, w, shade(kit.DEPTO.web.c, -0.4));
-  gradV(g, x, y + 56, w, h - 56, ['#3a4858', '#465668', '#506274']);                                       // su moqueta
-  for (let i = 0; i < 3; i++) {                                                                           // mesas, pantallas y chaquetas
-    const dx = x + 2 + i * 13;
-    rect(g, dx + 1, y + 37, 9, 7, PAL.ink[1]); rect(g, dx + 2, y + 38, 7, 5, [PAL.blue[4], PAL.crt[3], PAL.blue[5]][i]); px(g, dx + 4, y + 40, PAL.gold[5]);
-    rect(g, dx, y + 45, 12, 3, PAL.paper[5]); rect(g, dx + 1, y + 48, 10, 7, PAL.paper[3]);
-    const J = [JACKETS.navy, JACKETS.beige, JACKETS.olive][i];
-    rect(g, dx + 2, y + 50, 8, 10, J[2]); rect(g, dx + 3, y + 49, 6, 3, J[4]); rect(g, dx + 5, y + 60, 2, 4, PAL.metal[2]);
-    glow(g, dx + 5, y + 40, 8, 6, '#9fe8ff', 0.2, 3);
+  // lo que hay DE VERDAD al otro lado del cristal: el VESTÍBULO DE PLANTA de la Redacción (pecera.art.js, zona `hall`),
+  // con sus colores reales: yeso gris azulado con junquillo, zócalo de piedra clara, linóleo claro con la franja guía y
+  // la lengua de latón que lleva a esta puerta, el foco del hueco, el tótem-directorio «PLANTA 1» y el ficus del pasillo
+  const c = '#4c5260', pr = [shade(c, -0.2), shade(c, -0.06), c, shade(c, 0.1)];
+  const yZ = FL - 19, yS = FL - 13;
+  paint(g, x, y, w, h, (xx, yy) => {
+    if (yy >= yS) {
+      if (yy === yS + 6) return '#8a8c96';
+      if (yy > yS + 6 && yy < yS + 10) return ditherPick(xx, yy, ['#2a2c36', '#34363f'], 0.4);
+      return ditherPick(xx, yy, ['#4a4c54', '#56585f', '#62646b', '#6e7077'], 0.3 + (yy - yS) / 13 * 0.5);
+    }
+    if (yy >= yZ) return yy === yZ ? '#a8aab2' : yy === yS - 1 ? '#3a3c44' : '#7a7c84';
+    return ditherPick(xx, yy, pr, 0.85 - (yy - y) / 100 + (hash2(xx >> 1, yy >> 1, 21) < 0.04 ? -0.12 : 0));
+  });
+  rect(g, x, y, w, 3, PAL.ink[1]);                                                   // el techo del vestíbulo
+  hline(g, x, y + 54, w, '#8a90a0'); hline(g, x, y + 55, w, '#363a46');               // junquillo
+  // el foco del hueco
+  rect(g, x + 17, y + 3, 7, 2, PAL.metal[4]); hline(g, x + 18, y + 5, 5, '#fff2c0'); glow(g, x + 20, y + 14, 16, 12, '#fff0d0', 0.14, 3);
+  // la lengua de latón de los Despachos, en el suelo
+  poly(g, [[x + 12, yS], [x + 30, yS], [x + 32, yS + 6], [x + 10, yS + 6]], (xx, yy) => ditherPick(xx, yy, [shade(LATON, -0.5), shade(LATON, -0.36)], 0.4));
+  // el tótem-directorio, de canto, a la izquierda: «PLANTA 1» y su lista de puntos de color
+  rect(g, x + 3, y + 24, 12, yS - y - 24, '#262a34'); vline(g, x + 3, y + 24, yS - y - 24, '#4a4e5a'); hline(g, x + 3, y + 24, 12, '#6a6e7a');
+  rect(g, x + 5, y + 27, 8, 3, '#e8eaf2');
+  for (const [i, col] of [[0, LATON], [1, kit.DEPTO.office.c], [2, kit.DEPTO.papel.c], [3, kit.DEPTO.web.c]]) { rect(g, x + 5, y + 33 + i * 5, 2, 2, col); hline(g, x + 8, y + 33 + i * 5, 5, '#9a9eaa'); }
+  ellipse(g, x + 6, yS - 6, 1, 1, '#ff5a48');
+  // el ficus del pasillo, a la derecha
+  const fx = x + 33;
+  rect(g, fx - 3, yS - 4, 7, 6, '#6a4a34'); hline(g, fx - 3, yS - 4, 7, '#8a6a4a'); vline(g, fx, yS - 24, 20, '#4a3a2a');
+  for (const [lx, ly, lw] of [[-6, -22, 6], [-2, -26, 5], [1, -18, 6], [-7, -14, 6], [0, -11, 5], [-4, -8, 5]]) {
+    ellipse(g, fx + lx + lw / 2, yS + ly, lw / 2, 2, '#2e5a34'); px(g, fx + lx + 1, yS + ly - 1, '#4a8a4a');
   }
 }
 
@@ -209,20 +225,49 @@ function perchero(g) {
   kit.cantoVivo(g, x - 8, 32, 17, 67);
 }
 
+/** Marco, pantallita, placa y umbral de la puerta de la Sala (fondo). La HOJA va en el objeto (`drawPuertaSala`): la
+ *  misma puerta que se ve desde dentro de la Sala Amazonas, ABIERTA con su cuña (nadie sale), salvo en el Acto III, que
+ *  Íñigo la cierra «hasta 2031» hasta que Bruno entra a por él. */
 function puertaSala(g) {
   const x = 290, y = 38, w = 26, h = FL - y;
   kit.marcoPuerta(g, x, y, w, h);
-  paint(g, x, y, w, h, (xx, yy) => ditherPick(xx, yy, [PAL.wood[3], PAL.wood[4], PAL.wood[5]], 0.3 + (xx - x) / w * 0.4 + (hash2(xx, yy >> 2, 4) < 0.15 ? -0.25 : 0)));
-  const gx = x + 4, gy = y + 5, gw = w - 8, gh = 24;
-  rect(g, gx - 1, gy - 1, gw + 2, gh + 2, PAL.wood[1]);
-  paint(g, gx, gy, gw, gh, (xx, yy) => ditherPick(xx, yy, [PAL.green[3], PAL.green[4], PAL.teal[5], PAL.paper[5]], 0.2 + (xx - gx) / gw * 0.3 + (yy - gy) / gh * 0.3));
-  g.save(); g.globalAlpha = 0.28; ellipse(g, gx + 9, gy + 16, 3, 3, PAL.ink[1]); rect(g, gx + 6, gy + 19, 7, 5, PAL.ink[1]); g.restore();   // la gente de dentro
-  frameRect(g, x + 3, y + 34, w - 6, 18, PAL.wood[2]); hline(g, x + 4, y + 51, w - 8, PAL.wood[6]);
-  rect(g, x + 2, y + 30, 3, 4, LATON); px(g, x + 2, y + 30, PAL.gold[6]);
-  // marco de la pantallita de estado (el contenido, en el objeto) y la placa del kit
   rect(g, 287, 22, 32, 13, PAL.ink[1]); frameRect(g, 287, 22, 32, 13, PAL.metal[3]);
   kit.placaSala(g, W - 2 - kit.placaSalaW('sala_amazonas', { flecha: '>' }), 1, 'sala_amazonas', { flecha: '>' });
   kit.umbral(g, x - 2, FL + 1, w + 4, 5, kit.DEPTO.direccion.c);
+}
+/** ¿Cerrada? Solo en el Acto III mientras Íñigo tiene la sala «OCUPADA hasta 2031» (se abre para el clímax). */
+export const salaCerrada = (v) => !!v.flag('acto_3_iniciado') && !(v.flag('sala_abierta') && v.flag('ruben_libre'));
+function hojaSala(g, v) {
+  const x = 290, y = 38, w = 26, h = FL - y;
+  if (salaCerrada(v)) {
+    // cerrada: hoja de madera con su cristal (se adivina la gente de dentro) y el pomo de latón
+    paint(g, x, y, w, h, (xx, yy) => ditherPick(xx, yy, [PAL.wood[3], PAL.wood[4], PAL.wood[5]], 0.3 + (xx - x) / w * 0.4 + (hash2(xx, yy >> 2, 4) < 0.15 ? -0.25 : 0)));
+    const gx = x + 4, gy = y + 5, gw = w - 8, gh = 24;
+    rect(g, gx - 1, gy - 1, gw + 2, gh + 2, PAL.wood[1]);
+    paint(g, gx, gy, gw, gh, (xx, yy) => ditherPick(xx, yy, [PAL.green[3], PAL.green[4], PAL.teal[5], PAL.paper[5]], 0.2 + (xx - gx) / gw * 0.3 + (yy - gy) / gh * 0.3));
+    g.save(); g.globalAlpha = 0.28; ellipse(g, gx + 9, gy + 16, 3, 3, PAL.ink[1]); rect(g, gx + 6, gy + 19, 7, 5, PAL.ink[1]); g.restore();
+    frameRect(g, x + 3, y + 34, w - 6, 18, PAL.wood[2]); hline(g, x + 4, y + 51, w - 8, PAL.wood[6]);
+    rect(g, x + 2, y + 30, 3, 4, LATON); px(g, x + 2, y + 30, PAL.gold[6]);
+    return;
+  }
+  // abierta: por el hueco, la Sala Amazonas (su pared verde con la selva del friso, la luz fría del proyector y una
+  // esquina de la mesa con un botellín); la hoja, abierta hacia dentro contra la jamba izquierda; y la cuña en el suelo
+  paint(g, x, y, w, h, (xx, yy) => {
+    if (yy > FL - 10) return ditherPick(xx, yy, ['#183a2c', '#21483a', '#2a5646'], (yy - (FL - 10)) / 10);
+    if (yy > y + 28) return ditherPick(xx, yy, [PAL.leaf[0], PAL.leaf[1], PAL.leaf[2]], 0.35 + (yy - y - 28) / 60 + (hash2(xx >> 1, yy >> 1, 9) < 0.15 ? 0.3 : 0));
+    return ditherPick(xx, yy, [PAL.green[2], PAL.green[3], PAL.green[4]], 0.7 - (yy - y) / 60);
+  });
+  hline(g, x, y + 27, w, PAL.wood[5]); hline(g, x, y + 28, w, PAL.wood[1]);                       // la moldura
+  glow(g, x + w - 6, y + 14, 14, 12, '#bfe0ff', 0.3, 3);                                        // la pantalla, fuera de cuadro
+  rect(g, x + 8, y + 40, w - 8, 4, PAL.wood[3]); hline(g, x + 8, y + 40, w - 8, PAL.wood[5]);     // la esquina de la mesa
+  rect(g, x + 14, y + 36, 2, 4, PAL.teal[6]); px(g, x + 14, y + 35, PAL.white);                 // un botellín
+  rect(g, x + 10, y + 44, 2, h - 50, PAL.wood[2]);
+  // la hoja, abierta: de canto contra la jamba izquierda
+  rect(g, x, y, 5, h, PAL.wood[3]); vline(g, x, y, h, PAL.wood[5]); vline(g, x + 4, y, h, PAL.wood[1]);
+  rect(g, x + 3, y + 30, 2, 4, LATON);
+  ditherOverlay(g, x + 5, y, 3, h, PAL.ink[0], 0.3);
+  // la cuña (nadie la quita: nadie sale)
+  poly(g, [[x + 1, FL + 1], [x + 8, FL + 1], [x + 8, FL + 3], [x - 1, FL + 3]], PAL.wood[5]);
 }
 
 function drawRoom(g) {
@@ -311,6 +356,7 @@ function drawTitulatorAyudame(g, view, t) {
 /** pantallita de la puerta de la Sala: REUNIÓN EN CURSO (Actos I-II) · LIBRE (reunion_terminada) · OCUPADO HASTA 2031
  *  (Acto III): cambia texto, color y luz */
 function drawPuertaSala(g, view, t) {
+  hojaSala(g, view);
   const a3 = !!view.flag('acto_3_iniciado'), libre = !!view.flag('reunion_terminada') && !a3;
   const x = 288, y = 23, w = 30, h = 11;
   rect(g, x, y, w, h, libre ? PAL.crt[1] : '#3a0808');

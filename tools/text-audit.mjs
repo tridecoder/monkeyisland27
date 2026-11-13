@@ -11,6 +11,8 @@
 //     (es «Vending»), en cualquier mayúscula: en las líneas dichas, los nombres de salas/objetos/PNJ, la botonera y TODAS
 //     las cadenas literales de content/ (pintadas incluidas), salvo ids (`office_a_pecera`, `GV_OFFICE`, `m_office`) y
 //     las descripciones de flags; los comentarios no cuentan;
+//   · el gag de Desarrollo es VELADO (adenda §17): ni «feminista/machista», «igualdad», «brecha», «compañeras», «8 de
+//     marzo»/«8M»/«logo morado» ni «dar voz», en nada de lo que se ve o se oye (dicho, nombres y cadenas de content/);
 //   · «Nerea» (el desarrollador es Nemesio; el id `nerea_backlog` no cuenta) y «Dirección» como NOMBRE DE LA SALA (es
 //     «Despachos»): en los nombres de salas/objetos/PNJ y la botonera no puede salir «Dirección»; en lo dicho y en las
 //     cadenas de content/, ni «puerta/pasillo/cristal/placa/despacho/perchero/mueble de Dirección» ni la placa «DIRECCIÓN»
@@ -148,8 +150,10 @@ const PROHIBIDAS = /pajarera|office|nerea/i;
 const DIR_FRASE = /\b(puerta|pasillo|cristal|placa|despacho|perchero|mueble) de (la )?Direcci[oó]n\b/i, DIR_PLACA = /^\s*(1 )?DIRECCIÓN\s*$/;
 const DIR_SALA = { test: (t) => DIR_FRASE.test(t) || DIR_PLACA.test(t) };
 const esId = (t) => /^[A-Za-z0-9_.:\-/]+$/.test(t) || /^(bool|int|str|num|flag)\b.*·/.test(t);
+// el gag de Desarrollo es VELADO (adenda §17, orden del director): nada visible puede nombrar el tema ni ponerlo sobre la mesa
+const VELADO = /feminis|machis|igualdad|brecha|compañeras|8 de marzo|\b8M\b|en morado|logo morado|\bda[rn]? voz\b/i;
 const prohibidas = [];
-for (const t of texts) if (PROHIBIDAS.test(t) || DIR_SALA.test(t)) prohibidas.push(`dicho (${lines.get(t).who}): ${t}`);
+for (const t of texts) if (PROHIBIDAS.test(t) || DIR_SALA.test(t) || VELADO.test(t)) prohibidas.push(`dicho (${lines.get(t).who}): ${t}`);
 const visibles = await G(() => {
   const g = __game.game, out = [];
   for (const [rid, r] of Object.entries(g.content.rooms)) {
@@ -159,7 +163,7 @@ const visibles = await G(() => {
   for (const [id, a] of Object.entries(g.actors)) out.push(['actor ' + id, (a.def && a.def.name) || a.name || '']);
   return out;
 });
-for (const [k, t] of visibles) if (PROHIBIDAS.test(t) || /direcci[oó]n/i.test(t)) prohibidas.push(`nombre ${k}: «${t}»`);
+for (const [k, t] of visibles) if (PROHIBIDAS.test(t) || VELADO.test(t) || /direcci[oó]n/i.test(t)) prohibidas.push(`nombre ${k}: «${t}»`);
 /** Cadenas literales de un archivo JS, sin comentarios (tokenizador mínimo: '…', "…", `…`, // y /* *\/). */
 function literales(src) {
   const out = []; let i = 0;
@@ -179,9 +183,9 @@ function literales(src) {
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : e.name.endsWith('.js') ? [path.join(d, e.name)] : []);
 for (const f of walk(path.join(here, '..', 'content'))) {
   if (/content[\\/]flags\.js$/.test(f)) continue;                        // descripciones internas de flags
-  for (const t of literales(fs.readFileSync(f, 'utf8'))) if (((PROHIBIDAS.test(t) && !esId(t)) || DIR_SALA.test(t))) prohibidas.push(`${path.relative(path.join(here, '..'), f)}: «${t}»`);
+  for (const t of literales(fs.readFileSync(f, 'utf8'))) if (((PROHIBIDAS.test(t) && !esId(t)) || DIR_SALA.test(t) || VELADO.test(t))) prohibidas.push(`${path.relative(path.join(here, '..'), f)}: «${t}»`);
 }
-sec('Palabras prohibidas a la vista (Pajarera / Office / Nerea / «Dirección» como sala)', [...new Set(prohibidas)]);
+sec('Palabras prohibidas a la vista (Pajarera / Office / Nerea / «Dirección» como sala / el gag velado de Desarrollo)', [...new Set(prohibidas)]);
 // textos con temporizador: nunca menos que el tiempo de lectura (con la velocidad del texto de la partida)
 const timed = await G(() => (__game.game.timedTexts || []).map(x => ({ ...x })));
 const cortos = [...new Set(timed.filter(x => x.ms < x.need).map(x => `[${x.kind}] ${x.ms} ms < ${x.need} ms: ${x.text}`))];

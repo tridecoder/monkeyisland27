@@ -1569,56 +1569,35 @@ con quien haga falta. Y lo justifica. Es su gran talento.»
 
 ---
 
-## 17. «Equipo 100 % concienciado» — running gag de Desarrollo (encargo de dirección)
-**Premisa.** En esta casa Desarrollo son todo hombres (Anselmo, Nemesio y las tres espaldas del coro) y se creen muy
-feministas sin serlo. El chiste es **siempre sobre ellos** (su punto ciego, su autobombo, su «aliado» de diploma), nunca
-sobre las mujeres; sin groserías, sin acoso, nada sexual. Convive con «¡Ha sido Diseño!»: una de cada tres discusiones de
-fondo del coro es de este gag, y dos de ellas acaban culpando a Diseño. Escala por actos y remata en el epílogo y los créditos.
+## 17. El gag VELADO de Desarrollo (encargo de dirección, revisado)
+**Orden del director (revisión):** «Quita las preguntas de si Desarrollo son feministas. El que se vea que en el fondo
+son machistas tiene que ser muy velado… nada de preguntas». La versión explícita anterior (coro «conciencia», opciones de
+diálogo, atrezo del «comité», murmullos, remate del epílogo y entrada de créditos) se ha **QUITADO entera**.
 
-**Coro (ambiente rotatorio, `pecera.js` `CONCIENCIADOS`; se intercalan con `DISCUSIONES`).**
-- Acto I:
-  - DEV 1: «Somos un equipo feminista. Lo pone el diploma.» // DEV 2: «Nos lo dimos nosotros. Por unanimidad.» // DEV 3: «No.» // DEV 2: «Por mayoría.»
-  - DEV 2: «¿Diversidad? Aquí hay muchísima.» // DEV 1: «Él usa Linux.» // DEV 2: «Y yo, modo oscuro.» // DEV 3: «No.»
-  - DEV 1: «El 8 de marzo pusimos el logo en morado. Todo el día.» // DEV 2: «Sin que nadie lo pidiera.» // DEV 1: «Ese tema ya está cerrado.» // NEMESIO: «Lo tengo en HECHO (PERO NO).»
-  - DEV 1: «Le he explicado a Yoli su propio artículo de SEO.» // DEV 2: «¿Y?» // DEV 1: «Me ha corregido tres cosas. Le he dado las gracias por escuchar.» // DEV 2: «Eso es dar voz.»
-- Acto II (`acto_2_iniciado`):
-  - DEV 2: «La oferta pedía un "ninja del backend". Solo se apuntan chicos.» // DEV 1: «Qué raro. Con lo neutro que es "ninja".» // DEV 2: «Y "rockstar". Y "partirse la cara por el producto".» // DEV 1: «Será el diseño del anuncio.» // CORO: «¡Diseño!»
-  - DEV 1: «Mañana es jueves. Comité de igualdad.» // DEV 2: «¿Quién viene?» // DEV 1: «Los de siempre. Los cuatro.» // DEV 2: «Qué gusto que estemos todos de acuerdo.»
-  - DEV 2: «Hoy le he dicho "compañera" a Aurora. Con muchísimo respeto.» // DEV 1: «¿Y qué te ha contestado?» // DEV 2: «No sé. La he interrumpido para explicarle una tilde.» // DEV 3: «No.»
-- Acto III (`acto_3_iniciado`):
-  - DEV 1: «El comité ha aprobado contratar a una mujer.» // DEV 2: «¿Para qué puesto?» // DEV 1: «Para que el comité tenga sentido.» // DEV 3: «No.»
-  - DEV 2: «¿Y si la brecha es culpa de Diseño?» // DEV 1: «Diseño tiene más mujeres que nosotros.» // DEV 2: «¡Pues eso! ¡Provocadores!» // CORO: «¡Diseño!»
+**La regla (vinculante):**
+1. **Nunca se nombra.** Nada de lo que el jugador ve u oye dice el tema ni sus palabras clave (`tools/text-audit.mjs`
+   falla con «feminista/machista», «igualdad», «brecha», «compañeras», «8 de marzo»/«8M»/«logo morado», «dar voz»).
+2. **Nunca se pregunta.** Ninguna opción de diálogo de Bruno lo saca, ni con Desarrollo ni con nadie.
+3. **Nunca es un objeto.** Ni diploma, ni buzón, ni logo, ni cartel: el rincón de Desarrollo (x 1090-1150) es decorado
+   neutro (póster «FUNCIONA EN MI MÁQUINA», balda con el patito de goma, tres manuales sin abrir y un cactus en una taza,
+   pizarrita «DÍAS SIN CAÍDAS: 0»), sin hotspots.
+4. **Solo pasa.** Son cuatro conversaciones de fondo del coro (`pecera.js` `DE_FONDO`), metidas en la rotación de las
+   discusiones: como mucho una de cada cuatro, y **cada una sale una sola vez por partida** (`api.once`); todo lo demás
+   sigue siendo «¡Diseño!». Nadie lo comenta, no hay moraleja y quien contesta (si contesta) lo hace con una línea
+   tranquila que tiene gracia por sí sola. El jugador lo nota o no.
 
-**Opciones de diálogo nuevas (`pecera.dialogos.js`).**
-- Nemesio, «¿En Desarrollo no hay ninguna mujer?» (una vez): NEMESIO: «Ninguna. Pero tenemos un comité de igualdad. Se reúne los jueves.» // «Lo tengo en el tablero: "Igualdad", EN CURSO. Desde 2016.» // BRUNO: «¿Y quién está en el comité?» // NEMESIO: «Los cuatro. Por eso funciona tan bien: nadie nos lleva la contraria.»
-- Nemesio, Acto III, «¿Qué ha decidido el comité de igualdad?» (una vez): NEMESIO: «Contratar a una mujer. Por fin. Votación reñida: cuatro a cero.» // BRUNO: «¿Y ahora?» // NEMESIO: «Ahora debatimos quién le explica a ella lo de la igualdad.»
-- Anselmo, «¿Hay brecha salarial en Desarrollo?» (una vez): ANSELMO: «En mi equipo no hay brecha salarial.» // «No hay nadie con quien compararla.» // BRUNO: «Eso no es un logro.» // ANSELMO: «Es un dato. Y los datos no discriminan. Los hemos hecho nosotros.»
-- Coro, «¿Vosotros sois feministas?» (una vez): CORO: «¡Muchísimo!» // DEV 1: «Tenemos diploma.» // DEV 2: «Y pusimos el logo en morado. Un día entero.» // BRUNO: «¿Y alguna compañera en el equipo?» // DEV 1: «Estamos en ello. Lo lleva el comité.» // DEV 3: «No.»
+**Las cuatro líneas que quedan (texto completo):**
+- Acto I: DEV 1: «Le he explicado a Yoli su artículo de SEO.» // DEV 2: «¿Y?» // DEV 1: «Lo ha entendido a la
+  primera.» // YOLI: «Es que lo escribí yo. Ayuda bastante.»
+- Acto II (`acto_2_iniciado`): DEV 2: «He cortado a Aurora para explicarle una tilde.» // DEV 1: «¿Y qué ha dicho?» //
+  DEV 2: «Ha seguido la frase por donde iba. Con tilde.» // DEV 3: «No.»
+- Acto II (`acto_2_iniciado`): DEV 2: «A la oferta de "ninja del backend" se han apuntado tres.» // DEV 1: «¿Quiénes?» //
+  DEV 2: «Javier, Javi y Javier Ignacio. Será el diseño del anuncio.» // CORO: «¡Diseño!»
+- Acto III (`acto_3_iniciado`): DEV 1: «Le he explicado a Pilar cómo funciona su escaleta.» // DEV 2: «¿Y?» // DEV 1: «Me
+  ha dado las gracias. Dice que empiezo en cinco minutos.» // DEV 3: «No.»
 
-**Las que los desmontan (una línea seca cada una; opción nueva «Desarrollo dice que son muy feministas.», una vez, añadida al
-final de su árbol sin tocar lo que había; a Yoli, «Desarrollo dice que te da voz.»).**
-- AURORA (Redacción de papel): «Me llaman "compañera" para interrumpirme con más cariño.»
-- BEGOÑA (Administración): «Su comité de igualdad me manda las actas por triplicado. Iguales. Como ellos.»
-- PILAR (Eventos): «Les monté su jornada de igualdad. Cartel: cuatro señores y un logo morado.»
-- MARIPAZ (Comercial): «Desde el más absoluto cariño: su feminismo cabe en un diploma. Y sobra marco.»
-- CUSTODIA (Secretaría): «Me pidieron un buzón "para compañeras". El material no se pide. Que contraten.»
-- YOLI (Redacción): «Me explicaron mi propio artículo de SEO. Luego me agradecieron que lo escuchara.»
-
-**Atrezo en Desarrollo (rincón del comité, x 1090-1150; Mirar + 2-3 verbos).**
-| objeto | Mirar | otros verbos |
-|---|---|---|
-| `diploma_concienciado` «diploma "100 % concienciado"» | «"EQUIPO 100 % CONCIENCIADO". Expedido por: el equipo. Para: el equipo.» // «Cuatro firmas. Todas de los premiados.» | **Coger:** NEMESIO: «Ni lo toques. Nos costó mucho dárnoslo.» · **Usar:** «Lo leo dos veces. Sigue sin firmarlo ninguna compañera. Ni para aprobarlo.» · **Tirar:** ANSELMO: «Quieto. Es el único premio que hemos ganado por unanimidad.» |
-| `logo_morado` «logo morado» | «El logo del periódico, en morado. Impreso el 8 de marzo. Sigue en el corcho.» // «Debajo, a boli: "IGUALDAD: HECHO".» | **Coger:** DEV 1: «¡Eh! Eso es nuestra política de igualdad.» // DEV 2: «Entera.» · **Empujar:** «Lo enderezo. Se vuelve a torcer. Lleva así desde marzo.» · **Usar:** NEMESIO: «Lo descolgamos el 9. Volvió a subir solo. Como el café.» |
-| `buzon_companeras` «buzón "COMPAÑERAS"» | «Buzón de sugerencias: "COMPAÑERAS". Con candado y telarañas.» // «Dentro hay una sola nota. Es de Anselmo: "Más buzones".» · Acto III: «El buzón "COMPAÑERAS". Ha aparecido una araña.» // «Es la primera incorporación del año.» | **Abrir:** NEMESIO: «La llave la tiene el comité. Somos cuatro. No la encuentra ninguno.» · **Usar:** «Echo una sugerencia: "Contratad". Cae al fondo. Hace eco.» · **Usar `pieza_opa`:** «Si la echo ahí, Desarrollo la contesta explicándome mi propia pieza.» · **Empujar:** «Suena hueco. Es el sonido oficial del comité de igualdad.» |
-
-**Murmullos.** NEMESIO: «Igualdad: EN CURSO desde 2016. Va a muy buen ritmo.» · ANSELMO: «Brecha salarial cero. Lo he medido yo. Conmigo mismo.»
-
-**Remate (epílogo, `final.js`, tras «Enhorabuena, Diseño»).** DEV 1: «Otra cosa. El lunes entra la primera compañera de
-Desarrollo.» // DEV 2: «Encarna Kernel. La ha traído el comité. Es vecina de tu abuela.» // BRUNO: «Mi abuela dice que le
-arregló el CMS del pueblo en una mañana.» // DEV 1: «...Pues se lo explicaremos todo. Con paciencia.» // DEV 3: «No.»
-**Créditos:** «Comité de igualdad de Desarrollo — Asignado a: cuatro señores (los jueves). / Primera contratación: Encarna
-Kernel, vecina de la abuela. / Arregló el CMS en una mañana. / Pidió el traslado a Diseño. Entrega a las 18:29.» (lejos de
-«Infografía», como manda la regla de la casa).
+**Epílogo y créditos:** sin remate. Tras «Enhorabuena, Diseño» el epílogo sigue como antes («Por fin tengo departamento.
+Y es el que tenía razón.»…); en los créditos no hay entrada del tema.
 
 ## 18. Nemesio Backlog, los Despachos y el vestíbulo de planta (encargo de dirección)
 - **Desarrollo, solo hombres:** Nerea Backlog pasa a ser **Nemesio Backlog** (id `nerea_backlog` SIN cambiar: flags,
@@ -1636,6 +1615,23 @@ Kernel, vecina de la abuela. / Arregló el CMS en una mañana. / Pidió el trasl
   La **Reunión de Dirección** y la «PANTALLA DE DIRECCIÓN» no cambian.
 - **Vending (arco abierto):** «El Vending. Un arco sin puerta: se ve la máquina y a Gertrudis. Ahí vive ella.» · **Cerrar:**
   «No tiene puerta. Gertrudis no necesita puertas: necesita público.»
+  Desde DENTRO del Vending, la salida es el mismo arco (sin hoja; por él se ve el vestíbulo de planta), y se llama
+  «Redacción»: **Mirar:** «La Redacción, por el arco. Se oye teclear "pensiones".» · **Abrir:** «Más abierto no puede
+  estar. Es un arco: lo único de esta planta sin cerradura.» · **Cerrar:** «Para cerrar un arco hace falta una puerta y un
+  presupuesto. No hay ninguno.» · **Empujar:** «Empujo el aire del arco. Cede. Es lo único que cede en esta planta.» ·
+  **Coger:** «El arco se queda. Yo, de momento, también.»
+- **Cada conexión se ve igual desde los dos lados** (auditoría de dirección; `exit.tipo`, `tools/check.mjs`). Cambios de
+  texto: Despachos, cristal de la Redacción, **Mirar:** «El vestíbulo de la Redacción, tras el cristal. Más allá, la
+  Pecera. Con peces.» · **Hablar:** «Le hago gestos al tótem del vestíbulo. Me contesta: «AQUÍ». Ya lo sé.» · puerta de la
+  Sala (abierta con cuña, como se ve desde dentro), **Cerrar:** «Tiene una cuña desde marzo. Si la quito, alguien tendría
+  que salir.» (Acto III, cerrada: «Ya está cerrada. Por dentro. Como las buenas ideas.») · Eventos, puerta a Marketing
+  (entornada, la de los ojos de buey), **Mirar:** «La puerta a Marketing y Comercial. Por la rendija entra luz lila y sale
+  el gong.» · **Abrir:** «Está entornada. Pilar la deja así: «para que fluya el público».» · Administración, «pasillo a
+  Marketing» (boca de pasillo, sin puerta), **Mirar:** «El pasillo, de vuelta al Ecosistema. Al fondo, la impresora. Se oye
+  un gong.» · **Abrir:** «Es un pasillo: viene abierto de serie. Begoña lo tiene en revisión.» · **Cerrar:** «Si cierro el
+  pasillo, Begoña me pide el F-3 de Pasillos. Por triplicado.» · **Empujar:** «El pasillo no se empuja. Se recorre. Con
+  número de turno.» · Marketing, pasillo a Administración, **Abrir:** «Es un pasillo. Ya viene abierto. Lo que se abre al
+  fondo es un expediente.»
 - **Tótem `directorio_planta`:** Mirar: «Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.» //
   «Un punto rojo: "ESTÁ AQUÍ". Es la primera vez que algo me ubica.» · **Usar:** «Busco "becario" en la lista. No sale.
   Será que va dentro de "Redacción".» · **Empujar:** «No se mueve. Es lo único de esta planta que está donde dice que

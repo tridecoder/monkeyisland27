@@ -170,14 +170,19 @@ function drawFloor(g) {
 
 function drawDoor(g) {
   // la puerta doble a la Redacción web, abierta de par en par y AL MISMO NIVEL (orden de dirección 2): por el hueco se
-  // ve la moqueta azul y el resplandor de las pantallas; en el suelo, el umbral de latón (la frontera)
+  // ve el nogal y el parqué de la bisagra y, al fondo, el resplandor de las pantallas; en el suelo, el umbral de latón
   const x = 6, y = 33, w = 34, h = FL - 33;
   kit.marcoPuerta(g, x, y, w, h, { ramp: PAL.wood });
-  gradV(g, x, y, w, h, ['#16202c', '#1e2c3c', '#28384a']);
-  paint(g, x, y + h - 12, w, 12, (xx, yy) => ditherPick(xx, yy, ['#243462', '#2e4078', '#3a4e8c'], (yy - (y + h - 12)) / 12));
-  for (let k = 0; k < 3; k++) { const mx = x + 4 + k * 10; rect(g, mx, y + 24, 8, 6, PAL.ink[1]); rect(g, mx + 1, y + 25, 6, 4, [PAL.crt[3], PAL.blue[4], PAL.crt[4]][k]); rect(g, mx - 1, y + 31, 10, 3, PAL.metal[3]); }
+  // lo que hay de verdad al otro lado: la bisagra de la Redacción (pared de nogal con friso y parqué de tablilla, como en
+  // pecera.art.js `zonaPapel`) y, más allá, a la derecha, el resplandor frío de las pantallas de la Redacción web
+  gradV(g, x, y, w, h, ['#4a3420', '#6a4a2c', '#7a5634']);
+  hline(g, x, y + 22, w, '#9a7446'); hline(g, x, y + 23, w, '#2a1a10');                                          // el friso
+  rect(g, x + 6, y + 26, 11, 14, PAL.paper[6]); frameRect(g, x + 6, y + 26, 11, 14, PAL.wood[1]);              // «EL MATERIAL NO SE PIDE…»
+  for (let l = 0; l < 4; l++) hline(g, x + 8, y + 29 + l * 3, 7 - (l & 1) * 2, l === 0 ? PAL.red[3] : PAL.ink[3]);
+  paint(g, x, y + h - 12, w, 12, (xx, yy) => ditherPick(xx, yy, ['#3a2616', '#4a321c', '#5a3e24', '#6a4a2c'], (yy - (y + h - 12)) / 12 + (((xx + yy * 3) >> 2) & 1) * 0.1));
   rect(g, x + 2, y + 6, w - 4, 3, PAL.metal[4]); hline(g, x + 2, y + 9, w - 4, '#e8fff0');                       // un fluorescente
-  glow(g, x + w / 2, y + 28, 22, 16, '#8ec8ff', 0.3, 3);
+  for (let k = 0; k < 2; k++) { const mx = x + 18 + k * 7; rect(g, mx, y + 30, 6, 5, PAL.ink[1]); rect(g, mx + 1, y + 31, 4, 3, [PAL.crt[3], PAL.blue[4]][k]); }
+  glow(g, x + w - 6, y + 32, 16, 14, '#8ec8ff', 0.4, 3); glow(g, x + w / 2, y + 12, 20, 10, '#fff4d8', 0.2, 3);
   for (const [lx, d] of [[x, 1], [x + w - 5, -1]]) { rect(g, lx, y, 5, h, OLDW[3]); vline(g, lx + (d > 0 ? 0 : 4), y, h, OLDW[5]); vline(g, lx + (d > 0 ? 4 : 0), y, h, OLDW[1]); }
   ditherOverlay(g, x, y + h - 4, w, 4, PAL.ink[0], 0.35);
   kit.cantoVivo(g, x - 3, y - 3, w + 6, h + 3);

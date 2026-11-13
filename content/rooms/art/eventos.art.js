@@ -1,5 +1,5 @@
 // SALA `eventos` — La Sala Polivalente (Eventos, planta 2). Arte y geometría. Adenda §13 (sala propia de Eventos).
-// 512×144 con scroll. De izquierda a derecha: puerta abierta al Ecosistema (luz lila de Marketing) · PHOTOCALL con su
+// 512×144 con scroll. De izquierda a derecha: doble puerta ENTORNADA al Ecosistema (la misma de ojos de buey que se ve desde Marketing; por la rendija, luz lila) · PHOTOCALL con su
 // truss, la pared de logos con el hueco «ESPACIO PREMIUM PARA TU CARA», alfombra roja, postes y cordón de terciopelo ·
 // aro de luz · flight cases · ESCENARIO (telón negro, pancarta «BIENVENIDOS A» con cinta, cuenta atrás clavada en
 // 00:05:00, gong, micro de pie y atril) con las FILAS DE SILLAS delante (las famosas 112, en perspectiva; una con el
@@ -169,25 +169,30 @@ function drawTapeMarks(g) {
 }
 
 function drawDoor(g) {
-  const x = 3, y = 26, w = 33, h = FL - 26;
-  kit.marcoPuerta(g, x + 2, y, w - 4, h);                                          // marco común del edificio
-  // el otro lado: el Ecosistema, lila y luminoso
-  paint(g, x + 2, y, w - 4, h, (xx, yy) => ditherPick(xx, yy, LIL, 0.9 - (yy - y) / h * 0.6));
-  rect(g, x + 2, y + h - 12, w - 4, 12, '#6a3c92');                                  // su moqueta morada
-  for (let i = 0; i < 4; i++) hline(g, x + 2, y + h - 11 + i * 3, w - 4, '#8250aa');
-  rect(g, x + 10, y + 18, 12, 16, PAL.paper[6]); frameRect(g, x + 10, y + 18, 12, 16, PAL.metal[3]);   // la pizarra, a lo lejos
-  hline(g, x + 12, y + 22, 8, '#d83c4a'); hline(g, x + 12, y + 25, 6, '#2c5cc8'); hline(g, x + 12, y + 28, 7, '#2c9a4c');
-  // marco y hojas abiertas hacia dentro
-  rect(g, x, y - 2, w, 3, PAL.metal[3]); vline(g, x, y, h, PAL.metal[4]); vline(g, x + w - 1, y, h, PAL.metal[2]);
-  poly(g, [[x + 2, y + 1], [x + 7, y + 4], [x + 7, y + h - 3], [x + 2, y + h]], PAL.ink[2]);
-  poly(g, [[x + w - 3, y + 1], [x + w - 8, y + 4], [x + w - 8, y + h - 3], [x + w - 3, y + h]], PAL.ink[2]);
-  vline(g, x + 5, y + 30, 8, PAL.metal[5]); vline(g, x + w - 6, y + 30, 8, PAL.metal[5]);
+  // la MISMA doble hoja ciruela con ojos de buey que se ve desde Marketing (ecosistema.art.js `drawPuertaEventos`), por
+  // su cara de dentro: entornada, con la rendija y los ojos de buey por los que entra la luz lila del Ecosistema
+  const x = 5, y = 30, w = 29, h = FL - 30;
+  kit.marcoPuerta(g, x, y, w, h);
+  const PL = ['#1c1228', '#2a1a3a', '#3a2650', '#4c3262', '#5e4076'];
+  const hw = w >> 1;
+  for (const [dx, dw] of [[0, hw], [hw, w - hw]]) {
+    paint(g, x + dx, y, dw, h, (xx, yy) => ditherPick(xx, yy, PL, 0.75 - (yy - y) / h * 0.4 - (xx - x - dx) / dw * 0.15));
+    frameRect(g, x + dx, y, dw, h, PAL.ink[1]);
+    frameRect(g, x + dx + 3, y + 34, dw - 6, 20, PL[1]);
+    const ox = x + dx + (dw >> 1), oy = y + 13;
+    ellipse(g, ox, oy, 5, 5, PAL.metal[4]); ellipse(g, ox, oy, 4, 4, PAL.ink[0]);
+    ellipse(g, ox, oy, 3, 3, (xx, yy, d) => ditherPick(xx, yy, [LIL[0], LIL[2], LIL[4]], Math.max(0, 1 - d)));
+    px(g, ox - 1, oy - 2, PAL.white);
+    rect(g, x + dx + 2, y + 27, dw - 4, 2, PAL.metal[5]); hline(g, x + dx + 2, y + 27, dw - 4, PAL.metal[7]);   // barra antipánico
+  }
+  vline(g, x + hw, y + 2, h - 4, LIL[3]);                                           // la rendija: entra lila
+  glow(g, x + hw, y + 32, 8, 30, LIL[2], 0.2, 4);
   // placa de destino del kit: «2 MARKETING ◄ / Y COMERCIAL» (antes «◄ MKT»), umbral lila de Marketing
   kit.placaSala(g, 2, 3, 'ecosistema', { flecha: '<' });
-  kit.umbral(g, x, FL + 1, w, 6, kit.DEPTO.marketing.c);
-  // la luz lila que entra
-  glow(g, x + w / 2, FL + 8, 30, 10, LIL[2], 0.22, 4);
-  poly(g, [[x + 3, FL], [x + w - 3, FL], [x + w + 22, 143], [x - 2, 143]], (xx, yy) => (bayer(xx, yy) < 0.18 * (1 - (yy - FL) / 46) ? LIL[1] : null));
+  kit.umbral(g, x - 2, FL + 1, w + 4, 6, kit.DEPTO.marketing.c);
+  // la luz lila que se cuela por la rendija, en abanico por la moqueta
+  glow(g, x + hw, FL + 6, 18, 8, LIL[2], 0.18, 4);
+  poly(g, [[x + hw - 1, FL], [x + hw + 1, FL], [x + hw + 16, 143], [x + hw + 2, 143]], (xx, yy) => (bayer(xx, yy) < 0.18 * (1 - (yy - FL) / 46) ? LIL[1] : null));
 }
 
 function drawPhotocall(g) {
