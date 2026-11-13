@@ -27,16 +27,26 @@ async function revelacionRuben(api) {
     for (let i = 0; i < 3; i++) { await api.anim('bruno', 'reach', 380); api.sfx('paper'); await api.wait(200); }
     api.shake(300, 1);
     await api.sayFrom('armario_27', '¡EH! ¡QUE ES MI BORRADOR!', { color: '#B6FF4D' });
+    // Bruno da un paso atrás (estaba delante del armario y taparía la puerta) y mira cómo se abre
+    const L = art.layout.ruben || {};
+    const wt = L.walkTo || [206, 112];
+    await api.walkTo(wt[0] + 6, wt[1] + 2);
+    api.face('armario_27');
+    // «La puerta del armario se abre hacia fuera»: ñiiic en dos tiempos; dentro, el nido y Rubén de pie
     api.sfx('open');
+    api.setState('armario_27', 'entreabierto');
+    await api.wait(350);
+    const dentro = (L.positions && L.positions.dentro && L.positions.dentro.at) || [187, 93, 'down'];
+    api.placeActor(R, 'cpd', dentro[0], dentro[1], 'down'); api.show(R);
     api.setState('armario_27', 'abierto');
-    const at = (art.layout.ruben && art.layout.ruben.at) || [127, 100, 'down'];
-    api.placeActor(R, 'cpd', at[0], at[1], at[2] || 'down'); api.show(R);
-    // Bruno da un paso atrás (estaba delante del armario y taparía a Rubén) y le mira
-    const wt = (art.layout.ruben && art.layout.ruben.walkTo) || [204, 112];
-    await api.walkTo(wt[0] + 4, wt[1] + 2);
-    await api.wait(300);
-    api.face(R);
+    api.shake(200, 1);
+    await api.wait(600);
     await api.sayAs(R, 'BECARIO DETECTADO. LO QUE PASÓ DESPUÉS TE SORPRENDERÁ.');
+    // sale del armario y se queda a su lado (deja ver el nido)
+    const at = L.at || [178, 105, 'down'];
+    await api.walkActor(R, at[0], at[1]);
+    api.faceActor(R, 'bruno');
+    api.face(R);
     await api.say('...¿Tú eres el Titulator?');
     await api.sayAs(R, ['Rubén. Becario de verano.', 'Del verano pasado.']);
     await api.say('¿Y qué haces en un armario?');

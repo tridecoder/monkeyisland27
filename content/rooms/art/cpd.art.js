@@ -180,35 +180,76 @@ function drawRejilla(g) {
   tintR(g, x + 4, y + 2, w - 8, 3, '#8ec4ff', 0.18);
 }
 
+// Estados del objeto `armario_27` (los pone la lógica, cpd.js; se guardan con la partida):
+//   'cerrado'      puerta cerrada con la pegatina «NO ABRIR» (Actos I-III hasta la revelación)
+//   'entreabierto' fotograma intermedio del ñiiic: la puerta a medio abrir (solo dentro de la escena 7.3)
+//   'abierto'      puerta abierta hacia fuera: el nido de Rubén (monitor verde, manta, tápers, cables) con Rubén delante
+//   'vacio'        abierta y sin Rubén (ruben_libre): queda el nido, el monitor apagado y el pósit «Gracias, Tadeo»
+function puertaAbierta(g, x, y, h, ancho) {
+  // hoja de la puerta girada hacia fuera (hacia la izquierda): `ancho` = cuánto sobresale (12 abierta, 22 entreabierta)
+  const x0 = x + 1, x1 = x - ancho;
+  poly(g, [[x0, y + 11], [x1, y + 4], [x1, y + h], [x0, y + h - 4]], (xx, yy) => ditherPick(xx, yy, [PAL.ink[0], PAL.metal[1], PAL.metal[2], PAL.metal[3]], (xx - x1) / (ancho + 1) * 0.9));
+  line(g, x1, y + 4, x1, y + h, PAL.metal[4], 1);
+  // por dentro de la hoja, la pegatina se ve del revés (papel blanco con el «NO» al trasluz)
+  const px0 = x1 + Math.round(ancho * 0.25);
+  rect(g, px0, y + 38, Math.max(5, Math.round(ancho * 0.55)), 7, PAL.paper[5]); micro(g, 'ON', px0 + 1, y + 40, PAL.red[2]);
+}
+function nidoRuben(g, x, y, w, h, libre, t) {
+  // hueco oscuro del armario
+  rect(g, x + 1, y + 11, w - 2, h - 13, PAL.ink[0]);
+  gradV(g, x + 2, y + 12, w - 4, h - 16, [PAL.ink[1], PAL.ink[0]]);
+  // cables que cuelgan del techo del armario
+  for (let k = 0; k < 5; k++) vline(g, x + 3 + k * 6, y + 12, 6 + k * 2, [PAL.gold[3], PAL.blue[3], PAL.red[3], PAL.ink[3], PAL.teal[4]][k]);
+  // la matricial en la balda de arriba, con el papel continuo bajando por la pared del armario
+  rect(g, x + 3, y + 22, 13, 6, PAL.paper[3]); hline(g, x + 3, y + 22, 13, PAL.paper[5]); rect(g, x + 5, y + 21, 9, 1, PAL.paper[7]);
+  for (let yy = y + 28; yy < y + h - 4; yy += 2) { hline(g, x + 6, yy, 6, PAL.paper[6]); px(g, x + 6, yy, PAL.ink[3]); px(g, x + 11, yy, PAL.ink[3]); }
+  // monitor verde (el Titulator por dentro) en la balda derecha
+  rect(g, x + 18, y + 18, 12, 10, PAL.ink[2]); rect(g, x + 19, y + 19, 10, 7, libre ? PAL.ink[1] : PAL.crt[1]);
+  if (!libre) {
+    for (let k = 0; k < 3; k++) hline(g, x + 20, y + 20 + k * 2, 3 + ((k * 5) % 6), PAL.crt[5]);
+    if ((Math.floor((t || 0) / 400) & 1) === 0) rect(g, x + 24, y + 24, 2, 1, PAL.crt[6]);
+    glow(g, x + 24, y + 24, 16, 14, PAL.crt[4], 0.28, 4);
+  }
+  rect(g, x + 17, y + 28, 14, 1, PAL.metal[3]);                        // la balda
+  // manta de cuadros y cojín en el suelo del armario (el «nido»)
+  paint(g, x + 2, y + h - 12, w - 4, 8, (xx, yy) => ((((xx >> 2) + (yy >> 2)) & 1) ? PAL.red[3] : PAL.red[1]));
+  hline(g, x + 2, y + h - 12, w - 4, PAL.red[4]);
+  rect(g, x + w - 11, y + h - 16, 8, 5, PAL.paper[5]); hline(g, x + w - 11, y + h - 16, 8, PAL.paper[7]);
+  // tápers de atún apilados y envoltorios
+  rect(g, x + 18, y + 44, 9, 4, PAL.teal[6]); hline(g, x + 18, y + 44, 9, PAL.teal[7]); rect(g, x + 19, y + 49, 8, 4, PAL.teal[5]); hline(g, x + 19, y + 49, 8, PAL.teal[7]);
+  for (let k = 0; k < 9; k++) px(g, x + 3 + ((k * 7) % 22), y + h - 4 + (k % 2), PAL.paper[5]);
+  // pósit «Gracias, Tadeo» pegado por dentro
+  rect(g, x + 20, y + 33, 7, 6, '#f0e050'); hline(g, x + 21, y + 35, 5, PAL.ink[3]); hline(g, x + 21, y + 37, 4, PAL.ink[3]);
+}
 function drawArmario27(g, view, t) {
   const { x, w } = CABS.find(c => c.n === 27);
   const y = CAB_Y, h = CAB_H;
-  const enc = !!view.flag('ruben_encontrado'), libre = !!view.flag('ruben_libre');
+  const st = String(view.state || 'cerrado');
+  const libre = st === 'vacio';
   const a3 = !!view.flag('acto_3_iniciado');
-  if (!enc) {
+  if (st === 'cerrado') {
     rect(g, x + 3, y + 44, w - 6, 20, PAL.paper[6]); frameRect(g, x + 3, y + 44, w - 6, 20, PAL.red[3]);
     ellipse(g, x + 8, y + 49, 3, 3, PAL.red[4]); micro(g, 'OB', x + 6, y + 47, PAL.paper[7]);
     micro(g, 'NO', x + 4, y + 53, PAL.red[3]); micro(g, 'ABRIR', x + 4, y + 58, PAL.red[3]);
     hline(g, x + 14, y + 52, 12, PAL.metal[4]); hline(g, x + 14, y + 54, 9, PAL.metal[4]); hline(g, x + 14, y + 56, 11, PAL.metal[4]);
     rect(g, x + w - 6, y + 30, 2, 6, PAL.metal[6]);
+  } else if (st === 'entreabierto') {
+    // a medio abrir: la mitad derecha del hueco ya se ve (luz verde), la hoja aún tapa la izquierda
+    nidoRuben(g, x, y, w, h, false, t);
+    const hx = x + 14;
+    poly(g, [[x + 1, y + 11], [hx, y + 9], [hx, y + h - 3], [x + 1, y + h - 4]], (xx, yy) => ditherPick(xx, yy, [PAL.ink[1], PAL.metal[1], PAL.metal[2]], (xx - x) / 14));
+    vline(g, hx, y + 9, h - 12, PAL.metal[4]);
+    rect(g, x + 3, y + 44, 9, 16, PAL.paper[6]); micro(g, 'NO', x + 4, y + 50, PAL.red[3]);
+    puertaAbierta(g, x, y, h, 4);
   } else {
-    rect(g, x + 1, y + 11, w - 2, h - 13, PAL.ink[0]);
-    gradV(g, x + 2, y + 12, w - 4, h - 16, [PAL.ink[1], PAL.ink[0]]);
-    rect(g, x + 4, y + 36, 14, 9, PAL.ink[2]); rect(g, x + 5, y + 37, 12, 7, PAL.crt[1]);
-    for (let k = 0; k < 4; k++) hline(g, x + 6, y + 38 + k * 2, 4 + ((k * 5) % 6), PAL.crt[5]);
-    glow(g, x + 12, y + 40, 18, 12, PAL.crt[4], 0.25, 4);
-    for (let k = 0; k < 5; k++) vline(g, x + 3 + k * 5, y + 12, 18 + k * 2, [PAL.gold[3], PAL.blue[3], PAL.red[3], PAL.ink[3], PAL.teal[4]][k]);
-    rect(g, x + 14, y + 58, 9, 5, PAL.teal[6]); hline(g, x + 14, y + 58, 9, PAL.teal[7]);
-    for (let k = 0; k < 9; k++) px(g, x + 3 + ((k * 7) % 22), y + h - 8 + (k % 3), PAL.paper[5]);
-    poly(g, [[x + 1, y + 11], [x - 11, y + 6], [x - 11, y + h - 2], [x + 1, y + h - 4]], (xx, yy) => ditherPick(xx, yy, [PAL.ink[0], PAL.metal[1], PAL.metal[2]], (xx - x + 11) / 12));
-    line(g, x - 11, y + 6, x - 11, y + h - 2, PAL.metal[4], 1);
-    rect(g, x - 9, y + 38, 8, 6, PAL.paper[6]); micro(g, 'NO', x - 8, y + 40, PAL.red[3]);
+    nidoRuben(g, x, y, w, h, libre, t);
+    puertaAbierta(g, x, y, h, 12);
   }
   if (!libre) {
     const k = Math.floor((t || 0) / (a3 ? 110 : 480)) % 3;
     const col = ['#ff8030', '#ffd040', '#ff5030'][k];
     rect(g, x + w - 5, y + 14, 2, 2, col); glow(g, x + w - 4, y + 15, 5, 4, col, 0.5, 2);
-    if (a3 && !enc) for (let s = 0; s < 6; s++) rect(g, x + 3 + s * 3, y + 30 + ((Math.floor((t || 0) / 90) + s * 3) % 5), 2, 1, PAL.crt[5]);
+    if (a3 && st === 'cerrado') for (let s = 0; s < 6; s++) rect(g, x + 3 + s * 3, y + 30 + ((Math.floor((t || 0) / 90) + s * 3) % 5), 2, 1, PAL.crt[5]);
   } else rect(g, x + w - 5, y + 14, 2, 2, PAL.metal[2]);
 }
 
@@ -341,7 +382,9 @@ const layout = {
   cementerio_ratones: { rect: [299, 86, 19, 18], walkTo: [306, 112], face: 'up', draw: (g) => drawCaja(g) },
   rejilla_cpd: { rect: [94, 120, 40, 18], walkTo: [114, 114], face: 'down', draw: (g) => drawRejilla(g) },
   paco_ticket: { at: [273, 99, 'down'], walkTo: [270, 113], face: 'up' },
-  ruben: { at: [186, 101, 'down'], walkTo: [204, 112], face: 'left' },
+  // Rubén, fuera del armario y a su izquierda (deja ver el nido); `dentro` = de pie dentro del armario abierto (escena 7.3).
+  // Bruno le habla desde la derecha, de perfil, sin taparle (problema C del director).
+  ruben: { at: [178, 105, 'down'], walkTo: [206, 112], face: 'left', positions: { dentro: { at: [187, 93, 'down'] } } },
 };
 
 export default {

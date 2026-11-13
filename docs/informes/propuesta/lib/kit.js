@@ -177,7 +177,7 @@ export function escalera(g, x, y, w, h, dir = 'sube', o = {}) {
     const t = i / 4;
     const bx = Math.round(x - 2 + t * (w + 2));
     const by = dir === 'sube' ? Math.round(y + h - 8 + t * (ry - (y + h - 8))) : Math.round(ry + 2 + t * 8);
-    vline(g, bx, by, dir === 'sube' ? Math.round(h * (1 - t) * 0.9) + 6 : 12, PAL.metal[4]);
+    vline(g, bx, by, 9, PAL.metal[4]);
   }
 }
 

@@ -40,14 +40,19 @@ export function capa(g, d, S = 3, o = {}) {
   if (o.globos !== false) {
     g.fillStyle = 'rgba(255,255,255,0.05)'; g.fillRect(0, 0, W * S, 45 * S);
     dashed(g, [[0, 45 * S], [W * S, 45 * S]], 'rgba(255,255,255,0.35)', 1, [3, 5], false);
-    etiqueta(g, 'y<45: franja de globos y ventana de duelo (sin pistas de puzle)', W * S - 4, 45 * S - 18, '#d8d8e8', { align: 'right', size: 10, alpha: 0.6 });
+    etiqueta(g, 'y<45: franja de globos (sin pistas de puzle)', W * S - 4, 2, '#d8d8e8', { align: 'right', size: 9, alpha: 0.6 });
   }
   // zonas
+  const FL = d.FL || 96, vpx = W / 2;
+  const xb = (x) => Math.round(vpx + (x - vpx) * (144 - 10) / (FL - 10));
   for (const z of d.zonas || []) {
-    const pts = z.poly || [[z.r[0], z.r[1]], [z.r[0] + z.r[2], z.r[1]], [z.r[0] + z.r[2], z.r[1] + z.r[3]], [z.r[0], z.r[1] + z.r[3]]];
+    const pts = z.poly || (z.r ? [[z.r[0], z.r[1]], [z.r[0] + z.r[2], z.r[1]], [z.r[0] + z.r[2], z.r[1] + z.r[3]], [z.r[0], z.r[1] + z.r[3]]]
+      : [[z.x0, 14], [z.x1, 14], [z.x1, FL], [Math.min(W, xb(z.x1)), 144], [Math.max(0, xb(z.x0)), 144], [z.x0, FL]]);
+    if (z.ly == null && z.x0 != null) z.ly = 129;
     g.save(); g.globalAlpha = 0.16; g.fillStyle = z.c; g.beginPath(); P(pts).forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath(); g.fill(); g.restore();
     dashed(g, P(pts), z.c, 2, [10, 5]);
     const lx = (z.lx ?? pts[0][0] + 2) * S, ly = (z.ly ?? (pts[pts.length - 1][1] - 12)) * S;
+    g.save(); g.globalAlpha = 0.9; g.fillStyle = z.c; g.fillRect(lx - 4, ly, 3, 15); g.restore();
     etiqueta(g, z.nombre, lx, ly, z.c, { bold: true, size: 12, borde: true });
   }
   // walkbox(es)
