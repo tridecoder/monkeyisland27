@@ -10,6 +10,7 @@
 // por otro hotspot (o PNJ).
 //   node tools/play-mouse.mjs                    todo
 //   node tools/play-mouse.mjs --solo=geometria   solo la auditoría      (--solo=raton: solo la partida)
+//   (C) y cada PNJ con Hablar sigue visible (≥ 80 % de cabeza y torso) con Bruno de pie en su punto de conversación
 //   node tools/play-mouse.mjs --lento            capturas de cada paso en tools/shots/raton-*.png
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -93,7 +94,7 @@ async function auditCurrentRoom(tag) {
     const origDraw = g.drawActor;
     const npcs = Object.values(g.actors).filter(a => a.room === def.id && a.visible && a.id !== g.G.player && a.def.hotspot !== false);
     const vis = [];
-    for (const a of npcs) {
+    const measure = (a) => {
       g.camX = Math.max(0, Math.min(W - 320, a.x - 160));
       const cam = Math.round(g.camX);
       const b = g.actorBox(a);
@@ -130,8 +131,23 @@ async function auditCurrentRoom(tag) {
         box++;
         const t = g.pickAt(x - cam, y); if (t && t.id === a.id) mine++;
       }
-      const fv = tot ? seen / tot : 0, fc = box ? mine / box : 0;
-      vis.push(`${a.id} ${Math.round(fv * 100)}%/${mine}px`);
+      return { fv: tot ? seen / tot : 0, fc: box ? mine / box : 0, mine };
+    };
+    const P = g.player, pSave = { x: P.x, y: P.y, dir: P.dir, room: P.room };
+    for (const a of npcs) {
+      const { fv, fc, mine } = measure(a);
+      // (C) con Bruno de pie en el punto desde el que se le habla: el PNJ no queda tapado por Bruno
+      const t = g.actorTarget(a);
+      let fh = null;
+      if (t.handlers && t.handlers.hablar && t.def.walk !== false) {
+        const ap = g.approachPoint(t);
+        P.room = def.id; P.x = ap.x; P.y = ap.y;
+        if (ap.face) P.dir = ap.face; else if (ap.faceTo) g.faceTowards(P, ap.faceTo[0], ap.faceTo[1]);
+        fh = measure(a).fv;
+        Object.assign(P, pSave);
+        if (fh < VIS_MIN) out.push(`${tag} ${def.id}: PNJ «${a.id}» TAPADO POR BRUNO al hablarle: con Bruno en su punto de conversación (${Math.round(g.approachPoint(t).x)},${Math.round(g.approachPoint(t).y)}) solo se ve el ${Math.round(fh * 100)} % de cabeza y torso (mín. ${VIS_MIN * 100} %)`);
+      }
+      vis.push(`${a.id} ${Math.round(fv * 100)}%/${mine}px${fh == null ? '' : ` · hablando ${Math.round(fh * 100)}%`}`);
       if (fv < VIS_MIN) out.push(`${tag} ${def.id}: PNJ «${a.id}» medio escondido: solo se ve el ${Math.round(fv * 100)} % de cabeza y torso (mín. ${VIS_MIN * 100} %)`);
       if (fc < CLICK_MIN || mine < CLICK_PX) out.push(`${tag} ${def.id}: PNJ «${a.id}» con poca zona de clic propia (${mine} px, ${Math.round(fc * 100)} % de su caja)`);
     }
@@ -405,7 +421,7 @@ try {
     await G(() => __game.skipText(true));
     await R.startDismisser();
     await G(() => __game.newGame());
-    const cps = [[8, 'ACTO I (tras 7.2)'], [16, 'ACTO II (inicio)'], [29, 'ACTO II (tras D1)'], [37, 'ACTO III (inicio)'], [42, 'ACTO III (Rubén libre)']];
+    const cps = [[8, 'ACTO I (tras 7.2)'], [16, 'ACTO II (inicio)'], [29, 'ACTO II (tras D1)'], [37, 'ACTO III (inicio)'], [39, 'ACTO III (Rubén en el armario)'], [42, 'ACTO III (Rubén libre)']];
     let done = 1;
     for (const [n, tag] of cps) {
       for (const s of STEPS.filter(s => s.n > done && s.n <= n)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }

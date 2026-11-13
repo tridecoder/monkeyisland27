@@ -260,7 +260,25 @@ try {
   ok(await logHas('Me sobran ocho líneas. No recorto: yo solo mido.') && !(await flag('pagina_cerrada')), 'sin pieza_recortada: «Me sobran ocho líneas»');
   await setFlags({ pieza_recortada: true, evaristo_llamadas: 3 });
   await clearLog();
+  ok((await G(() => __game.objects().find(o => o.id === 'telefono_rojo').state)) === 'colgado', 'el teléfono rojo está colgado antes de 7.3a');
+  // problema D del director: Teodoro habla AL teléfono (descolgado, auricular en la oreja, junto a su mesa)
+  await G(() => {
+    const g = __game.game; window.__probe = [];
+    g.__speakOrig = g.speak.bind(g);
+    g.speak = (who, text, opts) => {
+      const t = g.actors.teodoro_cuerpodoce;
+      window.__probe.push({ who, text, tel: g.getObjState('telefono_rojo', 'catacumba').state, auricular: !!t.auricular, x: Math.round(t.x), y: Math.round(t.y) });
+      return g.__speakOrig(who, text, opts);
+    };
+  });
   await R.run(['dar', 'ficha_pagina_7', 'teodoro_cuerpodoce']); await R.run(['cerrar']); await idle();
+  const probe = await G(() => { const g = __game.game; g.speak = g.__speakOrig; delete g.__speakOrig; return window.__probe; });
+  const goy = probe.find(p => p.text.startsWith('Goyita. Página 7 cerrada'));
+  ok(goy && goy.who === 'teodoro_cuerpodoce' && goy.tel === 'descolgado' && goy.auricular && Math.abs(goy.x - 141) < 24,
+    `7.3a: «Goyita...» con el teléfono rojo DESCOLGADO, el auricular en la oreja y Teodoro junto a él (${JSON.stringify(goy)})`);
+  const otras = probe.filter(p => p !== goy);
+  ok(otras.every(p => p.tel === 'colgado' && !p.auricular), '7.3a: el resto de la escena, el teléfono colgado (descuelga solo para hablar con la Goyita)');
+  ok((await G(() => __game.objects().find(o => o.id === 'telefono_rojo').state)) === 'colgado', 'tras 7.3a el teléfono vuelve a estar colgado');
   await R.check({ flags: ['pagina_cerrada', 'acto_3_iniciado'], notiene: ['ficha_pagina_7', 'pieza_opa'] });
   ok(await logHas('Goyita. Página 7 cerrada. Esta noche firma un chaval.') && await logHas('ACTO III: CIERRE') && await logHas('Y la coma de Controlling, en su sitio. Ese hombre lee.'), 'paso 37: escena 7.3a (con el inserto 9.3)');
   const inigo = await G(() => __game.game.actors.inigo_sinergia.room);

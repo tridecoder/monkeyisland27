@@ -6,7 +6,9 @@
 //   · ningún globo de más de 3 renglones a 210 px (se saldría por arriba / taparía la escena);
 //   · signos de apertura: cada «?» / «!» con su «¿» / «¡» en la misma frase;
 //   · nombres: elContable.es, Íñigo, Begoña, Rubén, Ramírez... con sus tildes;
-//   · horas: lista de todas las horas que aparecen (18:30 → 21:00, relojes en 20:59, Begoña 19:00-19:15 / 19:07).
+//   · horas: lista de todas las horas que aparecen (18:30 → 21:00, relojes en 20:59, Begoña 19:00-19:15 / 19:07);
+//   · puesta en escena (problema C del director): quien dice una línea no puede estar tapado por otro actor que esté
+//     delante de él (más de un 20 % de su cabeza y torso bajo la figura de otro, por cajas de sprite).
 //   node tools/text-audit.mjs
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -70,6 +72,31 @@ await page.reload();
 await page.waitForFunction(() => !!window.__game);
 await G(() => __game.skipText(true));
 await R.startDismisser();
+// puesta en escena: al empezar cada línea, ¿tapa alguien (por delante) a quien habla?
+await G(() => {
+  const g = __game.game; window.__ocl = [];
+  const orig = g.speak.bind(g);
+  g.speak = (who, text, opts) => {
+    try {
+      const a = who && g.actors[who];
+      if (a && g.room && a.room === g.room.def.id && a.visible && !(opts && opts.at) && !g.phone) {
+        const shrink = (b) => { const w = b.w * 0.7; return { x: b.x + (b.w - w) / 2, y: b.y, w, h: b.h }; };
+        const b = shrink(g.actorBox(a)); const top = { x: b.x, y: b.y, w: b.w, h: (b.h - 2) * 0.6 };
+        let cov = 0; const by = [];
+        for (const o of Object.values(g.actors)) {
+          if (o === a || o.room !== a.room || !o.visible || o.y <= a.y + 1) continue;
+          const c = shrink(g.actorBox(o));
+          const ix = Math.max(0, Math.min(top.x + top.w, c.x + c.w) - Math.max(top.x, c.x));
+          const iy = Math.max(0, Math.min(top.y + top.h, c.y + c.h) - Math.max(top.y, c.y));
+          if (ix * iy > 0) { cov += ix * iy; by.push(`${o.id}@${Math.round(o.x)},${Math.round(o.y)}`); }
+        }
+        const f = cov / Math.max(1, top.w * top.h);
+        if (f > 0.2) window.__ocl.push(`${g.room.def.id}: ${who}@${Math.round(a.x)},${Math.round(a.y)} (${Math.round(f * 100)} % tapado por ${by.join(', ')}): ${text}`);
+      }
+    } catch (e) { /* ignore */ }
+    return orig(who, text, opts);
+  };
+});
 await G(() => __game.newGame());
 await collect();
 for (const s of STEPS) {
@@ -105,12 +132,14 @@ sec('Intervenciones de más de 80 caracteres', long);
 sec('Globos de más de 3 renglones', tall);
 sec('Signos de apertura que faltan (¿ ¡)', [...new Set(punct)]);
 sec('Nombres mal escritos', names);
+const ocl = [...new Set(await G(() => window.__ocl || []))];
+sec('Quien habla queda tapado por otro actor', ocl);
 out.push('\nHoras que aparecen: ' + [...times.keys()].sort().join(', '));
 console.log(out.join('\n'));
 fs.mkdirSync(path.join(here, 'shots'), { recursive: true });
 fs.writeFileSync(path.join(here, 'shots', 'textos.json'), JSON.stringify(texts.map(t => ({ ...lines.get(t), text: t })), null, 1));
 if (consoleErrors.length) console.log('\nErrores de consola:\n  ' + [...new Set(consoleErrors)].join('\n  '));
-const bad = long.length + tall.length + punct.length + names.length + consoleErrors.length;
+const bad = long.length + tall.length + punct.length + names.length + ocl.length + consoleErrors.length;
 console.log(bad ? `\nTEXTOS: ${bad} AVISOS` : '\nTEXTOS: OK');
 await browser.close();
 server.close();

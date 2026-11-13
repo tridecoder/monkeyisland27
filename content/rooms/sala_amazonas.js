@@ -50,6 +50,7 @@ export default buildRoom({
     sala_amazonas_climax_visto: 'bool · D · primera entrada del clímax 7.4 · D (versión corta al volver)',
     sala_amazonas_carteles_n: 'int · D · sala_amazonas · +1 por Mirar carteles_amazonas · D (rotación)',
     sala_amazonas_orden_n: 'int · D · sala_amazonas · +1 por Usar orden_del_dia · D',
+    sala_amazonas_lector_cae: 'int · D · 7.4: caída del Lector (1-3; 0 de pie) · actors.js',
   },
 
   objects: [
@@ -101,8 +102,11 @@ export default buildRoom({
       usar: 'Me como una miga. Sabe a reunión de marzo.',
       empujar: 'Acerco la bandeja a Mercados. Ni la miran. Están en el punto 3.',
     } },
-    { id: 'botellines', name: 'botellines', handlers: {
-      mirar: 'Catorce botellines sin abrir. Aquí nadie bebe: se nota que se piensa.',
+    { id: 'botellines', name: 'botellines', state: 'en_fila', states: ['en_fila', 'volando', 'tumbados'], handlers: {
+      mirar: async (api) => {
+        if (api.getState('botellines') === 'tumbados') await api.say('Catorce botellines por los suelos. Uno sigue en pie. Es de Mercados.');
+        else await api.say('Catorce botellines sin abrir. Aquí nadie bebe: se nota que se piensa.');
+      },
       coger: 'Si abro uno, me lo imputan como gasto de representación.',
       abrir: 'Abrir uno es asumir un gasto. Mejor me deshidrato con dignidad.',
       empujar: async (api) => { api.sfx(SFX.botellines); await api.say('Los alineo. Catorce en fila. Parecen un comité.'); },
@@ -169,7 +173,7 @@ export default buildRoom({
       murmurs: ['A mí lo que me interesa es la economía. Y ahorrar.'],
       handlers: {
         mirar: async (api) => {
-          if (api.flag('lector_derribado')) await api.say('Boca abajo sobre la mesa. Por detrás: «Atrezo – Focus group 2014».');
+          if (api.flag('lector_derribado')) await api.say(['Boca abajo en el suelo, delante de la mesa.', 'Por detrás: «Atrezo – Focus group 2014».']);
           else if (api.flag('chaqueta_en_lector')) await api.say('En la cabecera, el Lector Medio, con la chaqueta de Ramírez. Asiente.');
           else await api.say('En la cabecera, el Lector Medio. Asiente.');
         },
@@ -240,6 +244,10 @@ export default buildRoom({
   ambient: [],
 
   async onEnter(api) {
+    // idempotente (también al cargar): tras el ¡PLOF! los botellines siguen tumbados y el Lector, en el suelo
+    const bot = api.flag('lector_derribado') ? 'tumbados' : 'en_fila';
+    if (api.getState('botellines') !== bot) api.setState('botellines', bot);
+    if (api.flag('sala_amazonas_lector_cae')) api.setFlag('sala_amazonas_lector_cae', 0);
     // P16: «Usar puerta_sala con todo» (lo abre el paquete B) → escena 7.4 y duelo D4. Nunca tras ganar.
     if (climaxActivo(api) && !api.flag('duelo_inigo_ganado')) await api.scene('climax_entrada');
   },

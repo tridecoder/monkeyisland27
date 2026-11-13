@@ -393,7 +393,7 @@ flowchart LR
 
 | id | Mirar |
 |---|---|
-| `pecera_a_vestibulo` | «El vestíbulo. Desde aquí se ve el torno. Ya no me da miedo. Un poco.» |
+| `pecera_a_vestibulo` | «La escalera de bajada al vestíbulo. Planta 0.» // «Abajo espera el torno. Ya no me da miedo. Un poco.» |
 | `pecera_a_office` | «El Office. Ahí vive Gertrudis.» |
 | `pecera_a_pajarera` | «La Pajarera. Despacho de cristal: se ven las broncas, pero no se oyen.» |
 | `pecera_a_ecosistema` | «Escalera a la planta 2. La moqueta engorda dos centímetros: ahí está el dinero.» |
@@ -452,7 +452,7 @@ flowchart LR
 ### 3.2 `pecera` — La Pecera (Redacción Web y rincón de Desarrollo)
 
 **Fondo (800×144, scroll horizontal):** de izquierda a derecha.
-- **0-80 px:** puerta de cristal de vuelta al vestíbulo (se ve el torno al otro lado).
+- **0-80 px:** la **escalera que baja al vestíbulo** (planta 0): hueco en la pared, rellano a ras de suelo, barandilla que se hunde y rótulo «↓ VESTÍBULO · PLANTA 0». *(Revisión de dirección: la Redacción está en la planta 1; ya no hay puerta de cristal con el torno detrás. Ver el mapa de §3.0 y la adenda §14.)*
 - **80-260 px:** filas de mesas con monitores dobles llenos de gráficas, casi todas **vacías**: sillas con la chaqueta colgada y pantallas encendidas sin nadie (1.4b); dos figurantes al fondo tecleando. En la pared, una **pantalla gigante** «LECTORES CONCURRENTES: 3.418» con una línea roja que baja. Debajo, en el zócalo, una regleta y un **enchufe** con cinta de carrocero: «NO DESENCHUFAR – PANTALLA DE DIRECCIÓN».
 - **260-420 px:** la mesa de **Yoli** (tres monitores, un colirio, pósit «KEYWORD DEL DÍA»); al lado, la **mesa de Bruno** (monitor viejo con un pósit «Bruno Pellizco», **sin silla**); pegada a ella, la mesa vacía de Ramírez con **la única silla libre**, que tiene colgada una **chaqueta beige**. Una taza abandonada en una mesa. Al fondo, en el centro, la **puerta de cristal de la Pajarera** (se ven las persianas a media altura) y la puerta con letrero «OFFICE».
 - **420-600 px:** **rincón de Desarrollo**: la mesa de Nerea; una **pizarra kanban** con ruedas (columnas POR HACER · EN CURSO · BLOQUEADO · HECHO · HECHO (PERO NO)), con un pósit amarillísimo y viejo en la última columna; un **calendario de papel** de «Ferretería Hermanos Tornillo» en la pared; al fondo, la **ventana** con la ciudad de noche; en el extremo derecho, una **escalera** que sube con el cartel «PLANTA 2 – COMERCIAL · MARKETING · ADMINISTRACIÓN».
@@ -1130,7 +1130,7 @@ YOLI: ¡No entra nada! ¡El CMS lleva dos horas en "Guardando borrador"!
 ÍÑIGO: Vengo a reimaginar el perímetro.
 YOLI: Eso es despedir con diapositivas.
 ÍÑIGO: Os presento al Titulator 3000. Inteligencia artificial de titulares.
-(Gira el portátil. En pantalla: "EL IBEX ABRE PLANO. PLANO. ¿POR QUÉ NADIE HABLA DE ESTO?")
+(Gira el portátil. Primer plano de la pantalla: "EL IBEX ABRE PLANO. PLANO. ¿POR QUÉ NADIE HABLA DE ESTO?")
 ÍÑIGO: Esta tarde lleva trescientos titulares. La redacción humana, cero.
 YOLI: ¡Porque se nos ha caído el CMS!
 ÍÑIGO: Exacto. El Titulator no necesita CMS. Ni silla. Ni convenio.
@@ -1156,8 +1156,10 @@ NEREA: Paco dice muchas cosas. Por ticket.
 (Teodoro coge la ficha y la pieza. Las mide con el tipómetro. Dos veces.)
 TEODORO (fax): Veintitrés líneas. Hueco, fuente y firma.
 TEODORO (fax): Página 7 cerrada.
-(Descuelga el teléfono rojo. Por primera vez se le oye la voz: ronca, bajita.)
+(Teodoro va a su mesa y descuelga el teléfono rojo: el auricular en la oreja, el cable rizado
+ tenso hasta el aparato. Por primera vez se le oye la voz: ronca, bajita.)
 TEODORO: Goyita. Página 7 cerrada. Esta noche firma un chaval.
+(Cuelga. Vuelve a su sitio.)
 AURORA: (se quita las gafas) Ha hablado. En voz alta. Desde 1996 no...
 (Se abre la puerta. Entra Íñigo con dos pósits azules.)
 ÍÑIGO: Qué bonito. Una página. Lástima que no se vaya a imprimir.
@@ -1177,9 +1179,10 @@ AURORA: Y con buena letra, criatura.
 ```
 (Bruno tira de la tira de papel continuo. Sale un metro. Dos. Tres.)
 VOZ (dentro del armario 27): ¡EH! ¡QUE ES MI BORRADOR!
-(La puerta del armario se abre hacia fuera. Dentro, entre cables y envoltorios
- de bocadillo de máquina, un chico pálido con capucha y un teclado.)
+(Bruno da un paso atrás. La puerta del armario se abre hacia fuera, en dos tiempos. Dentro, entre cables y
+ envoltorios de bocadillo de máquina, una manta, tápers y un monitor verde, un chico pálido con capucha.)
 RUBÉN: BECARIO DETECTADO. LO QUE PASÓ DESPUÉS TE SORPRENDERÁ.
+(Sale del armario y se queda delante de su nido.)
 BRUNO: ...¿Tú eres el Titulator?
 RUBÉN: (se baja la capucha; en voz baja) Rubén. Becario de verano.
 RUBÉN: Del verano pasado.
@@ -1205,7 +1208,7 @@ RUBÉN: Y Nerea no mueve un pósit sin pruebas de que el becario existió.
 RUBÉN: Nadie me ha hecho nunca una foto.
 RUBÉN: (pausa) Bueno. La de Eventos. Pero salgo al fondo. Yendo al baño.
 RUBÉN: ¿Me traes un táper, ya que vas?
-(→ ruben_encontrado. Rubén se queda asomado al armario: Hablar abre su árbol, 7.7.10.)
+(→ ruben_encontrado. Rubén se queda delante de su armario abierto: Hablar abre su árbol, 7.7.10.)
 ```
 
 ### 7.4 El clímax (P16: Sala Amazonas)
@@ -1235,9 +1238,10 @@ BRUNO: Respondo a todos.
 
 **Empujar `lector_medio`:**
 ```
-(Bruno le da un toquecito al Lector Medio. Se inclina. Se inclina más.
- Cae de cara sobre la mesa. ¡PLOF! Vuelan catorce botellines.
- Por detrás: cartón pluma, celo y una pegatina: "Atrezo – Focus group 2014".)
+(El Lector Medio está de pie en la cabecera, DELANTE de la mesa, iluminado: no es una proyección.
+ Bruno se le acerca por un lado y le da un toquecito. Se inclina. Se inclina más.
+ Cae de cara al suelo, delante de la mesa. ¡PLOF! Rebota, tiembla la sala, vuelan catorce botellines.
+ Por detrás: cartón pluma, celo y una pegatina: "Atrezo – Focus group 2014". Se queda ahí.)
 GRABACIÓN: A mí lo que me interesa es la economía. Y ahorrar.
 GERVASIO: Lo que diga el Lector Medio.
 (Silencio.)
@@ -1252,7 +1256,8 @@ GERVASIO: Diecinueve años y nadie lo había preguntado.
 BEGOÑA: Factura de Optimal Brains. 48.000 euros. Concepto: "IA".
 BEGOÑA: ¿Qué es una IA? ¿Un taxi?
 (¡SELLO!) BEGOÑA: Rechazada. Va a la pared. Al lado del ministro.
-(Por los altavoces del edificio, la voz ronca de Teodoro por el teléfono rojo.)
+(Por los altavoces del edificio, la voz ronca de Teodoro por el teléfono rojo. Inserto en la esquina:
+ la Catacumba, Teodoro con el auricular rojo en la oreja.)
 TEODORO: Goyita. Tira.
 (Lejos, en el polígono, arranca la rotativa. En la Sala tiemblan los botellines.)
 RUBÉN: (con la cara pegada a la ventana) ¿Eso que suena es el papel?

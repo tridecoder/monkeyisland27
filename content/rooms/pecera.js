@@ -78,11 +78,13 @@ export default buildRoom({
 
   objects: [
     // ---------------------------------------------------------------- salidas (biblia 3.0: ninguna bloqueada)
-    { id: 'pecera_a_vestibulo', name: 'puerta del vestíbulo', exit: { room: 'vestibulo' }, handlers: {
-      mirar: 'El vestíbulo. Desde aquí se ve el torno. Ya no me da miedo. Un poco.',
-      abrir: async (api) => api.goto('vestibulo', 'pecera'), usar: async (api) => api.goto('vestibulo', 'pecera'),
-      cerrar: 'Ya está cerrada. El torno se encarga de que no entre nadie más.',
-      empujar: 'Empujar una puerta de cristal es dejar huellas en la escena del cierre.',
+    // geografía (adenda §14): la Redacción está en la planta 1; al vestíbulo (planta 0) se BAJA por esta escalera
+    { id: 'pecera_a_vestibulo', name: 'escalera al vestíbulo', exit: { room: 'vestibulo' }, handlers: {
+      mirar: async (api) => { await api.say(['La escalera de bajada al vestíbulo. Planta 0.', 'Abajo espera el torno. Ya no me da miedo. Un poco.']); },
+      abrir: 'Es una escalera. Está abierta desde 1987. Lo cerrado es el torno de abajo.',
+      usar: async (api) => api.goto('vestibulo', 'pecera'),
+      cerrar: 'Una escalera no se cierra. Para eso ya está el torno, abajo.',
+      empujar: 'Empujar a alguien escaleras abajo sería una salida en valor. No.',
     } },
     { id: 'pecera_a_pajarera', name: 'puerta de la Pajarera', exit: { room: 'pajarera' }, handlers: {
       mirar: 'La Pajarera. Despacho de cristal: se ven las broncas, pero no se oyen.',

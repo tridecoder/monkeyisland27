@@ -6,6 +6,7 @@
 import { paperDoll, defineSprite } from '../engine/sprites.js';
 import { PAL, rect, px, hline, vline, line, ditherPick, frameRect } from '../engine/draw.js';
 import { retratoAbuela, retratoEvaristo } from './lib/retratos.js';
+import { tiny } from './rooms/art/lib-oficina.js';
 
 // ------------------------------------------------------------------ Gertrudis (cafetera con LCD, §2.14)
 const gertrudisSprite = defineSprite({
@@ -111,19 +112,57 @@ const lectorChaqueta = defineSprite({
   dirs: ['down'], outline: '#ece2c8', shadow: true,
   draw(g) { lectorFront(g, true); },
 });
-// Caído de cara (lo empuja Bruno): se ve el reverso de cartón crudo, el puntal y la pegatina «Atrezo – Focus group 2014»
+// LA CAÍDA (clímax 7.4, Bruno lo empuja): tres fotogramas inclinados (`cae1`..`cae3`: 22°, 50°, 76°), girando sobre la
+// esquina derecha de la base (8 px a la derecha de sus pies), y el cartón tumbado en el suelo (`caido`).
+// La escena pone el flag local de sala `sala_amazonas_lector_cae` (1, 2, 3) y luego `lector_derribado`.
+const CAE_PIVOT = [24, 64];                 // esquina derecha de la pestaña de la base, en coordenadas del dibujo de pie
+function lectorInclinado(deg, jacket) {
+  const W = 96, H = 78, PX = 34, PY = 70;   // el pivote cae en (PX, PY) del lienzo girado
+  return defineSprite({
+    w: W, h: H, ox: PX - (CAE_PIVOT[0] - 16), oy: PY + 1, headY: 0, hitW: 40,
+    anims: { idle: { frames: 1, fps: 0 }, talk: { frames: 1, fps: 0 } },
+    dirs: ['down'], outline: '#ece2c8', shadow: false,
+    draw(g) {
+      const src = document.createElement('canvas'); src.width = 32; src.height = 66;
+      const sg = src.getContext('2d'); lectorFront(sg, jacket);
+      const d = sg.getImageData(0, 0, 32, 66).data;
+      const a = deg * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a);
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        // destino → origen (giro inverso, vecino más próximo: píxeles nítidos)
+        const dx = x - PX, dy = y - PY;
+        const sx = Math.round(dx * ca + dy * sa + CAE_PIVOT[0]), sy = Math.round(-dx * sa + dy * ca + CAE_PIVOT[1]);
+        if (sx < 0 || sy < 0 || sx >= 32 || sy >= 66) continue;
+        const i = (sy * 32 + sx) * 4;
+        if (d[i + 3] < 128) continue;
+        g.fillStyle = `rgb(${d[i]},${d[i + 1]},${d[i + 2]})`; g.fillRect(x, y, 1, 1);
+      }
+    },
+  });
+}
+const lectorCae = [22, 50, 76].map(deg => lectorInclinado(deg, false));
+const lectorCaeChaqueta = [22, 50, 76].map(deg => lectorInclinado(deg, true));
+// Caído de cara en el suelo, a la derecha de donde estaba (la cabeza a la derecha; el actor queda en el CENTRO del
+// cartón: la escena lo recoloca al caer, `xCaido()` en content/escenas/climax.js): el reverso de cartón crudo, el
+// puntal plegado, el altavoz boca abajo y la pegatina «ATREZO · FOCUS GROUP 2014» (el texto lo pinta drawExtra a 1:1,
+// sin escalar, para que se lea).
 const lectorCaido = defineSprite({
-  w: 48, h: 12, ox: 24, oy: 11, headY: -26, hitW: 48,
+  w: 78, h: 14, ox: 39, oy: 12, headY: -4, hitW: 72,
   dirs: ['down'], outline: '#ece2c8', shadow: false,
   draw(g) {
-    rect(g, 2, 3, 8, 7, C.board); rect(g, 3, 2, 6, 1, C.board); hline(g, 3, 2, 6, C.boardL);          // la cabeza (reverso)
-    rect(g, 10, 4, 24, 6, C.board); hline(g, 10, 4, 24, C.boardL); hline(g, 10, 9, 24, C.boardD);      // tronco
-    rect(g, 34, 5, 12, 5, C.board); hline(g, 34, 9, 12, C.boardD); vline(g, 40, 6, 4, C.boardD);       // las piernas
-    rect(g, 44, 8, 3, 2, C.shoeD);                                                                      // punteras
-    rect(g, 14, 5, 15, 4, C.card); frameRect(g, 14, 5, 15, 4, C.cardD); hline(g, 15, 6, 10, C.red); hline(g, 15, 7, 12, C.ink);   // pegatina
-    rect(g, 31, 3, 5, 7, C.boardD); hline(g, 31, 3, 5, '#8a7650');                                      // puntal plegado
-    rect(g, 6, 9, 4, 2, C.spk);                                                                          // el altavoz, boca abajo
-    hline(g, 3, 10, 42, '#5a5040');
+    // sombra de contacto
+    for (let x = 2; x < 76; x += 1) if ((x & 1) === 0) px(g, x, 13, '#1a1620');
+    // el tablero (perspectiva: un trapecio largo y bajo), los pies a la izquierda, la cabeza a la derecha
+    for (let y = 3; y < 12; y++) hline(g, 3 + ((11 - y) >> 2), y, 70 - ((11 - y) >> 1), y < 5 ? C.boardL : y > 9 ? C.boardD : C.board);
+    rect(g, 64, 2, 11, 9, C.board); hline(g, 65, 1, 9, C.boardL); vline(g, 74, 3, 7, C.boardD);       // la cabeza (reverso)
+    hline(g, 64, 2, 11, C.boardL);
+    rect(g, 2, 7, 6, 5, C.shoeD); hline(g, 2, 7, 6, C.shoe);                                          // punteras
+    rect(g, 8, 4, 6, 7, C.boardD); hline(g, 8, 4, 6, '#8a7650');                                      // la pestaña de la base
+    rect(g, 44, 3, 3, 8, C.boardD); hline(g, 44, 3, 3, '#8a7650');                                    // puntal plegado
+    // pegatina blanca grande (el texto, en drawExtra)
+    rect(g, 18, 3, 25, 8, C.card); frameRect(g, 18, 3, 25, 8, C.cardD); hline(g, 19, 4, 23, '#fffef8');
+    // celo y altavoz boca abajo en el hombro
+    rect(g, 54, 4, 6, 5, C.spk); hline(g, 52, 6, 10, C.tape);
+    hline(g, 3, 12, 72, '#5a5040');
   },
 });
 
@@ -395,7 +434,23 @@ export default {
     variants: {
       chaqueta: { sprite: lectorChaqueta },
       caido: { sprite: lectorCaido },
+      cae1: { sprite: lectorCae[0] }, cae2: { sprite: lectorCae[1] }, cae3: { sprite: lectorCae[2] },
+      cae1j: { sprite: lectorCaeChaqueta[0] }, cae2j: { sprite: lectorCaeChaqueta[1] }, cae3j: { sprite: lectorCaeChaqueta[2] },
     },
-    variant: (v) => (v.flag('lector_derribado') ? 'caido' : v.flag('chaqueta_en_lector') ? 'chaqueta' : null),
+    variant: (v) => {
+      if (v.flag('lector_derribado')) return 'caido';
+      const k = Number(v.flag('sala_amazonas_lector_cae')) || 0;          // clímax: fotogramas de la caída
+      if (k >= 1 && k <= 3) return 'cae' + k + (v.flag('chaqueta_en_lector') ? 'j' : '');
+      return v.flag('chaqueta_en_lector') ? 'chaqueta' : null;
+    },
+    // la pegatina del reverso, legible (a escala 1, sin el escalado de la perspectiva)
+    drawExtra(g, a, t, c) {
+      if (!c || !a.variants || !c.sprite || c.sprite !== a.variants.caido) return;
+      const x0 = Math.round(a.x + (18 - 39) * c.s), y0 = Math.round(a.y + (3 - 12) * c.s);
+      const w = Math.max(26, Math.round(25 * c.s) + 2);
+      g.fillStyle = '#fbfaf2'; g.fillRect(x0 - 1, y0 - 1, w, 9);
+      g.fillStyle = '#b9b1a0'; g.fillRect(x0 - 1, y0 + 7, w, 1);
+      tiny(g, 'ATREZO', x0 + 1, y0 + 1, '#c83a3a');
+    },
   },
 };

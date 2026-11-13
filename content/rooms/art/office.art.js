@@ -147,20 +147,25 @@ function counterAndMicro(g) {
 }
 
 function clock(g) {
-  wallClock(g, 100, 30, 8, 20 + 59 / 60);
+  // (el reloj y el calendario se cambiaron con el ventanuco: ahora están encima de Gertrudis, que llega hasta y≈52)
+  wallClock(g, 160, 28, 8, 20 + 59 / 60);
   // calendario de otro año colgado de una chincheta
-  rect(g, 112, 20, 10, 13, PAL.paper[7]); rect(g, 112, 20, 10, 4, PAL.red[4]); frameRect(g, 112, 20, 10, 13, PAL.paper[2]);
-  for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) px(g, 114 + c * 2, 26 + r * 2, PAL.ink[3]);
-  micro(g, '17', 113, 21, PAL.paper[7]);
+  rect(g, 174, 20, 10, 13, PAL.paper[7]); rect(g, 174, 20, 10, 4, PAL.red[4]); frameRect(g, 174, 20, 10, 13, PAL.paper[2]);
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) px(g, 176 + c * 2, 26 + r * 2, PAL.ink[3]);
+  micro(g, '17', 175, 21, PAL.paper[7]);
 }
 
-// ventanuco de la Secretaría de Redacción: marco, interior oscuro con archivadores, mostrador, timbre y cartel
+// ventanuco de la Secretaría de Redacción: marco, interior oscuro con archivadores, mostrador, timbre y cartel.
+// Va ENTRE la puerta de la Pecera y Gertrudis (adenda §3.5), encima del microondas: ya no se pisa con la cafetera
+// (informe visual, problema 13).
+const HX = 90, HY = 29;
 function hatch(g) {
-  const x = 138, y = 32, w = 48, h = 16;
+  const x = HX, y = HY, w = 48, h = 14;
   // cartel «EL MATERIAL NO SE PIDE. SE MERECE.»
-  ditherOverlay(g, 140, 10, 48, 20, PAL.ink[0], 0.45);
-  rect(g, 138, 8, 48, 21, PAL.paper[6]); frameRect(g, 138, 8, 48, 21, PAL.metal[2]); frameRect(g, 139, 9, 46, 19, PAL.red[3]);
-  microCenter(g, 'EL MATERIAL', 162, 11, PAL.ink[1]); microCenter(g, 'NO SE PIDE.', 162, 17, PAL.ink[1]); microCenter(g, 'SE MERECE.', 162, 22, PAL.red[3]);
+  const cx = x, cy = y - 23;
+  ditherOverlay(g, cx + 2, cy + 2, 48, 20, PAL.ink[0], 0.45);
+  rect(g, cx, cy, 48, 21, PAL.paper[6]); frameRect(g, cx, cy, 48, 21, PAL.metal[2]); frameRect(g, cx + 1, cy + 1, 46, 19, PAL.red[3]);
+  microCenter(g, 'EL MATERIAL', cx + 24, cy + 3, PAL.ink[1]); microCenter(g, 'NO SE PIDE.', cx + 24, cy + 9, PAL.ink[1]); microCenter(g, 'SE MERECE.', cx + 24, cy + 14, PAL.red[3]);
   // marco del ventanuco
   rect(g, x - 2, y - 2, w + 4, h + 6, PAL.metal[2]); frameRect(g, x - 2, y - 2, w + 4, h + 6, PAL.metal[1]);
   hline(g, x - 1, y - 1, w + 2, PAL.metal[5]);
@@ -172,14 +177,14 @@ function hatch(g) {
   // mostrador estrecho
   rect(g, x - 3, y + h, w + 6, 4, PAL.wood[4]); hline(g, x - 3, y + h, w + 6, PAL.wood[7]); hline(g, x - 3, y + h + 3, w + 6, PAL.wood[1]);
   // timbre de mostrador con pegatina «NO»
-  const bx = 158;
+  const bx = x + 20;
   rect(g, bx, y + h - 3, 10, 3, PAL.metal[4]); hline(g, bx, y + h - 3, 10, PAL.metal[7]);
   ellipse(g, bx + 5, y + h - 4, 4, 2, (xx, yy, d) => ditherPick(xx, yy, [PAL.gold[6], PAL.gold[4], PAL.gold[3]], d));
   px(g, bx + 5, y + h - 7, PAL.metal[7]);
   rect(g, bx + 3, y + h - 3, 5, 3, PAL.paper[7]); micro(g, 'N', bx + 3, y + h - 4, PAL.red[3]); px(g, bx + 7, y + h - 2, PAL.red[3]);
 }
 function drawCustodia(g, view, t) {
-  const x = 138, y = 32, w = 48;
+  const x = HX, y = HY, w = 48;
   const T = t || 0;
   // persiana metálica a media altura (lamas, tope inferior y asa)
   for (let ly = y - 1; ly < y + 8; ly += 2) {
@@ -211,10 +216,10 @@ function drawCustodia(g, view, t) {
       rect(g, fx, hy - 2 - up, 2, 2 + up, PAL.skin[4]); px(g, fx, hy - 2 - up, PAL.skin[5]);
     }
   };
-  hand(143, 42, false, 0);
-  hand(171, 42, true, 3);
+  hand(x + 5, y + 9, false, 0);
+  hand(x + 33, y + 9, true, 3);
   // brillo del flexo sobre las manos
-  glow(g, 168, 46, 22, 5, '#c8f0a0', 0.12, 3);
+  glow(g, x + 30, y + 13, 22, 5, '#c8f0a0', 0.12, 3);
 }
 
 function corkboard(g) {
@@ -371,9 +376,9 @@ const layout = {
   cartel_cortado: { rect: [190, 60, 56, 14], walkTo: [214, 108], face: 'up' },
   fregadero: { rect: [248, 62, 30, 30], walkTo: [260, 108], face: 'up' },
   office_a_catacumba: { rect: [275, 27, 42, 65], walkTo: [296, 108], face: 'right' },
-  custodia_precinto: { rect: [136, 30, 52, 24], walkTo: [150, 108], face: 'up', priority: 1, draw: (g, v, t) => drawCustodia(g, v, t) },
-  cartel_material: { rect: [138, 8, 48, 21], walkTo: [150, 108], face: 'up' },
-  timbre_secretaria: { rect: [156, 40, 14, 12], walkTo: [164, 108], face: 'up', priority: 2 },
+  custodia_precinto: { rect: [88, 27, 52, 21], walkTo: [114, 108], face: 'up', priority: 1, draw: (g, v, t) => drawCustodia(g, v, t) },
+  cartel_material: { rect: [90, 6, 48, 21], walkTo: [114, 108], face: 'up' },
+  timbre_secretaria: { rect: [108, 35, 14, 11], walkTo: [116, 108], face: 'up', priority: 2 },
   // Bruno le habla desde un lado (nunca delante: taparía el LCD); Gervasio, Acto III, plantado delante-derecha de
   // Gertrudis, mirándola, sin tapar el display.
   gertrudis: { at: [162, 94, 'down'], walkTo: [136, 110], face: 'right' },

@@ -22,6 +22,12 @@ export async function runDialog(game, api, id, startNode) {
   const usedKey = (n, o, i) => `${dId}.${n}.${o.id || i}`;
   game.state.dialogs = game.state.dialogs || {};
   const npc = def.actor;
+  // puesta en escena: al empezar a hablar, el PNJ se vuelve hacia Bruno si están en la misma sala (los dos de perfil,
+  // cara a cara; los sprites de una sola dirección —Gertrudis, el Lector— no cambian)
+  try {
+    const a = npc && game.actors[npc], p = game.player;
+    if (a && p && a.room === p.room && a.visible && Math.abs(a.x - p.x) > 4) game.faceTowards(a, p.x, a.y);
+  } catch (e) { /* solo cosmético */ }
   game.inDialog = (game.inDialog || 0) + 1;
   try { await dialogLoop(); } finally { game.inDialog = Math.max(0, game.inDialog - 1); }
   async function dialogLoop() {

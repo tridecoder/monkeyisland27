@@ -237,8 +237,30 @@ try {
   await clearLog();
   await verb('mirar', 'papel_continuo'); await verb('mirar', 'armario_27');
   await expectLog(['...Como el del fax de F.P.', 'Con faltas.'], 'pistas de P13');
+  must((await G(() => __game.objects().find(o => o.id === 'armario_27').state)) === 'cerrado', 'armario_27: cerrado antes de la revelación');
+  // problema B del director: el armario se dibuja por su ESTADO y el estado acompaña al guion línea a línea
+  await G(() => {
+    const g = __game.game; window.__probe = [];
+    g.__speakOrig = g.speak.bind(g);
+    g.speak = (who, text, opts) => {
+      const r = g.actors.ruben;
+      window.__probe.push({ who, text, armario: g.getObjState('armario_27', 'cpd').state, ruben: r.room === 'cpd' && r.visible ? [Math.round(r.x), Math.round(r.y)] : null });
+      return g.__speakOrig(who, text, opts);
+    };
+  });
   await verb('tirar', 'papel_continuo');
+  const probe = await G(() => { const g = __game.game; g.speak = g.__speakOrig; delete g.__speakOrig; return window.__probe; });
+  const grito = probe.find(p => p.text === '¡EH! ¡QUE ES MI BORRADOR!'), primera = probe.find(p => p.text.startsWith('BECARIO DETECTADO'));
+  must(grito && grito.armario === 'cerrado' && !grito.ruben, `7.3: al gritar, el armario debe estar cerrado y Rubén dentro (${JSON.stringify(grito)})`);
+  must(primera && primera.armario === 'abierto' && primera.ruben && primera.ruben[1] < 100, `7.3: la primera línea de Rubén, con el armario ABIERTO y él dentro (${JSON.stringify(primera)})`);
+  const tras = probe.slice(probe.indexOf(primera) + 1);
+  must(tras.length > 10 && tras.every(p => p.armario === 'abierto' && p.ruben && p.ruben[1] >= 104), '7.3: el resto de la escena, armario abierto y Rubén fuera, delante del nido');
+  ok('7.3: armario cerrado al gritar → se abre (entreabierto → abierto) con Rubén dentro → Rubén sale; abierto en todas las líneas');
   await expectFlags({ ruben_encontrado: true }, 'P13');
+  must((await G(() => __game.objects().find(o => o.id === 'armario_27').state)) === 'abierto', 'armario_27: abierto tras la revelación');
+  await G(() => __game.save('t_armario')); await G(() => __game.load('t_armario')); await idle();
+  must((await G(() => __game.objects().find(o => o.id === 'armario_27').state)) === 'abierto' && (await roomOf('ruben')) === 'cpd', 'armario_27 abierto (y Rubén) tras guardar y cargar');
+  ok('7.3: armario abierto tras la escena y tras guardar/cargar');
   must((await roomOf('ruben')) === 'cpd', 'P13: Rubén no está en el CPD');
   await expectLog(['¡EH! ¡QUE ES MI BORRADOR!', 'BECARIO DETECTADO.', 'Eras lo único que pasaba.', 'Entonces el nuevo soy yo.',
     'Pero salgo al fondo. Yendo al baño.', '¿Me traes un táper, ya que vas?'], '7.3');

@@ -23,6 +23,7 @@ const W = 800;
 const DX = 164;            // la escalera (antes en 598) se desplaza 164 px a la derecha
 const FL = 98;            // línea de suelo (la pared acaba aquí)
 const DT = 79;            // altura de la tapa de las mesas
+const KB_Y = 19;          // borde superior del kanban (tablero 42 px: acaba en y=61, encima del coro)
 const VPX = 320, VPY = 30; // punto de fuga del suelo
 
 /** x de una línea del suelo que sale de (xb, y=104) hacia el punto de fuga, evaluada en y */
@@ -63,25 +64,39 @@ function officeDoor(g) {
   ditherOverlay(g, x, y + h - 3, w, 3, PAL.gold[4], 0.4);
 }
 
+/** Salida al vestíbulo (geografía, adenda §14 y problema E del director): la Redacción está en la PLANTA 1, así que
+ *  aquí no hay una puerta a ras de suelo con el torno detrás, sino el hueco de la ESCALERA QUE BAJA a la planta 0:
+ *  rellano a la altura del suelo, barandilla que se hunde hacia la izquierda, peldaños que bajan y se oscurecen, y el
+ *  rótulo «↓ VESTÍBULO · PLANTA 0». Desde el vestíbulo se sube por la escalera «REDAC. 1» y se llega arriba de esta. */
 function vestibuloDoor(g) {
-  const x = 8, y = 28, w = 42, h = 68;
+  const x = 6, y = 26, w = 46, h = 70;
+  // hueco en la pared (marco de acero) y caja de escalera en penumbra, más oscura cuanto más abajo
   rect(g, x - 3, y - 3, w + 6, h + 3, PAL.metal[2]);
   frameRect(g, x - 3, y - 3, w + 6, h + 3, PAL.metal[1]);
   hline(g, x - 2, y - 2, w + 4, PAL.metal[6]); vline(g, x - 2, y - 2, h + 2, PAL.metal[5]);
-  paint(g, x, y, w, h, (xx, yy) => {
-    if (yy > y + 46) return (((xx >> 3) + (yy >> 2)) & 1) ? PAL.paper[2] : PAL.paper[1];
-    return ditherPick(xx, yy, [PAL.paper[3], PAL.paper[4], PAL.paper[5]], (yy - y) / 46);
-  });
-  glow(g, x + 18, y + 10, 24, 18, PAL.gold[6], 0.3);
-  rect(g, x + 14, y + 30, 14, 16, PAL.metal[3]); hline(g, x + 14, y + 30, 14, PAL.metal[6]);
-  rect(g, x + 11, y + 32, 20, 2, PAL.metal[5]); rect(g, x + 11, y + 37, 20, 2, PAL.metal[4]);
-  rect(g, x + 20, y + 28, 2, 3, PAL.metal[2]); px(g, x + 21, y + 26, PAL.red[4]);
-  ellipse(g, x + 6, y + 44, 4, 7, PAL.leaf[4]); rect(g, x + 4, y + 51, 5, 5, PAL.red[3]);
-  g.save(); g.globalAlpha = 0.14; poly(g, [[x + 4, y + h], [x + 12, y + h], [x + 30, y], [x + 22, y]], '#ffffff'); g.restore();
-  frameRect(g, x, y, w, h, PAL.metal[3]);
-  rect(g, x + 8, y + 37, 26, 2, PAL.metal[7]); hline(g, x + 8, y + 39, 26, PAL.metal[2]);
-  bevel(g, x + 4, y - 11, 34, 8, PAL.crt[2], PAL.crt[4], PAL.crt[0]);
-  tiny(g, 'VESTÍBULO', x + 21, y - 9, PAL.crt[6], { align: 'center' });
+  paint(g, x, y, w, h, (xx, yy) => ditherPick(xx, yy, [PAL.ink[0], PAL.ink[1], PAL.teal[1], PAL.teal[2]], 0.75 - (yy - y) / h * 0.35 - (x + w - xx) / w * 0.35));
+  // pared del fondo de la caja de escalera: zócalo que BAJA en diagonal (de derecha arriba a izquierda abajo)
+  line(g, x + w - 1, y + 50, x, y + h - 2, PAL.teal[3], 1);
+  // peldaños que bajan hacia la izquierda: cada uno más bajo, más estrecho y más oscuro
+  for (let i = 0; i < 7; i++) {
+    const sx = x + w - 10 - i * 6, sy = y + 48 + i * 3;
+    const c = [PAL.metal[7], PAL.metal[6], PAL.metal[5], PAL.metal[4], PAL.metal[3], PAL.metal[2], PAL.ink[3]][i];
+    rect(g, sx, sy, 9, 2, c); hline(g, sx, sy, 9, PAL.gold[i < 3 ? 5 : 3]); hline(g, sx, sy + 2, 9, PAL.ink[0]); vline(g, sx, sy + 3, 3, PAL.ink[1]);
+  }
+  // rellano a ras del suelo de la Pecera (el escalón de arriba), con su tira antideslizante amarilla
+  rect(g, x + w - 14, y + h - 4, 14, 4, PAL.metal[5]); hline(g, x + w - 14, y + h - 4, 14, PAL.metal[7]);
+  for (let k = 0; k < 14; k += 3) px(g, x + w - 14 + k, y + h - 2, PAL.gold[5]);
+  // barandilla: pasamanos de madera que baja hacia la izquierda, con balaustres
+  line(g, x + w - 2, y + 30, x + 2, y + 52, PAL.wood[5], 2); line(g, x + w - 2, y + 29, x + 2, y + 51, PAL.wood[7], 1);
+  for (let k = 0; k < 5; k++) { const bx = x + w - 6 - k * 10; const by = Math.round(y + 31 + (x + w - 2 - bx) * 22 / (w - 4)); vline(g, bx, by + 1, Math.max(4, y + h - 2 - by - k * 3), PAL.metal[4]); }
+  vline(g, x + w - 2, y + 29, h - 29, PAL.wood[4]); vline(g, x + w - 1, y + 29, h - 29, PAL.wood[2]);   // poste del arranque
+  // luz que sube de abajo (el vestíbulo, iluminado) y el reflejo del pasamanos
+  glow(g, x + 8, y + h - 4, 14, 8, PAL.gold[5], 0.18, 3);
+  // rótulo colgado: flecha abajo + VESTÍBULO / PLANTA 0
+  bevel(g, x - 2, y - 17, w + 4, 15, PAL.crt[2], PAL.crt[4], PAL.crt[0]);
+  poly(g, [[x + 1, y - 10], [x + 8, y - 10], [x + 4, y - 5]], PAL.crt[6]); rect(g, x + 3, y - 15, 3, 5, PAL.crt[6]);
+  tiny(g, 'VESTÍBULO', x + 28, y - 15, PAL.crt[6], { align: 'center' });
+  tiny(g, 'PLANTA 0', x + 28, y - 9, PAL.crt[5], { align: 'center' });
 }
 
 function deskWithStation(g, x, w, kinds, seed, o = {}) {
@@ -218,7 +233,7 @@ function drawRoom(g) {
   // pizarra de keywords y pancarta BIENVENIDO
   rect(g, 262, 20, 40, 28, PAL.metal[5]); rect(g, 263, 21, 38, 26, PAL.paper[7]); hline(g, 262, 48, 40, PAL.metal[2]);
   tiny(g, 'KEYWORDS', 282, 23, PAL.blue[3], { align: 'center' });
-  ['PENSIONES', 'IBEX', 'DANA', 'FÚTBOL'].forEach((s, i) => tiny(g, s, 265, 31 + i * 6, [PAL.ink[3], PAL.red[4], PAL.blue[4], PAL.crt[3]][i]));
+  ['PENSIONES', 'IBEX', 'LLUVIA', 'FÚTBOL'].forEach((s, i) => tiny(g, s, 265, 31 + i * 6, [PAL.ink[3], PAL.red[4], PAL.blue[4], PAL.crt[3]][i]));
   line(g, 288, 32, 299, 44, PAL.red[4]);
   {
     const x = 304, y = 34;
@@ -304,7 +319,7 @@ function drawDisenoBay(g) {
     const cols = [PAL.ink[1], PAL.red[4], PAL.gold[5], PAL.teal[5], PAL.blue[4], PAL.paper[7]];
     cols.forEach((c, i) => { rect(g, 686 + i * 5, 32, 4, 12, c); frameRect(g, 686 + i * 5, 32, 4, 12, PAL.metal[3]); });
     hline(g, 686, 46, 29, PAL.metal[3]);
-    tiny(g, 'PANTONE', 700, 48, PAL.metal[2], { align: 'center' });
+    tiny(g, 'COLORÍN', 700, 48, PAL.metal[2], { align: 'center' });   // carta de color inventada (nada de marcas reales, biblia §1.3)
   }
   // un cartelito impecable sobre la bandeja: «ENTREGAS · 18:29»
   rect(g, 612, 46, 26, 9, PAL.paper[7]); frameRect(g, 612, 46, 26, 9, PAL.metal[3]);
@@ -375,11 +390,11 @@ function drawDesarrollo(g) {
   ellipse(g, 482, DT - 3, 2, 2, PAL.gold[5]); px(g, 483, DT - 3, PAL.ink[0]); px(g, 484, DT - 2, PAL.red[4]);
   chairBack(g, 473, 103, { jacket: null, col: [PAL.teal[0], PAL.teal[1], PAL.teal[2], PAL.teal[3], PAL.teal[4]] });
 
-  // kanban (pizarra con ruedas)
+  // kanban (pizarra con ruedas), alta: el tablero entero queda POR ENCIMA de las cabezas y las manos del coro (P14)
   {
-    const x = 488, y = 28, w = 52, h = 42;
-    rect(g, x + 2, y + h, 2, 30, PAL.metal[4]); rect(g, x + w - 4, y + h, 2, 30, PAL.metal[4]);
-    rect(g, x + 1, y + h + 28, 4, 2, PAL.ink[0]); rect(g, x + w - 5, y + h + 28, 4, 2, PAL.ink[0]);
+    const x = 488, y = KB_Y, w = 52, h = 42;
+    rect(g, x + 2, y + h, 2, 38, PAL.metal[4]); rect(g, x + w - 4, y + h, 2, 38, PAL.metal[4]);
+    rect(g, x + 1, y + h + 36, 4, 2, PAL.ink[0]); rect(g, x + w - 5, y + h + 36, 4, 2, PAL.ink[0]);
     ditherOverlay(g, x + 2, y + 2, w, h, PAL.shadow, 0.45);
     rect(g, x, y, w, h, PAL.metal[6]); frameRect(g, x, y, w, h, PAL.metal[3]);
     hline(g, x + 1, y + 1, w - 2, PAL.metal[7]); vline(g, x + 1, y + 1, h - 2, PAL.metal[7]);
@@ -403,9 +418,9 @@ function drawDesarrollo(g) {
     }
     paint(g, x + 3 + 4 * colw, y + 8, colw - 1, h - 12, (xx, yy) => (((xx + yy) % 5 === 0) ? PAL.purple[6] : null));
     // el pósit de 1998 (amarillísimo, viejo, doblado)
-    postit(g, 530, 38, '#ffe21a', { w: 8, h: 8, lines: false });
-    for (let ly = 40; ly < 45; ly += 2) hline(g, 531, ly, 6, '#b08a00');
-    px(g, 537, 45, PAL.paper[0]); px(g, 536, 45, '#b08a00');
+    postit(g, 530, y + 10, '#ffe21a', { w: 8, h: 8, lines: false });
+    for (let ly = y + 12; ly < y + 17; ly += 2) hline(g, 531, ly, 6, '#b08a00');
+    px(g, 537, y + 17, PAL.paper[0]); px(g, 536, y + 17, '#b08a00');
   }
   // semáforo de ruido (la lámpara la dibuja el objeto) + pósit de Nerea
   {
@@ -524,7 +539,7 @@ function drawChaqueta(g) {
 }
 
 function drawKanbanNote(g, view) {
-  const x = 492, y = 28;
+  const x = 492, y = KB_Y;
   const cx = x + 4 + 4, cy = y + 10 + 1;
   if (view.flag('posit_descopeado')) {
     postit(g, cx - 1, cy, '#a6f08c', { w: 7, h: 7, lines: false });
@@ -606,7 +621,8 @@ function drawCoro(g, view, t) {
     for (const side of [-1, 1]) {
       const sw = Math.sin(ph + (side > 0 ? 1.4 : 0));
       const bx = s.cx + side * 8, by = 70;
-      const hx = Math.round(bx + side * (3 + sw * 3)), hy = Math.round(by - 12 - Math.abs(Math.cos(ph + side)) * 4);
+      // manos a la altura del teclado (no tapan el kanban, que está encima)
+      const hx = Math.round(bx + side * (3 + sw * 3)), hy = Math.round(by - 4 - Math.abs(Math.cos(ph + side)) * 3);
       line(g, bx, by + 2, hx, hy + 2, s.hood[2], 2);
       ellipse(g, hx, hy, 2.5, 2.5, PAL.skin[3]);
       px(g, hx - 2, hy - 3, PAL.skin[4]); px(g, hx, hy - 4, PAL.skin[4]); px(g, hx + 2, hy - 3, PAL.skin[4]); px(g, hx + 1, hy - 3, PAL.skin[2]);
@@ -711,9 +727,9 @@ const layout = {
   chaqueta_ramirez_hotspot: { rect: [340, 76, 18, 17], walkTo: [348, 111], face: 'up', priority: 2, draw: drawChaqueta },
   pecera_a_pajarera: { rect: [372, 28, 38, 70], walkTo: [391, 106], face: 'up' },
   pecera_a_office: { rect: [413, 34, 28, 64], walkTo: [427, 106], face: 'up' },
-  calendario_ferreteria: { rect: [456, 28, 22, 30], walkTo: [466, 110], face: 'up' },
-  kanban: { rect: [488, 26, 52, 46], walkTo: [512, 109], face: 'up', draw: drawKanbanNote },
-  posit_1998: { rect: [528, 36, 12, 12], walkTo: [534, 109], face: 'up', priority: 1 },
+  calendario_ferreteria: { rect: [456, 28, 22, 30], walkTo: [450, 108], face: 'up' },
+  kanban: { rect: [488, 17, 52, 46], walkTo: [512, 109], face: 'up', draw: drawKanbanNote },
+  posit_1998: { rect: [528, 27, 12, 12], walkTo: [534, 109], face: 'up', priority: 1 },
   ventana: { rect: [552, 20, 30, 46], walkTo: [567, 109], face: 'up' },
   pecera_a_ecosistema: { rect: [598 + DX, 14, 38, 84], walkTo: [620 + DX, 106], face: 'right' },
   ascensor_pecera: { rect: [722, 40, 36, 58], walkTo: [740, 108], face: 'up' },
@@ -724,13 +740,14 @@ const layout = {
   // ADENDA
   frontera_carrocero: { poly: [[394, 104], [428, 104], [488, 142], [434, 142]], walkTo: [404, 124], face: 'right', layer: 'back', draw: drawFrontera },
   cartel_frontera: { rect: [442, 72, 22, 30], walkTo: [452, 110], face: 'up' },
-  coro_desarrollo: { rect: [488, 54, 58, 52], walkTo: [517, 112], face: 'up', draw: drawCoro },
+  coro_desarrollo: { rect: [488, 62, 58, 44], walkTo: [517, 112], face: 'up', draw: drawCoro },
   bandeja_diseno: { rect: [612, 64, 24, 36], walkTo: [624, 110], face: 'up', draw: drawBandeja },
   semaforo_ruido: { rect: [540, 32, 14, 30], walkTo: [546, 108], face: 'up', draw: drawSemaforo },
   taza_no: { rect: [539, 71, 10, 11], walkTo: [544, 110], face: 'up', priority: 1 },
   pantalla_anselmo: { rect: [569, 60, 26, 20], walkTo: [582, 110], face: 'up', priority: 1, draw: drawAnselmoScreen },
   // PNJ
-  yoli_tendencias: { at: [284, 113, 'down'] },
+  // Bruno le habla desde su derecha (a su izquierda está Leoncio: no se pone detrás de él ni delante de ella)
+  yoli_tendencias: { at: [284, 113, 'down'], walkTo: [306, 116], face: 'left' },
   nerea_backlog: { at: [474, 115, 'down'] },
   ruben: { at: [568, 113, 'up'] },
   inigo_sinergia: { at: [214, 119, 'down'] },

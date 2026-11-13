@@ -213,6 +213,29 @@ and does not travel. A ride: door sfx, fade, a cabin `hud` with the floor counte
 for any entry. Lift objects carry `ascensor: { planta, label }` (no `exit`): `tools/check.mjs` and the test travel helpers
 (`walk-lib.mjs`, `play-mouse.mjs`) add lift edges to the exit graph and pick the floor by its label.
 
+### 2.6 Mapa del edificio (plantas y conexiones: arte, guion y botonera coinciden)
+Fuente única de la geografía (biblia §3.0, adenda §14). Toda señal, indicador de ascensor y escalera debe cuadrar con esto;
+una salida nueva se añade aquí primero.
+
+| planta | salas | cómo se llega / se sale |
+|---|---|---|
+| **2** Marketing · Eventos · Comercial · Administración | `ecosistema`, `eventos`, `administracion` | `ecosistema` → escalera que BAJA «P1 ▼» a `pecera` (llegas arriba de la escalera de la Pecera: entrada `ecosistema` de la Pecera, al pie de su escalera «PLANTA 2 ↑»); puerta «EVENTOS» → `eventos`; pasillo → `administracion` («PASILLO»). Ascensor `ascensor_ecosistema` (indicador en 2). |
+| **1** Redacción | `pecera`, `office`, `catacumba`, `pajarera`, `sala_amazonas` | `pecera`: a la izquierda la escalera que BAJA «↓ VESTÍBULO · PLANTA 0» (`pecera_a_vestibulo`; ni puerta de cristal ni torno a la vista); puerta «OFFICE» → `office` → puerta «TALLERES» → `catacumba` (por dentro rotula «OFFICE»); cristal «DIRECCIÓN» → `pajarera` → `puerta_sala` → `sala_amazonas`; a la derecha la escalera que SUBE «PLANTA 2» y el ascensor `ascensor_pecera` (indicador en 1). La Catacumba tiene techo bajo y tuberías, pero NO es un sótano: está en la planta 1, detrás del Office. |
+| **0** Vestíbulo | `vestibulo` | puerta de la calle (no se sale) · línea de tornos · detrás de los tornos, la escalera que SUBE «REDAC. 1» (`vestibulo_a_redaccion` / `torno`: llegas a la Pecera arriba de su escalera de bajada, entrada `vestibulo`) y el ascensor (indicador en 0). |
+| **−1** Sistemas y CPD | `cpd` | solo el ascensor («SALA FRÍA», indicador −1). |
+
+```
+P2   [eventos] ─puerta─ [ecosistema] ─pasillo─ [administracion]          ascensor (2)
+                           │ escalera (baja: «P1 ▼»)
+P1   [catacumba] ─TALLERES/OFFICE─ [office] ─OFFICE─ [pecera] ─cristal DIRECCIÓN─ [pajarera] ─puerta─ [sala_amazonas]
+                                   escalera «↓ VESTÍBULO» ┘  └ escalera «PLANTA 2 ↑» + ascensor (1)
+P0   [vestibulo]: tornos → escalera «REDAC. 1 ↑» + ascensor (0)
+P−1  [cpd]: solo ascensor (−1)
+```
+Entradas: `pecera.entries.vestibulo` = arriba de la escalera de bajada (x≈34); `vestibulo.entries.pecera` = al pie de la
+escalera «REDAC. 1» (detrás de los tornos); `pecera.entries.ecosistema` = al pie de la escalera «PLANTA 2»;
+`ecosistema.entries.pecera` = junto a la escalera «P1 ▼». `tools/smoke.mjs` comprueba estas señales y entradas.
+
 ## 3. game.js (shared)
 
 What the shared `content/game.js` provides (you use it, you don't edit it):
@@ -675,11 +698,11 @@ game by itself; `api.ending(opts)` ends the game (a click fast-forwards; at the 
 | `node tools/smoke.mjs` | full UI smoke test (title, 10 rooms, inventory, sample duel, save/load, menu, credits, debug, touch) |
 | `node tools/walkthrough.mjs [--alt] [--hasta=N] [--lento]` | bible §5.4 step by step (data in the file); stops at the first failing step and says why. Fails while rooms are unfinished: expected |
 | `node tools/extras.mjs [--hasta=X10] [--lento]` | walkthrough 5.4 + the «extras» X1…X26 of addendum §12 interleaved (data in the file; fails at the first unimplemented X step: expected). Shares `walk-data.mjs` / `walk-lib.mjs` with the walkthrough; both **dismiss the automatic notices** and keep going |
-| `node tools/play-mouse.mjs [--solo=raton\|geometria] [--vis]` | Act I + duel D1 with REAL mouse events only (incl. the vestíbulo barrier: the lift is unreachable before `torno_abierto`, reachable after; the lift panel by clicks), and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, is not fully covered by another hotspot, and every talkable NPC shows ≥ 80 % of head+torso (silhouette render) with ≥ 120 px of own click area (`--vis` prints the figures) |
+| `node tools/play-mouse.mjs [--solo=raton\|geometria] [--vis]` | Act I + duel D1 with REAL mouse events only (incl. the vestíbulo barrier: the lift is unreachable before `torno_abierto`, reachable after; the lift panel by clicks), and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, is not fully covered by another hotspot, and every talkable NPC shows ≥ 80 % of head+torso (silhouette render) with ≥ 120 px of own click area — also **with Bruno standing at its talk spot** (talk spots go to the SIDE of the NPC, never in front) (`--vis` prints the figures) |
 | `node tools/fuzz.mjs [--solo=guardar\|duelos\|objetos]` | save/load in every act and play on to the end; lose every duel once; Dar/Usar every item on every NPC and hotspot (no exceptions, no stuck dialogs, list of consumed items) |
 | `node tools/contrast.mjs [--todo]` | legibility: WCAG contrast of every speaker colour against its outline and against the real background of every room under the speech band (`SPEECH_BACKING`), same-room speakers distinguishable, and all UI / menu / duel text colours ≥ 4.5:1 |
 | `node tools/make-icons.mjs` | regenerates the web-app icons `icons/icon-{180,192,512}.png` from the game's own drawing code (the only image files in the project) |
-| `node tools/text-audit.mjs` | every line said in a full game + all 9 verbs on everything: > 80 chars, balloons over 3 rows, missing ¿ ¡, names, clock times |
+| `node tools/text-audit.mjs` | every line said in a full game + all 9 verbs on everything: > 80 chars, balloons over 3 rows, missing ¿ ¡, names, clock times, and staging: whoever says a line is not hidden (> 20 % of head+torso) by another actor standing in front |
 | `node tools/review.mjs [--solo=salas\|momentos]` | contact sheets for visual review → `tools/shots/review/` |
 | `node tools/actors.mjs` | cast contact sheet → `tools/shots/actores.png` (sprite-less presences as colour cards) |
 

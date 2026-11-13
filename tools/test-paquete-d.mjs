@@ -386,9 +386,39 @@ try {
   await verb('ir', 'sala_a_pajarera');
   ok((await state()).room === 'sala_amazonas', 'no se sale de la Sala hasta acabar');
   await shot('climax-antes-empujon');
+  // puesta en escena del ¡PLOF! (problema A del director): el Lector Medio se VE antes, durante y después
+  const antes = await G(() => {
+    const g = __game.game, a = g.actors.lector_medio;
+    return { room: a.room, visible: a.visible, x: a.x, y: a.y, chaqueta: g.spriteOf(a) === a.variants.chaqueta };
+  });
+  ok(antes.room === 'sala_amazonas' && antes.visible && antes.y >= 104 && antes.x > 40 && antes.x < 140 && antes.chaqueta,
+    `antes del empujón: el Lector Medio, de pie en la cabecera y DELANTE de la mesa (pies y=${antes.y} ≥ 104), con la chaqueta`);
+  await G(() => {
+    const g = __game.game; window.__probe = []; window.__cae = [];
+    const fl = g.state.flags;
+    g.state.flags = new Proxy(fl, { set(t, k, v) { if (k === 'sala_amazonas_lector_cae') window.__cae.push(v); t[k] = v; return true; } });
+    if (!g.__speakOrig) g.__speakOrig = g.speak.bind(g);
+    g.speak = (who, text, opts) => {
+      const a = g.actors.lector_medio;
+      window.__probe.push({ who, text, lector: { room: a.room, visible: a.visible, y: a.y, caido: g.spriteOf(a) === a.variants.caido },
+        botellines: g.getObjState('botellines', 'sala_amazonas').state, proyector: g.getObjState('proyector', 'sala_amazonas').state });
+      return g.__speakOrig(who, text, opts);
+    };
+  });
   await G(() => __game.clearLog());
   await verb('empujar', 'lector_medio');
   await G(() => __game.waitIdle());
+  const probe = await G(() => window.__probe), cae = await G(() => window.__cae);
+  await G(() => { const g = __game.game; if (g.__speakOrig) { g.speak = g.__speakOrig; delete g.__speakOrig; } });
+  ok(JSON.stringify(cae.slice(0, 3)) === '[1,2,3]', `la caída se ve en fotogramas: inclinado 1 → 2 → 3 (${JSON.stringify(cae)})`);
+  const fin = probe.findIndex(p => p.text === 'Eso es el papel.');
+  const enSala = probe.slice(0, fin + 1).filter(p => p.lector.room === 'sala_amazonas');
+  const grab = probe.find(p => p.who === 'lector_medio');
+  ok(grab && grab.lector.caido && grab.lector.visible && grab.lector.y >= 104 && grab.botellines === 'tumbados',
+    'tras el ¡PLOF!: el Lector Medio queda en el suelo, delante de la mesa, a la vista (variante caído) y los botellines tumbados');
+  ok(enSala.length > 10 && enSala.every(p => p.lector.caido && p.lector.visible), `el Lector caído sigue a la vista en todas las líneas de la escena (${enSala.length})`);
+  const d248 = probe.find(p => p.text === 'EL VIAJE CONTINÚA');
+  ok(d248 && d248.proyector === 'diapo_248', 'la diapositiva salta a la 248 en pantalla cuando se dice');
   st = await state();
   if (st.mode === 'title' && st.finished) st = { ...st, ...st.finished };
   ok(st.flags.lector_derribado === true, 'Empujar lector_medio → lector_derribado');

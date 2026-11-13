@@ -410,24 +410,24 @@ function hangingSign(g) {
 }
 
 // ------------------------------------------------------------------ mostrador de seguridad de Celestino (junto a los tornos)
-const CX0 = 156, CW = 50, CY = 79;   // mostrador bajo: Celestino se ve de cintura para arriba (problema 4)
+const CX0 = 156, CW = 50, CY = 85;   // mostrador BAJO (problema C): Celestino se ve de pecho para arriba, con la bufanda
 function drawCounter(g) {
   const x = CX0, y = CY, w = CW;
   shadowEllipse(g, x + w / 2, 102, w / 2 + 6, 3, 0.75);
-  gradV(g, x, y + 5, w, 23, [PAL.wood[4], PAL.wood[3], PAL.wood[2]]);
-  noise(g, x, y + 5, w, 23, PAL.wood[1], 0.05, 9);
+  gradV(g, x, y + 5, w, 17, [PAL.wood[4], PAL.wood[3], PAL.wood[2]]);
+  noise(g, x, y + 5, w, 17, PAL.wood[1], 0.05, 9);
   for (let i = 0; i < 3; i++) {
     const px0 = x + 3 + i * 15;
-    frameRect(g, px0, y + 9, 13, 14, PAL.wood[1]);
-    hline(g, px0 + 1, y + 10, 11, PAL.wood[5]); vline(g, px0 + 1, y + 10, 12, PAL.wood[5]);
-    hline(g, px0 + 1, y + 22, 12, PAL.wood[2]);
+    frameRect(g, px0, y + 7, 13, 10, PAL.wood[1]);
+    hline(g, px0 + 1, y + 8, 11, PAL.wood[5]); vline(g, px0 + 1, y + 8, 8, PAL.wood[5]);
+    hline(g, px0 + 1, y + 16, 12, PAL.wood[2]);
   }
-  vline(g, x, y + 5, 23, PAL.wood[5]); vline(g, x + w - 1, y + 5, 23, PAL.wood[1]);
-  rect(g, x, y + 25, w, 3, PAL.ink[2]); hline(g, x, y + 25, w, PAL.metal[3]);
+  vline(g, x, y + 5, 17, PAL.wood[5]); vline(g, x + w - 1, y + 5, 17, PAL.wood[1]);
+  rect(g, x, y + 19, w, 3, PAL.ink[2]); hline(g, x, y + 19, w, PAL.metal[3]);
   rect(g, x - 2, y, w + 4, 5, PAL.wood[5]); hline(g, x - 2, y, w + 4, PAL.wood[7]); hline(g, x - 2, y + 1, w + 4, PAL.wood[6]);
   hline(g, x - 2, y + 4, w + 4, PAL.wood[2]);
-  rect(g, x + 7, y + 12, 36, 7, PAL.gold[5]); frameRect(g, x + 7, y + 12, 36, 7, PAL.gold[2]);
-  microCenter(g, 'SEGURIDAD', x + 25, y + 13, PAL.ink[0]);
+  rect(g, x + 7, y + 9, 36, 7, PAL.gold[5]); frameRect(g, x + 7, y + 9, 36, 7, PAL.gold[2]);
+  microCenter(g, 'SEGURIDAD', x + 25, y + 10, PAL.ink[0]);
 }
 /** Objetos del mostrador (se pintan con el mostrador, delante de Celestino). Bajos: no le tapan el torso. */
 function counterTop(g) {
@@ -621,22 +621,23 @@ const layout = {
   planta_plastico: { rect: [134, 56, 18, 46], walkTo: [143, 109], face: 'up', priority: 1, draw: (g, v, t) => drawFicus(g, v, t) },
   pantalla_ibex: { rect: [160, 20, 36, 28], walkTo: [181, 112], face: 'up', draw: (g, v, t) => drawIbex(g, v, t) },
   altavoz_ibex: { rect: [198, 23, 15, 18], walkTo: [198, 110], face: 'up', priority: 1 },
-  buzon_sugerencias: { rect: [157, 65, 15, 14], walkTo: [165, 111], face: 'up', priority: 1 },
+  buzon_sugerencias: { rect: [157, 71, 15, 14], walkTo: [165, 111], face: 'up', priority: 1 },
   radio_celestino: {
-    rect: [191, 67, 15, 12], walkTo: [198, 111], face: 'up', priority: 1,
+    rect: [191, 73, 15, 12], walkTo: [198, 111], face: 'up', priority: 1,
     layer: 'sorted', zy: 104, prop: true,     // el mostrador tapa las piernas de Celestino: se pinta siempre
     draw: (g) => { drawCounter(g); counterTop(g); },
   },
   // la línea de tornos: el hotspot cubre el carril de Bruno y la bancada central; Bruno se acerca por el lado de la calle
   torno: {
-    poly: [[204, 74], [238, 74], [250, 124], [212, 124]], walkTo: [201, 112], face: 'right',
+    poly: [[204, 74], [238, 74], [250, 124], [212, 124]], walkTo: [207, 114], face: 'right',
     layer: 'sorted', zy: 124, draw: (g, v, t) => drawTorno(g, v, t),
   },
   torno_bancada: { rect: [226, 108, 36, 36], layer: 'sorted', zy: 145, prop: true, draw: (g) => drawBancadaDelantera(g) },
   logo_pared: { rect: [228, 14, 80, 20], walkTo: [204, 108], face: 'right' },
   ascensor_vestibulo: { rect: [234, 36, 38, 62], walkTo: [253, 109], face: 'up' },
   vestibulo_a_redaccion: { rect: [280, 36, 38, 62], walkTo: [300, 109], face: 'right' },
-  celestino: { at: [181, 99, 'down'], walkTo: [181, 112], face: 'up' },
+  // Celestino, tras su mostrador bajo; Bruno le habla desde la izquierda del mostrador, de perfil (no se pone delante)
+  celestino: { at: [181, 99, 'down'], walkTo: [146, 110], face: 'right' },
   evaristo_salvedad: { at: [196, 113, 'left'], walkTo: [186, 118], face: 'right' },
 };
 
@@ -648,9 +649,9 @@ const epilogo = {
   ruben: [64, 116, 'right'],
   bruno: [112, 124, 'left'],
   inigo_sinergia: { from: [253, 110, 'left'], at: [150, 118, 'right'] },
-  gervasio_acta: { from: [258, 112, 'left'], at: [200, 124, 'left'], salida: [30, 124] },
+  gervasio_acta: { from: [258, 112, 'left'], at: [214, 126, 'left'], salida: [30, 124] },
   salida: [10, 118],
-  periodicos: [186, 121],
+  periodicos: [205, 122],          // a un lado del mostrador: Bruno no se pone delante de Celestino mientras habla
 };
 
 export default {

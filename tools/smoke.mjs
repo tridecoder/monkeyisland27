@@ -158,6 +158,36 @@ try {
     }
   }
   ok(seen.size === 10, 'visitadas las 10 salas: ' + [...seen].join(', '));
+
+  // ---------------------------------------------------------------- geografía del edificio (docs/CONTENT_SCHEMA.md §2.6)
+  step('Geografía: plantas, escaleras, ascensor y entradas coherentes');
+  const geo = await G(() => {
+    const rooms = __game.game.content.rooms;
+    const PLANTA = { cpd: -1, vestibulo: 0, pecera: 1, office: 1, catacumba: 1, pajarera: 1, sala_amazonas: 1, ecosistema: 2, eventos: 2, administracion: 2 };
+    const bad = [];
+    for (const [rid, r] of Object.entries(rooms)) for (const o of r.objects || []) {
+      if (o.ascensor && o.ascensor.planta !== PLANTA[rid]) bad.push(`${rid}.${o.id}: ascensor dice planta ${o.ascensor.planta}, la sala está en la ${PLANTA[rid]}`);
+      if (!o.exit) continue;
+      const a = PLANTA[rid], b = PLANTA[o.exit.room];
+      const nombre = typeof o.name === 'function' ? '' : String(o.name || '');
+      if (a !== b && !(/escalera/i.test(nombre) || o.id === 'torno')) bad.push(`${rid}.${o.id} → ${o.exit.room}: cambia de planta (${a} → ${b}) y no es una escalera («${nombre}»)`);
+      if (Math.abs(a - b) > 1) bad.push(`${rid}.${o.id}: salta de la planta ${a} a la ${b}`);
+    }
+    const ep = rooms.pecera.entries.vestibulo, ev = rooms.vestibulo.entries.pecera;
+    const ex = rooms.pecera.layout.pecera_a_vestibulo, er = rooms.vestibulo.layout.vestibulo_a_redaccion;
+    return { bad, ep, ev, exX: ex.rect || ex.poly, erX: er.rect || er.poly, pname: rooms.pecera.objects.find(o => o.id === 'pecera_a_vestibulo').name };
+  });
+  ok(!geo.bad.length, 'cada salida entre plantas es una escalera (o el torno + escalera) y cada ascensor marca su planta' + (geo.bad.length ? ': ' + geo.bad.join(' · ') : ''));
+  ok(/escalera/i.test(geo.pname), `la salida de la Redacción (planta 1) al vestíbulo (planta 0) es una escalera que baja («${geo.pname}»)`);
+  ok(geo.ep[0] <= geo.exX[0] + geo.exX[2] + 10, `llegando del vestíbulo se aparece arriba de esa escalera (x=${geo.ep[0]})`);
+  ok(geo.ev[0] >= 234 && Math.abs(geo.ev[0] - (geo.erX[0] + geo.erX[2] / 2)) < 30, `llegando de la Redacción se aparece al pie de la escalera «REDAC. 1», detrás de los tornos (x=${geo.ev[0]})`);
+  await G(() => __game.gotoRoom('pecera', 'vestibulo')); await G(() => __game.waitIdle());
+  await G(() => __game.doVerb('ir', 'pecera_a_vestibulo'));
+  const llegaV = await state();
+  ok(llegaV.room === 'vestibulo' && llegaV.player.x >= 234, `bajando desde la Pecera se llega al vestíbulo interior, detrás de los tornos (x=${Math.round(llegaV.player.x)})`);
+  await G(() => __game.doVerb('ir', 'vestibulo_a_redaccion'));
+  const llegaP = await state();
+  ok(llegaP.room === 'pecera' && llegaP.player.x < 70, `subiendo «REDAC. 1» se llega a la Pecera arriba de la escalera de bajada (x=${Math.round(llegaP.player.x)})`);
   const presence = await G(async () => {
     await __game.gotoRoom('pajarera'); const a = __game.objects().filter(o => o.kind === 'actor').map(o => o.id);
     __game.setFlag('acto_3_iniciado', true);

@@ -27,7 +27,8 @@ const layout = {
   contratos_evaristo: { rect: [260, 52, 12, 46], walkTo: [262, 114], face: 'up', priority: 1 },
   coma_enmarcada: { rect: [250, 32, 14, 14], walkTo: [254, 114], face: 'up', priority: 1 },
   archivador_ejemplares: { rect: [276, 38, 42, 60], walkTo: [296, 112], face: 'up' },
-  begona_triplicado: { at: [193, 96, 'down'], walkTo: [193, 114], face: 'up' },
+  // Bruno le habla desde la izquierda de la ventanilla, de perfil, junto al agujerito (no delante de ella)
+  begona_triplicado: { at: [193, 96, 'down'], walkTo: [158, 116], face: 'right' },
   // dentro de su despacho (leyendo con lupa); `puerta`: sale a la puerta de cristal cuando se le llama (adenda 3.8)
   evaristo_salvedad: { at: [252, 97, 'down'], walkTo: [240, 115], face: 'right',
     positions: { despacho: { at: [252, 97, 'down'] }, puerta: { at: [237, 106, 'left'], walkTo: [216, 114], face: 'right' } } },
@@ -71,8 +72,8 @@ function drawBoothFront(g) {
   // rótulo superior VENTANILLA
   bevel(g, x0, top, x1 - x0, 12, PAL.crt[2], PAL.crt[4], PAL.crt[0]);
   cap(g, 'VENTANILLA', (x0 + x1) >> 1, top + 3, PAL.crt[6], { align: 'center' });
-  // agujerito a la altura de la boca (con aro)
-  ellipse(g, 193, 62, 3, 2, PAL.metal[5]); ellipse(g, 193, 62, 2, 1, PAL.ink[0]);
+  // agujerito a la altura de la boca (con aro), a un lado del cristal: así no le tapa la cara a Begoña (problema C)
+  ellipse(g, 177, 64, 3, 2, PAL.metal[5]); ellipse(g, 177, 64, 2, 1, PAL.ink[0]);
   // número del turno y flecha
   rect(g, 207, 49, 9, 5, PAL.ink[1]); rect(g, 208, 50, 7, 3, PAL.red[2]); px(g, 210, 51, PAL.red[6]); px(g, 211, 51, PAL.red[6]); px(g, 212, 52, PAL.red[6]);
   // mostrador (cara exterior): repisa saliente, panel frontal, ranura pasapapeles con bandeja de latón

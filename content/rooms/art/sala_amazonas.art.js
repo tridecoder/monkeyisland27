@@ -19,6 +19,7 @@ import {
 const W = 320;
 const FL = 98;
 const OK = { x: 104, y: 17, w: 120, h: 40 };      // pantalla del orden del día
+export const LECTOR_AT = [84, 110];                // pies del Lector Medio, de pie en la cabecera (clímax)
 
 const cacheDraw = (() => {
   const store = {};
@@ -128,18 +129,57 @@ function tableAndChairs(g) {
     for (let i = 0; i < 9; i++) px(g, x + 3 + Math.floor(hash2(i, 1, 4) * 18), y + 1 + Math.floor(hash2(i, 2, 4) * 3), PAL.gold[2 + (i % 3)]);
     px(g, x + 19, y + 2, PAL.gold[5]); px(g, x + 20, y + 3, PAL.gold[5]);
   }
-  // CATORCE BOTELLINES sin abrir, alineados
-  for (let i = 0; i < 14; i++) {
-    const bx = 176 + i * 4, by = 84;
-    rect(g, bx, by + 2, 3, 7, PAL.teal[5]); vline(g, bx, by + 2, 7, PAL.teal[7]); vline(g, bx + 2, by + 3, 6, PAL.teal[3]);
-    rect(g, bx + 1, by, 1, 2, PAL.teal[6]); px(g, bx + 1, by - 1, PAL.white);
-    hline(g, bx, by + 5, 3, PAL.paper[6]);
-  }
+  // (los CATORCE BOTELLINES los pinta el objeto `botellines` por estado: en fila / volando / tumbados)
   // sillas del lado cercano (de espaldas), una arrimada y otra empujada
   chairBack(g, 166, 107, { jacket: null, turn: 1, col: [PAL.teal[0], PAL.teal[1], PAL.teal[2], PAL.teal[3], PAL.teal[4]] });
   chairBack(g, 249, 106, { jacket: null, turn: -1, col: [PAL.teal[0], PAL.teal[1], PAL.teal[2], PAL.teal[3], PAL.teal[4]] });
 }
 const drawTable = cacheDraw('sala-mesa', 70, 60, 240, 56, tableAndChairs);
+
+// ------------------------------------------------------------------ los catorce botellines (estado del objeto `botellines`)
+//   'en_fila'  (por defecto) catorce botellines sin abrir, alineados
+//   'volando'  el ¡PLOF! del Lector Medio: saltan por el aire en abanico (fotogramas por tiempo desde que entra el estado)
+//   'tumbados' después: tumbados por la mesa, tres en el suelo, uno rodando
+function botellin(g, bx, by) {
+  rect(g, bx, by + 2, 3, 7, PAL.teal[5]); vline(g, bx, by + 2, 7, PAL.teal[7]); vline(g, bx + 2, by + 3, 6, PAL.teal[3]);
+  rect(g, bx + 1, by, 1, 2, PAL.teal[6]); px(g, bx + 1, by - 1, PAL.white);
+  hline(g, bx, by + 5, 3, PAL.paper[6]);
+}
+function botellinTumbado(g, bx, by, izq) {
+  rect(g, bx, by, 7, 3, PAL.teal[5]); hline(g, bx, by, 7, PAL.teal[7]); hline(g, bx, by + 2, 7, PAL.teal[3]);
+  vline(g, bx + 3, by, 3, PAL.paper[6]);
+  if (izq) { rect(g, bx - 2, by + 1, 2, 1, PAL.teal[6]); px(g, bx - 3, by + 1, PAL.white); }
+  else { rect(g, bx + 7, by + 1, 2, 1, PAL.teal[6]); px(g, bx + 9, by + 1, PAL.white); }
+}
+const VUELO = { t0: null };
+function drawBotellines(g, view, t) {
+  drawTable(g);
+  const st = String(view.state || 'en_fila');
+  if (st === 'volando') {
+    if (VUELO.t0 == null || t < VUELO.t0) VUELO.t0 = t;
+    const p = Math.min(1, (t - VUELO.t0) / 650);
+    for (let i = 0; i < 14; i++) {
+      const bx0 = 176 + i * 4, dir = (i - 6.5) / 6.5;
+      const h = 10 + ((i * 7) % 9);
+      const x = Math.round(bx0 + dir * 26 * p), y = Math.round(84 - Math.sin(p * Math.PI) * h + (i % 3 === 0 ? p * 22 : p * 2));
+      if ((i + Math.floor(t / 70)) & 1) botellin(g, x, y); else botellinTumbado(g, x - 2, y + 4, i & 1);
+    }
+    return;
+  }
+  VUELO.t0 = null;
+  if (st === 'tumbados') {
+    const r = rng(1406);
+    for (let i = 0; i < 11; i++) botellinTumbado(g, 160 + Math.floor(r() * 104), 85 + Math.floor(r() * 9), r() < 0.5);
+    botellin(g, 238, 84);                                                    // el único que aguanta en pie
+    return;
+  }
+  for (let i = 0; i < 14; i++) botellin(g, 176 + i * 4, 84);
+}
+// tres botellines que acaban en el suelo, delante de la mesa (capa propia, por delante de la mesa)
+function drawBotellinesSuelo(g, view) {
+  if (String(view.objState('botellines') || '') !== 'tumbados') return;
+  botellinTumbado(g, 168, 112, false); botellinTumbado(g, 203, 118, true); botellinTumbado(g, 236, 109, false);
+}
 
 const TEAL = [PAL.teal[0], PAL.teal[1], PAL.teal[2], PAL.teal[3], PAL.teal[4]];
 function farChairs(g) {
@@ -242,23 +282,42 @@ function fluorescent3(g, x) {
 }
 
 // ------------------------------------------------------------------ objetos
+const DIAPO = { t0: null };
 function drawOrden(g, view, t) {
   const { x, y, w, h } = OK;
   const a3 = !!view.flag('acto_3_iniciado');
   if (a3) {
-    // proyección: diapositiva 247 de 400 (o 248)
+    // proyección: diapositiva 247 de 400 (o 248, adenda 9.5). El número va GRANDE en la barra, y la 248 es otra
+    // diapositiva (fondo azul noche, carretera que se pierde): el salto se ve aunque no se lea el número. Al cambiar,
+    // un fogonazo blanco de proyector (fotogramas por tiempo desde que cambia el estado).
     const st = String(view.objState('proyector') ?? '');
     const s248 = /248/.test(st);
-    rect(g, x, y, w, h, '#eef2f4');
-    rect(g, x, y, w, 7, PAL.blue[3]);
-    tiny(g, 'ELCONTABLE.ES', x + 4, y + 1, PAL.paper[7]);
-    tiny(g, s248 ? '248 / 400' : '247 / 400', x + w - 4, y + 1, PAL.gold[5], { align: 'right' });
-    label(g, 'SINERGIAS', x + (w >> 1), y + 6, PAL.blue[3], { align: 'center' });
-    tiny(g, 'EXPONENCIALES:', x + (w >> 1), y + 20, PAL.red[3], { align: 'center' });
-    tiny(g, s248 ? 'EL VIAJE CONTINUA' : 'EL VIAJE', x + (w >> 1), y + 28, PAL.ink[2], { align: 'center' });
-    // flecha circular absurda
-    for (let i = 0; i < 6; i++) rect(g, x + 8 + i * 3, y + 33 - ((i * i) >> 3), 2, 2, PAL.teal[4]);
-    for (let i = 0; i < 6; i++) rect(g, x + w - 26 + i * 3, y + 33 - ((i * i) >> 3), 2, 2, PAL.gold[4]);
+    if (s248) { if (DIAPO.t0 == null || t < DIAPO.t0) DIAPO.t0 = t; } else DIAPO.t0 = null;
+    if (!s248) {
+      rect(g, x, y, w, h, '#eef2f4');
+      rect(g, x, y, w, 9, PAL.blue[3]);
+      tiny(g, 'ELCONTABLE.ES', x + 3, y + 2, PAL.paper[7]);
+      label(g, '247/400', x + w - 3, y - 2, PAL.gold[6], { align: 'right' });
+      label(g, 'SINERGIAS', x + (w >> 1), y + 8, PAL.blue[3], { align: 'center' });
+      tiny(g, 'EXPONENCIALES:', x + (w >> 1), y + 22, PAL.red[3], { align: 'center' });
+      tiny(g, 'EL VIAJE', x + (w >> 1), y + 29, PAL.ink[2], { align: 'center' });
+      // flecha circular absurda
+      for (let i = 0; i < 6; i++) rect(g, x + 8 + i * 3, y + 35 - ((i * i) >> 3), 2, 2, PAL.teal[4]);
+      for (let i = 0; i < 6; i++) rect(g, x + w - 26 + i * 3, y + 35 - ((i * i) >> 3), 2, 2, PAL.gold[4]);
+      return;
+    }
+    gradV(g, x, y, w, h, [PAL.night[2], PAL.night[3], PAL.dusk[3]]);
+    rect(g, x, y, w, 9, PAL.gold[4]);
+    tiny(g, 'ELCONTABLE.ES', x + 3, y + 2, PAL.ink[1]);
+    label(g, '248/400', x + w - 3, y - 2, PAL.red[2], { align: 'right' });
+    // una carretera que se pierde en el horizonte (el «viaje»)
+    poly(g, [[x + 48, y + h], [x + 72, y + h], [x + 61, y + 29], [x + 59, y + 29]], PAL.ink[2]);
+    for (let k = 0; k < 3; k++) rect(g, x + 60, y + 31 + k * 3, 1, 2, PAL.gold[6]);
+    hline(g, x, y + 29, w, PAL.dusk[5]);
+    label(g, 'EL VIAJE', x + (w >> 1), y + 6, PAL.gold[6], { align: 'center' });
+    label(g, 'CONTINÚA', x + (w >> 1), y + 16, PAL.gold[6], { align: 'center' });
+    const k = DIAPO.t0 == null ? 1 : (t - DIAPO.t0) / 380;
+    if (k < 1) { g.save(); g.globalAlpha = 0.85 * (1 - k); g.fillStyle = '#ffffff'; g.fillRect(x, y, w, h); g.restore(); }
     return;
   }
   const done = !!view.flag('reunion_terminada');
@@ -351,7 +410,7 @@ const layout = {
   orden_del_dia: { rect: [102, 14, 126, 46], walkTo: [162, 108], face: 'up', draw: drawOrden },
   planillo_mesa: { rect: [98, 82, 24, 10], walkTo: [108, 116], face: 'up', priority: 1, layer: 'sorted', zy: 104, draw: drawPlanillo },
   minicruasanes: { rect: [126, 83, 30, 11], walkTo: [140, 116], face: 'up' },
-  botellines: { rect: [174, 80, 60, 15], walkTo: [204, 116], face: 'up', layer: 'sorted', zy: 103, prop: true, draw: drawTable },
+  botellines: { rect: [174, 80, 60, 15], walkTo: [204, 116], face: 'up', layer: 'sorted', zy: 103, prop: true, draw: drawBotellines },
   figurantes_mercados: { rect: [222, 58, 66, 38], walkTo: [256, 114], face: 'up', priority: 1, draw: drawFigurantes },
   // ADENDA
   tele_amazonas: { rect: [286, 22, 34, 42], walkTo: [304, 112], face: 'up', draw: drawTele },
@@ -359,7 +418,10 @@ const layout = {
   carteles_amazonas: { rect: [40, 62, 54, 30], walkTo: [64, 110], face: 'up' },
   // PNJ
   gervasio_acta: { at: [84, 106, 'right'], positions: { preside: { at: [84, 106, 'right'] }, rincon: { at: [292, 112, 'left'] } } },
-  lector_medio: { at: [160, 92, 'down'], walkTo: [160, 114], face: 'up' },
+  // Lector Medio: EN LA CABECERA (el extremo izquierdo de la mesa, junto a la silla roja), DELANTE de la mesa, fuera del
+  // haz del proyector y bajo su propia luz (overlay); Bruno lo empuja desde su izquierda y cae hacia la derecha, en el
+  // suelo, delante de la mesa (clímax 7.4, content/escenas/climax.js).
+  lector_medio: { at: [LECTOR_AT[0], LECTOR_AT[1], 'down'], walkTo: [LECTOR_AT[0] - 22, LECTOR_AT[1] + 4], face: 'right' },
   inigo_sinergia: { at: [222, 114, 'left'] },
 };
 void noise; void gradH; void hash2; void bevel; void door; void mix; void lcd; void postit; void wainscot; void floorTiles; void wall;
@@ -374,16 +436,30 @@ export default {
   draw: drawRoom,
   animate(g, view, t) {
     rainOnGlass(g, 232, 22, 52, 42, t, 6);
+    drawBotellinesSuelo(g, view);
   },
-  // penumbra del Acto III (la pantalla del proyector queda iluminada)
+  // penumbra del Acto III. Quedan iluminados: la pantalla del proyector y, con su propio foco (la luz que rebota de la
+  // pantalla), la cabecera de la mesa donde está el Lector Medio; cuando cae, el foco baja con él al suelo. Así el
+  // remate del juego se ve entero, opaco y sin el halo del proyector encima (informe visual, problema 1).
   overlay(g, view, t) {
     if (!view.flag('acto_3_iniciado')) return;
+    const [lx, ly] = LECTOR_AT;
+    const caido = !!view.flag('lector_derribado');
+    // focos: [cx, cy, rx, ry] (de pie: todo el cartón; caído: el suelo delante de la mesa, a la derecha de la base)
+    const spots = caido ? [[lx + 38, ly - 6, 50, 15]] : [[lx + 2, ly - 30, 22, 38], [lx + 38, ly - 6, 46, 13]];
+    const hole = (k) => { for (const [cx, cy, rx, ry] of spots) { g.moveTo(cx + rx * k, cy); g.ellipse(cx, cy, rx * k, ry * k, 0, 0, Math.PI * 2); } };
     g.save();
     g.beginPath();
     g.rect(0, 0, W, 144);
     g.rect(OK.x - 3, OK.y - 3, OK.w + 6, OK.h + 6);
+    hole(1);
     g.clip('evenodd');
     g.globalAlpha = 0.44; g.fillStyle = '#080c24'; g.fillRect(0, 0, W, 144);
+    g.restore();
+    // borde suave del foco: medio oscuro entre la elipse grande y la pequeña
+    g.save();
+    g.beginPath(); hole(1); hole(0.72); g.clip('evenodd');
+    g.globalAlpha = 0.2; g.fillStyle = '#080c24'; g.fillRect(0, 0, W, 144);
     g.restore();
     g.save(); g.globalAlpha = 0.07 + 0.02 * Math.sin(t / 300); glow(g, 164, 40, 90, 34, '#f0f8ff', 0.5, 4); g.restore();
   },

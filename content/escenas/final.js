@@ -88,7 +88,7 @@ async function final(api) {
     // el fardo de periódicos
     api.sfx('drop');
     await api.sayAs(C, 'Ha llegado la furgoneta del polígono. Recién salidos.');
-    await api.walkTo(EP.periodicos[0], EP.periodicos[1]); api.face('up');
+    await api.walkTo(EP.periodicos[0], EP.periodicos[1]); api.face('celestino');
     await api.anim('bruno', 'reach', 400);
     api.sfx('paper');
     G.hud = periodicoHud;

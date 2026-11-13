@@ -3,6 +3,10 @@
 // Al acabar, lanza la escena del FINAL 7.5 del paquete A: api.scene('final') (si no existe, el motor solo avisa).
 import { SFX, sello, fundidoBlanco } from './planta_noble.js';
 import artAdmin from '../rooms/art/administracion.art.js';
+import artSala, { LECTOR_AT } from '../rooms/art/sala_amazonas.art.js';
+import { getFrame } from '../../engine/sprites.js';
+import { PAL, rect, hline, vline, frameRect, gradV, label } from '../../engine/draw.js';
+import { auricularRojo, cableRizado } from '../actors.js';
 
 const INIGO = 'inigo_sinergia', GERV = 'gervasio_acta', LECTOR = 'lector_medio', RUBEN = 'ruben', BEGONA = 'begona_triplicado';
 const EV = 'evaristo_salvedad';
@@ -15,8 +19,8 @@ const sayEv = (api, t) => api.sayAs(EV, t);
 // staging (coordenadas de la sala; la puerta es la entrada `pajarera` del arte)
 const PUERTA = [30, 118];
 const SITIO_RUBEN = [266, 122];      // «con la cara pegada a la ventana»
-const SITIO_BEGONA = [112, 124];
-const SITIO_TRAS_EMPUJON = [186, 120];   // Bruno, tras el ¡PLOF!: a un lado, sin tapar al Lector Medio caído
+const SITIO_BEGONA = [176, 126];     // a la derecha del Lector caído (no lo tapa), frente a Íñigo
+const SITIO_TRAS_EMPUJON = [46, 122];    // Bruno, tras el ¡PLOF!: a la izquierda, sin tapar al Lector Medio caído
 
 export const DECK_D4 = ['R10', 'R12', 'R13', 'R05', 'R01', 'R07', 'R15', 'R16'];
 export const PUNTOS_D4 = 4;          // 2 + remate A + 2 + remate B
@@ -122,18 +126,51 @@ export async function climaxReintento(api) {
 }
 
 // ---------------------------------------------------------------- 7.4 · Empujar al Lector Medio (orden de la adenda 9.7)
+/** Dónde queda el actor del Lector Medio caído: el centro del cartón tumbado (sprite `caido` de actors.js, origen en el
+ *  centro), con los pies donde estaba la base y la cabeza hacia la derecha, delante de la mesa. */
+function posCaido(api) {
+  const p = api.actorPos(LECTOR);
+  const x0 = (p && p.room === 'sala_amazonas' && !api.flag('lector_derribado')) ? p.x : LECTOR_AT[0];
+  return [Math.round(x0 + 8 + 31 * 0.95), LECTOR_AT[1] + 4];
+}
+/** El Lector Medio queda caído (idempotente). */
+function caer(api) {
+  if (api.flag('lector_derribado')) return;
+  const [x, y] = posCaido(api);
+  api.setFlag('lector_derribado', true);
+  api.setFlag('sala_amazonas_lector_cae', 0);
+  api.placeActor(LECTOR, 'sala_amazonas', x, y, 'down');
+}
+void artSala;
 export async function climaxEmpujon(api) {
   await api.cutscene(async () => {
+    // Bruno se acerca por la izquierda del Lector Medio (de perfil, mirándole) y le da un toquecito
     await api.walkTo(LECTOR);
-    await api.anim('bruno', 'reach', 500);
-    await api.wait(500);                                           // se inclina... se inclina más...
-    api.sfx(SFX.plof); api.shake(450, 2);
-    api.setFlag('lector_derribado', true);                         // el sprite cae de cara (variante `caido`)
+    api.face('right');
+    await api.wait(300);
+    await api.anim('bruno', 'reach', 450);
+    // «Se inclina. Se inclina más.» (tres fotogramas: la variante `caeN` de actors.js, por el flag local)
+    api.sfx('whoosh');
+    api.setFlag('sala_amazonas_lector_cae', 1); await api.wait(260);
+    api.setFlag('sala_amazonas_lector_cae', 2); await api.wait(170);
+    api.setFlag('sala_amazonas_lector_cae', 3); await api.wait(110);
+    // ¡PLOF! de cara contra el suelo, delante de la mesa: rebota, tiembla la sala, vuelan los catorce botellines
+    caer(api);
+    api.sfx(SFX.plof); api.shake(500, 3);
+    api.setState('botellines', 'volando');
     api.sfx(SFX.botellines);
-    // Bruno da un paso atrás para que se vea al Lector Medio en el suelo (estaba justo delante)
+    const [x, y] = posCaido(api);
+    api.placeActor(LECTOR, 'sala_amazonas', x, y - 3, 'down'); await api.wait(90);      // rebote
+    api.placeActor(LECTOR, 'sala_amazonas', x, y, 'down'); await api.wait(90);
+    api.placeActor(LECTOR, 'sala_amazonas', x, y - 1, 'down'); await api.wait(70);
+    api.placeActor(LECTOR, 'sala_amazonas', x, y, 'down');
+    await api.wait(520);
+    api.setState('botellines', 'tumbados');
+    api.sfx(SFX.botellines);
+    // Bruno da un paso atrás (sin tapar al Lector Medio caído ni la pegatina) y lo mira
     await api.walkTo(SITIO_TRAS_EMPUJON[0], SITIO_TRAS_EMPUJON[1]);
-    api.face(LECTOR);
-    await api.wait(500);
+    api.face('right');
+    await api.wait(700);
     await api.sayAs(LECTOR, 'A mí lo que me interesa es la economía. Y ahorrar.');
     await sayG(api, 'Lo que diga el Lector Medio.');
     await api.wait(1200);                                          // (silencio)
@@ -162,10 +199,15 @@ export async function climaxEmpujon(api) {
     // adenda 9.6 · el héroe de la coma (refuerzo opcional, A o B)
     if (api.flag('correo_evaristo_listo')) await heroeDeLaComa(api);
     else await correoQueSeEscapa(api);
-    // «Goyita. Tira.»
+    // «Goyita. Tira.» (por los altavoces, la voz de Teodoro por el teléfono rojo): un inserto en la esquina enseña
+    // la Catacumba, con Teodoro al aparato, el auricular en la oreja y el cable rizado hasta el teléfono descolgado.
     api.sfx('phone');
-    await api.wait(500);
-    await api.sayAs('teodoro_cuerpodoce', 'Goyita. Tira.');
+    api.game.hud = insertoTeodoro(api.game); api.game.hudTop = 0;
+    try {
+      await api.wait(700);
+      await api.sayAs('teodoro_cuerpodoce', 'Goyita. Tira.', { at: [INSERTO.x + (INSERTO.w >> 1), INSERTO.y + INSERTO.h + 16] });
+      await api.wait(300);
+    } finally { api.game.hud = null; }
     api.sfx(SFX.rotativa); api.shake(1800, 1);
     api.sfx(SFX.botellines);
     await api.wait(1400);
@@ -174,7 +216,7 @@ export async function climaxEmpujon(api) {
     await sayR(api, '¿Eso que suena es el papel?');
     await api.say('Eso es el papel.');
   });
-  api.setFlag('lector_derribado', true);
+  caer(api);
   // fundido a blanco → final 7.5 (paquete A)
   const quitarBlanco = await fundidoBlanco(api, 1000);
   const [bx, by, bd] = (artAdmin.layout && artAdmin.layout[BEGONA] && artAdmin.layout[BEGONA].at) || [214, 96, 'down'];
@@ -187,6 +229,45 @@ export async function climaxEmpujon(api) {
     quitarBlanco();
     await api.scene('final');                                      // aún no existe: el motor solo avisa
   }
+}
+
+// ---------------------------------------------------------------- inserto: Teodoro al teléfono rojo, en la Catacumba
+const INSERTO = { x: 6, y: 6, w: 92, h: 60 };
+function insertoTeodoro(game) {
+  const t0 = game.time;
+  return (g) => {
+    const { x, y, w, h } = INSERTO;
+    const k = Math.min(1, (game.time - t0) / 180);                     // el inserto «se abre» de arriba abajo
+    const hh = Math.max(2, Math.round(h * k));
+    g.save();
+    g.fillStyle = '#000'; g.fillRect(x - 2, y - 2, w + 4, hh + 4);
+    frameRect(g, x - 1, y - 1, w + 2, hh + 2, '#e8c070');
+    g.beginPath(); g.rect(x, y, w, hh); g.clip();
+    // pared de la Catacumba (tabaco), zócalo verde y la mesa de Teodoro
+    gradV(g, x, y, w, h, ['#5f4829', '#7a5f35', '#957845']);
+    rect(g, x, y + 38, w, 8, PAL.green[2]); hline(g, x, y + 38, w, PAL.green[4]);
+    rect(g, x, y + 46, w, h - 46, PAL.wood[3]); hline(g, x, y + 46, w, PAL.wood[5]);
+    // cartel «ROTATIVA» y el teléfono rojo descolgado
+    rect(g, x + 5, y + 22, 38, 12, PAL.paper[6]); rect(g, x + 5, y + 22, 38, 2, PAL.red[3]);
+    label(g, 'GOYITA', x + 24, y + 22, PAL.red[2], { align: 'center' });
+    const bx = x + 14, by = y + 44;
+    rect(g, bx, by, 18, 6, PAL.red[3]); hline(g, bx, by, 18, PAL.red[5]); hline(g, bx, by + 5, 18, PAL.red[1]);
+    rect(g, bx + 1, by - 2, 2, 2, PAL.red[2]); rect(g, bx + 15, by - 2, 2, 2, PAL.red[2]);
+    // Teodoro (sprite del juego, a escala 1), hablando
+    const a = game.actors.teodoro_cuerpodoce;
+    if (a) {
+      const sp = game.spriteOf(a);
+      const fr = Math.floor(game.time / 160) % 3;
+      const { canvas } = getFrame(sp, 'talk', 'down', fr);
+      const tx = x + 62, ty = y + h + 6;                             // pies (fuera del inserto: plano medio)
+      g.drawImage(canvas, Math.round(tx - (sp.ox + 1)), Math.round(ty - (sp.oy + 1)));
+      const top = ty - (sp.oy - (sp.headY || 0));
+      auricularRojo(g, tx - 9, Math.round(top + 5));
+      cableRizado(g, tx - 8, Math.round(top + 15), bx + 17, by + 2);
+    }
+    label(g, 'CATACUMBA', x + 3, y - 1, '#f4e4b0');
+    g.restore();
+  };
 }
 
 // adenda 9.6, versión A (con `correo_evaristo_listo`)

@@ -4,9 +4,38 @@
 // Las acotaciones de la biblia (entre paréntesis) son acciones, nunca texto.
 import { talk } from './pecera.voces.js';
 import art from './art/pecera.art.js';
+import { PAL, rect, hline, vline, frameRect, gradV, label, glow } from '../../engine/draw.js';
 
 const Y = 'yoli_tendencias', N = 'nerea_backlog', I = 'inigo_sinergia';
 const TITULATOR = '#B6FF4D';
+
+/** Inserto: el portátil plateado de Íñigo, girado hacia la redacción, con el Titulator escupiendo el titular. */
+function portatilTitulator(game) {
+  const t0 = game.time;
+  const LINES = ['EL IBEX ABRE PLANO.', 'PLANO.', '¿POR QUÉ NADIE', 'HABLA DE ESTO?'];
+  return (g) => {
+    const x = 94, y = 8, w = 132, h = 76;
+    const k = Math.min(1, (game.time - t0) / 200);
+    g.save();
+    g.beginPath(); g.rect(x - 4, y - 4, w + 8, Math.max(2, Math.round((h + 8) * k))); g.clip();
+    rect(g, x - 4, y - 4, w + 8, h + 8, '#000');
+    // tapa plateada con su pegatina y la pantalla
+    gradV(g, x, y, w, h - 10, [PAL.metal[6], PAL.metal[5], PAL.metal[4]]);
+    frameRect(g, x, y, w, h - 10, PAL.metal[2]);
+    rect(g, x + 6, y + 5, w - 12, h - 22, '#06140a'); frameRect(g, x + 5, y + 4, w - 10, h - 20, PAL.ink[1]);
+    rect(g, x + 6, y + 5, w - 12, 9, '#1c3a10');
+    label(g, 'TITULATOR 3000', x + (w >> 1), y + 3, '#B6FF4D', { align: 'center' });
+    const n = Math.min(LINES.length, Math.floor((game.time - t0) / 260) + 1);
+    LINES.slice(0, n).forEach((l, i) => label(g, l, x + 10, y + 13 + i * 10, '#B6FF4D'));
+    if ((Math.floor(game.time / 300) & 1) === 0) rect(g, x + 10 + 2, y + 15 + n * 10, 5, 1, '#B6FF4D');
+    glow(g, x + (w >> 1), y + 34, 60, 26, '#B6FF4D', 0.08, 3);
+    // la base (teclado) en perspectiva
+    rect(g, x - 4, y + h - 10, w + 8, 8, PAL.metal[5]); hline(g, x - 4, y + h - 10, w + 8, PAL.metal[7]); hline(g, x - 4, y + h - 3, w + 8, PAL.metal[2]);
+    for (let i = 0; i < 14; i++) rect(g, x + 4 + i * 9, y + h - 8, 7, 2, PAL.metal[3]);
+    rect(g, x + w - 18, y + h - 9, 10, 2, PAL.ink[2]);
+    g.restore();
+  };
+}
 
 async function presentacionVillano(api) {
   await api.cutscene(async (api) => {
@@ -45,9 +74,14 @@ async function presentacionVillano(api) {
       [I, 'Os presento al Titulator 3000. Inteligencia artificial de titulares.'],
     ]);
     // (Gira el portátil. En pantalla: «EL IBEX ABRE PLANO. PLANO. ¿POR QUÉ NADIE HABLA DE ESTO?»)
+    // Primer plano del portátil girado (informe visual, problema 9): el titular se VE en su pantalla.
     await api.anim(I, 'reach', 500);
     api.sfx('computer');
-    await api.sayAs(I, 'EL IBEX ABRE PLANO. PLANO. ¿POR QUÉ NADIE HABLA DE ESTO?', { color: TITULATOR });
+    api.game.hud = portatilTitulator(api.game); api.game.hudTop = 0;
+    try {
+      await api.wait(500);
+      await api.sayAs(I, 'EL IBEX ABRE PLANO. PLANO. ¿POR QUÉ NADIE HABLA DE ESTO?', { color: TITULATOR, at: [160 + Math.round(api.game.camX), 96] });
+    } finally { api.game.hud = null; }
     await talk(api, [
       [I, 'Esta tarde lleva trescientos titulares. La redacción humana, cero.'],
       [Y, '¡Porque se nos ha caído el CMS!'],

@@ -144,10 +144,10 @@ function drawDoor(g) {
     hline(g, 12, py0 + ph - 1, 22, PAL.wood[5]); vline(g, 33, py0, ph, PAL.wood[5]);
     gradV(g, 13, py0 + 1, 20, ph - 2, [PAL.wood[3], PAL.wood[2]]);
   }
-  // rótulo colgado sobre la puerta
+  // rótulo colgado sobre la puerta (por fuera dice «TALLERES»; por dentro, «OFFICE»)
   ditherOverlay(g, 5, 19, 46, 11, PAL.shadow, 0.5);
   bevel(g, 3, 16, 46, 11, PAL.gold[3], PAL.gold[5], PAL.gold[1]);
-  cap(g, 'TALLERES', 26, 18, PAL.ink[1], { align: 'center' });
+  cap(g, 'OFFICE', 26, 18, PAL.ink[1], { align: 'center' });      // desde dentro, la puerta anuncia adónde va
   px(g, 5, 15, PAL.ink[0]); px(g, 46, 15, PAL.ink[0]);
   rect(g, 12, 38, 22, 9, PAL.wood[2]); hline(g, 12, 38, 22, PAL.wood[1]); hline(g, 12, 46, 22, PAL.wood[5]);
   rect(g, 18, 40, 10, 5, PAL.paper[6]); greek(g, 19, 41, 8, 2, PAL.metal[3], 2);

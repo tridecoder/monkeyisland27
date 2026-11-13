@@ -1107,7 +1107,7 @@ export class Game {
       g.restore();
     } else g.drawImage(canvas, dx, dy, dw, dh);
     if (this.phone && this.phone.ear && a.id === this.G.player) Phone.drawEar(g, this, a, this.actorBox(a));
-    if (a.def.drawExtra) a.def.drawExtra(g, a, this.time, { s, box: this.actorBox(a) });
+    if (a.def.drawExtra) a.def.drawExtra(g, a, this.time, { s, box: this.actorBox(a), sprite: sp });
   }
   drawSpeech(g, cam) {
     for (const sp of this.speeches) {

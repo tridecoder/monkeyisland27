@@ -381,7 +381,8 @@ const layout = {
   },
   cementerio_ratones: { rect: [299, 86, 19, 18], walkTo: [306, 112], face: 'up', draw: (g) => drawCaja(g) },
   rejilla_cpd: { rect: [94, 120, 40, 18], walkTo: [114, 114], face: 'down', draw: (g) => drawRejilla(g) },
-  paco_ticket: { at: [273, 99, 'down'], walkTo: [270, 113], face: 'up' },
+  // Bruno le habla desde la izquierda de su mesa, de perfil (no delante de él: problema C)
+  paco_ticket: { at: [273, 99, 'down'], walkTo: [232, 113], face: 'right' },
   // Rubén, recién salido, delante de su armario abierto (el nido se ve alrededor y encima); `dentro` = de pie dentro del armario abierto (escena 7.3).
   // Bruno le habla desde la derecha, de perfil, sin taparle (problema C del director).
   ruben: { at: [186, 106, 'down'], walkTo: [208, 113], face: 'left', positions: { dentro: { at: [187, 93, 'down'] } } },
