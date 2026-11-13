@@ -388,11 +388,16 @@ try {
   await shot('climax-antes-empujon');
   // puesta en escena del ¡PLOF! (problema A del director): el Lector Medio se VE antes, durante y después
   const antes = await G(() => {
-    const g = __game.game, a = g.actors.lector_medio;
-    return { room: a.room, visible: a.visible, x: a.x, y: a.y, chaqueta: g.spriteOf(a) === a.variants.chaqueta };
+    const g = __game.game, a = g.actors.lector_medio, R = g.content.rooms.sala_amazonas;
+    const ger = R.actors.find(p => p.id === 'gervasio_acta'), pre = (ger.positions && ger.positions.preside) || ger;
+    const pant = R.objects.find(o => o.id === 'orden_del_dia');
+    return { room: a.room, visible: a.visible, x: a.x, y: a.y, chaqueta: g.spriteOf(a) === a.variants.chaqueta, cabecera: pre.x, pant: [pant.x, pant.x + pant.w] };
   });
-  ok(antes.room === 'sala_amazonas' && antes.visible && antes.y >= 104 && antes.x > 40 && antes.x < 140 && antes.chaqueta,
-    `antes del empujón: el Lector Medio, de pie en la cabecera y DELANTE de la mesa (pies y=${antes.y} ≥ 104), con la chaqueta`);
+  // orden de dirección (docs/GUIA_REDISENO.md §2 y §5): el Lector Medio NUNCA en la cabecera (donde preside Gervasio:
+  // a ≥ 60 px de ella) y SÍ junto a la pantalla de proyección (a ≤ 40 px de uno de sus bordes), delante de la mesa
+  const junto = Math.min(Math.abs(antes.x - antes.pant[0]), Math.abs(antes.x - antes.pant[1])) <= 40;
+  ok(antes.room === 'sala_amazonas' && antes.visible && antes.y >= 104 && Math.abs(antes.x - antes.cabecera) >= 60 && junto && antes.chaqueta,
+    `antes del empujón: el Lector Medio junto a la pantalla (x=${antes.x}; pantalla ${antes.pant.join('-')}), lejos de la cabecera de Gervasio (x=${antes.cabecera}) y DELANTE de la mesa (pies y=${antes.y} ≥ 104), con la chaqueta`);
   await G(() => {
     const g = __game.game; window.__probe = []; window.__cae = [];
     const fl = g.state.flags;

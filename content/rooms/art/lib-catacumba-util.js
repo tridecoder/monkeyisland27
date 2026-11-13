@@ -60,6 +60,7 @@ export function cord(g, x0, y0, x1, y1, sag, c, shadow = true) {
 }
 export { PAL };
 
+// (REDISEÑO: la microfuente CANÓNICA es micro() de content/lib/kit.js; esta copia se mantiene para el arte actual)
 // ---- fuente mínima 3x5 (para rótulos que no caben con la fuente del juego): mayúsculas, dígitos y signos
 const G = (a) => a.join('');
 const MINI = {

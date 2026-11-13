@@ -586,6 +586,8 @@ export function paperDoll(p = {}) {
   return {
     w: W, h: H, ox: cx, oy: feetY,
     headY: headTop - 4,               // pixel row of top of head (for speech placement)
+    hipY: waist, legLen,              // cadera (fila del cinturón) y largo de pierna: pose sentada (engine/pose.js)
+    handY: top + torsoLen + 1, handX: (sw >> 1) + 2,   // mano (para api.sostener): fila y distancia al eje
     anims: { idle: { frames: 2, fps: 0 }, walk: { frames: 4, fps: 8 }, talk: { frames: 3, fps: 9 }, reach: { frames: 1, fps: 0 } },
     dirs: ['down', 'up', 'right'],
     mirrorLeft: true,

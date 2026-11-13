@@ -7,7 +7,9 @@
 //  3. DAR / USAR CADA OBJETO con cada PNJ y con cada hotspot de cada sala (con el inventario completo), en tres momentos
 //     de la partida: ninguna excepción, ningún diálogo/duelo del que no se pueda salir, y lista de los objetos que se
 //     gastan (para revisar que solo se gastan con su uso correcto).
-//   node tools/fuzz.mjs [--solo=guardar|duelos|objetos]
+//   node tools/fuzz.mjs [--solo=guardar|duelos|objetos] [--sala=pecera,office] [--rapido]
+//     --sala: «todos los objetos con todo» solo en esas salas · --rapido: 3 puntos de guardado, sin la tanda de duelos y
+//     objetos solo en el Acto II (muestra: 1 de cada 2 objetos del inventario)
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -85,7 +87,7 @@ const snap = () => G(() => { const s = __game.state(); return { room: s.room, in
 async function saveLoad() {
   console.log('\n1. Guardar / cargar en mitad de cada acto y seguir hasta el final\n');
   await fresh();
-  const CP = [5, 9, 13, 20, 21, 25, 27, 29, 33, 34, 37, 38, 40, 42, 43];
+  const CP = args.rapido ? [13, 29, 42] : [5, 9, 13, 20, 21, 25, 27, 29, 33, 34, 37, 38, 40, 42, 43];
   for (const s of STEPS) {
     if (s.n === 1) continue;
     await step(s.n);
@@ -149,10 +151,10 @@ async function everyItem(tag) {
   const consumed = new Map(), stuck = [], thrown = [];
   let actions = 0;
   const reset = async (room) => { await G(() => __game.load('fz')); await G(() => __game.giveAll()); await teleport(room); };
-  for (const room of ROOMS) {
+  for (const room of (args.sala ? String(args.sala).split(',') : ROOMS)) {
     await reset(room);
     const targets = await G(() => __game.objects().filter(o => o.visible !== false).map(o => [o.kind, o.id]));
-    const items = await G(() => Object.keys(__game.game.content.items));
+    const items = (await G(() => Object.keys(__game.game.content.items))).filter((_, i) => !args.rapido || i % 2 === 0);
     for (const [kind, id] of targets) {
       for (const item of items) for (const verb of kind === 'actor' ? ['dar', 'usar'] : ['usar']) {
         if (item === id) continue;
@@ -182,18 +184,18 @@ async function everyItem(tag) {
 async function objects() {
   console.log('\n3. Dar / Usar cada objeto con cada PNJ y hotspot\n');
   await fresh();
-  const at = { 13: 'ACTO I', 29: 'ACTO II', 42: 'ACTO III' };
+  const at = args.rapido ? { 29: 'ACTO II' } : { 13: 'ACTO I', 29: 'ACTO II', 42: 'ACTO III' };
   for (const s of STEPS) {
     if (s.n === 1) continue;
     await step(s.n);
     if (at[s.n]) await everyItem(at[s.n]);
-    if (s.n === 42) break;
+    if (s.n === (args.rapido ? 29 : 42)) break;
   }
 }
 
 try {
   if (!args.solo || args.solo === 'guardar') await saveLoad();
-  if (!args.solo || args.solo === 'duelos') await duels();
+  if ((!args.solo && !args.rapido) || args.solo === 'duelos') await duels();
   if (!args.solo || args.solo === 'objetos') await objects();
 } catch (e) {
   failures++;

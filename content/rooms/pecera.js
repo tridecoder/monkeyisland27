@@ -86,8 +86,8 @@ export default buildRoom({
       cerrar: 'Una escalera no se cierra. Para eso ya está el torno, abajo.',
       empujar: 'Empujar a alguien escaleras abajo sería una salida en valor. No.',
     } },
-    { id: 'pecera_a_pajarera', name: 'puerta de la Pajarera', exit: { room: 'pajarera' }, handlers: {
-      mirar: 'La Pajarera. Despacho de cristal: se ven las broncas, pero no se oyen.',
+    { id: 'pecera_a_pajarera', name: 'puerta de Dirección', exit: { room: 'pajarera' }, handlers: {
+      mirar: 'Dirección. Despacho de cristal: se ven las broncas, pero no se oyen.',
       abrir: async (api) => api.goto('pajarera', 'pecera'), usar: async (api) => api.goto('pajarera', 'pecera'),
       hablar: 'Golpeo el cristal con los nudillos. Al otro lado lo apuntan en un pósit.',
       cerrar: 'Ya está cerrada. Dirección no cierra puertas: las delega.',

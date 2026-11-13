@@ -34,7 +34,7 @@ const CARTELES = [
 // §3.0: en el Acto III no se sale hasta ganar (salvo que falten réplicas: sin callejones, §0)
 async function salir(api) {
   if (climaxActivo(api) && !api.flag('lector_derribado')) {
-    if (api.flag('duelo_inigo_ganado')) { await api.say('Todavía no. A Íñigo le queda un dato. Asiente desde la cabecera.'); return; }
+    if (api.flag('duelo_inigo_ganado')) { await api.say('Todavía no. A Íñigo le queda un dato. Asiente junto a la pantalla.'); return; }
     if (replicasD4(api) >= PUNTOS_D4) { await api.say('No me voy. Íñigo sigue en la 247 y yo sigo en copia.'); return; }
     await api.say('Vuelvo enseguida. La 247 no se va a mover.');
   }
@@ -54,7 +54,7 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'sala_a_pajarera', name: 'puerta', exit: { room: 'pajarera' }, handlers: {
+    { id: 'sala_a_pajarera', name: 'puerta de Dirección', exit: { room: 'pajarera' }, handlers: {
       ir: salir,
       usar: salir,
       abrir: 'Ya está abierta. Nadie sale. Es un hecho cultural.',
@@ -174,8 +174,8 @@ export default buildRoom({
       handlers: {
         mirar: async (api) => {
           if (api.flag('lector_derribado')) await api.say(['Boca abajo en el suelo, delante de la mesa.', 'Por detrás: «Atrezo – Focus group 2014».']);
-          else if (api.flag('chaqueta_en_lector')) await api.say('En la cabecera, el Lector Medio, con la chaqueta de Ramírez. Asiente.');
-          else await api.say('En la cabecera, el Lector Medio. Asiente.');
+          else if (api.flag('chaqueta_en_lector')) await api.say('Junto a la pantalla, el Lector Medio, con la chaqueta de Ramírez. Asiente.');
+          else await api.say('Junto a la pantalla, el Lector Medio. Asiente.');
         },
         hablar: async (api) => {
           await api.sayAs(LECTOR, 'A mí lo que me interesa es la economía. Y ahorrar.');

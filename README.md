@@ -51,6 +51,9 @@ Necesitan Node 18+ y `playwright` (con Chromium) accesible para Node.
 
 | comando | qué hace |
 |---|---|
+| `node tools/test-all.mjs [--rapido] [--sala=<id>]` | **todas las pruebas** en paralelo con tabla de resumen (cada una en su propio puerto libre) |
+| `node tools/sala.mjs <id>` | vista previa de una sala para los artistas: todos los actos, depuración, «ver hotspots» e informe de PNJ (rediseño: `docs/GUIA_REDISENO.md`) |
+| `node tools/test-motor.mjs` | motor y kit del rediseño (pose sentada, penumbra, plano detalle, ver hotspots, objetivos táctiles) sobre una sala de demostración |
 | `node tools/check.mjs` | comprobación estática del contenido (ids lógica/arte, flags, salidas, líneas de más de 80 caracteres) |
 | `node tools/smoke.mjs` | prueba de humo de la interfaz (título, 10 salas, inventario, duelo, guardar/cargar, menú, créditos, táctil) |
 | `node tools/walkthrough.mjs [--alt]` | la partida completa (46 pasos del guion), en el orden de la tabla o en el alternativo |

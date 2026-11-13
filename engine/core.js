@@ -12,6 +12,9 @@ import * as UI from './ui.js';
 import * as Phone from './phone.js';
 import * as Screens from './screens.js';
 import { Debug } from './debug.js';
+import * as Pose from './pose.js';
+import * as Detalle from './detalle.js';
+import * as Ver from './hotspots.js';
 
 export const SCREEN_W = 320, SCREEN_H = 200, VIEW_H = 144;
 
@@ -120,6 +123,7 @@ export class Game {
     this.phone = null;            // primer plano del móvil durante una llamada (engine/phone.js, api.phone)
     this.ui = { verb: null, item: null, hover: null, invScroll: 0, sentence: null };
     this.mouse = { x: -1, y: -1, inside: false, touch: false };
+    this.coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);   // iPhone / tableta
     this.log = [];
     this.errors = [];
     this.toast = null;
@@ -213,7 +217,12 @@ export class Game {
   }
   syncState() {
     if (!this.state) return;
-    for (const a of Object.values(this.actors)) this.state.actors[a.id] = { room: a.room, x: Math.round(a.x), y: Math.round(a.y), dir: a.dir, visible: a.visible };
+    for (const a of Object.values(this.actors)) {
+      const s = { room: a.room, x: Math.round(a.x), y: Math.round(a.y), dir: a.dir, visible: a.visible };
+      if (a.pose !== undefined) s.pose = a.pose;          // api.pose (explícita); sin ella, la pose sale de la colocación
+      if (a.luz !== undefined) s.luz = a.luz;             // api.luz (exención de la penumbra)
+      this.state.actors[a.id] = s;
+    }
   }
   slotKey(slot) { return this.saveKey + ':slot:' + slot; }
   save(slot = 1) {
@@ -242,7 +251,7 @@ export class Game {
   resetRuntime() {
     this.speeches.forEach(s => s.resolve && s.resolve());
     this.speeches = []; this.timers.forEach(t => t.resolve()); this.timers = [];
-    this.choice = null; this.menu = null; this.hud = null; this.phone = null; this.hudTop = 0; this.cutscene = 0; this.skipCut = false; this.inDialog = 0;
+    this.choice = null; this.menu = null; this.hud = null; this.phone = null; this.detalle = null; this.hsShow = null; this.hsHold = false; this.hudTop = 0; this.cutscene = 0; this.skipCut = false; this.inDialog = 0;
     if (this.itemPick) { const r = this.itemPick.resolve; this.itemPick = null; r(null); }
     this.notices = []; this.idleMs = 0; this.idleFired = false; this.comboFails = 0; this.duelInfo = null;
     this.ui.verb = null; this.ui.item = null; this.ui.invScroll = 0; this.ui.sentence = null;
@@ -284,6 +293,7 @@ export class Game {
         room: s.room, x: s.x, y: s.y, dir: s.dir || 'down', visible: s.visible !== false,
         anim: 'idle', path: [], walkDist: 0, speed: def.speed || 64, walkResolve: null,
         custom: null, nextBlink: rand(1000, 4000), scale: def.scale,
+        pose: s.pose, luz: s.luz, hold: null,
       };
     }
   }
@@ -351,8 +361,14 @@ export class Game {
   }
 
   // ------------------------------------------------------------------ rooms
-  roomScale(y) {
-    const sc = this.room && this.room.def.scale;
+  /** Escala por profundidad. Con `x`, un walkbox activo que contenga el punto y tenga su propia `scale` (art
+   *  `walkboxes: [{ id, poly, scale: { yFar, far, yNear, near } | número }]`) manda sobre la de la sala. */
+  roomScale(y, x) {
+    let sc = this.room && this.room.def.scale;
+    if (x != null && this.room && this.room.walk && this.room.walk.scaled) {
+      const b = this.room.walk.boxAt(x, y, true);
+      if (b && b.scale != null) sc = b.scale;
+    }
     if (!sc) return 1;
     if (typeof sc === 'number') return sc;
     if (typeof sc === 'function') return sc(y);
@@ -526,6 +542,7 @@ export class Game {
     const a = this.actors[id];
     if (!a) { this.error('Actor desconocido: ' + id); return Promise.resolve(false); }
     if (a.walkResolve) { const r = a.walkResolve; a.walkResolve = null; r(false); }
+    if (a.pose && a.pose !== 'de_pie') a.pose = undefined;      // quien anda se levanta (la pose automática vuelve en su sitio)
     const onRoom = this.room && a.room === this.room.def.id;
     let path = onRoom ? this.room.walk.findPath([a.x, a.y], [x, y]) : [[x, y]];
     if (!path.length) return Promise.resolve(true);
@@ -554,7 +571,7 @@ export class Game {
     for (const a of Object.values(this.actors)) {
       if (a.room !== this.room.def.id) continue;
       if (a.path.length) {
-        const s = a.scale || this.roomScale(a.y);
+        const s = a.scale || this.roomScale(a.y, a.x);
         let step = a.speed * s * dt;
         while (step > 0 && a.path.length) {
           const [tx, ty] = a.path[0];
@@ -594,11 +611,37 @@ export class Game {
     return Math.floor(this.time / 1000 * fps) % ((an && an.frames) || 1);
   }
   actorBox(a) {
-    const s = a.scale || this.roomScale(a.y);
+    const s = a.scale || this.roomScale(a.y, a.x);
     const sp = this.spriteOf(a);
     const hw = (sp.hitW || sp.w * 0.62) * s / 2;
+    const pose = this.poseOf(a);
+    if (pose) {                                    // sentado: la cabeza baja; tras la mesa, la caja acaba en la cintura
+      const P = Pose.seat(sp);
+      const top = a.y - (sp.oy - (sp.headY || 0) - P.drop) * s;
+      const bottom = pose === 'tras_mesa' ? a.y - (sp.oy - P.hip - P.drop - 2) * s : a.y + 2;
+      return { x: a.x - hw, y: top, w: hw * 2, h: Math.max(4, bottom - top), s, pose };
+    }
     const top = a.y - (sp.oy - (sp.headY || 0)) * s;
     return { x: a.x - hw, y: top, w: hw * 2, h: a.y - top + 2, s };
+  }
+  /** Pose con la que se dibuja un actor: 'sentado' | 'tras_mesa' | null (de pie). Manda la pose explícita (api.pose);
+   *  si no hay, la de su colocación en la sala (art `pose` en `at`/`positions`) mientras esté quieto en ese punto. */
+  poseOf(a) {
+    if (a.path && a.path.length) return null;
+    if (a.pose === 'de_pie') return null;
+    if (a.pose) return a.pose;
+    if (!this.room || a.room !== this.room.def.id) return null;
+    const p = this.placementOf(a.id);
+    if (p && p.pose && Math.abs((p.x ?? -99) - a.x) < 2 && Math.abs((p.y ?? -99) - a.y) < 2) return p.pose;
+    return null;
+  }
+  /** Exención de la penumbra (0 = se oscurece como el fondo, 1 = no se oscurece nada). */
+  luzOf(a, P) {
+    if (a.luz != null) return a.luz;
+    const p = this.placementOf(a.id);
+    if (p && p.luz != null) return p.luz;
+    if (P && P.actores && P.actores[a.id] != null) return P.actores[a.id];
+    return P && P.actor != null ? P.actor : 0.78;
   }
 
   // ------------------------------------------------------------------ targets & hover
@@ -645,7 +688,8 @@ export class Game {
       .sort((a, b) => b.y - a.y);
     for (const a of acts) { const b = this.actorBox(a); if (x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h) return this.actorTarget(a); }
     const objs = this.roomObjects();
-    const hits = objs.filter(o => this.hitObject(o, x, y));
+    let hits = objs.filter(o => this.hitObject(o, x, y));
+    if (!hits.length) hits = this.slopHits(objs, x, y);
     if (!hits.length) {
       // the player is clickable (lowest priority) when its definition has handlers (e.g. "Mirar a Bruno")
       const p = this.player;
@@ -657,6 +701,24 @@ export class Game {
     }
     hits.sort((a, b) => (b.priority || 0) - (a.priority || 0) || objs.indexOf(b) - objs.indexOf(a));
     return this.objectTarget(hits[0]);
+  }
+  /** Tamaño mínimo efectivo de un hotspot (docs/GUIA_REDISENO.md): si un clic no cae en ningún objeto, los objetos
+   *  pequeños crecen (centrados) hasta 12×10 px con ratón y 16×12 px al tacto; gana el centro más cercano. */
+  slopHits(objs, x, y) {
+    const touch = this.touchUI();
+    const MW = touch ? 16 : 12, MH = touch ? 12 : 10;
+    let best = null, bd = Infinity;
+    for (const o of objs) {
+      if (o.hotspot === false) continue;
+      const b = Ver.bbox(o); if (!b) continue;
+      if (b.w >= MW && b.h >= MH) continue;
+      const w = Math.max(b.w, MW), h = Math.max(b.h, MH), cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+      if (Math.abs(x - cx) > w / 2 || Math.abs(y - cy) > h / 2) continue;
+      if (!this.getObjState(o.id).visible) continue;
+      const d = Math.hypot(x - cx, y - cy);
+      if (d < bd) { bd = d; best = o; }
+    }
+    return best ? [best] : [];
   }
   resolveTarget(id) {
     if (!id) return null;
@@ -713,7 +775,7 @@ export class Game {
       const a = t.actor;
       if (d.walkTo) return { x: d.walkTo[0], y: d.walkTo[1], face: d.face };
       const side = this.player.x < a.x ? -1 : 1;
-      return { x: a.x + side * 22 * this.roomScale(a.y), y: a.y + 1, faceTo: [a.x, a.y] };
+      return { x: a.x + side * 22 * this.roomScale(a.y, a.x), y: a.y + 1, faceTo: [a.x, a.y] };
     }
     if (d.walkTo) return { x: d.walkTo[0], y: d.walkTo[1], face: d.face || (d.walkTo[2]) };
     let cx, cy;
@@ -822,6 +884,8 @@ export class Game {
       if (blocking) this.speeches.filter(s => s.blocking).forEach(s => this.endSpeech(s));
     } finally {
       if (this.phone && (this.phone.owner === ctx || (blocking && this.busy <= 1))) Phone.kill(this);   // nunca queda el móvil colgado
+      if (this.detalle && (this.detalle.owner === ctx || (blocking && this.busy <= 1))) Detalle.close(this);   // ni el plano detalle
+      if (blocking && this.busy <= 1) for (const a of Object.values(this.actors)) if (a.hold && a.hold.owner) a.hold = null;
       if (blocking) {
         this.busy = Math.max(0, this.busy - 1);
         if (!this.busy) { this.cutscene = 0; this.skipCut = false; this.ui.sentence = null; this.applyPresence(); }
@@ -1041,12 +1105,14 @@ export class Game {
     sorted.sort((a, b) => a.z - b.z);
     for (const s of sorted) safe(s.fn, 'dibujo ' + s.label);
     if (rt.fg) g.drawImage(rt.fg, 0, 0);
+    if (rt.def.penumbra) safe(() => this.drawPenumbra(g, view, cam), 'penumbra()');
     if (rt.def.overlay) safe(() => rt.def.overlay(g, view, this.time), 'overlay()');
     for (const o of objs) {
       if (!o.draw || o.layer !== 'front') continue;
       const st = this.getObjState(o.id);
       if (st.visible) safe(() => this.drawObject(g, o, st), `draw() de ${o.id}`);
     }
+    if (Ver.active(this)) safe(() => Ver.draw(this, g, cam), 'ver hotspots');
     this.debug.drawRoom(g);
     g.restore();
     // fade (room viewport only)
@@ -1063,6 +1129,7 @@ export class Game {
     }
     if (this.hud) safe(() => this.hud(g), 'hud');
     if (this.phone) safe(() => Phone.draw(g, this), 'móvil');
+    if (this.detalle) safe(() => Detalle.draw(g, this), 'plano detalle');
     this.drawSpeech(g, cam);
     this.drawNotices(g);
   }
@@ -1094,20 +1161,57 @@ export class Game {
     }
     g.drawImage(c.cv, o.x - pad, o.y - pad);
   }
-  drawActor(g, a) {
-    const s = a.scale || this.roomScale(a.y);
+  drawActor(g, a, mask = false) {
+    const s = a.scale || this.roomScale(a.y, a.x);
     const sp = this.spriteOf(a);
-    if (sp.shadow !== false) shadowEllipse(g, Math.round(a.x), Math.round(a.y), Math.max(3, 8 * s), Math.max(1.2, 2.2 * s), 0.55);
+    const pose = this.poseOf(a);
+    if (!mask && sp.shadow !== false && pose !== 'tras_mesa') shadowEllipse(g, Math.round(a.x), Math.round(a.y), Math.max(3, 8 * s), Math.max(1.2, 2.2 * s), 0.55);
     const { canvas, flip } = getFrame(sp, a.anim, a.dir, this.actorFrame(a));
     const dw = Math.round(canvas.width * s), dh = Math.round(canvas.height * s);
     const dx = Math.round(a.x - (sp.ox + 1) * s), dy = Math.round(a.y - (sp.oy + 1) * s);
-    if (flip) {
-      g.save(); g.translate(Math.round(a.x) * 2, 0); g.scale(-1, 1);
-      g.drawImage(canvas, dx, dy, dw, dh);
-      g.restore();
-    } else g.drawImage(canvas, dx, dy, dw, dh);
+    if (flip) { g.save(); g.translate(Math.round(a.x) * 2, 0); g.scale(-1, 1); }
+    if (pose) Pose.drawPosed(g, sp, canvas, dx, dy, s, pose, a.dir);
+    else g.drawImage(canvas, dx, dy, dw, dh);
+    if (flip) g.restore();
+    if (a.hold) Pose.drawHold(g, this, a, sp, s, pose);
     if (this.phone && this.phone.ear && a.id === this.G.player) Phone.drawEar(g, this, a, this.actorBox(a));
-    if (a.def.drawExtra) a.def.drawExtra(g, a, this.time, { s, box: this.actorBox(a), sprite: sp });
+    if (a.def.drawExtra) a.def.drawExtra(g, a, this.time, { s, box: this.actorBox(a), sprite: sp, pose });
+  }
+  /** PENUMBRA (art `penumbra(view, t) → { color, alpha, spots, actor, actores } | null`): oscurece la sala por encima de
+   *  todo (fondo, muebles, primer plano) MENOS los focos (`spots`: [cx, cy, rx, ry] elipses o { rect: [x, y, w, h] }) y
+   *  los actores, que por defecto solo reciben el 22 % de la penumbra (`actor: 0.78` de exención; por actor con
+   *  `actores: { id: k }`, la colocación `luz: k` o api.luz(id, k)). Así ningún personaje queda «holograma». */
+  drawPenumbra(g, view, cam) {
+    let P = null;
+    try { P = this.room.def.penumbra(view, this.time); } catch (e) { this.error('penumbra() falló: ' + e.message, e); this.room.def.penumbra = null; return; }
+    if (!P) return;
+    const c = this.penCanvas || (this.penCanvas = document.createElement('canvas'));
+    if (c.width !== SCREEN_W || c.height !== VIEW_H) { c.width = SCREEN_W; c.height = VIEW_H; }
+    const m = c.getContext('2d');
+    m.setTransform(1, 0, 0, 1, 0, 0); m.globalCompositeOperation = 'source-over'; m.globalAlpha = 1;
+    m.clearRect(0, 0, SCREEN_W, VIEW_H);
+    m.globalAlpha = P.alpha ?? 0.45; m.fillStyle = P.color || '#080c24'; m.fillRect(0, 0, SCREEN_W, VIEW_H);
+    m.translate(-cam, 0);
+    m.globalCompositeOperation = 'destination-out';
+    const edge = P.borde ?? 0.55;
+    for (const sp of P.spots || []) {
+      if (sp.rect) { m.globalAlpha = sp.k ?? 1; m.fillStyle = '#000'; m.fillRect(sp.rect[0], sp.rect[1], sp.rect[2], sp.rect[3]); continue; }
+      const [cx, cy, rx, ry, k = 1] = sp;
+      for (const [f, al] of [[1, edge * k], [0.72, k]]) {
+        m.globalAlpha = al; m.fillStyle = '#000';
+        m.beginPath(); m.ellipse(cx, cy, Math.max(1, rx * f), Math.max(1, ry * f), 0, 0, Math.PI * 2); m.fill();
+      }
+    }
+    const rid = this.room.def.id;
+    for (const a of Object.values(this.actors)) {
+      if (a.room !== rid || !a.visible) continue;
+      const k = Math.max(0, Math.min(1, this.luzOf(a, P)));
+      if (k <= 0) continue;
+      m.globalAlpha = k;
+      this.drawActor(m, a, true);
+    }
+    m.setTransform(1, 0, 0, 1, 0, 0); m.globalCompositeOperation = 'source-over'; m.globalAlpha = 1;
+    g.drawImage(c, cam, 0);
   }
   drawSpeech(g, cam) {
     for (const sp of this.speeches) {
@@ -1123,7 +1227,7 @@ export class Game {
       const [fLo, fHi] = this.phone && !sp.phone ? Phone.freeRange(this) : [3, SCREEN_W - 3];   // con el móvil abierto, los demás hablan en el hueco libre
       cx = Math.max(fLo + w / 2, Math.min(fHi - w / 2, cx));
       let top = bottom - sp.lines.length * LINE_H;
-      const minTop = this.hud ? Math.max(2, this.hudTop) : 2;
+      const minTop = (this.hud || this.detalle) ? Math.max(2, this.hudTop) : 2;
       if (top < minTop) top = minTop;
       // legibilidad (problema 5): bajo cada línea, una banda oscura translúcida pegada al texto (el contorno negro de
       // 8 vecinos sigue ahí). Así el texto de color se lee sobre fondos claros (planta 2 lila) y oscuros (CPD).
@@ -1214,7 +1318,12 @@ export class Game {
       this.updateHover();
       if (e.pointerType === 'touch') {
         const lp = { cx: e.clientX, cy: e.clientY, fired: false };
-        lp.timer = setTimeout(() => { lp.fired = true; this.click(p.x, p.y, 2); }, 550);
+        // pulsación larga: verbo por defecto sobre un objeto; en una zona vacía de la sala, «ver hotspots»
+        lp.timer = setTimeout(() => {
+          lp.fired = true;
+          if (this.mode === 'play' && !this.menu && !this.busy && !this.choice && !this.itemPick && p.y < VIEW_H && !this.pickAt(p.x, p.y)) this.showHotspots();
+          else this.click(p.x, p.y, 2);
+        }, 550);
         this.longPress = lp;
         return;
       }
@@ -1236,13 +1345,27 @@ export class Game {
         if (this.mode === 'play' || this.menu) { this.toggleMenu(); e.preventDefault(); }
         return;
       }
-      if (e.key === '.' || e.key === 'Enter') { if (this.busy) this.skipSpeech(); return; }
+      if (e.key === '.' || e.key === 'Enter') { if (this.busy && !this.skipSpeech() && this.detalle) Detalle.skip(this); return; }
+      if ((e.key === 'h' || e.key === 'H') && !e.ctrlKey && !e.metaKey && !e.altKey) { this.showHotspots(); return; }
+      if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); if (!e.repeat) this.showHotspots(0, true); return; }
       if (e.key === 'F5') { e.preventDefault(); if (this.mode === 'play') this.toggleMenu(); return; }
       if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) { toggleFullscreen(this); return; }
       if (this.choice && /^[1-9]$/.test(e.key)) { const i = +e.key - 1; if (i < this.choice.options.length && !this.choice.disabled.has(i)) this.choice.resolve(i); return; }
       if (this.itemPick && (e.key === 'Backspace')) { this.itemPick.resolve(null); return; }
       this.debug.key(e);
     });
+    window.addEventListener('keyup', e => { if (e.key === ' ' || e.code === 'Space') this.hsHold = false; });
+  }
+  /** Interfaz táctil (filas de diálogo de 14 px, márgenes de toque de 16×12): último puntero táctil o pantalla «coarse». */
+  touchUI() { return !!(this.mouse.touch || this.coarse); }
+  /** «Ver hotspots» (D7): resalta con el canto vivo y el nombre todo lo interactivo de la sala durante `ms` (1,5 s), o
+   *  mientras se mantenga pulsado Espacio (`hold`). Botón del panel (ojo), menú de pausa, tecla H, pulsación larga. */
+  showHotspots(ms = 1500, hold = false) {
+    if (this.mode !== 'play' || !this.room) return false;
+    if (hold) this.hsHold = true;
+    this.hsShow = { t0: this.realTime, until: this.realTime + (hold ? 400 : ms) };
+    this.audio.sfx('click');
+    return true;
   }
   skipCutscene() {
     this.skipCut = true;
@@ -1283,12 +1406,13 @@ export class Game {
     if (this.mode !== 'play' || !this.room) return;
     if (this.choice) { UI.choiceClick(this, x, y); return; }
     if (this.itemPick) { if (!this.skipSpeech()) UI.itemPickClick(this, x, y); return; }
-    if (this.busy) { this.skipSpeech(); return; }
+    if (this.busy) { if (!this.skipSpeech() && this.detalle) Detalle.skip(this); return; }
     this.audio.unlock();
     if (y >= VIEW_H) {
       const hit = UI.panelHit(this, x, y);
       if (!hit) return;
       if (hit.type === 'menu') { this.toggleMenu(); return; }
+      if (hit.type === 'hotspots') { this.showHotspots(); return; }
       if (hit.type === 'verb') { this.ui.verb = hit.id; this.ui.item = null; this.audio.sfx('click'); return; }
       if (hit.type === 'arrow') { UI.scrollInventory(this, hit.dir); return; }
       if (hit.type === 'inv') {

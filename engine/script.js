@@ -2,6 +2,8 @@
 // See docs/CONTENT_SCHEMA.md#script-api for the authoritative reference.
 
 import * as Phone from './phone.js';
+import * as Detalle from './detalle.js';
+import { itemIconCanvas } from './ui.js';
 
 function pick(arr) { return Array.isArray(arr) ? arr[Math.floor(Math.random() * arr.length)] : arr; }
 
@@ -109,6 +111,20 @@ export function makeApi(game, ctx = {}) {
       a.room = room; if (x != null) a.x = x; if (y != null) a.y = y; if (dir) a.dir = dir; a.path = [];
       game.syncState();
     },
+    /** Pose de un actor: 'sentado' | 'tras_mesa' | 'de_pie' (fuerza de pie) | null (la de su colocación en la sala). */
+    pose: (id, pose = null) => { const a = actorOr(id); if (!a) return; a.pose = pose == null ? undefined : pose; game.syncState(); },
+    /** Exención de la penumbra de la sala para un actor: 0 = se oscurece como el fondo … 1 = nada; null = la de la sala. */
+    luz: (id, k = null) => { const a = actorOr(id); if (!a) return; a.luz = k == null ? undefined : Math.max(0, Math.min(1, Number(k))); game.syncState(); },
+    /** Objeto en la mano: id de un item del inventario (su icono a media escala), { draw(g, x, y, s, dir) } o null.
+     *  Se suelta solo al acabar el guion bloqueante que lo dio (no se guarda). */
+    sostener: (id, what = null) => {
+      const a = actorOr(id); if (!a) return;
+      if (what == null) { a.hold = null; return; }
+      if (typeof what === 'string') {
+        if (!game.content.items[what]) { game.error('sostener: item desconocido ' + what); return; }
+        a.hold = { icon: itemIconCanvas(game, what), item: what, owner: blocking ? ctx : null };
+      } else a.hold = { ...what, owner: blocking ? ctx : null };
+    },
     actorPos: (id) => { const a = actorOr(id); return a ? { room: a.room, x: a.x, y: a.y, dir: a.dir } : null; },
     anim: async (id, name, ms = 600) => {
       const a = actorOr(id); if (!a) return;
@@ -204,6 +220,30 @@ export function makeApi(game, ctx = {}) {
       return game.runScene(name, api, ...args);
     },
     refreshActors: () => game.applyPresence(),
+    /** PLANO DETALLE (engine/detalle.js): inserto ampliado con marco y rótulo. Ver la cabecera de detalle.js. */
+    detalle: async (opts = {}, body) => {
+      const D = Detalle.open(game, ctx, opts);
+      try {
+        if (game.instant) await game.sleep(0);
+        else await game.sleep(220);                                     // la apertura
+        if (typeof body === 'function') await body(api);
+        if (opts.lines) {
+          for (const l of opts.lines) {
+            if (game.detalle !== D) break;
+            if (Array.isArray(l)) {
+              const [who, text] = l;
+              if (who === 'player' || who === 'B') await api.say(text);
+              else if (who === 'narrador' || who === 'narrator' || who == null) await api.narrate(text);
+              else await api.sayAs(who, text);
+            } else await api.narrate(l);
+          }
+        }
+        if (!opts.lines && typeof body !== 'function') await Detalle.hold(game, opts.ms ?? 1800);
+        else if (opts.ms) await Detalle.hold(game, opts.ms);
+      } finally { if (game.detalle === D) Detalle.close(game); }
+    },
+    /** Alias del plano detalle con el nombre de la propuesta (M2). */
+    inserto: (opts, body) => api.detalle(opts, body),
     cutscene: async (fn) => {
       game.sceneTicks = (game.sceneTicks || 0) + 1;
       game.cutscene++;

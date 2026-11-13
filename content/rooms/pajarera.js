@@ -39,7 +39,7 @@ const GENERICOS = [
 
 async function mirarTitulator(api) {
   if (acto3(api)) {
-    await api.say(['El atril está vacío. Íñigo se ha llevado el Titulator a la reunión.', 'Sin titulares, la Pajarera parece un despacho.']);
+    await api.say(['El atril está vacío. Íñigo se ha llevado el Titulator a la reunión.', 'Sin titulares, Dirección parece un despacho normal.']);
     return;
   }
   const n = api.inc('titulator_mirar_n');
@@ -101,7 +101,7 @@ async function grabacion(api) {
 
 export default buildRoom({
   id: 'pajarera',
-  name: 'La Pajarera',
+  name: 'Dirección',                 // orden de dirección: «Pajarera» no se enseña nunca (id interno)
   music: 'm_pajarera',
   flags: {
     pajarera_titulares_vistos: 'lista · B · titulares de hazaña (8.3/9.9) ya mostrados por pantalla_titulator',
@@ -156,10 +156,10 @@ export default buildRoom({
       hablar: 'El cartelito dice «RESERVADO». Desde 2015. Para una reunión que nunca empieza.',
     } },
     { id: 'perchero', name: 'perchero', handlers: {
-      mirar: seq([['B', 'El perchero de la Pajarera. Vacío.'], ['B', 'Colgar algo aquí le quitaría autoridad a la chaqueta.']]),
+      mirar: seq([['B', 'El perchero de Dirección. Vacío.'], ['B', 'Colgar algo aquí le quitaría autoridad a la chaqueta.']]),
       'usar:chaqueta_ramirez': 'En el perchero se vería. Encima del Lector Medio, se respetaría.',
       usar: 'Me cuelgo la mochila. El perchero se tambalea. No está hecho para becarios.',
-      coger: 'Es el único mueble de la Pajarera sin pósit. No pienso estropearlo.',
+      coger: 'Es el único mueble de Dirección sin pósit. No pienso estropearlo.',
     } },
     { id: 'ordenador_gervasio', name: 'ordenador de Gervasio', handlers: {
       mirar: async (api) => leerEnviados(api),

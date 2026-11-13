@@ -68,11 +68,14 @@ export function buildRoom(logic, art = {}) {
     const out = { ...p, x: at.x, y: at.y, dir: at.dir };
     if (a.walkTo && !p.walkTo) out.walkTo = a.walkTo;
     if (a.face && !p.face) out.face = a.face;
+    if (a.pose && p.pose === undefined) out.pose = a.pose;          // 'sentado' | 'tras_mesa' (engine/pose.js)
+    if (a.luz != null && p.luz === undefined) out.luz = a.luz;      // exención de la penumbra (0..1)
     if (a.positions) {
       out.positions = {};
       for (const [k, v] of Object.entries(a.positions)) {
         const pt = toPoint(v.at) || at;
-        out.positions[k] = { x: pt.x, y: pt.y, dir: pt.dir, ...(v.walkTo ? { walkTo: v.walkTo } : {}), ...(v.face ? { face: v.face } : {}) };
+        out.positions[k] = { x: pt.x, y: pt.y, dir: pt.dir, ...(v.walkTo ? { walkTo: v.walkTo } : {}), ...(v.face ? { face: v.face } : {}),
+          pose: v.pose || undefined, ...(v.luz != null ? { luz: v.luz } : {}) };
       }
     }
     if (p.pos && typeof p.pos === 'string' && !(a.positions && a.positions[p.pos])) warn(`PNJ '${p.id}' usa pos '${p.pos}', que el arte no define en positions`);
@@ -92,7 +95,7 @@ export function buildRoom(logic, art = {}) {
     walkboxes: art.walkboxes || [{ id: 'suelo', poly: [[4, 104], [width - 4, 104], [width - 2, 142], [2, 142]] }],
     entries: art.entries || { default: { x: width / 2, y: 124, dir: 'down' } },
     draw: art.draw || ((g) => drawPlaceholderRoom(g, width, id)),
-    animate: art.animate, foreground: art.foreground, overlay: art.overlay,
+    animate: art.animate, foreground: art.foreground, overlay: art.overlay, penumbra: art.penumbra,
     dynamic: !!(logic.dynamic || art.dynamic),
     art, layout: L,
   };

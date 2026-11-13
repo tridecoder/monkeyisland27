@@ -198,7 +198,7 @@ const rubenDialog = {
 const REJILLA = [
   () => ['(Planta 2) «Te escribo desde el más absoluto cariño». Maripaz.', '(¡GONG!)'],
   () => ['(Administración) «Original. Duplicado. Triplicado. Original...»'],
-  () => ['(Pajarera) «Amarillo, facturación. Verde, oportunidades...»'],
+  () => ['(Dirección) «Amarillo, facturación. Verde, oportunidades...»'],
   () => ['(Vestíbulo) «¡Ibersideral entra por la banda!». También narra para el sótano.'],
   (api) => (acto3(api) && !api.flag('ruben_libre') ? ['(Desde el 27) Alguien teclea. Con faltas.']
     : api.flag('ruben_libre') ? ['(Desde el 27) Nada. Solo la matricial, imprimiendo por respeto.']

@@ -37,6 +37,11 @@ Authoritative reference for writing content on this engine. Everything here matc
 
 ## 0. Team rules: who owns which file
 
+> **REDISEÑO VISUAL (vigente):** el reparto de archivos de los cuatro paquetes de salas (P1 `vestibulo`+`cpd`, P2
+> `pecera`+`pajarera`, P3 `office`+`catacumba`+`administracion`, P4 `sala_amazonas`+`ecosistema`+`eventos`), el
+> contrato del edificio y las reglas de arte están en **`docs/GUIA_REDISENO.md`** (manda sobre la tabla de abajo).
+> El kit común es `content/lib/kit.js` y el contrato de datos `content/lib/edificio.js` (compartidos, solo lectura).
+
 Seven people work in parallel: four room authors (packages **A–D** of bible §9.1) and three background artists.
 Every file has exactly one owner, so nobody ever edits the same file.
 
@@ -155,18 +160,22 @@ export default {
   draw(g, view, t) {},              // static background, painted once (cached)
   animate(g, view, t) {},           // every frame, behind actors
   foreground(g, view, t) {},        // painted once, over actors
-  overlay(g, view, t) {},           // every frame, over everything
+  overlay(g, view, t) {},           // every frame, over everything (effects; NOT to darken actors: use penumbra)
+  penumbra(view, t) {},             // every frame: { color, alpha, spots, actor, actores } | null (§2.7)
   dynamic: false,                   // true if draw/foreground read flags (view.flag)
+  rediseno: false,                  // true = redesigned room: the geometry audit applies the strict redesign rules
 };
 ```
 Art-side object keys: `rect` | `poly`, `walkTo`, `face`, `walk`, `priority`, `layer`, `zy`, `cache`, `cachePad`,
 `draw` **or** `sprites` (one draw function per object **state**, plus `default`). Art-side NPC keys: `at`
-(`[x, y, dir]`, y = feet), `walkTo`, `face`, `positions` (`{ name: { at, walkTo?, face? } }`).
+(`[x, y, dir]`, y = feet), `walkTo`, `face`, `pose` (`'sentado'` | `'tras_mesa'`), `luz` (penumbra exemption 0..1),
+`positions` (`{ name: { at, walkTo?, face?, pose?, luz? } }`). Walkboxes may carry `scale` (§2.7).
 Art may **read** flags (`view.flag('cms_vivo')`, `view.state`), never change them.
 
 ### 2.3 What `buildRoom(logic, art)` does
 - Copies the art's room-level keys (`width`, `scale`, `walkboxes`, `entries`, `draw`, `animate`, `foreground`,
-  `overlay`) into the room; `dynamic` = logic **or** art.
+  `overlay`, `penumbra`) into the room; `dynamic` = logic **or** art. NPC layout `pose` / `luz` (and per position) go
+  to the placement.
 - For every logic object, merges its `layout[id]`: `rect` → `x, y, w, h`; `poly`; the art keys listed above (a key
   set by the logic wins); `sprites` → a `draw` that picks `sprites[state]` (or `sprites.default`). If the logic
   declares `states: [...]`, sprites for unknown states warn.
@@ -199,8 +208,6 @@ Art may **read** flags (`view.flag('cms_vivo')`, `view.state`), never change the
   turnstile lane (`paso_torno`), so before `torno_abierto` Bruno cannot walk to the lift at all (an unreachable
   approach point makes him walk to the closest reachable spot, then the handler answers). `?debug=1` draws disabled
   walkboxes in red.
-
----
 
 ### 2.5 The lift (`content/lib/ascensor.js`)
 One lift with a floor panel joins four rooms: -1 `cpd`, 0 `vestibulo`, 1 `pecera`, 2 `ecosistema` (`PLANTAS`; the Sala Polivalente `eventos` is reached from `ecosistema` through its door). Each of
@@ -235,6 +242,32 @@ P−1  [cpd]: solo ascensor (−1)
 Entradas: `pecera.entries.vestibulo` = arriba de la escalera de bajada (x≈34); `vestibulo.entries.pecera` = al pie de la
 escalera «REDAC. 1» (detrás de los tornos); `pecera.entries.ecosistema` = al pie de la escalera «PLANTA 2»;
 `ecosistema.entries.pecera` = junto a la escalera «P1 ▼». `tools/smoke.mjs` comprueba estas señales y entradas.
+
+### 2.7 Redesign engine features (art side) — details in `docs/GUIA_REDISENO.md` §13
+- **Seated pose** (`engine/pose.js`): NPC layout `at: [x, y, dir], pose: 'sentado'` (torso lowered, lap and calves;
+  in profile, thigh forward) or `'tras_mesa'` (hip up only, no shadow: the furniture in front —`layer: 'sorted'` with a
+  larger `zy`, or `foreground`— hides the rest). Also in `positions`. The pose applies while the actor stands still at
+  that placement point; walking stands him up. Scripts: `api.pose(id, pose)` (§7). `actorBox` (clicks, balloons)
+  follows the pose. `__game.state().poses` lists the poses in the current room.
+- **Penumbra** (`penumbra(view, t)` in the art, every frame): returns `null` or `{ color = '#080c24', alpha = 0.45,
+  spots: [[cx, cy, rx, ry, k?], { rect: [x, y, w, h], k? }], borde = 0.55, actor = 0.78, actores: { id: k } }`. It
+  darkens everything already drawn (background, objects, actors, `foreground`) EXCEPT the spots (soft edge) and the
+  actors, which keep `actor` (0.78 → they only get 22 % of the darkness); per actor: `actores`, the layout `luz`, or
+  `api.luz(id, k)` (1 = never darkened). Drawn before `overlay` and `layer: 'front'` objects.
+- **Shaped walkboxes**: several polygons (their union is the floor) — U shapes, notches, a strip behind a table. The
+  path goes around; sort the furniture with `layer: 'sorted'` + `zy`. A walkbox may have its own `scale`
+  (`{ yFar, far, yNear, near }` or a number) that wins over the room's inside it (`Game.roomScale(y, x)`).
+- **Minimum hit size**: a click/tap that hits nothing picks a small object whose box, grown (centred) to 12×10 (mouse)
+  or 16×12 (touch), contains the point (nearest centre wins). Dialog/duel option rows are 14 px high on touch screens.
+- **«Ver hotspots»**: panel eye button (x 287-302, y 144-155), pause menu «Ver objetos de la sala (H)», key **H**
+  (1.5 s), hold **Space**, long press on an empty spot (touch). `Game.showHotspots(ms, hold)`; `__game.showHotspots()`
+  returns the highlighted list.
+
+> **Rediseño (D1, contrato vigente para el repintado):** un solo NÚCLEO (ascensor + escalera) idéntico en las cuatro
+> plantas, a la izquierda de `pecera`, `ecosistema` y `cpd` y a la derecha (tras los tornos) del `vestibulo`; Catacumba
+> a medio nivel bajo el Office; Ecosistema a 400 px; la Pecera reordenada. Coordenadas, entradas y salidas que cambian:
+> `docs/GUIA_REDISENO.md` §3 y §9 (datos en `content/lib/edificio.js`). La tabla de arriba describe el arte actual
+> hasta que cada paquete entregue su sala; las conexiones (qué sala lleva a cuál) no cambian.
 
 ## 3. game.js (shared)
 
@@ -485,6 +518,22 @@ L1–L5 de Evaristo (`game.js`). Los correos «RV:» de Tadeo no son llamadas (s
 `api.anim(id, name, ms=600)`, `api.cameraTo(x)`, `api.cameraFollow(id?)`, `api.show(id)` / `api.hide(id)` /
 `api.isVisible(id)` (objects and actors), `api.refreshActors()` (re-apply `when` presence now).
 
+### Poses, light and held objects (redesign)
+| | |
+|---|---|
+| `api.pose(id, pose)` | `'sentado'` \| `'tras_mesa'` \| `'de_pie'` (force standing) \| `null` (back to the pose of its placement). Saved. Walking clears an explicit sitting pose |
+| `api.luz(id, k)` | exemption from the room `penumbra`: 0 = darkened like the background … 1 = never; `null` = the room's default. Saved |
+| `api.sostener(id, itemId \| { draw(g, x, y, s, dir) } \| null)` | object in the hand (an inventory icon at half scale, or your own drawing). Released when the blocking script that set it ends; not saved |
+
+### Plano detalle (close-up insert, `engine/detalle.js`)
+`await api.detalle({ draw(g, r, t, k), w = 150, h = 84, x?, y? = 8, titulo, color, lines, ms = 1800, oscurecer = 0.45 }, async (api) => {...}?)`
+— a framed, enlarged insert over the room (screen coordinates; `r = { x, y, w, h }`, clipped; `t` = ms since it
+opened; `k` = opening 0..1) with an optional caption tab. Balloons go below it (`hudTop`). It stays open while its
+`lines` are said (`[who, text]` with who = actor id, `'player'`/`'B'` or `'narrador'`; a plain string = narrator) and/or
+its body runs; with neither, for `ms` or until a click / «.». Esc (skipped cutscene) and fast mode resolve it at once;
+it always closes when the script that opened it ends (even on an exception) and on loading a save (never saved). The
+log gets `aviso: Plano detalle: <titulo>`; `__game.state().detalle = { titulo } | null`. Used by the 7.2 Titulator.
+
 ### Time & effects
 `api.wait(ms)`, `api.fadeOut(ms)`, `api.fadeIn(ms)`, `api.shake(ms, px)`, `api.sfx(name|def)`, `api.music(id|null, fade)`.
 
@@ -695,11 +744,14 @@ game by itself; `api.ending(opts)` ends the game (a click fast-forwards; at the 
 | `node tools/serve.mjs 8080` | static server → `http://localhost:8080/` |
 | `node tools/shot.mjs <room> [entry] [--debug] [--x=<roomX>] [--y=<roomY>] [--flags=a,b=1] [--verb=hablar:id] [--scale=3]` | screenshot of a room → `tools/shots/room-<room>[-debug].png`; prints content errors and **buildRoom warnings** (exit 1 if any) |
 | `node tools/check.mjs` | static check: imports, logic/art ids, files, exits/entries, undeclared flags, unknown items/actors/replies, duel decks; warnings for lines > 80 chars. **Must pass before you hand over** |
-| `node tools/smoke.mjs` | full UI smoke test (title, 10 rooms, inventory, sample duel, save/load, menu, credits, debug, touch) |
+| `node tools/test-all.mjs [--rapido] [--sala=<id>] [--solo=a,b] [--jobs=3]` | **every test** in parallel (each tool uses its own free port) with a summary table; logs in `tools/shots/test-all/`. `--rapido` samples the slow parts (≈ 2-3 min); `--sala` runs what concerns that room |
+| `node tools/sala.mjs <id> [--actos=a0,a1,…] [--escala=2] [--estricto]` | the artists' preview: the room in every act state (a0 start … a3b Rubén free) clean / debug / «ver hotspots», panorama of wide rooms, contact sheet and the NPC visibility + talk-spot report → `tools/shots/sala/<id>/` |
+| `node tools/test-motor.mjs` | redesign engine + kit test on the throwaway demo room `tools/demo-rediseno.js` (poses, U walkbox, per-area scale, penumbra, detalle, ver hotspots, hit-slop, 14 px touch rows, held object, kit registry) and, in the real game, «ver hotspots» in the 10 rooms and Gervasio seated |
+| `node tools/smoke.mjs [--rapido]` | full UI smoke test (title, 10 rooms, inventory, sample duel, save/load, menu, credits, debug, touch); `--rapido` skips the real-time phone part and the device viewports |
 | `node tools/walkthrough.mjs [--alt] [--hasta=N] [--lento]` | bible §5.4 step by step (data in the file); stops at the first failing step and says why. Fails while rooms are unfinished: expected |
 | `node tools/extras.mjs [--hasta=X10] [--lento]` | walkthrough 5.4 + the «extras» X1…X26 of addendum §12 interleaved (data in the file; fails at the first unimplemented X step: expected). Shares `walk-data.mjs` / `walk-lib.mjs` with the walkthrough; both **dismiss the automatic notices** and keep going |
-| `node tools/play-mouse.mjs [--solo=raton\|geometria] [--vis]` | Act I + duel D1 with REAL mouse events only (incl. the vestíbulo barrier: the lift is unreachable before `torno_abierto`, reachable after; the lift panel by clicks), and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, is not fully covered by another hotspot, and every talkable NPC shows ≥ 80 % of head+torso (silhouette render) with ≥ 120 px of own click area — also **with Bruno standing at its talk spot** (talk spots go to the SIDE of the NPC, never in front) (`--vis` prints the figures) |
-| `node tools/fuzz.mjs [--solo=guardar\|duelos\|objetos]` | save/load in every act and play on to the end; lose every duel once; Dar/Usar every item on every NPC and hotspot (no exceptions, no stuck dialogs, list of consumed items) |
+| `node tools/play-mouse.mjs [--solo=raton\|geometria] [--vis]` | Act I + duel D1 with REAL mouse events only (incl. the vestíbulo barrier: the lift is unreachable before `torno_abierto`, reachable after; the lift panel by clicks), and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, is not fully covered by another hotspot, and every talkable NPC shows ≥ 80 % of head+torso (silhouette render) with ≥ 120 px of own click area — also **with Bruno standing at its talk spot** (talk spots go to the SIDE of the NPC, never in front) (`--vis` prints the figures). Shared with `tools/sala.mjs` (`tools/geo-audit.mjs`), plus the redesign rules R1-R5 (≥ 12×10, overlaps ≤ 30 %, talk spot ≥ 24 px, kit signs whole, inside the room): errors in rooms whose art has `rediseno: true` (or with `--estricto`), warnings elsewhere (`--avisos` lists them); `--sala=a,b` limits the audit |
+| `node tools/fuzz.mjs [--solo=guardar\|duelos\|objetos] [--sala=a,b] [--rapido]` | save/load in every act and play on to the end; lose every duel once; Dar/Usar every item on every NPC and hotspot (no exceptions, no stuck dialogs, list of consumed items) |
 | `node tools/contrast.mjs [--todo]` | legibility: WCAG contrast of every speaker colour against its outline and against the real background of every room under the speech band (`SPEECH_BACKING`), same-room speakers distinguishable, and all UI / menu / duel text colours ≥ 4.5:1 |
 | `node tools/make-icons.mjs` | regenerates the web-app icons `icons/icon-{180,192,512}.png` from the game's own drawing code (the only image files in the project) |
 | `node tools/text-audit.mjs` | every line said in a full game + all 9 verbs on everything: > 80 chars, balloons over 3 rows, missing ¿ ¡, names, clock times, and staging: whoever says a line is not hidden (> 20 % of head+torso) by another actor standing in front |
@@ -711,12 +763,12 @@ URL parameters: `?debug=1` (walkboxes, hotspots with ids, actor boxes, coordinat
 JS with `g` = engine; F2 overlay, F3 console) · `?room=<id>&entry=<entry>` (new game directly in a room, no intro) ·
 `?autostart=1`.
 
-`window.__game`: `state()` → `{ mode, room, busy, cutscene, inventory, flags, objects, actors, player, dialog,
+`window.__game`: `state()` → `{ mode, room, busy, cutscene, inventory, flags, objects, actors, player, dialog, detalle, hotspotsShown, poses,
 dialogDisabled, pickItem, duel: { id, opponent, phase ('intro'|'reply'|'finisher'|'pick'|'end'), attack, options,
 correctIndex, correctItem, hits, misses, subject, assigned } | null, lastDuel, learnedReplies, notices, sentence,
 hover, camX, music, menu, speaking, aviso, finished }` · `newGame()` · `gotoRoom(id, entry?)` · `doVerb(verb, objId, itemId?)` ·
 `currentDialogOptions()` · `chooseDialog(i)` · `chooseText(substr)` · `chooseItem(id|null)` (duel inventory picker) ·
-`giveAll()` · `scene(name)` · `waitIdle()` · `skipText(true)` · `skipSpeech()` (close the current balloon, like a click) · `log` · `clearLog()` · `giveItem/takeItem/setFlag/getFlag`
+`giveAll()` · `scene(name)` · `showHotspots(ms?)` · `waitIdle()` · `skipText(true)` · `skipSpeech()` (close the current balloon, like a click) · `log` · `clearLog()` · `giveItem/takeItem/setFlag/getFlag`
 · `save(slot)` / `load(slot)` · `skipCutscene()` · `errors` · `objects()` · `screenPos(id)`, `verbPos(verb)`,
 `invPos(item)`, `optionPos(i)`, `virtualToClient(x, y)`, `roomPointToClient(x, y)`.
 

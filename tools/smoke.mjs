@@ -25,7 +25,10 @@ const consoleErrors = [];
 let expectErrors = false;
 let failures = 0;
 const ok = (cond, msg) => { if (cond) console.log('  ✓ ' + msg); else { failures++; console.log('  ✗ ' + msg); } };
-const step = (s) => console.log('\n» ' + s);
+const T0 = Date.now();
+const step = (s) => console.log(`\n» ${s}  [${Math.round((Date.now() - T0) / 1000)} s]`);
+// --rapido: se salta los encuadres de dispositivo (iPhone ×4 + escritorio/pantalla completa), la parte más lenta
+const RAPIDO = process.argv.includes('--rapido');
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
@@ -370,6 +373,8 @@ try {
 
   step('Llamadas: primer plano del móvil (api.phone) en pista, aviso e intro; se retira siempre');
   const phoneState = () => G(() => __game.state().phone);
+  if (RAPIDO) console.log('  (--rapido: se salta la parte en tiempo real)');
+  else {
   await fast(false);
   await G(() => { __game.setFlag('torno_abierto', true); __game.clearLog(); __game.doVerb('usar', 'movil'); });
   ok(await waitFor(() => !!__game.state().phone && __game.state().phone.caller === 'abuela_remedios', null, 4000), 'pista: se abre el móvil con la abuela');
@@ -385,6 +390,7 @@ try {
   await G(() => __game.gotoRoom('pecera')); await G(() => __game.gotoRoom('office'));
   ok((await phoneState()) === null, 'modo rápido: sin móvil colgado');
   await G(() => __game.skipText(false));
+  }
   await G(() => { for (const f of ['torno_abierto']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); });
 
   // ---------------------------------------------------------------- save / load
@@ -432,8 +438,8 @@ try {
 
   step('Robustez: errores de contenido no bloquean');
   expectErrors = true;
+  await fast(true);                           // la intro, en modo rápido (antes se veía entera en tiempo real: 70 s)
   await G(() => __game.newGame());
-  await fast(true);
   await G(() => __game.waitIdle());
   ok(await G(() => __game.doVerb('mirar', 'objeto_que_no_existe')) === false, 'doVerb con objeto inexistente devuelve false');
   await G(() => __game.game.runScript(async () => { throw new Error('fallo de prueba'); }, { label: 'prueba' }));
@@ -472,6 +478,8 @@ try {
   // ---------------------------------------------------------------- móvil (problema 6): iPhone vertical/horizontal,
   // instalada (standalone) o en Safari, escritorio y pantalla completa en Chromium
   step('Móvil: iPhone 13 en vertical y en horizontal, en Safari y como app instalada; escritorio; pantalla completa');
+  if (RAPIDO) console.log('  (--rapido: se salta)');
+  else {
   const { devices } = require('playwright');
   const IP = devices['iPhone 13'];
   const standaloneInit = () => {
@@ -545,6 +553,7 @@ try {
   await dp.waitForTimeout(400);
   ok(!(await dp.evaluate(() => !!document.fullscreenElement)), 'escritorio: tecla F otra vez → sale de pantalla completa');
   await dctx.close();
+  }
 
   step('Intro: el móvil de la abuela y Esc');
   await G(() => { __game.newGame(); });

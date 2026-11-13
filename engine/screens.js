@@ -125,6 +125,7 @@ function menuItems(game) {
   const sp = SPEEDS.reduce((b, x) => Math.abs(x[0] - s.textSpeed) < Math.abs(b[0] - s.textSpeed) ? x : b)[1];
   const items = [
     { label: 'Continuar', act: 'resume' },
+    { label: 'Ver objetos de la sala (H)', act: 'hotspots', enabled: !!game.room && game.mode === 'play' },
     { label: 'Guardar partida', act: 'save', enabled: !game.busy },
     { label: 'Cargar partida', act: 'load', enabled: !game.busy },
     { label: `Velocidad del texto: ${sp}`, act: 'speed' },
@@ -152,16 +153,17 @@ export function drawMenu(game, g) {
     return;
   }
   const items = menuItems(game);
-  const bh = 30 + items.length * 13 + 6;
-  drawBox(g, 60, 24, 200, bh);
-  drawText(g, 'Pausa', 160, 30, C.title, { align: 'center', bold: true });
-  hline(g, 80, 44, 160, '#2a2444');
-  const lay = layoutItems(items, 160, 49, 13);
+  const lh = items.length > 10 ? 12 : 13, by = items.length > 10 ? 14 : 24;
+  const bh = 30 + items.length * lh + 6;
+  drawBox(g, 60, by, 200, bh);
+  drawText(g, 'Pausa', 160, by + 6, C.title, { align: 'center', bold: true });
+  hline(g, 80, by + 20, 160, '#2a2444');
+  const lay = layoutItems(items, 160, by + 25, lh);
   m.layout = lay;
   drawItems(g, game, lay);
   let msg = m.msg, col = '#9cf0a4';
   if (m.msgSeq) { const cur = m.msgSeq.filter(x => x.at <= game.realTime).pop(); if (cur) { msg = cur.text; col = cur.color || col; } }
-  if (msg) wrap(msg, 300).forEach((l, i) => drawText(g, l, 160, 24 + bh + 4 + i * 11, col, { align: 'center' }));
+  if (msg) wrap(msg, 300).forEach((l, i) => drawText(g, l, 160, Math.min(188 - i * 11, by + bh + 4 + i * 11), col, { align: 'center' }));
 }
 export function menuClick(game, x, y) {
   const m = game.menu;
@@ -175,6 +177,7 @@ export function menuClick(game, x, y) {
   switch (it.act) {
     case 'difficulty': s.difficulty = ((s.difficulty || 0) + 1) % game.G.difficulty.length; game.saveSettings(); break;
     case 'resume': game.toggleMenu(); break;
+    case 'hotspots': game.toggleMenu(); game.showHotspots(); break;
     case 'save': m.page = 'save'; break;
     case 'load': m.page = 'load'; break;
     case 'speed': { const i = SPEEDS.findIndex(x => Math.abs(x[0] - s.textSpeed) < 0.01); s.textSpeed = SPEEDS[(i + 1) % SPEEDS.length][0]; game.saveSettings(); break; }

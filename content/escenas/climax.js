@@ -18,9 +18,10 @@ const sayEv = (api, t) => api.sayAs(EV, t);
 
 // staging (coordenadas de la sala; la puerta es la entrada `pajarera` del arte)
 const PUERTA = [30, 118];
-const SITIO_RUBEN = [266, 122];      // «con la cara pegada a la ventana»
-const SITIO_BEGONA = [176, 126];     // a la derecha del Lector caído (no lo tapa), frente a Íñigo
-const SITIO_TRAS_EMPUJON = [46, 122];    // Bruno, tras el ¡PLOF!: a la izquierda, sin tapar al Lector Medio caído
+// (el Lector Medio está junto a la pantalla, a la derecha, y cae hacia la derecha: nadie se pone delante de él caído)
+const SITIO_RUBEN = [178, 128];      // entre Íñigo y el Lector, sin tapar el cartón caído ni la pegatina
+const SITIO_BEGONA = [148, 130];     // frente a Íñigo, a la izquierda del Lector caído (no lo tapa)
+const SITIO_TRAS_EMPUJON = [206, 126];   // Bruno, tras el ¡PLOF!: a la izquierda del Lector caído, sin taparlo
 
 export const DECK_D4 = ['R10', 'R12', 'R13', 'R05', 'R01', 'R07', 'R15', 'R16'];
 export const PUNTOS_D4 = 4;          // 2 + remate A + 2 + remate B

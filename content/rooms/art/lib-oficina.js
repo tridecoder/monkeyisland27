@@ -6,6 +6,7 @@ import {
   noise, glow, shadowEllipse, ditherPick, hash2, rng, shade, mix, bayer,
 } from '../../../engine/draw.js';
 
+// (REDISEÑO: la microfuente CANÓNICA es micro() de content/lib/kit.js; esta copia se mantiene para el arte actual)
 // ------------------------------------------------------------------ micro-fuente 3x5 (mayúsculas)
 const GLY = {
   A: ['.#.', '#.#', '###', '#.#', '#.#'], B: ['##.', '#.#', '##.', '#.#', '##.'], C: ['.##', '#..', '#..', '#..', '.##'],

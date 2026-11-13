@@ -9,6 +9,7 @@ export const LAYOUT = {
   arrowX: 162, arrowW: 15, arrowUpY: 157, arrowDownY: 178, arrowH: 20,
   invX: 181, invY: 156, cellW: 34, cellH: 21, cols: 4, rows: 2,
   menuX: 305, menuY: 145, menuW: 13, menuH: 10,
+  eyeX: 287, eyeY: 144, eyeW: 16, eyeH: 12,          // botón «ver hotspots» (16×12: objetivo táctil mínimo)
   optX: 8, optY: 145, optLines: 5, optLineH: 10,
   iconW: 28, iconH: 18,
 };
@@ -52,6 +53,8 @@ function itemIcon(game, id) {
   return c;
 }
 export function clearIconCache() { iconCache.clear(); }
+/** Icono (lienzo 30×20 con contorno) de un item: lo usa api.sostener. */
+export function itemIconCanvas(game, id) { return itemIcon(game, id); }
 
 function verbAt(x, y) {
   const L = LAYOUT;
@@ -65,6 +68,7 @@ export function panelHit(game, x, y) {
   const L = LAYOUT;
   if (y < PANEL_Y) return null;
   if (x >= L.menuX && x < L.menuX + L.menuW && y >= L.menuY && y < L.menuY + L.menuH) return { type: 'menu' };
+  if (x >= L.eyeX && x < L.eyeX + L.eyeW && y >= L.eyeY && y < L.eyeY + L.eyeH) return { type: 'hotspots' };
   const vi = verbAt(x, y);
   if (vi >= 0 && game.verbs[vi]) return { type: 'verb', id: game.verbs[vi].id };
   if (x >= L.arrowX && x < L.arrowX + L.arrowW) {
@@ -116,6 +120,7 @@ export function drawPanel(game, g) {
   // menu icon
   const mh = hit && hit.type === 'menu';
   for (let i = 0; i < 3; i++) rect(g, L.menuX + 2, L.menuY + 2 + i * 3, 9, 1, mh ? COL.verbHover : COL.verbOff);
+  drawEye(g, hit && hit.type === 'hotspots', !!game.hsShow);
   // verbs
   const hov = game.ui.hover;
   const defVerb = !game.busy && hov && !game.ui.verb ? game.defaultVerbFor(hov) : null;
@@ -128,6 +133,18 @@ export function drawPanel(game, g) {
     drawText(g, v.label, L.verbX[c], L.verbY[r], col, { bold: true, outline: '#000000' });
   });
   drawInventory(game, g, hit);
+}
+
+/** Botón «ver hotspots»: un ojo de 11×7 en una tecla de 16×12. */
+function drawEye(g, hover, on) {
+  const L = LAYOUT, x = L.eyeX, y = L.eyeY;
+  rect(g, x + 1, y + 1, L.eyeW - 2, L.eyeH - 2, on ? '#2a2448' : hover ? '#1c1834' : '#100e1e');
+  const c = on ? COL.verbDefault : hover ? COL.verbHover : COL.verbOff;
+  const cx = x + 8, cy = y + 6;
+  rect(g, cx - 3, cy - 3, 7, 1, c); rect(g, cx - 3, cy + 3, 7, 1, c);
+  rect(g, cx - 5, cy - 2, 2, 1, c); rect(g, cx + 4, cy - 2, 2, 1, c); rect(g, cx - 5, cy + 2, 2, 1, c); rect(g, cx + 4, cy + 2, 2, 1, c);
+  rect(g, cx - 6, cy - 1, 1, 3, c); rect(g, cx + 6, cy - 1, 1, 3, c);
+  rect(g, cx - 1, cy - 1, 3, 3, c);
 }
 
 function drawInventory(game, g, hit) {
@@ -177,10 +194,18 @@ export function itemPickClick(game, x, y) {
 }
 
 // --------------------------------------------------------------- dialog options
+/** Geometría de las filas de opciones. Al tacto (iPhone), filas de 14 px (4 visibles) en vez de 10 (5 visibles):
+ *  objetivo táctil mínimo de la propuesta (§1.10). */
+export function optGeom(game) {
+  const big = !!(game.touchUI ? game.touchUI() : game.mouse && game.mouse.touch);
+  return big ? { big, y: 144, h: 14, n: 4, dy: 3 } : { big, y: LAYOUT.optY, h: LAYOUT.optLineH, n: LAYOUT.optLines, dy: 0 };
+}
 function choiceLayout(game) {
   const ch = game.choice;
-  if (ch.layout) return ch.layout;
-  const L = LAYOUT;
+  const G = optGeom(game);
+  if (ch.layout && ch.big === G.big) return ch.layout;
+  ch.big = G.big;
+  const L = { ...LAYOUT, optLines: G.n };
   const lines = [];
   ch.options.forEach((o, i) => {
     wrap(o, 288).forEach((l, k) => lines.push({ opt: i, text: (k ? '  ' : '') + l }));   // 288: never under the scroll arrows (x ≥ 304)
@@ -192,12 +217,14 @@ function choiceLayout(game) {
 function drawChoice(game, g) {
   const L = LAYOUT, ch = game.choice;
   const lines = choiceLayout(game);
+  const G = optGeom(game);
   ch.scroll = Math.max(0, Math.min(ch.scroll || 0, ch.maxScroll));
-  for (let i = 0; i < L.optLines; i++) {
+  for (let i = 0; i < G.n; i++) {
     const ln = lines[ch.scroll + i];
     if (!ln) break;
     const col = ch.disabled && ch.disabled.has(ln.opt) ? COL.optDisabled : ln.opt === ch.hover ? COL.optHover : COL.opt;
-    drawText(g, ln.text, L.optX, L.optY + i * L.optLineH, col);
+    if (G.big && ln.opt === ch.hover) rect(g, 2, G.y + i * G.h + 1, 298, G.h - 1, '#1c1834');
+    drawText(g, ln.text, L.optX, G.y + i * G.h + G.dy, col);
   }
   if (ch.maxScroll > 0) {
     arrow(g, 304, 146, 13, 24, true, ch.scroll > 0, false);
@@ -206,12 +233,12 @@ function drawChoice(game, g) {
 }
 export function hoverChoice(game, x, y) {
   const ch = game.choice; if (!ch) return;
-  const L = LAYOUT;
   const lines = choiceLayout(game);
+  const G = optGeom(game);
   ch.hover = -1;
-  if (y < L.optY || x > 300) return;
-  const li = Math.floor((y - L.optY - 2) / L.optLineH);
-  if (li < 0 || li >= L.optLines) return;
+  if (y < G.y || x > 300) return;
+  const li = G.big ? Math.floor((y - G.y) / G.h) : Math.floor((y - G.y - 2) / G.h);
+  if (li < 0 || li >= G.n) return;
   const ln = lines[(ch.scroll || 0) + li];
   if (ln && !(ch.disabled && ch.disabled.has(ln.opt))) ch.hover = ln.opt;
 }
@@ -228,12 +255,13 @@ export function choiceClick(game, x, y) {
 export function optionPos(game, i) {
   const ch = game.choice; if (!ch) return null;
   const lines = choiceLayout(game);
+  const G = optGeom(game);
   const li = lines.findIndex(l => l.opt === i);
   if (li < 0) return null;
   if (li < ch.scroll) ch.scroll = li;
-  if (li >= ch.scroll + LAYOUT.optLines) ch.scroll = li - LAYOUT.optLines + 1;
+  if (li >= ch.scroll + G.n) ch.scroll = li - G.n + 1;
   ch.scroll = Math.max(0, Math.min(ch.maxScroll, ch.scroll));
-  return { x: LAYOUT.optX + 10, y: LAYOUT.optY + (li - ch.scroll) * LAYOUT.optLineH + 7 };
+  return { x: LAYOUT.optX + 10, y: G.y + (li - ch.scroll) * G.h + (G.big ? 7 : 7) };
 }
 export function verbPos(game, id) {
   const i = game.verbs.findIndex(v => v.id === id);

@@ -27,5 +27,9 @@ export function createServer(dir = root) {
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
-  createServer().listen(port, () => console.log(`Sirviendo ${root} en http://localhost:${port}/`));
+  // puerto pedido (o 8080); si está ocupado (otro agente ya sirve el juego), uno libre cualquiera
+  const srv = createServer();
+  const ready = () => console.log(`Sirviendo ${root} en http://localhost:${srv.address().port}/`);
+  srv.once('error', (e) => { if (e.code === 'EADDRINUSE') { console.log(`El puerto ${port} está ocupado: uso uno libre.`); srv.listen(0, ready); } else throw e; });
+  srv.listen(port, ready);
 }

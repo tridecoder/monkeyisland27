@@ -1,6 +1,7 @@
 // Boot: loads content/index.js, starts the game and exposes window.__game (QA / testing API).
 import { Game } from './core.js';
 import * as UI from './ui.js';
+import * as HS from './hotspots.js';
 
 const params = new URLSearchParams(location.search);
 const debug = params.get('debug') === '1';
@@ -58,6 +59,9 @@ function makeTestApi(game) {
         menu: game.menu ? game.menu.page : null,
         speaking: game.speeches.map(s => ({ who: s.actor, text: s.text })),
         phone: game.phone ? { caller: game.phone.caller, label: game.phone.label, state: game.phone.state, side: game.phone.side } : null,   // llamada en curso (api.phone)
+        detalle: game.detalle ? { titulo: game.detalle.titulo } : null,   // plano detalle abierto (api.detalle)
+        hotspotsShown: !!game.hsShow,       // «ver hotspots» en pantalla
+        poses: Object.fromEntries(Object.values(game.actors).filter(a => game.room && a.room === game.room.def.id).map(a => [a.id, game.poseOf(a)]).filter(([, p]) => p)),
         aviso: !!game.avisoActive,          // true mientras suena una llamada / un RV: / un aviso común (game.js `avisos`)
         // última partida terminada con api.ending() (el juego ya está en el título): sus flags, inventario, sala y objetos
         finished: game.finished ? { room: game.finished.room, flags: game.finished.flags, inventory: game.finished.inventory, objects: game.finished.objects, actors: game.finished.actors } : null,
@@ -119,6 +123,8 @@ function makeTestApi(game) {
     save: (slot = 1) => game.save(slot),
     load: async (slot = 1) => { await game.load(slot); return idle(); },
     skipCutscene: () => game.skipCutscene(),
+    /** «Ver hotspots» como el botón del panel; devuelve la lista { id, name, box, kind } que se resalta. */
+    showHotspots: (ms) => { game.showHotspots(ms); return game.room ? HS.targets(game).map(t => ({ id: t.id, name: t.name, kind: t.kind, box: t.box })) : []; },
     objects: () => {
       if (!game.room) return [];
       const cam = Math.round(game.camX);

@@ -7,6 +7,12 @@ light; dense, believable clutter; and readable silhouettes. The building is the 
 Contable»), on a Friday evening (clocks stopped at 20:59, closing at 21:00; the game runs Friday 18:30 → 21:00). Room descriptions: bible `docs/GUION_BIBLIA.md` §3.
 Section 9 is the checklist for background artists (**Guía para artistas de fondo**).
 
+> **REDISEÑO VISUAL EN CURSO.** El contrato vinculante para repintar las 10 salas (paquetes P1-P4, archivos de cada uno,
+> núcleo de ascensor y escalera, zonas de la Pecera, nombres visibles —«Dirección», nunca «Pajarera»—, puesta en escena
+> de los PNJ, reglas de texto y de estados, lista de comprobación) está en **`docs/GUIA_REDISENO.md`**. El kit común de
+> señalética y arquitectura es `content/lib/kit.js` (§10 de esta guía) y lo nuevo del motor (pose sentada, penumbra,
+> plano detalle, walkboxes con forma, «ver hotspots») está en §10.2. Vista previa: `node tools/sala.mjs <sala>`.
+
 ```js
 // from content/rooms/art/<id>.art.js
 import { PAL, rect, gradV, wall, floorTiles, cityWindow, desk, glow, vignette } from '../../../engine/draw.js';
@@ -28,6 +34,8 @@ Each room is two files glued by ids (details: `docs/CONTENT_SCHEMA.md` §2):
   the room's writer (and mention it in your report).
 - Characters (`content/actors.js`) and inventory icons (`content/items.js`) are already finished and shared. You draw
   rooms, props and the per-state looks of room objects.
+- **Redesign:** during the redesign each package owns its rooms' logic AND art files (table in `docs/GUIA_REDISENO.md`
+  §1); `content/lib/kit.js` and `content/lib/edificio.js` are shared (import them, don't edit them).
 
 ## 0.1 The art file contract
 ```js
@@ -109,6 +117,9 @@ light — the house lighting model), `ramp3(hex)` → `[dark, base, light]`, `he
   For side walls (office rooms) draw trapezoids with `poly()` from the screen edge to the back-wall corners.
 - Walkboxes start 3–6 px below the floor line so feet never overlap the wall. Typical `scale`:
   `{ yFar: 100, far: 0.85, yNear: 142, near: 1.0 }` (a doll is ~55 px tall at 1.0).
+- **Darkness over a room with people in it** (Act III penumbra, a blackout): use the art key `penumbra(view, t)`, never
+  an `overlay` that paints over the actors (they would turn into «holograms», audit #1). The engine darkens the room
+  except the spots and keeps the actors at 22 % of the darkness (layout `luz: 1` = not at all). §10.2.
 - Shadows: `shadowEllipse` under every free-standing prop and character (the engine does characters).
   Darken where walls meet floors (`ditherOverlay(..., PAL.ink[0], 0.4)` on a 3–4 px strip) and the room edges
   (`vignette`). Light: `glow` for lamps/windows (banded translucent, smooth), `lightCone` for spotlights;
@@ -221,6 +232,10 @@ automatically.
   (`--x` moves Bruno/camera along wide rooms such as `pecera`). It prints content errors and logic/art id mismatches
   (exit 1 if any).
 - `node tools/check.mjs` must say `CHECK: OK`; `node tools/smoke.mjs` screenshots every room (`tools/shots/sala-<id>.png`).
+- **`node tools/sala.mjs <sala>`** (redesign): the room in every act state (clean, debug with walkboxes / hotspots /
+  talk-spot diamonds / the y = 45 balloon line, and «ver hotspots»), panorama of wide rooms, a contact sheet and the
+  NPC visibility report → `tools/shots/sala/<sala>/`. `node tools/test-all.mjs --sala=<sala>` runs every test that
+  concerns your room in parallel.
 
 ## 9. Guía para artistas de fondo (checklist)
 1. Lee la descripción del fondo de tu sala en la biblia §3 (y las columnas Mirar: dicen qué debe verse) y la tabla
@@ -240,3 +255,32 @@ automatically.
 8. Comprueba: `node tools/shot.mjs <sala> --debug` (y sin `--debug`), `node tools/check.mjs` sin errores, sin errores de
    consola; la sala se lee a 1× (prueba del guiño); nada importante bajo los 45 px superiores.
 9. Si necesitas un helper en `engine/draw.js` o un cambio en el motor: escríbelo en tu archivo o descríbelo en tu informe.
+
+## 10. Rediseño: kit común y motor (resumen; el contrato completo está en `docs/GUIA_REDISENO.md`)
+
+### 10.1 Kit (`content/lib/kit.js`, compartido) — `import * as kit from '../../lib/kit.js';`
+| helper | qué pinta |
+|---|---|
+| `kit.PLANTA`, `kit.DEPTO` | código de color: banda de placa por planta (P−1 azul, P0 verde, P1 verde agua, P2 lila) y acento por departamento (`c`, rampa `suelo`) |
+| `kit.micro(g, txt, x, y, c, { align, sombra })`, `kit.microW`, `kit.microLineas` | microfuente 3×5 canónica (4 px por carácter, tildes y Ñ; sin «¿¡»). Sustituye a las tres copias de `lib-oficina.js`, `lib-vestibulo-micro.js`, `lib-catacumba-util.js` (que siguen funcionando) |
+| `kit.texto(g, txt, x, y, w, h, { color, align, fuente })`, `kit.cabe(txt, w, h)` | texto ENTERO sobre su soporte: fuente del juego si cabe, si no 3×5 partido por palabras; si no cabe ni así lo apunta en `kit.registro.problemas` (la auditoría falla) |
+| `kit.placa(g, x, y, txt, { planta, flecha: '<' '>' '^' 'v', sub, depto })`, `kit.placaSala(g, x, y, roomId, { flecha })` | LA placa de destino del edificio (13 px; 19 con `sub`); `placaSala` usa el nombre llano de `content/lib/edificio.js` (`pajarera` → «DIRECCIÓN») |
+| `kit.rotuloDepto(g, x, y, depto, { texto, colgado })`, `kit.rotuloZona(g, cx, y, depto)` | rótulo de departamento colgado del techo (filete de color arriba), centrado en su zona |
+| `kit.umbral(g, x, y, w, h, color)`, `kit.marcoPuerta(g, x, y, w, h)`, `kit.huecoAbierto(...)`, `kit.peldanos(g, x, yBase, w, 'baja' \| 'sube')` | felpudo del color del destino, marco metálico común (la hoja la pintas tú), puerta abierta, tres peldaños de medio nivel (Office ↔ Catacumba) |
+| `kit.ascensor(g, x, y, w, h, planta)`, `kit.escalera(g, x, y, w, h, 'sube' \| 'baja')`, **`kit.nucleo(g, room, FL)`** | el núcleo completo e idéntico en las 4 plantas (devuelve la geometría `nucleoGeom` para `layout` y `entries`) |
+| `kit.zonaSuelo(g, x0, x1, FL, depto, { vpx, vpy, borde })`, `kit.sueloZona(g, quad, ramp)`, `kit.filete(g, x0, x1, y, depto)`, `kit.pilastra(g, x, yTop, FL)`, `kit.mampara(...)` | las cuatro capas que delimitan una zona: suelo con canto de goma, filete de pared, pilastra en el cambio, mampara baja |
+| `kit.cantoVivo(g, x, y, w, h)` | el lenguaje de lo interactivo: 1 px de luz cálida arriba-izquierda + 2 px de sombra de contacto (lo decorado no lo lleva) |
+| `kit.registro` | caja de cada placa/rótulo/texto pintado: la auditoría comprueba que estén enteros y dentro de la sala |
+
+Ejemplo completo (núcleo, zonas, placas, mesa con walkbox en U, PNJ sentado y tras la mesa, penumbra): `tools/demo-rediseno.js`.
+
+### 10.2 Motor
+| qué | en el arte | notas |
+|---|---|---|
+| pose sentada | NPC `at: [x, y, dir], pose: 'sentado' \| 'tras_mesa'` (también en `positions`) | `y` = pies en el suelo; `tras_mesa` = de la cadera arriba, el mueble delante tapa el resto (objeto `layer: 'sorted'` con `zy` mayor, o `foreground`) |
+| penumbra | `penumbra(view, t) → { color, alpha, spots: [[cx, cy, rx, ry], { rect }], actor, actores } \| null`; NPC `luz: 0..1` | se oscurece todo menos los focos; los actores, al 22 % |
+| walkbox con forma | varios polígonos (unión); `scale` propia por walkbox | se puede estar detrás, delante y a la cabecera de un mueble; ordénalo con `layer: 'sorted'` + `zy` |
+| oclusores | `foreground` · `layer: 'front'` · `layer: 'sorted'` + `zy` · `prop: true` | nunca tapan una cara ni > 20 % de cabeza+torso de quien habla |
+| ver hotspots | — (automático) | lo interactivo debe verse sin él; con él, se resalta con el canto vivo y el nombre |
+| tamaño mínimo | — (automático: 12×10 ratón, 16×12 táctil) | aun así, dibuja lo interactivo ≥ 12×10 (regla R1 de la auditoría) |
+| `rediseno: true` | en el `export default` del arte | activa las reglas estrictas de la auditoría para tu sala |

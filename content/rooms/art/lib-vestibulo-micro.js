@@ -2,6 +2,7 @@
 // Módulo propio del artista de fondos (vestibulo/cpd/office). Paso de 4 px por letra.
 import { rect } from '../../../engine/draw.js';
 
+// (REDISEÑO: la microfuente CANÓNICA es micro() de content/lib/kit.js; esta copia se mantiene para el arte actual)
 // glifos: 5 filas; '#' = píxel
 const FIX = {
   A: ['.#.', '#.#', '###', '#.#', '#.#'], B: ['##.', '#.#', '##.', '#.#', '##.'], C: ['.##', '#..', '#..', '#..', '.##'],

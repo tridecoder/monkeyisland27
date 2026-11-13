@@ -21,7 +21,8 @@ export class WalkMap {
   /** boxes: [{ id, poly:[[x,y],...], enabled, when }] — `when` (a condition, docs §8) is evaluated by the game
    *  (Game.refreshWalkboxes) on room entry, after every flag change and when a blocking script ends. */
   constructor(boxes = []) {
-    this.boxes = boxes.map((b, i) => ({ id: b.id || ('box' + i), poly: b.poly, enabled: b.enabled !== false, when: b.when }));
+    this.boxes = boxes.map((b, i) => ({ id: b.id || ('box' + i), poly: b.poly, enabled: b.enabled !== false, when: b.when, scale: b.scale }));
+    this.scaled = this.boxes.some(b => b.scale != null);      // alguna zona con escala propia (Game.roomScale)
     this.rebuild();
   }
   setEnabled(id, on) {
@@ -31,6 +32,12 @@ export class WalkMap {
   }
   get active() { return this.boxes.filter(b => b.enabled); }
   inside(x, y) { return this.active.some(b => pointInPoly(x, y, b.poly)); }
+  /** Walkbox activo que contiene el punto (con `scaledOnly`, solo los que tienen escala propia; gana el último). */
+  boxAt(x, y, scaledOnly = false) {
+    let hit = null;
+    for (const b of this.active) if ((!scaledOnly || b.scale != null) && pointInPoly(x, y, b.poly)) hit = b;
+    return hit;
+  }
   rebuild() {
     this.nodes = [];
     for (const b of this.active) {

@@ -75,7 +75,18 @@ export class Debug {
       const b = G.actorBox(a);
       frameRect(g, Math.round(b.x), Math.round(b.y), Math.round(b.w), Math.round(b.h), '#ffa040');
       px(g, Math.round(a.x), Math.round(a.y), '#ffffff');
+      // punto desde el que Bruno le habla (rombo blanco): siempre a un lado, ≥ 24 px (docs/GUIA_REDISENO.md)
+      if (a.id !== G.G.player && a.visible) {
+        const t = G.actorTarget(a);
+        if (t.handlers && (t.handlers.hablar || t.def.walkTo)) {
+          const ap = G.approachPoint(t), x = Math.round(ap.x), y = Math.round(ap.y);
+          const c = Math.abs(ap.x - a.x) >= 24 ? '#ffffff' : '#ff4040';
+          px(g, x, y - 2, c); px(g, x - 1, y - 1, c); px(g, x + 1, y - 1, c); px(g, x - 2, y, c); px(g, x + 2, y, c); px(g, x - 1, y + 1, c); px(g, x + 1, y + 1, c); px(g, x, y + 2, c);
+        }
+      }
     }
+    // franja de globos (y < 45): las pistas de puzle no van ahí
+    for (let x = 0; x < rt.width; x += 4) px(g, x, 45, '#80f0ff');
   }
   draw(g) {
     if (!this.on || !this.overlay) return;

@@ -19,7 +19,9 @@ import {
 const W = 320;
 const FL = 98;
 const OK = { x: 104, y: 17, w: 120, h: 40 };      // pantalla del orden del día
-export const LECTOR_AT = [84, 110];                // pies del Lector Medio, de pie en la cabecera (clímax)
+// pies del Lector Medio (Acto III): EXPOSITOR DE MARKETING junto a la pantalla de proyección, delante de la mesa, con su
+// propio foco. NUNCA en la cabecera ni junto a una placa de presidencia (orden de dirección: docs/GUIA_REDISENO.md §5).
+export const LECTOR_AT = [238, 108];
 
 const cacheDraw = (() => {
   const store = {};
@@ -417,12 +419,14 @@ const layout = {
   caja_cables: { rect: [288, 70, 32, 30], walkTo: [304, 113], face: 'up' },
   carteles_amazonas: { rect: [40, 62, 54, 30], walkTo: [64, 110], face: 'up' },
   // PNJ
-  gervasio_acta: { at: [84, 106, 'right'], positions: { preside: { at: [84, 106, 'right'] }, rincon: { at: [292, 112, 'left'] } } },
-  // Lector Medio: EN LA CABECERA (el extremo izquierdo de la mesa, junto a la silla roja), DELANTE de la mesa, fuera del
-  // haz del proyector y bajo su propia luz (overlay); Bruno lo empuja desde su izquierda y cae hacia la derecha, en el
-  // suelo, delante de la mesa (clímax 7.4, content/escenas/climax.js).
-  lector_medio: { at: [LECTOR_AT[0], LECTOR_AT[1], 'down'], walkTo: [LECTOR_AT[0] - 22, LECTOR_AT[1] + 4], face: 'right' },
-  inigo_sinergia: { at: [222, 114, 'left'] },
+  // Gervasio PRESIDE sentado en la cabecera (la silla roja, extremo izquierdo de la mesa) en los Actos I-II; en el Acto III
+  // está de pie en el rincón, bajo el cartel SALIDA.
+  gervasio_acta: { at: [84, 106, 'right'], pose: 'sentado', positions: { preside: { at: [84, 106, 'right'], pose: 'sentado' }, rincon: { at: [60, 110, 'right'] } } },
+  // Lector Medio (Acto III): expositor de Marketing aparcado JUNTO A LA PANTALLA de proyección, delante de la mesa, bajo
+  // su propio foco (penumbra); Bruno lo empuja desde su izquierda y cae hacia la derecha, en el suelo, delante de la mesa
+  // (clímax 7.4, content/escenas/climax.js). Nunca en la cabecera (orden de dirección).
+  lector_medio: { at: [LECTOR_AT[0], LECTOR_AT[1], 'down'], walkTo: [LECTOR_AT[0] - 24, LECTOR_AT[1] + 4], face: 'right', luz: 1 },
+  inigo_sinergia: { at: [118, 118, 'right'] },
 };
 void noise; void gradH; void hash2; void bevel; void door; void mix; void lcd; void postit; void wainscot; void floorTiles; void wall;
 
@@ -438,29 +442,20 @@ export default {
     rainOnGlass(g, 232, 22, 52, 42, t, 6);
     drawBotellinesSuelo(g, view);
   },
-  // penumbra del Acto III. Quedan iluminados: la pantalla del proyector y, con su propio foco (la luz que rebota de la
-  // pantalla), la cabecera de la mesa donde está el Lector Medio; cuando cae, el foco baja con él al suelo. Así el
-  // remate del juego se ve entero, opaco y sin el halo del proyector encima (informe visual, problema 1).
-  overlay(g, view, t) {
-    if (!view.flag('acto_3_iniciado')) return;
+  // PENUMBRA del Acto III (motor: art `penumbra`, engine/core.js drawPenumbra). Se oscurece la sala, NO los actores (solo
+  // el 22 %; el Lector Medio, nada: `luz: 1` en su layout). Quedan iluminados la pantalla del proyector y, con su
+  // propio foco, el Lector Medio junto a ella; cuando cae, el foco baja con él al suelo (informe visual, problema 1).
+  penumbra(view) {
+    if (!view.flag('acto_3_iniciado')) return null;
     const [lx, ly] = LECTOR_AT;
     const caido = !!view.flag('lector_derribado');
-    // focos: [cx, cy, rx, ry] (de pie: todo el cartón; caído: el suelo delante de la mesa, a la derecha de la base)
-    const spots = caido ? [[lx + 38, ly - 6, 50, 15]] : [[lx + 2, ly - 30, 22, 38], [lx + 38, ly - 6, 46, 13]];
-    const hole = (k) => { for (const [cx, cy, rx, ry] of spots) { g.moveTo(cx + rx * k, cy); g.ellipse(cx, cy, rx * k, ry * k, 0, 0, Math.PI * 2); } };
-    g.save();
-    g.beginPath();
-    g.rect(0, 0, W, 144);
-    g.rect(OK.x - 3, OK.y - 3, OK.w + 6, OK.h + 6);
-    hole(1);
-    g.clip('evenodd');
-    g.globalAlpha = 0.44; g.fillStyle = '#080c24'; g.fillRect(0, 0, W, 144);
-    g.restore();
-    // borde suave del foco: medio oscuro entre la elipse grande y la pequeña
-    g.save();
-    g.beginPath(); hole(1); hole(0.72); g.clip('evenodd');
-    g.globalAlpha = 0.2; g.fillStyle = '#080c24'; g.fillRect(0, 0, W, 144);
-    g.restore();
+    const spots = [{ rect: [OK.x - 3, OK.y - 3, OK.w + 6, OK.h + 6] }];
+    if (caido) spots.push([lx + 37, ly + 2, 50, 15]);
+    else spots.push([lx + 2, ly - 30, 22, 38], [lx + 2, ly - 2, 30, 10]);
+    return { color: '#080c24', alpha: 0.44, spots };
+  },
+  overlay(g, view, t) {
+    if (!view.flag('acto_3_iniciado')) return;
     g.save(); g.globalAlpha = 0.07 + 0.02 * Math.sin(t / 300); glow(g, 164, 40, 90, 34, '#f0f8ff', 0.5, 4); g.restore();
   },
 };
