@@ -127,6 +127,24 @@ const lectorCaido = defineSprite({
   },
 });
 
+// ------------------------------------------------------------------ el teléfono rojo de Teodoro (7.3a y «Goyita. Tira.»)
+/** Auricular rojo de baquelita, vertical, con la parte de oír arriba (x, y = esquina superior izquierda, 4x11). */
+export function auricularRojo(g, x, y) {
+  rect(g, x, y, 4, 3, '#c83a3a'); hline(g, x, y, 4, '#f07060');          // oído
+  rect(g, x + 1, y + 3, 2, 5, '#a82a2a'); vline(g, x + 1, y + 3, 5, '#d85048');
+  rect(g, x, y + 8, 4, 3, '#c83a3a'); hline(g, x, y + 10, 4, '#7a1a1a');  // boca
+  px(g, x - 1, y + 1, '#4a1010'); px(g, x - 1, y + 9, '#4a1010');
+}
+/** Cable rizado de (x0, y0) a (x1, y1): espiral de píxeles oscuros con brillos rojos. */
+export function cableRizado(g, x0, y0, x1, y1) {
+  const n = Math.max(4, Math.round(Math.hypot(x1 - x0, y1 - y0)));
+  for (let i = 0; i <= n; i++) {
+    const k = i / n, sag = Math.sin(k * Math.PI) * 4;
+    const x = Math.round(x0 + (x1 - x0) * k), y = Math.round(y0 + (y1 - y0) * k + sag);
+    px(g, x + ((i & 1) ? 1 : 0), y, (i % 3) ? '#8a2020' : '#e05040');
+  }
+}
+
 export default {
   // ---------------------------------------------------------------- protagonista
   bruno: {
@@ -190,6 +208,14 @@ export default {
       height: 0.94, build: 'normal',
     },
     murmurs: ['CUERPO 9. INTERLINEADO 10. CORAZÓN 12.', 'GOYITA, ¿ME OYES? TÚ AGUANTA.'],
+    // escena 7.3a: con el teléfono rojo descolgado (la escena pone `auricular` en el actor), el auricular en la oreja
+    // y el cable rizado que baja hasta el teléfono de su mesa (catacumba, x≈141 y≈80)
+    drawExtra(g, a, t, c) {
+      if (!a.auricular || !c) return;
+      const hx = Math.round(a.x - 9 * c.s), hy = Math.round(c.box.y + 5 * c.s);
+      auricularRojo(g, hx, hy);
+      cableRizado(g, hx + 1, hy + 10, 141, 80);
+    },
   },
   aurora_galerada: {
     name: 'Aurora', color: '#FF8A7A', speed: 48,

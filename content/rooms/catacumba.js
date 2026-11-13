@@ -62,6 +62,38 @@ async function darFicha(api) {
   await api.scene('acto_3a');
 }
 
+// ------------------------------------------------------------------ el teléfono rojo (7.3a): Teodoro va a su mesa,
+// descuelga (objeto `telefono_rojo` → 'descolgado' y el auricular en su mano: `auricular` lo pinta el drawExtra de
+// content/actors.js), habla por él y cuelga. El sitio y la pose salen del arte (layout.teodoro_cuerpodoce.positions.telefono).
+const sitioTelefono = () => {
+  const p = art.layout.teodoro_cuerpodoce.positions && art.layout.teodoro_cuerpodoce.positions.telefono;
+  return (p && p.at) || [148, 106, 'left'];
+};
+async function descolgar(api) {
+  const [x, y, dir] = sitioTelefono();
+  await api.walkActor(TEO, x, y);
+  api.faceActor(TEO, dir || 'left');
+  await api.anim(TEO, 'reach', 450);
+  api.sfx('click');
+  api.setState('telefono_rojo', 'descolgado');
+  api.game.actors[TEO].auricular = true;
+  api.faceActor(TEO, 'down');
+  api.sfx('phone');
+  await api.wait(700);
+}
+async function colgar(api) {
+  await api.wait(300);
+  api.faceActor(TEO, sitioTelefono()[2] || 'left');
+  await api.anim(TEO, 'reach', 400);
+  api.game.actors[TEO].auricular = false;
+  api.setState('telefono_rojo', 'colgado');
+  api.sfx('click');
+  await api.wait(250);
+  const at = art.layout.teodoro_cuerpodoce.at;
+  await api.walkActor(TEO, at[0], at[1]);
+  api.faceActor(TEO, at[2] || 'left');
+}
+
 // ------------------------------------------------------------------ Escena 7.3a · Inicio del Acto III
 async function escenaActo3a(api) {
   await api.cutscene(async (api) => {
@@ -78,9 +110,9 @@ async function escenaActo3a(api) {
     await fax(api, ['Veintitrés líneas. Hueco, fuente y firma.', 'Página 7 cerrada.']);
     if ((api.flag('evaristo_llamadas') || 0) >= 3) await fax(api, 'Y la coma de Controlling, en su sitio. Ese hombre lee.');  // adenda 9.3
     // (Descuelga el teléfono rojo. Por primera vez se le oye la voz: ronca, bajita.)
-    api.sfx('phone');
-    await api.wait(500);
+    await descolgar(api);
     await api.sayAs(TEO, 'Goyita. Página 7 cerrada. Esta noche firma un chaval.');
+    await colgar(api);
     await aurora(api, 'Ha hablado. En voz alta. Desde 1996 no...');
     // (Se abre la puerta. Entra Íñigo con dos pósits azules.)
     const prev = api.actorPos('inigo_sinergia');
@@ -424,7 +456,7 @@ export default buildRoom({
         hablar: 'Le hablo al fax. Teodoro lo considera una grosería.',
         empujar: 'No. Es la única boca de Teodoro. Y muerde.',
       } },
-    { id: 'telefono_rojo', name: 'teléfono rojo', handlers: {
+    { id: 'telefono_rojo', name: 'teléfono rojo', state: 'colgado', states: ['colgado', 'descolgado'], handlers: {
       mirar: async (api) => { await api.say(['Línea directa con la rotativa, en el polígono.', 'Teodoro la usa para hablar de sentimientos.']); },
       usar: async (api) => { if (api.flag('fax_con_papel')) await fax(api, 'Ese teléfono no se toca. Es nuestro.'); else await palmada(api); },
       coger: async (api) => { if (api.flag('fax_con_papel')) await fax(api, 'Ese teléfono no se toca. Es nuestro.'); else await palmada(api); },
@@ -571,5 +603,8 @@ export default buildRoom({
     // idempotente: el estado del fax sigue al flag (también tras cargar o si otro paquete lo ha puesto)
     const st = api.flag('fax_con_papel') ? 'con_papel' : 'sin_papel';
     if (api.getState('fax') !== st) api.setState('fax', st);
+    // el teléfono rojo solo está descolgado mientras Teodoro habla en la escena 7.3a
+    if (api.getState('telefono_rojo') !== 'colgado') api.setState('telefono_rojo', 'colgado');
+    if (api.game.actors[TEO]) api.game.actors[TEO].auricular = false;
   },
 }, art);

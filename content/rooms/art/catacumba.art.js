@@ -5,6 +5,7 @@ import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, dit
   rng, hash2, shade, shadowEllipse, bevel, vignette, floorPlanks, desk, wallClock,
   bookshelf, newspaperStack, mug, papers, lightCone, trashBin } from '../../../engine/draw.js';
 import { greek, cap, pin, stain, dropShadow, fabric, cord } from './lib-catacumba-util.js';
+import { tiny } from './lib-oficina.js';
 
 const W = 320;
 const TOB = ['#2c2016', '#45321f', '#5f4829', '#7a5f35', '#957845', '#b09457', '#c9ae70']; // pared con nicotina
@@ -24,7 +25,10 @@ const layout = {
       default: (g, v, t) => drawFax(g, 96, 68, false, t),
     },
   },
-  telefono_rojo: { rect: [122, 74, 20, 12], walkTo: [132, 112], face: 'up' },
+  telefono_rojo: {
+    poly: [[111, 58], [146, 58], [146, 72], [143, 72], [143, 87], [122, 87], [122, 72], [111, 72]], walkTo: [132, 112], face: 'up',
+    sprites: { colgado: (g) => drawTelefono(g, false), descolgado: (g) => drawTelefono(g, true), default: (g) => drawTelefono(g, false) },
+  },
   tipometro: { rect: [143, 79, 16, 8], walkTo: [150, 112], face: 'up' },
   reloj_2147: { rect: [147, 35, 18, 18], walkTo: [152, 112], face: 'up' },
   fotos_jefes_cierre: { rect: [170, 29, 48, 24], walkTo: [194, 112], face: 'up' },
@@ -33,11 +37,32 @@ const layout = {
   libro_estilo: { rect: [256, 72, 28, 13], walkTo: [270, 114], face: 'up' },
   bolis_aurora: { rect: [285, 66, 15, 22], walkTo: [292, 114], face: 'up', priority: 1 },
   corrector_aurora: { rect: [256, 85, 28, 5], walkTo: [276, 116], face: 'up', priority: 2 },
-  teodoro_cuerpodoce: { at: [166, 104, 'left'], walkTo: [190, 114], face: 'left' },
+  // Teodoro: de pie junto a la cajonera; `telefono` = su sitio al teléfono rojo en la escena 7.3a (delante de su mesa,
+  // a la derecha del teléfono, para que se vean a la vez el aparato descolgado, el cable y el auricular en su oreja)
+  teodoro_cuerpodoce: { at: [166, 104, 'left'], walkTo: [190, 114], face: 'left', positions: { telefono: { at: [156, 106, 'left'] } } },
   aurora_galerada: { at: [238, 106, 'right'], walkTo: [222, 114], face: 'right' },
 };
 
 // ------------------------------------------------------------ objetos con estado
+/** Teléfono rojo sin teclas ni disco (línea directa con la rotativa). Descolgado: la horquilla vacía, el cable rizado
+ *  sube hacia la mano de Teodoro (el auricular lo pinta su `drawExtra` en content/actors.js mientras habla). */
+function drawTelefono(g, descolgado) {
+  poly(g, [[125, 79], [139, 79], [141, 85], [123, 85]], PAL.red[3]);
+  hline(g, 125, 79, 14, PAL.red[5]); hline(g, 123, 85, 19, PAL.red[1]);
+  ellipse(g, 132, 82, 4, 1.5, PAL.red[2]); px(g, 130, 81, PAL.red[6]);
+  if (!descolgado) {
+    rect(g, 123, 75, 19, 4, PAL.red[3]); hline(g, 123, 75, 19, PAL.red[5]); hline(g, 123, 78, 19, PAL.red[1]);
+    rect(g, 122, 76, 3, 5, PAL.red[2]); rect(g, 140, 76, 3, 5, PAL.red[2]);
+  } else {
+    // horquilla vacía: dos patillas y el botón de colgar levantado
+    rect(g, 124, 76, 2, 3, PAL.red[2]); rect(g, 138, 76, 2, 3, PAL.red[2]); px(g, 124, 76, PAL.red[5]); px(g, 138, 76, PAL.red[5]);
+    rect(g, 130, 77, 4, 2, PAL.metal[5]); hline(g, 130, 77, 4, PAL.metal[7]);
+    // el cable rizado sale tenso hacia la derecha y arriba (hacia el auricular)
+    for (let i = 0; i < 9; i++) px(g, 141 + i, 80 - Math.round(i * 0.9) + ((i & 1) ? 1 : 0), PAL.red[2]);
+  }
+  for (let i = 0; i < 6; i++) px(g, 122 - i, 84 + (i & 1), PAL.ink[1]);
+}
+
 /** Fax beige de 1992, 26x17. Sin papel: bandeja vacía + luz roja que parpadea; con papel: folios y papel continuo saliendo. */
 function drawFax(g, x, y, papel, t) {
   const B = PAL.paper;
@@ -239,13 +264,16 @@ function drawTeodoroDesk(g) {
   for (const [dx, h, c] of [[1, 6, PAL.red[4]], [2, 9, PAL.gold[4]], [3, 7, PAL.blue[4]], [4, 5, PAL.paper[5]]]) { vline(g, ax + dx, 80 - h, h, c); px(g, ax + dx, 80 - h, PAL.ink[1]); }
   line(g, ax + 5, 80, ax + 8, 77, PAL.paper[6]); px(g, ax + 8, 77, PAL.red[5]);
   papers(g, 123, 85, 14, { n: 2, seed: 4 });
-  // teléfono rojo sin teclas ni disco
-  poly(g, [[125, 79], [139, 79], [141, 85], [123, 85]], PAL.red[3]);
-  hline(g, 125, 79, 14, PAL.red[5]); hline(g, 123, 85, 19, PAL.red[1]);
-  rect(g, 123, 75, 19, 4, PAL.red[3]); hline(g, 123, 75, 19, PAL.red[5]); hline(g, 123, 78, 19, PAL.red[1]);
-  rect(g, 122, 76, 3, 5, PAL.red[2]); rect(g, 140, 76, 3, 5, PAL.red[2]);
-  ellipse(g, 132, 82, 4, 1.5, PAL.red[2]); px(g, 130, 81, PAL.red[6]);
-  for (let i = 0; i < 6; i++) px(g, 122 - i, 84 + (i & 1), PAL.ink[1]);
+  // (el teléfono rojo es el objeto `telefono_rojo`: se pinta por estado, colgado / descolgado)
+  // cartelito clavado en la pared encima del teléfono: «LÍNEA DIRECTA · ROTATIVA» (se lee desde la primera vez)
+  dropShadow(g, 111, 59, 35, 12, 1, 1, 0.5);
+  rect(g, 111, 59, 35, 12, PAL.paper[6]); hline(g, 111, 59, 35, PAL.paper[7]); hline(g, 111, 70, 35, PAL.paper[3]);
+  rect(g, 111, 59, 35, 3, PAL.red[3]);
+  tiny(g, 'ROTATIVA', 128, 64, PAL.red[2], { align: 'center' });
+  pin(g, 113, 61, PAL.gold[5]); pin(g, 143, 61, PAL.gold[5]);
+  // el cable rizado baja de la pared (la línea va «al polígono»): de la clavija al teléfono
+  for (let y = 71; y < 77; y++) px(g, 146 + ((y & 1) ? 1 : 0), y, PAL.ink[1]);
+  rect(g, 145, 69, 4, 3, PAL.metal[3]); px(g, 146, 70, PAL.ink[0]);
   // tipómetro
   poly(g, [[144, 86], [158, 81], [159, 83], [146, 88]], PAL.metal[6]);
   line(g, 144, 86, 158, 81, PAL.metal[7]);
