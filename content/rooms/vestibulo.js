@@ -1,7 +1,10 @@
 // SALA `vestibulo` — LÓGICA. Dueño: P1 · «Vestíbulo, Sistemas y final» (docs/guion2/PLAN_COMEDIA.md §11 P1).
 // Plan de comedia: §5.1 (árbol de Celestino), §4.7 (Celestino narra los hitos al entrar), §4.1 (el torno saluda con la
 // cafetera viral), §6.3 (líneas de Bruno de esta sala), §10.1 (fuera el rumor D y su desmentido). Se quedan: la intro
-// (7.1), el rumor A1 (planta), la frente sellada, el Ibex, el cuadro de plazas (8bis) y la rama del organigrama.
+// (7.1), la frente sellada, el Ibex, el cuadro de plazas (8bis) y la rama del organigrama.
+// ENMIENDA E2 (P1): L1-L3, L5-L7 (§6); pasos 1-4 (§7.4: intro sin narrador de más, «¿Tú eres el nuevo?» una vez, saludos
+// solo cada ≥ 2 entradas, cotilleo L2); fase B (1) fuera el rumor A (la planta ya no arranca nada: flag local
+// `vestibulo_planta_oyo`), (8) fuera la retransmisión del torno (L4); §7.6 «plaza de garaje» once; §8 y §3.3 (plazas).
 // Escenas que registra esta sala (globales): `intro` (§7.1, la lanza game.onStart) y, desde ../escenas/final.js,
 // `final` (§9: epílogo, fe de erratas y créditos; la lanza el clímax de P4) con su alias `epilogo`.
 // El arte y la geometría están en ./art/vestibulo.art.js: aquí no hay ni una coordenada propia.
@@ -41,8 +44,8 @@ const ibexLine = (api, n) => { const l = IBEX[acto(api)]; return l[(Math.max(1, 
 // adenda 8bis.1: el cuadro de llaves rota 1…5 (la 5, solo en el Acto III) y después entre la 2 y la última
 const PLAZAS = [
   ['El cuadro de llaves del garaje. Doce plazas. Ciento doce aspirantes.', 'Debajo, a lápiz, la línea de sucesión. Hay más tachones que nombres.'],
-  ['«Plaza 3: Ramírez. Libre desde 2019. Ocupada por su ausencia».', 'Es la más codiciada. Nadie la usa y todos la quieren.'],
-  ['«Sucesión plaza 3: Maripaz, Borja, Yoli, el ficus».', 'Me busco. Debajo del ficus: «Vacante (bici)». Tachado.'],
+  ['«Plaza 3: Ramírez. Libre. Ocupada por su ausencia».', 'Es la más codiciada. Nadie la usa y todos la quieren.'],    // E2 §8
+  ['«Sucesión plaza 3: Maripaz, Yoli, el ficus y el móvil de Borja».', 'Me busco. Debajo del todo: «Vacante (bici)». Tachado.'],   // E2 §3.3
   ['«Plaza 1: Teodoro C., 1997». No ha salido del edificio desde entonces.', 'Nadie se atreve a pedírsela. Ni a desearle nada.'],
   ['«Plaza 9: Optimal Brains, hasta 2031». Pegado encima de tres herederos.'],
 ];
@@ -59,7 +62,7 @@ async function intro(api) {
   await api.cutscene(async () => {
     await api.fadeOut(0);
     api.music(null, 0);
-    await api.narrate(['Viernes, 18:30. Cierre de la edición del sábado: 21:00.', 'A las 18:30 ya se ha ido casi todo el mundo.',
+    await api.narrate(['Viernes, 18:30. Cierre de la edición del sábado: 21:00.',     // E2 §7.4 paso 1: una línea menos
       'Bruno Pellejo. Seis años de becario. 4.112 piezas en la web.', 'Cero en papel.']);
     api.music('m_vestibulo', 1.5);
     api.face('right');
@@ -77,7 +80,7 @@ async function intro(api) {
       await api.phone.say('Eso es una bebida, hijo. ¿Y mañana sales en el periódico?');
       await api.say('Salgo todos los días, abuela. En la web.');
       await api.phone.say('En el de papel, digo. En el de verdad. El que mancha.');
-      await api.say('...');
+      await api.wait(900);                                                   // E2 §7.4 paso 1: el «...» de Bruno, en silencio
       await api.say('Mañana. Mañana salgo en el de papel. Te lo prometo.');
       await api.phone.say('¡Ay, qué ilusión! Se lo digo a la del quiosco. Y a la del pan.');
       await api.say('No hace falta que se lo digas a todo el...');
@@ -91,10 +94,12 @@ async function intro(api) {
     await api.sayFrom('torno', 'USUARIO NO CONSTA EN ORGANIGRAMA.', { color: LED });
     api.faceActor(C, 'bruno');
     await api.sayAs(C, '¿Tú eres el nuevo?');
+    api.once('vestibulo_celestino_primera');                                 // E2 §9 C1: el onStart de Celestino no lo repite
     api.face(C);
     await api.say('Llevo seis años.');
     await api.sayAs(C, 'Pues no te ha visto ni el torno.');
   });
+  api.setFlag('vestibulo_saludo_ent', api.flag('vestibulo_entradas_n') || 0);   // E2 §7.4 pasos 3-4: cuenta como saludo
   api.setFlag('intro_vista', true);
 }
 
@@ -136,17 +141,15 @@ async function tornoViral(api) {
 const celestinoDialog = {
   actor: C, start: 'C0',
   onStart: async (api) => {
-    // rumor A, paso 1 (se queda): la planta lo ha oído todo
-    if (api.flag('planta_oyo') && !(api.flag('rumor_firma_n') > 0)) {
-      await api.sayAs(C, '¡Me informa la planta! ¡Que el chaval quiere firmar en papel!');
-      await api.say('¿La planta habla?');
-      await api.sayAs(C, 'Hablar no. Pero oye. Y yo oigo a la planta.');
-      api.setFlag('rumor_firma_n', 1);
-    }
+    // (E2 fase B (1): fuera el rumor A, «¡Me informa la planta!…»)
     if (api.flag('bruno_sellado_frente') && api.once('vestibulo_celestino_frente')) {
       await api.sayAs(C, '¡Y el chaval aparece con tarjeta en la frente! ¡Roja! ¡Directa!');
     }
-    if (api.once('vestibulo_celestino_primera')) { await api.sayAs(C, '¿Tú eres el nuevo?'); return; }
+    if (api.once('vestibulo_celestino_primera')) { await api.sayAs(C, '¿Tú eres el nuevo?'); return; }   // sin intro (cargas antiguas)
+    // E2 §7.4 pasos 3-4: el saludo, solo si han pasado ≥ 2 entradas en la sala desde el último (o desde la intro)
+    const ent = api.flag('vestibulo_entradas_n') || 0, ult = api.flag('vestibulo_saludo_ent');
+    if (typeof ult === 'number' && ent - ult < 2) return;
+    api.setFlag('vestibulo_saludo_ent', ent);
     const n = api.inc('vestibulo_saludo_n');
     for (let k = 0; k < SALUDOS.length; k++) {
       const l = SALUDOS[(n - 1 + k) % SALUDOS.length](api);
@@ -177,19 +180,20 @@ const celestinoDialog = {
         { id: 'cafe', text: '¿Dónde hay café en esta casa?', once: true,
           reply: 'En el Vending. Gertrudis. La cafetera.',
           lines: [['player', '¿Y cómo se le pide?'], [C, 'Pedir, no. Se saluda. Dale las buenas noches.'],
-            [C, 'Desde 2019 no se las da nadie. Yo sí, que soy su servicio técnico.']],
+            [C, 'Nadie se las da. Yo sí. Por eso a mí me pone espuma.']],                       // E2 L1
           setFlag: 'celestino_pista_gertrudis' },
-        { id: 'cotilleo', text: '¿Algún cotilleo?', once: true,
-          reply: ['¡Jugada de ascensor, ayer! Gervasio, al de Mercados:', '«Que esto no salga de aquí».',
-            '¡Y el de Mercados la devuelve de primeras! «Tranquilo: de aquí no sale...»', '¡Y se cierra la puerta! ¡No oigo el final!'],
-          lines: [['player', '¿«...ni el wifi»?'], [C, '¡Eso! ¡Ni el wifi! ¿Tú cómo lo sabes?'], ['player', 'Porque aquí no sale.']],
+        { id: 'cotilleo', text: '¿Algún cotilleo?', once: true,                              // E2 L2 (A + E)
+          reply: ['¡Jugada de ascensor! Gervasio, al de Mercados: «Que esto no salga de aquí».',
+            '¡Y el de Mercados, de primeras: «Tranquilo: de aquí no sale ni el wifi»!',
+            '¡Tres años sin hablarse! ¡Y el wifi sigue sin salir!'],
           do: async (api) => { api.learnReply('rep_05'); } },
         { id: 'ibex', text: '¿Cómo va el Ibex?',                                            // (rota, se queda)
           do: async (api) => {
-            if (api.once('vestibulo_ibex_primera')) {
-              await api.sayAs(C, '¿Me preguntas por el Ibex? ¿A mí? ¿En treinta años?');
-              await api.anim(C, 'reach', 400);                                    // se ajusta la bufanda
-              await api.wait(500);
+            if (api.once('vestibulo_ibex_primera')) {                              // E2 L3 (A + G)
+              await api.sayAs(C, '¿El Ibex? ¿Me preguntas a mí por el Ibex?');
+              await api.anim(C, 'reach', 450);                                    // se le empañan las gafas; se ajusta la bufanda
+              await api.wait(600);
+              await api.sayAs(C, 'Treinta años en este mostrador y eres el primero.');
             }
             await api.sayAs(C, ibexLine(api, api.inc('vestibulo_ibex_pregunta')));
           } },
@@ -201,7 +205,7 @@ const celestinoDialog = {
             await api.sayAs(C, ['...', 'Ese aparato no sabe lo que es una prórroga.', 'Tú pregúntame por el Ibex de vez en cuando. Por si acaso.']);
             await api.say('Perdone. Lo he dicho en voz alta. Era para dentro.');
           } },
-        { id: 'plaza', text: '¿Cómo se consigue una plaza de garaje?',                        // adenda 8bis.1 (se queda)
+        { id: 'plaza', text: '¿Cómo se consigue una plaza de garaje?', once: true,            // adenda 8bis.1 · E2 §7.6: once
           reply: ['Dos maneras: jubilarse o un «accidente». Con comillas.', 'La segunda no ha funcionado nunca. Pero se entrena mucho.'],
           lines: [['player', '¿Y una plaza de bici?'], [C, '¿Tú eres el nuevo?']] },
         { id: 'nada', text: 'Nada, Celestino.', exit: true, reply: '¡Y el chaval se retira al vestuario sin marcar!' },
@@ -221,6 +225,10 @@ export default buildRoom({
     vestibulo_ibex_pregunta: 'int · rotación de «¿Cómo va el Ibex?» (Celestino)',
     vestibulo_buzon_abierto: 'bool · ya se ha leído la sugerencia del buzón',
     vestibulo_saludo_n: 'int · P1 · rotación del saludo de Celestino (plan §5.1)',
+    vestibulo_entradas_n: 'int · P1 · E2 §7.4: entradas en la sala (sin cargas)',
+    vestibulo_saludo_ent: 'int · P1 · E2 §7.4: entradas al último saludo (o intro)',
+    vestibulo_planta_oyo: 'bool · P1 · E2 fase B (1): Hablar ficus (lo lee Mirar)',
+    vestibulo_foto_resbalo: 'bool · P1 · E2 L5: la foto resbala 1 px (arte)',
   },
 
   objects: [
@@ -251,7 +259,12 @@ export default buildRoom({
         }
         api.sfx('paper');
         api.setFlag('foto_en_organigrama', true);
-        await api.say('Ya consto. Mi cara en el organigrama, con chicle. Huele a menta y a futuro.');
+        await api.say('Ya consto.');                                                // E2 L5 (G)
+        await api.wait(500);
+        api.setFlag('vestibulo_foto_resbalo', true);                                // la foto resbala un centímetro. Se para.
+        api.sfx('click');
+        await api.wait(700);
+        await api.say('...Un centímetro por debajo de donde la puse. Me parece justo.');
       },
       'usar:chicle': 'El chicle solo no. Necesito algo que pegar. Por ejemplo, mi cara.',
       coger: 'Es de la empresa. Y la empresa es del organigrama.',
@@ -292,14 +305,8 @@ export default buildRoom({
         await api.sayFrom('torno', 'BIENVENIDO, VACANTE.', { color: LED });
         if (!api.flag('torno_abierto')) {
           api.setFlag('torno_abierto', true);
+          api.once('hito_celestino:torno_abierto');            // E2 fase B (8): Celestino ya no retransmite el torno (ni L4)
           await api.say('...Vacante. Bueno. Es un cargo.');
-          // §4.7: primera retransmisión de la noche, desde el mostrador
-          api.faceActor(C, 'bruno');
-          if (await narrarHito(api)) {
-            api.face(C);
-            await api.say('Celestino, el Ibex.');
-            await api.sayAs(C, 'El Ibex está plano, chaval. Tú no.');
-          }
         } else await cruzarTorno(api);
       },
       'usar:chicle': 'Pegar un chicle en el torno es vandalismo. Pegarlo en el organigrama, gestión.',
@@ -317,7 +324,7 @@ export default buildRoom({
       coger: 'No cabe en la mochila. Y tiene más antigüedad que yo.',
     } },
     { id: 'pantalla_ibex', name: 'pantalla del Ibex', handlers: {
-      mirar: 'Rojo, verde, rojo, verde. Es un semáforo que te debe dinero.',
+      mirar: 'Rojo, verde, rojo, verde. Celestino grita «¡uy!» en cada rojo.',               // E2 L6
       usar: 'No se toca. Celestino la tiene como la tele del bar.',
       coger: 'Si me la llevo, Celestino se queda sin partido. Y yo sin portero.',
       hablar: '¡Arriba, Ibersideral! ...No me hace caso. Solo atiende a Celestino.',
@@ -372,12 +379,12 @@ export default buildRoom({
     { id: 'fardo_periodicos', name: 'fardo de periódicos', hotspot: false, visible: false },
     { id: 'planta_plastico', name: 'ficus', handlers: {
       mirar: async (api) => {
-        if (api.flag('planta_oyo')) await api.say('Juraría que tiene una hoja girada hacia mí. La de la oreja.');
+        if (api.flag('vestibulo_planta_oyo')) await api.say('Juraría que tiene una hoja girada hacia mí. La de la oreja.');
         else await api.say('Es de plástico. Aun así, es la que más tiempo lleva en plantilla.');
       },
       hablar: async (api) => {
         await api.say('Le cuento lo de la firma. No me juzga. No me pide ticket.');
-        api.setFlag('planta_oyo', true);
+        api.setFlag('vestibulo_planta_oyo', true);
       },
       coger: 'No. Es la única que ha sobrevivido a todos los ERE.',
       'dar:cafe': 'No bebe. Por eso dura tanto.',
@@ -451,7 +458,7 @@ export default buildRoom({
           await api.say('Es Pellejo.');
           await api.sayAs(C, 'Pues díselo al torno, que es el que manda.');
         },
-        'dar:cafe': cel('Gracias, pero el café me lo traigo en termo. Desde 1994.'),
+        'dar:cafe': cel('Gracias, pero el café me lo traigo en termo. Gertrudis y yo somos solo amigos.'),   // E2 L7
         'dar:chicle': cel('Ese chicle ya es tuyo. Aquí no se aceptan devoluciones. Ni en el torno.'),
         'dar:ficha_pagina_7': cel('¿Una ficha de la página 7? Eso, a la Redacción de papel. Yo solo veo pasar.'),
         'dar:ticket_n1': cel('¿Un ticket cerrado? Eso no lo había visto nunca. Y llevo aquí treinta años.'),
@@ -472,6 +479,7 @@ export default buildRoom({
   ambient: [],
 
   async onEnter(api) {
+    if (!api.restoring) api.inc('vestibulo_entradas_n');                       // E2 §7.4 pasos 3-4 (saludos de Celestino)
     if (!api.flag('intro_vista') || enEpilogo(api) || api.restoring) return;   // intro, epílogo y cargar partida: nada aquí
     // §4.7: si hay un hito sin narrar, Celestino lo retransmite; si no, una línea del Ibex (rotan dentro de cada acto)
     if (await narrarHito(api)) return;

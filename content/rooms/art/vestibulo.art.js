@@ -130,7 +130,7 @@ function drawDoorBody(g, dawn) {
 
 // ------------------------------------------------------------------ organigrama (frame fijo; la foto en VACANTE es el estado)
 const ORG = { x: 51, y: 28, w: 54, h: 62 };
-function vacanteSlot(g, vx, vy, foto, t) {
+function vacanteSlot(g, vx, vy, foto, t, drop = 0) {
   rect(g, vx, vy, 24, 11, PAL.paper[7]);
   for (let i = 0; i < 24; i += 2) { px(g, vx + i, vy, PAL.red[3]); px(g, vx + i, vy + 10, PAL.red[3]); }
   for (let i = 0; i < 11; i += 2) { px(g, vx, vy + i, PAL.red[3]); px(g, vx + 23, vy + i, PAL.red[3]); }
@@ -138,11 +138,14 @@ function vacanteSlot(g, vx, vy, foto, t) {
     // la foto del becario: 8×9 con borde blanco, chicle rosa, y un resplandor de «consto» que late
     const pulse = 0.22 + 0.1 * Math.sin((t || 0) / 380);
     glow(g, vx + 6, vy + 6, 14, 9, '#fff4c8', pulse, 4);
-    rect(g, vx + 1, vy + 1, 8, 9, '#ffffff');
-    rect(g, vx + 2, vy + 2, 6, 7, PAL.blue[6]);
-    rect(g, vx + 3, vy + 2, 4, 2, PAL.wood[3]); rect(g, vx + 3, vy + 4, 4, 3, PAL.skin[5]); px(g, vx + 4, vy + 5, PAL.ink[1]); px(g, vx + 6, vy + 5, PAL.ink[1]);
-    rect(g, vx + 2, vy + 7, 6, 2, PAL.blue[3]);
+    // [P1] E2 L5: con `drop` la foto ha resbalado (1 px, un centímetro); el chicle se queda donde estaba, estirado
+    const fy = vy + drop;
+    rect(g, vx + 1, fy + 1, 8, 9, '#ffffff');
+    rect(g, vx + 2, fy + 2, 6, 7, PAL.blue[6]);
+    rect(g, vx + 3, fy + 2, 4, 2, PAL.wood[3]); rect(g, vx + 3, fy + 4, 4, 3, PAL.skin[5]); px(g, vx + 4, fy + 5, PAL.ink[1]); px(g, vx + 6, fy + 5, PAL.ink[1]);
+    rect(g, vx + 2, fy + 7, 6, 2, PAL.blue[3]);
     px(g, vx + 0, vy + 0, '#f2a0c8'); px(g, vx + 1, vy + 0, '#f2a0c8'); px(g, vx + 0, vy + 1, '#f2a0c8');           // el chicle
+    if (drop) px(g, vx + 1, vy + 1, '#f2a0c8');
     kit.micro(g, 'VACANTE', vx + 11, vy + 3, PAL.crt[2]);
   } else {
     rect(g, vx + 2, vy + 2, 7, 8, PAL.paper[4]);
@@ -202,7 +205,7 @@ function organigrama(g) {
   kit.cantoVivo(g, x - 2, y - 2, w + 4, h + 4);
 }
 function drawVacante(g, view, t) {
-  if (view.flag('foto_en_organigrama')) vacanteSlot(g, VAC.x, VAC.y, true, t);
+  if (view.flag('foto_en_organigrama')) vacanteSlot(g, VAC.x, VAC.y, true, t, view.flag('vestibulo_foto_resbalo') ? 1 : 0);
 }
 
 // ------------------------------------------------------------------ cuadro de llaves + línea de sucesión
@@ -660,6 +663,20 @@ export function drawCruasan(g, x, y) {
   rect(g, cx + 2, cy - 2, 2, 2, '#1c1828');                                                                   // el mordisco
 }
 
+/** [P1] E2 §4.5: el periódico de Maripaz, abierto por la página 7 (api.sostener, epílogo). Con `banner`, el anuncio que
+ *  dibuja a rotulador entre dos líneas (naranja de Comercial) y el rotulador en la mano. */
+export function drawPeriodicoMaripaz(g, x, y, s, dir, banner = false) {
+  const w = 13, h = 9, bx = Math.round(x - (dir === 'left' ? w - 3 : 3)), by = Math.round(y - h + 3);
+  rect(g, bx, by, w, h, '#ece4cc'); vline(g, bx + (w >> 1), by, h, '#c8bea0');                                // doble página
+  frameRect(g, bx, by, w, h, '#a89c80');
+  hline(g, bx + 1, by + 1, 5, PAL.ink[1]); hline(g, bx + 1, by + 2, 4, PAL.ink[2]);                          // titular de la 7
+  for (let i = 0; i < 3; i++) { hline(g, bx + 1, by + 4 + i * 2, 5, '#9a907a'); hline(g, bx + 7, by + 2 + i * 2, 5, '#9a907a'); }
+  if (banner) {
+    rect(g, bx + 1, by + 5, 5, 1, '#FF8A60'); px(g, bx + 1, by + 5, '#d0402a'); px(g, bx + 5, by + 5, '#d0402a');   // el banner, a rotulador
+    vline(g, bx + w, by - 2, 4, '#d0402a'); px(g, bx + w, by + 2, PAL.ink[1]);                                   // el rotulador
+  }
+}
+
 // ------------------------------------------------------------------ primer plano: poste y cordón de seguridad
 function foreground(g) {
   const px0 = 9;
@@ -712,14 +729,15 @@ const layout = {
 };
 
 // Epílogo (§7.5, sábado 6:00): sitios del reparto del amanecer (los usa content/escenas/final.js). Rubén junto al
-// organigrama mirando la luz de la calle; Íñigo y Gervasio salen del ascensor (`from`), cruzan el torno ya abierto y se
-// paran ante el mostrador (a un lado: nadie tapa a Celestino); Gervasio se va por la puerta de la calle (`salida`). Bruno
+// organigrama mirando la luz de la calle; Íñigo y Maripaz salen del ascensor (`from`), cruzan el torno ya abierto y se
+// paran ante el mostrador (a un lado: nadie tapa a Celestino); salen por la puerta de la calle (`salida`). Bruno
 // espera entre el cuadro de llaves y el organigrama; el fardo de periódicos está sobre el mostrador y Bruno lo lee a un lado.
 const epilogo = {
   ruben: [64, 116, 'right'],
   bruno: [112, 124, 'left'],
   inigo_sinergia: { from: [N.ascensor.entrada[0], N.ascensor.entrada[1], 'left'], at: [150, 118, 'right'] },
-  gervasio_acta: { from: [258, 112, 'left'], at: [188, 116, 'left'], salida: [30, 124] },   // ya cruzado el torno, lejos del carril «AVERIADO»
+  // [P1] E2 §4.5 (fase B (5)): Gervasio ya no sale en el epílogo; su sitio, del ascensor al mostrador, es de Maripaz
+  maripaz_remitido: { from: [N.ascensor.entrada[0], N.ascensor.entrada[1], 'left'], at: [188, 116, 'left'] },
   salida: [10, 118],
   periodicos: [150, 122],
   // [P1] plan §9: Ramírez entra por la puerta de la calle y sube por la escalera; Yoli baja por ella y sale a la calle

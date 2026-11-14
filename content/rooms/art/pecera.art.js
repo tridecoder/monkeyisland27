@@ -598,7 +598,7 @@ function drawEnchufe(g, view) {
   if (pulled) line(g, tx + 2, ty + th - 2, tx + tw - 3, ty + 1, PAL.paper[2]);                // la cinta, arrancada en diagonal
   label(g, 'NO', tx + (tw >> 1), ty - 2, PAL.red[3], { align: 'center' });
   micro(g, 'DESENCHUFAR', tx + 2, ty + 8, PAL.red[2]);
-  if (view.state === 'con_ticket') {               // camino antiguo (§4.2): la excepción de Nemesio, en otra tira
+  if (view.state === 'con_ticket') {               // camino antiguo (§4.2): la excepción de Anselmo, en otra tira
     rect(g, tx + 2, ty + th + 1, tw - 4, 7, PAL.paper[5]); hline(g, tx + 2, ty + th + 1, tw - 4, PAL.paper[7]);
     micro(g, 'SALVO T.3', tx + (tw >> 1), ty + th + 2, PAL.blue[2], { align: 'center' });
   }
@@ -691,12 +691,14 @@ function drawMesaDibujo(g) {
   lightCone(g, L.lx - 4, L.ly, 4, 26, 18, '#fff0c0', 0.25);
   kit.cantoVivo(g, x, y, 37, 18);
 }
-/** Herminia (ENMIENDA E1.8): el portátil de Leoncio, de cara, con la pegatina «INFOGRAFÍA» en la tapa y barras que
- *  crecen. Cuatro estados (el de la escena, `view.state`, o el que dan los flags): `cinta_1` una tira de carrocero en
+/** Herminia (ENMIENDA E1.8 + E2 §2.2): el portátil de Leoncio, de cara, con la pegatina «INFOGRAFÍA» en la tapa, la de
+ *  «IA» en la esquina de la pantalla (menos en `paquete`) y barras que crecen. `limpio` (antes de la 7.2): sin cinta.
+ *  Cuatro estados (el de la escena, `view.state`, o el que dan los flags): `cinta_1` una tira de carrocero en
  *  diagonal · `cinta_2` dos tiras en aspa · `paquete` envuelto entero, con un hueco de 4×3 por el que se ve la pantalla ·
  *  `anexionada` sin cinta y con la pegatina «DESARROLLO» (6×2) encima de la de «INFOGRAFÍA». */
 function estadoHerminia(view) {
   if (view.state) return view.state;
+  if (!view.flag('inigo_presentado')) return 'limpio';          // E2 §2.3.1: la primera tira se pone en la escena 7.2
   if (view.flag('infografia_integrada')) return 'anexionada';
   if (view.flag('dos_ias_vista')) return 'paquete';
   if (view.flag('herminia_midio')) return 'cinta_2';
@@ -734,7 +736,30 @@ function drawHerminia(g, view, t) {
     glow(g, hx + 2, hy + 1, 5, 4, '#ffb070', 0.2, 2);
     micro(g, 'PENDIENTE', sx + (sw >> 1), sy + 3, PAL.red[3], { align: 'center' });
   }
+  if (st !== 'paquete') {
+    // E2 §2.2: la segunda pegatina, blanca, con «IA» en rojo, en la esquina de la pantalla (encima de la cinta)
+    const ix = sx + sw - 11, iy = sy + 2;
+    rect(g, ix + 1, iy + 1, 10, 7, PAL.shadow);
+    rect(g, ix, iy, 10, 7, '#fbfbf6'); hline(g, ix, iy + 6, 10, PAL.metal[4]);
+    micro(g, 'IA', ix + 2, iy + 1, PAL.red[3]);
+  }
   kit.cantoVivo(g, sx, sy, sw, sh + 2);
+}
+/** E2 §2.6.5: la mesa vacía de Desarrollo donde estaba Nemesio. Mesita de canto con un monitor apagado, la silla vacía
+ *  arrimada (de espaldas) y dos pósits: «GUARDIA: ANSELMO» en el respaldo y «DE LA GUARDIA» en la tapa. */
+function drawMesaGuardia(g) {
+  const x = 594, y = 90, w = 24, h = 14;
+  deskFront(g, x, y, w, h, { drawers: false, top: [PAL.metal[4], PAL.metal[5], PAL.metal[6]], body: [PAL.metal[1], PAL.metal[2], PAL.metal[3]] });
+  // monitor apagado sobre la mesa
+  rect(g, x + 4, y - 9, 12, 9, PAL.metal[2]); rect(g, x + 5, y - 8, 10, 7, PAL.ink[0]); hline(g, x + 6, y - 7, 4, PAL.metal[3]);
+  rect(g, x + 9, y - 1, 2, 1, PAL.metal[3]);
+  // pósit pequeño en la tapa
+  rect(g, x + 18, y - 4, 5, 4, POSTIT.y); hline(g, x + 18, y - 4, 5, '#fff2a0');
+  // la silla vacía, arrimada
+  chairBack(g, x + 12, y + 22, {});
+  // el pósit del respaldo: «GUARDIA» (legible) y una raya debajo (el nombre)
+  rect(g, x + 7, y + 1, 11, 7, POSTIT.y); hline(g, x + 7, y + 1, 11, '#fff2a0'); hline(g, x + 7, y + 7, 11, '#c8b030');
+  micro(g, 'G', x + 8, y + 2, PAL.ink[2]); hline(g, x + 12, y + 3, 5, PAL.ink[3]); hline(g, x + 12, y + 5, 4, PAL.ink[3]);
 }
 /** cartel de la frontera, a mano, pegado en la pilastra de 480: «SOLO CÓDIGO» entero */
 function drawCartelFrontera(g) {
@@ -1106,7 +1131,8 @@ const layout = {
     // PNJ (docs/GUIA_REDISENO.md §10): Bruno siempre a un lado, a ≥ 24 px
     yoli_tendencias: { at: [309, 116, 'down'], walkTo: [284, 126], face: 'right' },
     leoncio_quesitos: { at: [434, 114, 'down'], walkTo: [410, 126], face: 'right' },
-    nerea_backlog: { at: [598, 114, 'left'], walkTo: [624, 126], face: 'left' },
+    // E2 §2.6.5: donde estaba Nemesio, su mesa vacía (sin sprite): «GUARDIA: ANSELMO»
+    mesa_guardia: { rect: [592, 84, 26, 30], walkTo: [612, 124], face: 'up', draw: drawMesaGuardia },
     anselmo_monolito: { at: [672, 118, 'left'], walkTo: [696, 128], face: 'left' },
     // solo en la escena 7.2 (pecera.escenas.js): presenta bajo la pantalla de métricas, entre Bruno y Yoli
     inigo_sinergia: { at: [246, 122, 'down'] },

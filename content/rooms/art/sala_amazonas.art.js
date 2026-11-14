@@ -23,6 +23,7 @@ import {
   glow, shadowEllipse, ditherPick, hash2, rng, fadeRows, vignette, cityWindow, wallClock, shade, label,
 } from '../../../engine/draw.js';
 import { POSTIT, chairBack, blinds, rainOnGlass, rainyGlassStatic, cable } from './lib-oficina.js';
+import { drawText, measure } from '../../../engine/font.js';
 import { paperDoll, getFrame } from '../../../engine/sprites.js';
 import * as kit from '../../lib/kit.js';
 import ACTORS from '../../actors.js';
@@ -551,6 +552,99 @@ export function detalleAtrezo(g, r, t) {
   rect(g, px0 - 3, py0 - 2, 10, 4, 'rgba(244,236,176,0.7)'); rect(g, px0 + pw - 7, py0 + ph - 2, 10, 4, 'rgba(244,236,176,0.7)');
   void t;
 }
+
+// ------------------------------------------------------------------ [P4] ENMIENDA E2 §4.2 · los anuncios de Maripaz
+// Funciones de dibujo para api.detalle (coordenadas de PANTALLA dentro de r = { x, y, w, h }). La «×» de cerrar y la
+// cuenta atrás las pinta el motor encima (`cerrarX`, `cuenta`).
+
+/** §4.2.1 · el pop-up de la X menguante: «¿Le interesa anunciarse en esta conversación?», un «¡SÍ!» naranja enorme y,
+ *  debajo, un «no, gracias» de 1 px de gris que casi no se ve. 150×60. */
+export function popupComercial(g, r, t) {
+  const { x, y, w, h } = r;
+  rect(g, x, y, w, h, '#fbfaf2');
+  rect(g, x, y, w, 9, '#ececec'); hline(g, x, y + 9, w, '#c8c0b0');
+  kit.micro(g, 'PUBLICIDAD', x + 4, y + 2, '#8a8a96', { registrar: false });
+  drawText(g, '¿Le interesa anunciarse', x + (w >> 1), y + 9, '#2a2430', { align: 'center', outline: null });
+  drawText(g, 'en esta conversación?', x + (w >> 1), y + 19, '#2a2430', { align: 'center', outline: null });
+  // el botón: enorme, naranja, latiendo
+  const late = Math.floor((t || 0) / 380) % 2;
+  const bw = 64 + late * 2, bh = 15 + late, bx = x + ((w - bw) >> 1), by = y + 33 - (late >> 1);
+  rect(g, bx + 2, by + 2, bw, bh, '#b8a890');
+  rect(g, bx, by, bw, bh, '#ff7a20'); frameRect(g, bx, by, bw, bh, '#b04a10'); hline(g, bx + 1, by + 1, bw - 2, '#ffb070');
+  drawText(g, '¡SÍ, QUIERO!', x + (w >> 1), by + 1 + (bh >> 1) - 7, '#ffffff', { align: 'center', outline: '#b04a10' });
+  // el «no»: diminuto, gris sobre gris claro (solo se lee si se busca)
+  kit.micro(g, 'NO, GRACIAS', x + (w >> 1), y + h - 6, '#dcd8cc', { align: 'center', registrar: false });
+}
+
+/** §4.2.2 · la página 7 según Comercial: todo anuncios; un banner entre cada dos «líneas» (que son más banners); un
+ *  faldón de Siestatón que ocupa media página y, en el centro, UNA franja gris de 1 px con el rótulo «noticia». 200×100. */
+export function paginaComercial(g, r, t) {
+  const { x, y, w, h } = r;
+  rect(g, x, y, w, h, '#f4efe0');
+  // cabecera de página
+  rect(g, x, y, w, 9, '#2a2430');
+  kit.micro(g, 'ECONOMÍA', x + 4, y + 2, '#f4efe0', { registrar: false });
+  kit.micro(g, '7', x + w - 7, y + 2, '#ffd040', { registrar: false });
+  // columna derecha: rascacielos de Cafés Madrugón (alto, estrecho)
+  const cx = x + w - 30;
+  rect(g, cx, y + 11, 28, 40, '#5a2e14'); frameRect(g, cx, y + 11, 28, 40, '#3a1a08');
+  kit.micro(g, 'CAFÉS', cx + 14, y + 14, '#ffd8a0', { align: 'center', registrar: false });
+  kit.micro(g, 'MADRU', cx + 14, y + 21, '#ffd8a0', { align: 'center', registrar: false });
+  kit.micro(g, 'GÓN', cx + 14, y + 27, '#ffd8a0', { align: 'center', registrar: false });
+  rect(g, cx + 9, y + 36, 10, 8, '#fbfaf2'); rect(g, cx + 19, y + 38, 2, 4, '#fbfaf2'); hline(g, cx + 10, y + 37, 8, '#7a4a24');
+  // fila de módulos arriba a la izquierda
+  const mods = [['ANUNCIO', '#3a7ac8'], ['ANUNCIO', '#2c9a4c'], ['TILAS', '#c83a8a']];
+  const mw = Math.floor((w - 36) / 3) - 2;
+  mods.forEach(([txt, c], i) => {
+    const mx = x + 3 + i * (mw + 2);
+    rect(g, mx, y + 11, mw, 14, c); frameRect(g, mx, y + 11, mw, 14, shade(c, -0.3));
+    kit.micro(g, txt, mx + (mw >> 1), y + 16, '#ffffff', { align: 'center', registrar: false });
+  });
+  // entre «línea» y «línea», un banner: tres tiras de colores (cada una con su BANNER), alternando
+  const bx = x + 3, bw = w - 36;
+  const tiras = ['#ffcc33', '#ff7a52', '#7ad0ff'];
+  for (let i = 0; i < 3; i++) {
+    const by = y + 27 + i * 6;
+    rect(g, bx, by, bw, 5, tiras[i]);
+    const on = ((Math.floor((t || 0) / 300) + i) % 3) === 0;
+    kit.micro(g, on ? 'BANNER!' : 'BANNER', bx + (bw >> 1), by, PAL.ink[1], { align: 'center', registrar: false });
+  }
+  // LA NOTICIA: una sola franja gris de 1 px, con su rótulo diminuto (y una flecha, por si acaso)
+  const ny = y + 47;
+  hline(g, bx + 30, ny, bw - 60, '#9a968c');
+  kit.micro(g, 'NOTICIA', bx + bw - 28, ny - 2, '#9a968c', { registrar: false });
+  line(g, bx + bw - 32, ny, bx + bw - 30, ny, '#9a968c');
+  // otro banner debajo de la noticia, que no respire
+  rect(g, bx, y + 50, bw, 5, '#ffcc33');
+  kit.micro(g, 'BANNER', bx + (bw >> 1), y + 50, PAL.ink[1], { align: 'center', registrar: false });
+  // el faldón de Siestatón: media página
+  const fy = y + 57, fh = h - 57 - 2;
+  gradV(g, x + 2, fy, w - 4, fh, ['#1c2a58', '#2a3c78']);
+  frameRect(g, x + 2, fy, w - 4, fh, '#0e1430');
+  drawText(g, 'COLCHONES SIESTATÓN', x + 4 + ((w - 60) >> 1), fy + 4, '#ffffff', { align: 'center', outline: '#0e1430' });
+  kit.micro(g, 'DUERMA COMO NUNCA', x + 4 + ((w - 60) >> 1), fy + 20, '#9fd0ff', { align: 'center', registrar: false });
+  kit.micro(g, 'ANUNCIO: 40 LÍNEAS', x + 4 + ((w - 60) >> 1), fy + 30, '#ffcc33', { align: 'center', registrar: false });
+  // el colchón (con su almohada) y las zetas
+  const kx = x + w - 52, ky = fy + 20;
+  rect(g, kx, ky, 42, 9, '#e8ecf8'); frameRect(g, kx, ky, 42, 9, '#9aa8c8'); hline(g, kx + 1, ky + 4, 40, '#c8d0e8');
+  rect(g, kx + 3, ky - 4, 12, 5, '#ffffff'); frameRect(g, kx + 3, ky - 4, 12, 5, '#9aa8c8');
+  const z = Math.floor((t || 0) / 500) % 3;
+  for (let i = 0; i <= z; i++) kit.micro(g, 'Z', kx + 20 + i * 6, ky - 8 - i * 4, '#ffffff', { registrar: false });
+}
+
+/** La tableta de Maripaz en alto (estampida, §4.3): un anuncio con su «5 s». Para api.sostener(MARIPAZ, { draw }). */
+export const tabletaEnAlto = {
+  draw(g, x, y, s, dir) {
+    const tx = Math.round(x - 6), ty = Math.round(y - 30 * s);
+    vline(g, Math.round(x), ty + 9, Math.round(26 * s), PAL.ink[1]);               // el brazo, estirado
+    rect(g, tx - 1, ty - 1, 15, 11, PAL.ink[0]);
+    rect(g, tx, ty, 13, 9, '#1c2a58');
+    rect(g, tx + 1, ty + 1, 11, 3, '#ff7a20');
+    kit.micro(g, '5', tx + 5, ty + 4, '#ffffff', { registrar: false });
+    void dir;
+  },
+};
+void measure;
 
 // ------------------------------------------------------------------ geometría
 const layout = {

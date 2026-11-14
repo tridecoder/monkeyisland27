@@ -3,6 +3,7 @@
 // Evaristo Salvedad, MP2), §4.7 y §8bis (opciones de Begoña, yunque), §4.8 (combinaciones), murmullos.
 // Reescritura de comedia, paquete P3 (docs/guion2/PLAN_COMEDIA.md): §5.8 Begoña, §4.5 la entrada nueva de la pared
 // (la factura del fax de la Redacción de papel), §6.3-6.4 líneas sueltas. El cartel del recorte lo firma Administración.
+// ENMIENDA E2 (P3): §5.2 (Evaristo, paso 28, en ./administracion.dialogos.js), §8 (fuera «desde julio»).
 // El arte y la geometría están en ./art/administracion.art.js (artista de fondos). Árboles en ./administracion.dialogos.js.
 import { buildRoom } from '../lib/room.js';
 import art from './art/administracion.art.js';
@@ -127,7 +128,7 @@ export default buildRoom({
     } },
     // ADENDA §3.8 · despacho de Controlling
     { id: 'puerta_controlling', name: 'puerta de Controlling', handlers: {
-      mirar: async (api) => { await api.say(['«CONTROLLING Y FINANZAS». Detrás del cristal, un señor lee con lupa.', 'Lee un contrato. Por la cláusula 12. Lleva ahí desde julio.']); },
+      mirar: async (api) => { await api.say(['«CONTROLLING Y FINANZAS». Detrás del cristal, un señor lee con lupa.', 'Lee un contrato con lupa. Va por la cláusula 12. Lleva una semana en ella.']); },
       usar: hablarEvaristo,
       abrir: hablarEvaristo,
       empujar: async (api) => { await sayBe(api, 'A don Evaristo no se le empuja. Se le espera.'); },
@@ -194,6 +195,7 @@ export default buildRoom({
         'dar:acta_reunion': async (api) => { await sayEv(api, 'Dos faltas y ninguna coma. Casi es poesía. Mala, pero poesía.'); },
         'dar:cafe': async (api) => { await sayEv(api, 'Gracias. ¿Lleva ticket? No lo digo yo. Lo diría Begoña.'); },
         'dar:tarjeta_becario': async (api) => { await sayEv(api, '«Pellizco». Se lo corrijo a lápiz. Rojo el error, azul usted.'); },
+        'dar:correo_evaristo': async (api) => { await sayEv(api, 'Es mío. Pero lo envía usted. En el momento oportuno.'); },
         'dar:boli_muerto': async (api) => { await sayEv(api, 'Sin tinta. Ni para una coma. Lo siento por él.'); },
         'dar:ficha_pagina_7': async (api) => { await sayEv(api, 'Tres casillas y ninguna coma. Así cualquiera firma.'); },
         'dar:*': async (api) => { await sayEv(api, 'Gracias. Lo leo y le escribo. Un correo. Muy pequeño.'); },
