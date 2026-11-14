@@ -5,7 +5,9 @@
 > la IA se pierden y falta la frase de Anselmo; no se entiende que Herminia es una IA; Marketing no me gusta: quita a
 > Borja y conviértelo en un objeto; recupera a una Maripaz muy divertida que lo venda todo; haz la 1, 2, 3 y sobre todo
 > la 4. El juego ha empeorado». Orden posterior: **«Fundiría a los dos de Desarrollo en un personaje. Se queda solo el
-> director de Desarrollo y el coro de desarrolladores.»**
+> director de Desarrollo y el coro de desarrolladores.»** **Revisión 2 (aprobada):** el dueño aprueba E2, reorienta a
+> Maripaz hacia «cada píxel es espacio publicitario» (§4, reescrita entera), aprueba la fase B de recorte (§7.5) y las
+> despedidas que solo se oyen una vez (§7.2), y pide el criterio de opciones repetibles (§7.6). Todo es definitivo.
 >
 > Este documento es **guion para implementar al pie de la letra**. Cada texto entre «» o en bloque `text` es literal.
 > Las acotaciones (entre paréntesis) son acciones, nunca texto en pantalla. `fichero:línea` = línea actual del árbol de
@@ -54,10 +56,10 @@ nuevas) pero, al podar y uniformar, **quitó a tres personajes su motor cómico*
 | D3 | La guerra Leoncio–Anselmo, en cuatro escenas obligatorias: 7.2, paso 34, momento 8, paso 40 | §2.4 |
 | D4 | **Nemesio desaparece**: Anselmo hereda su tablero, sus pasos (24 y 40), «salida en valor» y lo mejor de su voz | §2.6 |
 | D5 | **Borja desaparece**: queda **el aro de luz de Borja**, con su móvil publicando solo (posts programados con huecos) | §3 |
-| D6 | **Maripaz vuelve** a su «cariño» y a facturarlo todo, con gong, tarifas y paquetes; estrella de los pasos 25-26 y del epílogo | §4 |
+| D6 | **Maripaz, la de los anuncios**: ve cada píxel como espacio publicitario («todavía cabe un banner», «eso te lo arreglo con un pop-up», «se ve demasiado la noticia»), con gags visuales (la X menguante, la página 7 llena de anuncios, el adhesivo en la espalda de Bruno, el anuncio antes de entrar, el faldón más largo que la pieza); «cariño» y gong como condimento | §4 |
 | D7 | **Evaristo entra en el camino**: pasos nuevos 28 (escucharle) y 32 (Aurora bendice la coma y la manda por fax); su correo es el **tercer remate del duelo final** | §5 |
 | D8 | Una sola trama de coma (fuera la de 4,15 €); fuera la frase críptica del clímax | §5.6, §9 |
-| D9 | 38 líneas reescritas con otras formas de chiste; recorte del 20 % del texto existente del camino principal; «desde [fecha]» de 63 a 6 | §6–§8 |
+| D9 | 38 líneas reescritas con otras formas de chiste; recorte del 30 % del texto existente del camino principal (fase B incluida), despedidas una sola vez, criterio de opciones repetibles; «desde [fecha]» de 63 a 6 | §6–§8 |
 
 **Recorrido:** **44 pasos** (42 + 2 nuevos sin cambio de sala), **28 cambios de sala (6/14/8)**, igual que hoy.
 
@@ -87,11 +89,11 @@ del dueño (no se recuperan). Lo que sigue es lo que **hacía gracia y se perdi�
 | P8 | Herminia, Mirar | «Herminia. Un portátil que hace infografías sola. Con nuestra tipografía.» / «Delante, dos sillas vacías con chaqueta. Mirándola.» | «Un portátil con pegatina "INFOGRAFÍA"» (no dice IA) | §2.2 |
 | P9 | Nemesio | «Cierra la puerta al salir. No hay puerta. Ciérrala igual.» | No existe | §2.6, despedida de Anselmo |
 | P10 | Nemesio, álbum | «Diles que en nuestros corazones está en Hecho.» | No existe | §2.6, N_SALIDA (Anselmo) |
-| P11 | Maripaz, roll-up y objetos | «Ahora tú eres el anuncio, cariño. Te cobro el metro cuadrado.» · «Eso, cariño, es una baja de campaña. Te la facturo.» · «El roll-up no se toca, cariño. Está contratado hasta 2030.» · «Eso no es una venta, cariño. Es una ilusión. Y no la facturo.» · «El día que pagues tú, cariño.» · «¡Deja eso, cariño! Es una inversión a largo plazo.» | Mismas frases sin «cariño» y con «(*IVA aparte.)» detrás | §4.4 |
-| P12 | Maripaz, cuerpo | «Uy, cariño. Eso lo facturo como experiencia de usuario.» · «A mí no se me coge, cariño. Se me contrata.» · «¿«Pellizco»? Eso no es un nombre, cariño. Es un formato publicitario.» | Ídem, con asterisco | §4.3 |
-| P13 | Maripaz, D1 | «¿Llamar yo a Siestatón un viernes a estas horas? / Te lo pongo por escrito, cariño.» · «Eso no lo patrocina nadie, cariño. / Muy bonito. Cero euros.» | «Te lo mando por correo. Con copia.» · «(*Y de otra tarifa.)» | §4.5 |
-| P14 | Maripaz, silla 113 | «Me has devuelto la silla, cariño. Te la facturo como mudanza.» | No existe (el micropuzle de Pilar se queda sin pago) | §4.4 |
-| P15 | Maripaz, rumor C | «Teodoro es el dueño del edificio, cariño. Lo compró en el 97. Por fax.» | «(*Fuente: yo.)» | §4.2 |
+| P11 | Maripaz, roll-up y objetos | «Ahora tú eres el anuncio, cariño. Te cobro el metro cuadrado.» · «Eso, cariño, es una baja de campaña. Te la facturo.» · «El roll-up no se toca, cariño. Está contratado hasta 2030.» · «Eso no es una venta, cariño. Es una ilusión. Y no la facturo.» · «El día que pagues tú, cariño.» · «¡Deja eso, cariño! Es una inversión a largo plazo.» | Mismas frases sin «cariño» y con «(*IVA aparte.)» detrás | §4 (rev. 2: como condimento; ver §4.1) |
+| P12 | Maripaz, cuerpo | «Uy, cariño. Eso lo facturo como experiencia de usuario.» · «A mí no se me coge, cariño. Se me contrata.» · «¿«Pellizco»? Eso no es un nombre, cariño. Es un formato publicitario.» | Ídem, con asterisco | §4 (rev. 2: como condimento; ver §4.1) |
+| P13 | Maripaz, D1 | «¿Llamar yo a Siestatón un viernes a estas horas? / Te lo pongo por escrito, cariño.» · «Eso no lo patrocina nadie, cariño. / Muy bonito. Cero euros.» | «Te lo mando por correo. Con copia.» · «(*Y de otra tarifa.)» | §4 (rev. 2: como condimento; ver §4.1) |
+| P14 | Maripaz, silla 113 | «Me has devuelto la silla, cariño. Te la facturo como mudanza.» | No existe (el micropuzle de Pilar se queda sin pago) | §4 (rev. 2: como condimento; ver §4.1) |
+| P15 | Maripaz, rumor C | «Teodoro es el dueño del edificio, cariño. Lo compró en el 97. Por fax.» | «(*Fuente: yo.)» | §4 (rev. 2: como condimento; ver §4.1) |
 | P16 | Celestino, cotilleo | «En el ascensor, Gervasio le dijo a uno: «Que esto no salga de aquí».» / «Y el otro: «Tranquilo: de aquí no sale ni el wifi».» / «Llevan tres años sin hablarse. Por el wifi.» | Versión cortada en la puerta + «Porque aquí no sale.» (opaca, crítica §3.1.3) | §6, L5 |
 | P17 | Rubén, el precio | «Para Íñigo, soy una licencia. Factura 48.000 euros al mes.» | No existe: nadie une el Titulator con los 48.000 € antes de Evaristo | §5.4 (armario) |
 | P18 | Paco, Herminia | «Esta casa da de alta antes a un portátil que a un chaval.» | Bruno: «…Lo apunto en «injusticias».» | §6, L16 |
@@ -592,7 +594,6 @@ piloto rojo «EN DIRECTO» parpadeando). `rect` aproximado [108, 58, 22, 54], `w
 | Mirar (1.ª) | BRUNO: «Un aro de luz con el móvil de Borja. Borja se fue a las seis.» / «El móvil no. Tiene publicaciones programadas hasta el lunes.» |
 | Mirar (2.ª, 3.ª, 4.ª; rota) | «En pantalla: «Programado: lunes, 9:00. Feliz lunes, [NOMBRE].»» · «En pantalla: «Programado: viernes. Cerramos semana con [LOGRO].»» · «En pantalla: «Programado: domingo. Desconectar también es [VALOR].»» |
 | Mirar con `pagina_cerrada` (una vez, antes de la rotación) | MÓVIL: «Publicando: Exclusiva en la página 7, por [NOMBRE]. Emoji de fuego.» / BRUNO: «Mi primera firma en redes. Sin mi nombre. Con buena luz.» |
-| Hablar (rumor A3, si `rumor_firma_n === 2`; suma 1) | MÓVIL: «Publicando: Tendencia: el becario compra el periódico. Emoji de fuego.» / BRUNO: «¿Quién ha dicho eso?» / MÓVIL: «Publicando: «¿Quién ha dicho eso?». Emoji de ojos.» |
 | Hablar (1.ª normal) | BRUNO: «¿Hola?» / MÓVIL: «Publicando: «¿Hola?». Emoji de fuego.» / BRUNO: «Me ha publicado un hola.» |
 | Hablar (2.ª) | BRUNO: «Deja de publicar lo que digo.» / MÓVIL: «Publicando: «Deja de publicar lo que digo». Emoji de fuego.» |
 | Hablar (3.ª y siguientes) | (Bruno abre la boca. No dice nada. Silencio de 1,5 s.) / MÓVIL: «Publicando: [SILENCIO INCÓMODO]. Emoji de fuego.» |
@@ -613,17 +614,17 @@ Orgulloso de mi equipo: [AÑADIR EQUIPO]. Emoji de fuego.»
 
 | Función de Borja | Dónde (hoy) | Ahora |
 |---|---|---|
-| Rumor A, paso 3 (`rumor_firma_n` 2 → 3) | `ecosistema.dialogos.js:24-28` | Hablar `aro_borja` (§3.2). Sigue la cadena: paso 4, Yoli (`pecera.js:29-31`) |
+| Rumor A, paso 3 (`rumor_firma_n` 2 → 3) | `ecosistema.dialogos.js:24-28` | **Se elimina con toda la cadena A** (fase B, §7.5 (1)) |
 | Opciones «¿Has leído mi pieza?» / «Esta noche hay una opa.» (B3) | `ecosistema.dialogos.js:36-37` | **Desaparecen** con el árbol |
 | «Descopear» en Eventos (`oyo_descopear`, paso 39) | `eventos.dialogos.js:20-35` | El móvil, desde la puerta (§3.5) |
 | Embudo: Hablar / Coger / Empujar | `ecosistema.js:106-108` | Hablar: BRUNO «¿Y qué hay al final del embudo?» / MÓVIL «Publicando: ¿Qué hay al final del embudo? Emoji de embudo.» · Coger: «Si lo descuelgo, el móvil de Borja lo publica. Con música triste.» · Empujar: «Lo enderezo. Debajo, un pósit de Borja: «Torcido convierte más».» |
 | Ascensor, Tirar | `ecosistema.js:90` | «Tiro de la puerta. El móvil de Borja lo publica: «Abriendo caminos».» |
-| Chisme `rep_14` de Gertrudis | `office.js:25` | Pasa a Maripaz (§4.6) |
+| Chisme `rep_14` de Gertrudis | `office.js:25` | Pasa a Maripaz (§4.5) |
 | Sucesión de la plaza 3 | `vestibulo.js:45` | «Sucesión plaza 3: Maripaz, Yoli, el ficus y el móvil de Borja».» |
 | Créditos | `escenas/final.js:274` | `asig('Marketing', 'Asignado a: el móvil de Borja. Lo publicó a las nueve.')` |
 | `flags.js:77` | descripción con Borja | «…Pilar «¿Me prestas el álbum?» (el móvil de Borja dice «descopear»)…» |
 | `actors.js:298-307` | `borja_engagement` | se borra (o `// [E2] retirado`, sin uso) |
-| `tools/extras.mjs:57` (X17) | Hablar `borja_engagement` | `{ n: 'X17', tras: 27, sala: 'ecosistema', txt: 'Hablar aro_borja (rumor A3)', acc: [['ir', 'ecosistema'], V('hablar', 'aro_borja')], esp: { flags: { rumor_firma_n: 3 } } }` |
+| `tools/extras.mjs:57` (X17) | Hablar `borja_engagement` | se borra (la cadena A desaparece) |
 | Duelos, `hurtByPair`, móvil (correo), epílogo | — | Borja no estaba: nada que mover |
 
 ### 3.4 Duelo, correos del móvil, epílogo
@@ -667,117 +668,109 @@ Y en `ecosistema.js:37` sale la apostilla: «Tadeo no lo ha leído. Yo sí. Me l
 
 ---
 
-## 4. Maripaz Remitido, directora de Comercial
+## 4. Maripaz Remitido, directora de Comercial (reorientada por el dueño, revisión 2)
 
-### 4.1 Voz (sustituye a su ficha de §2.4 del plan y a la letra pequeña de §5.17)
+> Orden del dueño: «Quiero que hable más de branded content, de todavía hay un hueco más en la web para poner más
+> banners, de "esto te lo arreglo con un pop up", de los interstitials son ingresos. Incluso que se ve demasiado la
+> noticia, entre línea y línea todavía cabe un banner más y cosas así.» Esta sección sustituye entera a la revisión 1.
 
-**Cómo piensa:** todo lo que existe es un soporte publicitario y todo lo que pasa, un servicio facturable. No es mala:
-es **comercial de raza**, y lo dice con cariño. Vende lo que no se vende (un empujón, un saludo, una espera) y lo cobra
-al momento, con el gong. Es la única de la casa que nunca duda.
+### 4.1 Voz y motor cómico
 
-**Recursos** (variar; ninguno dos veces seguidas):
-1. **«Cariño»**: vuelve. Tope: 24 en todo el juego (hoy, 1). Nunca en dos frases seguidas suyas.
-2. **La tarifa imposible**: pone precio exacto a lo intangible («tarifa de proximidad», «el metro cuadrado», «por
-   impresión», «la espera, por minutos»).
-3. **El gong**: cada vez que vende algo, lo toca (`gong(api)`); en la Sala, sin gong, golpea la mesa con el mazo (`sfx('hit')`).
-4. **El patrocinio al vuelo**: bautiza la situación con una marca inventada («Agobio, con Tilas Calmín»). Marcas fijas:
-   Tilas Calmín, Cafés Madrugón, Mantas Arropa, Calzados Rufo, Colchones Siestatón.
-5. **La regla de tres comercial**: paquetes de tres en los que el tercero es absurdo («Básico, Premium y Gong»).
-6. **Letra pequeña «(*…)»**: se queda, pero como recurso raro: **tope 3** en todo el juego (hoy, 16).
+**Cómo piensa:** es la directora de Comercial de un medio digital y **ve cada píxel como espacio publicitario**. La
+noticia no es el producto: es lo que estorba entre dos anuncios. No es mala ni cínica: está **orgullosa** de su oficio
+y cree sinceramente que un pop-up arregla cualquier cosa. El jugador no necesita saber nada de medios: todos hemos
+cerrado anuncios con una X diminuta, esperado cinco segundos para «saltar anuncio» y buscado el texto entre banners.
+**El chiste se apoya en esa experiencia, y siempre que se pueda, se VE.**
 
-**Nunca:** «Diseño»; el director del periódico; marcas reales; dudar; «lo hablamos» (es de Gervasio).
+**Motor (el eje; uno por intervención como mucho):**
 
-### 4.2 Marketing y Comercial · árbol `maripaz` (sustituye a `ecosistema.dialogos.js:44-64`)
+| # | Recurso | Ejemplo | Tope |
+|---|---|---|---|
+| M1 | **«Todavía cabe un banner más»**: encuentra hueco en cualquier sitio (entre líneas, en la espalda de Bruno, en el botón de cerrar) | «Entre línea y línea todavía cabe un banner.» | 5 |
+| M2 | **«Eso te lo arreglo con un pop-up»**: su solución a todo, también a lo que no es de la web | «¿La rotativa? Eso te lo arreglo con un pop-up.» | 4 |
+| M3 | **«Se ve demasiado la noticia»**: el contenido como estorbo | «Tu noticia se ve demasiado, cariño. Estoy en ello.» | 3 |
+| M4 | **Branded content**: «no es publicidad, es contenido que paga» | «No es un anuncio. Es una historia. De una marca. Que paga.» | 3 |
+| M5 | **La X cada vez más pequeña** y el anuncio que te persigue | «Antes medía dos píxeles. Optimizamos.» | situación |
+| M6 | **Interstitial** = anuncio a pantalla completa que te hace esperar; **nunca dice la palabra sin que el gag la explique** | «Podrás pasar en cinco segundos.» | 2 «interstitial» |
+| M7 | **Vídeo que se reproduce solo**, con sonido | «¡COLCHONES SIESTATÓN!» | situación |
 
-Está en Marketing en el Acto I y tras ganar D1 (`when` de hoy, `ecosistema.js:220`).
+**Condimento** (de la revisión 1, subordinado al motor): «cariño» (tope 14), el gong al cerrar una venta (en la Sala,
+golpe de mazo en la mesa, `sfx('hit')`), facturar cualquier cosa, marcas inventadas (Tilas Calmín, Cafés Madrugón,
+Colchones Siestatón). Fuera la letra pequeña «(*…)» (tope 0).
+
+**Nunca:** jerga sin gag («CPM», «programática», «viewability»); «Diseño»; el director del periódico; marcas reales;
+crueldad (nadie la humilla: pierde el duelo con elegancia y sigue vendiendo).
+
+### 4.2 Las situaciones (gags visuales; todas con texto exacto)
+
+**4.2.1 · El pop-up de la X menguante (Sala Amazonas, al empezar a hablarle; camino principal, paso 26).** Cada vez que
+Bruno le habla tras la estampida, antes del menú salta un plano detalle `api.detalle({ titulo: 'PUBLICIDAD', w: 150,
+h: 60, draw: popupComercial })`: un recuadro blanco con «¿Le interesa anunciarse en esta conversación?», un botón
+naranja «¡SÍ!» enorme y, en la esquina, una ×. El tamaño de la × lo da `maripaz_popup_n`: 1.ª vez 3 px, 2.ª 1 px, 3.ª y
+siguientes ninguna (en su lugar, «Podrá cerrar en 3», cuenta atrás de 3 s; el cierre por clic se desactiva esos 3 s).
 
 ```text
-[onStart]
-[rumor C, si rumor_teodoro_n === 2; suma 1]
-MARIPAZ: Teodoro es el dueño del edificio, cariño. Lo compró en el 97. Por fax.
 [1.ª vez]
-MARIPAZ: ¿Esa cara? Te la patrocino, cariño. «Agobio, con Tilas Calmín».
-[siguientes, sin duelo_maripaz_ganado]
-MARIPAZ: ¿Otra vez aquí? La segunda visita ya es fidelización. Se cobra.
-[con duelo_maripaz_ganado, una vez]
-MARIPAZ: Mi becario favorito. Te debo una comisión. No te la voy a pagar.
-[con duelo_maripaz_ganado, siguientes]
-MARIPAZ: Pasa, cariño. Para ti, la entrada es gratis. La salida, ya veremos.
-
-[M0]
-> «¿Qué vende Comercial?»                                   once
-MARIPAZ: Todo, cariño. Lo que se lee, lo que se ve y lo que se pisa.
-MARIPAZ: Esta moqueta: «Pasos firmes, con Calzados Rufo». Ya la has pisado.
-(Gong.)
-MARIPAZ: Tres pasos. Te los facturo a final de mes.
-> «¿Me vende algo a mí?»                                    once
-MARIPAZ: Tengo tres paquetes. Básico, Premium y Gong.
-BRUNO: ¿Qué lleva el Gong?
-(Gong.)
-MARIPAZ: Esto. Ya lo has consumido. Son doce euros.
-> «¿Por qué tiene un gong?»                                 once
-MARIPAZ: Cada vez que vendo algo, lo toco.
-BRUNO: ¿Y cuando no vende nada?
-MARIPAZ: Lo toco más fuerte. Que parezca.
-> «¿Me patrocina a mi abuela?»                              once
-MARIPAZ: Hecho: «La abuela de Bruno, ofrecida por Mantas Arropa».
-MARIPAZ: Que se abrigue con marca, cariño.
-> «¿Qué tal con Siestatón?»                                 duelo_maripaz_ganado
-MARIPAZ: Encantados. Ahora la web respira. El banner, digo. Ronca, pero respira.
-> «Me voy.»                                                 exit
-(Gong.)
-MARIPAZ: Eso ha sido una despedida, cariño. La facturo.
+BRUNO: ¿Dónde se cierra esto?
+MARIPAZ: En la X, cariño.
+BRUNO: La X mide un píxel.
+MARIPAZ: La semana pasada medía dos. Optimizamos.
+[2.ª vez]
+BRUNO: Ahora la X es un punto.
+MARIPAZ: Un punto muy bien situado.
+[3.ª y siguientes: sin texto; la cuenta atrás y el cierre]
 ```
 
-### 4.3 Verbos sobre Maripaz (sustituyen a `ecosistema.js:225-237`; en la Sala, §4.5)
+**4.2.2 · La página 7 según Comercial (Sala, opción del árbol; camino principal si el jugador pregunta).** Plano detalle
+`titulo: 'PÁGINA 7 · PROPUESTA DE COMERCIAL'`, `w: 200, h: 100`, `draw: paginaComercial`: la página entera con bloques
+«ANUNCIO», un faldón de Siestatón que ocupa media página, un banner entre cada dos líneas y, en el centro, **una sola
+franja gris de 1 px** con el rótulo diminuto «noticia».
 
-| Verbo | Texto |
-|---|---|
-| Mirar | «Maripaz, Comercial. Lleva el mazo del gong como otros el bolso.» (igual) |
-| Coger | MARIPAZ: «A mí no se me coge, cariño. Se me contrata.» |
-| Empujar (1.ª) | (Gong.) MARIPAZ: «Uy, cariño. Eso lo facturo como experiencia de usuario.» |
-| Empujar (2.ª y siguientes) | MARIPAZ: «Segundo empujón: tarifa plana. Ya puedes empujar lo que quieras.» |
-| Dar `cafe` | MARIPAZ: «¿Café? Te lo patrocino: «Despertar, con Cafés Madrugón».» (igual) |
-| Dar `tarjeta_becario` | MARIPAZ: «¿«Pellizco»? Eso no es un nombre, cariño. Es un formato publicitario.» |
-| Dar `ficha_pagina_7` | con `casilla_hueco`: MARIPAZ «Ya te he firmado. Firmar dos veces es un contrato. (*De permanencia.)»; sin ella: «Una ficha sin hueco. El hueco lo tengo yo, cariño. En la Sala Amazonas.» |
-| Dar `pieza_opa` | MARIPAZ: «¿Una exclusiva sin un anuncio al lado? Qué desperdicio, cariño.» |
-| Dar `acta_reunion` | MARIPAZ: «¿Un acta de Gervasio? Te la compro. Para enmarcar. Es la única.» |
-| Dar `correo_evaristo` | MARIPAZ: «¿Evaristo? Me revisa los contratos. Por su culpa cobro exactamente lo pactado.» |
-| Dar `*` | MARIPAZ: «Si no lleva logo, no lo cojo. Y si lo lleva, lo cobro.» |
-| Usar `movil` | MARIPAZ: «Si me fotografías, cobro por impresión, cariño.» |
-| Hablar | árbol `maripaz` |
+**4.2.3 · El anuncio en la espalda de Bruno (Sala, al ganar D1; camino principal).** Al levantarse del planillo,
+Maripaz le pega a Bruno en la mochila un adhesivo de cartón: «SU ANUNCIO AQUÍ». Se ve en el sprite (variante
+`con_banner`, flag `bruno_con_banner`) hasta que Aurora se lo quita (§4.2.6). Mientras lo lleva, dos reacciones, una vez
+cada una: Yoli (si Bruno entra en la Redacción) «¿Llevas un banner en la espalda? ...Pues convierte. Me han mirado.»;
+Gervasio (si le habla) «Ese anuncio en la espalda... se agradece. Pero lo hablamos.»
 
-**Murmullos** (`ecosistema.js:221-224` y `actors.js:326`): «Te pongo un «ofrecido por» tan pequeño que solo lo verá
-el supervisor.» / «¿Y una portada desplegable con olor a chorizo? Piénsalo.» / «Tadeo, cariño, te patrocino el
-reenvío. «Por si os sirve», con Tilas Calmín.» / «Gervasio, ¿y tú cómo te encuentras? De salud, digo.»
+**4.2.4 · El anuncio antes de entrar (Marketing y Comercial; primera entrada con Maripaz en la planta).** Maripaz se
+planta delante de Bruno con el roll-up. Plano detalle `titulo: 'ANUNCIO'`, `draw: interstitialComercial` (cartel a
+toda la caja: «COLCHONES SIESTATÓN · DUERMA YA» y, abajo, «Podrá continuar en 5… 4… 3… 2… 1» y luego «Saltar anuncio ›»;
+`ms: 5200`; el clic no lo cierra antes de los 5 s).
 
-### 4.4 Objetos de su planta (sustituyen a las líneas de Maripaz en `ecosistema.js:112-198`)
+```text
+MARIPAZ: Bienvenido a Comercial, cariño. Podrás pasar en cinco segundos.
+(La cuenta atrás. Bruno espera. Mira al techo. Cuatro, tres, dos, uno.)
+BRUNO: ¿Qué ha sido eso?
+MARIPAZ: Un anuncio antes de entrar. Se llama interstitial. Son ingresos.
+```
 
-Con Maripaz presente (función `mp` de hoy; sin ella, la segunda columna, sin asteriscos):
+**4.2.5 · El vídeo que se reproduce solo (Marketing, objeto nuevo `pantalla_comercial`).** El monitor de Maripaz
+enseña la portada de la web como la ve Comercial. Ver §4.4.
 
-| Objeto · verbo | Con Maripaz | Sin Maripaz (Acto II antes de D1) |
-|---|---|---|
-| `rollup_comercial` · Usar | BRUNO «Me pongo delante del roll-up.» / MARIPAZ «Ahora tú eres el anuncio, cariño. Te cobro el metro cuadrado.» | «Me pongo delante. Soy el anuncio. Nadie me contrata.» |
-| `rollup_comercial` · Empujar | (Zas.) MARIPAZ «Eso, cariño, es una baja de campaña. Te la facturo.» | «Se enrolla sin factura. Lo disfruto.» |
-| `rollup_comercial` · Coger | MARIPAZ «El roll-up no se toca, cariño. Está contratado hasta 2030.» | «Contratado hasta 2030. Lo pone abajo, en pequeño.» |
-| `termometro_ventas` · Usar | MARIPAZ «Eso no es una venta, cariño. Es una ilusión. Y no la facturo.» | «Rojo hasta el 98 %. Nadie lo nota. Ni las ventas.» |
-| `termometro_ventas` · Hablar | BRUNO «¿Cuándo llegas al cien?» / MARIPAZ «El día que pagues tú, cariño.» | «No contesta. Le falta el 3 %. A mí, el contrato.» |
-| `piel_platano` · Coger | MARIPAZ «¡Deja eso, cariño! Es una inversión a largo plazo.» | «Mejor la dejo. Alguien la ha puesto con mucha planificación.» |
-| `lema_enmarcado` · Hablar | «Le leo el lema en voz alta. Maripaz asiente: lo patrocina ella.» | «Le leo el lema en voz alta. Suena a anuncio.» |
-| `ascensor_ecosistema` · Hablar | ««¿Bajas?». Hace «tin». Maripaz me lo factura como conversación.» | ««¿Bajas?». Hace «tin». Es la conversación más barata de la planta.» |
+**4.2.6 · El faldón más grande que la noticia (Redacción de papel, paso 35, camino principal).** Tras el recorte de
+Begoña y «PAGO YO. ES LA PRIMERA PIEZA DE LA WEB QUE ME ENTRA.», el fax vuelve a pitar (P3, `catacumba.js`):
 
-**La silla 113 (P14, pago del micropuzle de Pilar)** vuelve a `onEnter` de `ecosistema.js`, tras el roll-up:
-con `eventos_silla_devuelta` y Maripaz presente, una vez (`ecosistema_silla_maripaz`):
-«MARIPAZ: Me has devuelto la silla, cariño. Te la facturo como mudanza.»
+```text
+(El fax imprime una hoja larga, larguísima. Llega al suelo y sigue.)
+BRUNO: De Comercial. Mi pieza, con un faldón de Siestatón. Más largo que la pieza.
+TEODORO (fax): EL ANUNCIO MIDE CUARENTA LÍNEAS. LA NOTICIA, VEINTITRÉS.
+TEODORO (fax): EN MI PÁGINA LA NOTICIA SE VE. DEVUELTO.
+(Teodoro mete la hoja larga en el fax al revés. El fax la traga entera, despacio.)
+```
 
-### 4.5 Sala Amazonas (Acto II): reunión, estampida, árbol y D1
+Y Aurora, la primera vez que Bruno le habla con `bruno_con_banner` (P3, antes de su saludo; despega el adhesivo con la
+uña; `bruno_con_banner` = false):
+«AURORA: Llevas un anuncio en la espalda, criatura. En esta planta, no.»
 
-**Reunión** (`sala_amazonas.js:341`), en el saludo de Gervasio, con Maripaz:
-«MARIPAZ: Y yo, esperando a Siestatón. Les estoy cobrando la espera, cariño.»
+### 4.3 Sala Amazonas (Acto II, camino principal): reunión, estampida, árbol y D1
 
-**Estampida** (`reunionTerminada`, `sala_amazonas.js:450-452`): tras «¡Yo soy de Bolsa y de Mercados! ¡Tengo doble
-prioridad!», con Maripaz presente, una línea nueva (golpe de mazo en la mesa):
-«MARIPAZ: ¡La salida se factura aparte! ¡Por persona!»
+**Reunión** (`sala_amazonas.js:341`, saludo de Gervasio, con Maripaz):
+«MARIPAZ: Y yo, esperando a Siestatón. Mientras, le vendo el punto tres a Mercados.»
+
+**Estampida** (`reunionTerminada`, tras «¡Yo soy de Bolsa y de Mercados! ¡Tengo doble prioridad!»): Maripaz se pone
+de pie en la puerta con la tableta en alto (el anuncio antes de salir):
+«MARIPAZ: ¡Un momento! ¡Antes de salir, un anuncio de cinco segundos!»
+(Los tres de Mercados pasan por debajo de la tableta sin mirarla. Ella vuelve a sentarse en el planillo.)
 
 **Cierre** (`sala_amazonas.js:484-488`):
 
@@ -786,70 +779,207 @@ BRUNO: ¿Usted no huye?
 MARIPAZ: ¿Huir? Esta sala la tengo pagada hasta las nueve, cariño. La amortizo.
 MARIPAZ: Y estoy sentada en el planillo. La página 7 no se mueve sin mí.
 ```
-(Sale «Una reunión desde marzo y la cierro yo con una pregunta. Liderazgo.»)
 
-**Árbol `maripaz_sala`** (sustituye a `sala_amazonas.js:386-401`):
+**Árbol `maripaz_sala`** (sustituye a `sala_amazonas.js:386-401`; antes del menú, el pop-up de §4.2.1):
 
 ```text
 [MP_SALA]
 > [WT] «Siestatón no ha confirmado la página 7.»            !casilla_hueco
 MARIPAZ: ¿Ocho meses sin confirmar? Eso no es un cliente, cariño. Es un exnovio.
-MARIPAZ: Vale, los paso a la web. Pero alguien tiene que llamar a Siestatón.
+MARIPAZ: Los paso a la web, que allí cabe todo. Pero alguien tiene que llamarles.
 → duelo 'maripaz'
-> «¿Cuánto cuesta la página 7?»                             once
-MARIPAZ: Depende. ¿Para leerla o para quitarla?
-BRUNO: Para quitarla.
-MARIPAZ: Eso no tiene precio, cariño. Tiene duelo.
-> «¿Me cobra por hablar con usted?»                         once
-MARIPAZ: Los tres primeros minutos, gratis.
-(Mira el reloj.)
-MARIPAZ: Te quedan dos.
+> «¿Qué hace usted con el planillo?»                        once
+MARIPAZ: Mi propuesta para la página 7. Mira.
+(Plano detalle: PÁGINA 7 · PROPUESTA DE COMERCIAL, §4.2.2.)
+MARIPAZ: ¿Ves esa línea gris?
+BRUNO: ¿La noticia?
+MARIPAZ: Se ve demasiado. Estoy en ello.
+> «¿Y si la gente no quiere anuncios?»                      once
+MARIPAZ: Para eso está la X, cariño. Cada mes la hago un poco más pequeña.
+MARIPAZ: Nadie se ha quejado. No la encuentran.
 > «Luego vuelvo.»                                           exit
-MARIPAZ: Aquí estaré. Amortizando.
+MARIPAZ: Aquí estaré, cariño. Si me cierras, vuelvo a aparecer.
 ```
 
-**Verbos en la Sala** (`sala_amazonas.js:275-288`): Hablar antes de `reunion_terminada`: «Ahora no, cariño. Estoy en
-una reunión. Facturándola.» · Coger: MARIPAZ «A mí no se me coge, cariño. Se me contrata.» · Empujar: (mazo en la
-mesa) MARIPAZ «Eso es un empujón. Experiencia de usuario. Te la facturo.» · Dar `ficha_pagina_7`: «Una ficha sin hueco.
-El hueco lo tengo yo. Debajo.» (igual) · Dar `cafe`: «Ya tengo café, cariño. Patrocinado por mí.» · Dar `*`: «Si no
-lleva logo, no lo cojo. Y si lo lleva, lo cobro.» · Murmullo: «Esta silla la facturo por horas, cariño. Y el planillo,
-por día.»
+**Verbos en la Sala** (`sala_amazonas.js:275-288`):
 
-**Duelo D1** (`duelMaripaz`, `sala_amazonas.js:78-122`; mazo y remate iguales):
-
-| Campo | E2 |
+| Verbo | Texto |
 |---|---|
-| `attackText.R08` | «Esto te lo escribo desde el cariño más absoluto, cariño.» (igual) |
-| `attackText.R04` | «Hazlo tú, cariño, que escribes divinamente. Lo digo como clienta.» |
-| `attackText.R11` | «Me quedo a la espera de tus comentarios. La espera, por minutos.» |
-| `attackText.R14` | «Si quieres lo vemos en una reunión cortita, cariño. Con catering.» |
-| `intro` | «¿Llamar yo a Siestatón un viernes a estas horas? Por escrito, cariño.» |
-| `taunt` | «Eso no lo patrocina nadie, cariño.» · «Muy bonito. Cero euros.» |
-| `hurtByPair.maripaz.R11` (`duelo.js:48`) | «¿Sentada? Sentada se factura más.» (sustituye a «Me lo apunto.») |
-| `hurtByPair.maripaz.R08` | «¿Modo avión? Eso me lo patrocina una aerolínea.» (sin «(*No.)») |
-| `weakReplies…maripaz` (`duelo.js:28-36`) | «Te lo miro y te facturo.» (igual) · «Lo llevaba. Ahora lo llevas tú. Con IVA.» (igual) · «Por escrito es más caro, cariño.» · «¿La IA? ¿Y quién la patrocina?» (igual) · «Estupendamente. La plaza no se hereda.» (igual) |
-| `defeatLines` | «Asignado a ti, cariño. El teléfono de Siestatón es este. Suerte.» |
-| `onWin` (texto) | «...Aurora no sella nada sin café. Has invitado a la correctora.» / «Vale, llamo yo. Desde mi mesa: este teléfono es de Ramírez.» / (planillo) «Hueco libre: veintitrés líneas abajo. Impar, cariño: que se vea.» / [si perdió antes] «Y quitad el ronquido de la espera. Me lo ha chivado el becario.» / (Gong.) |
+| Mirar | «Maripaz, Comercial. Sentada en el planillo, con una tableta llena de anuncios.» |
+| Hablar (antes de `reunion_terminada`) | MARIPAZ: «Ahora no, cariño. Le estoy vendiendo el orden del día a Mercados.» |
+| Usar | BRUNO: «Le toco el hombro.» / MARIPAZ: «Has hecho clic en un anuncio. Ahora te sigo toda la noche.» |
+| Coger | MARIPAZ: «A mí no se me coge, cariño. Se me contrata. Por impresiones.» |
+| Empujar | (Golpe de mazo en la mesa.) MARIPAZ: «Eso en la web se llama «interacción». Te la cobro.» |
+| Dar `ficha_pagina_7` | MARIPAZ: «Una ficha sin hueco. El hueco lo tengo yo. Debajo. Con banners.» |
+| Dar `cafe` | MARIPAZ: «¿Café? Ya tengo. Y la taza lleva anuncio. Mira: Cafés Madrugón.» |
+| Dar `pieza_opa` | MARIPAZ: «¿Toda esta noticia sin un anuncio en medio? Se ve demasiado, cariño.» |
+| Dar `*` | MARIPAZ: «Si no lleva logo, no lo cojo. Y si lo lleva, lo cobro.» |
+| Murmullos | «Entre esta silla y aquella cabe un banner. Lo he medido.» / «Esta reunión, con un pop-up al principio, ya sería rentable.» |
 
-Escena de derrota `d1Siestaton` (§7.7): sin cambios (ya tenía «¿Cariño? ¿Me llamas desde el colchón?…»).
+**Duelo D1** (`duelMaripaz`, `sala_amazonas.js:78-122`; mazo R08, R04, R11, R14 y remate con la ficha, iguales):
 
-### 4.6 Maripaz fuera de su planta
+| Campo | Texto |
+|---|---|
+| `subject` | «Llamar a Siestatón para pasarlos a la web (contiene publicidad)» |
+| `attackText.R08` | «Te escribo desde el cariño más absoluto. Con un banner en la firma.» |
+| `attackText.R04` | «Hazlo tú, que escribes divinamente. Entre tus párrafos caben tres banners.» |
+| `attackText.R11` | «Me quedo a la espera de tus comentarios. Mientras, te pongo un vídeo.» |
+| `attackText.R14` | «Si quieres lo vemos en una reunión rápida. Con pop-up de bienvenida.» |
+| `intro` | «¿Llamar yo a Siestatón un viernes? Te lo pongo por escrito. Con banner.» (solo si el duelo no se abre desde el árbol; §7.4, paso 26) |
+| `hurt` | «Uy. Eso tiene tarifa.» · «Eso me lo guardo para un branded content.» |
+| `taunt` | «Eso no lo patrocina nadie, cariño.» · «Muy bonito. Pero sin anuncio no es contenido.» |
+| `hurtByPair.maripaz.R08` (`duelo.js:48`) | «¿Modo avión? Sin cobertura no me cargan los anuncios. Eso duele.» |
+| `hurtByPair.maripaz.R11` | «¿Sentado? Sentado se ven mejor los banners.» |
+| `weakReplies…maripaz` (`duelo.js:28-36`) | «Te lo miro y te facturo.» · «Lo llevaba. Ahora lo llevas tú. Con IVA.» · «Por escrito es más caro. Lleva anuncio.» · «¿La IA? ¿Y quién la patrocina?» · «Estupendamente. La plaza no se hereda.» |
+| remate (`atScore: 3`, `ficha_pagina_7`) | «¿Y quién me firma que esa página es noticia y no un hueco para anuncios?» / script: BRUNO «Ficha de la página 7. Sellada por Aurora. Impar.» |
+| `defeatLine` | «RESPUESTA AUTOMÁTICA DE COMERCIAL: «Cierre este anuncio para leer la respuesta».» |
+| `defeatLines` | «Asignado a ti, cariño. El teléfono de Siestatón es este. Antes, un anuncio.» |
+| escena de derrota `d1Siestaton` | igual (el ronquido en espera); en la 3.ª, tras «Por eso. Llamada a tres metros: tarifa de proximidad.», sale nada más |
+
+**Victoria** (`onWin`; texto completo, con el adhesivo de §4.2.3):
+
+```text
+MARIPAZ: ...Aurora no sella nada sin café. Has invitado a la correctora.
+MARIPAZ: Vale. Siestatón, a la web. Allí caben en todas partes.
+(Se levanta. Debajo, el planillo. Lo dobla y se lo da.)
+MARIPAZ: Hueco libre: veintitrés líneas. Impar, cariño. Y sin un banner. Me duele.
+(Al pasar por detrás de Bruno le pega en la mochila un adhesivo: «SU ANUNCIO AQUÍ». Golpe de mazo en la mesa.)
+MARIPAZ: Y esto, por las molestias. Tenías la espalda desaprovechada.
+[si perdió antes] MARIPAZ: Y quitad el ronquido de la espera. Me lo ha chivado el becario.
+⟶ duelo_maripaz_ganado · casilla_hueco · bruno_con_banner
+```
+
+### 4.4 Marketing y Comercial (Acto I y tras D1; `when` de hoy, `ecosistema.js:220`)
+
+**Entrada:** el anuncio antes de entrar (§4.2.4), una vez, en la primera entrada con Maripaz en la planta
+(`ecosistema_interstitial`). La silla 113 (pago del micropuzle de Pilar), en `onEnter`, una vez, con
+`eventos_silla_devuelta`: «MARIPAZ: Me has devuelto la silla, cariño. Ya le he puesto un anuncio en el respaldo.»
+
+**Árbol `maripaz`** (sustituye a `ecosistema.dialogos.js:44-64`):
+
+```text
+[onStart]
+[rumor C, si rumor_teodoro_n === 1; suma 1]
+MARIPAZ: Teodoro es el dueño del edificio, cariño. Lo compró en el 97. Por fax.
+[1.ª vez]
+MARIPAZ: ¿Esa cara? Te la patrocino. «Agobio, con Tilas Calmín».
+[siguientes, sin duelo_maripaz_ganado]
+MARIPAZ: ¿Vuelves? En la web eso se llama fidelización. Se cobra el doble.
+[con duelo_maripaz_ganado, una vez]
+MARIPAZ: Mi becario favorito. Te debo una comisión. No te la voy a pagar.
+
+[M0]
+> «¿Qué vende Comercial?»                                   once
+MARIPAZ: Contenido que paga, cariño. Lo vuestro es contenido que no paga.
+MARIPAZ: Branded content: una noticia que es un anuncio, pero no lo dice.
+BRUNO: ¿Eso no es engañar al lector?
+MARIPAZ: Es contarle una historia. De una marca. Que paga.
+> «¿Me vende algo a mí?»                                    once
+MARIPAZ: Tengo tres paquetes. Básico, Premium y Gong.
+BRUNO: ¿Qué lleva el Gong?
+(Gong.)
+MARIPAZ: Esto. Ya lo has consumido. Son doce euros.
+> «La web va muy lenta.»                                    once
+MARIPAZ: Eso te lo arreglo con un pop-up, cariño.
+BRUNO: ¿Un pop-up la hace más rápida?
+MARIPAZ: No. Pero mientras lo cierras, no te das cuenta.
+> «Mi abuela dice que no encuentra las noticias.»           once
+MARIPAZ: Están ahí, cariño. Debajo del vídeo que se pone solo.
+MARIPAZ: Que baje un poco. Y otro poco. Ahí, entre los colchones.
+> «¿Por qué tiene un gong?»                                 once
+MARIPAZ: Cada vez que vendo un banner, lo toco.
+BRUNO: ¿Y cuando no vende ninguno?
+MARIPAZ: Lo toco más fuerte. Que parezca.
+> «¿Qué tal con Siestatón?»                                 duelo_maripaz_ganado · once
+MARIPAZ: Encantados. En la web caben en todas partes. Hasta en la X de cerrar.
+> «Me voy.»                                                 exit
+(Gong.)
+MARIPAZ: ¿Seguro que quieres salir? Era una pregunta. Y un anuncio.
+```
+
+**Verbos sobre Maripaz en Marketing** (sustituyen a `ecosistema.js:225-237`):
+
+| Verbo | Texto |
+|---|---|
+| Mirar | «Maripaz, Comercial. Lleva el mazo del gong como otros el bolso.» / «La funda del móvil lleva anuncio.» |
+| Usar | BRUNO: «Le toco el hombro.» / MARIPAZ: «Has hecho clic en un anuncio. Ahora te sigo toda la noche.» |
+| Coger | MARIPAZ: «A mí no se me coge, cariño. Se me contrata. Por impresiones.» |
+| Empujar (1.ª) | (Gong.) MARIPAZ: «Uy. Eso en la web se llama «interacción». Te la facturo.» |
+| Empujar (2.ª y siguientes) | MARIPAZ: «Segunda interacción: tarifa plana. Ya puedes empujar lo que quieras.» |
+| Dar `cafe` | MARIPAZ: «¿Café? Te lo patrocino: «Despertar, con Cafés Madrugón». El vaso ya es soporte.» |
+| Dar `tarjeta_becario` | MARIPAZ: «¿«Pellizco»? Eso no es un nombre, cariño. Es un formato publicitario.» |
+| Dar `ficha_pagina_7` | con `casilla_hueco`: «Ya te he firmado. Firmar dos veces es un contrato de permanencia.»; sin ella: «Una ficha sin hueco. El hueco lo tengo yo. En la Sala Amazonas.» |
+| Dar `pieza_opa` | MARIPAZ: «¿Toda esta noticia sin un anuncio en medio? Se ve demasiado, cariño.» |
+| Dar `acta_reunion` | MARIPAZ: «¿Un acta? Con un banner arriba sería rentable. Por primera vez.» |
+| Dar `correo_evaristo` | MARIPAZ: «¿Evaristo? Me revisa los contratos. Por él cobro lo pactado. Qué pena.» |
+| Dar `*` | MARIPAZ: «Si no lleva logo, no lo cojo. Y si lo lleva, lo cobro.» |
+| Usar `movil` | MARIPAZ: «Si me fotografías, cobro por impresión, cariño.» |
+
+**Objeto nuevo `pantalla_comercial`** («monitor de Comercial», en la mesa de Maripaz; arte: la portada de la web con
+cuatro bloques de anuncio, un vídeo con un ▶ y una franja gris finísima; `rect` sobre su mesa):
+
+| Verbo | Texto |
+|---|---|
+| Mirar (1.ª) | «La portada de la web, en el monitor de Maripaz.» / «Un anuncio. Otro. Un vídeo. Una línea de noticia. Otro anuncio.» |
+| Mirar (siguientes) | «La línea de noticia tiene un pósit al lado: «Se ve demasiado».» |
+| Usar | (El vídeo arranca solo, a todo volumen.) PANTALLA: «¡COLCHONES SIESTATÓN! ¡DUERMA COMO NUNCA!» / BRUNO: «Lo silencio. Se vuelve a poner. Tiene más iniciativa que yo.» |
+| Cerrar | «Busco la X del vídeo. Es un píxel. Le doy. Se abre otro vídeo.» |
+| Hablar | «Le digo «para». Lo entiende como «reproducir».» |
+| Coger | «Es de Comercial. Si lo toco, me lo cobran como clic.» |
+
+(La línea del vídeo, con `api.sayFrom('pantalla_comercial', …, { color: '#FF8A60' })`, sin prefijo.)
+
+**Objetos de su planta** (sustituyen a las líneas de Maripaz en `ecosistema.js:112-198`; con la función `mp` de hoy: con
+Maripaz, primera columna; sin ella, segunda):
+
+| Objeto · verbo | Con Maripaz | Sin Maripaz (Acto II antes de D1) |
+|---|---|---|
+| `rollup_comercial` · Usar | BRUNO «Me pongo delante del roll-up.» / MARIPAZ «Ahora tú eres el anuncio, cariño. Te cobro el metro cuadrado.» | «Me pongo delante. Soy el anuncio. Nadie me contrata.» |
+| `rollup_comercial` · Empujar | (Zas.) MARIPAZ «Eso es una baja de campaña, cariño. Te la facturo.» | «Se enrolla sin factura. Lo disfruto.» |
+| `rollup_comercial` · Coger | MARIPAZ «El roll-up no se toca. Está contratado hasta 2030.» | «Contratado hasta 2030. Lo pone abajo, en pequeño.» |
+| `termometro_ventas` · Usar | MARIPAZ «Eso no es una venta, cariño. Es una ilusión. Y no la facturo.» | «Rojo hasta el 98 %. Nadie lo nota. Ni las ventas.» |
+| `termometro_ventas` · Hablar | BRUNO «¿Cuándo llegas al cien?» / MARIPAZ «Cuando la noticia ocupe una línea. Vamos por dos.» | «No contesta. Le falta el 3 %. A mí, el contrato.» |
+| `lema_enmarcado` · Hablar | «Le leo el lema en voz alta. Maripaz asiente y le busca hueco a un banner.» | «Le leo el lema en voz alta. Suena a anuncio.» |
+| `piel_platano` · Coger | MARIPAZ «¡Deja eso! Lleva un adhesivo de patrocinio. Por debajo.» | «Mejor la dejo. Alguien la ha puesto con mucha planificación.» |
+| `ascensor_ecosistema` · Hablar | ««¿Bajas?». Hace «tin». Maripaz quiere ponerle un anuncio al «tin».» | ««¿Bajas?». Hace «tin». Es la conversación más barata de la planta.» |
+
+**Ambiente y murmullos.** Tras D1 (`ecosistema.js:245-246`): «MARIPAZ: ¿Siestatón? Os paso a la web. Con un vídeo
+que se pone solo.» Murmullos (`ecosistema.js:221-224`, `actors.js:326`): «Entre línea y línea todavía cabe un banner.
+Lo he medido.» / «Si la noticia se ve demasiado, se le pone un vídeo encima.» / «Te pongo un «ofrecido por» tan pequeño
+que solo lo verá el supervisor.» / «Tadeo, cariño, te patrocino el reenvío.»
+
+### 4.5 Maripaz fuera de su planta
 
 | Dónde | Texto |
 |---|---|
 | Gertrudis, chisme `rep_14` (`office.js:25`) | «CHISME: GERVASIO A MARIPAZ: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".» / «MARIPAZ: "¿TE VA EN MARZO, CARIÑO? ES CUANDO ACABAN LAS RÁPIDAS".» |
-| Ambiente tras D1 (`ecosistema.js:245-246`) | «¿Siestatón? Os paso a la web. Con un banner que respira.» (igual) |
-| **Epílogo** (`escenas/final.js`, tras «...Pues bienvenido, Bruno Pellejo. Ya te ve hasta el torno.», l. 138) | Ver abajo |
+| Yoli, «¿Algún hilo bueno esta noche?» | igual (§2.7, «desde el más absoluto cariño») |
+| Paso 35, fax | §4.2.6 |
+| Adhesivo en la espalda | §4.2.3 (Yoli, Gervasio, Aurora) |
+| **Epílogo** (`escenas/final.js`, tras «...Pues bienvenido, Bruno Pellejo. Ya te ve hasta el torno.») | abajo |
 
 ```text
-(Del ascensor sale Maripaz, con el mazo. Coge un periódico del fardo y se lo ofrece a Bruno.)
-MARIPAZ: ¡La página 7, sin colchones! Primer ejemplar, cariño: dos euros.
-BRUNO: Es mi noticia.
-MARIPAZ: Por eso. Precio de autor: tres.
+(Del ascensor sale Maripaz con el periódico abierto por la página 7 y un rotulador.)
+MARIPAZ: Página 7. Tu noticia, entera. Ni un anuncio. Me ha dolido, cariño.
+MARIPAZ: Aunque mira: entre línea y línea todavía cabía un banner.
+(Lo dibuja con el rotulador, entre dos líneas. Le enseña el periódico.)
+BRUNO: Es papel. No se le puede hacer clic.
+MARIPAZ: Eso te lo arreglo con un pop-up. De cartulina.
 (Golpe de mazo en el fardo. Pum. Sale a la calle.)
 ```
-Sitio: el de Gervasio en el epílogo (`EP.gervasio_acta`, ya ha salido); salida, `EP.salida`. Son tres líneas dentro
-del epílogo, antes de Evaristo: no toca el final intocable.
+Sitio: el de Gervasio en el epílogo (`EP.gervasio_acta`; con la fase B, Gervasio ya no sale en el epílogo: el sitio
+queda libre); salida, `EP.salida`. Va antes de Evaristo y de la llamada de la abuela: no toca el final intocable.
+
+### 4.6 Arte y ayudas (P4 salvo lo indicado)
+
+- `popupComercial`, `paginaComercial`, `interstitialComercial`: tres funciones de dibujo para `api.detalle`, en
+  `content/rooms/art/sala_amazonas.art.js` (las dos primeras) y `art/ecosistema.art.js` (la tercera).
+- `pantalla_comercial`: hotspot y dibujo nuevos en `art/ecosistema.art.js`.
+- Variante `con_banner` de Bruno (**P0**, `actors.js`): un rectángulo de 5×4 px blanco con borde rojo sobre la mochila
+  (como el `badge`), con `variant: v => v.flag('bruno_con_banner') ? 'con_banner' : …` (la chaqueta de Ramírez manda si
+  coinciden).
+- Flags nuevos: `bruno_con_banner` (P4 lo pone en D1; P3 lo quita con Aurora; P2 y P4 leen para Yoli y Gervasio),
+  `maripaz_popup_n`, `ecosistema_interstitial`, `maripaz_empujon_n`, `pantalla_comercial_n`.
 
 ---
 
@@ -863,7 +993,7 @@ coma (la de 4,15 € de la llamada L3) y quien no la hace oye en el clímax una 
 
 | Golpe | Paso | Sala | Qué pasa | Pista justa |
 |---|---|---|---|---|
-| 1 | **28 (nuevo)** | Administración (la misma del paso 27) | Bruno **escucha a Evaristo hasta el final**: el contrato del Titulator dice «48,000 €» y su cláusula 12 dice que eso son 48 euros. Aprende `rep_16`. | Llamada L2 («pase por mi despacho»), Begoña al cerrar el paso 27, ficha (lápiz), abuela |
+| 1 | **28 (nuevo)** | Administración (la misma del paso 27) | Bruno **escucha a Evaristo hasta el final**: el contrato del Titulator dice «48,000 €» y su cláusula 12 dice que eso son 48 euros. Aprende `rep_16`. | Begoña al cerrar el paso 27 («Y pase por Controlling…»), ficha (lápiz), abuela |
 | 2 | **32 (nuevo)** | Redacción de papel (la misma de los pasos 29-31) | Aurora bendice la coma y la manda **por el fax de Teodoro** (tecla 3, Controlling). Evaristo contesta por fax con su correo impreso: **objeto `correo_evaristo`** («Envío: en el momento oportuno»). | Evaristo: «De alguien que sepa de comas»; ficha; abuela |
 | 3 | 43 (D4) | Sala Amazonas | **Tercer remate del duelo final**: Íñigo presume de los 48.000 €; Bruno adjunta el correo; Evaristo llama por el teléfono de conferencias. | Aurora: «Cuando alguien diga que una coma es un detalle sin importancia»; L5; abuela |
 
@@ -1021,8 +1151,8 @@ LECTOR MEDIO: ...Y ahorrar.
 ```
 
 `hurtByPair.inigo.R16` (`duelo.js`): «Esa coma no estaba en mi framework.» (igual). **`onWin`** de Íñigo
-(`climax.js:118-123`): «Me da igual el acta. Y la coma.» / «¡El Lector Medio lleva tres semanas asintiendo a mis
-diapositivas!» / «Ni un gesto en contra. Ni una pregunta. El mejor lector que he tenido.»
+(`climax.js:118-123`, con la fase B): una sola línea, «Ni un gesto en contra. Ni una pregunta. El mejor lector que he
+tenido.»
 
 ### 5.6 Tras el empujón: la factura, con coma (`climax.js:236-245`)
 
@@ -1046,7 +1176,7 @@ BEGOÑA: Con ticket.
 | Llamada | Condición | Texto |
 |---|---|---|
 | L1 | `torno_abierto` | igual |
-| L2 | `acto_2_iniciado` | «Una cosita. ¿Puede pasarse por mi despacho? Es un segundo.» / BRUNO «¿Ahora?» / «Cuando pueda. Pero ahora.» / «Planta 2, al fondo de Administración. Era solo eso.» (igual) |
+| L2 | — | **se elimina** (fase B, §7.5 (4)): a Evaristo te manda Begoña al cerrar el paso 27 (§5.2) |
 | L3 (**nueva, sin coma de 4,15 €**) | `pieza_recortada` | «Una cosita. Begoña me manda el triplicado de su recorte.» / «Ella recorta sin leer. Yo leo sin recortar. Somos un sistema.» / «Veintitrés líneas. Ni una coma fuera de sitio. Era solo eso.» |
 | L4 | `acto_3_iniciado` y `!ruben_encontrado` | «Una cosita. La máquina de la planta -1 vende veinticuatro atunes al mes.» / «En Sistemas no come atún nadie. Lo he cruzado con las nóminas.» / «Alguien come ahí abajo y no cobra. Era solo eso.» / BRUNO «Alguien que come y no cobra. Eso es un becario.» (la variante «Ya sé quién comía el atún…» se borra: con el orden nuevo no sale) |
 | L5 (B8) | `ruben_libre` y `!climax_entrada` | «Una cosita. Me dicen que va a la Sala. ¿Lleva mi correo?» / BRUNO «En el bolsillo.» / «Envíelo en el momento oportuno. Usted lo notará. Era solo eso.» |
@@ -1059,8 +1189,9 @@ en la entrada a los Despachos del paso 41, nunca seguida de L4 (B8).
 
 ### 5.8 Epílogo, créditos, titular
 
-- `escenas/final.js:140-153`: el bloque de Evaristo **deja de ser condicional** (siempre `correo_evaristo_listo`);
-  texto igual.
+- `escenas/final.js:140-153`: el bloque de Evaristo **deja de ser condicional** (siempre `correo_evaristo_listo`) y,
+  con la fase B, queda en tres líneas: «Pellejo. Lo he revisado en el periódico. Con jota y dos eles.» / BRUNO «Gracias,
+  don Evaristo.» / (silencio de 1,4 s) «...Felicidades. Es la primera vez que lo digo sin adjunto.»
 - Créditos (`final.js:272`): `asig('Controlling', 'Asignado a: don Evaristo Salvedad. Leyó hasta el final.')`.
 - Titular de los Despachos (`pajarera.js:36`): «UN SEÑOR ANUNCIA UN CORREO. LO QUE PASÓ DESPUÉS: NADA, DE MOMENTO»
   (igual; ahora siempre sale).
@@ -1080,7 +1211,7 @@ remiten a su texto.
 | L1 | `rooms/vestibulo.js:180` | «Desde 2019 no se las da nadie. Yo sí, que soy su servicio técnico.» | CELESTINO: «Nadie se las da. Yo sí. Por eso a mí me pone espuma.» | C (paga en el «cortado») |
 | L2 | `rooms/vestibulo.js:183-185` | cotilleo cortado + «Porque aquí no sale.» | `reply`: «¡Jugada de ascensor! Gervasio, al de Mercados: «Que esto no salga de aquí».» / «¡Y el de Mercados, de primeras: «Tranquilo: de aquí no sale ni el wifi»!» / «¡Tres años sin hablarse! ¡Y el wifi sigue sin salir!» · se borran las tres `lines` de Bruno y Celestino | A + E |
 | L3 | `rooms/vestibulo.js:190-192` | «¿Me preguntas por el Ibex? ¿A mí? ¿En treinta años?» | CELESTINO: «¿El Ibex? ¿Me preguntas a mí por el Ibex?» (Se le empañan las gafas. Se ajusta la bufanda. 1 s.) CELESTINO: «Treinta años en este mostrador y eres el primero.» | A + G |
-| L4 | `rooms/vestibulo.js:300-301` | «Celestino, el Ibex.» / «El Ibex está plano, chaval. Tú no.» | BRUNO: «¿Y el Ibex, Celestino?» / CELESTINO: «¡Plano! ¡Hoy en este edificio solo ha subido uno! ¡Y lleva mochila!» | A + E |
+| L4 | `rooms/vestibulo.js:300-301` | «Celestino, el Ibex.» / «El Ibex está plano, chaval. Tú no.» | **B**: se va con la retransmisión del torno (fase B, §7.5 (8)); el Ibex se queda en L3 | B |
 | L5 | `rooms/vestibulo.js:254` | «Ya consto. Mi cara en el organigrama, con chicle. Huele a menta y a futuro.» | «Ya consto.» (La foto resbala un centímetro. Se para.) «...Un centímetro por debajo de donde la puse. Me parece justo.» | G |
 | L6 | `rooms/vestibulo.js:320` | «Rojo, verde, rojo, verde. Es un semáforo que te debe dinero.» | «Rojo, verde, rojo, verde. Celestino grita «¡uy!» en cada rojo.» | G |
 | L7 | `rooms/vestibulo.js:454` | «…en termo. Desde 1994.» | CELESTINO: «Gracias, pero el café me lo traigo en termo. Gertrudis y yo somos solo amigos.» | X |
@@ -1101,7 +1232,7 @@ remiten a su texto.
 | L22 | `rooms/sala_amazonas.js:55` | «…Lleva aquí desde marzo. La barba, también.» | «Uno de Mercados, con barba de comité. Cuando empezó la reunión, era lampiño.» | G |
 | L23 | `rooms/sala_amazonas.js:260` | «Gervasio preside. Lleva en el punto 3 desde marzo.» | «Gervasio preside. Lleva tanto en el punto 3 que ya lo tutea.» | X |
 | L24 | `rooms/sala_amazonas.js:379` | «Desayunando. Desde 2019. Pero la reserva se respeta…» | GERVASIO: «Desayunando. La reserva se respeta: puede volver en cualquier momento.» | P (vuelve en el epílogo) |
-| L25 | `rooms/sala_amazonas.js:393` | «¿Desde marzo sin confirmar? Eso no es un cliente, es un exnovio.» | §4.5 («¿Ocho meses sin confirmar? Eso no es un cliente, cariño. Es un exnovio.») | — |
+| L25 | `rooms/sala_amazonas.js:393` | «¿Desde marzo sin confirmar? Eso no es un cliente, es un exnovio.» | §4.3 («¿Ocho meses sin confirmar? Eso no es un cliente, cariño. Es un exnovio.») | — |
 | L26 | `rooms/office.js:192` | «Desde marzo. La mejor de mi vida. No me la nombres.» | MERCADOS: «¿La de la Sala? Sigue. Yo no. No me la nombres.» | X |
 | L27 | `rooms/office.js:352` | murmullo «Desde marzo. Desde marzo...» | «Punto tres. Punto tres...» | G (tic) |
 | L28 | `escenas/final.js:193` | «Una. Pero se lo lee TODO. La tengo como KPI.» | YOLI: «Una. Pero se lo lee TODO. La he puesto de objetivo de empresa.» | J |
@@ -1129,15 +1260,16 @@ motor (900 ms + 55 ms/carácter).
 | | Líneas | Tiempo |
 |---|---:|---:|
 | Texto actual del camino principal | 619 | 35,4 min |
-| **Se borra o se sustituye (lista §7.2-7.4)** | **−126 (−20,4 %)** | **−7,1 min (−20,2 %)** |
-| Bruno, en concreto | 175 → 137 (**−22 %**) | — |
+| **Se borra o se sustituye (§7.2-7.4)** | **−126** | **−7,1 min** |
+| **Fase B, aprobada (§7.5)** | **−60** | **−3,3 min** |
+| **Total podado del texto que hay** | **−186 (−30 %)** | **−10,4 min (−29 %)** |
+| Bruno, en concreto | 175 → ≈ 130 (**−26 %**) | — |
 | Exposición de Íñigo (7.2) / de Aurora (café) | 13 → 10 / 13 → 6 | — |
-| Se añade (pedidos del dueño: Evaristo en el camino, Infografía e IA, Maripaz, remate C) | +97 | +5,3 min |
-| Resultado E2 | ≈ 590 (44 pasos) | ≈ 33,6 min |
+| Se añade (pedidos del dueño: Evaristo en el camino, Infografía e IA, Maripaz rev. 2, remate C) | +108 | +5,9 min |
+| **Resultado E2** | **≈ 541 (44 pasos), −12,6 % neto** | **≈ 30,9 min (−13 %)** |
 
-Es decir: **se poda un 20 % del texto que hay**, y casi todo lo podado se reinvierte en las tres cosas que el dueño ha
-pedido subir al camino principal. Si el dueño quiere además un **−20 % neto**, §7.5 trae una fase B con 60 líneas más,
-ordenada de menos a más dolorosa.
+Es decir: se poda casi un tercio del texto que hay y algo más de la mitad de lo podado se reinvierte en lo que el dueño
+ha pedido subir al camino principal. La cifra exacta la da la medida de §12.3 al terminar.
 
 ### 7.2 Coletillas de Bruno (se borran en todo el juego)
 
@@ -1167,17 +1299,20 @@ ordenada de menos a más dolorosa.
 | `items.js:263` | «Me queda grande. Lo apunto como «proyección de futuro».» → «Me queda grande. De hombros y de cargo.» |
 | `vestibulo.js` (L1 Evaristo, `game.js:106`) | se queda «Es el primero que me lo pregunta.» (informa: nadie escribe bien su apellido) |
 
-**Despedidas en silencio (motor, P0).** Las opciones de diálogo con `exit: true` cuyo texto empieza por «Nada» o es
-«Me voy.» **no se dicen en voz alta**: se oye solo la respuesta del PNJ, y **solo la primera vez por PNJ** (las
-siguientes salidas son mudas). Afecta en el camino principal a Celestino ×3, Aurora ×3, Paco ×2, Yoli, Anselmo: −16
-líneas. `tools/walk-lib.mjs` (`FAREWELLS`) no cambia: elige por texto de opción, no por lo que se oye.
+**Despedidas una sola vez por personaje (motor, P0; aprobado).** Las opciones `exit: true` de cualquier árbol se
+oyen enteras (la frase de Bruno y la respuesta del PNJ) **solo la primera vez que se eligen con ese PNJ**; las
+siguientes cierran el diálogo en silencio. Implementación: `engine` guarda `despedida_oida:<id del árbol>` (flag interno,
+fuera de `flags.js`) y, si existe, no dice ni la opción ni su `reply`/`do` de texto (los `do` con efectos —p. ej. el
+gong de Maripaz— se ejecutan igual, sin líneas). Excepción: si la despedida tiene efectos de trama (ninguna los tiene
+hoy), se dice siempre. En el camino principal: Celestino ×3, Aurora ×3, Paco ×2, Yoli, Anselmo, Maripaz: ≈ −16 líneas
+(ya contadas). `tools/walk-lib.mjs` (`FAREWELLS`) no cambia: elige por el texto de la opción, no por lo que se oye.
 
 ### 7.3 Exposición de Íñigo y de Aurora (texto final exacto)
 
 - **Íñigo, escena 7.2**: §2.3.1 (de 26 a 17 líneas; Íñigo de 13 a 10; su exposición del plan, de 7 líneas a 2).
-- **Íñigo, 7.3a** (`catacumba.js:149-153`): «Qué bonito. Una página. Lástima que no se vaya a imprimir.» / «A las nueve,
-  en la Sala Amazonas, adiós al papel. Y la Goyita, al desguace.» (de 3 a 2). Teodoro: sale «Haz algo. Y hazlo rápido.»
-  (`catacumba.js:159`, se queda «Chaval. Si no hay rotativa, no hay firma.»).
+- **Íñigo, 7.3a** (`catacumba.js:142-158`): **sale la visita entera** (fase B (3)). Tras «Ha hablado. En voz alta.
+  Delante de mí.» (L19), Teodoro por fax: «Chaval. La Reunión de Dirección apaga la rotativa a las nueve.» / «Si no hay
+  rotativa, no hay firma.»; Aurora: «Y con buena letra, criatura.»; rótulo «ACTO III: CIERRE».
 - **Aurora tras el café** (`catacumba.js:297-317`, de 13 líneas a 6):
 
 ```text
@@ -1213,7 +1348,7 @@ años…» (resumido en la última línea). Pistas de la abuela, sin cambios.
 | 23 | Celestino por megafonía: «¡Apagón desde el banquillo de Sistemas!…» | borrar (quedan sus retransmisiones del torno, la cafetera y Rubén) |
 | 23, 39 | rumor C en Yoli y en Pilar | fuera: la cadena C queda Aurora (1) → Maripaz (2) → desmentido de Teodoro (`rumor_teodoro_n >= 2`) |
 | 25 | Íñigo: «Te lo apunto en verde: oportunidad. Para él.» | borrar |
-| 26 | Maripaz: «Vale, los paso a la web. Pero alguien tiene que llamar a Siestatón.» se dice y luego el `intro` repite la llamada | se queda la de `maripaz_sala` (§4.5); el `intro` del duelo pasa a `[]` cuando se abre desde el árbol |
+| 26 | Maripaz: «Vale, los paso a la web. Pero alguien tiene que llamar a Siestatón.» se dice y luego el `intro` repite la llamada | se queda la de `maripaz_sala` (§4.3); el `intro` del duelo pasa a `[]` cuando se abre desde el árbol |
 | 27 | Celestino por megafonía: «¡Gana a Comercial en el descuento!…» · Begoña: «Pero esto... esto es un insulto a la contabilidad.» · «Te la fotocopio…» + «Y la tuya, por triplicado.» · «Rechazadas las tres. El original, para mí.» + «Duplicado y triplicado, para tu archivo personal.» · «Y el sobre me lo quedo. Es una prueba.» | borrar la 1.ª, 2.ª y 6.ª; fusionar: «Te la fotocopio, para que aprendas. Y la tuya, por triplicado.» · «Rechazadas las tres. El original, para mí. Las copias, para su archivo.» |
 | 31 | Aurora: «A ver.» · «Y «opa» en minúscula, que ya está en el diccionario y se ofende.» | borrar las dos |
 | 35 | Bruno: «Treinta y una por cero setenta y cuatro... veintitrés. Exacto.» | borrar |
@@ -1223,22 +1358,53 @@ años…» (resumido en la última línea). Pistas de la abuela, sin cambios.
 | 44 | Gervasio: «Es Evaristo. Dice que nos va a escribir un correo.» / «Lo hablamos.» · Bruno: frase críptica | borrar (§5.6) |
 | epílogo | narrador «Hidrovoltia lanza una opa sobre Banco Robledal» / «Por Bruno Pellejo» (B9) · Celestino: «¡Y se retiran los dos del campo!…» · «La línea de sucesión acaba de enloquecer.» | borrar |
 
-### 7.5 Fase B (solo si el dueño quiere −20 % neto; 60 líneas)
+### 7.5 Fase B (aprobada por el dueño: definitiva; 60 líneas)
 
-En este orden: (1) **rumor A** entero fuera del camino principal (Celestino, Gertrudis, aro, Yoli; el epílogo de la
-abuela pierde «En el pueblo digo que eres el dueño…», 5 líneas): −9. (2) **Íñigo en los Despachos tras la cafetera**
-(`pajarera.js`, eco viral): −3. (3) **Íñigo en la 7.3a**: fuera la visita (Teodoro y Aurora cierran solos): −6.
-(4) **L2** de Evaristo (la sustituye la línea de Begoña): −4. (5) **Gervasio y la beca** en el epílogo: −3. (6) **D2**
-de cuatro ataques a tres (fuera R03 en el mazo de Teodoro; R03 sigue en D3): −3. (7) **Begoña**: «Original.» /
-«Duplicado.» / «Triplicado.» en una sola línea: −2. (8) **Celestino**, retransmisiones del torno y de Rubén: −4.
-(9) **Gertrudis**: el chisme 1 (R03) pasa al tablón del Vending: −2. (10) **Armario 27**: fuera el bloque «¿Tú eres el
-nuevo?… Qué ilusión» (y su pago en el epílogo, «Sí. ...Sí. Qué bien suena», 3): −8. (11) **Evaristo en el epílogo**:
-de 6 a 3 («Pellejo. Lo he revisado en el periódico. Con jota y dos eles.» / «Gracias, don Evaristo.» / «Felicidades. Es
-la primera vez que lo digo sin adjunto.»): −3. (12) **Ramírez en el epílogo**: «…¿Y qué ha decidido?» / «Que la rotativa
-no se apaga.» / «Siempre fue muy sensata.» fuera: −3. (13) **Paco**, «Cierra. No, esa no. Esa es un servidor.»: −1.
-(14) **Íñigo**, onWin de D4 de 3 a 1 («Ni un gesto en contra. Ni una pregunta. El mejor lector que he tenido.»): −2.
-(15) **D3** de Gervasio: fuera R14 («reunión rápida»/«¿Te va en marzo?»), queda R07, R01 y el remate: −4. (16) **Yoli**
-en el epílogo: fuera «Y comentó en lo de la cafetera…»: −1. (17) Sobran 2 de la abuela en el epílogo (Euríbor): −2.
+| # | Corte | Ficheros | Líneas |
+|---|---|---|---:|
+| 1 | **Rumor A** eliminado entero: Celestino («¡Me informa la planta!…», `vestibulo.js:140-145`), Gertrudis (`office.js:129-133`), aro de Borja, Yoli (`pecera.js:29-31`) y el epílogo de la abuela (`final.js:209-213`). Se borran `rumor_firma_n`, `planta_oyo` si no tiene otro lector, y X17 | P1, P2, P3, P4, P0 | −9 |
+| 2 | **Eco viral de Íñigo en los Despachos** («Vacante. ¿Has visto el Titulator?…», `pajarera.js`) | P2 | −3 |
+| 3 | **Íñigo en la 7.3a**: fuera la visita (texto de §7.3) | P3 | −6 |
+| 4 | **L2** de Evaristo (§5.7) | P0 | −4 |
+| 5 | **Gervasio y la beca** en el epílogo (`final.js:109-120`): Íñigo sale solo tras «Suerte, Bruno.»; su sitio lo usa Maripaz (§4.5, epílogo) | P1 | −3 |
+| 6 | **D2** de Teodoro con un ataque menos: mazo `['R06', 'R02', 'R09']`, remate en `atScore: 2` (walk, §10.1) | P3 | −3 |
+| 7 | **Begoña**: «Original.» / «Duplicado.» / «Triplicado.» → una línea con tres sellos: «Original. Duplicado. Triplicado.» (`sfx('hit')` ×3) | P3 | −2 |
+| 8 | **Celestino**: fuera sus retransmisiones del torno (`vestibulo.js:297-302`, con L4) y de Rubén (la de la escalera de Sistemas) | P1 | −4 |
+| 9 | **Gertrudis**: fuera «CORTADO. DE QUÉ, NO SE PREGUNTA.» y el «Me lo...» de Bruno en el torrente | P3 | −2 |
+| 10 | **Armario 27**: fuera «¿Tú eres el nuevo?» / «Llevo seis años.» / «Ah. Yo, cuatro meses…» / «Qué ilusión…» y su pago en el epílogo (Rubén «¿Sigue gobernando el mismo?», Celestino «¿Tú eres el nuevo?», «Sí.», «...Sí. Qué bien suena.»); el epílogo empieza con Íñigo y su caja | P1 | −8 |
+| 11 | **Evaristo en el epílogo**, de 6 a 3 (§5.8) | P1 | −3 |
+| 12 | **Ramírez en el epílogo**: fuera «...¿Y qué ha decidido?» / «Que la rotativa no se apaga.» / «Siempre fue muy sensata.» | P1 | −3 |
+| 13 | **Paco**: fuera «Cierra. No, esa no. Esa es un servidor.» (la despedida de Paco pasa a «Cierra al salir. La puerta, no el servidor.», una vez) | P1 | −1 |
+| 14 | **Íñigo**, `onWin` de D4 de 3 a 1 (§5.5) | P4 | −2 |
+| 15 | **D3** de Gervasio sin R14: mazo `['R07', 'R01', 'R03', 'R05']`, remate en `atScore: 2` (walk, §10.1) | P2 | −4 |
+| 16 | **Yoli** en el epílogo: fuera «Y comentó en lo de la cafetera: «Ese chico está flaco».» | P1 | −1 |
+| 17 | **La abuela** en el epílogo: fuera BRUNO «¿En todo?» y «En todo. Hasta en lo del Euríbor.» / «No lo entiendo, pero lo escribes muy bonito.» (de «Te pongo un corazoncito.» pasa a «Y te pongo «abrígate». Que nunca contestas.»; el final, intacto) | P1 | −3 |
+| | **Total** | | **−61** |
+
+Con (1), la línea de la abuela «En el pueblo digo que eres el dueño…» desaparece y el rumor C queda como única cadena de
+rumores: Aurora (1) → Maripaz (2) → desmentido de Teodoro (`rumor_teodoro_n >= 2`).
+
+### 7.6 Opciones repetibles y `once` (criterio para B6)
+
+**Regla general.** Una opción de diálogo es `once` (desaparece tras elegirla; no se atenúa) **salvo** que entre en una
+de estas cuatro clases, que son repetibles:
+
+1. **Las que hacen avanzar la trama mientras no esté hecha** (abren un duelo, entregan algo, ponen un flag de recorrido):
+   se quedan hasta que su flag existe y entonces desaparecen por su condición (p. ej. «Quiero firmar en tu página 7.»
+   con `!duelo_teodoro_ganado`; «Siestatón no ha confirmado la página 7.» con `!casilla_hueco`).
+2. **Las rotativas declaradas**, que cambian de respuesta cada vez: Celestino «¿Cómo va el Ibex?»; Pilar «¿Cuántas
+   sillas hay?» y «¿Y de qué va el evento?»; Gertrudis «Buenas noches, Gertrudis.»; «¿Me da un café sin saludar?» (L17,
+   hasta `gertrudis_saludada`).
+3. **Las de estado**, que informan de algo que cambia con la partida: Evaristo «¿Ha enviado ya el correo?»; Leoncio
+   «¿Qué tal ahora con Anselmo?»; Aurora «¿Qué noticia puedo traer?».
+4. **Las de salida** (`exit`), con la regla de §7.2.
+
+**Excepciones** (pasan a `once` hoy, lo que arregla B6): Íñigo «¿Y si en la Reunión de Dirección dicen que no?»
+(`pajarera.js:451`); Pilar «¿Para qué es el photocall?» y «¿Hay catering?» (`eventos.dialogos.js`: solo se añade
+`once: true`, sin tocar texto; cambio mínimo en Eventos); el coro «¿Por qué gritáis tanto?» y «El CMS lo he arreglado
+yo.»; Aurora «¿Qué le parecen los verbos de abajo?»; Celestino «¿Cómo se consigue una plaza de garaje?»; Maripaz «¿Qué tal con Siestatón?» (ya `once` en §4.4); Evaristo
+«¿Por qué llama tanto?» (ya `once` en §5.2). Todo árbol nuevo o reescrito en E2 ya sigue la regla. P0 añade a
+`tools/plan-rules.mjs` un aviso: opción sin `once`, sin `if` y sin `exit` que no esté en la lista de clases 2-3.
 
 ---
 
@@ -1309,10 +1475,10 @@ año** (y 9 «desde las [hora]» del día de hoy, que no son la muletilla; 72 en
 | `rooms/sala_amazonas.js:71` | «…Y a la baja desde marzo.» | «No se cogen. Cotizan. Y a la baja.» |
 | `rooms/sala_amazonas.js:188` | «El punto 3 lleva sin tocarse desde marzo. Nadie se atreve.» | «El punto 3. Nadie lo toca. Dicen que muerde.» |
 | `rooms/sala_amazonas.js:260` | «…en el punto 3 desde marzo.» | L23 |
-| `rooms/sala_amazonas.js:341` | «Y yo esperando a Siestatón desde marzo…» | §4.5 |
+| `rooms/sala_amazonas.js:341` | «Y yo esperando a Siestatón desde marzo…» | §4.3 |
 | `rooms/sala_amazonas.js:379` | «Desayunando. Desde 2019…» | L24 |
-| `rooms/sala_amazonas.js:391` | opción «La página 7 está pendiente desde marzo.» | §4.5 («Siestatón no ha confirmado la página 7.») |
-| `rooms/sala_amazonas.js:393` | «¿Desde marzo sin confirmar?…» | §4.5 |
+| `rooms/sala_amazonas.js:391` | opción «La página 7 está pendiente desde marzo.» | §4.3 («Siestatón no ha confirmado la página 7.») |
+| `rooms/sala_amazonas.js:393` | «¿Desde marzo sin confirmar?…» | §4.3 |
 | `rooms/sala_amazonas.js:488` | «Una reunión desde marzo…» | — (L33) |
 | `rooms/vestibulo.js:44` | «Plaza 3: Ramírez. Libre desde 2019. Ocupada por su ausencia.» | ««Plaza 3: Ramírez. Libre. Ocupada por su ausencia».» |
 | `rooms/vestibulo.js:180` | Celestino, café | L1 |
@@ -1346,8 +1512,10 @@ antigüedad se cuenta con una cosa que se ve (la barba, el despertador, el amari
 | C6 «Y una lectora: cuarenta y siete» (¿lectoras o minutos?) | `pecera.dialogos.js:46` | §2.7 |
 | C7 Pilar llama a Borja | `eventos.dialogos.js:30` | «¡Ese móvil!» (§3.5) |
 | C8 créditos de Controlling condicionales | `final.js:272` | §5.8 |
-| C9 «Me lo apunto.» en boca de Maripaz (es la coletilla de Bruno) | `duelo.js:48`; `sala_amazonas.js:91` | §4.5 (`hurtByPair`); `hurt` de D1: «Uy. Eso tiene tarifa.» / «Eso, para un patrocinio.» |
-| C10 «Faldón», «KPI», «Q3» sin traducir | L28, L34, L36, §2.3.2, §4.5 | como se indica |
+| C9 «Me lo apunto.» en boca de Maripaz (es la coletilla de Bruno) | `duelo.js:48`; `sala_amazonas.js:91` | §4.3 (`hurtByPair` y `hurt` de D1) |
+| C10 «Faldón», «KPI», «Q3» sin traducir | L28, L34, L36, §2.3.2, §4.3 | como se indica |
+| **B6** opciones que se repiten en unos PNJ y en otros no | varios | criterio y lista en §7.6 |
+| C11 el adhesivo «SU ANUNCIO AQUÍ» no puede seguir en la espalda tras Aurora | `catacumba.js` (saludo de Aurora) | `bruno_con_banner` = false al quitarlo (§4.2.6); la variante del sprite lo lee |
 
 ---
 
@@ -1365,9 +1533,11 @@ Pasos 1-27: iguales salvo el **24** y el **26**. Desde el 28, renumeración (ant
   { n: 28, sala: 'administracion', txt: 'Evaristo: escuchar hasta el final', acc: [['verbo', 'hablar', 'evaristo_salvedad'], ['opcion', '¿Para qué me ha llamado?'], ['opcion', '¿De qué trata?'], ['opcion', 'Siga.'], ['cerrar']], esp: { flags: ['evaristo_escuchado', 'rep_16'] } },   // [E2] nuevo
   // n 29-31: los antiguos 28-30, iguales
   { n: 32, sala: 'catacumba', txt: 'Aurora: la coma de Evaristo → correo por fax', acc: [['verbo', 'hablar', 'aurora_galerada'], ['opcion', 'Don Evaristo pregunta si su coma está bien.'], ['cerrar']], esp: { flags: ['coma_bendecida', 'correo_evaristo_listo'], tiene: ['correo_evaristo'] } },   // [E2] nuevo
-  // n 33-39: los antiguos 31-37, iguales (el 34 conserva esp con 'herminia_midio'; el 37 con 'dos_ias_vista')
+  { n: 33, sala: 'catacumba', txt: 'Teodoro → D2', acc: [['verbo', 'hablar', 'teodoro_cuerpodoce'], ['opcion', 'Quiero firmar en tu página 7.'], ['duelo', ['R06', 'R02', { objeto: 'manual_fax' }]], ['cerrar']], esp: { flags: ['duelo_teodoro_ganado', 'casilla_firma'] } },   // [E2] fase B (6)
+  // n 34-39: los antiguos 32-37, iguales (el 34 conserva esp con 'herminia_midio'; el 37 con 'dos_ias_vista')
   { n: 40, sala: 'pecera', txt: 'Álbum a Anselmo → salida en valor', acc: [['ir', 'pecera'], ['dar', 'album_eventos', 'anselmo_monolito'], ['opcion', 'No es un despido: es una salida en valor.'], ['cerrar']], esp: { tiene: ['ticket_n1'], flags: ['posit_descopeado', 'ruben_libre'], notiene: ['album_eventos'] } },
-  // n 41-42: los antiguos 39-40, iguales
+  { n: 41, sala: 'pajarera', txt: 'Gervasio en la puerta → D3', acc: [['ir', 'pajarera'], ['verbo', 'hablar', 'gervasio_acta'], ['opcion', 'Necesito el acta de la última reunión.'], ['duelo', ['R07', 'R01', { objeto: 'fotocopia_nota_direccion' }]], ['cerrar']], esp: { flags: ['duelo_gervasio_ganado', 'sala_abierta'], tiene: ['acta_reunion'], notiene: ['fotocopia_nota_direccion'] } },   // [E2] fase B (15)
+  // n 42: el antiguo 40, igual
   { n: 43, sala: 'sala_amazonas', txt: 'Duelo D4 (Íñigo), tres remates', acc: [['duelo', ['R10', 'R12', { objeto: 'ticket_n1' }, 'R13', 'R05', { objeto: 'acta_reunion' }, 'R16', { objeto: 'correo_evaristo' }]]], esp: { flags: ['duelo_inigo_ganado'] } },
   // n 44: el antiguo 42, igual
 ```
@@ -1381,7 +1551,7 @@ export const ALT = [...range(1, 22), 27, 28, 23, 24, 25, 26, 29, 33, 30, 31, 32,
 Cambios de sala: el 28 ocurre en Administración tras el 27 (0); el 32 en la Redacción de papel tras el 31 (0).
 **28 cambios (6/14/8)**, como hoy.
 
-**`tools/extras.mjs`**: X17 → §3.3. Cualquier acción con `nerea_backlog` pasa a `anselmo_monolito` (mismos textos de
+**`tools/extras.mjs`**: X17 se borra (§3.3). Cualquier acción con `nerea_backlog` pasa a `anselmo_monolito` (mismos textos de
 opción salvo `N_ALBUM` → `AN_ALBUM`, que conservan sus textos). Con Borja y Nemesio fuera, se borran los extras que
 solo los probaban a ellos. Extra nuevo **XE5** (tras 27, Administración): Hablar Evaristo → «¿Para qué me ha llamado?» →
 «¿Falta mucho?» → `esp: { flags: { evaristo_escuchado: false } }` (la prisa no rompe nada; se repite sin coste).
@@ -1397,7 +1567,9 @@ solo los probaban a ellos. Extra nuevo **XE5** (tras 27, Administración): Habla
 | `rep_16` | réplica (existe) | P3, paso 28 (E_REVELA) | D4 |
 | `office_error_n` | int **nuevo** | P3, L17 | P3 |
 | `aro_borja_hablar_n`, `aro_borja_mirar_n` | int **nuevos** | P4 | P4 |
-| `maripaz_empujon_n` | int **nuevo** | P4 | P4 (§4.3) |
+| `maripaz_empujon_n`, `maripaz_popup_n`, `ecosistema_interstitial`, `pantalla_comercial_n` | int / bool **nuevos** | P4 | P4 (§4) |
+| `bruno_con_banner` | bool **nuevo** | P4 (gana D1) | P0 (variante `con_banner` de Bruno), P2 (Yoli, Gervasio), P3 (Aurora lo pone a false) |
+| `rumor_firma_n`, `planta_oyo` (si no tiene otro lector) | — | — | **se borran** (fase B (1)) |
 | `evaristo_lc`, `evaristo_convoco`, `pecera_nemesio_saludo` | — | — | **se borran** (sin lector) |
 
 ### 10.3 Pistas de la abuela (`pistas.js`)
@@ -1444,14 +1616,14 @@ Mismos cuatro paquetes de sala de §11 del plan, más el común. Cada uno edita 
 
 | Paquete | Ficheros | Secciones de E2 |
 |---|---|---|
-| **P0 · común** | `game.js`, `pistas.js`, `items.js`, `flags.js`, `duelo.js`, `actors.js`, `lib/movil.js`, `engine/*` (despedidas en silencio, §7.2), `tools/walk-data.mjs`, `tools/extras.mjs`, `tools/plan-rules.mjs`, `tools/text-audit.mjs`, `tools/test-*.mjs` comunes | §5.3 (objeto `correo_evaristo`), §5.7 (L1-L5, fuera LC), §7.2 (despedidas, `RV_TADEO`), §7.4 (paso 13: RV fuera de `avisos`), §9 (C9 en `duelo.js`), §10 entero, `actors.js`: bajas de `borja_engagement` y `nerea_backlog`, murmullos de Maripaz/Anselmo/Leoncio (§2.5, §4.3); `items.js:263`; `lib/movil.js:31`; `duelo.js` `hurtByPair.maripaz` y `weakReplies` (§4.5) |
-| **P1 · Vestíbulo, Sistemas y final** | `rooms/vestibulo.js`, `rooms/cpd.js`, `escenas/final.js` | §5.4 (armario), §5.8 (epílogo, créditos), §4.6 (Maripaz en el epílogo), §3.3 (plaza 3, créditos), §6 L1-L7, L16, L28, L37, §7 (pasos 2-4, 10, 20-23, armario, epílogo), §8 (sus filas), §9 B9, B10, C1 |
-| **P2 · Redacción y Despachos** | `rooms/pecera.js`, `pecera.dialogos.js`, `pecera.escenas.js`, `pecera.voces.js`, `pecera.secretaria.js`, `rooms/pajarera.js`, `art/pecera.art.js` | §2 entero (7.2, paso 34, momento 8, paso 40, árboles, fusión, Yoli), §6 L8-L15, L29-L30, L35, L38, §7 (pasos 11, 13, 25, 37 momento 8), §8 (sus filas), §9 B4, B5, C4-C6 |
-| **P3 · Vending, Redacción de papel y Administración** | `rooms/office.js`, `rooms/catacumba.js`, `rooms/administracion.js`, `administracion.dialogos.js` | §5.2, §5.3 (escena del fax), §5.7 (línea de 7.3a), §4.6 y §2.6.5 (chismes de `office.js`), §6 L17-L21, L26-L27, §7.3 (Aurora, 7.3a), §7.4 (pasos 27, 31, 35), §8 (sus filas) |
-| **P4 · Sala Amazonas, Marketing y Comercial, Eventos y clímax** | `rooms/sala_amazonas.js`, `rooms/ecosistema.js`, `ecosistema.dialogos.js`, `rooms/eventos.js`, `eventos.dialogos.js`, `escenas/climax.js`, `art/ecosistema.art.js` | §3 entero, §4.1-4.5, §5.5-5.6, §6 L22-L25, L33, L36, §7 (pasos 26, 44), §8 (sus filas), §9 C7 |
+| **P0 · común** | `game.js`, `pistas.js`, `items.js`, `flags.js`, `duelo.js`, `actors.js`, `lib/movil.js`, `engine/*` (despedidas una sola vez, §7.2), `tools/walk-data.mjs`, `tools/extras.mjs`, `tools/plan-rules.mjs`, `tools/text-audit.mjs`, `tools/test-*.mjs` comunes | §5.3 (objeto `correo_evaristo`), §5.7 (L1-L5, fuera LC), §7.2 (despedidas, `RV_TADEO`), §7.4 (paso 13: RV fuera de `avisos`), §9 (C9 en `duelo.js`), §10 entero, `actors.js`: bajas de `borja_engagement` y `nerea_backlog`, murmullos de Maripaz/Anselmo/Leoncio (§2.5, §4.4); variante `con_banner` de Bruno (§4.6); `items.js:263`; `lib/movil.js:31`; `duelo.js` `hurtByPair.maripaz` y `weakReplies` (§4.3); fase B (1) y (4) en sus ficheros; aviso de `plan-rules.mjs` para opciones repetibles (§7.6) |
+| **P1 · Vestíbulo, Sistemas y final** | `rooms/vestibulo.js`, `rooms/cpd.js`, `escenas/final.js` | §5.4 (armario), §5.8 (epílogo, créditos), §4.5 (Maripaz en el epílogo), §3.3 (plaza 3, créditos), §6 L1-L3, L5-L7, L16, L28, L37, §7 (pasos 2-4, 10, 20-23, armario, epílogo), §7.5 fase B (1) en Celestino, (5), (8), (10)-(13), (16), (17), §7.6 (Celestino), §8 (sus filas), §9 B9, B10, C1 |
+| **P2 · Redacción y Despachos** | `rooms/pecera.js`, `pecera.dialogos.js`, `pecera.escenas.js`, `pecera.voces.js`, `pecera.secretaria.js`, `rooms/pajarera.js`, `art/pecera.art.js` | §2 entero (7.2, paso 34, momento 8, paso 40, árboles, fusión, Yoli), §6 L8-L15, L29-L30, L35, L38, §7 (pasos 11, 13, 25, 37 momento 8), §7.5 fase B (1) en Yoli, (2), (15), §7.6 (Íñigo, coro), reacciones al adhesivo de Yoli y Gervasio (§4.2.3), §8 (sus filas), §9 B4, B5, C4-C6 |
+| **P3 · Vending, Redacción de papel y Administración** | `rooms/office.js`, `rooms/catacumba.js`, `rooms/administracion.js`, `administracion.dialogos.js` | §5.2, §5.3 (escena del fax), §5.7 (línea de 7.3a), §4.5 y §2.6.5 (chismes de `office.js`), **§4.2.6 (el faldón de Comercial por fax y Aurora quitando el adhesivo)**, §6 L17-L21, L26-L27, §7.3 (Aurora, 7.3a sin Íñigo), §7.4 (pasos 27, 31, 35), §7.5 fase B (1) en Gertrudis, (3), (6), (7), (9), §7.6 (Aurora), §8 (sus filas) |
+| **P4 · Sala Amazonas, Marketing y Comercial, Eventos y clímax** | `rooms/sala_amazonas.js`, `rooms/ecosistema.js`, `ecosistema.dialogos.js`, `rooms/eventos.js`, `eventos.dialogos.js`, `escenas/climax.js`, `art/ecosistema.art.js` | §3 entero, §4 entero salvo §4.2.6 (P3), §4.5 (epílogo, P1; chisme, P3) y la variante del sprite (P0): pop-up, página 7 de Comercial, adhesivo, anuncio de entrada, `pantalla_comercial`, árboles, D1, estampida; §5.5-5.6, §6 L22-L25, L33, L36, §7 (pasos 26, 44), §7.5 fase B (14), §7.6 (Pilar: solo `once`), §8 (sus filas), §9 C7 |
 
-Peticiones cruzadas (texto ya escrito aquí): P3 da `correo_evaristo` → P4 lo pide en D4; P4 sube `rumor_firma_n` a 3
-en el aro → P2 lo baja a 4 en Yoli; P2 retira `nerea_backlog` → P1 cambia las líneas de Rubén (§5.4) y P3 el chisme
+Peticiones cruzadas (texto ya escrito aquí): P3 da `correo_evaristo` → P4 lo pide en D4; P4 pone `bruno_con_banner`
+→ P2 (Yoli, Gervasio) y P3 (Aurora) lo leen y P0 lo pinta; P2 retira `nerea_backlog` → P1 cambia las líneas de Rubén (§5.4) y P3 el chisme
 (§2.6.5); P0 cambia el walk y las pistas cuando los cuatro hayan entregado.
 
 ---
@@ -1466,9 +1638,9 @@ en el aro → P2 lo baja a 4 en Yoli; P2 retira `nerea_backlog` → P1 cambia la
 2. **Pruebas** (cada paquete, las de su brief): `node tools/check.mjs`; `node tools/text-audit.mjs --estatico --plan`
    por sala; `node tools/walkthrough.mjs` y `--alt` (44 pasos); `node tools/extras.mjs`; `node tools/fuzz.mjs`.
 3. **Medida del recorte.** Jugar los 44 pasos con `tools/walk-lib.mjs` y volcar `__game.log` (sin avisos ni tarjeta).
-   Objetivo: del texto de hoy (619 líneas, 35,4 min) se van ≥ 124 líneas; resultado total ≤ 595 líneas con lo nuevo.
-   Bruno ≤ 140. Cada paquete informa de su cifra.
-4. **Topes nuevos** (`tools/plan-rules.mjs`): «desde» + fecha ≤ 6; «cariño» ≤ 24; «(*» ≤ 3; «Emoji de fuego» ≤ 8;
+   Objetivo: del texto de hoy (619 líneas, 35,4 min) se van ≥ 180 líneas; resultado total ≤ 545 líneas con lo nuevo.
+   Bruno ≤ 135. Cada paquete informa de su cifra.
+4. **Topes nuevos** (`tools/plan-rules.mjs`): «desde» + fecha ≤ 6; «cariño» ≤ 14; «(*» = 0; «interstitial» ≤ 2; «pop-up» ≤ 8; «Emoji de fuego» ≤ 8;
    «Diseño» ≤ 11 (hoy baja uno con la 7.2); «Me la apunto/Me lo apunto» en boca de Bruno = 0; «PORTÁTIL:» = 0.
 5. **Longitud.** Todas las líneas de este documento destinadas a pantalla: ≤ 80 caracteres (con el prefijo
    «HERMINIA (IA) › » o «TEODORO (fax): » incluido). Comprobado con script sobre los bloques `text`, las celdas «…» y
