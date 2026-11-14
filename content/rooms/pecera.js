@@ -18,6 +18,7 @@ import escenas from './pecera.escenas.js';
 import { talk, seq, num, PREFIX } from './pecera.voces.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
 import { dialogoCustodia, objetosSecretaria, flagsSecretaria } from './pecera.secretaria.js';
+import { darTaper } from './cpd.js';                      // [integrador] el táper también vale con Rubén en la Redacción
 
 const Y = 'yoli_tendencias', N = 'nerea_backlog', L = 'leoncio_quesitos', A = 'anselmo_monolito', R = 'ruben', V = 'valentin_reticula';
 const ley = (...lines) => async (api) => { await api.sayAs(L, lines); };
@@ -99,6 +100,7 @@ export default buildRoom({
     pecera_sillas_n: 'int · P2 · +1 por Mirar sillas_con_chaqueta',
     pecera_pantalla_anselmo_n: 'int · P2 · +1 por Mirar pantalla_anselmo (rotación Acto II)',
     pecera_valentin_n: 'int · P2 · +1 por Hablar con Valentín (1.ª: el casco)',
+    pecera_bandeja_abierta: 'bool · integrador · Abrir bandeja_diseno · arte (la bandeja de arriba, sacada)',
     pecera_murmullo_n: 'int · P2 · rotación de los murmullos de Leoncio y Anselmo',
     pecera_album_n: 'int · P2 · Nemesio N_ALBUM: «hecho» y «funeral» probados',
     ...flagsSecretaria,
@@ -211,7 +213,7 @@ export default buildRoom({
       empujar: async (api) => api.say(api.flag('cms_vivo')
         ? 'Ni hablar. Nueve años esperando a que alguien la desenchufara.'
         : 'Ya está enchufado. Lo dicen la cinta, el cable y Nemesio con la mirada.'),
-      usar: 'Enchufar algo más aquí sería pedirle demasiado a la pantalla de Dirección.',
+      usar: 'Enchufar algo más aquí sería pedirle demasiado a esa pantalla. Y a la regleta.',
       coger: 'La cinta dice NO DESENCHUFAR. No dice NO COGER. Pero se sobreentiende.',
     } },
     { id: 'taza_abandonada', name: 'taza abandonada', handlers: {
@@ -382,6 +384,7 @@ export default buildRoom({
       mirar: seq([['B', 'Una bandeja: "ENTREGAS DE DISEÑO Y PRODUCTO". Llena hasta arriba.'], ['B', 'Todo con fecha y a su hora. Desde Desarrollo no la abre nadie.']]),
       abrir: async (api) => {
         api.sfx('paper');
+        api.setFlag('pecera_bandeja_abierta', true);      // solo el dibujo (fuera el flag cruzado bandeja_diseno_abierta, §3.4)
         await api.say(['«Entregado a las 18:29». Y al fondo, de 2017, una hoja con una flecha.', '«La pantalla tumbará el CMS». Sello: «LEÍDO (PERO NO)».']);
       },
       coger: async (api) => api.sayAs(N, 'Déjala. Es lo único ordenado del rincón. Y no es nuestro.'),
@@ -448,13 +451,15 @@ export default buildRoom({
     { id: R, when: ['ruben_libre', '!lector_derribado'], handlers: {
       mirar: 'Rubén mira por la ventana. Espera al sol como quien espera una nómina.',
       hablar: async (api) => {
-        if (api.flag('herminia_de_alta') && api.once('pecera_ruben_herminia')) {          // E1.5
+        // E1.5 (si ya lo oyó desde el armario, cpd.js `cpd_ruben_oyo_alta`, no lo pregunta otra vez)
+        if (api.flag('herminia_de_alta') && !api.flag('cpd_ruben_oyo_alta') && api.once('pecera_ruben_herminia')) {
           await talk(api, [[R, '¿A ella le dieron el alta en cuarenta segundos?'], ['B', 'Es una herramienta.'], [R, 'Yo también. Pero sin pegatina.']]);
         }
         await api.sayAs(R, 'Estoy esperando a que salga el sol. Me han dicho que existe.');
       },
       'dar:cafe': async (api) => api.sayAs(R, 'Gracias. Es lo primero caliente desde julio. Sin contar el armario.'),
       'dar:ticket_n1': async (api) => api.sayAs(R, 'Guárdalo tú. Si lo toco, me vuelvo a dar de alta.'),
+      'dar:taper_huerfano': darTaper,
     },
       murmurs: ['AMANECER DETECTADO. LO QUE PASÓ DESPUÉS... Perdón. Aún no ha salido.', '¿El sol también va con ticket?'] },
     // §5.14: Valentín Retícula, cameo MUDO junto a la bandeja (fuera de 7.2, epílogo y créditos)

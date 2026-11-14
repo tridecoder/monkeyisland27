@@ -263,6 +263,8 @@ export class Game {
     // medía 800 px, los mostradores y las mesas estaban en otro sitio). Cada PNJ vuelve a su sitio de la sala donde está.
     if ((d.v || 1) < 3) this.migrarJugadorV2();
     if ((d.v || 1) < SAVE_V) this.migrarPosiciones();
+    // migración del contenido (objetos y flags retirados): idempotente, en cada carga (content/game.js `migrarPartida`)
+    if (typeof this.G.migrarPartida === 'function') { try { this.G.migrarPartida(this.state); } catch (e) { this.error('migrarPartida falló', e); } }
     this.buildActors();
     this.mode = 'play';
     const duelo = this.state.duelPendiente;

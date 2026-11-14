@@ -336,7 +336,7 @@ try {
   await G(() => __game.waitIdle());
   const sl = await state();
   ok(sl.lastDuel.result === 'lost' && !sl.flags['duel:prueba2:won'] && sl.flags['duel:prueba2:perdido_n'] === 1, 'dos fallos (maxMisses 2) = derrota; duel:prueba2:perdido_n = 1');
-  ok(await G(t => { const w = __game.game.content.duels.weakReplies.find(x => x.text === t); const i = __game.log.findIndex(l => l.text === w.answer); const j = __game.log.findIndex(l => l.who === 'narrador' && l.text.includes('Lo que diga Gervasio.')); return i >= 0 && j > i; }, ultimaFloja), 'la contestación de la última floja se oye ANTES de la derrota (crítica §9.4)');
+  ok(await G(t => { const w = __game.game.content.duels.weakReplies.find(x => x.text === t); const i = __game.log.findIndex(l => l.text === w.answer); const j = __game.log.findIndex(l => l.who === 'narrador' && l.text.includes('RESPUESTA AUTOMÁTICA')); return i >= 0 && j > i; }, ultimaFloja), 'la contestación de la última floja se oye ANTES de la derrota (crítica §9.4)');
   ok(sl.flags['duel:prueba2:empieza'] === 'R03', `la revancha empezará por el ataque que ganó (R03): ${sl.flags['duel:prueba2:empieza']}`);
   G(code => __game.game.runScript(api => api.duel(eval(code)), { label: 'duelo de prueba 2 (revancha)' }), D2);
   await waitFor(() => __game.state().dialog);

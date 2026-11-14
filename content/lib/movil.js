@@ -10,13 +10,11 @@
 // 18:30 → 21:00; los relojes del edificio siguen parados en las 20:59.
 // Seguro: el móvil no se guarda, se retira al acabar el guion (aunque falle) y al cargar; en modo rápido, todo es instantáneo.
 
-/** Los «RV:» de Tadeo (adenda §2.2): condición, asunto (lo que dice Tadeo) y el comentario de Bruno. Los usa también la
+/** Los «RV:» de Tadeo (adenda §2.2; plan §5.16): condición, asunto (lo que dice Tadeo) y el comentario de Bruno. Los usa también la
  *  cola de avisos (content/game.js) para que el correo y el aviso digan exactamente lo mismo. */
-export const RV_TADEO = [
-  ['inigo_presentado', 'RV: Mejora tus Core Web Vitals en 5 pasos (40 págs.). Por si os sirve!!', 'Para Redacción, Sistemas, Papel y Conserjería. Celestino, en copia.'],
-  ['gertrudis_saludada', 'RV: RV: Cómo instalar una bandeja 2 en una impresora sin bandeja 2.', 'La impresora de la tercera está en copia. Me identifico con ella.'],
-  ['acto_2_iniciado', 'RV: RV: RV: La IA dice que el LCP baja quitando lo más grande!!', 'Lo más grande de un periódico es la portada. Mal asunto.'],
-  ['cms_vivo', 'RV x4: ¿Qué es un CMS? Lo reenvío a los del CMS!!', 'Paco tendrá un ticket nuevo. Le contestará su mejor empleada.'],
+export const RV_TADEO = [   // plan §5.16: tres, sin siglas
+  ['inigo_presentado', 'RV: Cómo hacer que la web cargue en la mitad de tiempo (40 págs.)!!', 'Cuarenta páginas para que cargue antes. Las abro mañana. Si cargan.'],
+  ['acto_2_iniciado', 'RV: RV: RV: La IA dice que la web va más rápida sin lo más grande!!', 'Lo más grande de un periódico es la portada. Mal asunto.'],
   ['acto_3_iniciado', 'RV x5: Reflexión sobre armarios: "AYÚDAME ESTOY EN EL ARMARIO 27"', 'Lo ha visto toda la empresa. Y nadie lo ha leído.'],
 ];
 
@@ -81,7 +79,7 @@ async function correo(api) {
 }
 
 async function llamadas(api) {
-  const ev = Math.min(num(api, 'evaristo_llamadas'), 5);
+  const ev = Math.min(num(api, 'evaristo_llamadas'), 6);   // L1-L5 y la LC (plan §5.13)
   const rows = [{ text: 'Abuela', sub: 'perdida · siempre', icon: '#d83a2a' }];
   for (let i = ev; i >= 1; i--) rows.push({ text: 'Evaristo', sub: i === ev ? 'contestada · hoy' : 'contestada', icon: '#F0F0A8' });
   await api.phone.app({ title: 'Llamadas', rows });

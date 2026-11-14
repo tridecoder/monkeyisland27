@@ -4,6 +4,7 @@
 // Cada objetivo: id · hecho (condición, §8 de CONTENT_SCHEMA) · activo (desde cuándo cuenta) · salas (dónde «toca»;
 // '*' = todas) · meta (lo que dice Bruno al mirarse, §8.2) · niveles: 1 y 2 = la abuela; 3 = [abuela, Bruno al colgar]
 // · extra (opcional): { si: condición, abuela: 'línea' } que la abuela añade en el nivel 3.
+// · previa (opcional): { si: condición, nivel, abuela: 'línea' } que la abuela dice ANTES de la pista de ese nivel.
 // El motor (engine/objetivos.js) elige el objetivo y el nivel; content/game.js (`pistas`) dice las líneas.
 // Los autores de sala no tienen que tocar nada: cada objetivo se da por hecho con su flag. Si un hito no tiene flag,
 // `api.objetivo.marcar('<id>')`.
@@ -52,7 +53,7 @@ export const OBJETIVOS = [
     'Las reuniones se acaban cuando alguien pregunta qué hay que hacer.',
     'Por eso tu tío no pregunta nunca. Tú sí. En esa reunión de marzo.',
     ['Pregunta lo que viene después. Verás cómo corren.', 'A Gervasio: «¿y los siguientes pasos?».']] },
-  { id: 'hueco', hecho: 'casilla_hueco', activo: 'reunion_terminada', salas: ['sala_amazonas', 'ecosistema'], meta: M.hff, niveles: [
+  { id: 'hueco', hecho: 'casilla_hueco', activo: 'reunion_terminada', salas: ['sala_amazonas'], meta: M.hff, niveles: [
     'La que se queda sentada es que quiere que le hables.',
     'Si alguien tiene algo apartado desde marzo, ya no es suyo.',
     ['Díselo por escrito, que es como se dicen las cosas.', 'A Maripaz: la página 7, desde marzo.']],
@@ -81,12 +82,14 @@ export const OBJETIVOS = [
   { id: 'recorte', hecho: 'pieza_recortada', activo: 'pieza_escrita', salas: ['catacumba', 'administracion'], meta: M.hff, niveles: [
     'Si te sobra, dáselo a quien corta. La que me hace los bajos no pregunta.',
     'La de la ventanilla no lee: corta. Y el fax llega a todas partes.',
-    ['Mándaselo a la que corta, por la máquina o en mano.', 'La pieza a Begoña: fax, tecla 2, o subir.']] },
+    ['Mándaselo a la que corta, por la máquina o en mano.', 'La pieza a Begoña: fax, tecla 2, o subir.']],
+    // E1.4.1: con `herminia_midio`, antes del nivel 1
+    previa: { si: 'herminia_midio', nivel: 1, abuela: 'Hasta la maquinita de los dibujos sabe cuánto te sobra, hijo.' } },
   { id: 'cierre', hecho: 'pagina_cerrada', activo: ['casilla_hueco', 'casilla_fuente', 'casilla_firma', 'pieza_recortada'], salas: ['*'], meta: M.cierre, niveles: [
     '¿Y a qué esperas para darle los papeles a ese señor del fax?',
     'Tienes las tres cosas, hijo. Llévalas a quien manda en el papel.',
     ['Al señor del fax llévale los papeles. De mi parte.', 'La ficha, a Teodoro.']] },
-  { id: 'armario', hecho: 'ruben_encontrado', activo: 'acto_3_iniciado', salas: ['cpd'], meta: M.acto3, niveles: [
+  { id: 'armario', hecho: 'ruben_encontrado', activo: 'acto_3_iniciado', salas: ['cpd', 'pecera'], meta: M.acto3, niveles: [
     'Si de un armario sale papel, es que alguien escribe dentro, hijo.',
     'Esos titulares tan raros salen de abajo. De un armario.',
     ['Tira del papel que sale del armario. Con cuidado.', 'Sistemas: el papel continuo del 27.']] },
@@ -99,7 +102,7 @@ export const OBJETIVOS = [
     'Ese chico te dio una frase de despedir sin despedir. Úsala.',
     ['Dile al de los papelitos esa frase tan fina.', 'El álbum a Nemesio. «Salida en valor».']],
     extra: { si: ['!rep_13', '!oyo_descopear'], abuela: 'Pero antes pregúntale al chico por los discursos de ese señor.' } },
-  { id: 'acta', hecho: 'sala_abierta', activo: 'acto_3_iniciado', salas: ['pajarera', 'office'], meta: M.acta, niveles: [
+  { id: 'acta', hecho: 'sala_abierta', activo: 'acto_3_iniciado', salas: ['pajarera'], meta: M.acta, niveles: [
     'En una reunión manda el que escribe el acta. Que la escriba otro.',
     'El de la puerta quiere un acta. Y que no se sepa con quién comió.',
     ['Gánale al de la puerta y enséñale su cuenta de la comida.', 'Duelo con Gervasio. Remate: su nota.']] },

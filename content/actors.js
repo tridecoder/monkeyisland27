@@ -231,9 +231,9 @@ export default {
       skin: '#f0c4a0', hair: '#3a2018', hairStyle: 'highponytail', hairStreak: '#FF78B8', glasses: 'thick', glassesColor: '#1a1418',
       shirt: '#4a5a80', emblem: '#FF78B8', pants: '#2a2a3a', shoes: '#f0f0f0', prop: 'eyedrops', build: 'slim', height: 0.97,
     },
-    murmurs: ['Precio café hoy, precio café 2026, precio café por qué...', 'Si baja otra vez, me pongo colirio en el alma.',
+    murmurs: ['Esto sube — 3.402 — esto baja — 3.398 — esto soy yo.',   // plan §5.4
       'Ahí al lado imprimen lo que yo publiqué ayer. Con las faltas corregidas.',   // orden 2: la Redacción de papel, al lado
-      'Busco "el Contable" y salen gestorías. Nos ganan en SEO.', 'Hacen más ruido que mi gráfica cuando baja.'],
+      'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.'],
   },
   // Nemesio Backlog (id histórico `nerea_backlog`: el personaje se llamó Nerea hasta que dirección pidió que Desarrollo
   // fuera solo de hombres; el id no se toca para no romper partidas, pruebas ni flags). El dueño del kanban: chaleco de
@@ -245,7 +245,7 @@ export default {
       sleeveNotes: '#f0e050', pencil: true, pencilColor: '#3070d0', pants: '#4a3a32', shoes: '#2a1a14', height: 1.02, build: 'normal',
     },
     murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.',
-      'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.'],
+      'No hay urgentes. Hay POR HACER escrito más fuerte.'],   // [integrador] fuera los dos murmullos con «Diseño» (tope §5.14)
   },
   teodoro_cuerpodoce: {
     // No habla: sus líneas salen del fax (prefijo «TEODORO (fax):», §3.4). Solo habla en voz alta al teléfono rojo.
@@ -379,7 +379,7 @@ export default {
       emblem: '#3CE0C6', pocketItem: '#c8ccd4', pocketKind: 'ruler', prop: 'folder', propColor: '#e8d49a',
       sleeves: 'short', pants: '#4e5a48', shoes: '#3a2e26', height: 0.99,
     },
-    murmurs: ['Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.', 'Cuarenta y un pósits. Cuarenta y un «NO». Es una serie muy estable.', 'Si la cinta avanza otro palmo, me piden pasaporte para el Vending.'],
+    murmurs: ['Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.', 'Cuarenta y un pósits a Anselmo. Cuarenta y un «no». Serie muy estable.'],   // E1.6
   },
   anselmo_monolito: {
     // Director de Desarrollo (pecera, 560-610 px). Chaleco acolchado gris con muchos bolsillos, un rollo de cinta de
@@ -389,7 +389,7 @@ export default {
       skin: '#dcae88', hair: '#2e2830', hairStyle: 'short', shirt: '#b4503c', vest: '#8c9098', keys: '#e8d8a0',
       prop: 'folder', propColor: '#2f4f86', pants: '#5c5c46', shoes: '#34281c', height: 1.02, build: 'normal',
     },
-    murmurs: ['Esto no ha pasado por Desarrollo. Esto tampoco. Esto sí, de refilón.', 'Transversal. No invasivo. Transversal.', 'Revisión: marzo. Qué bien suena marzo.', '(al termo) Tú sí eres de Desarrollo.'],
+    murmurs: ['Esto no ha pasado por mí. Esto tampoco. Esto, de refilón.', '(al termo) Tú sí eres de la casa.'],   // E1.6
   },
   evaristo_salvedad: {
     // Director de Controlling y Financiero (administracion; epílogo, vestibulo). Chaqueta de punto gris perla abrochada,
@@ -413,7 +413,7 @@ export default {
       shirt: '#f8f8fa', jacket: '#2f7058', pants: '#202028', shoes: '#f6f6f6', bracelets: '#c4c8d0',
       height: 1.13, build: 'athletic',
     },
-    murmurs: ['Esto, dos píxeles a la izquierda. Ahora sí.', 'Nota para el lunes: abrirle la bandeja a Desarrollo. Con cariño.', '(al monitor) Venga, becario. Que tú puedes.'],
+    murmurs: [],   // cameo MUDO (orden del dueño): solo «Está en la bandeja.» en su escena (pecera.js)
   },
 
   // ---------------------------------------------------------------- ADENDA §1/11.2: presencias SIN sprite
@@ -422,7 +422,6 @@ export default {
   // su objeto usa `api.sayFrom('<objeto>', texto)`, que toma el `color` del objeto (declarado igual en el stub).
   custodia_precinto: { name: 'Custodia', color: '#A0A0FF', hotspot: false, presence: 'manos bajo una persiana metálica (Secretaría de Redacción, en la Redacción)', doll: {} },
   tadeo_adjunto: { name: 'Tadeo', color: '#FFCC99', hotspot: false, presence: 'portátil (Marketing y Comercial) y móvil (avisos RV:)', doll: {} },
-  herminia: { name: 'Herminia', color: '#FF8C3C', hotspot: false, presence: 'rótulos en el portátil de Leoncio (Redacción)', doll: {} },
   coro_desarrollo: { name: 'CORO', color: '#7FFFD4', hotspot: false, presence: 'los tres devs, a la vez', doll: {} },
   dev_1: { name: 'DEV 1', color: '#7FFFD4', hotspot: false, presence: 'del coro: indignado', doll: {} },
   dev_2: { name: 'DEV 2', color: '#7FFFD4', hotspot: false, presence: 'del coro: más indignado', doll: {} },

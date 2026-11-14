@@ -91,8 +91,8 @@ async function revelacionRuben(api) {
   if (api.has('taper_huerfano')) { await api.say('Pues mira. Traigo uno. Huérfano.'); await darTaper(api); }
 }
 
-/** §4.4 · el táper huérfano del Vending paga el «¿Me traes un táper?» de Rubén. */
-async function darTaper(api) {
+/** §4.4 · el táper huérfano del Vending paga el «¿Me traes un táper?» de Rubén (también en la Redacción: pecera.js). */
+export async function darTaper(api) {
   if (api.flag('taper_dado')) { await api.sayAs(R, 'Ya tengo uno. Vacío. Para que dure.'); return; }
   api.sfx('pickup');
   api.take('taper_huerfano');

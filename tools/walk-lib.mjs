@@ -110,6 +110,21 @@ async function playDuel(seq0) {
   }
   fail('el duelo no termina');
 }
+/** Pierde el duelo abierto eligiendo siempre la floja (plan §7.5); en un remate, se retira del hilo. */
+async function loseDuel() {
+  for (let k = 0; k < 12; k++) {
+    await G(() => __game.waitIdle());
+    const st = await state();
+    if (!st.duel) break;
+    if (st.duel.phase === 'reply' && st.dialog) await G(i => __game.chooseDialog(i), st.duel.weakIndex);
+    else if (st.duel.phase === 'finisher' && st.dialog) await chooseByText('[Retirarse del hilo]');
+    else await page.waitForTimeout(30);
+  }
+  await G(() => __game.waitIdle());
+  const st = await state();
+  if (st.duel) fail('el duelo no se pierde con flojas');
+  if (!st.lastDuel || !['lost', 'retired'].includes(st.lastDuel.result)) fail(`se esperaba perder el duelo (resultado: ${st.lastDuel && st.lastDuel.result})`);
+}
 async function run(a) {
   const [k, x, y, z] = a;
   if (k === 'ir') return travel(x);
@@ -125,6 +140,7 @@ async function run(a) {
   if (k === 'opcion') return chooseByText(x);
   if (k === 'cerrar') return closeDialog();
   if (k === 'duelo') return playDuel(x);
+  if (k === 'perder') return loseDuel();
   void z;
   fail('acción desconocida ' + JSON.stringify(a));
 }
@@ -145,5 +161,5 @@ async function check(esp) {
   async function startDismisser() {
     await page.evaluate(() => { if (window.__dismisser) return; window.__dismisser = setInterval(() => { try { if (__game.state().aviso) __game.skipSpeech(); } catch (e) { /* ignore */ } }, 120); });
   }
-  return { run, check, state, travel, chooseByText, closeDialog, playDuel, startDismisser, G, norm };
+  return { run, check, state, travel, chooseByText, closeDialog, playDuel, loseDuel, startDismisser, G, norm };
 }

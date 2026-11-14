@@ -100,12 +100,12 @@ export default {
     retire: '[Retirarse del hilo]',
     pickPrompt: 'Adjuntar al hilo:',
     notReady: 'Aún no tengo con qué contestarle. Debería cotillear más.',
-    defeatCc: 'Dirección',
+    defeatCc: 'Toda la empresa',
     defeatAssigned: 'Vacante',
     // Línea de derrota POR DEFECTO (rótulo del narrador). Cada rival pone la suya en su sala: `defeatLine` (plan §7.7).
-    defeatLine: ['narrator', 'RESPUESTA AUTOMÁTICA DE DIRECCIÓN: «Lo que diga Gervasio.»'],
+    defeatLine: ['narrator', 'RESPUESTA AUTOMÁTICA: «Su correo es muy importante. Por eso lo archivamos.»'],
     // §7.1.5: quién entra en copia tras el CC propio del rival (`ccSteps` / `cc1` del rival): 2.º fallo, 3.º fallo
-    ccSteps: ['Toda la planta', 'Dirección'],
+    ccSteps: ['Toda la planta', 'Toda la empresa'],
     // §7.1.10: retirarse no tiene consecuencia; el hilo lo dice
     retireThread: { from: 'RV:', text: 'Bruno ha abandonado el hilo.' },
   },

@@ -98,13 +98,6 @@ const icons = {
     });
     if (v && v.flag('pieza_escrita')) hline(g, 8, 17, 12, v.flag('pieza_recortada') ? P.leaf[4] : P.red[3]);   // la pieza
   },
-  planillo(g) {
-    sheet(g, 3, 1, 22, 16, [P.paper[3], P.paper[5], P.paper[6], P.paper[7]]);
-    for (let xx = 5; xx < 24; xx += 5) vline(g, xx, 2, 14, P.paper[3]);
-    for (let yy = 4; yy < 16; yy += 4) hline(g, 4, yy, 20, P.paper[3]);
-    rect(g, 15, 10, 9, 6, P.blue[5]); hline(g, 15, 10, 9, P.blue[6]);   // faldón vendido
-    rect(g, 5, 2, 9, 2, P.red[3]);
-  },
   copias_rechazadas(g) {
     sheet(g, 3, 3, 16, 14, [P.paper[3], P.paper[4], P.paper[5], P.paper[6]]);
     sheet(g, 8, 0, 16, 15);
@@ -155,11 +148,6 @@ const icons = {
     rect(g, 5, 10, 7, 5, P.paper[6]); rect(g, 6, 11, 5, 3, P.gold[4]);
     rect(g, 15, 10, 8, 5, P.paper[6]); rect(g, 16, 11, 6, 3, P.red[4]); px(g, 20, 12, '#d4dcb4');
   },
-  posit_baja_ruben(g) {
-    poly(g, [[6, 2], [22, 1], [23, 16], [7, 17]], (xx, yy) => ditherPick(xx, yy, ['#b0a020', '#e0d040', '#f4e660', '#fff8a0'], 0.9 - (xx - 6) / 40 - (yy - 1) / 30));
-    line(g, 9, 6, 19, 5, P.ink[2]); line(g, 9, 9, 17, 9, P.ink[2]); line(g, 9, 12, 15, 12, P.ink[2]);
-    line(g, 18, 14, 22, 16, '#b0a020');
-  },
   ticket_n1(g) {
     sheet(g, 7, 0, 14, 18);
     for (let xx = 7; xx < 21; xx += 2) px(g, xx, 17, P.paper[2]);
@@ -195,7 +183,8 @@ export const FICHA = {
   margen: 'Al margen, a lápiz: «Arriba no me atiende nadie. El CMS está en coma».',
   pieza: ['PIEZA: sin escribir. Primero las fuentes; luego, mi ordenador.',
     'PIEZA: treinta y una líneas. El faldón, veintitrés. Me sobran ocho.',
-    'PIEZA: veintitrés líneas. Lista para Teodoro.'],
+    'PIEZA: veintitrés líneas. Lista para Teodoro.',
+    'PIEZA: treinta y una líneas. Sobra un 26 %, dice Herminia. ¿Quién recorta?'],      // E1.4.1 (herminia_midio)
 };
 /** Las líneas de Mirar la ficha según el estado de la partida (también las usa tools/test-fase0.mjs). */
 export function fichaViva(api) {
@@ -205,7 +194,7 @@ export function fichaViva(api) {
   out.push(FICHA.fuente[f('casilla_fuente') ? 2 : (api.has('fotocopia_nota_direccion') || api.has('mensaje_fp')) ? 1 : 0]);
   out.push(FICHA.firma[f('casilla_firma') ? 2 : f('fax_con_papel') ? 1 : 0]);
   if (!f('cms_vivo')) out.push(FICHA.margen);
-  if (f('casilla_fuente') || f('pieza_escrita')) out.push(FICHA.pieza[f('pieza_recortada') ? 2 : f('pieza_escrita') ? 1 : 0]);
+  if (f('casilla_fuente') || f('pieza_escrita')) out.push(FICHA.pieza[f('pieza_recortada') ? 2 : f('pieza_escrita') ? (f('herminia_midio') ? 3 : 1) : 0]);
   return out;
 }
 
@@ -289,10 +278,6 @@ export default {
     iconKey: (v) => ['casilla_hueco', 'casilla_fuente', 'casilla_firma', 'pieza_escrita', 'pieza_recortada'].map(f => (v.flag(f) ? 1 : 0)).join(''),
     handlers: { mirar: async (api) => { await api.say(fichaViva(api)); } },
   },
-  planillo: {
-    name: 'planillo de maqueta', icon: icons.planillo,
-    handlers: { mirar: say(['Planillo. Página 7: COLCHONES SIESTATÓN. Faldón, 23 líneas.', '«Pendiente de confirmar desde marzo».']) },
-  },
   copias_rechazadas: {
     name: 'duplicado y triplicado', icon: icons.copias_rechazadas,
     handlers: { mirar: 'Duplicado y triplicado de mi nota de gasto. Sello: RECHAZADA. Dos veces.' },
@@ -305,7 +290,7 @@ export default {
     name: 'fax de F.P.', icon: icons.mensaje_fp,
     handlers: {
       mirar: async (api) => {
-        await api.say(['Fax de F.P.: «La opa de Hidrovoltia sobre Banco Robledal es verdad».', '«Falta la segunda fuente: mira los gastos de Dirección. — F.P.»',
+        await api.say(['Fax de F.P.: «La opa de Hidrovoltia sobre Banco Robledal es verdad».', '«Falta la segunda fuente: mira las notas de gasto. — F.P.»',
           'Borde perforado. Esto no viene de un fax: viene de una matricial.']);
         api.setFlag('vio_borde_perforado', true);
       },
@@ -328,10 +313,6 @@ export default {
   album_eventos: {
     name: 'álbum de Eventos', icon: icons.album_eventos,
     handlers: { mirar: say(['En todas las fotos, al fondo, Rubén. Cena de Navidad, presentación, photocall.', 'Siempre yendo al baño. Siempre con un táper.']) },
-  },
-  posit_baja_ruben: {
-    name: 'pósit «Baja becario Rubén»', icon: icons.posit_baja_ruben,
-    handlers: { mirar: '«Baja becario Rubén». Descopeado. Es el pósit más importante de mi vida.' },
   },
   ticket_n1: {
     name: 'ticket nº 1', icon: icons.ticket_n1,

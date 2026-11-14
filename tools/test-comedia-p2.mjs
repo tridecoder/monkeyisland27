@@ -314,7 +314,7 @@ async function principal() {
   }
   await T.idle();
   must((await T.flag('duel:gervasio:perdido_n')) === 1, 'D3: no cuenta la derrota');
-  await T.musts(['«Lo que diga Gervasio.»', '...¿Yo? Asignado a ti. El acta, digo.', 'Mi primera acta.', 'Es un diario.', 'LA ARCHIVA EN "DIARIOS"'], 'D3 derrota');
+  await T.musts(['«Fuera de la oficina hasta nueva acta.»', '...¿Yo? Asignado a ti. El acta, digo.', 'Mi primera acta.', 'Es un diario.', 'LA ARCHIVA EN "DIARIOS"'], 'D3 derrota');
   ok('§5.10 Gervasio en la puerta (Acto III) y D3 perdido: línea, escena del acta-diario y titular (§7.7)');
   await R.closeDialog(); await T.idle();
   await T.clearLog();

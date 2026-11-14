@@ -24,7 +24,7 @@
 // Estados (se dibujan por el ESTADO del objeto o por el flag que la lógica pone ANTES de la línea que lo comenta):
 // pantalla_metricas / enchufe_pantalla (cms_vivo), ordenador_bruno + silla_ramirez (silla_libre), chaqueta (when),
 // kanban (posit_descopeado), frontera_carrocero (acto_2_iniciado / acto_3_iniciado / infografia_integrada),
-// semaforo_ruido (estado rojo/ambar/verde), bandeja_diseno (bandeja_diseno_abierta), pantalla_anselmo
+// semaforo_ruido (estado rojo/ambar/verde), bandeja_diseno (pecera_bandeja_abierta), pantalla_anselmo
 // (ruben_encontrado / infografia_integrada), ventana (estado `amanecer`, que pone el epílogo).
 import {
   PAL, rect, hline, vline, frameRect, px, line, poly, ellipse, paint, bevel, ditherOverlay, gradV,
@@ -535,7 +535,7 @@ function drawMetricas(g, view, t) {
   hline(g, x - 1, y - 1, w + 2, PAL.metal[4]);
   // etiqueta de cinta en el bisel inferior
   rect(g, x + 5, y + h + 1, 87, 7, PAL.paper[4]); hline(g, x + 5, y + h + 1, 87, PAL.paper[6]); hline(g, x + 5, y + h + 7, 87, PAL.paper[2]);
-  micro(g, 'PANTALLA DE DIRECCIÓN', x + 48, y + h + 2, PAL.ink[2], { align: 'center' });
+  micro(g, 'PANTALLA DE MÉTRICAS', x + 48, y + h + 2, PAL.ink[2], { align: 'center' });
   if (off) {
     gradV(g, x, y, w, h, [PAL.ink[1], PAL.ink[0]]);
     g.save(); g.globalAlpha = 0.1; poly(g, [[x + 6, y + h], [x + 22, y + h], [x + 44, y], [x + 28, y]], '#ffffff'); g.restore();
@@ -895,10 +895,10 @@ function drawAnselmoScreen(g, view, t) {
 }
 
 /** bandeja de entregas de Diseño y Producto, en la frontera con Desarrollo: mueble blanco con «ENTREGAS» entero y la
- *  torre de tres bandejas llenas; abierta (bandeja_diseno_abierta), la de arriba sacada, el aviso de 2017 asomando y
+ *  torre de tres bandejas llenas; abierta (flag local pecera_bandeja_abierta), la de arriba sacada, el aviso de 2017 asomando y
  *  el sello rojo de Desarrollo a la vista */
 function drawBandeja(g, view) {
-  const x = 684, y = 60, w = 34, abierta = !!view.flag('bandeja_diseno_abierta');
+  const x = 684, y = 60, w = 34, abierta = !!view.flag('pecera_bandeja_abierta');
   shadowEllipse(g, x + w / 2, 99, w / 2 + 2, 2, 0.6);
   // mueble blanco con su rótulo
   rect(g, x, y + 18, w, 20, '#ecece6'); frameRect(g, x, y + 18, w, 20, PAL.metal[3]); hline(g, x + 1, y + 19, w - 2, '#ffffff');

@@ -32,8 +32,8 @@ async function usarTele(api) {
 }
 
 const CARTELES = [
-  '«NO DEJÉIS TAZAS. – Dirección».',
-  '«LAS TAZAS SON DE DIRECCIÓN. – Mercados».',
+  '«NO DEJÉIS TAZAS. – Gervasio».',
+  '«LAS TAZAS SON DE GERVASIO. – Mercados».',
   '«ESTA SALA NO ES EL VENDING». Firmado por la cafetera.',
   '«ESTE CARTEL ESTÁ RESERVADO. – Íñigo».',
   '«¿QUIÉN HA CAMBIADO LOS CARTELES? – Todos».',

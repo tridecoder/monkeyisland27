@@ -234,9 +234,9 @@ const dueloGervasio = {
       script: remateHidrovoltia },
   ],
   cc1: 'Sus tres móviles',
-  defeatLine: 'RESPUESTA AUTOMÁTICA DE DIRECCIÓN: «Lo que diga Gervasio.»',
+  defeatLine: 'RESPUESTA AUTOMÁTICA DE GERVASIO: «Fuera de la oficina hasta nueva acta.»',
   defeatScene: 'gervasio_derrota',
-  defeatHeadline: 'UN BECARIO REDACTA UN ACTA. DIRECCIÓN LA ARCHIVA EN "DIARIOS"',
+  defeatHeadline: 'UN BECARIO REDACTA UN ACTA. GERVASIO LA ARCHIVA EN "DIARIOS"',
   onWin: async (api) => {
     await gv(api, 'Diecinueve años sin un marrón. Y ahora me toca el acta.');
     // (Escribe, despacio, con la lengua fuera.)
@@ -358,7 +358,7 @@ export default buildRoom({
           '"Viernes, 20:59 · Seguimiento · Org.: Ramírez · recurrente".',
           'Todos los relojes marcan las 20:59. La sala es de Ramírez. Siempre.',
           '"Mercados · cinco minutitos · marzo". Sin hora de salida.',
-          '"RESERVADA – Dirección". Tachado: "RESERVADA DE VERDAD – Gervasio".',
+          '"RESERVADA – Gervasio". Tachado: "RESERVADA DE VERDAD – Gervasio".',
           '"Esta anula las anteriores – Íñigo". Debajo: "Y esta, la tuya – Maripaz".',
           '"Reunión para decidir quién reserva la sala". 2.ª convocatoria.',
         ];

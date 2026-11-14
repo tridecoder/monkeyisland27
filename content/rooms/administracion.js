@@ -174,7 +174,6 @@ export default buildRoom({
         },
         'dar:copias_rechazadas': async (api) => { await sayBe(api, 'Eso es suyo. Para su archivo personal. Yo ya tengo el original.'); },
         'dar:fotocopia_nota_direccion': async (api) => { await sayBe(api, 'Quédesela y estúdiela. Por las dos caras, como se la he dado.'); },
-        'dar:planillo': async (api) => { await sayBe(api, 'Eso es de maqueta. Aquí solo maquetamos rechazos.'); },
         'dar:acta_reunion': async (api) => { await sayBe(api, '¿Un acta de Gervasio? La sello para que conste que existe.'); sello(api); },
         'dar:ficha_pagina_7': async (api) => { await sayBe(api, 'Tres casillas. Bien. Pero ninguna dice «importe».'); },
         'usar:movil': async (api) => { await sayBe(api, 'Aquí no se hacen fotos. Se hacen fotocopias.'); },

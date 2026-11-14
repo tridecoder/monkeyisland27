@@ -9,7 +9,7 @@
 //  - hit = +1 (attack leaves the deck), the rival takes it with `hurtByPair[pair]` (string, list of lines or list of
 //    [actor, line] pairs) or its rotating `hurt`; `onHit(api, ctl, pairId)`. A «+1» line enters the thread.
 //  - miss = one more "RE:" in the subject and somebody more in copy (`ccSteps`: rival's CC → «Toda la planta» →
-//    «Dirección»); the rival ALWAYS answers (taunt / its own weak answer) BEFORE the defeat is decided.
+//    «Toda la empresa»); the rival ALWAYS answers (taunt / its own weak answer) BEFORE the defeat is decided.
 //  - finishers (remates) at given scores: replies greyed out, only [Usar objeto] / [Retirarse del hilo];
 //    a wrong object only gets a line (not a miss).
 //  - defeat (maxMisses): the rival's own `defeatLine` → `defeatLines` → `duel:<id>:perdido_n` + 1 → the rival's defeat
@@ -42,8 +42,8 @@ export async function runDuel(game, api, idOrDef) {
   const id = typeof idOrDef === 'object' ? (idOrDef.id || 'duelo') : idOrDef;
   if (!opp) { game.error('Duelo desconocido: ' + idOrDef); return false; }
   const T = { to: 'Todos', useObject: '[Usar objeto]', retire: '[Retirarse del hilo]', pickPrompt: 'Adjuntar al hilo:',
-    defeatPrefix: 'RV: ', defeatCc: 'Dirección', defeatAssigned: 'Vacante', plusOne: null, notReady: null, defeatLine: null,
-    ccSteps: ['Toda la planta', 'Dirección'], retireThread: { from: 'RV:', text: 'Bruno ha abandonado el hilo.' }, ...(D.texts || {}) };
+    defeatPrefix: 'RV: ', defeatCc: 'Toda la empresa', defeatAssigned: 'Vacante', plusOne: null, notReady: null, defeatLine: null,
+    ccSteps: ['Toda la planta', 'Toda la empresa'], retireThread: { from: 'RV:', text: 'Bruno ha abandonado el hilo.' }, ...(D.texts || {}) };
   const pairs = new Map((D.pairs || []).map(p => [p.id, p]));
   const pairOrder = (D.pairs || []).map(p => p.id);
   const flags = game.state.flags;
@@ -62,7 +62,7 @@ export async function runDuel(game, api, idOrDef) {
   const fax = opp.style === 'fax';
   const rot = { hurt: 0, taunt: 0 };
   const next = (k) => { const l = asArray(opp[k]); return l.length ? l[rot[k]++ % l.length] : null; };
-  // CC that grows with every miss: rival's own CC (`ccSteps[0]` or `cc1`) → «Toda la planta» → «Dirección»
+  // CC that grows with every miss: rival's own CC (`ccSteps[0]` or `cc1`) → «Toda la planta» → «Toda la empresa»
   const ccSteps = asArray(opp.ccSteps).length ? asArray(opp.ccSteps) : [opp.cc1, ...T.ccSteps].filter(Boolean);
 
   // ---- shared duel state (read by the HUD, the test API and finisher scripts)
@@ -162,7 +162,10 @@ export async function runDuel(game, api, idOrDef) {
       if (step && !S.ccExtra.includes(step) && step !== S.cc) S.ccExtra.push(step);
       if (ch.kind === 'weak') {
         const own = opp.weakAnswers && opp.weakAnswers[ch.w.text];
-        await say('rival', own || (ch.w.answers && ch.w.answers[id]) || (fax && ch.w.answerFax) || ch.w.answer);
+        const ans = own || (ch.w.answers && ch.w.answers[id]) || (fax && ch.w.answerFax) || ch.w.answer;
+        // una contestación de varias líneas (['línea 1', 'línea 2']) la dice entera el rival; [who, line] sigue valiendo
+        if (Array.isArray(ans) && ans.every(x => typeof x === 'string') && !isWho(ans[0])) { for (const l of ans) await say('rival', l); }
+        else await say('rival', ans);
       } else if (ch.kind === 'comodin') await say('rival', D.comodin.again);
       else await say('rival', next('taunt'));
       if (S.misses >= maxMisses) { S.result = 'lost'; S.lostTo = pid; break; }
