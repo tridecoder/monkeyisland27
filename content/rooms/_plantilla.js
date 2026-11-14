@@ -30,7 +30,7 @@ export default buildRoom({
       },
     },
     // objeto que solo existe mientras se cumple una condición (`when`: se evalúa en cada frame)
-    { id: 'papel', name: 'papel', when: ['acto_2_iniciado', '!has:planillo'], desc: 'Un papel.' },
+    { id: 'papel', name: 'papel', when: ['acto_2_iniciado', '!has:cafe'], desc: 'Un papel.' },
     // SALIDA: deja siempre `exit: { room }` (el walkthrough y check.mjs usan ese grafo).
     // El bloqueo va en handlers.ir (se mira antes que `exit`); la entrada por defecto es el id de esta sala.
     {
@@ -52,7 +52,7 @@ export default buildRoom({
       handlers: {
         hablar: async (api) => { await api.dialog('gervasio_plantilla'); },
         mirar: 'Gervasio. Tres móviles y ninguna tarea.',
-        'dar:planillo': async (api) => { await api.sayAs('gervasio_acta', 'Eso lo coges tú. Ah, que ya lo tienes. Pues eso.'); },
+        'dar:cafe': async (api) => { await api.sayAs('gervasio_acta', 'Eso lo coges tú. Ah, que ya lo tienes. Pues eso.'); },
       },
     },
   ],

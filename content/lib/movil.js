@@ -6,15 +6,15 @@
 //   · «Llamadas perdidas»    → la eterna de la abuela y las de Evaristo hasta ahora
 //   · «Guardar el móvil»     → cierra (también Esc o un toque en la sala)
 // Leer un correo solo toca `movil_leidos` (bits de leídos): no suma contadores de la biblia ni de la adenda.
+// La hora de la barra de estado es la de la historia, por hitos (plan §8.4: content/pistas.js `horaMovil`, api.hora()):
+// 18:30 → 21:00; los relojes del edificio siguen parados en las 20:59.
 // Seguro: el móvil no se guarda, se retira al acabar el guion (aunque falle) y al cargar; en modo rápido, todo es instantáneo.
 
-/** Los «RV:» de Tadeo (adenda §2.2): condición, asunto (lo que dice Tadeo) y el comentario de Bruno. Los usa también la
+/** Los «RV:» de Tadeo (adenda §2.2; plan §5.16): condición, asunto (lo que dice Tadeo) y el comentario de Bruno. Los usa también la
  *  cola de avisos (content/game.js) para que el correo y el aviso digan exactamente lo mismo. */
-export const RV_TADEO = [
-  ['inigo_presentado', 'RV: Mejora tus Core Web Vitals en 5 pasos (40 págs.). Por si os sirve!!', 'Para Redacción, Sistemas, Papel y Conserjería. Celestino, en copia.'],
-  ['gertrudis_saludada', 'RV: RV: Cómo instalar una bandeja 2 en una impresora sin bandeja 2.', 'La impresora de la tercera está en copia. Me identifico con ella.'],
-  ['acto_2_iniciado', 'RV: RV: RV: La IA dice que el LCP baja quitando lo más grande!!', 'Lo más grande de un periódico es la portada. Mal asunto.'],
-  ['cms_vivo', 'RV x4: ¿Qué es un CMS? Lo reenvío a los del CMS!!', 'Paco tendrá un ticket nuevo. Le contestará su mejor empleada.'],
+export const RV_TADEO = [   // plan §5.16: tres, sin siglas
+  ['inigo_presentado', 'RV: Cómo hacer que la web cargue en la mitad de tiempo (40 págs.)!!', 'Cuarenta páginas para que cargue antes. Las abro mañana. Si cargan.'],
+  ['acto_2_iniciado', 'RV: RV: RV: La IA dice que la web va más rápida sin lo más grande!!', 'Lo más grande de un periódico es la portada. Mal asunto.'],
   ['acto_3_iniciado', 'RV x5: Reflexión sobre armarios: "AYÚDAME ESTOY EN EL ARMARIO 27"', 'Lo ha visto toda la empresa. Y nadie lo ha leído.'],
 ];
 
@@ -22,12 +22,12 @@ export const RV_TADEO = [
 const FIJOS = [
   { bit: 8, de: 'Eventos', who: 'pilar_escaleta', fecha: '3 mar.', asunto: '¡Empezamos en 5 minutos!',
     cuerpo: ['Recordatorio: la presentación empieza en 5 minutos.', 'Enviado el 3 de marzo. Reenviado cada cinco minutos desde entonces.'],
-    bruno: 'Son las 20:59. Llevo ocho meses llegando tarde a algo.' },
+    bruno: 'Enviado el 3 de marzo. No he ido. Ya no sé si llego tarde o si no empieza.' },
   { bit: 9, de: 'Administración', who: 'begona_triplicado', fecha: 'ayer', asunto: 'Nota de gasto RECHAZADA (se adjunta duplicado)',
     cuerpo: ['Su nota «Café para pensar» queda RECHAZADA.', 'Motivo: pensar no es un gasto deducible. Triplicado, por correo interno.'],
-    bruno: 'Pienso gratis, entonces. Como siempre.' },
+    bruno: '«Pensar no es deducible». Lo enmarco. Mi primer documento oficial.' },
   { bit: 10, de: 'elContable.es', who: null, fecha: 'hace 6 años', asunto: '¡Bienvenido a elContable.es, Bruno!',
-    cuerpo: ['¡Bienvenido, Bruno! Tu acceso estará listo en 24 horas.', 'Mientras, lee el libro de estilo: página 1 de 412. Un abrazo, Personal.'],
+    cuerpo: ['¡Bienvenido, Bruno! Tu acceso estará listo en 24 horas.', 'Mientras, lee el libro de estilo: página 1 de 900. Un abrazo, Personal.'],
     bruno: 'Sin leer desde hace seis años. Ya casi me ha llegado el acceso.' },
 ];
 const COLOR_SISTEMA = '#c8d0e8';
@@ -79,7 +79,7 @@ async function correo(api) {
 }
 
 async function llamadas(api) {
-  const ev = Math.min(num(api, 'evaristo_llamadas'), 5);
+  const ev = Math.min(num(api, 'evaristo_llamadas'), 6);   // L1-L5 y la LC (plan §5.13)
   const rows = [{ text: 'Abuela', sub: 'perdida · siempre', icon: '#d83a2a' }];
   for (let i = ev; i >= 1; i--) rows.push({ text: 'Evaristo', sub: i === ev ? 'contestada · hoy' : 'contestada', icon: '#F0F0A8' });
   await api.phone.app({ title: 'Llamadas', rows });

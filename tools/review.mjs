@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Revisión visual (QA): juega el walkthrough 5.4 en modo rápido hasta varios puntos de control, recorre TODAS las salas en
+// Revisión visual (QA): juega el recorrido del plan de comedia (42 pasos) en modo rápido hasta varios puntos de control, recorre TODAS las salas en
 // cada estado de acto (normal y con el overlay de depuración) y captura los momentos clave (intro, villano, duelos,
 // revelación, clímax, epílogo, créditos, poscréditos) fotograma a fotograma (uno por cada línea hablada).
 // Compone hojas de contactos 2×3 en tools/shots/review/*.png (cada viñeta = pantalla 320×200 a escala 2 + rótulo).
@@ -179,34 +179,35 @@ try {
   }
   if (!solo || solo === 'salas') { await playTo(13); await tourRooms('ACTO I'); await G(() => __game.load('rev')); await G(() => __game.skipText(true)); }
   if (!solo || solo === 'momentos') {
-    await playTo(28);
-    await R.travel('ecosistema');
-    await capture('m03-duelo-D1', () => { __game.doVerb('dar', 'maripaz_remitido', 'planillo'); }, { max: 14 });
-    done = 29; await R.closeDialog().catch(() => {});
+    await playTo(25);
+    await R.travel('sala_amazonas');
+    await capture('m03-duelo-D1', () => { __game.doVerb('hablar', 'maripaz_remitido'); }, { max: 14, choose: ['La página 7 está pendiente desde marzo.'] });
+    done = 26; await R.closeDialog().catch(() => {});
   }
-  if (!solo || solo === 'salas') { await playTo(29); await tourRooms('ACTO II'); await G(() => __game.load('rev')); await G(() => __game.skipText(true)); }
+  if (!solo || solo === 'salas') { await playTo(26); await tourRooms('ACTO II'); await G(() => __game.load('rev')); await G(() => __game.skipText(true)); }
   if (!solo || solo === 'momentos') {
-    await playTo(34);
+    await playTo(30);
     await R.travel('catacumba');
     await capture('m04-duelo-D2', async () => { __game.doVerb('hablar', 'teodoro_cuerpodoce'); }, { max: 14, choose: ['Quiero firmar en tu página 7.'] });
-    done = 35; await R.closeDialog().catch(() => {});
-    await playTo(36);
+    done = 31; await R.closeDialog().catch(() => {});
+    await playTo(33);
     await R.travel('catacumba');
     await capture('m05-acto3-7.3a', () => { __game.doVerb('dar', 'teodoro_cuerpodoce', 'ficha_pagina_7'); }, { max: 14 });
-    done = 37; await R.closeDialog().catch(() => {});
+    done = 34; await R.closeDialog().catch(() => {});
+    await R.travel('pecera'); await G(() => __game.waitIdle());      // momento 8 (E1.4.2)
     await R.travel('cpd');
     await capture('m06-revelacion-7.3', () => { __game.doVerb('tirar', 'papel_continuo'); }, { max: 18 });
-    done = 38;
+    done = 35;
   }
-  if (!solo || solo === 'salas') { await playTo(42); await tourRooms('ACTO III'); await G(() => __game.load('rev')); await G(() => __game.skipText(true)); }
+  if (!solo || solo === 'salas') { await playTo(38); await tourRooms('ACTO III'); await G(() => __game.load('rev')); await G(() => __game.skipText(true)); }
   if (!solo || solo === 'momentos') {
-    await playTo(42);
-    await R.travel('office');
+    await playTo(38);
+    await R.travel('pajarera');
     await capture('m07-duelo-D3', () => { __game.doVerb('hablar', 'gervasio_acta'); }, { max: 14, choose: ['Necesito el acta de la última reunión.'] });
-    done = 43; await R.closeDialog().catch(() => {});
+    done = 39; await R.closeDialog().catch(() => {});
     await R.travel('pajarera');
     await capture('m08-climax-7.4', () => { __game.doVerb('usar', 'puerta_sala'); }, { max: 40 });
-    done = 45;
+    done = 41;
     await capture('m09-final-7.5', () => { __game.doVerb('empujar', 'lector_medio'); }, { max: 60 });
   }
   await writeSheets();

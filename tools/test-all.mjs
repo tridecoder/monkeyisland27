@@ -7,7 +7,8 @@
 //                                                solo geometría, fuzz --rapido (≈ 2 min)
 //   node tools/test-all.mjs --sala=pecera        lo que toca a esa sala: check, motor, vista previa (tools/sala.mjs),
 //                                                geometría de esa sala, fuzz de objetos en esa sala, walkthroughs, el test
-//                                                del paquete antiguo que la cubre, text-audit y contraste
+//                                                de comedia del paquete que la cubre (tools/test-comedia-p1..p4.mjs),
+//                                                text-audit (con las reglas del plan como fallo) y contraste
 //   node tools/test-all.mjs --solo=smoke,fuzz    solo esas
 //   --jobs=3 (en paralelo) · --log=<dir> (registros; por defecto tools/shots/test-all/) · --lista (enseña el plan)
 // Sale con 1 si algo falla. Los registros completos de cada prueba quedan en <log>/<nombre>.log.
@@ -24,41 +25,44 @@ const jobs = Math.max(1, Number(args.jobs || 3));
 const logDir = path.resolve(args.log || path.join(here, 'shots', 'test-all'));
 fs.mkdirSync(logDir, { recursive: true });
 
-// paquete antiguo de pruebas que cubre cada sala (tools/test-paquete-*.mjs)
-const PAQ = { vestibulo: 'a', cpd: 'a', pecera: 'b', pajarera: 'b', office: 'c', catacumba: 'c', ecosistema: 'd', eventos: 'd', administracion: 'd', sala_amazonas: 'd' };
+// test de comedia del paquete que reescribió cada sala (tools/test-comedia-p<n>.mjs; plan §11)
+const PAQ = { vestibulo: 'p1', cpd: 'p1', pecera: 'p2', pajarera: 'p2', office: 'p3', catacumba: 'p3', administracion: 'p3', sala_amazonas: 'p4', ecosistema: 'p4', eventos: 'p4' };
 
 const T = [];
 const add = (name, file, a = [], timeout = 900) => T.push({ name, file, args: a, timeout });
 if (salas) {
   add('check', 'check.mjs');
   add('motor', 'test-motor.mjs');
+  add('fase0', 'test-fase0.mjs');
   for (const s of salas) add('sala ' + s, 'sala.mjs', [s, '--sin-imagenes']);
   add('geometria', 'play-mouse.mjs', ['--solo=geometria', '--sala=' + salas.join(',')]);
   add('walkthrough', 'walkthrough.mjs');
   add('walkthrough --alt', 'walkthrough.mjs', ['--alt']);
   add('extras', 'extras.mjs');
   add('fuzz (objetos)', 'fuzz.mjs', ['--solo=objetos', '--sala=' + salas.join(','), ...(rapido ? ['--rapido'] : [])]);
-  for (const p of [...new Set(salas.map(s => PAQ[s]).filter(Boolean))]) add('test-paquete-' + p, `test-paquete-${p}.mjs`);
-  add('text-audit', 'text-audit.mjs');
+  for (const p of [...new Set(salas.map(s => PAQ[s]).filter(Boolean))]) add('comedia-' + p, `test-comedia-${p}.mjs`);
+  add('text-audit', 'text-audit.mjs', ['--plan']);
   add('contrast', 'contrast.mjs');
 } else {
   add('check', 'check.mjs');
   add('motor', 'test-motor.mjs');
   add('smoke', 'smoke.mjs', rapido ? ['--rapido'] : []);
   add('movil', 'test-movil.mjs');                     // el móvil de Bruno con ratón y dedo (menú, correo, abuela)
+  add('fase0', 'test-fase0.mjs');                     // sistemas comunes del plan de comedia (duelo, objetivo, pistas, hora, ambiente, movimiento, efectos)
   add('walkthrough', 'walkthrough.mjs');
   add('walkthrough --alt', 'walkthrough.mjs', ['--alt']);
   add('extras', 'extras.mjs');
   add('play-mouse', 'play-mouse.mjs', rapido ? ['--solo=geometria'] : [], 2400);   // la partida entera con ratón + conexiones + geometría
-  add('fuzz', 'fuzz.mjs', rapido ? ['--rapido'] : []);
-  add('text-audit', 'text-audit.mjs');
+  add('fuzz', 'fuzz.mjs', rapido ? ['--rapido'] : [], 2400);
+  add('text-audit', 'text-audit.mjs', ['--plan']);      // reglas del plan de comedia (§6.1, §12.2, topes §2.4) como FALLO
   add('contrast', 'contrast.mjs');
-  for (const p of ['a', 'b', 'c', 'd']) add('test-paquete-' + p, `test-paquete-${p}.mjs`);
+  for (const p of ['p1', 'p2', 'p3', 'p4']) add('comedia-' + p, `test-comedia-${p}.mjs`);
+  add('heredado', 'test-heredado.mjs');               // lo que comprobaban los test-paquete-a/b/c/d retirados y sigue valiendo
 }
 const solo = args.solo ? String(args.solo).split(',') : null;
 const plan = solo ? T.filter(t => solo.some(s => t.name.startsWith(s) || t.file.startsWith(s))) : T;
 // las largas primero (mejor reparto en paralelo)
-const WEIGHT = { fuzz: 5, 'play-mouse': 4, smoke: 4, motor: 2, 'test-paquete-a': 2, 'text-audit': 2 };
+const WEIGHT = { fuzz: 5, 'play-mouse': 4, smoke: 4, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
 plan.sort((a, b) => (WEIGHT[b.name.split(' ')[0]] || 1) - (WEIGHT[a.name.split(' ')[0]] || 1));
 if (args.lista) { for (const t of plan) console.log(`${t.name.padEnd(22)} node tools/${t.file} ${t.args.join(' ')}`); process.exit(0); }
 

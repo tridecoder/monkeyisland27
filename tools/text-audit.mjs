@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// AUDITORÍA DE TEXTOS (QA): juega el walkthrough 5.4 en modo rápido y, en tres momentos (Actos I, II y III), prueba los
+// AUDITORÍA DE TEXTOS (QA): juega el recorrido del plan de comedia (42 pasos) en modo rápido y, en tres momentos (Actos I, II y III), prueba los
 // 9 verbos con TODO lo visible de las 10 salas (saliendo de diálogos con su despedida); recoge cada línea dicha
 // (`__game.log`) y comprueba:
 //   · ninguna intervención de más de 80 caracteres (biblia §0);
@@ -21,7 +21,9 @@
 //     el tiempo de lectura del motor (`speechDuration`, que escala con la velocidad del texto) — engine `timedTexts`;
 //   · puesta en escena (problema C del director): quien dice una línea no puede estar tapado por otro actor que esté
 //     delante de él (más de un 20 % de su cabeza y torso bajo la figura de otro, por cajas de sprite).
-//   node tools/text-audit.mjs
+//   · plan de comedia (tools/plan-rules.mjs, AVISOS; con --plan cuentan como fallo): remates «… Como X.», palabras
+//     vetadas a la vista (apodos de sala, LCP…) y topes de muletilla por personaje (§2.4).
+//   node tools/text-audit.mjs [--plan] · node tools/text-audit.mjs --estatico [--plan] [--sala=pecera] (solo el repaso estático)
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -29,6 +31,24 @@ import { fileURLToPath } from 'node:url';
 import { createServer } from './serve.mjs';
 import { STEPS } from './walk-data.mjs';
 import { createRunner, FAREWELLS } from './walk-lib.mjs';
+import { estatico, topes, COMO_PERMITIDAS } from './plan-rules.mjs';
+
+// ---------------------------------------------------------------- reglas del plan de comedia (tools/plan-rules.mjs)
+const ARGS = Object.fromEntries(process.argv.slice(2).filter(a => a.startsWith('--')).map(a => { const [k, v] = a.slice(2).split('='); return [k, v ?? true]; }));
+const PLAN = (() => {
+  const st = estatico(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'), ARGS.sala ? String(ARGS.sala).split(',') : null);
+  const out = [];
+  const sec = (t, arr) => { out.push(`\n${t}: ${arr.length}`); arr.slice(0, ARGS.todo ? 9999 : 60).forEach(x => out.push('  · ' + x)); };
+  sec(`[plan §6.1] Remates «… Como X.» (tope ${COMO_PERMITIDAS} cuando esté reescrito)`, st.como);
+  sec('[plan §12.2] Palabras vetadas a la vista (apodos de sala, jerga sin traducir)', st.vetadas);
+  return { st, out, malos: (st.como.length > COMO_PERMITIDAS ? st.como.length : 0) + st.vetadas.length };
+})();
+if (ARGS.estatico) {
+  console.log('Repaso estático del plan de comedia (avisos' + (ARGS.plan ? '; --plan: cuentan como fallo' : '') + ')');
+  console.log(PLAN.out.join('\n'));
+  console.log(ARGS.plan && PLAN.malos ? `\nPLAN: ${PLAN.malos} AVISOS` : '\nPLAN: ' + (PLAN.malos ? `${PLAN.malos} avisos (no cuentan sin --plan)` : 'OK'));
+  process.exit(ARGS.plan && PLAN.malos ? 1 : 0);
+}
 
 const { chromium } = createRequire(import.meta.url)('playwright');
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -51,7 +71,7 @@ async function escape() {
     await G(() => __game.waitIdle());
     const st = await G(() => __game.state());
     if (st.pickItem) { await G(() => __game.chooseItem(null)); continue; }
-    if (st.duel && st.dialog) { const i = st.dialog.findIndex(o => o.startsWith('Te lo miro') || o === '[Retirarse del hilo]'); await G(i => __game.chooseDialog(i), Math.max(0, i)); continue; }
+    if (st.duel && st.dialog) { const i = st.duel.phase === 'reply' ? st.duel.weakIndex : st.dialog.findIndex(o => o === '[Retirarse del hilo]'); await G(i => __game.chooseDialog(i), Math.max(0, i)); continue; }
     if (st.dialog) {
       let i = FAREWELLS.map(f => st.dialog.findIndex(o => norm(o).startsWith(f))).find(x => x >= 0);
       if (i == null || i < 0) { i = st.dialog.length - 1; while ((st.dialogDisabled || []).includes(i) && i > 0) i--; }
@@ -114,7 +134,7 @@ await collect();
 for (const s of STEPS) {
   if (s.n > 1) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); }
   await collect();
-  if ([13, 29, 42].includes(s.n)) await everything();
+  if ([13, 26, 38].includes(s.n)) await everything();     // Actos I, II (tras D1) y III (Rubén libre)
 }
 await collect();
 
@@ -126,6 +146,7 @@ const NAME_RULES = [[/\bInigo\b/, 'Íñigo'], [/\bÍnigo\b/, 'Íñigo'], [/\bBeg
   [/\bReticula\b/, 'Retícula'], [/\belcontable|\bEl ?Contable\.es|\bElContable/, 'elContable.es / «el Contable»'], [/\bCatacumbas\b/, 'Catacumba'], [/\bTeodor\b/, 'Teodoro']];
 texts.forEach((t, i) => {
   const who = lines.get(t).who;
+  if (who === 'tarjeta') return;     // la tarjeta FE DE ERRATAS (plan §9) es una pantalla fija, no un globo
   if (t.length > 80) long.push(`[${t.length}] ${who}: ${t}`);
   if (widths[i] > 3) tall.push(`[${widths[i]} renglones] ${who}: ${t}`);
   // signos de apertura, frase a frase (los rótulos del narrador y las pantallas en MAYÚSCULAS también cuentan)
@@ -149,7 +170,7 @@ const PROHIBIDAS = /pajarera|office|nerea/i;
 // «Dirección» como nombre de la sala de los despachos (orden del director: se llama «Despachos»)
 const DIR_FRASE = /\b(puerta|pasillo|cristal|placa|despacho|perchero|mueble) de (la )?Direcci[oó]n\b/i, DIR_PLACA = /^\s*(1 )?DIRECCIÓN\s*$/;
 const DIR_SALA = { test: (t) => DIR_FRASE.test(t) || DIR_PLACA.test(t) };
-const esId = (t) => /^[A-Za-z0-9_.:\-/]+$/.test(t) || /^(bool|int|str|num|flag)\b.*·/.test(t);
+const esId = (t) => /^!?[A-Za-z0-9_.:\-/]+$/.test(t) || /^(bool|int|str|num|flag)\b.*·/.test(t);
 // el gag de Desarrollo es VELADO (adenda §17, orden del director): nada visible puede nombrar el tema ni ponerlo sobre la mesa
 const VELADO = /feminis|machis|igualdad|brecha|compañeras|8 de marzo|\b8M\b|en morado|logo morado|\bda[rn]? voz\b/i;
 const prohibidas = [];
@@ -193,12 +214,18 @@ sec(`Textos con temporizador más cortos que su tiempo de lectura (${timed.lengt
 const ocl = [...new Set(await G(() => window.__ocl || []))];
 sec('Quien habla queda tapado por otro actor', ocl);
 out.push('\nHoras que aparecen: ' + [...times.keys()].sort().join(', '));
+// reglas del plan de comedia: avisos (no cuentan salvo con --plan)
+const planTopes = topes(texts.map(t => ({ text: t, ...lines.get(t) })));
+out.push('\n--- PLAN DE COMEDIA (avisos' + (ARGS.plan ? '; --plan: cuentan como fallo' : ', no cuentan como fallo todavía') + ') ---');
+out.push(...PLAN.out);
+sec('[plan §2.4] Topes de muletilla por personaje (líneas distintas oídas)', planTopes);
 console.log(out.join('\n'));
 fs.mkdirSync(path.join(here, 'shots'), { recursive: true });
 fs.writeFileSync(path.join(here, 'shots', 'textos.json'), JSON.stringify(texts.map(t => ({ ...lines.get(t), text: t })), null, 1));
 if (consoleErrors.length) console.log('\nErrores de consola:\n  ' + [...new Set(consoleErrors)].join('\n  '));
 const bad = long.length + tall.length + punct.length + names.length + ocl.length + consoleErrors.length + new Set(prohibidas).size + cortos.length;
-console.log(bad ? `\nTEXTOS: ${bad} AVISOS` : '\nTEXTOS: OK');
+const planBad = ARGS.plan ? PLAN.malos + planTopes.length : 0;
+console.log(bad + planBad ? `\nTEXTOS: ${bad + planBad} AVISOS` : `\nTEXTOS: OK${PLAN.malos + planTopes.length ? ` (plan de comedia: ${PLAN.malos + planTopes.length} avisos pendientes de los paquetes de sala)` : ''}`);
 await browser.close();
 server.close();
-process.exit(bad ? 1 : 0);
+process.exit(bad + planBad ? 1 : 0);

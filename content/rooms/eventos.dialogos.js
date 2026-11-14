@@ -25,8 +25,8 @@ async function borjaSeAsoma(api) {
     api.show(BORJA);
     await api.walkActor(BORJA, 34, 118);
     api.faceActor(BORJA, 'bruno');
-    await sayB(api, '¡Compártelo! Por cierto: hemos descopeado la ética del Q3.');
-    await api.say('Descopear. Me lo apunto.');
+    await sayB(api, '¡Hemos descopeado la ética del Q3! O sea, quitado del plan. Con cariño.');
+    await api.say('Descopear. Quitar algo sin que se note. Me lo apunto. Por si acaso.');
     await sayP(api, '¡Borja! Sin acreditación, de la puerta no se pasa.');
     await sayB(api, '¡Me voy! Pero esto lo cuento. En vertical.');
     await api.walkActor(BORJA, 6, 118);

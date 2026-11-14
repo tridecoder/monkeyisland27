@@ -101,7 +101,7 @@ if (content) {
   if (!rooms[content.game.startRoom]) err('game.startRoom desconocida: ' + content.game.startRoom);
 
   // ---------------------------------------------------------------- 3. static scan of the sources
-  const ENGINE_PREFIX = /^(duel:|walkbox:)/;
+  const ENGINE_PREFIX = /^(duel:|walkbox:|obj:|ambient:)/;
   const flagUses = [], itemUses = [], actorUses = [], sceneUses = [], replyUses = [];
   const strRe = (inner) => new RegExp(inner, 'g');
   const condParts = (s) => s.split(/\s*,\s*/).map(x => x.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);

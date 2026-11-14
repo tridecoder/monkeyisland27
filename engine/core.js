@@ -15,6 +15,8 @@ import { Debug } from './debug.js';
 import * as Pose from './pose.js';
 import * as Detalle from './detalle.js';
 import * as Ver from './hotspots.js';
+import * as Fx from './efectos.js';
+import * as Mov from './mover.js';
 /** Versión de las partidas guardadas: 2 = tras el rediseño de las salas (las posiciones de los PNJ cambiaron). */
 const SAVE_V = 3;                    // 3: la Redacción pasó a 1270 px (vestíbulo de planta): los PNJ vuelven a su sitio
 
@@ -179,7 +181,7 @@ export class Game {
   checkFlag(name, op) {
     if (!this.debug.on || name == null) return;
     const n = String(name);
-    if (n.startsWith('duel:') || n.startsWith('walkbox:')) return;
+    if (n.startsWith('duel:') || n.startsWith('walkbox:') || n.startsWith('obj:') || n.startsWith('ambient:')) return;
     const known = this.content.flags;
     if (!known || !Object.keys(known).length || n in known || this.warnedFlags.has(n)) return;
     this.warnedFlags.add(n);
@@ -235,6 +237,8 @@ export class Game {
       const s = { room: a.room, x: Math.round(a.x), y: Math.round(a.y), dir: a.dir, visible: a.visible };
       if (a.pose !== undefined) s.pose = a.pose;          // api.pose (explícita); sin ella, la pose sale de la colocación
       if (a.luz !== undefined) s.luz = a.luz;             // api.luz (exención de la penumbra)
+      if (a.variante) s.variante = a.variante;            // api.vestir (variante de sprite elegida por guion)
+      if (a.posName) s.posName = a.posName;               // posición con nombre de la colocación (applyPresence)
       this.state.actors[a.id] = s;
     }
   }
@@ -242,7 +246,9 @@ export class Game {
   save(slot = 1) {
     if (!this.state) return false;
     this.syncState();
-    const data = { v: SAVE_V, date: Date.now(), roomName: this.room ? (this.room.def.name || this.room.def.id) : '', state: this.state };
+    // a save made while a duel is open remembers it: loading restarts that duel (critic §6.5 / §9 bug 6)
+    const state = this.duelActive ? { ...this.state, duelPendiente: this.duelActive.id } : this.state;
+    const data = { v: SAVE_V, date: Date.now(), roomName: this.room ? (this.room.def.name || this.room.def.id) : '', state };
     try { localStorage.setItem(this.slotKey(slot), JSON.stringify(data)); return true; } catch (e) { this.error('No se pudo guardar', e); return false; }
   }
   slotInfo(slot) {
@@ -258,10 +264,18 @@ export class Game {
     // medía 800 px, los mostradores y las mesas estaban en otro sitio). Cada PNJ vuelve a su sitio de la sala donde está.
     if ((d.v || 1) < 3) this.migrarJugadorV2();
     if ((d.v || 1) < SAVE_V) this.migrarPosiciones();
+    // migración del contenido (objetos y flags retirados): idempotente, en cada carga (content/game.js `migrarPartida`)
+    if (typeof this.G.migrarPartida === 'function') { try { this.G.migrarPartida(this.state); } catch (e) { this.error('migrarPartida falló', e); } }
     this.buildActors();
     this.mode = 'play';
+    const duelo = this.state.duelPendiente;
+    delete this.state.duelPendiente;
     await this.runScript(async () => { await this.enterRoom(this.state.room, null, { restore: true }); }, { label: 'cargar' });
     this.anclarJugador();
+    // the save was made during a duel: the duel starts again from 0 (never drops to the room with the duel lost)
+    if (duelo && this.content.duels.opponents[duelo]) {
+      this.runScript(async (api) => { api.notice(this.G.duelResumeNotice || 'Se retoma el hilo.'); await api.duel(duelo); }, { label: 'reanudar duelo ' + duelo });
+    }
     return true;
   }
   /** Partida v2 (Redacción de 940 px): el jugador, si estaba en la Redacción, pasa a la x equivalente de la sala de 1270
@@ -294,17 +308,22 @@ export class Game {
     p.x = x; p.y = y; p.path = [];
     this.snapCamera(); this.syncState();
   }
-  autosave() { if (this.G.autosave !== false) this.save('auto'); }
+  autosave() { if (this.G.autosave !== false && !this.duelActive) this.save('auto'); }      // plan §7.1.14: never inside a duel
 
   // ------------------------------------------------------------------ new game / actors
   resetRuntime() {
+    // scripts left waiting on a menu/choice of the previous game never resume: their input lock must not leak into the
+    // loaded game (a save loaded from inside a duel or a dialog left the game «busy» for ever). `gen` makes any late
+    // finally of those orphan scripts a no-op.
+    this.gen = (this.gen || 0) + 1; this.busy = 0; this.acting = 0;
     this.speeches.forEach(s => s.resolve && s.resolve());
     this.speeches = []; this.timers.forEach(t => t.resolve()); this.timers = [];
     // un menú con salida (`escape`, p. ej. el del móvil) se cierra por su salida: su guion termina y suelta la entrada
     if (this.choice && this.choice.escape != null) { const ch = this.choice; ch.resolve(ch.escape); }
     this.choice = null; this.menu = null; this.hud = null; this.phone = null; this.detalle = null; this.hsShow = null; this.hsHold = false; this.hudTop = 0; this.cutscene = 0; this.skipCut = false; this.inDialog = 0;
     if (this.itemPick) { const r = this.itemPick.resolve; this.itemPick = null; r(null); }
-    this.notices = []; this.idleMs = 0; this.idleFired = false; this.comboFails = 0; this.duelInfo = null;
+    this.notices = []; this.idleMs = 0; this.idleFired = false; this.comboFails = 0; this.duelInfo = null; this.duelActive = null;
+    Fx.reset(this); Mov.reset(this);
     this.ui.verb = null; this.ui.item = null; this.ui.invScroll = 0; this.ui.sentence = null;
     this.fadeLevel = 0; this.fades = [];
     this.room = null;
@@ -344,13 +363,15 @@ export class Game {
         room: s.room, x: s.x, y: s.y, dir: s.dir || 'down', visible: s.visible !== false,
         anim: 'idle', path: [], walkDist: 0, speed: def.speed || 64, walkResolve: null,
         custom: null, nextBlink: rand(1000, 4000), scale: def.scale,
-        pose: s.pose, luz: s.luz, hold: null,
+        pose: s.pose, luz: s.luz, hold: null, variante: s.variante, posName: s.posName,
       };
     }
   }
   get player() { return this.actors[this.G.player]; }
   /** Current sprite of an actor: def.variant(view) may pick one of def.variants (e.g. the Lector Medio with a jacket). */
   spriteOf(a) {
+    // api.vestir(id, variante): explicit variant chosen by a script (saved with the game) beats def.variant(view)
+    if (a.variante && a.variants[a.variante]) return a.variants[a.variante];
     if (a.def.variant) {
       let k = null;
       try { k = a.def.variant(this.viewFor()); } catch (e) { k = null; }
@@ -382,12 +403,17 @@ export class Game {
       const a = this.actors[p.id]; if (!a || a.id === this.G.player) continue;
       let on = false;
       try { on = this.cond(p.when, this.condApi()); } catch (e) { this.error(`when de ${p.id} en ${rid} falló`, e); }
-      if (on && a.room !== rid) {
+      const pn = on && p.positions ? (typeof p.pos === 'function' ? p.pos(this.viewFor()) : p.pos) : null;
+      // también si sigue en la sala pero su posición con nombre ha cambiado (Gervasio: de su mesa, Acto II, a la puerta
+      // de la Sala, Acto III); los paseos de guion dentro de la sala no cambian el nombre y no se tocan
+      const moved = on && a.room === rid && pn && p.positions[pn] && a.posName && a.posName !== pn;
+      if (on && (a.room !== rid || moved)) {
         let pos = p;
-        const pn = typeof p.pos === 'function' ? p.pos(this.viewFor()) : p.pos;
-        if (pn && p.positions && p.positions[pn]) pos = p.positions[pn];
+        if (pn && p.positions[pn]) pos = p.positions[pn];
         a.room = rid; a.x = pos.x ?? a.x; a.y = pos.y ?? a.y; a.dir = pos.dir || a.dir; a.path = []; a.anim = 'idle';
+        if (moved) a.pose = undefined;                     // la pose vuelve a salir de la colocación nueva
       } else if (!on && a.room === rid) { a.room = null; a.path = []; }
+      if (on && pn) a.posName = pn;
     }
   }
   /** Placement of an actor in the current room (merged with its named position, if any). */
@@ -502,6 +528,7 @@ export class Game {
     }));
     this.refreshWalkboxes(rt);
     rt.ambient = asArray(def.ambient).map(a => ({ def: a, next: this.time + rand(...(a.every || [8000, 15000])), running: false }));
+    Fx.ambientEnter(this, rt);
     this.room = rt;
     this.paintRoom();
     const p = this.player;
@@ -549,8 +576,9 @@ export class Game {
     return new Promise(res => this.timers.push({ at: this.time + ms, resolve: res }));
   }
   fadeTo(level, ms = 400) {
-    if (this.instant || ms <= 0) { this.fadeLevel = level; this.fades = []; return Promise.resolve(); }
-    return new Promise(res => { this.fades = [{ from: this.fadeLevel, to: level, start: this.time, ms, resolve: res }]; });
+    if (this.instant || ms <= 0) { const old = this.fades; this.fadeLevel = level; this.fades = []; old.forEach(f => f.resolve()); return Promise.resolve(); }
+    // a fade replaced by another never leaves its script waiting for ever (two room changes at once)
+    return new Promise(res => { const old = this.fades; this.fades = [{ from: this.fadeLevel, to: level, start: this.time, ms, resolve: res }]; old.forEach(f => f.resolve()); });
   }
   shake(ms = 400, amp = 2) { if (!this.instant) { this.shakeUntil = this.time + ms; this.shakeAmp = amp; } }
 
@@ -563,17 +591,19 @@ export class Game {
     text = String(text ?? '');
     const a = actorId ? this.actors[actorId] : null;
     if (actorId && !a) this.error('Actor desconocido en sayAs: ' + actorId);
-    this.log.push({ who: a ? a.id : (opts.who || (opts.narrator ? 'narrador' : null)), name: a ? a.name : null, text, room: this.state && this.state.room, t: Math.round(this.time) });
+    this.log.push({ who: a ? a.id : (opts.who || (opts.narrator ? 'narrador' : null)), name: a ? a.name : null, text, room: this.state && this.state.room, t: Math.round(this.time), ...(opts.tag ? { tag: opts.tag } : {}) });
     if (this.debug.on) console.log(`[diálogo] ${a ? a.name : '—'}: ${text}`);
     // el que llama por el móvil habla SIEMPRE anclado al teléfono (aunque el contenido no lo pida)
     if (this.phone && a && a.id === this.phone.caller && !opts.at && !opts.narrator) opts = { ...opts, ...Phone.anchor(this) };
     const durMs = opts.ms ? this.timedMs('globo', text, opts.ms) : this.speechDuration(text);   // nunca menos que leerlo
     if (this.instant) return Promise.resolve();
     for (const s of this.speeches.filter(s => s.actor === (a ? a.id : null) && !s.at === !opts.at)) this.endSpeech(s);
+    // ambient chatter and murmurs never stay on screen under a real line: they are cut (the next ambient line waits)
+    if (!opts.ambient) for (const s of this.speeches.filter(s => s.ambient)) this.endSpeech(s);
     return new Promise(resolve => {
       const color = opts.color || (a ? a.color : (this.G.narratorColor || '#f0e8c0'));
       const lines = wrap(text, opts.width || 210);
-      const sp = { actor: a ? a.id : null, at: opts.at || null, text, lines, color, end: this.time + durMs, blocking: opts.blocking !== false, tail: opts.tail || null, phone: !!opts.phone, resolve };
+      const sp = { actor: a ? a.id : null, at: opts.at || null, text, lines: opts.style === 'titular' ? wrap(text, 290, { bold: true }) : lines, color, end: this.time + durMs, blocking: opts.blocking !== false, tail: opts.tail || null, phone: !!opts.phone, ambient: !!opts.ambient, style: opts.style || null, tag: opts.tag || null, resolve };
       this.speeches.push(sp);
     });
   }
@@ -590,10 +620,11 @@ export class Game {
   isTalking(id) { return this.speeches.some(s => s.actor === id); }
 
   // ------------------------------------------------------------------ actors movement
-  walkActor(id, x, y) {
+  walkActor(id, x, y, opts = {}) {
     const a = this.actors[id];
     if (!a) { this.error('Actor desconocido: ' + id); return Promise.resolve(false); }
     if (a.walkResolve) { const r = a.walkResolve; a.walkResolve = null; r(false); }
+    a.running = !!opts.run;                                       // scripted walks never run (only the double click)
     if (a.pose && a.pose !== 'de_pie') a.pose = undefined;      // quien anda se levanta (la pose automática vuelve en su sitio)
     const onRoom = this.room && a.room === this.room.def.id;
     let path = onRoom ? this.room.walk.findPath([a.x, a.y], [x, y]) : [[x, y]];
@@ -623,8 +654,10 @@ export class Game {
     for (const a of Object.values(this.actors)) {
       if (a.room !== this.room.def.id) continue;
       if (a.path.length) {
+        // a NPC walking under a non-blocking script waits while the player is aiming at something (critic §6.6)
+        if (Mov.frozen(this, a)) { a.anim = 'idle'; continue; }
         const s = a.scale || this.roomScale(a.y, a.x);
-        let step = a.speed * s * dt;
+        let step = a.speed * (a.running ? Mov.RUN_FACTOR : 1) * s * dt;
         while (step > 0 && a.path.length) {
           const [tx, ty] = a.path[0];
           const dx = tx - a.x, dy = ty - a.y;
@@ -636,7 +669,7 @@ export class Game {
         }
         a.anim = 'walk';
         if (!a.path.length) {
-          a.anim = 'idle';
+          a.anim = 'idle'; a.running = false;
           if (a.walkResolve) { const r = a.walkResolve; a.walkResolve = null; r(true); }
         }
       } else if (a.custom && (a.custom.until === 0 || this.time < a.custom.until)) {
@@ -743,7 +776,7 @@ export class Game {
     }
     const acts = Object.values(this.actors).filter(a => a.room === this.room.def.id && a.visible && a.id !== this.G.player && a.def.hotspot !== false)
       .sort((a, b) => b.y - a.y);
-    for (const a of acts) { const b = this.actorBox(a); if (x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h) return this.actorTarget(a); }
+    for (const a of acts) { const b = this.actorBox(a), m = a.path.length ? 4 : 0; if (x >= b.x - m && x < b.x + b.w + m && y >= b.y - m && y < b.y + b.h + m) return this.actorTarget(a); }
     const objs = this.roomObjects();
     let hits = objs.filter(o => this.hitObject(o, x, y));
     if (!hits.length) hits = this.slopHits(objs, x, y);
@@ -857,8 +890,9 @@ export class Game {
     // un objeto que se usa solo, «usado con» el propio Bruno, es usarlo (el gesto natural: «Usar móvil con Bruno»)
     if (itemId && verb === 'usar' && this.isSolo(itemId) && target && target.id === this.G.player) { target = this.itemTarget(itemId); itemId = null; }
     this.acting = (this.acting || 0) + 1;
+    const gen = this.gen;
     try { return await this.executeInner(verb, target, itemId); }
-    finally { this.acting--; this.checkIdle(); }
+    finally { if (gen === this.gen) this.acting = Math.max(0, this.acting - 1); this.checkIdle(); }
   }
   async executeInner(verb, target, itemId) {
     const token = ++this.actionToken;
@@ -939,6 +973,7 @@ export class Game {
   async runScript(fn, ctx = {}) {
     const blocking = ctx.blocking !== false;
     if (blocking) this.busy++;
+    const gen = this.gen;
     const api = makeApi(this, ctx);
     try { await fn(api); }
     catch (e) {
@@ -948,9 +983,13 @@ export class Game {
       if (this.phone && (this.phone.owner === ctx || (blocking && this.busy <= 1))) Phone.kill(this);   // nunca queda el móvil colgado
       if (this.detalle && (this.detalle.owner === ctx || (blocking && this.busy <= 1))) Detalle.close(this);   // ni el plano detalle
       if (blocking && this.busy <= 1) for (const a of Object.values(this.actors)) if (a.hold && a.hold.owner) a.hold = null;
-      if (blocking) {
+      if (blocking && gen === this.gen) {
         this.busy = Math.max(0, this.busy - 1);
-        if (!this.busy) { this.cutscene = 0; this.skipCut = false; this.ui.sentence = null; this.applyPresence(); }
+        if (!this.busy) {
+          this.cutscene = 0; this.skipCut = false; this.ui.sentence = null; this.applyPresence();
+          // el jugador recupera el control: la cámara vuelve a seguirle (un guion que la fijó con cameraTo no la deja clavada)
+          if (this.camTarget != null && this.mode === 'play') { this.camTarget = null; this.camFollow = this.G.player; }
+        }
       }
       if (blocking) this.idleMs = 0;
       this.checkIdle();
@@ -966,7 +1005,7 @@ export class Game {
       // `escape`: la opción que eligen Esc y un toque en la sala (fuera del panel y del móvil); `t0`: los toques de los
       // primeros 250 ms no cuentan (el segundo toque de un doble toque no elige una opción por accidente)
       const escape = Number.isInteger(opts.escape) ? opts.escape : null;
-      this.choice = { options: texts, disabled, escape, t0: this.realTime, resolve: i => { this.choice = null; res(i); this.checkIdle(); }, scroll: 0, hover: -1 };
+      this.choice = { options: texts, disabled, escape, compact: !!opts.duel, t0: this.realTime, resolve: i => { this.choice = null; res(i); this.checkIdle(); }, scroll: 0, hover: -1 };
       this.checkIdle();
     });
   }
@@ -1035,16 +1074,10 @@ export class Game {
       target = Math.max(0, Math.min(W - SCREEN_W, target));
       this.camX += (target - this.camX) * Math.min(1, dt * 3.2);
       if (Math.abs(target - this.camX) < 0.3) this.camX = target;
-      // ambient
-      if (!this.busy && !this.choice) for (const am of this.room.ambient) {
-        if (this.time < am.next || am.running) continue;
-        am.next = this.time + rand(...(am.def.every || [8000, 15000]));
-        let ok = true;
-        try { ok = !am.def.if || this.cond(am.def.if, makeApi(this, {})); } catch (e) { ok = false; }
-        if (!ok) continue;
-        am.running = true;
-        this.runScript(am.def.run, { blocking: false, label: 'ambient ' + this.room.def.id, ambientRoom: this.room.def.id }).then(() => { am.running = false; });
-      }
+      // ambient: one shared scheduler (engine/efectos.js) — never over a balloon, menu, notice, phone or close-up;
+      // 60-120 s between interventions; at most 3 per visit (room `ambientRules: { every, max, first }`)
+      Fx.updateAmbient(this);
+      Mov.update(this, dt);
       if (this.room.def.update) { try { this.room.def.update(makeApi(this, { label: 'update' }), dt); } catch (e) { this.error('update() falló', e); this.room.def.update = null; } }
       this.updateIdle(dt);
     }
@@ -1084,16 +1117,16 @@ export class Game {
     if (!lines.length) return;
     const M = this.murmur;
     if (this.realTime - (M.last[t.id] || -1e9) < 9000) return;
-    if (this.speeches.length) return;
+    if (!Fx.quiet(this)) return;
     M.last[t.id] = this.realTime;
     M.idx = M.idx || {};
     const i = (M.idx[t.id] = ((M.idx[t.id] ?? -1) + 1)) % lines.length;
-    if (t.kind === 'actor') this.speak(t.id, lines[i], { blocking: false });
+    if (t.kind === 'actor') this.speak(t.id, lines[i], { blocking: false, ambient: true });
     else {
       const d = t.def;
       const cx = d.poly ? d.poly.reduce((s, p) => s + p[0], 0) / d.poly.length : d.x + d.w / 2;
       const top = d.poly ? Math.min(...d.poly.map(p => p[1])) : d.y;
-      this.speak(null, lines[i], { blocking: false, at: [cx, top - 2], color: d.murmurColor || '#c8c4d8', who: t.id });
+      this.speak(null, lines[i], { blocking: false, ambient: true, at: [cx, top - 2], color: d.murmurColor || '#c8c4d8', who: t.id });
     }
   }
   inputActivity() { this.idleMs = 0; this.idleFired = false; this.murmur.stillMs = 0; }
@@ -1122,6 +1155,7 @@ export class Game {
       this.renderRoom(g);
       UI.drawPanel(this, g);
     }
+    if (this.card) { try { Fx.drawCard(this, g); } catch (e) { this.error('tarjeta falló', e); } }
     if (this.menu) Screens.drawMenu(this, g);
     if (this.iosHelp) Screens.drawIosHelp(this, g);
     this.debug.draw(g);
@@ -1181,6 +1215,7 @@ export class Game {
       const st = this.getObjState(o.id);
       if (st.visible) safe(() => this.drawObject(g, o, st), `draw() de ${o.id}`);
     }
+    if (this.apagon) safe(() => Fx.drawApagon(this, g, cam), 'apagón');
     if (Ver.active(this)) safe(() => Ver.draw(this, g, cam), 'ver hotspots');
     this.debug.drawRoom(g);
     g.restore();
@@ -1199,6 +1234,7 @@ export class Game {
     if (this.hud) safe(() => this.hud(g), 'hud');
     if (this.phone) safe(() => Phone.draw(g, this), 'móvil');
     if (this.detalle) safe(() => Detalle.draw(g, this), 'plano detalle');
+    if (this.burst) safe(() => Fx.drawBurst(this, g), 'notificaciones');
     this.drawSpeech(g, cam);
     this.drawNotices(g);
   }
@@ -1235,9 +1271,11 @@ export class Game {
     const sp = this.spriteOf(a);
     const pose = this.poseOf(a);
     if (!mask && sp.shadow !== false && pose !== 'tras_mesa') shadowEllipse(g, Math.round(a.x), Math.round(a.y), Math.max(3, 8 * s), Math.max(1.2, 2.2 * s), 0.55);
-    const { canvas, flip } = getFrame(sp, a.anim, a.dir, this.actorFrame(a));
+    const fr = this.actorFrame(a);
+    const { canvas, flip } = getFrame(sp, a.anim, a.dir, fr);
     const dw = Math.round(canvas.width * s), dh = Math.round(canvas.height * s);
-    const dx = Math.round(a.x - (sp.ox + 1) * s), dy = Math.round(a.y - (sp.oy + 1) * s);
+    const bob = a.running && a.anim === 'walk' && !mask && fr % 2 ? Math.max(1, Math.round(s)) : 0;   // carrera: saltito al paso
+    const dx = Math.round(a.x - (sp.ox + 1) * s), dy = Math.round(a.y - (sp.oy + 1) * s) - bob;
     if (flip) { g.save(); g.translate(Math.round(a.x) * 2, 0); g.scale(-1, 1); }
     if (pose) Pose.drawPosed(g, sp, canvas, dx, dy, s, pose, a.dir);
     else g.drawImage(canvas, dx, dy, dw, dh);
@@ -1254,6 +1292,10 @@ export class Game {
     let P = null;
     try { P = this.room.def.penumbra(view, this.time); } catch (e) { this.error('penumbra() falló: ' + e.message, e); this.room.def.penumbra = null; return; }
     if (!P) return;
+    this.drawShade(g, cam, P);
+  }
+  /** Darkens the room view with P = { color, alpha, spots, actor, actores, borde } (penumbra and api.apagon). */
+  drawShade(g, cam, P) {
     const c = this.penCanvas || (this.penCanvas = document.createElement('canvas'));
     if (c.width !== SCREEN_W || c.height !== VIEW_H) { c.width = SCREEN_W; c.height = VIEW_H; }
     const m = c.getContext('2d');
@@ -1284,6 +1326,7 @@ export class Game {
   }
   drawSpeech(g, cam) {
     for (const sp of this.speeches) {
+      if (sp.style === 'titular') { Fx.drawTitular(this, g, sp); continue; }
       let cx, bottom;
       const a = sp.actor && this.actors[sp.actor];
       if (sp.at) { cx = Math.round(sp.at[0] - cam); bottom = Math.round(sp.at[1]); }
@@ -1298,6 +1341,7 @@ export class Game {
       let top = bottom - sp.lines.length * LINE_H;
       const minTop = (this.hud || this.detalle) ? Math.max(2, this.hudTop) : 2;
       if (top < minTop) top = minTop;
+      if (sp.tag && top < minTop + 12) top = minTop + 12;
       // legibilidad (problema 5): bajo cada línea, una banda oscura translúcida pegada al texto (el contorno negro de
       // 8 vecinos sigue ahí). Así el texto de color se lee sobre fondos claros (planta 2 lila) y oscuros (CPD).
       const SB = this.G.speechBacking === undefined ? SPEECH_BACKING : this.G.speechBacking;
@@ -1306,6 +1350,7 @@ export class Game {
         sp.lines.forEach((l, i) => { const lw = measure(l) + 6; g.fillRect(Math.round(cx - lw / 2), top + i * LINE_H - 2, lw, LINE_H + 1); });
         g.restore();
       }
+      if (sp.tag) { const tw = measure(sp.tag) + 6; g.save(); g.globalAlpha = 0.9; g.fillStyle = '#06050c'; g.fillRect(Math.round(cx - tw / 2), top - 12, tw, 10); g.restore(); drawText(g, sp.tag, cx, top - 13, sp.color, { align: 'center' }); }   // «MEGAFONÍA» (api.megafonia)
       if (sp.tail) this.drawTail(g, sp, cx, top, w);
       sp.lines.forEach((l, i) => drawText(g, l, cx, top + i * LINE_H, sp.color, { align: 'center' }));
     }
@@ -1374,9 +1419,12 @@ export class Game {
       this.mouse.x = p.x; this.mouse.y = p.y; this.mouse.inside = true;
       this.mouse.touch = e.pointerType === 'touch';
       this.updateHover();
-      if (this.longPress && Math.hypot(e.clientX - this.longPress.cx, e.clientY - this.longPress.cy) > 12) { clearTimeout(this.longPress.timer); this.longPress = null; }
+      if (this.longPress && Math.hypot(e.clientX - this.longPress.cx, e.clientY - this.longPress.cy) > 12) {
+        clearTimeout(this.longPress.timer); this.longPress = null;
+        Mov.holdStart(this, 'touch', true);                          // a finger dragged on the floor: Bruno follows it
+      }
     });
-    c.addEventListener('pointerleave', () => { this.mouse.inside = false; this.ui.hover = null; });
+    c.addEventListener('pointerleave', () => { this.mouse.inside = false; this.ui.hover = null; Mov.holdEnd(this); });
     c.addEventListener('pointerdown', e => {
       e.preventDefault();
       this.audio.unlock();
@@ -1397,8 +1445,10 @@ export class Game {
         return;
       }
       this.click(p.x, p.y, e.button === 2 ? 2 : 0);
+      if (e.button === 0) Mov.holdStart(this, e.pointerType || 'mouse');      // holding the button keeps walking
     });
     c.addEventListener('pointerup', e => {
+      Mov.holdEnd(this);
       if (e.pointerType === 'touch' && this.longPress) {
         clearTimeout(this.longPress.timer);
         const lp = this.longPress; this.longPress = null;
@@ -1468,7 +1518,8 @@ export class Game {
       else this.ui.hover = null;
     }
   }
-  click(x, y, button) {
+  click(x, y, button, ev = {}) {
+    if (this.card) { Fx.cardClick(this); return; }
     if (this.iosHelp) { if (this.realTime - this.iosHelp.at > 300) this.iosHelp = null; return; }   // el panel de ayuda del iPhone se cierra con un toque
     if (this.menu) { Screens.menuClick(this, x, y); return; }
     if (this.mode === 'title') { Screens.titleClick(this, x, y); return; }
@@ -1513,12 +1564,14 @@ export class Game {
     }
     if (t) {
       if (this.ui.item) { this.execute(this.ui.verb, t, this.ui.item); return; }
+      // double click / double tap on an exit while Bruno walks to it: he is there already (classic convention)
+      if (!this.ui.verb && t.def.exit && Mov.isDouble(this, x, y, t.id, ev) && Mov.skipToExit(this, t)) return;
       this.execute(this.ui.verb || 'ir', t);
       return;
     }
-    // walk to point
+    // walk to point (a double click / double tap on the floor runs: engine/mover.js)
     this.cancelAction();
     this.ui.verb = null; this.ui.item = null;
-    this.walkActor(this.G.player, x + Math.round(this.camX), y);
+    this.walkActor(this.G.player, x + Math.round(this.camX), y, { run: Mov.isDouble(this, x, y, null, ev) });
   }
 }

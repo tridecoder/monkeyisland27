@@ -1,6 +1,7 @@
-// SALA `ecosistema` — ÁRBOLES DE DIÁLOGO (paquete D). Biblia §7.7.8 (Borja), §7.7.9 (Maripaz); adenda §4.5 (portátil de
-// Tadeo), rumores §8.1 paso 3 (Borja), §8.3 paso 3 (Maripaz), §8.4 paso 1 (Borja). Importado por ./ecosistema.js.
-// El árbol de Pilar Escaleta (Eventos) vive en ./eventos.dialogos.js: Eventos tiene sala propia (adenda §13.4).
+// SALA `ecosistema` (a la vista: «Marketing y Comercial») — ÁRBOLES DE DIÁLOGO. Dueño: P4. Plan de comedia §5.16 (Borja,
+// cuatro opciones; el asistente de Tadeo, tres) y §5.17 (Maripaz: su «cariño» pasa a letra pequeña; el duelo D1 se ha
+// mudado a la Sala Amazonas). Rumores: se quedan A3 (Borja) y C3 (Maripaz); fuera B y D (§10.1). Importado por ./ecosistema.js.
+// El árbol de Pilar Escaleta (Eventos) vive en ./eventos.dialogos.js.
 import { gong, SFX } from '../escenas/planta_noble.js';
 
 const BORJA = 'borja_engagement', MARIPAZ = 'maripaz_remitido';
@@ -8,56 +9,45 @@ const sayB = (api, t) => api.sayAs(BORJA, t);
 const sayM = (api, t) => api.sayAs(MARIPAZ, t);
 const tadeo = (api, t) => api.sayFrom('portatil_tadeo', t);
 
-/** P07: «La página 7 está pendiente desde marzo» → duelo D1 (Hablar M0 opción 2 y Dar planillo). */
-export async function abrirDueloMaripaz(api, conFrase) {
-  if (conFrase) await api.say('La página 7 está pendiente desde marzo.');
-  await sayM(api, '¿Desde marzo sin confirmar? Eso no es un cliente, es un exnovio.');
-  await sayM(api, 'Vale, los paso a la web. Pero alguien tiene que llamar a Siestatón.');
-  await api.duel('maripaz');
-}
-
 /** biblia 5.5 `bruno_sellado_frente` (opcional): un comentario por PNJ, una vez. */
 async function frente(api, who) {
   if (api.flag('bruno_sellado_frente') && api.once('frente_' + who)) await api.sayAs(who, 'Llevas RECHAZADO en la frente.');
 }
 
 export default {
-  // ---------------------------------------------------------------- §7.7.8 Borja (Marketing: sin cámara; problema 8)
+  // ---------------------------------------------------------------- §5.16 Borja (la cara de Marketing)
   borja: {
     actor: BORJA, start: 'BJ0',
     onStart: async (api) => {
       await sayB(api, '¡Bruno! ¡Justo hablábamos de tu marca personal!');
-      // rumores (adenda 8): como mucho uno por conversación; prioridad A, luego D
+      // rumor A3 (se queda): como mucho uno por conversación
       if ((api.flag('rumor_firma_n') || 0) === 2) {
         api.inc('rumor_firma_n');
         await sayB(api, '¡Me dicen que vas a comprar el periódico! ¡Eso es un lanzamiento!');
         await sayB(api, 'Te hago la campaña: «Sonríe como si tuvieras liquidez».');
-      } else if (api.flag('acto_2_iniciado') && (api.flag('rumor_plaza_n') || 0) === 0) {
-        api.inc('rumor_plaza_n');
-        await sayB(api, '¡Dicen que Gervasio deja la plaza 7! ¡Se ha comprado una bici!');
       }
       await frente(api, BORJA);
     },
     nodes: {
       BJ0: {
         options: [
-          { text: '¿Qué hace Marketing?', reply: ['¡Engagement! Que la gente quiera lo que ya tiene.', 'Pero en vertical. Y con un emoji de fuego.'] },
-          { text: '¿Qué evento hay hoy?', once: true, reply: '¡Eso es de Eventos! Yo solo lo cuento. Antes de que pase.' },
-          { text: '¿Me prestas el álbum?', if: ['ruben_encontrado', '!oyo_descopear'],
-            reply: ['El álbum es de Eventos. Yo solo lo viralizo.', 'Pídeselo a Pilar. Con acreditación, que se pone tensa.'] },
-          { text: 'Me voy.', exit: true, do: async (api) => { await sayB(api, '¡Salida de escena! ¡Eso es un cierre de embudo!'); } },
+          { text: '¿Qué hacéis en Marketing?', once: true,
+            reply: ['¡Contenido! Todo lo que pasa delante de mí es contenido.', '¡No te muevas! ¡Así, triste! ¡Eso en vertical lo peta!'] },
+          { text: '¿Has leído mi pieza?', once: true, reply: 'No lo he leído. Lo he compartido. Es más rápido.' },
+          { text: 'Esta noche hay una opa.', once: true, reply: '¿Una opa? ¡Qué bonito! ¿Es un evento? ¿Hay croquetas?' },
+          { text: 'Me voy.', exit: true, do: async (api) => { await sayB(api, '¿Te vas? ¡Eso es una salida de escena! ¡Lo subo!'); } },
         ],
       },
     },
   },
 
-  // ---------------------------------------------------------------- §7.7.9 Maripaz
+  // ---------------------------------------------------------------- §5.17 Maripaz (Acto I y tras D1)
   maripaz: {
     actor: MARIPAZ, start: 'M0',
     onStart: async (api) => {
       if ((api.flag('rumor_teodoro_n') || 0) === 2) {
         api.inc('rumor_teodoro_n');
-        await sayM(api, 'Teodoro es el dueño del edificio, cariño. Lo compró en el 97. Por fax.');
+        await sayM(api, 'Teodoro es el dueño del edificio. Lo compró en el 97. Por fax. (*Fuente: yo.)');
       }
       await frente(api, MARIPAZ);
       await sayM(api, '¿Esa cara? Te la patrocino. «Agobio, con Tilas Calmín».');
@@ -65,9 +55,7 @@ export default {
     nodes: {
       M0: {
         options: [
-          { text: '¿Qué vende Comercial?', reply: 'No vendemos anuncios, cariño. Vendemos contenido que paga.' },
-          { text: 'La página 7 está pendiente desde marzo.', if: ['has:planillo', '!duelo_maripaz_ganado'],
-            do: async (api) => { await abrirDueloMaripaz(api, false); return 'exit'; } },
+          { text: '¿Qué vende Comercial?', reply: 'No vendemos anuncios. Vendemos contenido que paga. (*Paga usted.)' },
           { text: '¿Qué tal con Siestatón?', if: 'duelo_maripaz_ganado', reply: 'Encantados. Ahora la web respira. El banner, digo.' },
           { text: 'Me voy.', exit: true, do: async (api) => { gong(api); await sayM(api, 'Eso ha sido una despedida. La facturo.'); } },
         ],
@@ -75,7 +63,7 @@ export default {
     },
   },
 
-  // ---------------------------------------------------------------- adenda §4.5 · el asistente de Tadeo (habla el portátil)
+  // ---------------------------------------------------------------- §5.16 · el asistente de Tadeo (habla el portátil)
   portatil_tadeo: {
     actor: 'tadeo_adjunto', start: 'TA0',
     onStart: async (api) => {
@@ -86,25 +74,14 @@ export default {
     nodes: {
       TA0: {
         options: [
-          { text: '¿Dónde está Tadeo?', once: true,
-            do: async (api) => { await tadeo(api, ['En casa, desde las seis. Pero sigue muy presente.', 'Presente en todas las bandejas de entrada del edificio.']); } },
-          { text: '¿Tadeo lee lo que reenvía?', once: true,
-            do: async (api) => { await tadeo(api, 'Tadeo confía. Leer es para quien duda.'); } },
-          { text: '¿Qué son las Core Web Vitals?', once: true,
-            do: async (api) => { await tadeo(api, ['Tres medidas de la página: carga, respuesta y estabilidad.', 'Tadeo propuso quitar la página. Para que cargue antes.']); } },
-          { text: 'Deja de reenviar.',
+          { text: '¿Quién es Tadeo?', once: true,
+            do: async (api) => { await tadeo(api, '¡Excelente pregunta! Tadeo es tu usuario favorito.'); } },
+          { text: '¿Lees lo que te reenvía?', once: true,
+            do: async (api) => { await tadeo(api, '¡Excelente pregunta! No. Él tampoco.'); } },
+          { text: 'Adiós.', exit: true,
             do: async (api) => {
-              await tadeo(api, '¡Entendido! Reenvío tu petición a todo el edificio.');
-              for (let i = 0; i < 3; i++) { api.sfx(SFX.plin); await api.wait(220); }
-            } },
-          { text: '¿Os contesta alguien?', if: 'ruben_encontrado', once: true,
-            do: async (api) => { await tadeo(api, ['Una cuenta: Titulator 3000. Siempre: «Gracias, Tadeo».', 'Es nuestro mejor cliente. No compra nada.']); } },
-          { text: 'Me voy.', exit: true,
-            do: async (api) => {
-              await tadeo(api, '¿Quieres que reenvíe tu salida?');
-              await api.say('No.');
+              await tadeo(api, '¡Excelente despedida! ¿Quieres que la reenvíe?');
               api.sfx(SFX.plin);
-              await tadeo(api, 'Reenviada.');
             } },
         ],
       },

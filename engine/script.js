@@ -4,6 +4,8 @@
 import * as Phone from './phone.js';
 import * as Detalle from './detalle.js';
 import { itemIconCanvas } from './ui.js';
+import * as Fx from './efectos.js';
+import * as Obj from './objetivos.js';
 
 function pick(arr) { return Array.isArray(arr) ? arr[Math.floor(Math.random() * arr.length)] : arr; }
 
@@ -14,9 +16,15 @@ export function makeApi(game, ctx = {}) {
 
   // an ambient script (room `ambient`) falls silent as soon as the player leaves its room
   const gone = () => !!(ctx.ambientRoom && (!game.state || game.state.room !== ctx.ambientRoom));
+  // ambient lines (room `ambient`) wait for silence before each balloon and are cut by any real line (efectos.js)
+  const amb = !!ctx.ambientRoom;
   const sayLines = async (who, text, opts) => {
     const lines = Array.isArray(text) ? text : [text];
-    for (const l of lines) { if (gone()) return; await game.speak(who, l, { blocking, ...(opts || {}) }); }
+    for (const l of lines) {
+      if (gone()) return;
+      if (amb && !(await Fx.waitQuiet(game, gone))) return;
+      await game.speak(who, l, { blocking, ...(amb ? { ambient: true } : {}), ...(opts || {}) });
+    }
   };
 
   const resolvePoint = (target, y) => {
@@ -59,7 +67,33 @@ export function makeApi(game, ctx = {}) {
       const cx = d.poly ? d.poly.reduce((s, p) => s + p[0], 0) / d.poly.length : d.x + d.w / 2;
       const top = d.poly ? Math.min(...d.poly.map(p => p[1])) : d.y;
       const lines = Array.isArray(text) ? text : [text];
-      for (const l of lines) { if (gone()) return; await game.speak(null, l, { blocking, at: [cx, top - 2], color: opts.color || d.color || '#e8e8e8', who: d.id, ...opts }); }
+      for (const l of lines) {
+        if (gone()) return;
+        if (amb && !(await Fx.waitQuiet(game, gone))) return;
+        await game.speak(null, l, { blocking, at: [cx, top - 2], color: opts.color || d.color || '#e8e8e8', who: d.id, ...(amb ? { ambient: true } : {}), ...opts });
+      }
+    },
+    /** MEGAFONÍA (plan §4.7): la voz de un actor por un altavoz (ascensor, edificio): globo arriba, en su color, con la
+     *  etiqueta «MEGAFONÍA» encima (no cuenta en los 80 caracteres), sin que el actor esté en la sala. No bloquea salvo
+     *  `{ blocking: true }`. El log lleva `tag: 'MEGAFONÍA'`. */
+    megafonia: async (id, text, opts = {}) => {
+      const a = actorOr(id); if (!a) return;
+      const lines = Array.isArray(text) ? text : [text];
+      if (opts.sfx !== false) game.audio.sfx(opts.sfx || 'beep');
+      for (const l of lines) {
+        if (gone()) return;
+        await game.speak(null, l, { blocking: !!opts.blocking, at: [Math.round(game.camX) + 160, opts.y ?? 44], color: a.color, who: a.id, width: 260, ms: opts.ms, tag: opts.etiqueta ?? 'MEGAFONÍA' });
+      }
+    },
+    /** TITULAR (plan §4.6): la línea sale como franja de titular de periódico. opts: { who (actor; por defecto Bruno),
+     *  from (objeto que «habla», p. ej. 'pantalla_titulator'), blocking, ms }. */
+    titular: async (text, opts = {}) => {
+      const who = opts.from ? null : (opts.who || P());
+      const lines = Array.isArray(text) ? text : [text];
+      for (const l of lines) {
+        if (gone()) return;
+        await game.speak(who, l, { blocking: opts.blocking ?? blocking, style: 'titular', who: opts.from, ms: opts.ms, color: opts.color });
+      }
     },
     sayRandom: (lines) => sayLines(P(), pick(lines)),
 
@@ -104,6 +138,16 @@ export function makeApi(game, ctx = {}) {
       return game.walkActor(id, p[0], p[1]);
     },
     face: (dirOrTarget) => api.faceActor(P(), dirOrTarget),
+    /** Variante de sprite elegida por guion (se guarda con la partida): api.vestir('bruno', 'con_chaqueta'); null = la
+     *  de siempre (o la que diga `variant(view)` en actors.js). */
+    vestir: (id, variante = null) => {
+      const a = actorOr(id); if (!a) return;
+      if (variante && !a.variants[variante]) { game.error(`vestir: ${id} no tiene la variante ${variante}`); return; }
+      a.variante = variante || undefined;
+      if (game.state && game.state.actors[id]) { if (variante) game.state.actors[id].variante = variante; else delete game.state.actors[id].variante; }
+    },
+    /** Huida en grupo por una puerta con atasco (plan §4.4). Ver engine/efectos.js `estampida`. */
+    estampida: (ids, opts) => Fx.estampida(game, api, ids, opts),
     faceActor: (id, dirOrTarget) => {
       const a = actorOr(id); if (!a) return;
       if (['up', 'down', 'left', 'right'].includes(dirOrTarget)) { a.dir = dirOrTarget; return; }
@@ -146,6 +190,14 @@ export function makeApi(game, ctx = {}) {
     // time & effects
     wait: (ms) => game.sleep(ms),
     shake: (ms, amp) => game.shake(ms, amp),
+    /** Apagón de la sala (plan §4.2): api.apagon({ ms: 3000, spots, alpha }) · api.apagon(false) devuelve la luz. */
+    apagon: (opts) => Fx.apagon(game, opts),
+    /** Ráfaga de notificaciones + contador (plan §4.1, la cafetera viral). Ver engine/efectos.js `viral`. */
+    viral: (opts) => Fx.viral(game, opts),
+    /** Pantalla fija (la fe de erratas final, plan §9): api.tarjeta({ titulo, lineas, minMs: 6000 }); espera al clic. */
+    tarjeta: (opts) => Fx.tarjeta(game, opts),
+    /** Dice una secuencia [[quién, texto], ...] con `voces` opcionales (el mismo formato que el ambiente). */
+    decir: (lines, voces) => Fx.decir(api, lines, voces),
     fadeOut: (ms = 500) => game.fadeTo(1, ms),
     fadeIn: (ms = 500) => game.fadeTo(0, ms),
     sfx: (name) => game.audio.sfx(name),
@@ -216,6 +268,11 @@ export function makeApi(game, ctx = {}) {
     notice: (text, opts) => game.notice(text, opts),
     get comboFails() { return game.comboFails; },
     resetComboFails: () => { game.comboFails = 0; },
+
+    // objetivos, pistas y hora (plan §8; engine/objetivos.js, datos en content/pistas.js)
+    objetivo: Obj.apiFor(game, () => api),
+    /** Hora de la historia en el móvil ('18:30' … '21:00', por hitos; los relojes del edificio siguen en 20:59). */
+    hora: () => Obj.hora(game),
 
     // flow
     goto: (room, entry) => game.enterRoom(room, entry),

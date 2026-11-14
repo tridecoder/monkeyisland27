@@ -1,14 +1,15 @@
 #!/usr/bin/env node
-// Walkthrough de EXTRAS (adenda §12): reproduce el walkthrough 5.4 completo (walk-data.mjs) INTERCALANDO los pasos X
-// de la tabla 12.2 de docs/GUION_ADENDA.md en el sitio indicado (`tras: N` = justo después del paso N de la biblia).
-//   node tools/extras.mjs              todo
-//   node tools/extras.mjs --hasta=X10  se para (con éxito) tras ese paso X (o tras el paso numérico, p. ej. --hasta=20)
+// Walkthrough de EXTRAS: reproduce el recorrido del plan de comedia (walk-data.mjs, 42 pasos) INTERCALANDO los pasos X de
+// la tabla del plan §3.5 (con la ENMIENDA E1.9 y los ajustes de los paquetes P1-P4) en su sitio (`tras: N` = justo
+// después del paso N; `tras: 'XE3'` = después de ese paso X).
+//   node tools/extras.mjs              todo, hasta la tarjeta FE DE ERRATAS y los créditos
+//   node tools/extras.mjs --hasta=XE3  se para (con éxito) tras ese paso X (o tras el paso numérico, p. ej. --hasta=20)
 //   node tools/extras.mjs --lento      sin modo rápido y con capturas
-// Tras cada paso de la biblia se comprueban sus resultados; tras cada paso X, los de la tabla 12.2. Las llamadas de
-// Evaristo, los «RV:» de Tadeo y los rumores salen solos (entrar en salas / Hablar): el test cierra el globo y sigue
-// (walk-lib.mjs `startDismisser`) y comprueba los CONTADORES en los puntos de control (filas «—»).
-// Mientras falten las partes de la adenda por implementar FALLARÁ en el primer paso X pendiente: es lo esperado.
-// Acciones y formato de `esp`: ver la cabecera de walkthrough.mjs.
+// Tras cada paso se comprueban sus resultados. Las llamadas de Evaristo (L1-L5 y la LC), los «RV:» de Tadeo y los rumores
+// salen solos (entrar en salas / Hablar): el test cierra el globo y sigue (walk-lib.mjs `startDismisser`) y comprueba los
+// CONTADORES en los puntos de control (filas «—»).
+// Acciones y formato de `esp`: ver la cabecera de walkthrough.mjs; además `['perder']` (pierde el duelo abierto con flojas)
+// y `esp.log: ['texto', …]` (cada texto debe salir en el registro durante ese paso; `who:texto` exige además quién lo dice).
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -24,56 +25,62 @@ const args = Object.fromEntries(process.argv.slice(2).filter(a => a.startsWith('
 const V = (verbo, obj) => ['verbo', verbo, obj];
 const O = (t) => ['opcion', t];
 const SALIR = ['cerrar'];
-// ------------------------------------------------------------------ adenda 12.2 (X1…X26)
+// ------------------------------------------------------------------ plan §3.5 + E1.9 (+ informes P1-P4)
 const X = [
+  // Vestíbulo (se quedan)
   { n: 'X1', tras: 7, sala: 'vestibulo', txt: 'Hablar planta_plastico', acc: [V('hablar', 'planta_plastico')], esp: { flags: ['planta_oyo'] } },
   { n: 'X2', tras: 7, sala: 'vestibulo', txt: 'Empujar planta_plastico', acc: [V('empujar', 'planta_plastico')], esp: { flags: { planta_empujada_n: 1 } } },
   { n: 'X3', tras: 7, sala: 'vestibulo', txt: 'Hablar celestino → (rumor A1) → «Nada, Celestino.»', acc: [V('hablar', 'celestino'), SALIR], esp: { flags: { rumor_firma_n: 1 } } },
   { n: 'X4', tras: 7, sala: 'vestibulo', txt: 'Mirar rama_diseno · Usar altavoz_ibex', acc: [V('mirar', 'rama_diseno'), V('usar', 'altavoz_ibex')], esp: {} },
-  { n: 'X4b', tras: 7, sala: 'vestibulo', txt: 'Mirar cuadro_plazas ×3 · Hablar celestino → «¿Cómo se consigue una plaza de garaje?»', acc: [V('mirar', 'cuadro_plazas'), V('mirar', 'cuadro_plazas'), V('mirar', 'cuadro_plazas'), V('hablar', 'celestino'), O('¿Cómo se consigue una plaza de garaje?'), SALIR], esp: { flags: { cuadro_plazas_n: 3 } } },
-  { n: '—10', tras: 10, sala: 'pajarera', txt: 'Control: al entrar en la pajarera salió la llamada L1', acc: [], esp: { flags: { evaristo_llamadas: 1 } } },
-  { n: 'X5', tras: 13, sala: 'pecera', txt: 'Mirar sillas_con_chaqueta · Hablar leoncio_quesitos → «¿Qué es Herminia?»', acc: [V('mirar', 'sillas_con_chaqueta'), V('hablar', 'leoncio_quesitos'), O('¿Qué es Herminia?'), SALIR], esp: {} },
+  { n: 'X4b', tras: 7, sala: 'vestibulo', txt: 'Mirar cuadro_plazas ×3 · Hablar celestino → plaza de garaje', acc: [V('mirar', 'cuadro_plazas'), V('mirar', 'cuadro_plazas'), V('mirar', 'cuadro_plazas'), V('hablar', 'celestino'), O('¿Cómo se consigue una plaza de garaje?'), SALIR], esp: { flags: { cuadro_plazas_n: 3 } } },
+  // §4.3 Ramírez ha vuelto
+  { n: 'XM3a', tras: 9, sala: 'pecera', txt: 'Usar chaqueta_ramirez (sin destino): Bruno se la pone', acc: [V('usar', 'chaqueta_ramirez')], esp: { flags: { bruno_con_chaqueta: true }, tiene: ['chaqueta_ramirez'] } },
+  { n: 'XM3b', tras: 'XM3a', sala: 'pajarera', txt: '(entrar en Despachos) → Íñigo le confunde; Bruno se la quita', acc: [['ir', 'pajarera']], esp: { flags: { bruno_con_chaqueta: false }, tiene: ['chaqueta_ramirez'] } },
+  { n: '—13', tras: 13, sala: 'pecera', txt: 'Control: la llamada L1 ya salió (en la primera entrada sin escena)', acc: [], esp: { flags: { evaristo_llamadas: 1 } } },
+  // E1.9 · XE1: Leoncio y el portátil
+  { n: 'XE1', tras: 13, sala: 'pecera', txt: 'Hablar leoncio_quesitos → «¿Me hace un gráfico a mí?» (sale la línea del PORTÁTIL)', acc: [V('hablar', 'leoncio_quesitos'), O('¿Me hace un gráfico a mí?'), SALIR], esp: { log: ['herminia_portatil:PORTÁTIL: › Bruno · aportación a la planta'] } },
   { n: '—14', tras: 14, sala: 'office', txt: 'Control: el «Buenas noches» llevó antes el rumor A2', acc: [], esp: { flags: { rumor_firma_n: 2 } } },
+  { n: 'XM1', tras: 15, sala: 'pecera', txt: '(entrar en la Redacción) → reacción viral de Yoli', acc: [['ir', 'pecera']], esp: { flags: ['cafetera_viral'] } },
+  // §4.2 el apagón (sin el ticket nº 3: escalada, sin CMS)
+  { n: 'XM2', tras: 18, sala: 'pecera', txt: 'Tirar enchufe_pantalla ×3 (sin el ticket nº 3); al entrar, la llamada L2', acc: [['ir', 'pecera'], V('tirar', 'enchufe_pantalla'), V('tirar', 'enchufe_pantalla'), V('tirar', 'enchufe_pantalla')], esp: { flags: { apagon_n: 3, cms_vivo: false, evaristo_convoco: true, evaristo_llamadas: 2 } } },
+  { n: 'XE2', tras: 18, sala: 'pecera', txt: 'Hablar anselmo_monolito → «¿Por qué invades la sección de Leoncio?»', acc: [V('hablar', 'anselmo_monolito'), O('¿Por qué invades la sección de Leoncio?'), SALIR], esp: {} },
   { n: '—17', tras: 17, sala: 'catacumba', txt: 'Control: A_MENU llevó antes el rumor C1', acc: [], esp: { flags: { rumor_teodoro_n: 1 } } },
-  { n: '—20', tras: 20, sala: 'office', txt: 'Control: L2 ya salió', acc: [], esp: { flags: { evaristo_convoco: true, evaristo_llamadas: 2 } } },
-  { n: 'X6', tras: 20, sala: 'pecera', txt: 'Hablar custodia_precinto (Secretaría, en la Redacción) → «¿Me deja un boli?» → «¿Y cómo se consigue un boli aquí?»', acc: [['ir', 'pecera'], V('hablar', 'custodia_precinto'), O('¿Me deja un boli?'), O('¿Y cómo se consigue un boli aquí?'), SALIR], esp: { flags: ['custodia_regla'] } },
+  { n: 'X6', tras: 18, sala: 'pecera', txt: 'Custodia → «¿Me deja un boli?» → «¿Y cómo se consigue un boli aquí?»', acc: [['ir', 'pecera'], V('hablar', 'custodia_precinto'), O('¿Me deja un boli?'), O('¿Y cómo se consigue un boli aquí?'), SALIR], esp: { flags: ['custodia_regla'] } },
+  { n: 'X11', tras: 22, sala: 'cpd', txt: 'Usar rejilla_cpd ×2 (la primera narra el hito pendiente)', acc: [V('usar', 'rejilla_cpd'), V('usar', 'rejilla_cpd')], esp: { flags: { rejilla_n: 1 } } },
   { n: '—23', tras: 23, sala: 'pecera', txt: 'Control: Y0 llevó antes el rumor C2', acc: [], esp: { flags: { rumor_teodoro_n: 2 } } },
-  { n: 'X7', tras: 24, sala: 'pecera', txt: 'Hablar anselmo_monolito → «¿Y el Titulator? Ese sí entró.»', acc: [V('hablar', 'anselmo_monolito'), O('¿Y el Titulator? Ese sí entró.'), O('Me voy.'), SALIR], esp: { flags: ['anselmo_dijo_regla'] } },
-  { n: 'X8', tras: 24, sala: 'pecera', txt: 'Hablar leoncio_quesitos → «¿Y si Herminia tuviera alta en Sistemas?»', acc: [V('hablar', 'leoncio_quesitos'), O('¿Y si Herminia tuviera alta en Sistemas?'), SALIR], esp: { flags: ['leoncio_acepta_alta'] } },
-  { n: 'X9', tras: 24, sala: 'pecera', txt: 'Abrir bandeja_diseno · Hablar coro_desarrollo → «Diseño os avisó de lo del CMS. En 2017.»', acc: [V('abrir', 'bandeja_diseno'), V('hablar', 'coro_desarrollo'), O('Diseño os avisó de lo del CMS. En 2017.'), SALIR], esp: { flags: ['bandeja_diseno_abierta'] } },
-  { n: '—25', tras: 25, sala: 'cpd', txt: 'Control: P1 llevó antes el rumor B1', acc: [], esp: { flags: { rumor_atun_n: 1 } } },
-  { n: 'X10', tras: 26, sala: 'cpd', txt: 'Hablar paco_ticket → «Quiero dar de alta a una becaria.» → «Herramienta.»', acc: [V('hablar', 'paco_ticket'), O('Quiero dar de alta a una becaria.'), O('Herramienta.'), SALIR], esp: { flags: ['herminia_de_alta'] } },
-  { n: 'X11', tras: 26, sala: 'cpd', txt: 'Usar rejilla_cpd', acc: [V('usar', 'rejilla_cpd')], esp: { flags: { rejilla_n: 1 } } },
-  { n: 'X12', tras: 26, sala: 'pecera', txt: 'Hablar anselmo_monolito → «Hay una becaria nueva en Desarrollo.»', acc: [['ir', 'pecera'], V('hablar', 'anselmo_monolito'), O('Hay una becaria nueva en Desarrollo.'), SALIR], esp: { flags: ['infografia_integrada'] } },
-  { n: 'X11b', tras: 26, sala: 'pecera', txt: 'Hablar valentin_reticula → «¿Qué está dirigiendo?» → «¿Por qué trabaja aquí, al lado de Desarrollo?» → «¿Sabía que la pantalla tumbaba el CMS?» · Usar monitor_valentin', acc: [V('hablar', 'valentin_reticula'), O('¿Qué está dirigiendo?'), O('¿Por qué trabaja aquí, al lado de Desarrollo?'), O('¿Sabía que la pantalla tumbaba el CMS?'), O('Me voy.'), SALIR, V('usar', 'monitor_valentin')], esp: {} },
-  { n: 'X13', tras: 26, sala: 'pecera', txt: 'Hablar coro_desarrollo → «Herminia ahora es de Desarrollo.»', acc: [V('hablar', 'coro_desarrollo'), O('Herminia ahora es de Desarrollo.'), SALIR], esp: {} },
-  { n: 'X14', tras: 26, sala: 'pecera', txt: 'Hablar nerea_backlog → (rumor B2) → «Nada, ya me voy.»', acc: [V('hablar', 'nerea_backlog'), SALIR], esp: { flags: { rumor_atun_n: 2 } } },
-  { n: 'X15', tras: 26, sala: 'pajarera', txt: 'Hablar inigo_sinergia → (rumor B3) → «Me voy.»', acc: [['ir', 'pajarera'], V('hablar', 'inigo_sinergia'), SALIR], esp: { flags: { rumor_atun_n: 3 } } },
-  { n: 'X16', tras: 28, sala: 'ecosistema', txt: 'Mirar portatil_tadeo ×2', acc: [['ir', 'ecosistema'], V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo')], esp: { flags: { portatil_tadeo_n: 2, rep_15: true } } },
-  { n: 'X17', tras: 28, sala: 'ecosistema', txt: 'Hablar borja_engagement → (rumor A3) → «Me voy.»', acc: [V('hablar', 'borja_engagement'), SALIR], esp: { flags: { rumor_firma_n: 3 } } },
-  { n: 'X17b', tras: 28, sala: 'ecosistema', txt: 'Hablar borja_engagement → (rumor D1) · Mirar piel_platano', acc: [V('hablar', 'borja_engagement'), SALIR, V('mirar', 'piel_platano')], esp: { flags: { rumor_plaza_n: 1, piel_platano_n: 1 } } },
-  { n: '—29', tras: 28, sala: 'ecosistema', txt: 'Hablar maripaz_remitido → rumor C3 → «Me voy.» (antes de Dar planillo)', acc: [V('hablar', 'maripaz_remitido'), SALIR], esp: { flags: { rumor_teodoro_n: 3 } } },
-  { n: 'X18', tras: 30, sala: 'administracion', txt: 'Usar puerta_controlling → «¿Algún cotilleo?»', acc: [['ir', 'administracion'], V('usar', 'puerta_controlling'), O('¿Algún cotilleo?'), SALIR], esp: { flags: ['rep_16'] } },
-  { n: 'X18b', tras: 30, sala: 'administracion', txt: 'Hablar begona_triplicado → «¿Le han pedido algo raro hoy?»', acc: [V('hablar', 'begona_triplicado'), O('¿Le han pedido algo raro hoy?'), SALIR], esp: {} },
-  { n: 'X19', tras: 30, sala: 'administracion', txt: 'Hablar evaristo_salvedad → «¿Para qué me ha llamado?» → «¿De qué trata?» → «Siga.» → «Siga, siga.» → «No pare.»', acc: [V('hablar', 'evaristo_salvedad'), O('¿Para qué me ha llamado?'), O('¿De qué trata?'), O('Siga.'), O('Siga, siga.'), O('No pare.'), SALIR], esp: { flags: ['evaristo_escuchado'] } },
-  { n: 'X20', tras: 31, sala: 'catacumba', txt: 'Coger bolis_aurora', acc: [['ir', 'catacumba'], V('coger', 'bolis_aurora')], esp: { tiene: ['boli_muerto'], flags: ['boli_muerto_cogido'] } },
-  { n: 'X21', tras: 33, sala: 'catacumba', txt: 'Hablar aurora_galerada → «Don Evaristo pregunta si su coma está bien.»', acc: [V('hablar', 'aurora_galerada'), O('Don Evaristo pregunta si su coma está bien.'), SALIR], esp: { flags: ['coma_bendecida'] } },
-  { n: '—35', tras: 35, sala: 'catacumba', txt: 'Control: T0 llevó antes el desmentido C de Teodoro', acc: [], esp: { flags: { rumor_teodoro_n: 3 } } },
-  { n: 'X22', tras: 36, sala: 'administracion', txt: 'Hablar evaristo_salvedad → «Aurora dice que su coma está bien.»', acc: [['ir', 'administracion'], V('hablar', 'evaristo_salvedad'), O('Aurora dice que su coma está bien.'), SALIR], esp: { flags: ['correo_evaristo_listo'] } },
-  { n: '—37', tras: 37, sala: 'catacumba', txt: 'Control: al entrar en la catacumba salió L3', acc: [], esp: { flags: { evaristo_llamadas: 3 } } },
-  { n: 'X23', tras: 37, sala: 'pecera', txt: 'Dar boli_muerto a custodia_precinto → «Para apuntar lo que me digan. Sin grabadora.» (al entrar en la Redacción sale L4)', acc: [['ir', 'pecera'], ['dar', 'boli_muerto', 'custodia_precinto'], O('Para apuntar lo que me digan. Sin grabadora.'), SALIR], esp: { flags: { custodia_ablandada: true, evaristo_llamadas: 4 }, notiene: ['boli_muerto'] } },
-  { n: 'X24', tras: 37, sala: 'pecera', txt: 'Hablar custodia_precinto → «¿Dónde está...?» → «¿Dónde está el Titulator?» → «Ya está.»', acc: [V('hablar', 'custodia_precinto'), O('¿Dónde está...?'), O('¿Dónde está el Titulator?'), O('Ya está.'), SALIR], esp: {} },
-  { n: '—38', tras: 37, sala: 'cpd', txt: 'Control: L4 (sin Rubén) salió al entrar en la Redacción de X23; L5 al pasar hacia el CPD', acc: [['ir', 'cpd']], esp: { flags: { evaristo_llamadas: 5 } } },
-  { n: 'X23b', tras: 37, sala: 'cpd', txt: 'Hablar paco_ticket → (rumor D2) → «Me voy.» (antes de Tirar, paso 38)', acc: [V('hablar', 'paco_ticket'), SALIR], esp: { flags: { rumor_plaza_n: 2 } } },
-  { n: '—39', tras: 39, sala: 'cpd', txt: 'Control: R0 llevó antes el desmentido B de Rubén', acc: [], esp: {} },
-  { n: 'X25b', tras: 40, sala: 'pecera', txt: 'Hablar nerea_backlog → (rumor D3) → «Nada, ya me voy.» (antes del paso 41)', acc: [['ir', 'pecera'], V('hablar', 'nerea_backlog'), SALIR], esp: { flags: { rumor_plaza_n: 3 } } },
-  { n: 'X25', tras: 41, sala: 'pecera', txt: 'Hablar yoli_tendencias → (rumor A4) → «Me voy.»', acc: [V('hablar', 'yoli_tendencias'), SALIR], esp: { flags: { rumor_firma_n: 4 } } },
-  { n: '—42', tras: 42, sala: 'cpd', txt: 'Control: L1-L5 y RV1-RV5 ya han salido (RV5 en una entrada de los pasos 37-42)', acc: [], esp: { flags: { evaristo_llamadas: 5, tadeo_rv_n: 5 } } },
-  { n: 'X26', tras: 42, sala: 'vestibulo', txt: 'Hablar celestino → (desmentido D) → «Nada, Celestino.»', acc: [['ir', 'vestibulo'], V('hablar', 'celestino'), SALIR], esp: {} },
+  { n: 'X9', tras: 24, sala: 'pecera', txt: 'Abrir bandeja_diseno (sin flag cruzado)', acc: [V('abrir', 'bandeja_diseno')], esp: { flags: { pecera_bandeja_abierta: true } } },
+  { n: 'X11b', tras: 24, sala: 'pecera', txt: 'Hablar valentin_reticula ×2 (cameo mudo: «Está en la bandeja.»)', acc: [V('hablar', 'valentin_reticula'), V('hablar', 'valentin_reticula')], esp: { log: ['valentin_reticula:Está en la bandeja.'] } },
+  // §7.7 perder D1 una vez (la revancha la gana el paso 26)
+  { n: 'XM7', tras: 25, sala: 'sala_amazonas', txt: 'Maripaz → D1 perdido (tres flojas)', acc: [V('hablar', 'maripaz_remitido'), O('La página 7 está pendiente desde marzo.'), ['perder'], SALIR], esp: { flags: { 'duel:maripaz:perdido_n': 1, casilla_hueco: false } } },
+  // §4.4 el fugitivo de Mercados y el táper (tras ganar D1, para no romper el paso 26)
+  { n: 'XM4a', tras: 26, sala: 'office', txt: 'Hablar mercados_1 → «¿Y cuáles son los siguientes pasos?» · Coger taper_suelo', acc: [['ir', 'office'], V('hablar', 'mercados_1'), O('¿Y cuáles son los siguientes pasos?'), SALIR, V('coger', 'taper_suelo')], esp: { flags: ['mercados_huido'], tiene: ['taper_huerfano'] } },
+  { n: 'X17', tras: 27, sala: 'ecosistema', txt: 'Hablar borja_engagement → (rumor A3) → «Me voy.»', acc: [['ir', 'ecosistema'], V('hablar', 'borja_engagement'), SALIR], esp: { flags: { rumor_firma_n: 3 } } },
+  { n: '—C3', tras: 27, sala: 'ecosistema', txt: 'Hablar maripaz_remitido (de vuelta en Marketing tras D1) → rumor C3', acc: [V('hablar', 'maripaz_remitido'), SALIR], esp: { flags: { rumor_teodoro_n: 3 } } },
+  { n: 'X18', tras: 27, sala: 'administracion', txt: 'Usar puerta_controlling → «¿Algún cotilleo?»', acc: [['ir', 'administracion'], V('usar', 'puerta_controlling'), O('¿Algún cotilleo?'), SALIR], esp: { flags: ['rep_16'] } },
+  { n: 'X18b', tras: 27, sala: 'administracion', txt: 'Hablar begona_triplicado → «¿Le han pedido algo raro hoy?»', acc: [V('hablar', 'begona_triplicado'), O('¿Le han pedido algo raro hoy?'), SALIR], esp: {} },
+  { n: 'X19', tras: 27, sala: 'administracion', txt: 'Evaristo: «¿Para qué me ha llamado?» … «No pare.»', acc: [V('hablar', 'evaristo_salvedad'), O('¿Para qué me ha llamado?'), O('¿De qué trata?'), O('Siga.'), O('Siga, siga.'), O('No pare.'), SALIR], esp: { flags: ['evaristo_escuchado'] } },
+  { n: 'X20', tras: 28, sala: 'catacumba', txt: 'Coger bolis_aurora', acc: [V('coger', 'bolis_aurora')], esp: { tiene: ['boli_muerto'], flags: ['boli_muerto_cogido'] } },
+  { n: 'X21', tras: 30, sala: 'catacumba', txt: 'Aurora → «Don Evaristo pregunta si su coma está bien.»', acc: [V('hablar', 'aurora_galerada'), O('Don Evaristo pregunta si su coma está bien.'), SALIR], esp: { flags: ['coma_bendecida'] } },
+  { n: '—T0', tras: 31, sala: 'catacumba', txt: 'Control: T0 llevó antes el desmentido C de Teodoro', acc: [], esp: { flags: { rumor_teodoro_n: 3, catacumba_desmentido_c: true } } },
+  { n: '—LC', tras: 32, sala: 'pecera', txt: 'Control: al entrar en la Redacción salió la llamada LC (la coma, por teléfono)', acc: [], esp: { flags: { correo_evaristo_listo: true, evaristo_lc: true } } },
+  // §4.5 el fax de teclas
+  { n: 'XM5', tras: 32, sala: 'catacumba', txt: 'Usar pieza_opa con fax → «1: GOYITA», de nuevo → «3: CONTROLLING»', acc: [['ir', 'catacumba'], ['usar', 'pieza_opa', 'fax'], O('1: GOYITA'), SALIR, ['usar', 'pieza_opa', 'fax'], O('3: CONTROLLING'), SALIR], esp: { flags: { fax_tecla_n: 2, pieza_recortada: false } } },
+  { n: 'X23', tras: 34, sala: 'pecera', txt: 'Dar boli_muerto a custodia_precinto → «Para apuntar lo que me digan. Sin grabadora.»', acc: [['ir', 'pecera'], ['dar', 'boli_muerto', 'custodia_precinto'], O('Para apuntar lo que me digan. Sin grabadora.'), SALIR], esp: { flags: ['custodia_ablandada', 'dos_ias_vista'], notiene: ['boli_muerto'] } },
+  { n: 'X24', tras: 34, sala: 'pecera', txt: 'Custodia → «¿Dónde está...?» → «¿Dónde está Ramírez?» → «Ya está.»', acc: [V('hablar', 'custodia_precinto'), O('¿Dónde está...?'), O('¿Dónde está Ramírez?'), O('Ya está.'), SALIR], esp: { log: ['Desayunando.'] } },
+  { n: 'XM4b', tras: 35, sala: 'cpd', txt: 'El táper huérfano, a Rubén (se entrega en la escena del armario si Bruno lo lleva)', acc: [], esp: { flags: ['taper_dado'], notiene: ['taper_huerfano'] } },
+  // E1.5 / E1.9 · MP1 «Alta en cuarenta segundos» y la anexión
+  { n: 'XE3', tras: 36, sala: 'cpd', txt: 'Paco → «¿Me das de alta a una becaria? Se llama Herminia.» → «Herramienta.»', acc: [V('hablar', 'paco_ticket'), O('¿Me das de alta a una becaria? Se llama Herminia.'), O('Herramienta.'), SALIR], esp: { flags: ['herminia_de_alta'] } },
+  { n: 'XE4', tras: 'XE3', sala: 'pecera', txt: '(entrar en la Redacción) → anexión', acc: [['ir', 'pecera']], esp: { flags: ['infografia_integrada'] } },
+  { n: 'X16', tras: 37, sala: 'ecosistema', txt: 'Mirar portatil_tadeo ×4 (con Rubén encontrado: la réplica R15)', acc: [['ir', 'ecosistema'], V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo')], esp: { flags: { portatil_tadeo_n: 4, rep_15: true } } },
+  { n: 'X25', tras: 38, sala: 'pecera', txt: 'Hablar yoli_tendencias → (rumor A4) → «Me voy.»', acc: [V('hablar', 'yoli_tendencias'), SALIR], esp: { flags: { rumor_firma_n: 4 } } },
+  { n: '—38', tras: 38, sala: 'pecera', txt: 'Control: L1-L5, la LC y los tres RV de Tadeo ya han salido', acc: [], esp: { flags: { evaristo_llamadas: 6, tadeo_rv_n: 3 } } },
 ];
 const hasta = args.hasta ?? null;
 const order = [];
-for (const s of STEPS) { order.push(s); for (const x of X) if (x.tras === s.n) order.push(x); }
+const after = (n) => { for (const x of X) if (x.tras === n) { order.push(x); after(x.n); } };
+for (const s of STEPS) { order.push(s); after(s.n); }
+const sueltos = X.filter(x => !order.includes(x));
+if (sueltos.length) { console.log('Pasos X sin sitio: ' + sueltos.map(x => x.n).join(', ')); process.exit(1); }
 const stopIdx = hasta == null ? order.length : order.findIndex(s => String(s.n) === String(hasta)) + 1 || order.length;
 
 const server = createServer(path.resolve(here, '..'));
@@ -96,12 +103,18 @@ try {
   if (!args.lento) await G(() => __game.skipText(true));
   await R.startDismisser();
   await G(() => __game.newGame());
-  console.log('Walkthrough de extras (adenda §12): §5.4 + pasos X intercalados\n');
+  console.log('Walkthrough de extras (plan de comedia §3.5 + E1.9): recorrido de 42 pasos + pasos X intercalados\n');
   for (const s of order.slice(0, stopIdx)) {
     try {
+      const log0 = await G(() => __game.log.length);
       for (const a of s.acc) await run(a);
       await G(() => __game.waitIdle());
       await check(s.esp);
+      if (s.esp.log) {
+        const L = await G((k) => __game.log.slice(k).map(l => `${l.who}:${l.text}`), log0);
+        const faltan = s.esp.log.filter(t => !L.some(l => (t.includes(':') && !t.startsWith('«') ? l.startsWith(t) : l.includes(t))));
+        if (faltan.length) throw new StepFail(`no salió en pantalla: ${JSON.stringify(faltan)}`);
+      }
       console.log(`  ✓ ${String(s.n).padStart(4)} [${s.sala}] ${s.txt}`);
       lastOk = s.n; done++;
       if (args.lento) await page.screenshot({ path: path.join(here, 'shots', `extras-${String(s.n).replace(/\W/g, '_')}.png`) });
@@ -125,7 +138,7 @@ if (failed) {
   try { await page.screenshot({ path: path.join(here, 'shots', 'extras-fallo.png') }); console.log('    captura: tools/shots/extras-fallo.png'); } catch (_) { /* ignore */ }
 }
 if (consoleErrors.length) console.log('\nErrores de consola:\n  ' + consoleErrors.join('\n  '));
-console.log(failed ? `\nÚltimo paso correcto: ${lastOk} (${done} de ${stopIdx}). Fallo esperado mientras la adenda no esté implementada en las salas.` : `\nEXTRAS COMPLETO (${done} pasos)`);
+console.log(failed ? `\nÚltimo paso correcto: ${lastOk} (${done} de ${stopIdx}).` : `\nEXTRAS COMPLETO (${done} pasos)`);
 await browser.close();
 server.close();
 process.exit(failed || consoleErrors.length ? 1 : 0);

@@ -28,10 +28,13 @@ const layout = {
   camastro: { rect: [44, 52, 34, 46], walkTo: [62, 112], face: 'up' },
   mesa_teodoro: { rect: [98, DESK_Y, 72, 20], layer: 'sorted', zy: DESK_ZY, prop: true, cache: true, cachePad: 6, draw: (g) => drawTeodoroDesk(g) },
   fax: {
-    rect: [FAX.x, FAX.y, 26, 17], walkTo: [114, 112], face: 'up', layer: 'sorted', zy: DESK_ZY + 1,
+    rect: [FAX.x, FAX.y, 26, 17], walkTo: [148, 114], face: 'left',   // [P3] de lado: no tapa el fax ni a Teodoro
+    layer: 'sorted', zy: DESK_ZY + 1,
     sprites: {
       sin_papel: (g, v, t) => drawFax(g, FAX.x, FAX.y, false, t),
       con_papel: (g, v, t) => drawFax(g, FAX.x, FAX.y, true, t),
+      // [P3] plan §4.5: imprimiendo (la hoja sale 2 px cada 80 ms, y vuelve a empezar)
+      imprimiendo: (g, v, t) => { drawFax(g, FAX.x, FAX.y, true, t); drawHojaSaliendo(g, FAX.x, FAX.y, t); },
       default: (g, v, t) => drawFax(g, FAX.x, FAX.y, false, t),
     },
   },
@@ -43,6 +46,8 @@ const layout = {
   reloj_2147: { rect: [176, 29, 22, 22], walkTo: [187, 114], face: 'up' },
   fotos_jefes_cierre: { rect: [198, 27, 42, 26], walkTo: [214, 114], face: 'up' },
   fax_enmarcado: { rect: [220, 55, 18, 24], walkTo: [230, 114], face: 'up' },
+  // [P3] plan §4.5: la factura del envío (0,26 €), grapada en la pared de Teodoro, sobre el fax
+  factura_fax: { rect: [104, 56, 12, 13], walkTo: [114, 112], face: 'up', draw: (g) => drawFactura(g, 105, 57) },
   cartel_aurora: { rect: [248, 36, 50, 30], walkTo: [266, 114], face: 'up' },
   libro_estilo: { rect: [244, 89, 28, 11], walkTo: [258, 114], face: 'up' },
   bolis_aurora: { rect: [284, 62, 14, 20], walkTo: [290, 114], face: 'up', priority: 1 },
@@ -123,6 +128,21 @@ function drawFax(g, x, y, papel, t) {
     hline(g, x + 5, y + 20, 5, B[2]);
   }
   kit.cantoVivo(g, x, y, 26, 17);
+}
+
+/** [P3] La hoja que sale del fax mientras imprime: crece 2 px cada 80 ms hasta 16 px y vuelve a empezar. */
+function drawHojaSaliendo(g, x, y, t) {
+  const h = 2 + ((Math.floor((t || 0) / 80) * 2) % 16);
+  rect(g, x + 3, y + 14, 9, h, PAL.paper[7]); vline(g, x + 11, y + 14, h, PAL.paper[4]);
+  for (let i = 3; i < h - 1; i += 3) hline(g, x + 4, y + 14 + i, 6 - (i % 4), PAL.ink[3]);
+}
+/** [P3] La factura del fax: papelito con grapa, renglones y sello rojo. */
+function drawFactura(g, x, y) {
+  dropShadow(g, x, y, 9, 11, 1, 1, 0.5);
+  rect(g, x, y, 9, 11, PAL.paper[6]); hline(g, x, y, 9, PAL.paper[7]); vline(g, x + 8, y + 1, 10, PAL.paper[4]);
+  rect(g, x + 2, y - 1, 5, 1, PAL.metal[6]);                       // grapa
+  for (let i = 0; i < 3; i++) hline(g, x + 1, y + 2 + i * 2, 6 - i, PAL.ink[3]);
+  frameRect(g, x + 2, y + 7, 5, 3, PAL.red[3]); px(g, x + 4, y + 8, PAL.red[4]);
 }
 
 // ------------------------------------------------------------ piezas del fondo

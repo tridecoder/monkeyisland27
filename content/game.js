@@ -8,18 +8,19 @@ import { drawText, measure } from '../engine/font.js';
 import music from './music.js';
 import flags, { ADENDA_FLAGS } from './flags.js';
 import { RV_TADEO } from './lib/movil.js';
+import { OBJETIVOS, SALUDOS, OTRA_VEZ, ABUELA_VIRAL, DESPEDIDA, horaMovil } from './pistas.js';
 
 // ------------------------------------------------------------------ §8.2 respuestas por defecto (rotan en orden)
 const DEFAULTS = {
   mirar: ['Es exactamente lo que parece. En esta casa, eso ya es noticia.', 'Lo miro con intensidad de periodista sin cenar. No descubro nada.', 'Nada que contrastar.', 'Si lo miro más, Yoli me lo cuenta como tiempo de permanencia.', 'Visto. Ni una errata. Sospechoso.'],
   coger: ['Está inventariado. Aquí todo está inventariado menos yo.', 'Si lo cojo, alguien me pedirá una nota de gasto por tocarlo.', 'No es mío. Aquí nada es mío. Ni la silla, hasta hace poco.', 'Mejor no. Luego desaparece algo y el becario es el primero en la lista.', 'No me cabe. Mi mochila ya va llena de chapas de eventos.'],
-  usar: ['No veo cómo. El manual lo tiene alguien que se jubiló en 2011.', 'Usarlo así sería innovación. Y la innovación la cobra la consultora.', 'No funciona. Como casi todo lo que se enchufa en esta planta.', 'No se me ocurre para qué. Y eso que he hecho un máster.', 'Mejor no lo toco. Si se rompe, abren un ticket con mi nombre mal escrito.'],
+  usar: ['No veo cómo. El manual lo tiene alguien que se jubiló en 2011.', 'Usarlo así sería innovación. Y la innovación la cobra la consultora.', 'No funciona. Lo añado a mis competencias: «equipos averiados».', 'No se me ocurre para qué. Y eso que he hecho un máster.', 'Mejor no lo toco. Si se rompe, sale en el parte con mi nombre mal escrito.'],
   dar: ['No creo que lo quiera. Y si lo acepta, luego hay que declararlo.', 'Aquí si das algo sin acta, te lo devuelven con tareas.', 'Lo rechazaría. Tiene cara de quien ya tiene uno.', 'Regalar cosas en una redacción se considera soborno o despedida.', 'No. Si le doy eso, me pide factura.'],
   hablar: ['No contesta. O es un objeto o está en una videollamada.', 'Le hablo. No me contesta. Es lo más parecido a una fuente oficial.', 'Hablarle a eso sería como responder a todos: posible, pero imperdonable.', 'Silencio. Al menos no me ha dicho «lo hablamos».', 'No me contesta. Bueno, no me ha llamado Pellizco. Algo es algo.'],
-  abrir: ['No se abre. Como las plazas de redactor.', 'Cerrado. Como el plazo. Como el cierre. Como mi futuro.', 'No tiene por dónde. Es un diseño muy de Dirección.', 'Si lo abro, me hacen responsable de lo que salga.', 'No se abre. Lo dejo así: está en su derecho.'],
-  cerrar: ['Ya está cerrado. Aquí lo único que no cierra a tiempo es la edición.', 'Cerrarlo no cierra nada. Bueno, cerraría el tema, que aquí es lo difícil.', 'No hay nada que cerrar. Salvo un ticket. Y eso es cosa de Paco.', 'Lo cierro. No pasa nada. Igual que en las reuniones.', 'Prefiero dejarlo abierto. Como mi contrato.'],
-  empujar: ['Lo empujo. No se mueve. Como un correo pidiendo aumento de sueldo.', 'No pienso empujar eso. Saldría en el próximo comité. En diapositiva.', 'Ni se inmuta. Tiene más estabilidad laboral que yo.', 'Empujo. Nada. Es como empujar la prima de riesgo con la mirada.', 'No, que luego se cae y el becario es el último que lo tocó.'],
-  tirar: ['Tiro. Nada. Tiene más resistencia que el papel.', 'Aquí el que tira de algo se convierte en el responsable.', 'No pienso tirar de eso. En esta empresa ya tira siempre el becario.', 'Tiro. Se resiste. Como Teodoro a la web.', 'Mejor no. Si viene con cable, Paco me lo factura.'],
+  abrir: ['No se abre. Lo apunto como «acceso restringido». Suena a ascenso.', 'Cerrado. Hay una pegatina: «No forzar». Me ha convencido.', 'No tiene por dónde. Lo ha montado alguien que no quería visitas.', 'Si lo abro, me hacen responsable de lo que salga.', 'No se abre. Lo dejo así: está en su derecho.'],
+  cerrar: ['Ya está cerrado. Aquí lo único que no cierra a tiempo es la edición.', 'Cerrarlo no cierra nada. Bueno, cerraría el tema, que aquí es lo difícil.', 'No hay nada que cerrar. Lo apunto en «tareas completadas».', 'Lo cierro. No pasa nada. Igual que en las reuniones.', '¿Cerrar algo yo? ¿Con qué cargo?'],
+  empujar: ['Empujo con las dos manos. Nada. Sigo un poco, por si alguien mira.', 'No pienso empujar eso. Saldría en el próximo comité. En diapositiva.', 'Ni se inmuta. Tiene más estabilidad laboral que yo.', 'Empujo. Nada. Es como empujar la prima de riesgo con la mirada.', 'No, que luego se cae y el becario es el último que lo tocó.'],
+  tirar: ['Tiro. Nada. Tiene más resistencia que el papel.', 'Aquí el que tira de algo se convierte en el responsable.', 'No pienso tirar de eso. En esta empresa ya tira siempre el becario.', 'Tiro. No sale. Le pido perdón. Me parece lo correcto.', 'Mejor no. Si viene con cable, Paco me lo factura.'],
 };
 // §8.6: «Combinar 10 cosas seguidas sin éxito»
 const COMBO_GAG = '¿Estás probando todo con todo? Así trabajan en Administración. Y no funciona.';
@@ -37,35 +38,15 @@ for (const v of Object.keys(DEFAULTS)) defaults[v] = rotating(v);
 defaults.combine = rotating('usar');      // objeto con objeto sin combinación: las de Usar
 defaults['*'] = rotating('mirar');
 
-// ------------------------------------------------------------------ §5.6 pistas de la abuela (Usar movil)
-const SALUDOS = ['¿Bruno? ¿Has comido?', 'Hijo, ¿ya sales en el periódico?', 'Te llamo porque no me llamas.'];
-const PISTAS = [
-  ['torno_abierto', (api) => ['En el pueblo, el que no sale en la foto no existe. Ponte en la foto, hijo.',
-    ...(api.has('chicle') || api.flag('tarjeta_con_chicle') ? ['Y pégala bien, que se cae. Con eso que llevas, hijo.']
-      : ['Y pégala bien, que se cae. Pídele algo que pegue al del mostrador.', 'Ese siempre está mascando algo.'])]],
-  ['gertrudis_saludada', ['¿Has saludado a todo el mundo? A las máquinas también. Son las que trabajan.']],
-  ['acto_2_iniciado', ['A la señora que corrige llévale un café.', 'Los que corrigen siempre están cansados.']],
-  ['silla_libre', ['¿Estás de pie? Siéntate. Y si hay una chaqueta, que la lleve alguien importante.']],
-  ['reunion_terminada', ['Las reuniones se acaban cuando alguien pregunta qué hay que hacer.', 'Por eso tu tío no pregunta nunca.']],
-  ['casilla_hueco', ['Si alguien tiene algo apartado desde marzo, ya no es suyo. Díselo por escrito.']],
-  ['cms_vivo', ['A veces las cosas no van porque hay otra cosa mirándolas todo el rato.']],
-  ['nota_gasto_presentada', ['¿Has hecho la cuenta de gastos? Hazla mal. Así te enseñan una bien hecha.']],
-  ['fax_con_papel', ['Las máquinas viejas son como yo: sin papel no dicen nada.']],
-  ['casilla_fuente', ['Lo que me cuenta una vecina no me lo creo hasta que me lo cuenta otra.']],
-  ['pieza_escrita', ['¿Y has escrito ya? Siéntate en tu silla y escribe. Sin palabras raras.']],
-  ['paco_dio_manual', ['Pregúntale al de los ordenadores por ese fax. Esos saben de cacharros viejos.']],
-  ['casilla_firma', ['El que no contesta, contesta solo. Como el contestador de tu tío.']],
-  ['pieza_recortada', ['Si te sobra, recorta por abajo. Como los pantalones.']],
-  ['pagina_cerrada', ['¿Y a qué esperas para darle los papeles a ese señor del fax?']],
-  ['ruben_encontrado', ['Si de un armario sale papel, es que alguien escribe dentro, hijo.']],
-  ['ruben_libre', (api) => ['Para que dejen irse a alguien, hay que demostrar que estuvo. Busca fotos.',
-    ...(api.flag('oyo_descopear') ? [] : ['Las fotos de las fiestas las guarda la que las organiza. Pídeselas.'])]],
-  ['sala_abierta', ['En una reunión manda el que escribe el acta. Haz que la escriba otro.']],
-  ['juego_terminado', ['A los que nunca dicen nada, hijo, un empujoncito. Con educación.']],
-];
+// ------------------------------------------------------------------ plan §8.5: la abuela, tres niveles por objetivo
+// Textos: content/pistas.js. Elección del objetivo y del nivel: engine/objetivos.js (api.objetivo.pista()). Nivel 3: la
+// abuela dice su línea y, AL COLGAR, Bruno traduce la acción en voz alta. Nunca dos llamadas idénticas seguidas.
 async function pistas(api) {
   const n = api.inc('abuela_llamadas');
   const A = 'abuela_remedios';
+  const P = api.objetivo.pista();                       // { obj, nivel, repetida, def }
+  const N = P.def ? P.def.niveles : null;
+  const tres = N && P.nivel >= 3 ? N[2] : null;
   // Bruno llama a su abuela: primer plano del móvil (api.phone) con su retrato; ella habla desde el móvil
   await api.phone.call({ caller: A, label: 'Abuela', outgoing: true }, async () => {
     await api.phone.say(SALUDOS[(n - 1) % SALUDOS.length]);
@@ -73,14 +54,25 @@ async function pistas(api) {
     if ((api.flag('evaristo_llamadas') || 0) >= 2 && api.once('abuela_evaristo')) {
       await api.phone.say(['Me ha llamado un señor de tu trabajo, muy educado.', 'Quería saber si "Remedios" lleva tilde. Le he dicho que no.', 'Y que te abrigues. Me ha dicho que era solo eso.']);
     }
-    const hit = PISTAS.find(([flag]) => !api.flag(flag));
-    if (hit) await api.phone.say(typeof hit[1] === 'function' ? hit[1](api) : hit[1]);
-    await api.phone.say('Abrígate.');
+    // plan §4.1: la cafetera viral, una vez, antes de la pista
+    if (api.flag('cafetera_viral') && api.once('abuela_viral')) {
+      for (const [w, t] of ABUELA_VIRAL) { if (w === 'A') await api.phone.say(t); else await api.say(t); }
+    }
+    if (N) {
+      if (P.repetida) await api.phone.say(OTRA_VEZ);
+      const pre = P.def.previa;
+      if (pre && P.nivel === (pre.nivel || 1) && api.cond(pre.si)) await api.phone.say(pre.abuela);
+      await api.phone.say(tres ? tres[0] : N[P.nivel - 1]);
+      const ex = P.def.extra;
+      if (tres && ex && api.cond(ex.si)) await api.phone.say(ex.abuela);
+    }
+    await api.phone.say(DESPEDIDA);
   });
+  if (tres) await api.say(tres[1]);                     // nivel 3: Bruno, al colgar, dice la acción
 }
 
 // ------------------------------------------------------------------ ADENDA §2: avisos al entrar en sala
-// Llamadas de Evaristo (L1-L5, contador `evaristo_llamadas`) y «RV:» de Tadeo (RV1-RV5, contador `tadeo_rv_n`).
+// Llamadas de Evaristo (L1-L5 y la LC de §5.13, contador `evaristo_llamadas`) y «RV:» de Tadeo (RV1-RV3, contador `tadeo_rv_n`).
 // Mecánica única (adenda 2): el MOTOR llama a `afterEnter` (abajo) tras el `onEnter` de CADA sala; los autores de sala
 // NO tienen que hacer nada. No salta si la entrada ya ha lanzado una escena / diálogo / duelo / cinemática, ni al cargar
 // partida, ni en `sala_amazonas` con `acto_3_iniciado`, ni tras el final. Como mucho UN aviso por entrada (también si
@@ -133,6 +125,16 @@ const LLAMADAS = [
     ['E', 'Una cosita. ¿Le ha llegado mi correo?'], ['B', 'No.'], ['E', 'Correcto. Aún no lo he enviado. Quería ver si funcionaba.'],
     ['E', 'Lleva una coma que me tiene en vela.']])),
 ];
+// plan §5.13 · LC: la coma se cierra por teléfono. Sale en la siguiente entrada con `coma_bendecida` y sin
+// `correo_evaristo_listo`, con prioridad sobre L1-L5 (que siguen su orden: el índice descuenta la LC); suma
+// `evaristo_llamadas`. La opción E_ENVIO de Administración se queda como camino antiguo.
+const LC = llamada((api) => !!api.flag('coma_bendecida') && !api.flag('correo_evaristo_listo') && !api.flag('evaristo_lc'), [
+  ['E', 'Una cosita. ¿Le ha dicho algo Aurora? Llevo diez minutos junto al teléfono.'],
+  ['B', 'Que una coma bien puesta no espera.'],
+  ['E', '...Entonces lo envío. En el momento oportuno. Con todos en copia.'],
+  ['E', 'Era solo eso. Y gracias. Esto sí lo digo sin adjunto.']]);
+const LC_RUN = LC.run;
+LC.run = async (api) => { api.setFlag('evaristo_lc', true); await LC_RUN(api); api.setFlag('correo_evaristo_listo', true); };
 const rv = (cond, asunto, bruno) => ({ cond, run: async (api) => {
   api.sfx('beep');
   api.notice('¡ding!  Correo nuevo: Tadeo Adjunto', { color: '#FFCC99', ms: 1800 });
@@ -148,7 +150,8 @@ async function avisos(api) {
   if (g.avisoEntryN === g.entryN) return false;                               // ya ha salido uno en esta entrada
   if (api.flag('juego_terminado') || g.cutscene > 0 || g.inDialog) return false;
   if (api.room === 'sala_amazonas' && api.flag('acto_3_iniciado')) return false;
-  const call = LLAMADAS[api.flag('evaristo_llamadas') || 0];
+  const idx = (api.flag('evaristo_llamadas') || 0) - (api.flag('evaristo_lc') ? 1 : 0);   // L1-L5 sin contar la LC
+  const call = api.cond(LC.cond) ? LC : LLAMADAS[idx];
   const mail = RVS[api.flag('tadeo_rv_n') || 0];
   const pick = call && api.cond(call.cond) ? ['evaristo_llamadas', call] : mail && api.cond(mail.cond) ? ['tadeo_rv_n', mail] : null;
   if (!pick) return false;
@@ -156,7 +159,7 @@ async function avisos(api) {
   g.avisoActive = true;
   try {
     api.inc(pick[0]);
-    if (pick[0] === 'evaristo_llamadas' && api.flag('evaristo_llamadas') === 2) api.setFlag('evaristo_convoco', true);   // L2
+    if (pick[1] === LLAMADAS[1]) api.setFlag('evaristo_convoco', true);   // L2
     await pick[1].run(api);
     // la primera vez que suena el móvil o llega un correo: cómo se usa (orden del director: que se descubra)
     if (api.once('movil_pista_uso')) api.notice('Usa el móvil para llamar a la abuela o leer el correo', { color: '#9fd8ff', ms: 4200 });
@@ -164,6 +167,22 @@ async function avisos(api) {
   return true;
 }
 const afterEnter = (api) => avisos(api);
+
+// ------------------------------------------------------------------ plan §3.4: partidas guardadas antiguas
+// Objetos y flags retirados en la reescritura de comedia. Idempotente: el motor la llama en cada carga.
+const FLAGS_RETIRADOS = ['leoncio_acepta_alta', 'bandeja_diseno_abierta', 'rumor_atun_n', 'rumor_plaza_n', 'gertrudis_error_indice'];
+function migrarPartida(st) {
+  const inv = Array.isArray(st.inventory) ? st.inventory : (st.inventory = []);
+  const fl = st.flags || (st.flags = {});
+  const quitar = (id) => { const i = inv.indexOf(id); if (i >= 0) { inv.splice(i, 1); return true; } return false; };
+  quitar('planillo');                                     // Maripaz ya está en la Sala por su `when` (sala_amazonas.js)
+  if (quitar('posit_baja_ruben')) {                       // el pósit lo cerraba Paco: ahora lo da la escena del tablero
+    if (!inv.includes('ticket_n1')) inv.push('ticket_n1');
+    fl.ruben_libre = true; fl.posit_descopeado = true;
+  }
+  for (const k of FLAGS_RETIRADOS) delete fl[k];
+  return st;
+}
 
 // flags de la adenda: contadores a 0, booleanos a false (adenda 11.2)
 const startFlags = Object.fromEntries(ADENDA_FLAGS.map(k => [k, String(flags[k]).startsWith('int') ? 0 : false]));
@@ -273,11 +292,15 @@ export default {
 
   defaults,
 
+  // plan §8: objetivos (ficha, «Mirar a Bruno», abuela) y hora del móvil por hitos — datos en content/pistas.js
+  objetivos: OBJETIVOS,
+  hora: horaMovil,
+  metaFinal: 'Lo hemos conseguido. Bueno: lo he conseguido. Lo pongo en «logros».',
+
   // ---------------------------------------------------------------- §8.6 cuarta pared
   idle: { ms: 60000, run: async (api) => { await api.say('Tranquilo. Yo también me quedo así en las reuniones.'); } },
   saveMessages: ['Guardando... (original)', 'Guardando... (duplicado)', 'Guardando... (triplicado)'],
   saveFirstLine: { text: 'BEGOÑA: «Por triplicado, como debe ser.»', color: '#C0A2F6' },
-  difficulty: ['Normal', 'Difícil', 'Cierre en viernes'],
   // menú de pausa → «Cómo se juega» (motor: game.G.help)
   help: [
     'Elige un verbo y haz clic en algo. Sin verbo, el clic anda o mira.',
@@ -296,6 +319,7 @@ export default {
   // escenas comunes (Usar movil → api.scene('pistas'))
   scenes: { pistas, avisos },
   afterEnter,           // motor: tras el onEnter de cada sala (avisos de la adenda §2)
+  migrarPartida,        // motor (core.load): partidas guardadas con objetos/flags retirados (plan §3.4)
 
   music,
 

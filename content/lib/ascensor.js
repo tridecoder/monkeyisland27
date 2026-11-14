@@ -13,6 +13,7 @@
 //
 // Cada sala con ascensor tiene un objeto con `ascensor: { planta, label }` (lo leen los tests y tools/check.mjs para el
 // grafo de salidas) y la entrada `ascensor` en su arte. Los objetos se crean con `ascensorObjeto(id, handlers)`.
+import { narrarHito } from './celestino.js';
 import { rect, hline, vline, frameRect, gradV, paint, ditherPick, glow, PAL } from '../../engine/draw.js';
 import { drawText } from '../../engine/font.js';
 
@@ -22,7 +23,7 @@ export const PLANTAS = [
   { n: 2, room: 'ecosistema', obj: 'ascensor_ecosistema', label: 'Planta 2 · Marketing · Eventos · Comercial · Administración' },
   { n: 1, room: 'pecera', obj: 'ascensor_pecera', label: 'Planta 1 · Redacción · Despachos · Vending' },
   { n: 0, room: 'vestibulo', obj: 'ascensor_vestibulo', label: 'Planta 0 · Vestíbulo' },
-  { n: -1, room: 'cpd', obj: 'ascensor_cpd', label: 'Planta -1 · Sistemas y CPD' },
+  { n: -1, room: 'cpd', obj: 'ascensor_cpd', label: 'Planta -1 · Sistemas' },
 ];
 export const QUEDARSE = 'Nada, me quedo en esta planta.';
 
@@ -35,7 +36,7 @@ export function plantaPermitida(api, room) {
 // frases del ascensor durante el viaje (rotan en orden)
 export const FRASES = [
   'Su planta ha quedado registrada con el ticket 48.216. Paco le atenderá.',
-  'Ascensor rediseñado por Diseño y Producto. Si no lo nota, está bien hecho.',
+  'Este ascensor tiene espejo. Para que el becario se vea subir, aunque sea aquí.',
   'Le recordamos que lo que se dice en el ascensor no sale. Ni el wifi.',
   'Hilo musical: el Ibex en diferido. Narra Celestino, desde el mostrador.',
   'Capacidad: ocho personas o una reunión que pudo ser un correo.',
@@ -103,7 +104,8 @@ export async function usarAscensor(api) {
   game.hud = cabina(aqui ? aqui.n : 0, dest.n, game.time, game);
   try {
     api.sfx('machine');
-    await api.narrate(FRASES[(n - 1) % FRASES.length], { color: ASCENSOR_COLOR });
+    // plan §4.7: si Bruno tiene una hazaña sin narrar, Celestino la retransmite por la megafonía de la cabina
+    if (!(await narrarHito(api, { via: 'megafonia' }))) await api.narrate(FRASES[(n - 1) % FRASES.length], { color: ASCENSOR_COLOR });
     await api.wait(250);
     api.sfx('beep');
   } finally { game.hud = null; }

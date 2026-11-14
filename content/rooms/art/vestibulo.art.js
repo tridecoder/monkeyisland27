@@ -652,6 +652,14 @@ export function drawCajaInigo(g, x, y, s) {
   rect(g, bx + 9, by - 8, 3, 3, PAL.paper[6]); px(g, bx + 10, by - 7, PAL.red[4]);                             // taza
 }
 
+/** [P1] El cruasán mordido de Ramírez (api.sostener, epílogo §9). */
+export function drawCruasan(g, x, y) {
+  const cx = Math.round(x), cy = Math.round(y);
+  ellipse(g, cx, cy, 4, 2, '#c8843c'); ellipse(g, cx - 1, cy - 1, 3, 1, '#e8b060');
+  px(g, cx - 3, cy + 1, '#a86a2c'); px(g, cx + 3, cy + 1, '#a86a2c');
+  rect(g, cx + 2, cy - 2, 2, 2, '#1c1828');                                                                   // el mordisco
+}
+
 // ------------------------------------------------------------------ primer plano: poste y cordón de seguridad
 function foreground(g) {
   const px0 = 9;
@@ -714,6 +722,9 @@ const epilogo = {
   gervasio_acta: { from: [258, 112, 'left'], at: [188, 116, 'left'], salida: [30, 124] },   // ya cruzado el torno, lejos del carril «AVERIADO»
   salida: [10, 118],
   periodicos: [150, 122],
+  // [P1] plan §9: Ramírez entra por la puerta de la calle y sube por la escalera; Yoli baja por ella y sale a la calle
+  ramirez: { from: [14, 120, 'right'], at: [92, 118, 'right'] },
+  yoli_tendencias: { from: [N.escaleras.sube.entrada[0], N.escaleras.sube.entrada[1], 'left'], at: [176, 120, 'left'] },
 };
 
 export default {

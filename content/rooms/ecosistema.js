@@ -1,4 +1,6 @@
-// SALA `ecosistema` — LÓGICA. Dueño: paquete D · «Planta noble y Dirección» (biblia §9.1). Biblia: §3.7, §7.7.8, §7.7.9,
+// SALA `ecosistema` (a la vista: «Marketing y Comercial») — LÓGICA. Dueño: P4 (plan de comedia §5.16 Borja y el portátil de
+// Tadeo, §5.17 Maripaz: fuera el duelo D1, que se muda a la Sala Amazonas; su «cariño» pasa a letra pequeña; tras D1, su
+// llamada a Siestatón como ambiente). Antes: paquete D · «Planta noble y Dirección» (biblia §9.1). Biblia: §3.7, §7.7.8, §7.7.9,
 // §6.4-6.5 (duelo D1, Maripaz), P07, P14a. Adenda: §3.7 (portátil de Tadeo), §4.5 (su asistente), §8bis (piel de plátano),
 // rumores A3 / C3 / D1 (§8), murmullos y combinaciones (§4.8).
 // El arte y la geometría están en ./art/ecosistema.art.js (artista de fondos). Árboles en ./ecosistema.dialogos.js.
@@ -6,7 +8,7 @@
 // de luz, las cajas de lanyards, el gong, el álbum y el ¡FLASH! de entrada viven allí. Aquí queda Marketing + Comercial.
 import { buildRoom } from '../lib/room.js';
 import art from './art/ecosistema.art.js';
-import dialogos, { abrirDueloMaripaz } from './ecosistema.dialogos.js';
+import dialogos from './ecosistema.dialogos.js';
 import { gong, SFX, rota } from '../escenas/planta_noble.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
 
@@ -16,33 +18,25 @@ const sayM = (api, t) => api.sayAs(MARIPAZ, t);
 const tadeo = (api, t) => api.sayFrom('portatil_tadeo', t);
 const acto = (api) => (api.flag('acto_3_iniciado') ? 3 : api.flag('acto_2_iniciado') ? 2 : 1);
 
-// adenda §3.7: rotación del portátil de Tadeo (Mirar). La (2) enseña R15.
+// §5.16: el portátil de Tadeo baja a cuatro mensajes sin siglas (rotan). Con Rubén encontrado, el hilo del cuarto (la
+// pareja R15) tiene respuesta del Titulator: la réplica nueva, «Lo sé. Me lo ha contado ella. Se llama Rubén.» (§7.3).
 const PORTATIL = [
-  ['«¡Equipo! La IA dice que el LCP es el elemento más grande».', '«Propongo quitarlo. Por si os sirve!!».'],
-  null,
-  ['«RV: Lo más grande de la web es el logo. Propongo quitar el logo».', '«A la e ya le falta un tornillo. Es una señal».'],
-  ['«RV: Nuestro CLS es 0,25. La IA dice que lo bueno es 0,1».', '«Mide cuánto se mueve la página. Propongo atornillarla».',
-    '«He pedido presupuesto a Ferretería Hermanos Tornillo».'],
-  ['«RV: LCP de 4,1 segundos. Lo bueno es 2,5».', '«Propongo que la Redacción escriba más rápido».'],
-  ['«RV: INP alto: la web tarda en responder al lector».', '«Propongo que el lector espere sentado. Si encuentra silla».'],
-  ['«RV: Lazy loading: cargar las cosas solo cuando hacen falta».', '«Propongo aplicarlo a las reuniones».',
-    'Es lo primero sensato que leo hoy. Lo ha escrito una máquina.'],
-  ['«RV: 4.000 líneas de código de la IA para el CMS».', '«No las he leído, pero tienen colores. ¡Vamos, equipo!».'],
-  ['«RV: He pedido a la IA un resumen de mis correos».', '«Me ha mandado un correo. Os lo reenvío».'],
+  ['En pantalla: «La IA dice que lo más pesado de la web es el logo».'],
+  ['Debajo: «Propongo quitar el logo. Por si os sirve!!». Enviado a todos.'],
+  ['«La IA dice que la gente no lee. RV: a todos. Para que lo lean».'],
+  ['«La IA está de acuerdo conmigo. Adjunto pantallazo de la IA de acuerdo».'],
 ];
 async function mirarPortatil(api) {
   if (api.flag('ecosistema_portatil_cerrado')) { await api.say(['Cerrado. Por primera vez desde las seis.', 'Se oye la moqueta.']); return; }
   if ((api.flag('portatil_tadeo_n') || 0) === 0) await api.say(['El portátil de Tadeo, de Negocio. Se fue a las seis.', 'Su portátil, no.']);
   const n = api.inc('portatil_tadeo_n');
-  const k = n <= 9 ? n : 3 + ((n - 10) % 7);          // tras la (9) vuelve a la (3)
-  if (k === 2) {
-    await api.say(['Un hilo. Tadeo: «Lo he consultado con la IA y está de acuerdo conmigo».',
-      'Leoncio contesta: «Normal. Se lo has preguntado tú». Me la apunto.']);
+  const k = (n - 1) % PORTATIL.length;
+  await api.say(PORTATIL[k]);
+  if (k === 3 && api.flag('ruben_encontrado')) {
+    await api.say(['Contesta el Titulator: «Lo sé. Me lo ha contado ella. Se llama Rubén».',
+      'Tadeo no lo ha leído. Yo sí. Me la apunto.']);
     api.learnReply('rep_15');
-    await api.say('Debajo, la IA de Tadeo: «¡Excelente observación!».');
-    return;
   }
-  await api.say(PORTATIL[k - 1]);
 }
 
 async function cerrarPortatil(api) {
@@ -63,34 +57,15 @@ async function cerrarPortatil(api) {
   }
 }
 
-// ---- duelo D1 (biblia §6.4-6.5)
-const duelMaripaz = {
-  actor: MARIPAZ,
-  from: 'Maripaz Remitido',
-  subject: 'Llamar a Colchones Siestatón para pasarlos a la web (viernes, 19:07)',
-  assigned: 'B. Pollejo',
-  deck: ['R08', 'R04', 'R11', 'R14'],
-  winScore: 3,
-  intro: ['¿Llamar yo a Siestatón un viernes a estas horas?', 'Te lo pongo por escrito, cariño.'],
-  hurt: ['Uy. Eso tiene tarifa.', 'Me lo apunto para un patrocinio.'],
-  taunt: ['Eso no lo patrocina nadie, cariño.', 'Muy bonito. Cero euros.'],
-  defeatLines: ['Asignado a ti, cariño. El teléfono de Siestatón es este. Suerte.',
-    ['player', 'No pienso llamar a un colchón a estas horas.']],
-  onWin: async (api) => {
-    await sayM(api, 'Vale, llamo yo.');
-    api.sfx('phone');
-    await sayM(api, '¿Siestatón? Os paso a la web. Con un banner que respira.');
-    await sayM(api, 'Hueco libre. Faldón de 23 líneas. Impar, cariño: que se vea.');
-    api.take('planillo');
-    api.setFlag('duelo_maripaz_ganado', true);
-    api.setFlag('casilla_hueco', true);
-    gong(api);
-    await api.wait(700);
-  },
-};
+// Maripaz (§5.17): fuera de la planta en el Acto II hasta ganar D1 (está en la Sala Amazonas, sentada en el planillo)
+const maripazAqui = (api) => { const p = api.actorPos(MARIPAZ); return !!(p && p.room === 'ecosistema'); };
+/** Maripaz contesta si está; si no, la línea de Bruno. */
+async function mp(api, linea, sinElla) {
+  if (maripazAqui(api)) await sayM(api, linea); else await api.say(sinElla);
+}
 
 // «Usar cualquier papel» con la impresora (§3.7)
-const PAPELES = ['fotocopia_nota_direccion', 'mensaje_fp', 'pieza_opa', 'ficha_pagina_7', 'posit_baja_ruben', 'ticket_n1', 'acta_reunion', 'album_eventos'];
+const PAPELES = ['fotocopia_nota_direccion', 'mensaje_fp', 'pieza_opa', 'ficha_pagina_7', 'ticket_n1', 'acta_reunion', 'album_eventos'];
 const impresoraPapel = Object.fromEntries(PAPELES.map(i => ['usar:' + i, '«ATASCO EN BANDEJA 2». Le da igual lo que le dé.']));
 
 export default buildRoom({
@@ -113,7 +88,7 @@ export default buildRoom({
       cerrar: 'Se cierra solo. Es lo único de la planta que no pide feedback.',
       empujar: 'No se empuja. Se activa. Lo dice el vinilo.',
       tirar: 'Tiro de la puerta. Borja lo cuenta en vertical: «Bruno abriendo caminos».',
-      hablar: '«¿Bajas?». Hace «tin». Maripaz me lo factura como conversación.',
+      hablar: '«¿Bajas?». Hace «tin». Comercial me lo factura como conversación.',
     }),
     // ---- la puerta de EVENTOS (Sala Polivalente) y lo que llena la pared que dejó el photocall
     { id: 'ecosistema_a_eventos', name: 'puerta de Eventos', exit: { room: 'eventos', tipo: 'puerta_doble' }, handlers: {
@@ -136,17 +111,17 @@ export default buildRoom({
     // planta, Maripaz ya lo ha desplegado: está contratado hasta 2030)
     { id: 'rollup_comercial', name: 'roll-up de Comercial', state: 'desplegado', states: ['desplegado', 'enrollado'], handlers: {
       mirar: async (api) => api.say(['Un roll-up: «SU ANUNCIO AQUÍ». Y la extensión de Maripaz, en grande.', 'Lleva aquí tanto tiempo que ya se anuncia a sí mismo.']),
-      usar: async (api) => { await api.say('Me pongo delante del roll-up.'); await sayM(api, 'Ahora tú eres el anuncio, cariño. Te cobro el metro cuadrado.'); },
-      empujar: async (api) => { api.setState('rollup_comercial', 'enrollado'); await api.say('¡Zas! Se enrolla solo.'); await sayM(api, 'Eso, cariño, es una baja de campaña. Te la facturo.'); },
-      coger: async (api) => { await sayM(api, 'El roll-up no se toca, cariño. Está contratado hasta 2030.'); },
+      usar: async (api) => { await api.say('Me pongo delante del roll-up.'); await mp(api, 'Ahora tú eres el anuncio. Te cobro el metro cuadrado. (*IVA aparte.)', 'Soy el anuncio. Nadie lo contrata. Ni yo.'); },
+      empujar: async (api) => { api.setState('rollup_comercial', 'enrollado'); await api.say('¡Zas! Se enrolla solo.'); await mp(api, 'Eso es una baja de campaña. Te la facturo. (*Sin preaviso.)', 'Sin Maripaz delante, se enrolla sin factura. Lo disfruto.'); },
+      coger: async (api) => { await mp(api, 'El roll-up no se toca. Está contratado hasta 2030. (*Renovable.)', 'Contratado hasta 2030. Lo pone abajo, en pequeño.'); },
       tirar: async (api) => { api.setState('rollup_comercial', 'desplegado'); await api.say('Tiro de la lona. Sube como una persiana con objetivos.'); },
     } },
     { id: 'termometro_ventas', name: 'termómetro de ventas', handlers: {
       mirar: async (api) => api.say(['Un termómetro pintado a rotulador: «OBJETIVO Q3». Rojo hasta el 97 %.', 'El 3 % que falta se lo lleva el gong de al lado.']),
-      usar: async (api) => { await api.say('Le pinto un poquito más de rojo.'); await sayM(api, 'Eso no es una venta, cariño. Es una ilusión. Y no la facturo.'); },
+      usar: async (api) => { await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Eso no es una venta. Es una ilusión. Y no la facturo. (*Todavía.)', 'Rojo hasta el 98 %. Nadie lo nota. Igual que mis ventas.'); },
       empujar: 'Si lo empujo, sube la temperatura. No las ventas.',
       coger: 'Es la única cosa de la planta que sube sola. No lo toco.',
-      hablar: async (api) => { await api.say('«¿Cuándo llegas al cien?».'); await sayM(api, 'El día que pagues tú, cariño.'); },
+      hablar: async (api) => { await api.say('«¿Cuándo llegas al cien?».'); await mp(api, 'El día que pagues tú. (*Tarifa becario: la misma.)', 'No contesta. Le falta el 3 %. Y a mí, el contrato.'); },
     } },
     { id: 'pizarra_sinergia', name: 'pizarra', handlers: {
       mirar: 'Pone SINERGIA en tres colores. Si la miras fijamente, aparece un velero.',
@@ -169,7 +144,7 @@ export default buildRoom({
       mirar: '«TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO.»',
       coger: 'Si lo descuelgo, detrás habrá un módulo. Mejor no mirar.',
       usar: 'Me pongo al lado. Soy una oportunidad. Nadie me compra.',
-      hablar: 'Le leo el lema en voz alta. Maripaz asiente: lo patrocina ella.',
+      hablar: 'Le leo el lema en voz alta. Suena a anuncio. Lo patrocina Comercial.',
     } },
     { id: 'impresora_tercera', name: 'impresora', handlers: {
       mirar: async (api) => {
@@ -182,7 +157,6 @@ export default buildRoom({
       empujar: 'No. Una impresora a la que empujas siempre se acuerda.',
       hablar: 'Le pregunto por la bandeja 2. Se calla. Lleva años callándoselo.',
       ...impresoraPapel,
-      'usar:planillo': '«ATASCO EN BANDEJA 2». Ni el planillo la convence.',
       'usar:copias_rechazadas': 'Le doy papel. Dice «ATASCO EN BANDEJA 2». Le da igual: es de principios.',
       'usar:manual_fax': 'El manual es del fax. La impresora no se deja ayudar por un fax.',
     } },
@@ -190,7 +164,7 @@ export default buildRoom({
       mirar: 'Pasillo a Administración. Al fondo, una ventanilla brilla como un faro.',
       usar: async (api) => { await api.goto('administracion', 'ecosistema'); },
       abrir: 'Es un pasillo. Ya viene abierto. Lo que se abre al fondo es un expediente.',
-      empujar: 'El pasillo no se empuja. Se recorre. Como el procedimiento.',
+      empujar: '¿Empujar un pasillo? ¿Hacia Administración? Ya va él solo.',
     } },
     // ADENDA §3.7 · portátil de Tadeo (presencia sin sprite: habla en su color, encima del portátil)
     { id: 'portatil_tadeo', name: 'portátil de Tadeo', color: '#FFCC99', handlers: {
@@ -199,7 +173,7 @@ export default buildRoom({
       cerrar: cerrarPortatil,
       abrir: async (api) => {
         if (api.flag('ecosistema_portatil_cerrado')) await api.say('Mejor no. Ahora está en paz. La impresora, no.');
-        else await api.say('Ya está abierto. Nunca se ha cerrado. Como su bandeja de salida.');
+        else await api.say('Ya está abierto. Nunca se ha cerrado. Su bandeja de salida, tampoco.');
       },
       coger: 'Si lo cojo, me reenvía a mí.',
       usar: 'No me siento. Si me siento, reenvío.',
@@ -217,7 +191,7 @@ export default buildRoom({
         if (n === 0) await api.say(['Una piel de plátano junto a la impresora. Pósit: «Para Gervasio (plaza 7)».', 'Gervasio no imprime nunca. El plan tiene un fallo.']);
         else await api.say('Lleva aquí desde marzo. Es más antigua que yo en esta planta.');
       },
-      coger: async (api) => { await sayM(api, '¡Deja eso, cariño! Es una inversión a largo plazo.'); },
+      coger: async (api) => { await mp(api, '¡Deja eso! Es una inversión a largo plazo. (*Rentabilidad no garantizada.)', 'Mejor la dejo. Alguien la ha puesto con mucha planificación.'); },
       empujar: 'La aparto con el pie. Aquí no se cae nadie: aquí la gente se jubila.',
       usar: 'No. Yo quiero una plaza de bici. Y por las buenas.',
       hablar: 'Le pregunto a quién espera. El pósit lo dice todo.',
@@ -229,8 +203,7 @@ export default buildRoom({
       murmurs: ['Hay que hablarle al lector de tú. Y en vertical. Y con un emoji.',
         'Esto es contenido. Aquello es contenido. ¿Tú eres contenido?',
         'Tadeo y yo hacemos sinergia. Él reenvía. Yo lo convierto en hilo.',
-        'Si alguien deja su plaza, el post del pésame lo escribo yo.',
-        '¡Valentín no necesita filtro! ¡El filtro necesita a Valentín!'],
+        'Si alguien deja su plaza, el post del pésame lo escribo yo.'],
       handlers: {
         mirar: 'Borja Engagement, Marketing. Habla al móvil como a un micro. Aunque no grabe.',
         hablar: async (api) => api.dialog('borja'),
@@ -243,36 +216,34 @@ export default buildRoom({
         'usar:movil': async (api) => { await sayB(api, '¡Me grabas! ¡Eso es contenido generado por becario!'); },
         'dar:*': async (api) => { await sayB(api, '¡Gracias! Lo subo. Luego te lo devuelvo, si no se viraliza.'); },
       } },
-    { id: MARIPAZ,
+    // §5.17: en Marketing y Comercial en el Acto I y tras ganar D1 (en el Acto II, hasta D1, está en la Sala Amazonas)
+    { id: MARIPAZ, when: (api) => !api.flag('acto_2_iniciado') || !!api.flag('casilla_hueco'),
       murmurs: ['Te pongo un «ofrecido por» tan pequeño que solo lo verá el supervisor.',
         '¿Y una portada desplegable con olor a chorizo? Piénsalo.',
-        'Tadeo, cariño, te patrocino el reenvío. «Por si os sirve, con...»',
-        'Gervasio, cariño, ¿y tú cómo te encuentras? De salud, digo.'],
+        'Tadeo, te patrocino el reenvío. «Por si os sirve...» (*Sin existencias.)',
+        'Gervasio, ¿y tú cómo te encuentras? De salud, digo. (*Pregunta sin compromiso.)'],
       handlers: {
         mirar: 'Maripaz, Comercial. Lleva el mazo del gong como otros el bolso.',
         hablar: async (api) => api.dialog('maripaz'),
-        'dar:planillo': async (api) => {
-          if (!api.has('ficha_pagina_7')) { await sayM(api, '¿Y la ficha de tu página? Sin ficha no te firmo ni el hueco, cariño.'); return; }
-          await abrirDueloMaripaz(api, true);
-        },
         'dar:ficha_pagina_7': async (api) => {
-          if (api.flag('casilla_hueco')) await sayM(api, 'Ya te he firmado, cariño. Firmar dos veces es un contrato.');
-          else await sayM(api, 'Una ficha sin hueco. Tráeme el planillo y hablamos de huecos, cariño.');
+          if (api.flag('casilla_hueco')) await sayM(api, 'Ya te he firmado. Firmar dos veces es un contrato. (*De permanencia.)');
+          else await sayM(api, 'Una ficha sin hueco. El hueco está en la Sala Amazonas. (*Debajo de mí.)');
         },
         'dar:cafe': async (api) => { await sayM(api, '¿Café? Te lo patrocino: «Despertar, con Cafés Madrugón».'); },
-        'dar:tarjeta_becario': async (api) => { await sayM(api, '¿«Pellizco»? Eso no es un nombre, cariño. Es un formato publicitario.'); },
-        'dar:pieza_opa': async (api) => { await sayM(api, '¿Una exclusiva sin módulo al lado? Qué desperdicio, cariño.'); },
-        'usar:movil': async (api) => { await sayM(api, 'Si me fotografías, cobro por impresión, cariño.'); },
-        empujar: async (api) => { gong(api); await sayM(api, 'Uy, cariño. Eso lo facturo como experiencia de usuario.'); },
-        coger: async (api) => { await sayM(api, 'A mí no se me coge, cariño. Se me contrata.'); },
+        'dar:tarjeta_becario': async (api) => { await sayM(api, '¿«Pellizco»? Eso no es un nombre. Es un formato publicitario. (*Robapáginas.)'); },
+        'dar:pieza_opa': async (api) => { await sayM(api, '¿Una exclusiva sin módulo al lado? Qué desperdicio. (*Módulo no incluido.)'); },
+        'usar:movil': async (api) => { await sayM(api, 'Si me fotografías, cobro por impresión. (*Mil impresiones mínimo.)'); },
+        empujar: async (api) => { gong(api); await sayM(api, 'Uy. Eso lo facturo como experiencia de usuario. (*Contacto incluido.)'); },
+        coger: async (api) => { await sayM(api, 'A mí no se me coge. Se me contrata. (*Mínimo un trimestre.)'); },
       } },
   ],
 
   dialogs: dialogos,
-  duels: { maripaz: duelMaripaz },
   scenes: {},
   defaults: {},
-  ambient: [],
+  // §5.9: tras D1, Maripaz llama a Siestatón desde su mesa (una vez, cuando el motor encuentre hueco)
+  ambient: [{ id: 'maripaz_siestaton', if: 'casilla_hueco', voces: { M: 'maripaz_remitido' },
+    discusiones: [[['M', '¿Siestatón? Os paso a la web. Con un banner que respira.']]] }],
 
   async onEnter(api) {
     // El ¡FLASH! de entrada ya no es de esta planta: es del photocall de Eventos, en la Sala Polivalente (`eventos`).
@@ -282,10 +253,6 @@ export default buildRoom({
     if (api.restoring) return;
     if (!api.flag('acto_2_iniciado') && api.once('ecosistema_entrada_1830')) {
       await api.say('La planta 2 a las seis y media: moqueta, pufs y nadie. Y un gong, detrás.');
-    }
-    // micro-puzle de la silla 113 (eventos): Maripaz ha recuperado su silla
-    if (api.flag('eventos_silla_devuelta') && api.once('ecosistema_silla_maripaz')) {
-      await sayM(api, 'Me has devuelto la silla, cariño. Te la facturo como mudanza.');
     }
   },
 }, art);

@@ -12,6 +12,9 @@
 //    planillo queda en la mesa; el orden del día, tachado.
 //  · Acto III: penumbra del motor (`penumbra`, nunca un overlay que oscurezca actores): quedan iluminados la pantalla
 //    (diapositiva 247 → 248), el Lector Medio y, tenue, el sillón vacío. La tele, muerta; la caja de cables, quieta.
+//  · [P4] Actos I-II: los tres de Mercados son ACTORES (`mercados_1..3`) sentados tras la mesa; Maripaz, en el
+//    extremo izquierdo del lado del fondo (Acto II, hasta D1), con el borde del planillo asomando bajo ella
+//    (`planillo_bajo_maripaz`). La tele gana el estado `entrada_1` (Celestino en directo, clímax).
 //  · Señalética común: placa «1 DESPACHOS ◄» del kit sobre la puerta (nunca «Pajarera»), marco y umbral de Despachos.
 // Mobiliario que tapa actores: la mesa y las sillas cercanas las pinta el objeto `botellines` (`layer: 'sorted'`,
 // `prop: true`); el sillón presidencial y las sillas lejanas son fondo (detrás de todo el que está de pie).
@@ -19,9 +22,10 @@ import {
   PAL, rect, hline, vline, frameRect, px, line, poly, ellipse, paint, bevel, ditherOverlay, gradV,
   glow, shadowEllipse, ditherPick, hash2, rng, fadeRows, vignette, cityWindow, wallClock, shade, label,
 } from '../../../engine/draw.js';
-import { POSTIT, JACKETS, chairBack, blinds, rainOnGlass, rainyGlassStatic, cable } from './lib-oficina.js';
+import { POSTIT, chairBack, blinds, rainOnGlass, rainyGlassStatic, cable } from './lib-oficina.js';
 import { paperDoll, getFrame } from '../../../engine/sprites.js';
 import * as kit from '../../lib/kit.js';
+import ACTORS from '../../actors.js';
 
 const W = 320, FL = 96;
 const PANT = { x: 122, y: 22, w: 120, h: 40 };          // pantalla del orden del día / proyección
@@ -230,6 +234,14 @@ function sillonPresidencial(g) {
   rect(g, x - 1, by - 13, 2, 8, PAL.metal[3]);
   hline(g, x - 7, by - 3, 15, PAL.metal[4]); px(g, x - 7, by - 2, PAL.ink[0]); px(g, x + 7, by - 2, PAL.ink[0]);
 }
+// [P4] clímax, floja «siguientes pasos» (§7.5): Gervasio, agachado tras su sillón; asoma la cortinilla por el lado
+function cortinilla(g) {
+  const x = CAB + 8, y = 74;
+  rect(g, x, y + 2, 5, 4, '#e0a888'); vline(g, x + 4, y + 3, 3, '#c08868');           // un trozo de frente
+  hline(g, x - 1, y + 1, 7, '#3a3030'); hline(g, x, y, 6, '#3a3030'); px(g, x + 6, y + 2, '#3a3030');
+  hline(g, x + 1, y + 3, 4, '#3a3030');                                                // la cortinilla, cruzada
+  px(g, x + 2, y + 5, PAL.ink[0]);                                                     // un ojo
+}
 function proyectorCuerpo(g) {
   const x = 175, y = 4;
   bevel(g, x, y, 16, 7, PAL.paper[4], PAL.paper[6], PAL.paper[2]);
@@ -260,6 +272,7 @@ function drawRoom(g, v) {
   ventanal(g);
   sillasLejanas(g, v);
   sillonPresidencial(g);
+  if (v.flag('sala_amazonas_gervasio_agachado')) cortinilla(g);
   proyectorCuerpo(g);
   if (!a3(v)) { glow(g, 52, 30, 30, 22, '#fff4d8', 0.08); glow(g, 214, 30, 40, 20, '#fff4d8', 0.06); glow(g, CAB, 40, 26, 30, '#fff0c8', 0.1, 3); }
   else {
@@ -445,14 +458,12 @@ function drawCruasanes(g) {
   for (let i = 0; i < 10; i++) px(g, x + 3 + Math.floor(hash2(i, 1, 4) * 20), y + 2 + Math.floor(hash2(i, 2, 4) * 3), PAL.gold[2 + (i % 3)]);
   kit.cantoVivo(g, x + 1, y + 1, 26, 5);
 }
-function drawPlanillo(g) {
-  const x = 90, y = 88;
-  poly(g, [[x + 2, y], [x + 20, y], [x + 22, y + 6], [x, y + 6]], PAL.paper[7]);
-  hline(g, x, y + 6, 22, PAL.paper[3]);
-  for (let i = 0; i < 4; i++) vline(g, x + 5 + i * 4, y, 6, PAL.blue[5]);
-  hline(g, x + 1, y + 3, 20, PAL.blue[5]);
-  rect(g, x + 7, y + 1, 4, 2, PAL.red[3]); rect(g, x + 13, y + 4, 4, 2, PAL.teal[5]);
-  kit.cantoVivo(g, x, y, 23, 7);
+// [P4] el borde del planillo asomando bajo Maripaz (8×3 px) sobre el canto del fondo de la mesa, junto a su cadera
+export const MARIPAZ_AT = [120, 98];
+function drawPlanilloBajo(g) {
+  const x = MARIPAZ_AT[0] + 5, y = 81;
+  rect(g, x, y, 8, 3, PAL.paper[7]); hline(g, x, y + 2, 8, PAL.paper[3]);
+  vline(g, x + 3, y, 3, PAL.blue[5]); px(g, x + 6, y + 1, PAL.red[3]);
 }
 
 // tele de videollamadas (objeto): canales según tele_n; en el Acto III, muerta (el objeto se oculta, el aparato no)
@@ -461,7 +472,9 @@ function drawTele(g, view, t) {
   rect(g, x - 1, y - 1, w + 2, h + 2, PAL.ink[0]); frameRect(g, x - 1, y - 1, w + 2, h + 2, PAL.metal[2]);
   hline(g, x - 1, y - 1, w + 2, PAL.metal[4]);
   const sx = x, sy = y, sw = w, sh = h;
-  if (a3(view)) {
+  if (String(view.objState('tele_amazonas') || view.state || '') === 'entrada_1') {
+    teleEntrada1(g, sx, sy, sw, sh, t);
+  } else if (a3(view)) {
     gradV(g, sx, sy, sw, sh, [PAL.ink[2], PAL.ink[0]]);
     g.save(); g.globalAlpha = 0.1; poly(g, [[sx + 3, sy + sh], [sx + 9, sy + sh], [sx + 20, sy], [sx + 14, sy]], '#ffffff'); g.restore();
     px(g, sx + sw - 2, sy + sh + 1, PAL.red[1]);                     // piloto de reposo, apagado
@@ -499,34 +512,22 @@ function drawCaja(g, view, t) {
   void t;
 }
 
-// figurantes de Mercados (Actos I-II): dos sentados a escala 0,92 (uno con barba de comité) y uno desplomado («Zzz»)
-const FIG = {
-  a: { skin: '#d8a888', hair: '#2a2024', hairStyle: 'parted', shirt: '#e8ecf0', jacket: '#5a5e68', tie: '#9a2a2a', pants: '#3a3a44', build: 'normal', eyebags: true },
-  b: { skin: '#e0b090', hair: '#5a4632', hairStyle: 'balding', beard: 'long', shirt: '#d8d0c0', jacket: '#4a5a3a', pants: '#3a3a30', build: 'heavy', belly: true },
-};
-const figSp = {};
-function figuranteSentado(g, key, cx, headTop, s, t) {
-  const sp = figSp[key] || (figSp[key] = paperDoll(FIG[key]));
-  const { canvas } = getFrame(sp, 'idle', 'down', 0);
-  const rows = 30;                                         // cabeza, hombros y pecho: la mesa tapa el resto
-  const dw = Math.round(canvas.width * s), dh = Math.round(rows * s);
-  const bob = Math.round(Math.sin(t / 900 + cx) * 0.6);
-  const top0 = 14;                                         // fila de la coronilla en el lienzo del paper doll
-  g.save(); g.imageSmoothingEnabled = false;
-  g.drawImage(canvas, 0, top0, canvas.width, rows, Math.round(cx - dw / 2), headTop + bob, dw, dh);
+// [P4] plan §4.7: estado `entrada_1` de la tele (clímax): Celestino en directo, la cabeza del sprite de la intro a escala
+// 1 (24×24 de recorte), el rótulo «ENTRADA 1» y el piloto rojo de directo.
+let celSp = null;
+function teleEntrada1(g, sx, sy, sw, sh, t) {
+  gradV(g, sx, sy, sw, sh, [PAL.blue[2], PAL.blue[4]]);
+  rect(g, sx, sy + sh - 5, sw, 5, PAL.leaf[2]);                    // el mostrador del vestíbulo, en verde
+  const sp = celSp || (celSp = paperDoll(ACTORS.celestino.doll));
+  const { canvas } = getFrame(sp, 'talk', 'down', Math.floor(t / 160) % 3);
+  const top = 12;                                                   // coronilla en el lienzo del muñeco
+  g.save(); g.beginPath(); g.rect(sx, sy, sw, sh); g.clip();
+  g.drawImage(canvas, 0, top, canvas.width, 24, Math.round(sx + sw / 2 - canvas.width / 2), sy + 2, canvas.width, 24);
   g.restore();
-}
-function drawFigurantes(g, view, t) {
-  figuranteSentado(g, 'a', 146, 58, 0.92, t);
-  figuranteSentado(g, 'b', 200, 58, 0.92, t);
-  // el «desplomado»: cabeza sobre los brazos cruzados, encima de la mesa
-  const cx = 172, y = 75;
-  rect(g, cx - 9, y + 2, 18, 6, JACKETS.navy[2]); hline(g, cx - 9, y + 2, 18, JACKETS.navy[4]);
-  ellipse(g, cx, y + 3, 6, 4, PAL.wood[1]); hline(g, cx - 3, y, 5, PAL.wood[3]);
-  rect(g, cx - 11, y + 7, 5, 2, PAL.skin[4]); rect(g, cx + 6, y + 7, 5, 2, PAL.skin[4]);
-  const z = Math.floor(t / 700) % 2;
-  kit.micro(g, 'Z', cx + 8, y - 6 - z, PAL.paper[6]);
-  kit.micro(g, 'Z', cx + 12, y - 12 - z, PAL.paper[5]);
+  rect(g, sx, sy, sw, 6, PAL.ink[0]);
+  kit.micro(g, 'ENTR.1', sx + (sw >> 1) + 2, sy, PAL.paper[7], { align: 'center' });
+  if (Math.floor(t / 400) % 2) rect(g, sx + 1, sy + 1, 2, 2, PAL.red[5]);
+  ditherOverlay(g, sx, sy, sw, sh, '#ffffff', 0.06);
 }
 
 // plano detalle del clímax (7.4): el reverso del cartón caído con la pegatina «Atrezo – Focus group 2014», a 3×
@@ -558,9 +559,9 @@ const layout = {
   carteles_amazonas: { rect: [38, 57, 74, 35], walkTo: [70, 114], face: 'up' },
   orden_del_dia: { rect: [118, 18, 128, 46], walkTo: [182, 124], face: 'up', draw: drawOrden },
   proyector: { rect: [170, 0, 26, 14], walkTo: [182, 124], face: 'up', priority: 2, layer: 'front', draw: drawProyector },
-  figurantes_mercados: { rect: [134, 60, 76, 21], walkTo: [168, 124], face: 'up', priority: 1, layer: 'sorted', zy: 90, draw: drawFigurantes },
-  planillo_mesa: { rect: [88, 86, 26, 11], walkTo: [100, 122], face: 'up', priority: 2, layer: 'sorted', zy: 108, draw: drawPlanillo },
-  botellines: { rect: [114, 80, 60, 13], walkTo: [144, 124], face: 'up', priority: 1, layer: 'sorted', zy: 106, prop: true, draw: drawBotellines },
+  planillo_bajo_maripaz: { rect: [MARIPAZ_AT[0] + 2, 76, 14, 10], walkTo: [94, 124], face: 'right', priority: 3, layer: 'sorted', zy: 107, draw: drawPlanilloBajo },
+  botellines: { rect: [137, 80, 37, 13],   // [integrador] sin pisar el planillo (solape ≤ 30 %)
+  walkTo: [144, 124], face: 'up', priority: 1, layer: 'sorted', zy: 106, prop: true, draw: drawBotellines },
   minicruasanes: { rect: [194, 83, 30, 10], walkTo: [210, 124], face: 'up', priority: 1, layer: 'sorted', zy: 108, draw: drawCruasanes },
   // ADENDA §3.9: la tele (muerta en el Acto III, cuando el objeto se oculta) y la caja de cables, sobre la credencia
   tele_amazonas: { rect: [244, 17, 36, 37], walkTo: [262, 124], face: 'up', prop: true, draw: drawTele },
@@ -578,6 +579,12 @@ const layout = {
   // foco (`luz: 1`). Bruno lo empuja desde su izquierda; cae hacia la derecha, delante de la mesa (climax.js).
   lector_medio: { at: [LECTOR_AT[0], LECTOR_AT[1], 'down'], walkTo: [LECTOR_AT[0] - 24, LECTOR_AT[1] + 4], face: 'right', luz: 1 },
   inigo_sinergia: { at: [222, 122, 'left'], walkTo: [198, 124], face: 'right' },
+  // [P4] Actos I-II: los tres de Mercados, sentados tras la mesa (la mesa les tapa de cintura abajo); en la estampida
+  // saltan la mesa hacia la franja delantera y huyen por la puerta (sala_amazonas.js). Maripaz, en el extremo del fondo.
+  mercados_1: { at: [146, 98, 'down'], pose: 'tras_mesa', walkTo: [120, 122], face: 'right' },
+  mercados_2: { at: [172, 98, 'down'], pose: 'tras_mesa', walkTo: [146, 122], face: 'right' },
+  mercados_3: { at: [198, 98, 'down'], pose: 'tras_mesa', walkTo: [172, 122], face: 'right' },
+  maripaz_remitido: { at: [MARIPAZ_AT[0], MARIPAZ_AT[1], 'down'], pose: 'tras_mesa', walkTo: [94, 124], face: 'right' },
 };
 
 export default {
@@ -587,7 +594,9 @@ export default {
   dynamic: true,
   scale: { yFar: 96, far: 0.92, yNear: 142, near: 1.04 },
   // walkbox en U: perímetro libre alrededor de la mesa (izquierda junto a la puerta, franja delantera y la cabecera)
-  walkboxes: [{ id: 'suelo', poly: [[4, 102], [84, 102], [84, 118], [282, 118], [282, 100], [316, 100], [318, 142], [2, 142]] }],
+  walkboxes: [{ id: 'suelo', poly: [[4, 102], [84, 102], [84, 118], [282, 118], [282, 100], [316, 100], [318, 142], [2, 142]] },
+    // [P4] pasillo del lado del fondo (tras la mesa): solo se abre a mano en la estampida y en la salida de Maripaz
+    { id: 'fondo', when: 'sala_amazonas_fondo_abierto', poly: [[78, 96], [214, 96], [214, 101], [88, 101], [86, 107], [78, 107]] }],
   entries: { pajarera: [28, 114, 'right'] },
   layout,
   draw: drawRoom,
@@ -614,6 +623,7 @@ export default {
     const spots = [{ rect: [PANT.x - 3, PANT.y - 3, PANT.w + 6, PANT.h + 6] }, [CAB, 84, 14, 22, 0.55]];
     if (view.flag('lector_derribado')) spots.push([lx + 37, ly + 1, 44, 13], [lx + 70, ly - 10, 22, 10, 0.6]);
     else spots.push([lx + 1, ly - 32, 17, 40], [lx + 2, ly, 24, 8]);
+    if (String(view.objState('tele_amazonas') || '') === 'entrada_1') spots.push({ rect: [TELE.x - 3, TELE.y - 3, TELE.w + 6, TELE.h + 6] });
     return { color: '#080c24', alpha: 0.66, spots };
   },
 };

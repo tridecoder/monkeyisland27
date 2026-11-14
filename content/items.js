@@ -96,13 +96,7 @@ const icons = {
       if (on) { px(g, 9, yy + 1, P.leaf[4]); px(g, 10, yy, P.leaf[5]); px(g, 11, yy - 1, P.leaf[5]); }
       hline(g, 13, yy + 1, 7, P.paper[2]);
     });
-  },
-  planillo(g) {
-    sheet(g, 3, 1, 22, 16, [P.paper[3], P.paper[5], P.paper[6], P.paper[7]]);
-    for (let xx = 5; xx < 24; xx += 5) vline(g, xx, 2, 14, P.paper[3]);
-    for (let yy = 4; yy < 16; yy += 4) hline(g, 4, yy, 20, P.paper[3]);
-    rect(g, 15, 10, 9, 6, P.blue[5]); hline(g, 15, 10, 9, P.blue[6]);   // faldón vendido
-    rect(g, 5, 2, 9, 2, P.red[3]);
+    if (v && v.flag('pieza_escrita')) hline(g, 8, 17, 12, v.flag('pieza_recortada') ? P.leaf[4] : P.red[3]);   // la pieza
   },
   copias_rechazadas(g) {
     sheet(g, 3, 3, 16, 14, [P.paper[3], P.paper[4], P.paper[5], P.paper[6]]);
@@ -154,11 +148,6 @@ const icons = {
     rect(g, 5, 10, 7, 5, P.paper[6]); rect(g, 6, 11, 5, 3, P.gold[4]);
     rect(g, 15, 10, 8, 5, P.paper[6]); rect(g, 16, 11, 6, 3, P.red[4]); px(g, 20, 12, '#d4dcb4');
   },
-  posit_baja_ruben(g) {
-    poly(g, [[6, 2], [22, 1], [23, 16], [7, 17]], (xx, yy) => ditherPick(xx, yy, ['#b0a020', '#e0d040', '#f4e660', '#fff8a0'], 0.9 - (xx - 6) / 40 - (yy - 1) / 30));
-    line(g, 9, 6, 19, 5, P.ink[2]); line(g, 9, 9, 17, 9, P.ink[2]); line(g, 9, 12, 15, 12, P.ink[2]);
-    line(g, 18, 14, 22, 16, '#b0a020');
-  },
   ticket_n1(g) {
     sheet(g, 7, 0, 14, 18);
     for (let xx = 7; xx < 21; xx += 2) px(g, xx, 17, P.paper[2]);
@@ -178,6 +167,36 @@ const icons = {
 // ------------------------------------------------------------------ helpers for handlers
 const say = (lines) => async (api) => { await api.say(lines); };
 const N_REPLICAS = 16;       // adenda 6.1: «[N] de 16» (14 de la biblia + R15/R16)
+
+// ------------------------------------------------------------------ plan §8.1: la ficha viva (textos literales del plan)
+export const FICHA = {
+  titulo: 'Ficha de la página 7. Hueco, fuente, firma.',
+  hueco: ['HUECO: vendida a Siestatón desde marzo. Se decide en la Sala Amazonas.',
+    'HUECO: la reunión ha acabado. Maripaz no. Sigue sentada en el planillo.',
+    'HUECO, hecho: Siestatón, a la web. El faldón es mío. Veintitrés líneas.'],
+  fuente: ['FUENTE: dos fuentes, dice Aurora. Tengo cero.',
+    'FUENTE: tengo una nota de gasto con un reverso. Me falta otra fuente.',
+    'FUENTE, hecho: una anónima y otra con IVA.'],
+  firma: ['FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.',
+    'FIRMA: el fax ya habla. Ahora hay que ganárselo contestando.',
+    'FIRMA, hecho: «Trece con espacios. Cabe.»'],
+  margen: 'Al margen, a lápiz: «Arriba no me atiende nadie. El CMS está en coma».',
+  pieza: ['PIEZA: sin escribir. Primero las fuentes; luego, mi ordenador.',
+    'PIEZA: treinta y una líneas. El faldón, veintitrés. Me sobran ocho.',
+    'PIEZA: veintitrés líneas. Lista para Teodoro.',
+    'PIEZA: treinta y una líneas. Sobra un 26 %, dice Herminia. ¿Quién recorta?'],      // E1.4.1 (herminia_midio)
+};
+/** Las líneas de Mirar la ficha según el estado de la partida (también las usa tools/test-fase0.mjs). */
+export function fichaViva(api) {
+  const f = (k) => !!api.flag(k);
+  const out = [FICHA.titulo];
+  out.push(FICHA.hueco[f('casilla_hueco') ? 2 : f('reunion_terminada') ? 1 : 0]);
+  out.push(FICHA.fuente[f('casilla_fuente') ? 2 : (api.has('fotocopia_nota_direccion') || api.has('mensaje_fp')) ? 1 : 0]);
+  out.push(FICHA.firma[f('casilla_firma') ? 2 : f('fax_con_papel') ? 1 : 0]);
+  if (!f('cms_vivo')) out.push(FICHA.margen);
+  if (f('casilla_fuente') || f('pieza_escrita')) out.push(FICHA.pieza[f('pieza_recortada') ? 2 : f('pieza_escrita') ? (f('herminia_midio') ? 3 : 1) : 0]);
+  return out;
+}
 
 export default {
   tarjeta_becario: {
@@ -234,29 +253,30 @@ export default {
   },
   chaqueta_ramirez: {
     name: 'chaqueta de Ramírez', icon: icons.chaqueta_ramirez,
-    handlers: { mirar: 'La chaqueta de Ramírez. Huele a 2019 y a sala de prensa.' },
+    handlers: {
+      mirar: 'La chaqueta de Ramírez. Huele a 2019 y a sala de prensa.',
+      // plan §4.3: Usar la chaqueta sin destino = ponérsela (el sprite de Bruno cambia: actors.js `con_chaqueta`)
+      usar: async (api) => {
+        if (api.flag('bruno_con_chaqueta')) { api.setFlag('bruno_con_chaqueta', false); await api.say('Me la quito. Vuelvo a ser yo. Con mangas de camisa.'); return; }
+        await api.anim(api.player, 'reach', 400);
+        api.setFlag('bruno_con_chaqueta', true);
+        await api.say(['Me la pongo. Por probar. Huele a 2019 y a cruasán.', 'Me queda grande. Lo apunto como «proyección de futuro».']);
+        if (api.room === 'pecera') await api.scene('pecera_chaqueta');   // [P2] §4.3: Yoli y el coro, si se la pone allí
+        else if (api.room === 'pajarera') await api.scene('pajarera_chaqueta');   // [P2] §4.3: Íñigo le confunde
+      },
+    },
   },
   sobre_azucar: {
     name: 'sobre de azúcar', icon: icons.sobre_azucar,
     handlers: { mirar: 'Sobre de azúcar caducado en 2021. Pone «Cafetería». Es casi un ticket.' },
   },
   ficha_pagina_7: {
+    // plan §8.1: la ficha es una LISTA VIVA. Mirar dice el título, las tres casillas en su estado (la hecha, corta; la
+    // pendiente, qué falta y dónde), la nota al margen sin CMS y la línea de la pieza. El icono marca cada casilla y la
+    // pieza (raya roja = escrita; con «23» = recortada).
     name: 'ficha de la página 7', icon: icons.ficha_pagina_7,
-    iconKey: (v) => ['casilla_hueco', 'casilla_fuente', 'casilla_firma'].map(f => (v.flag(f) ? 1 : 0)).join(''),
-    handlers: {
-      mirar: async (api) => {
-        const c = f => (api.flag(f) ? '[✓]' : '[ ]');
-        if (api.flag('casilla_hueco') && api.flag('casilla_fuente') && api.flag('casilla_firma')) {
-          await api.say('Tres casillas llenas. Es lo más parecido a un contrato que he tenido.');
-          return;
-        }
-        await api.say([`Ficha de la página 7. HUECO ${c('casilla_hueco')} · FUENTE ${c('casilla_fuente')} · FIRMA ${c('casilla_firma')}.`, 'Sin las tres, Teodoro no cierra.']);
-      },
-    },
-  },
-  planillo: {
-    name: 'planillo de maqueta', icon: icons.planillo,
-    handlers: { mirar: say(['Planillo. Página 7: COLCHONES SIESTATÓN. Faldón, 23 líneas.', '«Pendiente de confirmar desde marzo».']) },
+    iconKey: (v) => ['casilla_hueco', 'casilla_fuente', 'casilla_firma', 'pieza_escrita', 'pieza_recortada'].map(f => (v.flag(f) ? 1 : 0)).join(''),
+    handlers: { mirar: async (api) => { await api.say(fichaViva(api)); } },
   },
   copias_rechazadas: {
     name: 'duplicado y triplicado', icon: icons.copias_rechazadas,
@@ -270,7 +290,7 @@ export default {
     name: 'fax de F.P.', icon: icons.mensaje_fp,
     handlers: {
       mirar: async (api) => {
-        await api.say(['Fax de F.P.: «La opa de Hidrovoltia sobre Banco Robledal es verdad».', '«Falta la segunda fuente: mira los gastos de Dirección. — F.P.»',
+        await api.say(['Fax de F.P.: «La opa de Hidrovoltia sobre Banco Robledal es verdad».', '«Falta la segunda fuente: mira las notas de gasto. — F.P.»',
           'Borde perforado. Esto no viene de un fax: viene de una matricial.']);
         api.setFlag('vio_borde_perforado', true);
       },
@@ -278,7 +298,7 @@ export default {
   },
   manual_fax: {
     name: 'manual del fax', icon: icons.manual_fax,
-    handlers: { mirar: say(['Manual del fax de la Catacumba. Página 9: «Respuesta automática».', 'Las demás páginas son fotos del fax. Posando.']) },
+    handlers: { mirar: say(['Manual del fax de la Redacción de papel. Página 9: «Respuesta automática».', 'Las demás páginas son fotos del fax. Posando.']) },
   },
   pieza_opa: {
     name: 'mi exclusiva', icon: icons.pieza_opa,
@@ -294,10 +314,6 @@ export default {
     name: 'álbum de Eventos', icon: icons.album_eventos,
     handlers: { mirar: say(['En todas las fotos, al fondo, Rubén. Cena de Navidad, presentación, photocall.', 'Siempre yendo al baño. Siempre con un táper.']) },
   },
-  posit_baja_ruben: {
-    name: 'pósit «Baja becario Rubén»', icon: icons.posit_baja_ruben,
-    handlers: { mirar: '«Baja becario Rubén». Descopeado. Es el pósit más importante de mi vida.' },
-  },
   ticket_n1: {
     name: 'ticket nº 1', icon: icons.ticket_n1,
     handlers: { mirar: say(['Ticket nº 1: «Alta becario Rubén». Asignado a: Titulator 3000.', 'Estado: CERRADO. El primer ticket que cierra Paco en su vida.']) },
@@ -311,6 +327,19 @@ export default {
     // Combinaciones con salas/PNJ (4.8): las implementa la sala (handlers 'dar:boli_muerto').
     name: 'boli muerto', icon: icons.boli_muerto,
     handlers: { mirar: 'Un boli rojo sin tinta. Murió corrigiendo un «detrás mío».' },
-    combine: { ficha_pagina_7: 'No escribe. Pero lo intenta. Como yo.' },     // adenda 4.8 (A)
+    combine: { ficha_pagina_7: 'No escribe. Le guardo un minuto de silencio. ...Ya.' },     // adenda 4.8 (A)
+  },
+  // [P3] plan §4.4: el táper que suelta el de Mercados al huir del Vending; se da a `ruben` en Sistemas (P1, `taper_dado`)
+  taper_huerfano: {
+    name: 'táper sin nombre',
+    icon(g) {
+      // táper de plástico translúcido con tapa azul, vacío y sin etiqueta (28×18)
+      rect(g, 5, 6, 18, 10, '#cfd8dc'); rect(g, 6, 7, 16, 8, '#e4ecee'); hline(g, 6, 14, 16, '#a8b4b8');
+      vline(g, 5, 6, 10, '#9aa6aa'); vline(g, 22, 6, 10, '#9aa6aa'); hline(g, 5, 15, 18, '#8a9498');
+      rect(g, 4, 3, 20, 4, '#3a7ac8'); hline(g, 4, 3, 20, '#6aa0e0'); hline(g, 4, 6, 20, '#2a5a98');
+      rect(g, 2, 4, 2, 2, '#3a7ac8'); rect(g, 24, 4, 2, 2, '#3a7ac8');
+      px(g, 8, 9, '#ffffff'); px(g, 9, 8, '#ffffff');
+    },
+    handlers: { mirar: 'Un táper sin nombre. Vacío. Huele a lentejas de ayer y a huida.' },
   },
 };

@@ -192,9 +192,16 @@ export default {
       skin: '#e8b48c', hair: '#6a4026', hairStyle: 'cowlick', shirt: '#9cc8ec', untucked: true,
       badge: '#c83030', backpack: '#4a6070', pants: '#3a4562', shoes: '#c8c0b0', build: 'slim', height: 1.02,
     },
-    // §8.6 cuarta pared: el propio sprite es clicable
+    // plan §4.3: con la chaqueta de Ramírez puesta (flag `bruno_con_chaqueta`, o api.vestir('bruno', 'con_chaqueta'))
+    variants: {
+      con_chaqueta: { doll: { jacket: '#c8b48a', backpack: null, badge: null, cuffs: '#c8b48a' } },
+      // epílogo (§9): la bufanda del Ibex que le enrolla Celestino (la de Celestino: verde con la raya roja)
+      con_bufanda: { doll: { scarf: '#2a8a3a', scarfStripe: '#d03030' } },
+    },
+    variant: (v) => (v.flag('bruno_con_chaqueta') && v.has('chaqueta_ramirez') ? 'con_chaqueta' : null),
+    // plan §8.2: «Mirar a Bruno» dice la meta actual en su voz (objetivo de la sala, content/pistas.js)
     handlers: {
-      mirar: 'Soy yo. Joven, prometedor y sin contrato. Como una startup.',
+      mirar: async (api) => { await api.say(api.objetivo.meta() || 'Respondo a todos. Es lo único que sé hacer bien.'); },
       'usar:tarjeta_becario': 'Me identifico. Me reconozco. Es más de lo que hace el torno.',
     },
   },
@@ -207,6 +214,7 @@ export default {
       epaulettes: '#e0b840', scarf: '#2a8a3a', scarfStripe: '#d03030', earpiece: '#202020',
       pocketItem: '#303034', pocketKind: 'radio', pants: '#5a5e68', shoes: '#1a1a1e', height: 0.96, build: 'normal', belly: true,
     },
+    variants: { sin_bufanda: { doll: { scarf: null, scarfStripe: null } } },   // epílogo: se la ha dado a Bruno
     murmurs: ['Treinta años en este mostrador. El mostrador, cuarenta.', 'Si me preguntan por el Ibex, digo que va.',
       'Chof, chof... Menta. Lo único de esta casa que no caduca.'],
     // mastica chicle de menta sin parar: de vez en cuando, una pompa rosa (solo de frente)
@@ -226,9 +234,9 @@ export default {
       skin: '#f0c4a0', hair: '#3a2018', hairStyle: 'highponytail', hairStreak: '#FF78B8', glasses: 'thick', glassesColor: '#1a1418',
       shirt: '#4a5a80', emblem: '#FF78B8', pants: '#2a2a3a', shoes: '#f0f0f0', prop: 'eyedrops', build: 'slim', height: 0.97,
     },
-    murmurs: ['Precio café hoy, precio café 2026, precio café por qué...', 'Si baja otra vez, me pongo colirio en el alma.',
+    murmurs: ['Esto sube — 3.402 — esto baja — 3.398 — esto soy yo.',   // plan §5.4
       'Ahí al lado imprimen lo que yo publiqué ayer. Con las faltas corregidas.',   // orden 2: la Redacción de papel, al lado
-      'Busco "el Contable" y salen gestorías. Nos ganan en SEO.', 'Hacen más ruido que mi gráfica cuando baja.'],
+      'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.'],
   },
   // Nemesio Backlog (id histórico `nerea_backlog`: el personaje se llamó Nerea hasta que dirección pidió que Desarrollo
   // fuera solo de hombres; el id no se toca para no romper partidas, pruebas ni flags). El dueño del kanban: chaleco de
@@ -240,7 +248,7 @@ export default {
       sleeveNotes: '#f0e050', pencil: true, pencilColor: '#3070d0', pants: '#4a3a32', shoes: '#2a1a14', height: 1.02, build: 'normal',
     },
     murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.',
-      'Esto a POR HACER. Esto a BLOQUEADO. Esto a Diseño, que ya lo entregó.', 'Diseño entrega antes de que lo pida el tablero. Me descoloca.'],
+      'No hay urgentes. Hay POR HACER escrito más fuerte.'],   // [integrador] fuera los dos murmullos con «Diseño» (tope §5.14)
   },
   teodoro_cuerpodoce: {
     // No habla: sus líneas salen del fax (prefijo «TEODORO (fax):», §3.4). Solo habla en voz alta al teléfono rojo.
@@ -374,7 +382,7 @@ export default {
       emblem: '#3CE0C6', pocketItem: '#c8ccd4', pocketKind: 'ruler', prop: 'folder', propColor: '#e8d49a',
       sleeves: 'short', pants: '#4e5a48', shoes: '#3a2e26', height: 0.99,
     },
-    murmurs: ['Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.', 'Cuarenta y un pósits. Cuarenta y un «NO». Es una serie muy estable.', 'Si la cinta avanza otro palmo, me piden pasaporte para el Vending.'],
+    murmurs: ['Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.', 'Cuarenta y un pósits a Anselmo. Cuarenta y un «no». Serie muy estable.'],   // E1.6
   },
   anselmo_monolito: {
     // Director de Desarrollo (pecera, 560-610 px). Chaleco acolchado gris con muchos bolsillos, un rollo de cinta de
@@ -384,7 +392,7 @@ export default {
       skin: '#dcae88', hair: '#2e2830', hairStyle: 'short', shirt: '#b4503c', vest: '#8c9098', keys: '#e8d8a0',
       prop: 'folder', propColor: '#2f4f86', pants: '#5c5c46', shoes: '#34281c', height: 1.02, build: 'normal',
     },
-    murmurs: ['Esto no ha pasado por Desarrollo. Esto tampoco. Esto sí, de refilón.', 'Transversal. No invasivo. Transversal.', 'Revisión: marzo. Qué bien suena marzo.', '(al termo) Tú sí eres de Desarrollo.'],
+    murmurs: ['Esto no ha pasado por mí. Esto tampoco. Esto, de refilón.', '(al termo) Tú sí eres de la casa.'],   // E1.6
   },
   evaristo_salvedad: {
     // Director de Controlling y Financiero (administracion; epílogo, vestibulo). Chaqueta de punto gris perla abrochada,
@@ -408,21 +416,50 @@ export default {
       shirt: '#f8f8fa', jacket: '#2f7058', pants: '#202028', shoes: '#f6f6f6', bracelets: '#c4c8d0',
       height: 1.13, build: 'athletic',
     },
-    murmurs: ['Esto, dos píxeles a la izquierda. Ahora sí.', 'Nota para el lunes: abrirle la bandeja a Desarrollo. Con cariño.', '(al monitor) Venga, becario. Que tú puedes.'],
+    murmurs: [],   // cameo MUDO (orden del dueño): solo «Está en la bandeja.» en su escena (pecera.js)
   },
 
   // ---------------------------------------------------------------- ADENDA §1/11.2: presencias SIN sprite
   // Son actores solo para tener nombre y color al hablar (`api.sayAs`): NUNCA se colocan en una sala (el hotspot que
   // las representa es un objeto de la sala con el mismo id, o un objeto cercano). Para que el texto salga encima de
   // su objeto usa `api.sayFrom('<objeto>', texto)`, que toma el `color` del objeto (declarado igual en el stub).
-  custodia_precinto: { name: 'Custodia', color: '#A0A0FF', hotspot: false, presence: 'manos bajo una persiana metálica (Secretaría de Redacción, en la pecera)', doll: {} },
-  tadeo_adjunto: { name: 'Tadeo', color: '#FFCC99', hotspot: false, presence: 'portátil (ecosistema) y móvil (avisos RV:)', doll: {} },
-  herminia: { name: 'Herminia', color: '#FF8C3C', hotspot: false, presence: 'rótulos en el portátil de Leoncio (pecera)', doll: {} },
+  custodia_precinto: { name: 'Custodia', color: '#A0A0FF', hotspot: false, presence: 'manos bajo una persiana metálica (Secretaría de Redacción, en la Redacción)', doll: {} },
+  tadeo_adjunto: { name: 'Tadeo', color: '#FFCC99', hotspot: false, presence: 'portátil (Marketing y Comercial) y móvil (avisos RV:)', doll: {} },
   coro_desarrollo: { name: 'CORO', color: '#7FFFD4', hotspot: false, presence: 'los tres devs, a la vez', doll: {} },
   dev_1: { name: 'DEV 1', color: '#7FFFD4', hotspot: false, presence: 'del coro: indignado', doll: {} },
   dev_2: { name: 'DEV 2', color: '#7FFFD4', hotspot: false, presence: 'del coro: más indignado', doll: {} },
   dev_3: { name: 'DEV 3', color: '#7FFFD4', hotspot: false, presence: 'del coro: solo dice «No.»', doll: {} },
   altavoz_ibex: { name: 'ALTAVOZ', color: '#CCCCCC', hotspot: false, presence: 'voz de objeto (vestibulo)', doll: {} },
+
+  // [P3] plan §4.4 / §10.2: los tres de Mercados (muñeco genérico recoloreado: camisas beige, gris y azul; uno con
+  // barba). Estampida en la Sala Amazonas (P4); `mercados_1` se esconde después en la cola del microondas del Vending (P3).
+  mercados_1: {
+    name: 'Mercados 1', color: '#7CF0C8', speed: 64,
+    doll: { skin: '#e4b08c', hair: '#4a3626', hairStyle: 'parted', beard: 'full', shirt: '#d8c49a', tie: '#5a4a3a',
+      pants: '#5a5650', shoes: '#2a2420', height: 1.0, build: 'normal' },
+  },
+  mercados_2: {
+    name: 'Mercados 2', color: '#6EA0FF', speed: 64,
+    doll: { skin: '#f0c4a0', hair: '#2a2420', hairStyle: 'short', shirt: '#a8acb4', tie: '#2a3a5a',
+      pants: '#3a3c44', shoes: '#1a1a1e', height: 0.96, build: 'slim' },
+  },
+  mercados_3: {
+    name: 'Mercados 3', color: '#FF7EC0', speed: 64,
+    doll: { skin: '#d8a07a', hair: '#8a8a90', hairStyle: 'balding', glasses: 'square', glassesColor: '#2a2a2a',
+      shirt: '#7a9ac8', pants: '#3a3a42', shoes: '#2a1a14', height: 1.04, build: 'heavy', belly: true },
+  },
+  // [P4] plan §7.7: Colchones Siestatón al teléfono (derrota de D1). Solo voz por el móvil; su retrato es un colchón.
+  siestaton: { name: 'Siestatón', color: '#9FD0FF', hotspot: false, presence: 'voz por teléfono (derrota de D1)', doll: {},
+    portrait(g, w, h, st) {
+      rect(g, 0, 0, w, h, '#1c2a48');
+      for (let y = 4; y < h; y += 9) hline(g, 0, y, w, '#22345a');
+      const t = st.t || 0, cx = w >> 1, by = h - 12;
+      rect(g, cx - 26, by - 10, 52, 13, '#e8eef8'); hline(g, cx - 26, by - 10, 52, '#ffffff'); hline(g, cx - 26, by + 2, 52, '#9aa8c4');
+      for (let x = cx - 22; x < cx + 24; x += 8) { px(g, x, by - 5, '#9aa8c4'); px(g, x + 4, by - 2, '#9aa8c4'); }
+      rect(g, cx - 24, by - 15, 14, 5, '#ffffff'); hline(g, cx - 24, by - 11, 14, '#c8d2e4');
+      const z = Math.floor(t / 600) % 3;
+      for (let i = 0; i <= z; i++) { const zx = cx + 10 + i * 7, zy = by - 22 - i * 7; hline(g, zx, zy, 4, '#ffffff'); px(g, zx + 2, zy + 1, '#ffffff'); px(g, zx + 1, zy + 2, '#ffffff'); hline(g, zx, zy + 3, 4, '#ffffff'); }
+    } },
 
   // ---------------------------------------------------------------- objetos con carácter (§2.14)
   gertrudis: {

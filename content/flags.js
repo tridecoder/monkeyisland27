@@ -7,7 +7,8 @@
 // - Flags LOCALES de una sala (que nadie más lee): decláralos en tu archivo de lógica, `flags: { <sala>_algo: 'comentario' }`,
 //   con el prefijo del id de la sala (p. ej. `office_microondas_visto`). Si un flag cruza de sala, NO lo inventes:
 //   pídelo al jefe de guion (va en la biblia §5.5 y aquí).
-// - Prefijos reservados del motor: `duel:<id>:won`, `walkbox:<sala>.<id>` (no hace falta declararlos).
+// - Prefijos reservados del motor: `duel:<id>:won|perdido_n|empieza|floja`, `walkbox:<sala>.<id>`, `obj:<objetivo>`,
+//   `ambient:<sala>.<id>` (no hace falta declararlos).
 // - `node tools/check.mjs` comprueba estáticamente que todo flag usado en content/ existe.
 
 const reps = {};
@@ -18,17 +19,17 @@ const repInfo = {
   rep_09: 'B · pecera · Nemesio N3 (con cms_vivo)', rep_10: 'C · office · chisme nº 3', rep_11: 'B · pecera · Mirar ordenador_bruno (con silla_libre)',
   rep_12: 'A · cpd · Paco P3 (con cms_vivo)', rep_13: 'A · cpd · Rubén R2 (Acto III)', rep_14: 'C · office · chisme nº 4',
   // adenda 7.1 (R15/R16; Íñigo D4 al final del mazo)
-  rep_15: 'D · ecosistema · 2.ª Mirar de portatil_tadeo (hilo de Tadeo y Leoncio)',
+  rep_15: 'P1 · cpd · Rubén «¿Te llegaban correos de Tadeo?» (plan §5.12; antes, portátil de Tadeo)',   // [P1]
   rep_16: 'D · administracion · Evaristo E0, opción «¿Algún cotilleo?»',
 };
 for (const [k, v] of Object.entries(repInfo)) reps[k] = `bool · ${v} (con api.learnReply('${k}')) · módulo de duelo, libreta_replicas`;
 
 // Flags de la adenda (§6.2): se inicializan en game.js `startFlags` (contadores a 0, booleanos a false).
 export const ADENDA_FLAGS = [
-  'evaristo_llamadas', 'evaristo_convoco', 'evaristo_escuchado', 'coma_bendecida', 'correo_evaristo_listo', 'tadeo_rv_n',
-  'portatil_tadeo_n', 'anselmo_dijo_regla', 'leoncio_acepta_alta', 'herminia_de_alta', 'infografia_integrada',
-  'bandeja_diseno_abierta', 'custodia_regla', 'boli_muerto_cogido', 'custodia_ablandada', 'planta_oyo', 'planta_empujada_n',
-  'rejilla_n', 'hoja_reservas_n', 'tele_n', 'rumor_firma_n', 'rumor_atun_n', 'rumor_teodoro_n', 'rumor_plaza_n',
+  'evaristo_llamadas', 'evaristo_lc', 'evaristo_convoco', 'evaristo_escuchado', 'coma_bendecida', 'correo_evaristo_listo', 'tadeo_rv_n',
+  'portatil_tadeo_n', 'anselmo_dijo_regla', 'herminia_de_alta', 'infografia_integrada',
+  'custodia_regla', 'boli_muerto_cogido', 'custodia_ablandada', 'planta_oyo', 'planta_empujada_n',
+  'rejilla_n', 'hoja_reservas_n', 'tele_n', 'rumor_firma_n', 'rumor_teodoro_n',
   'cuadro_plazas_n', 'piel_platano_n', 'rep_15', 'rep_16',
 ];
 
@@ -48,7 +49,6 @@ export default {
   cms_vivo: 'bool · B · pecera · P05b · A (Paco, contador), B (Yoli, Nemesio, pantalla), pistas',
   gertrudis_saludada: 'bool · C · office · primer «Buenas noches» · C, pistas, B (titular)',
   chisme_indice: 'int · C · office · +1 por saludo · C',
-  gertrudis_error_indice: 'int · C · office · +1 por «Un café, por favor» · C',
   aurora_conto_pasos: 'bool · C · catacumba · P03 · D (opción «siguientes pasos» de Gervasio), pistas',
 
   // ---------------------------------------------------------------- Acto II
@@ -95,14 +95,13 @@ export default {
   evaristo_convoco: 'bool · A · común · llamada L2 · D (E0, opción 1)',
   evaristo_escuchado: 'bool · D · administracion · E_REVELA · C (Aurora, opción de la coma), D (ocultar opción 1)',
   coma_bendecida: 'bool · C · catacumba · Aurora, opción de la coma · D (E0, opción 9)',
-  correo_evaristo_listo: 'bool · D · administracion · E_ENVIO · D (clímax 9.6 A/B), A (aviso L5, epílogo 9.8, créditos), B (titular)',
-  tadeo_rv_n: 'int · A · común (avisos, game.js) · +1 por RV: (2.2) · A (Mirar movil), C (murmullo de Aurora)',
+  correo_evaristo_listo: 'bool · D · administracion · E_ENVIO, o la llamada LC (game.js, plan §5.13) · D (clímax 9.6 A/B), A (aviso L5, epílogo 9.8, créditos), B (titular)',
+  evaristo_lc: 'bool · P0 · game.js · llamada LC de Evaristo (plan §5.13: coma_bendecida sin correo_evaristo_listo) · game.js (índice de L1-L5)',
+  tadeo_rv_n: 'int · A · común (avisos, game.js) · +1 por RV: (plan §5.16: tres) · A (Mirar movil), C (murmullo de Aurora)',
   portatil_tadeo_n: 'int · D · ecosistema · +1 por Mirar portatil_tadeo · D',
-  anselmo_dijo_regla: 'bool · B · pecera · AN0, opción 4 · B (LQ0, opción 5)',
-  leoncio_acepta_alta: 'bool · B · pecera · LQ_ALTA · A (Paco P1)',
-  herminia_de_alta: 'bool · A · cpd · Paco «Herramienta.» · B (AN0 opción 7, Rubén en la Pecera, titular)',
+  anselmo_dijo_regla: 'bool · P2 · pecera · momento 8 «Dos IAs» (E1.4.2) · P1 (Paco P_ALTA, MP1)',
+  herminia_de_alta: 'bool · P1 · cpd · Paco P_ALTA «Herramienta.» (MP1) · P2 (anexión, Rubén en la Redacción, titular)',
   infografia_integrada: 'bool · B · pecera · AN_HERMINIA · B (cinta, pantalla, Leoncio, coro), A (epílogo, créditos)',
-  bandeja_diseno_abierta: 'bool · B · pecera · Abrir bandeja_diseno · B (coro opción 6, enchufe_pantalla)',
   custodia_regla: 'bool · C · office · CU_PARAQUE opción 4 · C (bolis_aurora, CU_CADAVER, Aurora)',
   boli_muerto_cogido: 'bool · C · catacumba · Coger bolis_aurora · C (no se vuelve a dar)',
   custodia_ablandada: 'bool · C · office · CU_DA · C (CU_DONDE), B (titular), A (créditos)',
@@ -112,9 +111,7 @@ export default {
   hoja_reservas_n: 'int · B · pajarera · +1 por Mirar hoja_reservas · B',
   tele_n: 'int · D · sala_amazonas · +1 por Usar tele_amazonas / caja_cables · D',
   rumor_firma_n: 'int · A, C, D, B · lo suma quien cuenta el rumor A (8.1) · el siguiente de la cadena, A (epílogo, ≥ 4)',
-  rumor_atun_n: 'int · A, B · lo suma quien cuenta el rumor B (8.2) · el siguiente de la cadena, A (Rubén, ≥ 3)',
   rumor_teodoro_n: 'int · C, B, D · lo suma quien cuenta el rumor C (8.3) · el siguiente de la cadena, C (Teodoro, = 3)',
-  rumor_plaza_n: 'int · D, A, B · lo suma quien cuenta el rumor D (8.4) · el siguiente de la cadena, A (Celestino, = 3)',
   cuadro_plazas_n: 'int · A · vestibulo · +1 por Mirar cuadro_plazas · A',
   piel_platano_n: 'int · D · ecosistema · +1 por Mirar piel_platano · D',
 
@@ -132,6 +129,24 @@ export default {
 
   // ---------------------------------------------------------------- el móvil de Bruno (content/lib/movil.js)
   movil_leidos: 'int · común (lib/movil.js) · bits de los correos leídos en el móvil (0-4 RV: de Tadeo, 8-10 fijos) · el menú del móvil',
+
+  // ---------------------------------------------------------------- PLAN DE COMEDIA §3.4 (altas; las bajas, cuando las
+  // salas dejen de usarlos). Los pone/lee cada paquete; el motor solo pone duel:<id>:* (no hace falta declararlos).
+  cafetera_viral: 'bool · P3 · office · Gertrudis, 1.er saludo · P2 (Yoli, Íñigo), P1 (torno, epílogo), P0 (abuela, hitos)',
+  cafetera_en_directo: 'bool · P3 · office · Gertrudis, el bis · P3 (3.er saludo, Vending con cms_vivo)',
+  apagon_n: 'int · P2 · pecera · Tirar enchufe_pantalla sin vio_ticket_3 · P2 (escalada del apagón, titular)',
+  bruno_con_chaqueta: 'bool · P0 · items.js · Usar chaqueta_ramirez sin destino · P2 (Redacción, Despachos), P0 (sprite de Bruno)',
+  mercados_huido: 'bool · P3 · office · mercados_1 → «siguientes pasos» · P3 (táper), P2 (titular)',
+  taper_dado: 'bool · P1 · cpd · Dar taper_huerfano a ruben · P1 (titular reactivo)',
+  teodoro_intentos_n: 'int · P3 · catacumba · hablar/dar/usar con Teodoro sin fax_con_papel · P3 (el fax vomita la tarde)',
+  fax_tecla_n: 'int · P3 · catacumba · teclas 1 y 3 del fax · P3 (Teodoro, Evaristo)',
+  // [P2] ENMIENDA E1.4.5 (Redacción): paso 32 y momento 8
+  herminia_midio: 'bool · P2 · pecera · paso 32, escena «Herminia mide la pieza» · P0 (ficha, abuela Recorte), P2 (portátil, Leoncio)',
+  dos_ias_vista: 'bool · P2 · pecera · momento 8 «Dos IAs» (1.ª entrada con acto_3_iniciado) · P2 (Mirar portátil), extras',
+  climax_entrada: 'bool · P4 · climax · entrada en el clímax (opcional: la hora del móvil pasa a 20:59) · P0 (hora)',
+  abuela_obj: 'str · P0 · game.js pistas (engine/objetivos.js) · objetivo de la última pista · la abuela',
+  abuela_nivel: 'int · P0 · game.js pistas · nivel 1-3 de la última pista · la abuela',
+  // también prefijos reservados del motor: obj:<objetivo> (api.objetivo.marcar), obj:hora, ambient:<sala>.<id>
 
   // ---------------------------------------------------------------- réplicas del duelo (§6.3 + adenda 7.1)
   ...reps,

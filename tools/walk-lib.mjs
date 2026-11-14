@@ -68,7 +68,8 @@ async function travel(to) {
   }, to);
   if (!r.ok) fail(r.msg);
 }
-async function playDuel(seq) {
+async function playDuel(seq0) {
+  let seq = seq0;
   const pairs = await G(() => Object.fromEntries(__game.game.content.duels.pairs.map(p => [p.id, p.reply])));
   let i = 0;
   for (let guard = 0; guard < 80; guard++) {
@@ -82,8 +83,16 @@ async function playDuel(seq) {
     if (want === undefined) fail(`el duelo sigue tras las ${seq.length} jugadas previstas (fase ${st.duel.phase})`);
     if (st.duel.phase === 'reply') {
       if (typeof want !== 'string') fail(`se esperaba un remate (objeto ${want.objeto}) y el rival ataca con ${st.duel.attack}`);
-      if (st.duel.attack !== want) fail(`el rival ataca con ${st.duel.attack}; según la biblia tocaba ${want} (orden del mazo, §6.4)`);
-      const k = st.dialog.findIndex(o => o === pairs[want]);
+      if (st.duel.attack !== want) {
+        // plan §7.1.9: la REVANCHA empieza por el ataque que ganó (flag duel:<id>:empieza); el orden de las parejas puede
+        // girar, pero las parejas que tocan antes del siguiente remate son las mismas
+        // girado: se contesta el ataque que llega (un acierto es un acierto; los remates llegan por puntos)
+        const revancha = st.flags && st.flags['duel:' + st.duel.id + ':perdido_n'] > 0;
+        if (!revancha) fail(`el rival ataca con ${st.duel.attack}; según la biblia tocaba ${want} (orden del mazo, §6.4)`);
+        if (!st.dialog.includes(pairs[st.duel.attack])) { await G(k => __game.chooseDialog(k), st.duel.weakIndex); continue; }   // no la sabe: un fallo (va al final)
+        seq = seq.slice(); seq[i] = st.duel.attack;
+      }
+      const k = st.dialog.findIndex(o => o === pairs[seq[i]]);
       if (k < 0) fail(`la réplica de ${want} no está en el menú (¿no se aprendió? flag rep_${want.slice(1)}). Menú: ${JSON.stringify(st.dialog)}`);
       await G(k => __game.chooseDialog(k), k);
       i++;
@@ -101,6 +110,21 @@ async function playDuel(seq) {
   }
   fail('el duelo no termina');
 }
+/** Pierde el duelo abierto eligiendo siempre la floja (plan §7.5); en un remate, se retira del hilo. */
+async function loseDuel() {
+  for (let k = 0; k < 12; k++) {
+    await G(() => __game.waitIdle());
+    const st = await state();
+    if (!st.duel) break;
+    if (st.duel.phase === 'reply' && st.dialog) await G(i => __game.chooseDialog(i), st.duel.weakIndex);
+    else if (st.duel.phase === 'finisher' && st.dialog) await chooseByText('[Retirarse del hilo]');
+    else await page.waitForTimeout(30);
+  }
+  await G(() => __game.waitIdle());
+  const st = await state();
+  if (st.duel) fail('el duelo no se pierde con flojas');
+  if (!st.lastDuel || !['lost', 'retired'].includes(st.lastDuel.result)) fail(`se esperaba perder el duelo (resultado: ${st.lastDuel && st.lastDuel.result})`);
+}
 async function run(a) {
   const [k, x, y, z] = a;
   if (k === 'ir') return travel(x);
@@ -116,6 +140,7 @@ async function run(a) {
   if (k === 'opcion') return chooseByText(x);
   if (k === 'cerrar') return closeDialog();
   if (k === 'duelo') return playDuel(x);
+  if (k === 'perder') return loseDuel();
   void z;
   fail('acción desconocida ' + JSON.stringify(a));
 }
@@ -126,7 +151,7 @@ async function check(esp) {
   const errs = [];
   if (esp.sala && st.room !== esp.sala) errs.push(`sala: ${st.room}, se esperaba ${esp.sala}`);
   const flags = Array.isArray(esp.flags) ? Object.fromEntries(esp.flags.map(f => [f, true])) : (esp.flags || {});
-  for (const [f, v] of Object.entries(flags)) if (st.flags[f] !== v) errs.push(`flag ${f} = ${JSON.stringify(st.flags[f])}, se esperaba ${JSON.stringify(v)}`);
+  for (const [f, v] of Object.entries(flags)) if (v === false ? !!st.flags[f] : st.flags[f] !== v) errs.push(`flag ${f} = ${JSON.stringify(st.flags[f])}, se esperaba ${JSON.stringify(v)}`);
   for (const i of esp.tiene || []) if (!st.inventory.includes(i)) errs.push(`falta ${i} en el inventario`);
   for (const i of esp.notiene || []) if (st.inventory.includes(i)) errs.push(`${i} sigue en el inventario (debía gastarse)`);
   if (errs.length) fail(errs.join('; '));
@@ -136,5 +161,5 @@ async function check(esp) {
   async function startDismisser() {
     await page.evaluate(() => { if (window.__dismisser) return; window.__dismisser = setInterval(() => { try { if (__game.state().aviso) __game.skipSpeech(); } catch (e) { /* ignore */ } }, 120); });
   }
-  return { run, check, state, travel, chooseByText, closeDialog, playDuel, startDismisser, G, norm };
+  return { run, check, state, travel, chooseByText, closeDialog, playDuel, loseDuel, startDismisser, G, norm };
 }
