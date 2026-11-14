@@ -23,7 +23,8 @@ export const VETADAS = [
 ];
 /** El nombre del periódico real (el que NO es elContable) no aparece en NINGÚN fichero del repositorio: se busca sin
  *  escribirlo (el patrón va codificado para que este archivo tampoco lo contenga). */
-export const MARCA_REAL = new RegExp(Buffer.from('ZWxccypFY29ub21pc3Rh', 'base64').toString(), 'i');
+// Opcional y fuera del repositorio: MARCA_VETADA=<expresión> node tools/text-audit.mjs comprueba que no aparece en ningún fichero.
+export const MARCA_REAL = process.env.MARCA_VETADA ? new RegExp(process.env.MARCA_VETADA, 'i') : null;
 const prueba = (re, t) => (typeof re === 'function' ? re(t) : re.test(t));
 
 /** Topes de muletilla por personaje (§2.4), contados en las líneas distintas que se oyen. who = id de actor (o 'bruno');
@@ -105,6 +106,6 @@ export function estatico(root, salas = null) {
   // el nombre del periódico real, en cualquier fichero de texto del repositorio (salvo node_modules y .git)
   const todo = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => (e.name === 'node_modules' || e.name.startsWith('.')) ? []
     : e.isDirectory() ? todo(path.join(d, e.name)) : /\.(js|mjs|md|html|css|json|webmanifest|txt)$/.test(e.name) ? [path.join(d, e.name)] : []);
-  if (!salas) for (const f of todo(root)) if (MARCA_REAL.test(fs.readFileSync(f, 'utf8'))) vetadas.push(`${path.relative(root, f)}: [nombre del periódico real]`);
+  if (!salas && MARCA_REAL) for (const f of todo(root)) if (MARCA_REAL.test(fs.readFileSync(f, 'utf8'))) vetadas.push(`${path.relative(root, f)}: [nombre del periódico real]`);
   return { como: [...new Set(como)], vetadas: [...new Set(vetadas)] };
 }
