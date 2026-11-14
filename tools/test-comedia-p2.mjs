@@ -212,7 +212,7 @@ async function principal() {
     ['empujar', 'kanban'], ['tirar', 'calendario_ferreteria'], ['mirar', 'calendario_ferreteria'], ['tirar', 'semaforo_ruido'], ['coger', 'bandeja_diseno']]) await T.verb(v, o);
   await T.musts(['Pósit: «GUARDIA: ANSELMO».', '«GUARDIA DE LA GUARDIA: ANSELMO».', 'Hasta el polvo pasa por sus sistemas.',
     'Anselmo me abre expediente. Mental.', 'De mi tablero se sale hecho o muerto.', 'Anselmo lo devuelve con la mirada.',
-    'Es lo único de fuera que dejo entrar. Por los tacos.', 'Anselmo solo se fía de este.'], 'mesa de guardia');
+    'Es de fuera, pero trae tacos del 8.', 'Anselmo solo se fía de este.'], 'mesa de guardia');
   lg = await T.log();
   must(lg.filter(l => l.who === 'anselmo_monolito').length === 4, 'hotspots: no los contesta Anselmo');
   await sinNemesio('hotspots');
@@ -311,7 +311,7 @@ async function principal() {
   await T.opcion('Me voy.');
   await T.musts(['Dos tiras de cinta de Desarrollo. Por debajo, la IA sigue haciendo gráficos.', HERMINIA + 'pieza_opa · ya medida · sobra: 26 %',
     'Notas de gasto generativas para Begoña.', 'Ya te lo he dicho. El prompt es de dentro. Lo escribí yo. En mayúsculas.',
-    'Invadir, no. Desplegar capacidad.', 'Un quesito que suma 130 % no es un gráfico. Es una aspiración.'], 'tras el paso 34');
+    'Invadir, no. Desplegar capacidad.', 'Un quesito que suma 130 %. Yo los hacía de 100. Vieja escuela.'], 'tras el paso 34');
   await sinNemesio('paso 34');
   ok('E2 §2.3.2 paso 34 → herminia_midio (cinta_2), «El modelo es de fuera. El prompt es de dentro.»; árboles [2], [4], [5]');
 
@@ -403,8 +403,8 @@ async function principal() {
   await R.closeDialog(); await T.idle();
   await T.expectFlags({ posit_descopeado: true, ruben_libre: true }, 'paso 40');
   await T.expectInv(['ticket_n1'], ['album_eventos'], 'paso 40');
-  await T.musts(['...Eso no es ni hecho ni muerto. Es consultoría.', 'Despedir, no. Salida en valor. ...Eso sí lo sé hacer yo.',
-    'Columna nueva. La primera que no dice que no.', 'Lo único integrado de la casa.', 'Y en nuestros corazones, Rubén está en HECHO.',
+  await T.musts(['...Ni hecho ni muerto. Consultoría.', 'Despedir, no. Salida en valor. ...Eso sí lo sé hacer yo.',
+    'Columna nueva. La primera que no dice que no.', 'Y en nuestros corazones, Rubén está en HECHO.',
     'No subo. Nunca subo. Paco.', 'Estoy esperando a que salga el sol.', 'Revocado. Con fecha de hoy. Y de julio.',
     'Integró una IA que era un becario.', 'Nos hemos quedado sin IA de la casa.', HERMINIA + 'alta de usuario: no · propietaria: Infografía',
     '...Lo miro en la próxima versión.', 'SEGUIREMOS INFORMANDO. Perdón.'], 'AN_SALIDA');

@@ -5,7 +5,9 @@
 // el árbol y los verbos de Maripaz; el portátil de Tadeo con seis reenvíos), Eventos («¡Ese móvil!», `once` de §7.6) y
 // clímax (D4 con R16 y el tercer remate: Evaristo llama por el teléfono de conferencias; la factura con coma).
 //   node tools/test-comedia-p4.mjs            (modo rápido; comprueba también los planos detalle sin modo rápido)
-//   node tools/test-comedia-p4.mjs --shots    además guarda capturas en tools/shots/e2-p4-*.png
+//   node tools/test-comedia-p4.mjs --shots    además guarda capturas en tools/shots/e2-p4-*.png (y e3-*.png)
+// ENMIENDA E3 §4: la opción «¿Usted se lee el periódico?» del árbol de Maripaz (B19) y M1, Dar la pieza a Maripaz en
+// Marketing (B24: entera la 1.ª vez, entera otra vez, recortada).
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -43,7 +45,8 @@ const verb = (v, t, i) => G(([v, t, i]) => __game.doVerb(v, t, i || null), [v, t
 const opts = () => G(() => __game.currentDialogOptions());
 const choose = (t) => R.chooseByText(t);
 const inRoom = async (id) => { const a = (await state()).actors[id]; return a && a.room; };
-const snap = (name) => page.screenshot({ path: path.join(shotsDir, `e2-p4-${name}.png`) });
+// las capturas de ENMIENDA E3 van con su propio prefijo (`e3-…`)
+const snap = (name) => page.screenshot({ path: path.join(shotsDir, name.startsWith('e3-') ? `${name}.png` : `e2-p4-${name}.png`) });
 const shot = async (name) => {
   if (!args.shots) return;
   await G(() => __game.skipText(false));
@@ -195,7 +198,14 @@ try {
   ok(await logHas('Lo compró en el 97. Por fax.') === 1 && (await flag('rumor_teodoro_n')) === 2, 'rumor C: Maripaz lo sube de 1 a 2');
   ok(await logHas('«Agobio, con Tilas Calmín».') === 1, 'saludo (1.ª vez)');
   ok(JSON.stringify(await opts()) === JSON.stringify(['¿Qué vende Comercial?', '¿Me vende algo a mí?', 'La web va muy lenta.',
-    'Mi abuela dice que no encuentra las noticias.', '¿Por qué tiene un gong?', 'Me voy.']), 'árbol M0 (§4.4)');
+    'Mi abuela dice que no encuentra las noticias.', '¿Por qué tiene un gong?', '¿Usted se lee el periódico?', 'Me voy.']), 'árbol M0 (§4.4; E3 B19)');
+  // ENMIENDA E3 §4.3 B19: lee el periódico (nunca a Bruno) y el remate vuelve al eje
+  await shot('e3-periodico-menu');
+  if (args.shots) await shotDuring('e3-periodico', () => choose('¿Usted se lee el periódico?'), 'Para vender un hueco hay que leer lo de al lado.', 500);
+  else await choose('¿Usted se lee el periódico?');
+  ok(await logWho('De la cabecera a las esquelas. Para vender un hueco hay que leer lo de al lado.') === 'maripaz_remitido'
+    && await logWho('Lo más leído es la fe de erratas. Y ahí no me dejan poner ni un banner.') === 'maripaz_remitido', 'E3 B19: «¿Usted se lee el periódico?»');
+  ok(!(await opts()).includes('¿Usted se lee el periódico?'), 'E3 B19: la opción es `once`');
   await choose('La web va muy lenta.');
   ok(await logHas('Eso te lo arreglo con un pop-up, cariño.') === 1 && await logHas('mientras lo cierras, no te das cuenta') === 1, '«Eso te lo arreglo con un pop-up»');
   await choose('¿Qué vende Comercial?');
@@ -277,11 +287,11 @@ try {
   await verb('hablar', 'maripaz_remitido');
   ok(await logHas('Le estoy vendiendo el orden del día a Mercados.') === 1 && !(await state()).dialog && !(await flag('maripaz_popup_n')), 'antes de la estampida: sin pop-up ni menú');
   await verb('empujar', 'maripaz_remitido');
-  ok(await logHas('Te la cobro.') === 1, 'Empujar (mazo)');
+  ok(await logHas('Si me mueves a mí, se mueve la página 7.') === 1, 'Empujar (mazo)');
   await verb('dar', 'maripaz_remitido', 'ficha_pagina_7');
   ok(await logHas('Debajo. Con banners.') === 1, 'Dar la ficha');
   await verb('coger', 'planillo_bajo_maripaz');
-  ok(await logHas('Se negocia.') === 1, 'Coger el planillo');
+  ok(await logHas('Es mío hasta que alguien llame a Siestatón.') === 1, 'Coger el planillo');
   await shot('sala-reunion');
   await verb('hablar', 'gervasio_acta');
   ok(await logHas('Mientras, le vendo el punto tres a Mercados.') === 1, 'onStart de la reunión: Maripaz vende el punto tres');
@@ -388,6 +398,26 @@ try {
   ok(await logHas('Hasta en la X de cerrar.') === 1, '«¿Qué tal con Siestatón?»');
   await R.closeDialog();
   ok(await logHas('Era una pregunta. Y un anuncio.') === 0, 'despedida oída solo la primera vez (E2 §7.2)');
+
+  step('ENMIENDA E3 §4.4.1 · M1 «La lectora del inventario»: Dar la pieza a Maripaz (entera, otra vez, recortada)');
+  await G(() => __game.clearLog());
+  await give('pieza_opa');
+  const M1A = 'Línea nueve: «Hidrovoltia, a por el Robledal». Quita el sueño. Siestatón.';
+  const M1B = 'Y la conclusión vale un faldón entero. Que no te la recorten.';
+  if (args.shots) await shotDuring('e3-m1-entera', () => verb('dar', 'maripaz_remitido', 'pieza_opa'), M1A, 500);
+  else await verb('dar', 'maripaz_remitido', 'pieza_opa');
+  ok(await logWho(M1A) === 'maripaz_remitido' && await logHas(M1B) === 1 && await logHas('¿Toda esta noticia sin un anuncio en medio?') === 0, 'M1, 1.ª vez: lee la pieza y la tasa');
+  ok(await G(() => __game.state().inventory.includes('pieza_opa')), 'M1: la pieza no se consume');
+  if (args.shots) await shotDuring('e3-m1-segunda', () => verb('dar', 'maripaz_remitido', 'pieza_opa'), '¿Toda esta noticia sin un anuncio en medio?', 500);
+  else await verb('dar', 'maripaz_remitido', 'pieza_opa');
+  ok(await logHas('¿Toda esta noticia sin un anuncio en medio? Se ve demasiado.') === 1 && await logHas(M1A) === 1, 'M1, 2.ª vez: vuelve a vender (eje)');
+  await setFlags({ pieza_recortada: true });
+  if (args.shots) await shotDuring('e3-m1-recortada', () => verb('dar', 'maripaz_remitido', 'pieza_opa'), 'Te han quitado la conclusión.', 500);
+  else await verb('dar', 'maripaz_remitido', 'pieza_opa');
+  ok(await logWho('Te han quitado la conclusión. Era mi hueco de cierre. Lo daba por vendido.') === 'maripaz_remitido', 'M1, recortada: «Lo daba por vendido.»');
+  ok(await G(() => !__game.log.some(l => /te leo|leyéndote|seis años/i.test(String(l.text)) && l.who === 'maripaz_remitido')), 'Maripaz no lee a Bruno');
+  await setFlags({ pieza_recortada: false });
+  await G(() => __game.takeItem ? __game.takeItem('pieza_opa') : null);
 
   // ================================================================ EVENTOS
   step('Eventos (protegida): «¡Ese móvil!» y `once` de §7.6');

@@ -237,3 +237,44 @@ flags `evaristo_lc`, `evaristo_convoco`, `rumor_firma_n` y `planta_oyo` (y el pu
 de Nemesio y Borja de `plan-rules.mjs`. `migrarPartida` los borra de las partidas guardadas (con las posiciones de los
 dos actores) y deshace una `coma_bendecida` sin `correo_evaristo_listo`. El recorrido es el de 44 pasos (`walk-data.mjs`),
 `text-audit` va con `--plan --e2` en `test-all` y el tope global de «cariño» es 20 (sin contar Eventos).
+
+---
+
+## E3. ENMIENDA E3 — fórmulas de remate y segundo registro de Maripaz
+
+> Guion: `docs/guion2/ENMIENDA_E3.md` (revisión 2, aplicada). Prevalece sobre el plan, E1 y E2 solo en lo que toca.
+
+### E3.1 Topes nuevos (fallo con `--e2`; `test-all` ya pasa `--plan --e2`)
+
+En todo el juego, contados en las cadenas literales de `content/` (`TOPES_E2_JUEGO` de `tools/plan-rules.mjs`). **Eventos
+(`eventos.js`, `eventos.dialogos.js`) no cuenta** (`fuera`, como «cariño»): ni se reescribe ni suma.
+
+| Fórmula | Tope | Tras E3 | Ejemplo de lo que cuenta |
+|---|---|---|---|
+| «lo único / la única / el único / su única…» | 8 | 6 | «Es lo único de esta planta que…», «ERES EL ÚNICO» |
+| «X no se coge. Se Y.» (con punto, dos puntos, punto y coma o coma) | 6 | 5 | «Las sillas no se cogen. Se heredan.» |
+| «primera vez» | 5 | 4 | «Es la primera vez que…» |
+| «Mi primer/a…» | 6 | 5 | «Mi primer documento oficial» |
+| «No es X. Es Y.» (la cuarta fórmula) | 12 | 10 | «Eso no es una pregunta, criatura. Es una sentencia.» |
+| «factur…» | 11 | 9 | «Te la facturo.» |
+
+Margen de 1-2 en cada uno: **una línea nueva con cualquiera de estas fórmulas casi seguro sobra**. Remata con la
+situación, no con el molde (formas de E3 §3.1: lógica propia del personaje, acción con consecuencia, consecuencia absurda,
+precisión absurda, detalle concreto, pista escondida, cortesía con el objeto, rebaja, fuera de registro, callback…).
+Siguen al límite exacto de E2 «desde [fecha]» (6/6) y «Emoji de fuego» (8/8).
+
+Para ver cuántas lleva cada tope (pasen o no): `node tools/text-audit.mjs --estatico --recuento`.
+
+El auditor (`esTexto()`) ya no se salta las frases sin tildes, eñes ni comas (antes no veía «Un fax enmarcado no se coge.
+Se hereda.»): una línea ASCII también cuenta para los topes, los «Como X.» y las palabras vetadas. Excepción: el campo
+`apodo:` de la tabla `SALA` de `content/lib/edificio.js` (ids internos, nada lo enseña).
+
+### E3.2 Maripaz: segundo registro acotado
+
+- **Maripaz lee el periódico y la pieza, nunca a Bruno.** Nada de Maripaz dice «te leo», «leyéndote», «seis años» ni
+  promete leerle: quien lee a Bruno es la abuela, y es el final del juego.
+- Lo dice en su idioma comercial, sin ternura: leer es encontrar el hueco y el anuncio vecino; un elogio es una tasación
+  («vale un faldón entero»), nunca «es lo mejor».
+- Dosis: seis líneas en su boca (murmullo B20, Dar el acta B14, la opción `once` «¿Usted se lee el periódico?» de su árbol
+  y M1: Dar `pieza_opa` en Marketing, con variante recortada y respuesta repetida de eje), ninguna en el duelo. El resto,
+  eje (inventario publicitario).

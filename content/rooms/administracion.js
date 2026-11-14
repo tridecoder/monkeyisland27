@@ -61,7 +61,6 @@ export default buildRoom({
       usar: async (api) => { await api.goto('ecosistema', 'administracion'); },
       abrir: 'Es un pasillo: viene abierto de serie. Begoña lo tiene en revisión.',
       cerrar: 'Si cierro el pasillo, Begoña me pide el F-3 de Pasillos. Por triplicado.',
-      empujar: 'El pasillo no se empuja. Se recorre. Con número de turno.',
     } },
     { id: 'cartel_horario', name: 'cartel del horario', handlers: {
       mirar: async (api) => { await api.say(['«ATENCIÓN: 19:00 A 19:15». Según Begoña son las 19:07.', 'Llevan siéndolo toda la tarde.']); },
@@ -90,9 +89,9 @@ export default buildRoom({
         const n = rota(api, 'administracion_pared_n');
         await api.say(lista[n % lista.length]);
       },
-      coger: async (api) => { await sayBe(api, 'Eso es patrimonio. Esas notas no se tocan: se rechazan.'); },
+      coger: async (api) => { await sayBe(api, 'Uno: es patrimonio. Dos: ya están rechazadas. Tres: esas manos.'); },
       empujar: 'Una nota se tuerce. Begoña la endereza sin mirar. Tiene un sexto sentido.',
-      'usar:copias_rechazadas': 'Las mías no son de pared. Son de archivo personal. Lo dijo ella.',
+      'usar:copias_rechazadas': 'Las mías van al archivo personal. Lo dijo ella.',
     } },
     { id: 'cartel_recorte', name: 'cartel del recorte', handlers: {
       mirar: async (api) => { await api.say(['«TODA PIEZA O NOTA SUFRE EL RECORTE ESTÁNDAR (26 %). SIN EXCEPCIONES».', '«Firmado: Administración (también recortada)».']); },
@@ -105,7 +104,7 @@ export default buildRoom({
     { id: 'mesa_evaristo', name: 'mesa de Evaristo', hotspot: false },
     { id: 'ventanilla', name: 'ventanilla', handlers: {
       mirar: async (api) => { await api.say(['Una ventanilla dentro de una oficina.', 'Nadie sabe por qué. Begoña la defiende igual.']); },
-      abrir: async (api) => { await sayBe(api, 'La ventanilla no se abre. Se atiende por el agujerito, como manda la norma.'); },
+      abrir: async (api) => { await sayBe(api, '¿Abrirla? Por el agujerito cabe un impreso doblado en tres. Usted, no.'); },
       empujar: async (api) => { await sayBe(api, 'Ese cristal es de 1986. Aguantó una auditoría. Te aguanta a ti.'); },
       hablar: async (api) => api.dialog('begona'),
       usar: async (api) => api.dialog('begona'),
@@ -131,12 +130,12 @@ export default buildRoom({
       mirar: async (api) => { await api.say(['«CONTROLLING Y FINANZAS». Detrás del cristal, un señor lee con lupa.', 'Lee un contrato con lupa. Va por la cláusula 12. Lleva una semana en ella.']); },
       usar: hablarEvaristo,
       abrir: hablarEvaristo,
-      empujar: async (api) => { await sayBe(api, 'A don Evaristo no se le empuja. Se le espera.'); },
+      empujar: async (api) => { await sayBe(api, 'Ni se le ocurra. Si le empuja, vuelve a empezar la cláusula 12.'); },
       cerrar: 'Ya está cerrada. Don Evaristo la cierra con doble vuelta. Y con nota al pie.',
       hablar: hablarEvaristo,
     } },
     { id: 'contratos_evaristo', name: 'carpetas de contratos', handlers: {
-      mirar: 'Carpetas: «CONTRATOS (LEÍDOS)». La única estantería sincera de la casa.',
+      mirar: 'Carpetas: «CONTRATOS (LEÍDOS)». Y es verdad: están subrayados.',
       coger: async (api) => { await sayEv(api, 'Esas no. Están leídas. Si las toca, hay que releerlas.'); },
       abrir: async (api) => { await sayEv(api, 'Si la abre, se pierde la página. Y la página es lo de menos: la coma.'); },
     } },
@@ -144,7 +143,7 @@ export default buildRoom({
       mirar: 'Una coma enmarcada. Placa: «Cláusula 7, 2009. Nos ahorró una fusión».',
       hablar: 'Le digo que es preciosa. Desde dentro, Evaristo asiente.',
       coger: async (api) => { await sayEv(api, 'Esa coma no se presta. Ya hizo bastante en 2009.'); },
-      usar: 'Una coma no se usa. Se pone en su sitio. Y ella ya está.',
+      usar: 'Ya está en su sitio. Y bien puesta.',
     } },
   ],
 
@@ -177,8 +176,8 @@ export default buildRoom({
         'dar:fotocopia_nota_direccion': async (api) => { await sayBe(api, 'Quédesela y estúdiela. Por las dos caras, como se la he dado.'); },
         'dar:acta_reunion': async (api) => { await sayBe(api, '¿Un acta de Gervasio? La sello para que conste que existe.'); sello(api); },
         'dar:ficha_pagina_7': async (api) => { await sayBe(api, 'Tres casillas. Bien. Pero ninguna dice «importe».'); },
-        'usar:movil': async (api) => { await sayBe(api, 'Aquí no se hacen fotos. Se hacen fotocopias.'); },
-        empujar: 'A Begoña no se la empuja. Se la tramita.',
+        'usar:movil': async (api) => { await sayBe(api, '¿Fotos? En esta ventanilla, fotocopias. Por triplicado.'); },
+        empujar: 'Me pongo detrás para empujarla. Me da número de turno. El uno.',
         coger: async (api) => { await sayBe(api, 'Toca algo de esta ventanilla y lo sello. A usted también.'); },
       } },
     { id: EV,
@@ -191,7 +190,7 @@ export default buildRoom({
           await sayEv(api, 'El triplicado tiene una coma distinta.');
           await sayEv(api, '...Es broma. Es lo único que sé hacer de broma.');
         },
-        'dar:ticket_n1': async (api) => { await sayEv(api, '«Asignado a: Titulator 3000». ¿Facturamos a un ticket? Lo apunto.'); },
+        'dar:ticket_n1': async (api) => { await sayEv(api, '«Asignado a: Titulator 3000». ¿Y a quién se lo reclamo? ¿Al enchufe?'); },
         'dar:acta_reunion': async (api) => { await sayEv(api, 'Dos faltas y ninguna coma. Casi es poesía. Mala, pero poesía.'); },
         'dar:cafe': async (api) => { await sayEv(api, 'Gracias. ¿Lleva ticket? No lo digo yo. Lo diría Begoña.'); },
         'dar:tarjeta_becario': async (api) => { await sayEv(api, '«Pellizco». Se lo corrijo a lápiz. Rojo el error, azul usted.'); },
@@ -199,7 +198,7 @@ export default buildRoom({
         'dar:boli_muerto': async (api) => { await sayEv(api, 'Sin tinta. Ni para una coma. Lo siento por él.'); },
         'dar:ficha_pagina_7': async (api) => { await sayEv(api, 'Tres casillas y ninguna coma. Así cualquiera firma.'); },
         'dar:*': async (api) => { await sayEv(api, 'Gracias. Lo leo y le escribo. Un correo. Muy pequeño.'); },
-        empujar: async (api) => { await sayBe(api, 'A don Evaristo no se le empuja. Se le espera.'); },
+        empujar: async (api) => { await sayBe(api, 'Ni se le ocurra. Si le empuja, vuelve a empezar la cláusula 12.'); },
         coger: async (api) => { await sayEv(api, 'Una cosita: no me coja. Si me muevo, pierdo la línea.'); },
       } },
   ],

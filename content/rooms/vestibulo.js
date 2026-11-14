@@ -271,7 +271,6 @@ export default buildRoom({
       'usar:tarjeta_becario': fotoEnOrganigrama,
       'usar:chicle': 'El chicle solo no. Necesito algo que pegar. Por ejemplo, mi cara.',
       coger: 'Es de la empresa. Y la empresa es del organigrama.',
-      empujar: 'Si lo empujo, se reestructura solo. Y luego me lo facturan.',
       tirar: 'Si tiro del organigrama, me caen treinta jefes. Y ninguno ayuda.',
       hablar: 'Le hablo al organigrama. Treinta caras y ninguna me contesta. Es un comité.',
     } },
@@ -342,9 +341,9 @@ export default buildRoom({
         api.setFlag('vestibulo_buzon_abierto', true);
       },
       usar: 'Escribo «Más becarios con contrato». La ranura la escupe. Polvo y principios.',
-      'dar:*': 'Eso no es una sugerencia. Es un objeto. Aquí no se aceptan pruebas.',
+      'dar:*': 'Es un buzón de sugerencias. Pruebas, no se aceptan.',
       cerrar: 'Lleva cerrado desde que se inventó el correo electrónico.',
-      coger: 'Está atornillado. Es lo único de esta casa que tiene estabilidad.',
+      coger: 'Está atornillado. A él sí lo hicieron fijo.',
       hablar: 'Le sugiero algo en voz alta. El polvo ni se mueve.',
     } },
     { id: 'radio_celestino', name: 'radio', handlers: {
@@ -358,7 +357,7 @@ export default buildRoom({
       mirar: async (api) => api.say(api.flag('torno_abierto')
         ? 'Botones: 2, 1, 0 y -1. El -1 está gastadísimo: Sistemas no sube nunca.'
         : ['El ascensor. Detrás de los tornos, con su moqueta y su logo.', 'Desde aquí se ve la moqueta. Algún día la piso. Con contrato.']),
-      cerrar: 'Se cierra solo. Es lo único automático del edificio. Bueno, y Gertrudis.',
+      cerrar: 'Se cierra solo. Celestino lo narra: «¡Y cierra! ¡Y cierra!».',
       empujar: 'Si empujo el ascensor, me lo cobra Sistemas como horas extra.',
       tirar: 'Tiro de la puerta. No cede. Va con cita previa, como Paco.',
       hablar: '¿Baja? Hace «tin». Es lo más amable que me han dicho hoy.',
@@ -369,7 +368,6 @@ export default buildRoom({
       mirar: async (api) => api.say(api.flag('torno_abierto')
         ? 'La escalera a la Redacción. Moqueta roja: aquí ya se nota que constas.'
         : 'La escalera a la Redacción. Al otro lado de los tornos. A seis años y un torno.'),
-      empujar: 'Una escalera no se empuja. Se sube. Si te deja el torno.',
       hablar: '«¿Hay alguien arriba?». Contesta un teclado. Eso es que sí.',
     } },
     // bancada delantera de tornos, carril fuera de servicio (decorado: tapa a quien pase detrás)
@@ -389,7 +387,7 @@ export default buildRoom({
         await api.say('Le cuento lo de la firma. No me juzga. No me pide ticket.');
         api.setFlag('vestibulo_planta_oyo', true);
       },
-      coger: 'No. Es la única que ha sobrevivido a todos los ERE.',
+      coger: 'No. Ha sobrevivido a tres ERE. No voy a ser yo el cuarto.',
       'dar:cafe': 'No bebe. Por eso dura tanto.',
       'dar:*': 'No acepta nada. Ni regalos ni sugerencias. Por eso sigue en plantilla.',
       empujar: async (api) => {
@@ -425,7 +423,6 @@ export default buildRoom({
       },
       coger: 'La rama es suya. Yo solo cuelgo.',
       tirar: 'Si tiro de la rama, se cae la casilla. Y yo con ella.',
-      empujar: 'Es la única rama del organigrama que está recta. La dejo.',
       'usar:tarjeta_becario': fotoEnOrganigrama,                                    // crítica 3 · N4
       hablar: 'Le pregunto a la rama si me quiere. No contesta. Se fue a las 18:30.',
     } },
@@ -439,7 +436,7 @@ export default buildRoom({
       },
       coger: cel('Esas llaves no se tocan. Las custodio yo. Y el garaje me custodia a mí.'),
       'usar:tarjeta_becario': 'La tarjeta no abre el garaje. Seis años y no tengo ni plaza de bici.',
-      abrir: 'Las plazas no se abren. Se heredan.',
+      abrir: 'Aquí una plaza se abre cuando alguien se jubila. Nadie se jubila.',
       tirar: 'Si tiro de una llave, la línea de sucesión se reordena. Y me echan a mí.',
       hablar: 'Le pregunto qué hay que hacer para tener plaza. El cuadro calla. Sabe cosas.',
     } },
@@ -466,7 +463,7 @@ export default buildRoom({
         'dar:chicle': cel('Ese chicle ya es tuyo. Aquí no se aceptan devoluciones. Ni en el torno.'),
         'dar:ficha_pagina_7': cel('¿Una ficha de la página 7? Eso, a la Redacción de papel. Yo solo veo pasar.'),
         'dar:ticket_n1': cel('¿Un ticket cerrado? Eso no lo había visto nunca. Y llevo aquí treinta años.'),
-        'dar:taper_huerfano': cel('¿Un táper sin nombre? Eso no es para mí. Es para alguien con hambre de verdad.'),
+        'dar:taper_huerfano': cel('¡Táper rechazado! ¡Ese táper busca a alguien con hambre de verdad!'),
         'dar:*': cel('Eso, a objetos perdidos. Ahí guardo desde paraguas hasta becarios.'),
         empujar: 'A Celestino no se le empuja. Lleva galones. Y bufanda.',
         tirar: 'Le tiro de la bufanda. Grita «¡fuera de juego!». Lo dejo.',

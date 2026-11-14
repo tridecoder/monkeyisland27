@@ -26,7 +26,7 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   // [integrador] con Rubén ya fuera del armario, la línea del armario 27 se queda vieja (álbum y baja)
   baja: 'A las nueve apagan la rotativa. Y Rubén sigue de alta en un armario.',
   acta: 'Para entrar en la Sala hace falta un acta. Gervasio no ha escrito una nunca.',
-  climax: 'Respondo a todos. Es lo único que sé hacer bien.',
+  climax: 'Respondo a todos. Por fin algo que sé hacer.',
   // E2 §10.3: la coma de Evaristo (pasos 28 y 32)
   coma: 'Evaristo me llama y Begoña me manda a verle. Algo le quita el sueño.',   // integración: en el paso 28 solo ha sonado la L1
   bendicion: 'Evaristo duda de su propia coma. Necesita a alguien que sepa de comas.',

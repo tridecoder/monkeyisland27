@@ -248,7 +248,7 @@ try {
   step('Paso 30 · dos fuentes: la fotocopia VUELVE a Bruno');
   await R.run(['dar', 'fotocopia_nota_direccion', 'aurora_galerada']); await R.run(['cerrar']); await idle();
   await R.check({ flags: ['casilla_fuente'], notiene: ['mensaje_fp'], tiene: ['fotocopia_nota_direccion'] });
-  ok(await logHas('las fuentes no se quedan, se citan') && !(await logHas('en minúscula')), 'paso 30: casilla_fuente, −mensaje_fp, la fotocopia se queda (sin «A ver.» ni «opa»)');
+  ok(await logHas('Una fuente se cita y se devuelve: es prestada.') && !(await logHas('en minúscula')), 'paso 30: casilla_fuente, −mensaje_fp, la fotocopia se queda (sin «A ver.» ni «opa»)');
   await verb('hablar', 'aurora_galerada');
   o = await opts();
   ok(o && !o.includes('Tengo una fuente.') && !o.includes('Tengo dos fuentes.'), 'tras citar, no vuelve «Tengo una fuente»');
@@ -272,7 +272,7 @@ try {
   ok(o && o.includes('Don Evaristo pregunta si su coma está bien.'), 'con evaristo_escuchado y papel: la opción de la coma');
   await shotDuring('coma-fax', () => chooseNoWait('Don Evaristo pregunta si su coma está bien.'), [7000, 22000, 28500, 40000]);
   await R.check({ flags: ['coma_bendecida', 'correo_evaristo_listo'], tiene: ['correo_evaristo'] });
-  ok(await logHas('lo único bien puntuado de la casa') && await logHas('«La coma está bien. Envíelo. A.G.»') && await logHas('ESO NO ES MÍO. ES DE CONTROLLING. LO RESPETO.')
+  ok(await logHas('lo único bien puntuado de la casa') && await logHas('«La coma está bien. Envíelo. A.G.»') && await logHas('DE CONTROLLING. NI LO MIDO. LO RESPETO.')
     && await logHas('Cuando alguien diga que una coma es un detalle sin importancia'), 'paso 32: texto de §5.3');
   o = await opts();
   ok(o && !o.includes('Don Evaristo pregunta si su coma está bien.'), 'la opción de la coma desaparece');
@@ -317,21 +317,21 @@ try {
   ok(await flag('fax_tecla_n') === 2 && await logHas('No recorto: yo solo leo') && await logHas('recorte sin leer'), 'tecla 3: Evaristo llama; «alguien que recorte sin leer»');
   ok(!(await flag('pieza_recortada')), 'sin pieza_recortada tras 1 y 3 (XM5)');
   await verb('usar', 'fax', 'pieza_opa'); await choose('Mejor no.');
-  ok(await logHas('Un fax mal marcado no se borra'), '«Mejor no.»');
+  ok(await logHas('un número mal marcado también llega. A otro.'), '«Mejor no.»');
   await clearLog();
   await shotDuring('fax-begona', async () => { await R.run(['usar', 'pieza_opa', 'fax']); await chooseNoWait('2: ADMINISTRACIÓN'); }, [3600, 7800, 16000, 49000, 55000, 60500]);
   await R.check({ flags: ['pieza_recortada', 'catacumba_factura'], tiene: ['pieza_opa'] });
   ok(await logHas('BEGOÑA (fax): ADMINISTRACIÓN. RECIBIDO A LAS 19:07') && await logHas('CABE, CABE Y CABE') && await logHas('0,26 euros') && await logHas('acaba en un juzgado'),
     'paso 35: Begoña recorta por fax, triplicado, cuarta hoja con la factura');
   ok(!(await logHas('cero setenta y cuatro')), '§7.4 paso 35: fuera la cuenta de Bruno');
-  ok(await logHas('Mi pieza, con un faldón de Siestatón. Más largo que la pieza.') && await logHas('EL ANUNCIO MIDE CUARENTA LÍNEAS. LA NOTICIA, VEINTITRÉS.')
+  ok(await logHas('Mi pieza, con faldón de Comercial: «¿La opa le quita el sueño? Siestatón».') && await logHas('EL ANUNCIO MIDE CUARENTA LÍNEAS. LA NOTICIA, VEINTITRÉS.')
     && await logHas('EN MI PÁGINA LA NOTICIA SE VE. DEVUELTO.'), '§4.2.6: el faldón de Comercial, devuelto por fax');
   ok((await G(() => __game.state().objects['catacumba.fax'])).state === 'con_papel', 'el fax se traga el faldón y queda con_papel');
   ok(await G(() => __game.state().objects['catacumba.factura_fax'] ? __game.state().objects['catacumba.factura_fax'].visible !== false : true), 'la factura queda grapada en la pared');
   if (SHOTS) { await G(() => __game.skipText(false)); await page.waitForTimeout(300); await page.screenshot({ path: path.join(here, 'shots', 'e2-p3-factura.png') }); await G(() => __game.skipText(true)); }
   await clearLog();
   await verb('usar', 'fax', 'pieza_opa');
-  ok(await logHas('me la facturan dos veces'), 'la pieza recortada no se vuelve a enviar');
+  ok(await logHas('Begoña recorta el recorte'), 'la pieza recortada no se vuelve a enviar');
 
   step('Paso 36 · Dar ficha a Teodoro → 7.3a (sin Íñigo, §7.3; la línea de Controlling, §5.7)');
   await clearLog();

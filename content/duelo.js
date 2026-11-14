@@ -33,7 +33,7 @@ export default {
   // `only: [ids]` = solo en esos duelos. La contestación se dice SIEMPRE, también en el tercer fallo.
   weakReplies: [
     { text: 'Te lo miro y te digo.', answer: 'Ya. Te lo miro yo también.',
-      answers: { maripaz: 'Te lo miro y te facturo.', teodoro: 'MIRAR NO CUENTA. MEDIR, SÍ.', gervasio: 'Eso es mío. No me lo copies.', inigo: 'Perfecto. Te pongo en «Pendiente». Es azul.' } },
+      answers: { maripaz: '¿Me lo miras? Eso es una impresión. Te la cobro.', teodoro: 'MIRAR NO CUENTA. MEDIR, SÍ.', gervasio: 'Eso es mío. No me lo copies.', inigo: 'Perfecto. Te pongo en «Pendiente». Es azul.' } },
     { text: '¿Eso no lo llevaba otro departamento?', answer: 'Lo llevaba. Ahora lo llevas tú.',
       answers: { maripaz: 'Lo llevaba. Ahora lo llevas tú. Con IVA.', teodoro: 'AQUÍ NO HAY OTRO. HAY ESTE.', gervasio: 'Lo llevaba. Se ha delegado. Mira quién está delante.', inigo: 'Ya no hay departamentos. Hay cuadrantes.' } },
     { text: '¿Me lo pones por escrito?', answer: 'Te lo estoy poniendo por escrito. Es un correo.',
@@ -82,16 +82,16 @@ export default {
     '*': 'Eso no encaja en este hilo.',
     teodoro: {
       movil: '¿Me vas a llamar? Estoy aquí. A dos metros.',
-      tarjeta_becario: 'Una tarjeta sin foto. Como tu firma.',
+      tarjeta_becario: 'Una tarjeta sin foto. Sin cara no hay cuerpo.',
       libreta_replicas: 'Ya te he leído las réplicas. No caben.',
-      boli_muerto: 'LOS MUERTOS NO SE FAXEAN. SE ENTIERRAN EN CUERPO 9.',      // adenda 7.5
+      boli_muerto: 'ESQUELA: UN BOLI DE AURORA. MURIÓ CORRIGIENDO. CABE EN UNA LÍNEA.',      // adenda 7.5
       '*': 'Eso no se faxea.',
     },
     inigo: {
-      movil: 'Si me grabas, te facturo los derechos de imagen.',
+      movil: 'Grábame. Lo subimos como caso de éxito. Tú sales en «aprendizajes».',
       tarjeta_becario: 'Sin foto no estás en mi matriz. Ah, sí: en «Ideal».',
       libreta_replicas: 'Bonito cuaderno. Low-cost.',
-      manual_fax: '¿Un manual? Yo no leo manuales: los facturo.',
+      manual_fax: '¿Un manual? Nosotros lo resumimos en una diapositiva. La 247.',
       boli_muerto: '¿Un boli? Yo firmo con el dedo. En la tableta.',            // adenda 7.5
       '*': 'Ese input no escala.',
       // «ticket_n1 en el remate B» y «acta_reunion en el remate A» van en el `wrongObject` de cada remate (paquete D)

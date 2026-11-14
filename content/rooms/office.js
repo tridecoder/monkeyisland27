@@ -220,9 +220,9 @@ export default buildRoom({
     { id: 'office_a_pecera', name: 'Redacción', exit: { room: 'pecera', tipo: 'arco' }, handlers: {
       mirar: 'La Redacción, por el arco. Se oye teclear «pensiones».',
       usar: async (api) => { await api.goto('pecera'); },
-      abrir: 'Más abierto no puede estar. Es un arco: lo único de esta planta sin cerradura.',
+      abrir: 'Más abierto no puede estar. Es un arco.',
       cerrar: 'Para cerrar un arco hace falta una puerta y un presupuesto. No hay ninguno.',
-      empujar: 'Empujo el aire del arco. Cede. Es lo único que cede en esta planta.',
+      empujar: 'Empujo el aire del arco. Cede.',
       hablar: 'Le digo a la Redacción que ahora vuelvo. Nadie levanta la vista.',
       coger: 'El arco se queda. Yo, de momento, también.',
     } },
@@ -236,9 +236,9 @@ export default buildRoom({
         api.sfx('close');
         await api.say('La cierro con la delicadeza de un jefe de cierre.');
       },
-      coger: 'El yogur de Ramírez no se toca. Es lo único suyo que sigue fresco.',
+      coger: 'El yogur de Ramírez. Caducó en 2019. Dijo que volvía antes.',
       usar: async (api) => {
-        if (api.has('taper_huerfano')) await api.say('Mi táper se queda conmigo. Es lo único que tengo a mi cargo.');
+        if (api.has('taper_huerfano')) await api.say('Mi táper se queda conmigo. En el currículum: «Personal a cargo: 1».');
         else await api.say('Meto mi táper. Ah, no: no tengo táper. Tengo nervios, y no se enfrían.');
       },
       'usar:taper_huerfano': 'Si lo meto ahí, mañana es de Ramírez. Aquí todo acaba siendo suyo.',
@@ -261,7 +261,7 @@ export default buildRoom({
         if (api.flag('office_microondas_visto')) await api.say('Sus dueños se fueron a las seis y media. Los tuppers siguen en la cola.');
         else { api.setFlag('office_microondas_visto', true); await api.say('Nueve tuppers en cola. El primero lleva ahí desde la hora de comer.'); }
       },
-      usar: 'Hay cola. Colarse en el microondas es lo único que aquí es despido procedente.',
+      usar: 'Hay cola. Colarse aquí es despido procedente.',
       abrir: 'Dentro gira un plato vacío. Nadie se atreve a pararlo.',
       'usar:cafe': 'Recalentar un café de Gertrudis delante de ella. Ni loco.',
       'usar:taper_huerfano': 'Está vacío. Calentar la nada en la cola de otros: eso sí es despido.',
@@ -284,19 +284,19 @@ export default buildRoom({
     { id: 'hoja_firmas', name: 'hoja de firmas', handlers: {
       mirar: async (api) => { await api.say(['Curso obligatorio de prevención de riesgos. No lo ha hecho nadie.', 'Hay una sola firma: «Rubén (todavía aquí)».']); },
       usar: 'Mi primera firma en papel no va a ser en una hoja de riesgos. Me niego.',
-      coger: 'Si me la llevo, Rubén pierde su única firma. Y no sé quién es.',
+      coger: 'Si me la llevo, Rubén pierde su firma. Y todavía no sé quién es.',
     } },
     { id: 'cartel_cortado', name: 'cartel del cortado', handlers: {
       mirar: '«El cortado sube a 1,20 €». Escrito a mano. La noticia más leída del edificio.',
       coger: 'Si me lo llevo, el precio sube igual. Lo dice el IPC.',
-      usar: 'Lo releo. Sigue a 1,20 €. Es la única cifra estable de la casa.',
+      usar: 'Lo releo. 1,20 €. Cuando entré de becario, valía uno.',
     } },
     { id: 'fregadero', name: 'fregadero', handlers: {
       mirar: 'Tazas de eventos. La del «Foro de Innovación 2017» tiene moho innovador.',
       usar: 'Si friego una taza, mañana me toca fregar todas. Así empezó Celestino.',
       coger: 'La taza del Foro de Innovación no se mueve. Ha echado raíces. Disruptivas.',
       'usar:cafe': 'Tirar un café de Gertrudis por el fregadero. Me oiría. Lo sé.',
-      'usar:taper_huerfano': 'Ya está limpio. Es el único táper limpio del edificio. No lo estropeo.',
+      'usar:taper_huerfano': 'Ya está limpio. Lo vuelvo a fregar. Por tener algo hecho.',
       abrir: 'Abro el grifo. Tose dos veces y suelta un hilo. Lo cierro antes de que opine.',
       cerrar: 'Cierro el grifo. Gotea igual. Es su manera de opinar.',
     } },
@@ -342,8 +342,8 @@ export default buildRoom({
         'dar:taper_huerfano': async (api) => { await lcd(api, 'NO SIRVO EN TÁPER. TENGO UN NOMBRE QUE MANTENER.'); },
         'usar:*': async (api) => { await lcd(api, 'E-46: ESO NO ES UN CAFÉ.'); },
         'dar:*': async (api) => { await lcd(api, 'E-46: ESO NO ES UN CAFÉ.'); },
-        empujar: 'No pienso pegar a una cafetera. Es la única que trabaja de noche.',
-        tirar: 'No pienso pegar a una cafetera. Es la única que trabaja de noche.',
+        empujar: 'Ni la rozo. En la pantalla ya pone: «ANOTADO».',
+        tirar: 'Ni la rozo. En la pantalla ya pone: «ANOTADO».',
         coger: 'Pesa lo que un convenio colectivo. Con sus anexos.',
         abrir: 'La abro. Dentro, un pósit: «Si lees esto, salúdala. — C.»',
         cerrar: 'Ya está cerrada. Abierta, solo con buenas palabras.',
@@ -373,7 +373,7 @@ export default buildRoom({
         'dar:*': async (api) => { await gv(api, 'Eso lo coges tú, que tienes la agenda más limpia.'); },
         empujar: 'Diecinueve años sin moverse de su sitio. No voy a ser yo quien empiece.',
         tirar: 'Si le tiro de la manga, me la delega.',
-        coger: 'Gervasio no se coge. Se le espera. Él también espera algo. No sabe qué.',
+        coger: 'Gervasio espera algo. No sabe qué. Por si soy yo, me aparto.',
       } },
   ],
 

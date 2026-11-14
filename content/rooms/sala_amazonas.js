@@ -99,11 +99,11 @@ export const duelMaripaz = {
     R14: 'Si quieres lo vemos en una reunión rápida. Con pop-up de bienvenida.',
   },
   intro: [],
-  hurt: ['Uy. Eso tiene tarifa.', 'Eso me lo guardo para un branded content.'],
+  hurt: ['Uy. Eso tiene tarifa.', 'Bien dicho. Eso, al lado de un anuncio de tiritas.'],
   taunt: ['Eso no lo patrocina nadie.', 'Muy bonito. Pero sin anuncio no es contenido.'],
   finishers: [
     { atScore: 3, text: '¿Y quién me firma que esa página es noticia y no un hueco para anuncios?', object: 'ficha_pagina_7',
-      wrongObject: { '*': 'Eso no lo facturo. Ni lo firmo. Ni lo entiendo.' },
+      wrongObject: { '*': 'Eso no lleva sello. Sin sello, para mí es un hueco. Y los huecos los vendo.' },
       script: async (api) => { await api.say(fichaSellada(api)); } },
   ],
   cc1: 'Colchones Siestatón',
@@ -192,7 +192,7 @@ async function d1Siestaton(api, info = {}) {
     } else {
       await api.phone.say('Le pasamos con su comercial.');
       gong(api);
-      await sayM(api, '¿Sí? ¿Me llamas desde el colchón? Eso te lo facturo.');
+      await sayM(api, '¿Sí? ¿Me llamas desde un colchón? Buena elección.');
       await api.say('Maripaz, está usted a tres metros.');
       await sayM(api, 'Por eso. Llamada a tres metros: tarifa de proximidad.');
     }
@@ -253,7 +253,7 @@ export default buildRoom({
     // §4.4: Maripaz incuba el planillo (8×3 px bajo ella). Se ve, no se coge: se negocia (D1).
     { id: 'planillo_bajo_maripaz', name: 'planillo', when: ['acto_2_iniciado', '!casilla_hueco', '!acto_3_iniciado'], handlers: {
       mirar: 'Asoma un borde del planillo. Página 7: «Colchones Siestatón». Encima, Maripaz.',
-      coger: async (api) => { await sayM(api, 'Ese planillo no se coge. Se negocia.'); },
+      coger: async (api) => { await sayM(api, 'Ese planillo tiene un hueco. Es mío hasta que alguien llame a Siestatón.'); },
       tirar: 'Tiro un milímetro. Maripaz pesa más que el planillo. Y que mi contrato.',
       usar: 'Para usarlo tendría que levantarse Maripaz. Eso se negocia aparte.',
       empujar: 'Lo empujo hacia dentro. Maripaz se acomoda encima. Ha ganado terreno.',
@@ -277,7 +277,7 @@ export default buildRoom({
     { id: 'tele_amazonas', name: 'tele de videollamadas', states: ['normal', 'entrada_1'], handlers: {
       mirar: async (api) => {
         if (api.getState('tele_amazonas') === 'entrada_1') await api.say('«ENTRADA 1»: el vestíbulo. Celestino retransmite. Con bufanda.');
-        else if (api.flag('acto_3_iniciado')) await api.say('Apagada. Solo el piloto rojo, en reposo. Lo único que descansa aquí.');
+        else if (api.flag('acto_3_iniciado')) await api.say('Apagada. Solo el piloto rojo, en reposo. Se lo ha ganado.');
         else await api.say('Una tele de videollamadas. Pegatina: «PULSAR ENTRADA 3. NO, LA 2. NO».');
       },
       usar: usarTele,
@@ -324,7 +324,7 @@ export default buildRoom({
           else await sayG(api, 'Yo aquí solo estoy en copia. Con toda la empresa.');
         },
         'dar:cafe': async (api) => { await sayG(api, '¿Un café? ¿A mí? Esto no estaba en el orden del día. Se agradece.'); },
-        'dar:acta_reunion': async (api) => { await sayG(api, 'No, no. El acta es tuya. Yo ya cumplí. Por primera vez.'); },
+        'dar:acta_reunion': async (api) => { await sayG(api, 'No, no. El acta es tuya. Yo ya... Se ha cumplido.'); },
         'dar:*': async (api) => { await sayG(api, 'Eso lo coges tú, que tienes la agenda más limpia.'); },
         empujar: 'Gervasio no se mueve. Diecinueve años esquivando marrones dan estabilidad.',
       } },
@@ -341,8 +341,8 @@ export default buildRoom({
           await api.dialog('maripaz_sala');
         },
         usar: async (api) => { await api.say('Le toco el hombro.'); await sayM(api, 'Has hecho clic en un anuncio. Ahora te sigo toda la noche.'); },
-        coger: async (api) => { await sayM(api, 'A mí no se me coge, cariño. Se me contrata. Por impresiones.'); },
-        empujar: async (api) => { api.sfx('hit'); await sayM(api, 'Eso en la web se llama «interacción». Te la cobro.'); },
+        coger: async (api) => { await sayM(api, '¿Cogerme? Antes, el formulario de contacto, cariño. Catorce campos.'); },
+        empujar: async (api) => { api.sfx('hit'); await sayM(api, '¡Uy! Si me mueves a mí, se mueve la página 7.'); },
         'dar:ficha_pagina_7': async (api) => { await sayM(api, 'Una ficha sin hueco. El hueco lo tengo yo. Debajo. Con banners.'); },
         'dar:cafe': async (api) => { await sayM(api, '¿Café? Ya tengo. Y la taza lleva anuncio. Mira: Cafés Madrugón.'); },
         'dar:pieza_opa': async (api) => { await sayM(api, '¿Toda esta noticia sin un anuncio en medio? Se ve demasiado.'); },
@@ -366,10 +366,10 @@ export default buildRoom({
           if (!api.flag('duelo_inigo_ganado') || !climaxActivo(api)) { await api.say('Todavía no. Primero, por escrito.'); return; }
           await api.scene('climax_empujon');
         },
-        coger: 'Es más alto que yo y tiene más autoridad. No se coge: se consulta.',
+        coger: 'Lo levanto un poco. Pesa lo que un folio. Asiente igual.',
         tirar: 'No tiro de la chaqueta de Ramírez. Aún tiene que volver a por ella.',
         'usar:chicle': 'No. Ya lleva celo. Dos adhesivos en un lector es golpe de Estado.',
-        'dar:*': 'Se lo enseño. Asiente. Asiente a todo: es su único dato.',
+        'dar:*': 'Se lo enseño. Asiente. Antes le ha asentido al proyector.',
       } },
     { id: INIGO, when: 'acto_3_iniciado',
       murmurs: ['Esto en verde. Esto en rosa. Esto en azul, que es excusa.', 'Diapositiva 248: «El viaje continúa».',
@@ -390,7 +390,7 @@ export default buildRoom({
         'dar:ticket_n1': async (api) => { await sayI(api, 'Eso, por escrito. Si no está en el hilo, no escala.'); },
         'dar:acta_reunion': async (api) => { await sayI(api, 'Eso, por escrito. Si no está en el hilo, no escala.'); },
         'dar:*': async (api) => { await sayI(api, 'Ese input no escala.'); },
-        empujar: 'A un consultor no se le empuja. Se le factura. Y eso ya lo hace él.',
+        empujar: 'No. Está presentando. Si le empujo, pasa a la diapositiva 248.',
       } },
   ],
 

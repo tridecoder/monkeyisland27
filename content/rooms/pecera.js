@@ -133,7 +133,6 @@ export default buildRoom({
       mirar: async (api) => { await api.say(['Los Despachos. Cristal de arriba abajo: se ven las broncas, pero no se oyen.', 'Al fondo, la puerta de la Sala de Reuniones.']); },
       abrir: async (api) => api.goto('pajarera', 'pecera'), usar: async (api) => api.goto('pajarera', 'pecera'),
       hablar: 'Golpeo el cristal con los nudillos. Al otro lado lo apuntan en un pósit.',
-      cerrar: 'Ya está cerrada. En los Despachos las puertas no se cierran: se delegan.',
     } },
     { id: 'pecera_a_office', name: 'Vending', exit: { room: 'office', tipo: 'arco' }, handlers: {
       mirar: 'El Vending. Un arco sin puerta: se ve la máquina y a Gertrudis. Ahí vive ella.',
@@ -151,9 +150,9 @@ export default buildRoom({
     } },
     ...objetosSecretaria,
     { id: 'directorio_planta', name: 'directorio de la planta', handlers: {
-      mirar: seq([['B', 'Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.'], ['B', 'Un punto rojo: «ESTÁ AQUÍ». Es la primera vez que algo me ubica.']]),
+      mirar: seq([['B', 'Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.'], ['B', 'Un punto rojo: «ESTÁ AQUÍ». Gracias. Me hacía falta.']]),
       usar: 'Busco «becario» en la lista. No sale. Será que va dentro de «Redacción».',
-      empujar: 'No se mueve. Es lo único de esta planta que está donde dice que está.',
+      empujar: 'No se mueve. Está donde dice que está.',
       coger: 'Es un tótem. Se consulta, no se adopta.',
     } },
     ascensorObjeto('ascensor_pecera', {
@@ -177,7 +176,7 @@ export default buildRoom({
         mirar: async (api) => {
           const n = api.inc('pecera_figurantes_n');
           if (n === 1) await api.say('Dos redactores. Teclean desde las tres. Uno escribe "pensiones" en bucle.');
-          else if (n === 2) await api.say('Los dos únicos que quedan. Están de guardia. Lo demás son chaquetas.');
+          else if (n === 2) await api.say('Siguen tecleando. De guardia. El resto de la planta son chaquetas.');
           else await api.say(['En sus pantallas:', MONITORES[(n - 3) % MONITORES.length]]);
         },
         hablar: 'Ni me miran. Están en directo. Yo no soy noticia.',
@@ -201,9 +200,9 @@ export default buildRoom({
         : 'Lectores concurrentes: 3.418. Se refresca cada segundo. Igual que Yoli.'),
       usar: 'No sé usarla. Ni ella a mí.',
       hablar: async (api) => api.say(api.flag('cms_vivo')
-        ? 'Le hablo. Está apagada. Es la primera vez que no me contesta con una cifra.'
+        ? 'Le hablo. Está apagada. No me da ni una cifra.'
         : '"¿Me lees?" Baja a 3.417. Creo que se ha ido el que me leía.'),
-      tirar: 'Está atornillada a la pared. Es lo único fijo de esta planta.',
+      tirar: 'Está atornillada a la pared. Y Yoli, a la pantalla.',
       empujar: 'Ni la toco. Se refresca cada segundo: me vería venir.',
     } },
     { id: 'monitor_yoli', name: 'monitor de Yoli', handlers: {
@@ -312,7 +311,7 @@ export default buildRoom({
     } },
     { id: 'silla_ramirez', name: 'silla de Ramírez', handlers: {
       mirar: async (api) => {
-        if (!api.flag('chaqueta_cogida')) await api.say(['La única silla libre. Tiene una chaqueta: Ramírez, el de Bolsa.', 'En el bolsillo, un tique: «1 cruasán. Para tomar aquí».']);
+        if (!api.flag('chaqueta_cogida')) await api.say(['Una silla libre. Tiene una chaqueta: Ramírez, el de Bolsa.', 'En el bolsillo, un tique: «1 cruasán. Para tomar aquí».']);
         else await api.say('Una silla. Libre. Me tiembla algo que no sabía que tenía.');
       },
       usar: async (api) => {
@@ -386,8 +385,8 @@ export default buildRoom({
     { id: 'semaforo_ruido', name: 'semáforo de ruido', state: 'rojo', states: ['rojo', 'ambar', 'verde'], handlers: {
       mirar: seq([['B', 'Semáforo de ruido de Prevención. Rojo.'], ['B', 'Pósit de Anselmo: "Verde: 14 de agosto. Estaban de vacaciones".']]),
       usar: 'Lo toco. Se pone más rojo. Existe un rojo más rojo.',
-      tirar: async (api) => api.sayAs(A, 'No. Es lo único que les mide sin que se enfaden.'),
-      hablar: '"Shhh", le digo. Es la primera vez que alguien le da la razón.',
+      tirar: async (api) => api.sayAs(A, 'No. Es de Prevención. El pósit, mío.'),
+      hablar: '"Shhh", le digo. Se pone verde un segundo. Luego, rojo otra vez.',
       coger: 'Si me lo llevo, Desarrollo deja de hacer ruido oficialmente. No sería verdad.',
     } },
     { id: 'taza_no', name: 'taza «NO»', handlers: {
@@ -403,7 +402,7 @@ export default buildRoom({
         api.setFlag('pecera_bandeja_abierta', true);      // solo el dibujo (fuera el flag cruzado bandeja_diseno_abierta, §3.4)
         await api.say(['«Entregado a las 18:29». Y al fondo, de 2017, una hoja con una flecha.', '«La pantalla tumbará el CMS». Sello: «LEÍDO (PERO NO)».']);
       },
-      coger: async (api) => api.sayAs(A, 'Déjala. Es lo único ordenado del rincón. Y no es nuestro.'),
+      coger: async (api) => api.sayAs(A, 'Déjala. Está ordenada. Se nota que no es nuestra.'),
       cerrar: 'Ya está cerrada. Es una bandeja: lo suyo es que alguien la abra.',
       'usar:pieza_opa': 'No. Si la dejo aquí, la leen en 2033. Con sello de LEÍDO (PERO NO).',
     } },
@@ -426,7 +425,7 @@ export default buildRoom({
     } },
     { id: 'calendario_ferreteria', name: 'calendario de ferretería', handlers: {
       mirar: seq([['B', 'Calendario de Ferretería Hermanos Tornillo. Anselmo solo se fía de este.'], ['B', 'Trae santoral, fases de la luna y una oferta de tacos del 8.']]),
-      tirar: async (api) => api.sayAs(A, '¡Quieto! Es lo único de fuera que dejo entrar. Por los tacos.'),
+      tirar: async (api) => api.sayAs(A, '¡Quieto! Es de fuera, pero trae tacos del 8. Tiene permiso.'),
       coger: 'Si me lo llevo, Anselmo no sabría en qué día vive.',
       abrir: 'Lo hojeo. En diciembre regalan una llave inglesa. Hay que llegar a diciembre.',
     } },
@@ -509,7 +508,7 @@ export default buildRoom({
         else await api.sayAs(L, 'Sobra un 26 %. Te la ha medido ella. Yo te la sostengo, que pesa.');
       },
       'dar:*': ley('Herminia ya lo ha contado. Yo lo sostengo. Es mi parte.'),
-      empujar: 'No. Está mirando a Herminia trabajar. Es lo único que hace.',
+      empujar: 'No. Está mirando a Herminia trabajar.',
     },
       murmurs: null },
     // E2 §2.5-2.6 · Anselmo Monolito, director de Desarrollo y dueño del tablero (hereda a Nemesio), con árbol
