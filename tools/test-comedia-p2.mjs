@@ -444,7 +444,8 @@ async function sacarCapturas() {
       if (await T.logHas(texto)) { await T.page.waitForTimeout(ms); await T.page.screenshot({ path: path.join(dir, `e2-p2-${nombre}.png`) }); return; }
       await T.page.waitForTimeout(100);
     }
-    throw new StepFail(`captura ${nombre}: no aparece «${texto}»`);
+    const st = await T.R.state();
+    throw new StepFail(`captura ${nombre}: no aparece «${texto}» (sala ${st.room}; log: ${JSON.stringify((await T.log()).slice(-4))})`);
   };
   const sin = (T, fn) => { const p = fn(); p.catch(() => {}); T.pend = p; };
   const prep = async (flags, items = [], conInigo = true) => {
@@ -507,7 +508,8 @@ async function sacarCapturas() {
   await T.goto('pajarera', 'pecera'); await T.idle(); await lento(T);
   sin(T, () => T.hablar('gervasio_acta'));
   await shotWhen(T, 'Ese anuncio en la espalda', 'gervasio-banner');
-  await T.R.closeDialog().catch(() => {}); await T.idle();
+  for (let i = 0; i < 100 && !(await T.opciones()).length; i++) await T.page.waitForTimeout(100);
+  await T.R.closeDialog(); await T.pend; await T.idle();
   sin(T, () => T.R.travel('pecera'));
   await shotWhen(T, '¿Llevas un banner en la espalda?', 'yoli-banner');
   await fin(T);
