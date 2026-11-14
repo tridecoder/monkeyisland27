@@ -214,7 +214,7 @@ try {
   await verb('usar', 'maripaz_remitido');
   ok(await logHas('Has hecho clic en un anuncio.') === 1, 'Usar: clic en un anuncio');
   await verb('usar', 'rollup_comercial');
-  ok(await logHas('Ahora tú eres el anuncio. Te cobro el metro cuadrado.') === 1, 'roll-up con Maripaz');
+  ok(await logHas('Ahora tú eres el anuncio, cariño. Te cobro el metro cuadrado.') === 1, 'roll-up con Maripaz');
   await verb('hablar', 'termometro_ventas');
   ok(await logHas('Cuando la noticia ocupe una línea. Vamos por dos.') === 1, 'termómetro con Maripaz');
   await give('correo_evaristo');

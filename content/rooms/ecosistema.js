@@ -121,7 +121,7 @@ const aroObjeto = {
     empujar: async (api) => { api.sfx('step'); await movil(api, 'Publicando: Movimiento en la oficina. Emoji de cohete.'); },
     cerrar: async (api) => {
       await movil(api, 'Publicando: Nos vamos. Volvemos en cinco minutos. Emoji de fuego.');
-      await api.say('Sigue encendido. Lo de los cinco minutos se lo ha copiado a Pilar.');
+      await api.say('Sigue encendido. Lo de «faltan cinco minutos» se lo ha copiado a Pilar.');
     },
     'usar:movil': async (api) => { api.sfx('click'); await movil(api, 'Publicando: Alguien me hace una foto. Emoji de cámara.'); },
     'dar:album_eventos': async (api) => { await movil(api, 'Publicando: Recuerdos de [EVENTO]. Emoji de lágrima.'); },
@@ -250,11 +250,11 @@ export default buildRoom({
       usar: async (api) => {
         if (!maripazAqui(api)) { await api.say('Me pongo delante. Soy el anuncio. Nadie me contrata.'); return; }
         await api.say('Me pongo delante del roll-up.');
-        await sayM(api, 'Ahora tú eres el anuncio. Te cobro el metro cuadrado.');
+        await sayM(api, 'Ahora tú eres el anuncio, cariño. Te cobro el metro cuadrado.');
       },
       empujar: async (api) => {
         api.setState('rollup_comercial', 'enrollado'); api.sfx('whoosh');
-        await mp(api, 'Eso es una baja de campaña. Te la facturo.', 'Se enrolla sin factura. Lo disfruto.');
+        await mp(api, 'Eso es una baja de campaña, cariño. Te la facturo.', 'Se enrolla sin factura. Lo disfruto.');
       },
       coger: async (api) => { await mp(api, 'El roll-up no se toca. Está contratado hasta 2030.', 'Contratado hasta 2030. Lo pone abajo, en pequeño.'); },
       tirar: async (api) => { api.setState('rollup_comercial', 'desplegado'); await api.say('Tiro de la lona. Sube como una persiana con objetivos.'); },
@@ -359,7 +359,7 @@ export default buildRoom({
           else await sayM(api, 'Segunda interacción: tarifa plana. Ya puedes empujar lo que quieras.');
         },
         'dar:cafe': async (api) => { await sayM(api, '¿Café? Te lo patrocino: «Despertar, con Cafés Madrugón». El vaso ya es soporte.'); },
-        'dar:tarjeta_becario': async (api) => { await sayM(api, '¿«Pellizco»? Eso no es un nombre. Es un formato publicitario.'); },
+        'dar:tarjeta_becario': async (api) => { await sayM(api, '¿«Pellizco»? Eso no es un nombre, cariño. Es un formato publicitario.'); },
         'dar:ficha_pagina_7': async (api) => {
           if (api.flag('casilla_hueco')) await sayM(api, 'Ya te he firmado. Firmar dos veces es un contrato de permanencia.');
           else await sayM(api, 'Una ficha sin hueco. El hueco lo tengo yo. En la Sala Amazonas.');

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// AUDITORÍA DE TEXTOS (QA): juega el recorrido del plan de comedia (42 pasos) en modo rápido y, en tres momentos (Actos I, II y III), prueba los
+// AUDITORÍA DE TEXTOS (QA): juega el recorrido de la ENMIENDA E2 (44 pasos) en modo rápido y, en tres momentos (Actos I, II y III), prueba los
 // 9 verbos con TODO lo visible de las 10 salas (saliendo de diálogos con su despedida); recoge cada línea dicha
 // (`__game.log`) y comprueba:
 //   · ninguna intervención de más de 80 caracteres (biblia §0);
@@ -13,7 +13,7 @@
 //     las descripciones de flags; los comentarios no cuentan;
 //   · el gag de Desarrollo es VELADO (adenda §17): ni «feminista/machista», «igualdad», «brecha», «compañeras», «8 de
 //     marzo»/«8M»/«logo morado» ni «dar voz», en nada de lo que se ve o se oye (dicho, nombres y cadenas de content/);
-//   · «Nerea» (el desarrollador es Nemesio; el id `nerea_backlog` no cuenta) y «Dirección» como NOMBRE DE LA SALA (es
+//   · «Nerea» (nombre retirado; Desarrollo es Anselmo y el coro, E2 §2.6) y «Dirección» como NOMBRE DE LA SALA (es
 //     «Despachos»): en los nombres de salas/objetos/PNJ y la botonera no puede salir «Dirección»; en lo dicho y en las
 //     cadenas de content/, ni «puerta/pasillo/cristal/placa/despacho/perchero/mueble de Dirección» ni la placa «DIRECCIÓN»
 //     (la «Reunión de Dirección», la «PANTALLA DE DIRECCIÓN» y la «Dirección de arte» sí valen);
@@ -23,10 +23,10 @@
 //     delante de él (más de un 20 % de su cabeza y torso bajo la figura de otro, por cajas de sprite).
 //   · plan de comedia (tools/plan-rules.mjs, AVISOS; con --plan cuentan como fallo): remates «… Como X.», palabras
 //     vetadas a la vista (apodos de sala, LCP…) y topes de muletilla por personaje (§2.4).
-//   · ENMIENDA E2 (§12.4, §7.6; tools/plan-rules.mjs): topes «en todo el juego» («desde [fecha]» ≤ 6, «cariño» ≤ 14,
-//     «(*» = 0, «interstitial» ≤ 2, «pop-up» ≤ 8, «Emoji de fuego» ≤ 8, «PORTÁTIL:» = 0…), topes por personaje
-//     (Anselmo, Leoncio, Maripaz, «Me lo apunto» de Bruno) y opciones repetibles sin `once` (§7.6). AVISOS que no
-//     cuentan ni con --plan; con --e2 cuentan como fallo (lo activará el integrador).
+//   · ENMIENDA E2 (§12.4, §7.6; tools/plan-rules.mjs): topes «en todo el juego» («desde [fecha]» ≤ 6, «cariño» ≤ 20 sin
+//     Eventos, «(*» = 0, «interstitial» ≤ 2, «pop-up» ≤ 8, «Emoji de fuego» ≤ 8, «PORTÁTIL:» = 0…), topes por personaje
+//     (Anselmo, Leoncio, Maripaz, «Me lo apunto» de Bruno) y opciones repetibles sin `once` (§7.6). Avisos; con --e2
+//     cuentan como fallo (test-all pasa `--plan --e2`).
 //   node tools/text-audit.mjs [--plan] [--e2] · node tools/text-audit.mjs --estatico [--plan] [--e2] [--sala=pecera] (solo el repaso estático)
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -159,7 +159,7 @@ await collect();
 for (const s of STEPS) {
   if (s.n > 1) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); }
   await collect();
-  if ([13, 26, 38].includes(s.n)) await everything();     // Actos I, II (tras D1) y III (Rubén libre)
+  if ([13, 26, 40].includes(s.n)) await everything();     // Actos I, II (tras D1) y III (Rubén libre, paso 40 de E2)
 }
 await collect();
 

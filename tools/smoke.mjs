@@ -399,7 +399,7 @@ try {
   ok((await state()).flags.evaristo_llamadas === 1, 'nunca en sala_amazonas con acto_3_iniciado');
   await G(() => __game.gotoRoom('office'));
   av = await state();
-  ok(av.flags.evaristo_llamadas === 1 && av.flags.tadeo_rv_n === 3 && av.flags.evaristo_convoco === true, 'sin L2 (E2, fase B 4): nada suena; los tres RV en el correo; evaristo_convoco por el puente');
+  ok(av.flags.evaristo_llamadas === 1 && av.flags.tadeo_rv_n === 3 && !('evaristo_convoco' in av.flags), 'sin L2 (E2, fase B 4): nada suena; los tres RV en el correo; sin evaristo_convoco (retirado en la integración)');
   await G(() => { __game.doVerb('mirar', 'movil'); });
   ok(await G(() => __game.log.some(l => l.text.startsWith('Y 3 correos de Tadeo'))), 'Mirar móvil con tadeo_rv_n = 3: «Y 3 correos de Tadeo...»');
   await G(() => { __game.setFlag('pieza_recortada', true); __game.setFlag('acto_3_iniciado', false); __game.clearLog(); });

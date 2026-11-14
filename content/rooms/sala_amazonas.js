@@ -104,7 +104,7 @@ export const duelMaripaz = {
   ],
   cc1: 'Colchones Siestatón',
   defeatLine: 'RESPUESTA AUTOMÁTICA DE COMERCIAL: «Cierre este anuncio para leer la respuesta».',
-  defeatLines: ['Asignado a ti. El teléfono de Siestatón es este. Antes, un anuncio.'],
+  defeatLines: ['Asignado a ti, cariño. El teléfono de Siestatón es este. Antes, un anuncio.'],
   defeatScene: 'd1_siestaton',
   defeatHeadline: 'BECARIO LLAMA A UN COLCHÓN UN VIERNES. EL COLCHÓN NO LO COGE',
   onWin: async (api) => {
@@ -312,6 +312,8 @@ export default buildRoom({
         },
         hablar: async (api) => {
           if (!api.flag('acto_3_iniciado')) { await api.dialog('gervasio_reunion'); return; }
+          // E2 §4.2.3: la reacción al adhesivo (una vez, compartida con la de Despachos)
+          if (api.flag('bruno_con_banner') && api.once('pajarera_gervasio_banner')) { await sayG(api, 'Ese anuncio en la espalda... se agradece. Pero lo hablamos.'); return; }
           if (api.flag('lector_derribado')) await sayG(api, 'Diecinueve años y nadie lo había preguntado.');
           else if (api.flag('duelo_inigo_ganado')) await sayG(api, 'Lo que diga el Lector Medio.');
           else await sayG(api, 'Yo aquí solo estoy en copia. Con toda la empresa.');
@@ -333,7 +335,7 @@ export default buildRoom({
           await api.dialog('maripaz_sala');
         },
         usar: async (api) => { await api.say('Le toco el hombro.'); await sayM(api, 'Has hecho clic en un anuncio. Ahora te sigo toda la noche.'); },
-        coger: async (api) => { await sayM(api, 'A mí no se me coge. Se me contrata. Por impresiones.'); },
+        coger: async (api) => { await sayM(api, 'A mí no se me coge, cariño. Se me contrata. Por impresiones.'); },
         empujar: async (api) => { api.sfx('hit'); await sayM(api, 'Eso en la web se llama «interacción». Te la cobro.'); },
         'dar:ficha_pagina_7': async (api) => { await sayM(api, 'Una ficha sin hueco. El hueco lo tengo yo. Debajo. Con banners.'); },
         'dar:cafe': async (api) => { await sayM(api, '¿Café? Ya tengo. Y la taza lleva anuncio. Mira: Cafés Madrugón.'); },
@@ -447,7 +449,7 @@ export default buildRoom({
               do: async (api) => {
                 if ((api.flag('duel:maripaz:perdido_n') || 0) > 0) await sayM(api, INTRO_REVANCHA);
                 else {
-                  await sayM(api, ['¿Ocho meses sin confirmar? Eso no es un cliente. Es un exnovio.',
+                  await sayM(api, ['¿Ocho meses sin confirmar? Eso no es un cliente, cariño. Es un exnovio.',
                     'Los paso a la web, que allí cabe todo. Pero alguien tiene que llamarles.']);
                 }
                 await api.duel('maripaz');

@@ -174,7 +174,7 @@ async function faxConPapel(api) {
   atrasadas.push('19:12. Goyita, ¿me oyes? Tú aguanta.');
   for (const l of atrasadas) { api.sfx('paper'); await fax(api, l); }
   api.faceActor(TEO, 'right');
-  await aurora(api, 'Lleva toda la tarde contestándote, criatura; nadie le había dado papel.');
+  await aurora(api, 'Lleva toda la tarde contestándote; nadie le había dado papel.');
   // (El último pliego sale torcido, con borde perforado.)
   api.sfx('paper');
   api.setState('fax', 'con_papel');
@@ -441,7 +441,7 @@ async function hablarAurora(api) {
   if (!(api.flag('rumor_teodoro_n') > 0)) {
     await aurora(api, 'Teodoro duerme aquí desde 1997. Detrás de esa cortina.');
     api.inc('rumor_teodoro_n');
-  } else await aurora(api, 'Dime, criatura. Con sujeto y predicado, si puede ser.');
+  } else await aurora(api, 'Dime. Con sujeto y predicado, si puede ser.');
   await api.dialog('aurora', 'A_MENU');
 }
 
@@ -497,8 +497,8 @@ async function hablarTeodoro(api) {
     }
     return;
   }
-  // adenda 8.3 · desmentido del rumor C (una sola vez, con el rumor en el paso 3)
-  if ((api.flag('rumor_teodoro_n') || 0) >= 3 && !api.flag('catacumba_desmentido_c')) {
+  // adenda 8.3 · desmentido del rumor C (una sola vez). E2 §7.4/§7.5: la cadena es Aurora (1) → Maripaz (2) → Teodoro
+  if ((api.flag('rumor_teodoro_n') || 0) >= 2 && !api.flag('catacumba_desmentido_c')) {
     api.setFlag('catacumba_desmentido_c', true);
     await fax(api, ['No estoy empadronado.', 'Estoy maquetado.']);
   }
@@ -719,7 +719,7 @@ export default buildRoom({
       mirar: '«NO HABLO ANTES DEL CAFÉ. NI DESPUÉS, PERO ANTES MENOS.»',
       coger: async (api) => {
         if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc en los nudillos. El cartel no se toca. Ni se discute.'); return; }
-        await aurora(api, 'Deja el cartel, criatura. Lleva treinta años sin una errata.');
+        await aurora(api, 'Deja el cartel. Lleva treinta años sin una errata.');
       },
       usar: 'Lo señalo. Aurora me señala a mí. Hemos llegado a un acuerdo.',
     } },

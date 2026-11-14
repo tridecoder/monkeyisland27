@@ -315,7 +315,7 @@ What the shared `content/game.js` provides (you use it, you don't edit it):
 | `scenes.pistas` | plan §8.5: the grandmother's hints in three levels per objective (Usar `movil` → Llamar a la abuela), texts in `content/pistas.js`; see §7 «Objetivos, pistas y hora» |
 | `objetivos`, `hora`, `metaFinal` | plan §8: the objectives list and the phone time function (`content/pistas.js`), read by `engine/objetivos.js` (`api.objetivo`, `api.hora()`) |
 | `afterEnter`, `scenes.avisos` | **Automatic notices** (addendum §2), see «Avisos» below |
-| `migrarPartida(state)` | plan §3.4: called by the engine on **every** load (idempotent), after its own position migrations: removes retired items (`planillo`; `posit_baja_ruben` → `ticket_n1` + `ruben_libre`) and retired flags; E2: old Evaristo calls (counter) → per-call marks, `correo_evaristo_listo` → item `correo_evaristo`, drops `evaristo_lc` |
+| `migrarPartida(state)` | plan §3.4: called by the engine on **every** load (idempotent), after its own position migrations: removes retired items (`planillo`; `posit_baja_ruben` → `ticket_n1` + `ruben_libre`) and retired flags; E2: old Evaristo calls (counter) → per-call marks, `correo_evaristo_listo` → item `correo_evaristo`; a `coma_bendecida` without `correo_evaristo_listo` is undone (step 32 can be played); drops `evaristo_lc`, `evaristo_convoco`, `rumor_firma_n`, `planta_oyo`, `pecera_nemesio_saludo` and the saved positions of the retired actors `nerea_backlog` / `borja_engagement` |
 | `pantallas` | E2: objects that «speak» with a fixed prefix/colour, used by `api.pantalla(obj, text)`: `herminia_portatil` → «HERMINIA (IA) › » #FF8C3C; `aro_borja`, `eventos_a_ecosistema` #4FD8E8; `pantalla_comercial` #FF8A60 |
 | `startFlags` | the 28 flags of addendum 6.2 initialised: counters `0`, booleans `false` |
 | `title`, `ending`, `credits` | title screen (front page), credits shell with the «Fe de erratas» box and Gertrudis' LCD (§14) |
@@ -328,7 +328,7 @@ After the `onEnter` of **every** room the engine runs `game.afterEnter`, which p
 and L5 (`ruben_libre` and `!climax_entrada`); L2 and the LC are gone (counter `evaristo_llamadas` = calls heard; each
 call also leaves `once:evaristo_L<n>`). Tadeo's «RV:» mails are **no longer notices** (E2 §7.4): they arrive silently in
 the phone's mailbox when their condition holds (`tadeo_rv_n` = arrived). Calls come in order and wait for their
-condition; they never set bible flags (bridge until integration: `evaristo_convoco` is set with `acto_2_iniciado`). They do **not** play
+condition; they never set bible flags (the E2 bridge for `evaristo_convoco` was removed at integration). They do **not** play
 when the entry already ran a scene / dialog / duel / cutscene (the engine counts `api.scene` (except `avisos`/`pistas`),
 `api.dialog`, `api.duel`, `api.cutscene` during `onEnter`), when loading a save, in `sala_amazonas` with
 `acto_3_iniciado`, or after `juego_terminado`. Consequences for room authors:
@@ -407,9 +407,9 @@ Object state & visibility are saved (`state.objects['room.id']`). Other rooms' o
 
 ### 5.1 Definitions (`content/actors.js`, shared)
 All characters of bible §2 with their exact ids, names and text colours:
-`bruno` (player), `celestino`, `yoli_tendencias`, `nerea_backlog`, `teodoro_cuerpodoce`, `aurora_galerada`,
-`gervasio_acta`, `begona_triplicado`, `borja_engagement`, `maripaz_remitido`, `paco_ticket`, `inigo_sinergia`,
-`ruben`, `abuela_remedios` (**phone only**: never placed in a room; `api.sayAs('abuela_remedios', ...)` shows her text at
+`bruno` (player), `celestino`, `yoli_tendencias`, `teodoro_cuerpodoce`, `aurora_galerada`,
+`gervasio_acta`, `begona_triplicado`, `maripaz_remitido`, `paco_ticket`, `inigo_sinergia`, `anselmo_monolito`, `leoncio_quesitos`,
+`ruben` (E2: `nerea_backlog` —Nemesio, merged into Anselmo— and `borja_engagement` —now the `aro_borja` object of Marketing— no longer exist), `abuela_remedios` (**phone only**: never placed in a room; `api.sayAs('abuela_remedios', ...)` shows her text at
 the top), `ramirez` (post-credits only), and the two "objects with character", which are actors so that their text
 appears above them in their colour: `gertrudis` (LCD `#39FF14`, custom sprite, `defaultVerb: 'hablar'`) and
 `lector_medio` (the Lector Medio, a marketing buyer-persona cardboard standee: stock-photo smile, blue jumper, folded

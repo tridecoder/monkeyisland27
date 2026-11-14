@@ -23,7 +23,7 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   acta: 'Para entrar en la Sala hace falta un acta. Gervasio no ha escrito una nunca.',
   climax: 'Respondo a todos. Es lo único que sé hacer bien.',
   // E2 §10.3: la coma de Evaristo (pasos 28 y 32)
-  coma: 'Don Evaristo me ha llamado tres veces. Algo le quita el sueño.',
+  coma: 'Evaristo me llama y Begoña me manda a verle. Algo le quita el sueño.',   // integración: en el paso 28 solo ha sonado la L1
   bendicion: 'Evaristo duda de su propia coma. Necesita a alguien que sepa de comas.',
 };
 const faltanD1 = (api) => ['rep_08', 'rep_04', 'rep_11'].filter(f => !api.flag(f)).length > 0;

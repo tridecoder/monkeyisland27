@@ -340,7 +340,7 @@ async function anexion(api) {
     // (La pantalla de Anselmo pita. La lee. Se levanta despacio.)
     api.sfx('beep');
     await api.wait(500);
-    await talk(api, [[A, '«Herminia. Becaria de Desarrollo.» ¿De dónde viene? ...De la casa.'], [A, 'Entonces es estupenda.']]);
+    await talk(api, [[A, '«Herminia. Becaria de Desarrollo.» ¿Procedencia? ...De la casa.'], [A, 'Entonces es estupenda.']]);   // integración: sin el 5.º «¿De dónde viene?» (tope 4)
     await api.walkActor(A, MESA_INFOGRAFIA[0], MESA_INFOGRAFIA[1]);
     api.faceActor(A, 'left');
     // (Cruza la frontera y desenvuelve el portátil. Rasss, al revés. Largo.)
@@ -380,7 +380,6 @@ async function viral(api) {
       etiqueta: 'en directo' });
     await talk(api, [[Y, '¡Bruno! ¡Once mil concurrentes! ¿Qué ha pasado?'],
       [Y, '«Un joven da las buenas noches a una cafetera». Lo ha sacado el Titulator.'],
-      [Y, 'Sin CMS. Sin edición. Sin pudor. Lo está viendo medio país.'],
       ['B', 'Le he dado las buenas noches. Dos veces. Tengo don de gentes.'],
       [Y, 'Hazlo otra vez. Con otra máquina. Lo que sea que tenga enchufe.']]);
     api.setState('pantalla_metricas', 'viral_baja');

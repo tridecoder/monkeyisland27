@@ -58,3 +58,51 @@ L4, L5; RV sin aviso; objeto `correo_evaristo`; ficha y pistas de la coma; altas
 **Pendiente de la integración (tras P1-P4):** `walk-data.mjs` (44 pasos) y `extras.mjs` de §10.1; retirar lo marcado
 `// [E2: retirar en integración]` (Nemesio, Borja, `evaristo_lc`, `evaristo_convoco` y su puente, `rumor_firma_n`,
 `planta_oyo`); pasar `--e2` en `test-all`.
+
+## ENMIENDA E2 — integración (P0 + P1-P4)
+
+**Hecho**
+- **Recorrido de 44 pasos** (`tools/walk-data.mjs`, E2 §10.1 con las acciones de los informes): Anselmo en 24 y 40,
+  Maripaz y su pop-up en 26 (`bruno_con_banner`), Evaristo en 28 y 32 (Aurora quita el adhesivo), mazos de la fase B en
+  33, 41 y 43 (tres remates). `ALT` de §10.1. `walkthrough`, `--alt`, `fuzz`, `text-audit` y `play-mouse` lo usan.
+- **Extras** (`tools/extras.mjs`, 79 pasos): fuera X3, —14, X17, X18, X19, X21, X25 y —LC; X1 con
+  `vestibulo_planta_oyo`; XE1 con «HERMINIA (IA) › »; XM2 sin `evaristo_convoco`; XM7 con «Siestatón no ha confirmado la
+  página 7.» (y el 1.er pop-up); rumor C: Aurora 1 → Maripaz 2 (—C3) → desmentido de Teodoro (—T0); nuevos XP4a (aro de
+  Borja ×3 tras el anuncio de entrada), XP4b (pantalla de Comercial), XE5 (prisa con Evaristo, sin coste) y XE6 (el
+  correo de Evaristo a Begoña, que no se gasta; va tras el 33 porque el correo se recibe en el 32).
+- **play-mouse sin modo rápido**: los anuncios de Maripaz se cierran como un jugador (clic en la «×» de 3 px y de 1 px;
+  sin «×», un clic durante «Podrá cerrar en 3» que no la cierra y otro al acabar); el 26 abre el pop-up tres veces antes
+  de la D1; el anuncio de entrada de Marketing (paso 39, de camino a Eventos) se comprueba igual. Espera de `settle`
+  hasta 4 min (el paso 44 con epílogo y créditos pasa del minuto y medio).
+- **Bajas**: actores `nerea_backlog` y `borja_engagement`; flags `evaristo_convoco`, `evaristo_lc`, `rumor_firma_n`,
+  `planta_oyo`; el puente `puenteE2`; los topes de Nemesio y Borja. `migrarPartida` los borra de las partidas (también
+  `pecera_nemesio_saludo` y las posiciones guardadas de los dos actores) y deshace una `coma_bendecida` sin
+  `correo_evaristo_listo` (petición de P3). `coma_bendecida`, `correo_evaristo_listo` y `tadeo_rv_n` estaban dentro de
+  un comentario en `ADENDA_FLAGS` y no se inicializaban: ahora sí.
+- **text-audit con `--plan --e2`** en `test-all` (los topes de E2 son fallo). «cariño»: tope global 20 sin contar
+  Eventos (hoy 15); Maripaz recupera seis de E2 §4 (exnovio, `defeatLines` de D1, «A mí no se me coge», roll-up ×2,
+  «Pellizco»). Recuentos: «desde [fecha]» 6/6, «(*» 0, «interstitial» 1/2, «pop-up» 5/8, «Emoji de fuego» 8/8,
+  «PORTÁTIL:» 0, «Diseño» (cadenas) 7/11.
+- **Eventos**: el rumor C de Pilar vuelve (sus dos líneas de antes) como gag suelto: una vez, con el Acto II empezado,
+  marca local `once:eventos_pilar_rumor`; ya no suma a la cadena. El «CLS de Tadeo» de la cuenta atrás se queda (E2 no
+  lo nombra).
+- **Costuras**: desmentido de Teodoro con `rumor_teodoro_n ≥ 2` (la cadena ya no pasa por Yoli ni Pilar: con ≥ 3 nunca
+  salía); reacción de Gervasio al adhesivo también en la Sala (misma marca que la de Despachos); adhesivo del sprite de
+  5×4 a 7×5 de espaldas y de 2×4 a 3×5 de perfil; el 5.º «¿De dónde viene?» de Anselmo (anexión) pasa a
+  «¿Procedencia?»; meta de la coma sin «tres veces» (en el paso 28 solo ha sonado la L1); fuera la línea de Yoli «Sin
+  CMS. Sin edición. Sin pudor…» (E2 §7.4, paso 16, seguía en la escena viral).
+  Topes que el `text-audit` completo encontró: «criatura» de Aurora 9 → 6 (fuera en «Deja el cartel», «Dime» y
+  «Lleva toda la tarde contestándote»; se quedan las literales de E2) y Bruno ya no dice «cinco minutos» sin comillas
+  (aro de Borja: «Lo de «faltan cinco minutos» se lo ha copiado a Pilar.»).
+- **Pruebas**: `node tools/test-all.mjs` 17/17 en verde (809 s), sin errores de consola. Capturas revisadas en
+  `tools/shots/e2-int-*.png`.
+- **Medida del recorte** (E2 §12.3; el recorrido jugado con sus herramientas, `__game.log` sin avisos ni tarjeta):
+  `main` (42 pasos) 619 líneas, 28.444 caracteres, 35,4 min, Bruno 175 → E2 (44 pasos) 553 líneas, 26.458 caracteres,
+  32,5 min, Bruno 155: −66 líneas (−10,7 %), −2,9 min (−8,2 %).
+
+**Abierto**
+- El objetivo de §12.3 (≤ 545 líneas y Bruno ≤ 135) no se alcanza: faltan 8 líneas y 20 de Bruno (sus líneas cuentan
+  las opciones elegidas en el recorrido).
+- «Diseño e Infografía nunca en la misma escena» se sigue comprobando por línea; por escena, a mano (7.2, paso 34,
+  momento 8, paso 40 y anexión no los juntan).
+- El nombre del periódico real solo se comprueba con `MARCA_VETADA=<expresión>` en el entorno (no vive en el repo).

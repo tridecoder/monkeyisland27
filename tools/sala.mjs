@@ -27,8 +27,8 @@ const args = Object.fromEntries(argv.filter(a => a.startsWith('--')).map(a => { 
 const room = argv.find(a => !a.startsWith('--'));
 const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'eventos', 'administracion', 'cpd'];
 if (!room || !ROOMS.includes(room)) { console.log('uso: node tools/sala.mjs <sala> [--actos=a0,a1,...] [--escala=2] [--out=dir] [--estricto]\nsalas: ' + ROOMS.join(', ')); process.exit(2); }
-const CPS = [['a0', 0, 'inicio (torno cerrado)'], ['a1', 8, 'Acto I, tras 7.2'], ['a1b', 16, 'Acto II, inicio'], ['a2', 29, 'Acto II, tras D1'],
-  ['a3', 37, 'Acto III, inicio'], ['a3r', 39, 'Acto III, Rubén en el armario'], ['a3b', 42, 'Acto III, Rubén libre']];
+const CPS = [['a0', 0, 'inicio (torno cerrado)'], ['a1', 8, 'Acto I, tras 7.2'], ['a1b', 16, 'Acto II, inicio'], ['a2', 26, 'Acto II, tras D1'],
+  ['a3', 36, 'Acto III, inicio'], ['a3r', 37, 'Acto III, Rubén en el armario'], ['a3b', 40, 'Acto III, Rubén libre']];   // pasos de E2 §10.1
 const want = args.actos ? String(args.actos).split(',') : CPS.map(c => c[0]);
 const scale = Number(args.escala || 2);
 const outDir = path.resolve(args.out || path.join(here, 'shots', 'sala', room));

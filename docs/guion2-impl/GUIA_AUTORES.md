@@ -201,11 +201,11 @@ murmullos y el ambiente que estuvieran en pantalla (nada habla por debajo del an
 Estos seis últimos son **globales** (declarados en `flags.js`): no los volváis a declarar como locales de sala
 (`check.mjs` da error si un flag local ya es global).
 
-### E2.5 Reglas de texto nuevas (avisos hasta la integración)
+### E2.5 Reglas de texto nuevas (fallo desde la integración: `test-all` pasa `--plan --e2`)
 
 `node tools/text-audit.mjs --estatico` enseña, además de lo de siempre, un bloque **ENMIENDA E2** que **no cuenta como
 fallo** (ni con `--plan`) hasta que el integrador pase `--e2`:
-- en todo el juego (todas las cadenas de `content/`): «desde [fecha]» ≤ 6, «cariño» ≤ 14, «(*» = 0, «interstitial» ≤ 2,
+- en todo el juego (todas las cadenas de `content/`): «desde [fecha]» ≤ 6, «cariño» ≤ 20 (integración; sin Eventos), «(*» = 0, «interstitial» ≤ 2,
   «pop-up» ≤ 8, «Emoji de fuego» ≤ 8, «PORTÁTIL:» = 0, «Diseño» ≤ 11;
 - por personaje (en la partida automática): «Me la/lo apunto» de Bruno = 0; Anselmo «mis sistemas» ≤ 5, «próxima
   versión» ≤ 4, «¿De dónde viene/n?» ≤ 4; Leoncio «Yo ya no» ≤ 2; Maripaz M1 ≤ 5, M2 ≤ 4, M3 ≤ 3, M4 ≤ 3;
@@ -230,7 +230,10 @@ El tope «cariño» de Maripaz en `TOPES` (este sí cuenta con `--plan`) sube de
 - Los `test-comedia-p<n>.mjs` son vuestros: los que comprueban textos que E2 cambia (p. ej. P2 con «PORTÁTIL: ›» y
   Nemesio, P3 con «E-31», P4 con «desde marzo») tendréis que actualizarlos.
 
-### E2.7 Lo que queda marcado `// [E2: retirar en integración]`
+### E2.7 Retirado en la integración de E2
 
-`actors.js` (`nerea_backlog`, `borja_engagement`), `flags.js` (`evaristo_lc`, `evaristo_convoco`, `rumor_firma_n`,
-`planta_oyo`), `game.js` (`puenteE2` y `FLAGS_E2_PENDIENTES`), `plan-rules.mjs` (topes de Nemesio y Borja).
+Ya no queda nada marcado `// [E2: retirar en integración]`: fuera los actores `nerea_backlog` y `borja_engagement`, los
+flags `evaristo_lc`, `evaristo_convoco`, `rumor_firma_n` y `planta_oyo` (y el puente `puenteE2` de `game.js`), y los topes
+de Nemesio y Borja de `plan-rules.mjs`. `migrarPartida` los borra de las partidas guardadas (con las posiciones de los
+dos actores) y deshace una `coma_bendecida` sin `correo_evaristo_listo`. El recorrido es el de 44 pasos (`walk-data.mjs`),
+`text-audit` va con `--plan --e2` en `test-all` y el tope global de «cariño» es 20 (sin contar Eventos).

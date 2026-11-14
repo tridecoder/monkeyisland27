@@ -37,7 +37,6 @@ export const TOPES = [
   // §6.1.2: «Bruno solo cita»: lo que va entre comillas no cuenta (sinComillas)
   { who: 'bruno', re: /lo hablamos|cariño|acreditad|cinco minutos/i, max: 0, txt: 'muletillas ajenas en boca de Bruno', sinComillas: true, fuera: ['eventos'] },   // Eventos, sala protegida: los «cinco minutos» son de la sala (Pilar)
   { who: 'celestino', re: /¿Tú eres el nuevo\?/, max: 5, txt: '«¿Tú eres el nuevo?»' },
-  { who: 'nerea_backlog', re: /Si no está en el tablero, no existe/i, max: 2, txt: '«Si no está en el tablero, no existe»' },   // [E2: retirar en integración]
   { who: 'teodoro_cuerpodoce', re: /\bchaval\b/i, max: 6, txt: '«chaval» (Teodoro)', also: ['fax'] },
   { who: 'teodoro_cuerpodoce', re: /\bCABE\b/, max: 4, txt: '«CABE»', also: ['fax'] },
   { who: 'aurora_galerada', re: /\bcriatura\b/i, max: 6, txt: '«criatura»' },
@@ -48,8 +47,7 @@ export const TOPES = [
   { who: 'inigo_sinergia', re: /no escala/i, max: 3, txt: '«no escala»' },
   { who: 'inigo_sinergia', re: /\bSiguiente\b/, max: 6, txt: '«Siguiente» (Íñigo)' },
   { who: 'maripaz_remitido', re: /\bcariño\b/i, max: 14, txt: '«cariño» (Maripaz; E2 §4.1: condimento, tope 14)' },
-  { who: 'borja_engagement', re: /en vertical/i, max: 2, txt: '«en vertical»' },   // [E2: retirar en integración] (Borja)
-  { who: 'borja_engagement', re: /engagement/i, max: 1, txt: '«engagement»' },
+  { who: 'anselmo_monolito', re: /Si no está en el tablero, no existe/i, max: 2, txt: '«Si no está en el tablero, no existe» (heredado de Nemesio)' },
   { who: 'pilar_escaleta', re: /cinco minutos/i, max: 5, txt: '«cinco minutos» fuera de Eventos', fuera: ['eventos'] },
   { who: 'evaristo_salvedad', re: /una cosita/i, max: 7, txt: '«Una cosita»' },
   { who: 'evaristo_salvedad', re: /era solo eso/i, max: 6, txt: '«Era solo eso»' },
@@ -111,8 +109,7 @@ export function estatico(root, salas = null) {
 }
 
 // ======================================================================================== ENMIENDA E2 §12.4 y §7.6
-// AVISOS por ahora: text-audit los enseña siempre y NO cuentan como fallo ni con `--plan`; con `--e2` (lo pondrá el
-// integrador cuando las cuatro salas hayan entregado) cuentan como fallo.
+// text-audit los enseña siempre; con `--e2` cuentan como fallo (integración de E2: `test-all` pasa `--plan --e2`).
 //   · TOPES_E2_JUEGO: «en todo el juego», contados en TODAS las cadenas literales de content/ (sin comentarios, sin
 //     arte, sin descripciones de flags): cada aparición cuenta, aunque esté en una rama rara.
 //   · TOPES_E2: por personaje, sobre las líneas que se oyen en la partida automática (como TOPES).
@@ -124,7 +121,9 @@ const MESES = 'enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octu
 export const DESDE_FECHA = new RegExp(`\\bdesde\\s+(?:(?:19|20)\\d\\d\\b|(?:${MESES})\\b|hace\\s+\\S+\\s+(?:años|meses|semanas)\\b)`, 'gi');
 export const TOPES_E2_JUEGO = [
   { re: DESDE_FECHA, max: 6, txt: '«desde [fecha]» (§8: quedan seis)' },
-  { re: /\bcariño\b/gi, max: 14, txt: '«cariño» (§4.1)' },
+  // integración (orden del director): el tope global sube de 14 a 20 para devolver a Maripaz sus mejores «cariño»; las
+  // cadenas de Eventos (sala protegida) no cuentan para este tope (`fuera`)
+  { re: /\bcariño\b/gi, max: 20, txt: '«cariño» (§4.1; tope global 20, sin Eventos)', fuera: /[\\/]eventos[.\w]*\.js$/ },
   { re: /\(\*/g, max: 0, txt: 'letra pequeña «(*…)» (§4.1)' },
   { re: /\binterstitial/gi, max: 2, txt: '«interstitial» (§4.1, M6)' },
   { re: /\bpop-?up/gi, max: 8, txt: '«pop-up» (§12.4)' },
@@ -156,7 +155,7 @@ export function topesE2Juego(root) {
     if (/[\\/]art[\\/]/.test(rel) || /flags\.js$/.test(rel) || /_plantilla/.test(rel)) continue;
     for (const t of literales(fs.readFileSync(f, 'utf8'))) {
       if (!esTexto(t)) continue;
-      for (const T of cuenta) { const n = (t.match(T.re) || []).length; for (let i = 0; i < n; i++) T.hits.push(`${rel}: ${t}`); }
+      for (const T of cuenta) { if (T.fuera && T.fuera.test(rel)) continue; const n = (t.match(T.re) || []).length; for (let i = 0; i < n; i++) T.hits.push(`${rel}: ${t}`); }
     }
   }
   return cuenta.filter(T => T.hits.length > T.max).map(T => `${T.txt}: ${T.hits.length} (tope ${T.max}):\n      ${[...new Set(T.hits)].join('\n      ')}`);

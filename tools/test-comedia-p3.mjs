@@ -388,8 +388,7 @@ try {
   ok(await logHas('de vuelta a Marketing'), 'pasillo: «Marketing», sin apodo');
 
   step('Paso 28 (E2 §5.2) · Evaristo: escuchar hasta el final (dos aciertos), sin evaristo_convoco');
-  await setFlags({ evaristo_convoco: false, bruno_sellado_frente: true });
-  await G(() => { __game.game.state.flags.evaristo_convoco = false; });
+  await setFlags({ bruno_sellado_frente: true });   // integración: evaristo_convoco ya no existe
   await clearLog();
   await verb('hablar', 'evaristo_salvedad');
   ok(await logHas('Pellejo, con jota. Pase un segundo. Una cosita. Muy pequeña.') && await logHas('Bien centrado. Begoña tiene pulso.'), 'saludo de §5.2 y la frente sellada');

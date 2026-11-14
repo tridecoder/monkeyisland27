@@ -15,8 +15,8 @@ const { chromium } = createRequire(import.meta.url)('playwright');
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = Object.fromEntries(process.argv.slice(2).filter(a => a.startsWith('--')).map(a => { const [k, v] = a.slice(2).split('='); return [k, v ?? true]; }));
 const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'eventos', 'administracion', 'cpd'];
-const CPS = [['a0', 0, 'inicio (torno cerrado)'], ['a1', 8, 'Acto I, tras 7.2'], ['a1b', 16, 'Acto II, inicio'], ['a2', 29, 'Acto II, tras D1'],
-  ['a3', 37, 'Acto III, inicio'], ['a3r', 39, 'Acto III, Rubén en el armario'], ['a3b', 42, 'Acto III, Rubén libre']];
+const CPS = [['a0', 0, 'inicio (torno cerrado)'], ['a1', 8, 'Acto I, tras 7.2'], ['a1b', 16, 'Acto II, inicio'], ['a2', 26, 'Acto II, tras D1'],
+  ['a3', 36, 'Acto III, inicio'], ['a3r', 37, 'Acto III, Rubén en el armario'], ['a3b', 40, 'Acto III, Rubén libre']];   // pasos de E2 §10.1
 const want = args.actos ? String(args.actos).split(',') : CPS.map(c => c[0]);
 const scale = Number(args.escala || 2);
 const outDir = path.resolve(args.out || path.join(here, 'shots', 'rediseno', 'final'));
