@@ -148,7 +148,8 @@ sala, se pide; los locales, con el prefijo de vuestra sala en `flags` de la lóg
 | Número con punto de miles (§9 B10) | `import { miles } from '../lib/kit.js'` | `` `${miles(n)}. Es tu número…` `` (48531 → «48.531»; también 1.234) |
 | Gong de Maripaz | ya existe: `import { gong } from '../escenas/planta_noble.js'` (`gong(api)`); el mazo en la mesa, `api.sfx('hit')` | — |
 
-`__game.state().detalle` da ahora `{ titulo, cerrarX, cuenta, bloqueado }` para vuestras pruebas.
+`__game.state().detalle` da ahora `{ titulo, cerrarX, cuenta, bloqueado }` para vuestras pruebas. Al abrirse un plano detalle se cortan los
+murmullos y el ambiente que estuvieran en pantalla (nada habla por debajo del anuncio).
 
 ### E2.2 Datos comunes ya cambiados (no los dupliquéis en la sala)
 

@@ -49,6 +49,8 @@ export function open(game, ctx, opts = {}) {
   };
   D.bloqueo = Math.max(0, Number(opts.bloqueo ?? (D.cuenta ? D.cuenta.ms : 0)) || 0);
   game.hudTop = y + h + (D.titulo ? 13 : 5);        // los globos, debajo del inserto
+  // el ambiente y los murmullos no se quedan debajo del inserto (E2: el anuncio tapa la sala; nada habla por encima)
+  for (const sp of (game.speeches || []).filter(sp => sp.ambient)) game.endSpeech(sp);
   game.log.push({ who: 'aviso', name: null, text: 'Plano detalle' + (D.titulo ? ': ' + D.titulo : ''), room: game.state && game.state.room, t: Math.round(game.time) });
   return D;
 }
