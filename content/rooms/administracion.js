@@ -1,6 +1,8 @@
 // SALA `administracion` — LÓGICA. Dueño: paquete D · «Planta noble y Dirección» (biblia §9.1). Biblia: §3.8, §7.6.2
 // (Begoña), P08 (la peor nota de gasto), P11 (recorte del 26 %). Adenda: §3.8 (despacho de Controlling), §4.6 (don
 // Evaristo Salvedad, MP2), §4.7 y §8bis (opciones de Begoña, yunque), §4.8 (combinaciones), murmullos.
+// Reescritura de comedia, paquete P3 (docs/guion2/PLAN_COMEDIA.md): §5.8 Begoña, §4.5 la entrada nueva de la pared
+// (la factura del fax de la Redacción de papel), §6.3-6.4 líneas sueltas. El cartel del recorte lo firma Administración.
 // El arte y la geometría están en ./art/administracion.art.js (artista de fondos). Árboles en ./administracion.dialogos.js.
 import { buildRoom } from '../lib/room.js';
 import art from './art/administracion.art.js';
@@ -22,6 +24,7 @@ const PARED = [
   '«Nota de gasto generada por IA (Desarrollo). Motivo: la IA no come».',
   '«Yunque, una unidad. Motivo: un yunque no es material de oficina».',
 ];
+const PARED_FAX = '«Fax de la Redacción de papel, 0,26 €. Motivo: lo pagó Teodoro».';
 
 // adenda 3.8: «al Usar la puerta, sale a la puerta». Bruno se aparta a un lado, Evaristo sale de pie a la puerta de
 // cristal (posición `puerta` del arte), se habla, y vuelve a su despacho (posición `despacho`).
@@ -53,7 +56,7 @@ export default buildRoom({
   objects: [
     // la boca del pasillo, SIN puerta: la misma que se ve desde Marketing y Comercial (tipo 'pasillo')
     { id: 'administracion_a_ecosistema', name: 'pasillo a Marketing', exit: { room: 'ecosistema', tipo: 'pasillo' }, handlers: {
-      mirar: 'El pasillo, de vuelta al Ecosistema. Al fondo, la impresora. Se oye un gong.',
+      mirar: 'El pasillo, de vuelta a Marketing. Al fondo, la impresora. Y un gong.',
       usar: async (api) => { await api.goto('ecosistema', 'administracion'); },
       abrir: 'Es un pasillo: viene abierto de serie. Begoña lo tiene en revisión.',
       cerrar: 'Si cierro el pasillo, Begoña me pide el F-3 de Pasillos. Por triplicado.',
@@ -79,7 +82,13 @@ export default buildRoom({
       usar: 'Le doy al botón. Pita. Begoña se pone las gafas de atender.',
     } },
     { id: 'pared_rechazadas', name: 'pared de notas rechazadas', handlers: {
-      mirar: async (api) => { const n = rota(api, 'administracion_pared_n'); await api.say(PARED[n % PARED.length]); },
+      mirar: async (api) => {
+        // plan §4.5: con la pieza recortada por fax, la factura de Teodoro entra en la rotación (la primera vez, la primera)
+        if (api.flag('catacumba_factura') && api.once('administracion_pared_fax')) { await api.say(PARED_FAX); return; }
+        const lista = api.flag('catacumba_factura') ? PARED.concat([PARED_FAX]) : PARED;
+        const n = rota(api, 'administracion_pared_n');
+        await api.say(lista[n % lista.length]);
+      },
       coger: async (api) => { await sayBe(api, 'Eso es patrimonio. Esas notas no se tocan: se rechazan.'); },
       empujar: 'Una nota se tuerce. Begoña la endereza sin mirar. Tiene un sexto sentido.',
       'usar:copias_rechazadas': 'Las mías no son de pared. Son de archivo personal. Lo dijo ella.',
@@ -111,8 +120,8 @@ export default buildRoom({
       'usar:cafe': 'Lleno la del original y la dejo ahí. Begoña la mira con sospecha. Sin ticket.',
     } },
     { id: 'archivador_ejemplares', name: 'archivador EJEMPLARES', handlers: {
-      mirar: '«EJEMPLARES». Aquí guarda Begoña las notas bien hechas. Como reliquias.',
-      abrir: async (api) => { await sayBe(api, 'Las notas son confidenciales. Como las nóminas y la receta de la tortilla.'); },
+      mirar: '«EJEMPLARES». Once notas bien hechas en cuarenta años. Una por cuatrienio.',
+      abrir: async (api) => { await sayBe(api, 'Las notas son confidenciales. Las nóminas, también. Y la receta de la tortilla.'); },
       coger: async (api) => { await sayBe(api, 'Los ejemplares no salen de aquí. Salen sus fotocopias. Por las dos caras.'); },
       empujar: 'No se mueve. Lo sujetan cuarenta años de notas bien hechas.',
     } },

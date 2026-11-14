@@ -125,7 +125,7 @@ export default buildRoom({
     { id: 'aro_luz', name: 'aro de luz', handlers: {
       mirar: 'Un aro de luz. Te pone cara de haber dormido. Mentira institucional.',
       usar: 'Me pongo delante. Por fin parezco alguien con contrato.',
-      coger: 'Si me lo llevo, mañana en la Pecera se nos ven las ojeras de verdad.',
+      coger: '¿Llevarme el aro de luz? Mañana la Redacción amanecería con su cara de verdad.',
       cerrar: 'Ya está apagado. Solo se enciende cuando hay alguien importante. Nunca.',
       abrir: 'Es un aro. No tiene por dónde. Por eso le cabe todo el mundo.',
     } },

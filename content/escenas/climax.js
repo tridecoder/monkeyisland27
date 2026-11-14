@@ -1,4 +1,6 @@
-// PAQUETE D · CLÍMAX (biblia §7.4, P16) con los insertos de la adenda §9.4, §9.5, §9.6 (A/B) y §9.7 (orden final),
+// P4 · CLÍMAX (plan de comedia: §4.7 Celestino por la tele, §4.5 el 26 % de Begoña, §7.5 floja «siguientes pasos» con
+// Gervasio escondido, §7.6 hurtByPair de Rubén —en content/duelo.js—, §7.7 derrota sin titular, §8.4 la hora).
+// Antes: PAQUETE D · CLÍMAX (biblia §7.4, P16) con los insertos de la adenda §9.4, §9.5, §9.6 (A/B) y §9.7 (orden final),
 // duelo D4 de Íñigo (biblia §6.4-6.5; mazo ampliado con R15/R16 al final, adenda §7.2). Lo importa ./../rooms/sala_amazonas.js.
 // Al acabar, lanza la escena del FINAL 7.5 del paquete A: api.scene('final') (si no existe, el motor solo avisa).
 import { SFX, sello, fundidoBlanco } from './planta_noble.js';
@@ -31,6 +33,7 @@ async function entraPorDelante(api, id, [x, y]) {
   await api.walkActor(id, x, y);
 }
 
+const SIGUIENTES_312 = 'Me alegra que lo preguntes. Diapositiva 312.';
 export const DECK_D4 = ['R10', 'R12', 'R13', 'R05', 'R01', 'R07', 'R15', 'R16'];
 export const PUNTOS_D4 = 4;          // 2 + remate A + 2 + remate B
 
@@ -82,8 +85,17 @@ export const duelInigo = {
   // plan §7 (paquete común): CC que crece y derrota propia; sin titular (el Titulator es Rubén y está en la sala)
   cc1: 'Optimal Brains & Partners',
   defeatLine: 'RESPUESTA AUTOMÁTICA DE OPTIMAL BRAINS: «Gracias por su feedback.»',
-  defeatLines: ['Asignado a Vacante. Llama tú a la rotativa. Es un perfil ideal para despedir.',
-    ['player', 'Ni hablar. Lo vuelvo a intentar.']],
+  defeatLines: ['Asignado a Vacante. Llama tú a la rotativa.', ['player', 'Ni hablar.']],
+  // §7.5: la floja «¿Y cuáles son los siguientes pasos?» (solo D4): Gervasio se agacha tras su sillón (se le ve la
+  // cortinilla, arte) mientras Íñigo contesta con la 312. (Una sola cadena: el motor no admite aquí dos líneas.)
+  weakAnswers: { '¿Y cuáles son los siguientes pasos?': SIGUIENTES_312 },
+  say: async (api, line) => {
+    if (line !== SIGUIENTES_312) { await sayI(api, line); return; }
+    const esconde = enSala(api, GERV);
+    if (esconde) { api.hide(GERV); api.setFlag('sala_amazonas_gervasio_agachado', true); api.sfx('whoosh'); await api.wait(300); }
+    try { await sayI(api, [SIGUIENTES_312, '«Siguientes pasos de los siguientes pasos».']); }
+    finally { if (esconde) { api.setFlag('sala_amazonas_gervasio_agachado', false); api.show(GERV); } }
+  },
   onWin: async (api) => {
     api.setFlag('duelo_inigo_ganado', true);
     await sayI(api, ['Eso es un acta de hace un mes. Me da igual el acta.',
@@ -92,6 +104,8 @@ export const duelInigo = {
   },
   onLose: async (api) => {
     // «el duelo vuelve a empezar: Íñigo regresa a la diapositiva 247» (se reintenta Hablando con él, regla 6.2.6)
+    // §7.7: Íñigo despega el pósit de Bruno de «Ideal» y lo pega en «Prescindible»
+    await api.anim(INIGO, 'reach', 400);
     await sayI(api, 'Siguiente.');
     if (replicasD4(api) >= PUNTOS_D4) await api.say('Le vuelvo a hablar. Un consultor siempre tiene un hueco en la agenda.');
     else await api.say('Me faltan réplicas. Tengo que cotillear más. La 247 no se va a mover.');
@@ -106,13 +120,16 @@ async function abrirDuelo(api) {
 export async function climaxEntrada(api) {
   api.music('m_climax', 1);
   const primera = !api.flag('sala_amazonas_climax_visto');
+  if (!api.flag('climax_entrada')) api.setFlag('climax_entrada', true);   // §8.4: el móvil pasa a las 20:59
   await api.cutscene(async () => {
     if (primera) {
       await api.wait(600);
       await sayI(api, 'Siguiente.');
       await api.wait(700);
-      await sayI(api, ['Siguiente.', 'Perfecto. Como veis, la 247 tiene mucho recorrido.']);
+      await sayI(api, ['Siguiente.', 'Perfecto. La 247, como veis, tiene mucho recorrido.']);
       await api.say(['El proyector se colgó en la 247 hace tres semanas.', 'Él cree que avanza. El Lector Medio cree que asiente.']);
+      // §8.4: por fin coinciden el móvil (hora de la historia) y los relojes parados del edificio
+      if (api.hora() === '20:59') await api.say('Por primera vez esta noche, mi móvil y los relojes de la casa dicen lo mismo.');
       await sayI(api, ['...y en la fase 3, el papel pasa a ser un recuerdo de marca.',
         '¿Vacante? Esto es una Reunión de Dirección. Los becarios no tienen voz.']);
       await api.say('Pero tienen correo.');
@@ -188,6 +205,16 @@ export async function climaxEmpujon(api) {
       await api.sayAs(LECTOR, 'A mí lo que me interesa es la economía. Y ahorrar.');
     });
     await sayG(api, 'Lo que diga el Lector Medio.');
+    // §4.7 · la tele de videollamadas se enciende sola: «ENTRADA 1», Celestino retransmite desde el vestíbulo
+    api.setState('tele_amazonas', 'entrada_1');
+    api.sfx('beep');
+    await api.wait(400);
+    await api.megafonia('celestino', ['¡Al suelo el Lector Medio! ¡Penalti! ¡Penalti clarísimo!',
+      '¡Que lo mire el árbitro! ¡Que lo mire!'], { blocking: true, etiqueta: 'ENTRADA 1', sfx: false });
+    await api.wait(900);                                           // (silencio)
+    await sayG(api, '...Lo que diga el árbitro.');
+    api.setState('tele_amazonas', 'normal');
+    api.sfx('click');
     await api.wait(1200);                                          // (silencio)
     await sayI(api, '...¿Y quién ha validado la fase 1?');
     await api.wait(1800);                                          // (silencio largo; alguien deja de teclear)
@@ -209,8 +236,10 @@ export async function climaxEmpujon(api) {
     await entraPorDelante(api, BEGONA, SITIO_BEGONA);
     api.faceActor(BEGONA, INIGO);
     await sayBe(api, ['Factura de Optimal Brains. 48.000 euros. Concepto: «IA».', '¿Qué es una IA? ¿Un taxi?']);
+    // §4.5: el recorte estándar, también a la factura (48.000 × 0,74)
+    await sayBe(api, 'Recorte estándar del 26 %: 35.520 euros.');
     sello(api);
-    await sayBe(api, 'Rechazada. Va a la pared. Al lado del ministro.');
+    await sayBe(api, 'Y rechazada igual. Al lado del ministro.');
     // adenda 9.6 · el héroe de la coma (refuerzo opcional, A o B)
     if (api.flag('correo_evaristo_listo')) await heroeDeLaComa(api);
     else await correoQueSeEscapa(api);

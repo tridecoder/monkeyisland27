@@ -272,6 +272,8 @@ export default {
         await api.anim(api.player, 'reach', 400);
         api.setFlag('bruno_con_chaqueta', true);
         await api.say(['Me la pongo. Por probar. Huele a 2019 y a cruasán.', 'Me queda grande. Lo apunto como «proyección de futuro».']);
+        if (api.room === 'pecera') await api.scene('pecera_chaqueta');   // [P2] §4.3: Yoli y el coro, si se la pone allí
+        else if (api.room === 'pajarera') await api.scene('pajarera_chaqueta');   // [P2] §4.3: Íñigo le confunde
       },
     },
   },
@@ -345,5 +347,18 @@ export default {
     name: 'boli muerto', icon: icons.boli_muerto,
     handlers: { mirar: 'Un boli rojo sin tinta. Murió corrigiendo un «detrás mío».' },
     combine: { ficha_pagina_7: 'No escribe. Le guardo un minuto de silencio. ...Ya.' },     // adenda 4.8 (A)
+  },
+  // [P3] plan §4.4: el táper que suelta el de Mercados al huir del Vending; se da a `ruben` en Sistemas (P1, `taper_dado`)
+  taper_huerfano: {
+    name: 'táper sin nombre',
+    icon(g) {
+      // táper de plástico translúcido con tapa azul, vacío y sin etiqueta (28×18)
+      rect(g, 5, 6, 18, 10, '#cfd8dc'); rect(g, 6, 7, 16, 8, '#e4ecee'); hline(g, 6, 14, 16, '#a8b4b8');
+      vline(g, 5, 6, 10, '#9aa6aa'); vline(g, 22, 6, 10, '#9aa6aa'); hline(g, 5, 15, 18, '#8a9498');
+      rect(g, 4, 3, 20, 4, '#3a7ac8'); hline(g, 4, 3, 20, '#6aa0e0'); hline(g, 4, 6, 20, '#2a5a98');
+      rect(g, 2, 4, 2, 2, '#3a7ac8'); rect(g, 24, 4, 2, 2, '#3a7ac8');
+      px(g, 8, 9, '#ffffff'); px(g, 9, 8, '#ffffff');
+    },
+    handlers: { mirar: 'Un táper sin nombre. Vacío. Huele a lentejas de ayer y a huida.' },
   },
 };

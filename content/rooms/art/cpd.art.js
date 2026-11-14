@@ -470,6 +470,81 @@ function animateLeds(g, view, t) {
   g.save(); g.globalAlpha = b; g.fillStyle = '#5ab0ff'; g.fillRect(96, 100, W - 96, 44); g.restore();
 }
 
+// ------------------------------------------------------------------ [P1] regleta R-3 (plan §4.2, paso 20)
+// 14×6 en el suelo, al pie del armario 24: cuerpo gris con tres enchufes, piloto verde (encendida) o apagado, una brida
+// blanca con su etiqueta y el cable gris que sube por el canto del rack hasta el techo (va a la pantalla de la Redacción).
+const REG = { x: 104, y: 95, w: 14, h: 6 };
+function drawRegleta(g, view, t) {
+  const { x, y, w, h } = REG;
+  const on = String(view.state || 'encendida') !== 'apagada';
+  // el cable que sube por el canto izquierdo del rack 24 hasta el techo
+  vline(g, x + 1, 0, y + 1, PAL.metal[3]); vline(g, x + 2, 0, y + 1, PAL.metal[1]);
+  for (let yy = 8; yy < y - 4; yy += 14) { rect(g, x, yy, 4, 2, PAL.paper[6]); px(g, x + 3, yy + 1, PAL.paper[3]); }   // bridas por el camino
+  shadowEllipse(g, x + w / 2, y + h, w / 2 + 2, 1.5, 0.7);
+  rect(g, x, y, w, h, PAL.metal[2]); hline(g, x, y, w, PAL.metal[5]); hline(g, x, y + h - 1, w, PAL.ink[0]);
+  for (let k = 0; k < 3; k++) { rect(g, x + 2 + k * 3, y + 2, 2, 2, PAL.ink[0]); px(g, x + 2 + k * 3, y + 2, PAL.metal[1]); }
+  rect(g, x + w - 3, y + 2, 2, 2, on ? '#5cff5c' : '#123012');                                 // piloto
+  if (on) glow(g, x + w - 2, y + 3, 5, 3, '#5cff5c', 0.4 + 0.1 * Math.sin((t || 0) / 500), 2);
+  // la brida con su etiqueta, colgando del enchufe del medio
+  rect(g, x + 5, y - 3, 1, 3, PAL.paper[6]); rect(g, x + 4, y - 7, 7, 4, PAL.paper[7]); frameRect(g, x + 4, y - 7, 7, 4, PAL.paper[3]);
+  hline(g, x + 5, y - 6, 4, PAL.red[3]); hline(g, x + 5, y - 4, 3, PAL.ink[3]);
+}
+
+// ------------------------------------------------------------------ [P1] primer plano de Rubén en su nido (plan §4.6)
+/** Plano detalle de 160×100 (api.detalle): Rubén de pie dentro del armario 27, entre cables, con la cara verde del monitor.
+ *  `r` = { x, y, w, h } en coordenadas de pantalla; t = ms desde que se abrió (parpadeo y boca). */
+export function primerPlanoRuben(g, r, t) {
+  const { x, y, w, h } = r;
+  const T = t || 0;
+  gradV(g, x, y, w, h, ['#06120a', '#0c2414', '#123a1c']);
+  // fondo: cables de colores colgando del techo del armario, baldas y la matricial
+  const cab = [PAL.gold[3], PAL.blue[3], PAL.red[3], PAL.teal[4], PAL.metal[4], PAL.gold[5], PAL.red[4]];
+  for (let k = 0; k < 14; k++) {
+    const cx = x + 4 + k * 11 + ((k * 7) % 5), len = 18 + ((k * 13) % 30);
+    for (let yy = 0; yy < len; yy++) px(g, cx + Math.round(Math.sin((yy + k * 3) / 6) * 2), y + yy, cab[k % cab.length]);
+  }
+  rect(g, x + 2, y + 34, 34, 3, PAL.metal[2]); rect(g, x + w - 36, y + 30, 34, 3, PAL.metal[2]);          // baldas
+  rect(g, x + 6, y + 24, 26, 10, PAL.paper[3]); hline(g, x + 6, y + 24, 26, PAL.paper[5]); rect(g, x + 10, y + 22, 18, 2, PAL.paper[6]);   // matricial
+  for (let yy = y + 37; yy < y + h; yy += 3) { hline(g, x + 12, yy, 12, PAL.paper[6]); px(g, x + 12, yy, PAL.ink[3]); px(g, x + 23, yy, PAL.ink[3]); }
+  // el monitor (el Titulator por dentro), a la derecha, que le ilumina la cara de verde
+  rect(g, x + w - 34, y + 8, 30, 22, PAL.ink[2]); rect(g, x + w - 32, y + 10, 26, 17, PAL.crt[1]);
+  for (let k = 0; k < 4; k++) hline(g, x + w - 30, y + 12 + k * 3, 8 + ((k * 7) % 12), PAL.crt[5]);
+  if ((Math.floor(T / 350) & 1) === 0) rect(g, x + w - 30 + 18, y + 22, 3, 2, PAL.crt[6]);
+  glow(g, x + w - 40, y + 50, 70, 50, PAL.crt[4], 0.22, 5);
+  // pósits y táperes en las baldas
+  rect(g, x + w - 30, y + 33, 9, 5, PAL.teal[6]); hline(g, x + w - 30, y + 33, 9, PAL.teal[7]); rect(g, x + w - 19, y + 33, 9, 5, PAL.teal[5]);
+  rect(g, x + w - 14, y + 42, 9, 8, '#f0e050'); hline(g, x + w - 13, y + 44, 7, PAL.ink[3]); hline(g, x + w - 13, y + 46, 5, PAL.ink[3]);
+  // Rubén, de medio cuerpo: sudadera gris con capucha, cascos al cuello, ojeras y migas
+  const cx = x + (w >> 1) - 6, top = y + 18;
+  const skin = '#d4dcb4', skinS = '#aebc8c', hair = '#5a4a3a', hood = '#86888e', hoodS = '#5e6066', hoodL = '#a4a6ac';
+  ellipse(g, cx, y + h + 6, 40, 36, (xx, yy, d) => (d > 0.9 ? hoodS : xx < cx - 10 ? hoodL : hood));                // hombros
+  poly(g, [[cx - 20, y + h - 30], [cx + 20, y + h - 30], [cx + 14, y + h - 22], [cx - 14, y + h - 22]], hoodS);     // capucha caída
+  rect(g, cx - 2, y + h - 22, 1, 14, PAL.paper[5]); rect(g, cx + 3, y + h - 22, 1, 12, PAL.paper[5]);             // cordones
+  rect(g, cx - 7, top + 34, 14, 10, skinS);                                                                       // cuello
+  ellipse(g, cx, top + 52, 18, 5, (xx, yy, d) => (d > 0.7 ? '#101014' : '#202024'));                              // cascos al cuello
+  rect(g, cx - 19, top + 48, 5, 7, '#202024'); rect(g, cx + 14, top + 48, 5, 7, '#202024');
+  ellipse(g, cx, top + 18, 17, 20, (xx, yy, d) => (d > 0.88 ? skinS : xx > cx + 6 ? '#c6e0a0' : skin));            // cabeza (luz verde a la derecha)
+  ellipse(g, cx, top + 2, 18, 9, hair); rect(g, cx - 17, top + 2, 6, 8, hair); rect(g, cx + 12, top + 2, 5, 6, hair);
+  for (let k = 0; k < 5; k++) px(g, cx - 12 + k * 6, top + 9 + (k % 2), hair);                                    // flequillo despeinado
+  const blink = (T % 2600) > 2450;
+  for (const ex of [cx - 7, cx + 7]) {
+    if (blink) hline(g, ex - 3, top + 17, 6, PAL.ink[1]);
+    else { rect(g, ex - 3, top + 15, 6, 4, '#f4f4ec'); rect(g, ex - 1, top + 15, 3, 4, PAL.ink[1]); px(g, ex, top + 15, '#ffffff'); }
+    hline(g, ex - 3, top + 20, 6, '#8a8aa8'); hline(g, ex - 2, top + 21, 4, '#9a98b4');                          // ojeras
+    hline(g, ex - 4, top + 12, 7, hair);                                                                          // cejas
+  }
+  rect(g, cx - 1, top + 20, 2, 5, skinS);                                                                         // nariz
+  const boca = Math.floor(T / 140) % 3;                                                                           // habla en titulares
+  if (boca === 0) hline(g, cx - 4, top + 29, 8, '#5a2a2a');
+  else { rect(g, cx - 4, top + 28, 8, boca === 1 ? 2 : 3, '#5a2a2a'); hline(g, cx - 3, top + 28, 6, '#e8e0d0'); }
+  for (let k = 0; k < 7; k++) px(g, cx - 14 + ((k * 9) % 28), y + h - 16 + (k % 3) * 3, '#e8c880');               // migas de bocadillo
+  // el envoltorio del bocadillo de atún, en la mano levantada
+  rect(g, x + 20, y + h - 26, 14, 9, PAL.paper[6]); frameRect(g, x + 20, y + h - 26, 14, 9, PAL.teal[4]);
+  hline(g, x + 22, y + h - 23, 9, PAL.teal[5]); hline(g, x + 22, y + h - 20, 6, PAL.teal[5]);
+  ellipse(g, x + 27, y + h - 14, 6, 5, skin);
+  ditherOverlay(g, x, y, w, 10, '#000000', 0.25);
+}
+
 // ------------------------------------------------------------------ geometría
 const layout = {
   ascensor_cpd: { rect: N.ascensor.rect, walkTo: N.ascensor.walkTo, face: 'up' },            // núcleo del kit (FL = 94)
@@ -487,6 +562,9 @@ const layout = {
     layer: 'sorted', zy: 103, prop: true, draw: (g, v, t) => drawPacoDesk(g, v, t),
   },
   cementerio_ratones: { rect: [299, 86, 19, 18], walkTo: [306, 112], face: 'up', cache: true, draw: (g) => drawCaja(g) },
+  // [P1] la regleta R-3 (paso 20): al pie del armario 24
+  regleta_r3: { rect: [REG.x - 1, REG.y - 1, REG.w + 2, REG.h + 5], walkTo: [114, 106], face: 'up', priority: 2,
+    sprites: { encendida: (g, v, t) => drawRegleta(g, v, t), apagada: (g, v, t) => drawRegleta(g, v, t), default: (g, v, t) => drawRegleta(g, v, t) } },
   rejilla_cpd: { rect: [112, 121, 36, 15], walkTo: [130, 116], face: 'down', cache: true, draw: (g) => drawRejilla(g) },
   carro_kvm: { rect: [144, 90, 28, 36], layer: 'sorted', zy: 125, prop: true, draw: (g, v, t) => drawCarro(g, v, t) },
   // Paco, SENTADO tras su mesa (la mesa le tapa de la cintura abajo); Bruno le habla desde la izquierda, de perfil

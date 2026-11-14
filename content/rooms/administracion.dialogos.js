@@ -1,4 +1,5 @@
-// SALA `administracion` — ÁRBOLES DE DIÁLOGO (paquete D). Biblia §7.6.2 (Begoña: P08 y P11).
+// SALA `administracion` — ÁRBOLES DE DIÁLOGO (paquete D; reescritura de comedia P3: plan §5.8 Begoña, §6.4 y §5.13
+// las líneas de Evaristo). Biblia §7.6.2 (Begoña: P08 y P11).
 // Adenda §4.6 (don Evaristo Salvedad y el micro-puzle MP2 «Escuchar hasta el final»), §4.7 (opción nueva de Begoña),
 // §8bis (opción del yunque). Importado por ./administracion.js.
 import { sello, SFX } from '../escenas/planta_noble.js';
@@ -7,10 +8,13 @@ const BEGONA = 'begona_triplicado', EV = 'evaristo_salvedad';
 const sayBe = (api, t) => api.sayAs(BEGONA, t);
 const sayEv = (api, t) => api.sayAs(EV, t);
 
-/** P11 · B_RECORTE (también al Dar pieza_opa sin recortar). */
+/** P11 · recorte() (Dar pieza_opa o «Necesito recortar ocho líneas.»): plan §5.8, el camino en persona. */
 export async function recorte(api) {
   await sayBe(api, ['Toda pieza sufre el recorte estándar del 26 %. Sin excepciones.',
-    'Recorto por abajo, como manda la pirámide invertida.', 'Se pierde la conclusión, que no la lee nadie.']);
+    'Por abajo, que manda la pirámide invertida. Se pierde la conclusión.']);
+  await api.say('Pero en la conclusión explico por qué la opa es import...');
+  sello(api);
+  await sayBe(api, 'Recortado.');
   api.sfx('typewriter');
   await api.wait(500);
   api.setFlag('pieza_recortada', true);
@@ -33,32 +37,44 @@ export default {
         options: [
           { text: 'Quiero presentar una nota de gasto.', if: '!nota_gasto_presentada', goto: 'B_NOTA' },
           { text: 'Llevan siendo las 19:07 toda la tarde.', once: true, reply: 'Por eso sigo abierta. El horario se cumple.' },
-          { text: '¿Me deja ver la nota de gasto de Dirección?', once: true,
-            reply: 'Las notas son confidenciales. Como las nóminas y la receta de la tortilla.' },
-          { text: 'Vengo a ver la pared. Dicen que es el Prado de las facturas.', once: true,
-            reply: ['Mi favorita: «Cena con el ministro».', '«Motivo de rechazo: el ministro pagó».',
-              'Las de Dirección, en cambio, son de manual.', 'Algún día enmarcaré una, para que se vea la diferencia.'] },
+          // plan §5.8 [3]: el recorte del 26 %, en directo, sobre una pregunta (siembra el paso 33)
+          { text: 'Begoña, con todo el respeto, yo solo venía a preguntarle si...', once: true,
+            do: async (api) => {
+              sello(api);                                    // (Begoña levanta un sello. Bruno se calla en seco.)
+              await sayBe(api, 'Recortado. Lo que venía después era la conclusión. No la lee nadie.');
+              await api.say('¿Me ha recortado una pregunta?');
+              await sayBe(api, 'El 26 %. Por abajo. Sin excepciones.');
+              await api.say('¿Y qué le iba a preguntar?');
+              await sayBe(api, 'No lo sabremos nunca. Así es más limpio.');
+            } },
+          { text: 'Vengo a ver la pared. Dicen que es un museo de facturas.', once: true,
+            reply: ['Mi favorita: «Cena con el ministro». Motivo: «el ministro pagó».',
+              'Algún día enmarcaré una buena. Para que se vea la diferencia.'] },
+          { text: '¿Usted ha sido feliz alguna vez?', if: 'nota_gasto_presentada', once: true,
+            do: async (api) => {
+              await sayBe(api, 'Rellene el F-1 de Felicidad. Por triplicado.');
+              await api.say('¿Y cuándo me contesta?');
+              await sayBe(api, 'En marzo. Con los demás F-1. Hay uno de 1987.');
+            } },
           { text: 'Necesito recortar ocho líneas.', if: ['has:pieza_opa', '!pieza_recortada'],
             do: async (api) => { await recorte(api); return 'exit'; } },
-          { text: '¿Usted ha sido feliz alguna vez?', if: 'nota_gasto_presentada',
-            reply: 'Rellene el F-1 de Felicidad. Por triplicado. Se lo contesto en marzo.' },
           // adenda 4.7 y 8bis (antes de la despedida; se quedan)
-          { text: '¿Qué le parece Custodia, la de Secretaría?',
+          { text: '¿Qué le parece Custodia, la de Secretaría?', once: true,
             reply: ['¿Custodia? No es burocracia, niño. Es temperamento.', 'Eso no se sella.'] },
           { text: '¿Le han pedido algo raro hoy?',
             reply: ['Un yunque. Por nota de gasto. Concepto: «Sucesión, plaza 7».',
               'Rechazado. Si lo aprobara, tendría que justificar la caída.'] },
-          { text: 'Nada. Me iba.', exit: true, reply: 'Es lo más eficiente que ha hecho hoy.' },
+          { text: 'Nada. Me iba.', exit: true, reply: 'Salida sin trámite. La anoto como lo más eficiente del día.' },
         ],
       },
       B_NOTA: {
-        onEnter: async (api) => { await sayBe(api, ['Concepto, importe y justificante.', 'Y como me escribas «varios», te sello la frente.']); },
+        onEnter: async (api) => { await sayBe(api, ['Uno: concepto. Dos: importe. Tres: justificante.', 'Y como me escribas «varios», te sello la frente.']); },
         options: [
           { text: 'Nada. Importe cero. No he gastado nada.', once: true, goto: 'B0',
             do: async (api) => {
-              await api.wait(900);
+              await api.wait(900);                         // (Pausa. Revisa la nada por las dos caras.)
               await sayBe(api, '...Correcta. Aprobada. Vete. Me has hecho daño.');
-              await api.say('He hecho el trámite bien. Ese ha sido mi error.');
+              await api.say('He hecho un trámite bien. Primera vez. Lo pongo en «logros».');
             } },
           { text: 'Café para entender el capitalismo.', goto: 'B_IMPORTE' },
           { text: 'Varios.', once: true, goto: 'B0',
@@ -66,18 +82,18 @@ export default {
               await sayBe(api, 'Te lo he avisado.');
               sello(api);
               api.setFlag('bruno_sellado_frente', true);
-              await api.say('Me ha sellado la frente. RECHAZADO. Al revés, pero se lee.');
+              await api.say('RECHAZADO, en la frente. Mi primer documento oficial. Con sello.');
             } },
           { text: 'Representación. Me represento a mí mismo.', once: true,
             reply: 'Eso no es representación. Es autoestima. Y no desgrava.' },
         ],
       },
       B_IMPORTE: {
-        onEnter: async (api) => { await sayBe(api, '«Café para entender el capitalismo». ¿Importe?'); },
+        onEnter: async (api) => { await sayBe(api, '«Café para entender el capitalismo». Importe.'); },
         options: [
-          { text: 'Lo que sea.', reply: 'Ajá.', goto: 'B_JUST' },
-          { text: '1,40 €, más IVA espiritual.', reply: 'Ajá.', goto: 'B_JUST' },
-          { text: 'Cero. Me lo invitó la máquina.', reply: 'Ajá.', goto: 'B_JUST' },
+          { text: 'Lo que sea.', reply: '«Lo que sea». Lo escribo en letra. En número no cabe.', goto: 'B_JUST' },
+          { text: '1,40 €, más IVA espiritual.', reply: 'El espíritu no tributa, niño. Por eso no lo veo por aquí.', goto: 'B_JUST' },
+          { text: 'Cero. Me lo invitó la máquina.', reply: 'Una invitación es retribución en especie. Se lo comunico a Gertrudis.', goto: 'B_JUST' },
         ],
       },
       B_JUST: {
@@ -99,10 +115,11 @@ export default {
         },
         options: [
           { text: 'Pues enséñeme cómo es una nota bien hecha, si tan lista es.', goto: 'B_EJEMPLAR' },
+          // plan §5.8 [2·NO] (sin «Dirección» en Administración: la nota buena es de los Despachos)
+          { text: 'Seguro que en los Despachos las hacen peor.', goto: 'B_EJEMPLAR',
+            do: async (api) => { await sayBe(api, '¿Peor? ¿Las de los Despachos? Siéntese. Bueno, no hay silla. Mire.'); } },
           { text: 'Lo siento. En la universidad no dimos tickets.', goto: 'B_EJEMPLAR' },
           { text: '¿Me la aprueba o no?', reply: 'Se la apruebo el día que el CMS no se caiga.' },
-          { text: 'Esto es un puzle, ¿verdad? Lo noto en el aire.',
-            reply: ['Aquí no hay puzles. Hay procedimientos.', 'Para usted es lo mismo, pero con multa.'] },
         ],
       },
       B_EJEMPLAR: {
@@ -144,7 +161,7 @@ export default {
         await sayEv(api, (api.flag('evaristo_llamadas') || 0) >= 1 ? 'Pellejo, con jota. Pase un segundo.' : '¿Pellizco? Pase un segundo.');
         await sayEv(api, 'Una cosita. Muy pequeña.');
       } else await sayEv(api, 'Disculpe. ¿Tiene un segundo? Son tres.');
-      await frente(api, EV, 'Lleva RECHAZADO en la frente. Del revés. Lo he leído igual.');
+      await frente(api, EV, 'Lleva «RECHAZADO» en la frente. Bien centrado. Begoña tiene pulso.');
     },
     nodes: {
       E0: {
@@ -187,7 +204,7 @@ export default {
             do: async (api) => {
               api.sfx('typewriter');
               await api.wait(700);
-              await api.say('He perdido a un hombre por mirar el reloj. Que está parado.');
+              await api.say('Evaristo vuelve a su mesa. Le he mirado el reloj y se ha dado cuenta.');
             } },
           { text: '¿De qué trata?', goto: 'E_DET1' },
         ],
@@ -239,7 +256,8 @@ export default {
           await api.say('Ha dicho que una coma bien puesta no espera.');
           await api.wait(900);
           api.sfx('computer');
-          await sayEv(api, ['Entonces lo envío.', 'En el momento oportuno. Con todos en copia. Como debe ser.']);
+          await sayEv(api, ['...Entonces lo envío. En el momento oportuno. Con todos en copia.',
+            'Era solo eso. Y gracias. Esto sí lo digo sin adjunto.']);
           api.sfx(SFX.plin);
           api.setFlag('correo_evaristo_listo', true);
           return 'exit';

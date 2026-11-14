@@ -528,7 +528,9 @@ function drawFrente(g) {
 /** pantalla gigante de métricas: «LECTORES CONCURRENTES 3.418» y la línea roja que baja; con cms_vivo, apagada */
 function drawMetricas(g, view, t) {
   const x = 178, y = 31, w = 96, h = 30;
-  const off = !!view.flag('cms_vivo');
+  const st = view.state;
+  const off = !!view.flag('cms_vivo') || st === 'negra';
+  const viral = !off && (st === 'viral' || st === 'viral_baja');
   rect(g, x - 2, y - 2, w + 4, h + 12, PAL.ink[0]); frameRect(g, x - 2, y - 2, w + 4, h + 12, PAL.metal[2]);
   hline(g, x - 1, y - 1, w + 2, PAL.metal[4]);
   // etiqueta de cinta en el bisel inferior
@@ -543,7 +545,15 @@ function drawMetricas(g, view, t) {
     gradV(g, x, y, w, h, [PAL.blue[1], PAL.blue[0]]);
     micro(g, 'LECTORES CONCURRENTES', x + 3, y + 2, PAL.blue[7]);
     hline(g, x + 3, y + 8, w - 6, PAL.blue[3]);
-    const n = ['3', '.', '4', '1', String(8 - (Math.floor(t / 1000) % 3 === 0 ? 1 : 0))];
+    const n = viral ? (st === 'viral' ? ['1', '1', '.', '3', '0', '2'] : ['1', '1', '.', '2', String(8 - (Math.floor(t / 2000) % 6))])
+      : ['3', '.', '4', '1', String(8 - (Math.floor(t / 1000) % 3 === 0 ? 1 : 0))];
+    if (viral) {                                     // §4.1: la taza de la cafetera viral junto a la cifra (9×9)
+      const cx = x + 44, cy = y + 7;
+      rect(g, cx, cy + 1, 7, 8, '#f4f0e8'); vline(g, cx, cy + 1, 8, '#ffffff'); vline(g, cx + 6, cy + 1, 8, PAL.paper[3]);
+      rect(g, cx + 7, cy + 3, 2, 4, '#f4f0e8'); px(g, cx + 8, cy + 4, PAL.blue[0]); px(g, cx + 8, cy + 5, PAL.blue[0]);
+      hline(g, cx + 1, cy + 2, 5, PAL.wood[2]);
+      px(g, cx + 2, cy - 1, '#cfd8e8'); px(g, cx + 4, cy - 2, '#cfd8e8');
+    }
     let nx = x + 4;
     n.forEach(ch => { label(g, ch, nx, y + 6, '#fff4c8'); nx += ch === '.' ? 3 : 7; });
     micro(g, 'EN DIRECTO', x + w - 4, y + 11, PAL.crt[5], { align: 'right' });
@@ -588,9 +598,25 @@ function drawEnchufe(g, view) {
   if (pulled) line(g, tx + 2, ty + th - 2, tx + tw - 3, ty + 1, PAL.paper[2]);                // la cinta, arrancada en diagonal
   label(g, 'NO', tx + (tw >> 1), ty - 2, PAL.red[3], { align: 'center' });
   micro(g, 'DESENCHUFAR', tx + 2, ty + 8, PAL.red[2]);
+  if (view.state === 'con_ticket') {               // camino antiguo (§4.2): la excepción de Nemesio, en otra tira
+    rect(g, tx + 2, ty + th + 1, tw - 4, 7, PAL.paper[5]); hline(g, tx + 2, ty + th + 1, tw - 4, PAL.paper[7]);
+    micro(g, 'SALVO T.3', tx + (tw >> 1), ty + th + 2, PAL.blue[2], { align: 'center' });
+  }
   kit.cantoVivo(g, tx, ty, tw, th);
 }
 
+/** monitor de Yoli (§4.2): el rótulo del CMS, «PUBLICADO» (verde) mientras la pantalla grande está negra y «GUARDANDO»
+ *  (ámbar) cuando vuelve; sin estado de escena no se pinta nada (su mesa ya está en el fondo) */
+function drawMonitorYoli(g, view, t) {
+  const st = view.state;
+  if (st !== 'publicado' && st !== 'guardando') return;
+  const x = 262, y = 64, w = 40, h = 8, ok = st === 'publicado';
+  rect(g, x - 1, y - 1, w + 2, h + 2, PAL.ink[0]);
+  rect(g, x, y, w, h, ok ? '#0c2a12' : '#2a200a');
+  micro(g, ok ? 'PUBLICADO' : 'GUARDANDO', x + (w >> 1), y + 2, ok ? '#7aff7a' : '#ffc83a', { align: 'center' });
+  if (!ok && (Math.floor(t / 400) & 1)) px(g, x + w - 3, y + h - 2, '#ffc83a');
+  glow(g, x + w / 2, y + h / 2, 24, 8, ok ? '#7aff7a' : '#ffc83a', 0.18, 3);
+}
 /** la guardia de la web: dos de espaldas que teclean */
 function drawFigurantes(g, view, t) {
   const spec = [{ cx: 262, hair: PAL.wood[1], shirt: JACKETS.grey, y: 62 }, { cx: 277, hair: PAL.ink[3], shirt: JACKETS.burdeos, y: 63 }];
@@ -665,16 +691,49 @@ function drawMesaDibujo(g) {
   lightCone(g, L.lx - 4, L.ly, 4, 26, 18, '#fff0c0', 0.25);
   kit.cantoVivo(g, x, y, 37, 18);
 }
-/** Herminia: portátil de cara con «HERMINIA» entero en la barra de título y las barras que crecen */
+/** Herminia (ENMIENDA E1.8): el portátil de Leoncio, de cara, con la pegatina «INFOGRAFÍA» en la tapa y barras que
+ *  crecen. Cuatro estados (el de la escena, `view.state`, o el que dan los flags): `cinta_1` una tira de carrocero en
+ *  diagonal · `cinta_2` dos tiras en aspa · `paquete` envuelto entero, con un hueco de 4×3 por el que se ve la pantalla ·
+ *  `anexionada` sin cinta y con la pegatina «DESARROLLO» (6×2) encima de la de «INFOGRAFÍA». */
+function estadoHerminia(view) {
+  if (view.state) return view.state;
+  if (view.flag('infografia_integrada')) return 'anexionada';
+  if (view.flag('dos_ias_vista')) return 'paquete';
+  if (view.flag('herminia_midio')) return 'cinta_2';
+  return 'cinta_1';
+}
 function drawHerminia(g, view, t) {
   const sx = 443, sy = 58, sw = 36, sh = 22;
+  const st = estadoHerminia(view);
+  const CINTA = '#e6dab0', CINTA_S = '#b8a878';
+  // tapa y pantalla
   rect(g, sx, sy, sw, sh, PAL.metal[5]); frameRect(g, sx, sy, sw, sh, PAL.metal[2]);
   rect(g, sx + 1, sy + 1, sw - 2, sh - 3, PAL.ink[1]);
-  rect(g, sx + 1, sy + 1, sw - 2, 7, '#ff8c3c'); micro(g, 'HERMINIA', sx + (sw >> 1), sy + 2, PAL.ink[1], { align: 'center' });
+  rect(g, sx + 1, sy + 1, sw - 2, 6, '#3a2a20');
   const k = Math.floor(t / 400) % 6;
   for (let i = 0; i < 6; i++) rect(g, sx + 4 + i * 5, sy + sh - 3 - (i <= k ? 2 + i : 1), 3, (i <= k ? 2 + i : 1), i <= k ? '#ff8c3c' : PAL.metal[2]);
   poly(g, [[sx - 1, sy + sh], [sx + sw + 1, sy + sh], [sx + sw + 3, sy + sh + 2], [sx - 3, sy + sh + 2]], PAL.metal[4]);
-  glow(g, sx + 18, sy + 11, 18, 11, '#ffb070', 0.12, 3);
+  // la pegatina «INFOGRAFÍA», en el marco de arriba (naranja de Herminia)
+  rect(g, sx - 3, sy - 4, sw + 6, 7, '#ff8c3c'); hline(g, sx - 3, sy - 4, sw + 6, '#ffb070'); hline(g, sx - 3, sy + 2, sw + 6, '#b85a20');
+  micro(g, 'INFOGRAFÍA', sx + (sw >> 1), sy - 3, PAL.ink[1], { align: 'center' });
+  if (st === 'anexionada') {
+    // la pegatina «DESARROLLO» encima de la de «INFOGRAFÍA» (se ve el borde naranja asomando)
+    rect(g, sx - 1, sy - 4, sw + 2, 7, '#7FFFD4'); hline(g, sx - 1, sy + 2, sw + 2, '#3a8a76');
+    micro(g, 'DESARROLLO', sx + (sw >> 1), sy - 3, '#10302a', { align: 'center' });
+  }
+  if (st !== 'paquete') glow(g, sx + 18, sy + 11, 18, 11, '#ffb070', 0.12, 3);
+  const tira = (x0, y0, x1, y1) => { line(g, x0, y0, x1, y1, CINTA); line(g, x0, y0 + 1, x1, y1 + 1, CINTA); line(g, x0, y0 + 2, x1, y1 + 2, CINTA_S); };
+  if (st === 'cinta_1') tira(sx - 1, sy + 4, sx + sw, sy + sh - 4);
+  else if (st === 'cinta_2') { tira(sx - 1, sy + 4, sx + sw, sy + sh - 4); tira(sx - 1, sy + sh - 5, sx + sw, sy + 3); }
+  else if (st === 'paquete') {
+    // envuelta entera: cinta en bandas horizontales con sus sombras, y un hueco de 4×3 por el que la pantalla trabaja
+    for (let yy = sy - 1; yy < sy + sh + 2; yy++) hline(g, sx - 2, yy, sw + 4, ((yy - sy) % 4 === 3) ? CINTA_S : CINTA);
+    for (let i = 0; i < 3; i++) vline(g, sx + 6 + i * 11, sy - 1, sh + 3, '#d2c69c');
+    const hx = sx + 22, hy = sy + 12;
+    rect(g, hx, hy, 4, 3, PAL.ink[1]); px(g, hx + 1, hy + 2, '#ff8c3c'); px(g, hx + 2, hy + 1 + (k & 1), '#ff8c3c'); px(g, hx + 3, hy + 2, '#ffb070');
+    glow(g, hx + 2, hy + 1, 5, 4, '#ffb070', 0.2, 2);
+    micro(g, 'PENDIENTE', sx + (sw >> 1), sy + 3, PAL.red[3], { align: 'center' });
+  }
   kit.cantoVivo(g, sx, sy, sw, sh + 2);
 }
 /** cartel de la frontera, a mano, pegado en la pilastra de 480: «SOLO CÓDIGO» entero */
@@ -686,8 +745,8 @@ function drawCartelFrontera(g) {
   rect(g, x - 2, y - 1, 6, 2, '#d8cfa0'); rect(g, x + w - 4, y - 1, 6, 2, '#d8cfa0');
   kit.cantoVivo(g, x, y, w, h);
 }
-/** LA FRONTERA: cinta de carrocero EN EL SUELO sobre el cambio de moqueta. Acto I recta · Acto II doble (ha avanzado
- *  veinte píxeles hacia Infografía) · Acto III lazo que encierra Infografía · infografia_integrada: solo el pegamento */
+/** LA FRONTERA: cinta de carrocero EN EL SUELO sobre el cambio de moqueta. Siempre recta (ENMIENDA E1.3.4: la escalada
+ *  vive en el portátil) · infografia_integrada: solo la marca del pegamento */
 function drawFrontera(g, view) {
   const dS = (xb, y) => deSuelo(xb + D, y) - D;          // la fuga del suelo, en las coordenadas de 800 px del dibujo
   const a2 = !!view.flag('acto_2_iniciado'), a3 = !!view.flag('acto_3_iniciado'), inte = !!view.flag('infografia_integrada');
@@ -709,13 +768,8 @@ function drawFrontera(g, view) {
     for (let y = FL + 2; y < 144; y += 2) { const xx = Math.round(dS(480, y)); ditherOverlay(g, xx, y, 3 + Math.floor((y - FL) / 22), 1, PAL.paper[2], 0.4); }
     return;
   }
-  recta(480);
-  if (a2 || a3) recta(460);                   // doble: la cinta nueva, 20 px más allá
-  if (a3) {                                          // lazo: rodea Infografía por delante hasta la pilastra de 386
-    const yl = 128;
-    tira(Math.round(dS(460, yl)), yl, Math.round(dS(386, yl)), yl);
-    tira(Math.round(dS(386, yl)), yl, 386, FL + 1);
-  }
+  recta(480);                                        // E1.3.4: solo recta (fuera «doble» y «lazo»)
+  void a2; void a3;
 }
 
 /** KANBAN con ruedas, EXENTO en el plano medio (pies y 106), con las cabeceras legibles, el pósit «BAJA / RUBÉN» en
@@ -827,7 +881,7 @@ function drawTazaNo(g) {
 /** pantalla de Anselmo, en un brazo de pared: DENEGADO / REVOCADO / (integrada) ACCESO OK, siempre entera */
 function drawAnselmoScreen(g, view, t) {
   const x = 644, y = 27, w = 36, h = 25;
-  const inte = !!view.flag('infografia_integrada'), found = !!view.flag('ruben_encontrado');
+  const inte = !!view.flag('infografia_integrada'), found = !!view.flag('ruben_libre');   // REVOCADO: cambia sola en N_SALIDA (E1.4.3)
   rect(g, x, y, w, h, PAL.metal[1]); frameRect(g, x, y, w, h, PAL.metal[3]); hline(g, x, y, w, PAL.metal[4]);
   const sx = x + 2, sy = y + 2, sw = w - 4, sh = h - 4;
   rect(g, sx, sy, sw, sh, inte ? PAL.crt[0] : found ? '#3a0c0c' : '#1a0a0a');
@@ -919,7 +973,6 @@ function drawMonitorValentin(g, view, t) {
   poly(g, [[lx + 5, ly - 19], [lx + 9, ly - 17], [lx + 8, ly - 14], [lx + 4, ly - 15]], PAL.metal[7]);
   hline(g, lx + 5, ly - 14, 3, '#fff4c8');
   g.save(); g.globalAlpha = 0.12; poly(g, [[lx + 5, ly - 14], [lx + 8, ly - 14], [lx + 12, ly + 1], [lx + 1, ly + 1]], '#ffe6b0'); g.restore();
-  if (view.visible !== false) kit.cantoVivo(g, mx - 1, my - 1, mw + 2, mh + 2);
 }
 
 // ================================================================== TÓTEM-DIRECTORIO y RINCÓN DE DESARROLLO
@@ -1030,6 +1083,7 @@ const layout = {
     enchufe_pantalla: { rect: [174, 72, 46, 22], walkTo: [196, 110], face: 'up', priority: 1, draw: drawEnchufe },
     sillas_con_chaqueta: { rect: [218, 64, 36, 40], walkTo: [236, 112], face: 'up' },
     figurantes_web: { rect: [254, 60, 30, 44], walkTo: [268, 112], face: 'up', draw: drawFigurantes },
+    monitor_yoli: { rect: [284, 62, 22, 13], walkTo: [282, 122], face: 'up', priority: 2, draw: drawMonitorYoli },
     // ECONOMÍA
     ordenador_bruno: { rect: [312, 44, 36, 48], walkTo: [330, 120], face: 'up', draw: drawOrdenadorBruno },
     silla_ramirez: { rect: [322, 98, 60, 16], walkTo: [350, 122], face: 'up', layer: 'sorted', zy: 112, draw: drawSillaRamirez },
@@ -1037,7 +1091,7 @@ const layout = {
     taza_abandonada: { rect: [368, 64, 14, 14], walkTo: [378, 120], face: 'up', priority: 1, draw: drawTaza },
     // INFOGRAFÍA
     mesa_dibujo: { rect: [388, 60, 46, 36], walkTo: [404, 118], face: 'up', draw: drawMesaDibujo },
-    herminia_portatil: { rect: [442, 56, 38, 28], walkTo: [460, 120], face: 'up', draw: drawHerminia },
+    herminia_portatil: { rect: [440, 52, 42, 32], walkTo: [460, 120], face: 'up', draw: drawHerminia },
     cartel_frontera: { rect: [456, 34, 34, 19], walkTo: [470, 116], face: 'up', draw: drawCartelFrontera },
     // la cinta, en el suelo (debajo de los actores)
     frontera_carrocero: { poly: [[456, 95], [488, 95], [508, 143], [466, 143]], walkTo: [482, 126], face: 'down', layer: 'back', draw: drawFrontera },
@@ -1062,7 +1116,7 @@ const layout = {
     bandeja_diseno: { rect: [684, 56, 34, 42], walkTo: [700, 112], face: 'up', draw: drawBandeja },
     ventana: { rect: [759, 27, 40, 46], walkTo: [778, 116], face: 'up',
       sprites: { default: (g, view, t) => ventana(g, t, false), amanecer: (g, view, t) => ventana(g, t, true) } },
-    monitor_valentin: { rect: [721, 46, 38, 30], walkTo: [740, 114], face: 'up', prop: true, draw: drawMonitorValentin },
+    // (el puesto de Valentín ya no es hotspot, §5.14: se pinta en `animate`)
     // Valentín, de pie y a cuerpo entero, junto a su mesa mirando su monitor; Rubén (Acto III), en el ventanal
     valentin_reticula: { at: [770, 112, 'left'], walkTo: [746, 126], face: 'right' },
     ruben: { at: [788, 114, 'up'], walkTo: [764, 126], face: 'right' },
@@ -1090,11 +1144,13 @@ export default {
   layout,
   draw: drawRoom,
   foreground: drawFrente,
-  animate: desplazado((g, view, t) => {
+  animate: (g, view, t) => { animaWeb(g, view, t); monitorValentin(g, view, t); },
+};
+const monitorValentin = desplazado((g, view, t) => drawMonitorValentin(g, view, t), D2);
+const animaWeb = desplazado((g, view, t) => {
     lcd(g, 220, DT - 15, 15, 13, { kind: (Math.floor(t / 4000) & 1) ? 'saver' : 'article', seed: 3, t });
     lcd(g, 255, DT - 15, 14, 13, { kind: (Math.floor(t / 3000) & 1) ? 'bars' : 'chart', seed: 9, t });
     // un fluorescente moribundo parpadea sobre Infografía
     if (hash2(Math.floor(t / 120), 5, 2) < 0.1) { rect(g, 412, 10, 30, 4, PAL.metal[3]); g.save(); g.globalAlpha = 0.18; rect(g, 386, 15, 94, 30, PAL.ink[0]); g.restore(); }
-  }),
-};
+});
 void mix; void bayer; void papers; void frameRect; void vline;

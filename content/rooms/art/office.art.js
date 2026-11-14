@@ -411,7 +411,31 @@ const layout = {
   // LCD). Gervasio (Acto III) se planta DELANTE de ella: su cabeza queda por debajo del LCD.
   gertrudis: { at: GER_AT, walkTo: [134, 110], face: 'right' },
   gervasio_acta: { at: [170, 119, 'up'], walkTo: [136, 128], face: 'right' },
+  // [P3] plan §4.4: uno de Mercados, escondido al final de la cola del microondas (junto a la fuente, sin tapar hotspots)
+  mercados_1: { at: [292, 106, 'left'], walkTo: [274, 120], face: 'right' },
+  // [P3] el táper que suelta al huir: rueda hasta Bruno (9×6 px en el suelo)
+  taper_suelo: { rect: [255, 124, 13, 9], walkTo: [278, 132], face: 'left', draw: (g, view) => { if (view.visible !== false) drawTaper(g, 257, 126); } },
 };
+
+// ------------------------------------------------------------------ [P3] táper en el suelo y la emisión de Gertrudis
+function drawTaper(g, x, y) {
+  shadowEllipse(g, x + 4, y + 6, 6, 1.5, 0.6);
+  rect(g, x, y + 2, 9, 4, '#cfd8dc'); hline(g, x, y + 5, 9, '#8a9498'); px(g, x + 2, y + 3, '#ffffff');
+  rect(g, x - 1, y, 11, 2, '#3a7ac8'); hline(g, x - 1, y, 11, '#6aa0e0');
+}
+// plan §4.1: piloto rojo de 2×2 y «EN DIRECTO» en microfuente sobre el LCD (office_emision = 1); con 2, el LCD se apaga
+// un instante (el parpadeo de dos veces al entrar en directo). Gertrudis: pies en GER_AT, 44 px de sprite a escala 1,5.
+function drawEmision(g, view, t) {
+  const e = Number(view.flag('office_emision')) || 0;
+  if (!e) return;
+  const s = 1.5, top = GER_AT[1] - 43 * s, x0 = GER_AT[0] - 17 * s;
+  if (e === 2) { rect(g, Math.round(x0 + 5 * s), Math.round(top + 6 * s), Math.round(24 * s), Math.round(9 * s), '#020604'); return; }
+  const on = Math.floor((t || 0) / 400) % 2 === 0;
+  const ty = Math.round(top + 1);                       // sobre el calientatazas, justo encima del LCD (bajo los globos)
+  rect(g, GER_AT[0] - 25, ty - 1, 50, 7, '#08060e');
+  rect(g, GER_AT[0] - 23, ty + 1, 2, 2, on ? '#ff3020' : '#601810');
+  kit.micro(g, 'EN DIRECTO', GER_AT[0] + 3, ty, '#ff5040', { align: 'center', registrar: false });
+}
 
 export default {
   room: 'office',
@@ -430,6 +454,7 @@ export default {
   draw(g) { paintBackground(g); },
   foreground(g) { foreground(g); },
   animate(g, view, t) { animateOffice(g, view, t); },
+  overlay(g, view, t) { drawEmision(g, view, t); },
   // el parpadeo oscurece la sala un instante (los actores, solo el 22 %)
   penumbra(view, t) {
     const f = flicker(t);

@@ -410,7 +410,7 @@ const layout = {
   pajarera_a_pecera: { rect: [3, 42, 37, 54], walkTo: [24, 110], face: 'left' },
   persiana: { rect: [2, 14, 38, 26], walkTo: [24, 110], face: 'up' },
   postits: { rect: [44, 22, 46, 44], walkTo: [70, 114], face: 'up' },
-  matriz_2x2: { rect: [90, 16, 64, 42], walkTo: [122, 110], face: 'up' },
+  matriz_2x2: { rect: [90, 16, 64, 42], walkTo: [122, 110], face: 'up', draw: drawMatrizRamirez },
   posit_evaristo: { rect: [154, 44, 13, 12], walkTo: [156, 110], face: 'up', priority: 2, draw: drawPositEvaristo },
   sofa: { rect: [60, 72, 62, 28], walkTo: [100, 116], face: 'up' },
   pantalla_titulator: { rect: [120, 55, 42, 32], walkTo: [140, 110], face: 'up', priority: 1,
@@ -423,9 +423,18 @@ const layout = {
   // PNJ (docs/GUIA_REDISENO.md §10)
   lector_medio: { at: [50, 106, 'right'], walkTo: [26, 124], face: 'right' },
   inigo_sinergia: { at: [92, 98, 'down'], pose: 'sentado', walkTo: [66, 126], face: 'right' },
-  gervasio_acta: { at: [262, 97, 'down'], pose: 'tras_mesa', walkTo: [236, 126], face: 'right' },
+  // Acto II, tras su mesa; Acto III (§5.10), de pie de guardia junto a la puerta de la Sala, sin taparla
+  gervasio_acta: { at: [262, 97, 'down'], pose: 'tras_mesa', walkTo: [236, 126], face: 'right',
+    positions: { mesa: { at: [262, 97, 'down'], pose: 'tras_mesa' }, puerta: { at: [276, 116, 'left'], walkTo: [248, 124], face: 'right' } } },
 };
 function mesaDireccionObj(g) { mesaDireccion(g); }
+/** §4.3: con la chaqueta en el Lector Medio, un pósit BEIGE más en «Ideal»: «RAMÍREZ (LECTOR)» */
+function drawMatrizRamirez(g, view) {
+  if (!view.flag('chaqueta_en_lector')) return;
+  const x = 92, y = 18;
+  postit(g, x + 3, y + 15, '#d8c49a', { w: 28, h: 7, lines: false });
+  micro(g, 'RAMÍREZ', x + 17, y + 16, PAL.wood[1], { align: 'center' });
+}
 /** pósit azul de Evaristo, asomando por la esquina de PRESCINDIBLE de la matriz */
 function drawPositEvaristo(g) {
   const x = 154, y = 44;

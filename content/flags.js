@@ -19,7 +19,7 @@ const repInfo = {
   rep_09: 'B · pecera · Nemesio N3 (con cms_vivo)', rep_10: 'C · office · chisme nº 3', rep_11: 'B · pecera · Mirar ordenador_bruno (con silla_libre)',
   rep_12: 'A · cpd · Paco P3 (con cms_vivo)', rep_13: 'A · cpd · Rubén R2 (Acto III)', rep_14: 'C · office · chisme nº 4',
   // adenda 7.1 (R15/R16; Íñigo D4 al final del mazo)
-  rep_15: 'D · ecosistema · 2.ª Mirar de portatil_tadeo (hilo de Tadeo y Leoncio)',
+  rep_15: 'P1 · cpd · Rubén «¿Te llegaban correos de Tadeo?» (plan §5.12; antes, portátil de Tadeo)',   // [P1]
   rep_16: 'D · administracion · Evaristo E0, opción «¿Algún cotilleo?»',
 };
 for (const [k, v] of Object.entries(repInfo)) reps[k] = `bool · ${v} (con api.learnReply('${k}')) · módulo de duelo, libreta_replicas`;
@@ -144,6 +144,9 @@ export default {
   taper_dado: 'bool · P1 · cpd · Dar taper_huerfano a ruben · P1 (titular reactivo)',
   teodoro_intentos_n: 'int · P3 · catacumba · hablar/dar/usar con Teodoro sin fax_con_papel · P3 (el fax vomita la tarde)',
   fax_tecla_n: 'int · P3 · catacumba · teclas 1 y 3 del fax · P3 (Teodoro, Evaristo)',
+  // [P2] ENMIENDA E1.4.5 (Redacción): paso 32 y momento 8
+  herminia_midio: 'bool · P2 · pecera · paso 32, escena «Herminia mide la pieza» · P0 (ficha, abuela Recorte), P2 (portátil, Leoncio)',
+  dos_ias_vista: 'bool · P2 · pecera · momento 8 «Dos IAs» (1.ª entrada con acto_3_iniciado) · P2 (Mirar portátil), extras',
   climax_entrada: 'bool · P4 · climax · entrada en el clímax (opcional: la hora del móvil pasa a 20:59) · P0 (hora)',
   abuela_obj: 'str · P0 · game.js pistas (engine/objetivos.js) · objetivo de la última pista · la abuela',
   abuela_nivel: 'int · P0 · game.js pistas · nivel 1-3 de la última pista · la abuela',

@@ -429,6 +429,36 @@ export default {
   dev_3: { name: 'DEV 3', color: '#7FFFD4', hotspot: false, presence: 'del coro: solo dice «No.»', doll: {} },
   altavoz_ibex: { name: 'ALTAVOZ', color: '#CCCCCC', hotspot: false, presence: 'voz de objeto (vestibulo)', doll: {} },
 
+  // [P3] plan §4.4 / §10.2: los tres de Mercados (muñeco genérico recoloreado: camisas beige, gris y azul; uno con
+  // barba). Estampida en la Sala Amazonas (P4); `mercados_1` se esconde después en la cola del microondas del Vending (P3).
+  mercados_1: {
+    name: 'Mercados 1', color: '#7CF0C8', speed: 64,
+    doll: { skin: '#e4b08c', hair: '#4a3626', hairStyle: 'parted', beard: 'full', shirt: '#d8c49a', tie: '#5a4a3a',
+      pants: '#5a5650', shoes: '#2a2420', height: 1.0, build: 'normal' },
+  },
+  mercados_2: {
+    name: 'Mercados 2', color: '#6EA0FF', speed: 64,
+    doll: { skin: '#f0c4a0', hair: '#2a2420', hairStyle: 'short', shirt: '#a8acb4', tie: '#2a3a5a',
+      pants: '#3a3c44', shoes: '#1a1a1e', height: 0.96, build: 'slim' },
+  },
+  mercados_3: {
+    name: 'Mercados 3', color: '#FF7EC0', speed: 64,
+    doll: { skin: '#d8a07a', hair: '#8a8a90', hairStyle: 'balding', glasses: 'square', glassesColor: '#2a2a2a',
+      shirt: '#7a9ac8', pants: '#3a3a42', shoes: '#2a1a14', height: 1.04, build: 'heavy', belly: true },
+  },
+  // [P4] plan §7.7: Colchones Siestatón al teléfono (derrota de D1). Solo voz por el móvil; su retrato es un colchón.
+  siestaton: { name: 'Siestatón', color: '#9FD0FF', hotspot: false, presence: 'voz por teléfono (derrota de D1)', doll: {},
+    portrait(g, w, h, st) {
+      rect(g, 0, 0, w, h, '#1c2a48');
+      for (let y = 4; y < h; y += 9) hline(g, 0, y, w, '#22345a');
+      const t = st.t || 0, cx = w >> 1, by = h - 12;
+      rect(g, cx - 26, by - 10, 52, 13, '#e8eef8'); hline(g, cx - 26, by - 10, 52, '#ffffff'); hline(g, cx - 26, by + 2, 52, '#9aa8c4');
+      for (let x = cx - 22; x < cx + 24; x += 8) { px(g, x, by - 5, '#9aa8c4'); px(g, x + 4, by - 2, '#9aa8c4'); }
+      rect(g, cx - 24, by - 15, 14, 5, '#ffffff'); hline(g, cx - 24, by - 11, 14, '#c8d2e4');
+      const z = Math.floor(t / 600) % 3;
+      for (let i = 0; i <= z; i++) { const zx = cx + 10 + i * 7, zy = by - 22 - i * 7; hline(g, zx, zy, 4, '#ffffff'); px(g, zx + 2, zy + 1, '#ffffff'); px(g, zx + 1, zy + 2, '#ffffff'); hline(g, zx, zy + 3, 4, '#ffffff'); }
+    } },
+
   // ---------------------------------------------------------------- objetos con carácter (§2.14)
   gertrudis: {
     // LCD verde, SIEMPRE EN MAYÚSCULAS. Es un actor para que su texto salga encima con su color.
