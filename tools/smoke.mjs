@@ -585,6 +585,15 @@ try {
   await dp.waitForFunction(() => window.__game && __game.state().mode === 'title');
   const dm = await dp.evaluate(() => { const c = document.getElementById('screen'); return { cw: c.width, ch: c.height, label: __game.game.titleLayout.map(i => i.label) }; });
   ok(dm.cw % 320 === 0 && dm.ch % 200 === 0, `escritorio: escala entera (${dm.cw}x${dm.ch})`);
+  // B1: con partida guardada («Continuar» + «Pantalla completa»: 4 entradas) el menú no se solapa con el lema del pie (y 187)
+  await dp.evaluate(() => { __game.skipText(true); return __game.newGame(); });
+  await dp.reload();
+  await dp.waitForFunction(() => window.__game && __game.state().mode === 'title');
+  await dp.waitForTimeout(300);
+  const lay = await dp.evaluate(() => __game.game.titleLayout.map(i => ({ label: i.label, y: i.y })));
+  ok(lay.length >= 4 && lay.every((it, i) => !i || it.y >= lay[i - 1].y + 12), `título con partida guardada: ${lay.length} entradas sin solaparse entre sí`);
+  ok(lay[lay.length - 1].y + 12 <= 190, `título con partida guardada: «${lay[lay.length - 1].label}» acaba por encima del lema (y ${lay[lay.length - 1].y}+12 ≤ 190)`);
+  await dp.screenshot({ path: path.join(shots, 'bugs2-test-titulo.png') });
   await dp.mouse.click(10, 10);
   await dp.keyboard.press('f');
   await dp.waitForTimeout(500);

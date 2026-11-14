@@ -44,8 +44,10 @@ export function drawTitle(game, g) {
     else { gradV(g, 0, 0, 320, 200, [PAL.night[0], PAL.night[2], PAL.dusk[3]]); drawText(g, T.text || game.G.name || 'Aventura', 160, 60, C.title, { align: 'center', scale: 2 }); }
   } catch (e) { game.error('title.draw falló', e); T.draw = null; }
   if (game.titleSub === 'load') { drawSlotPicker(game, g, 'load'); return; }
-  const y0 = T.menuY ?? 150;
-  const lay = layoutItems(titleItems(game), 160, y0, 12);
+  const items = titleItems(game);
+  // con pie (lema) en y=187, la última opción debe acabar antes de él: el menú sube si tiene más de tres entradas (B1)
+  const y0 = T.footer ? Math.min(T.menuY ?? 150, 176 - (items.length - 1) * 12) : (T.menuY ?? 150);
+  const lay = layoutItems(items, 160, y0, 12);
   game.titleLayout = lay;
   drawItems(g, game, lay);
   if (T.footer) drawText(g, T.footer, 160, 187, C.faint, { align: 'center' });

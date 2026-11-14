@@ -209,6 +209,9 @@ try {
   const T = await open({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 });
   const geo = await T.G(async () => { const ui = await import('./engine/ui.js'); return ui.optGeom(__game.game); });
   ok(geo.big && geo.h >= 14, `filas de diálogo al tacto: ${geo.h} px (${geo.n} visibles)`);
+  // B2: la 4.ª fila no se corta por abajo: texto (12 filas de glifo, con descendentes) dentro de los 200 px
+  const ultimo = geo.y + (geo.n - 1) * geo.h + geo.dy + 11;
+  ok(ultimo <= 199, `táctil: la última fila de diálogo acaba en y=${ultimo} (≤ 199, sin cortar descendentes)`);
   T.page.evaluate(() => __game.game.runScript(async api => { await api.choose(['Primera opción', 'Segunda opción', 'Tercera', 'Cuarta', 'Quinta', 'Sexta']); })).catch(() => {});
   await T.page.waitForTimeout(300);
   const o2 = await T.G(() => __game.optionPos(1));

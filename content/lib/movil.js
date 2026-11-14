@@ -70,7 +70,7 @@ async function correo(api) {
   for (let guard = 0; guard < 40; guard++) {
     const L = bandeja(api);
     const u = L.filter(c => !leido(api, c.bit)).length;
-    await api.phone.app({ title: u ? `Correo · ${u} sin leer` : 'Correo', rows: L.map(c => ({ text: c.de, sub: c.asunto, dot: !leido(api, c.bit) })) });
+    await api.phone.app({ title: u ? `Correo (${u})` : 'Correo', rows: L.map(c => ({ text: c.de, sub: c.asunto, dot: !leido(api, c.bit) })) });
     const opts = L.map(c => `${leido(api, c.bit) ? '' : '* '}${c.de}: ${corto(c.asunto)}`).concat(['Volver']);   // «*» = sin leer
     const i = await api.choose(opts, { escape: L.length });
     if (i < 0 || i >= L.length) return;

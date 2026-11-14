@@ -299,7 +299,7 @@ export default buildRoom({
       cerrar: 'Cierro el grifo. Gotea igual. Es su manera de opinar.',
     } },
     // mueble de plano medio (solo dibujo: tapa lo que queda tras su tablero; sin hotspot)
-    { id: 'mesa_alta', name: 'mesa alta', hotspot: false },
+    { id: 'mesa_alta', name: 'mesa alta', handlers: { mirar: 'Una mesa alta, sin taburetes.' } },
     // ADENDA §8bis · la porra de las plazas de garaje
     { id: 'porra_plazas', name: 'hoja de la porra', handlers: {
       mirar: async (api) => {

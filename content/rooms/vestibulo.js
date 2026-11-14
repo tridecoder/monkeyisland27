@@ -9,7 +9,7 @@
 // `puerta_calle`: 'noche' | 'amanecer' (epílogo: final.js lo pone al empezar la escena; cambia cielo, luz del suelo y lluvia).
 // Flags que el arte puede leer: torno_abierto (alas recogidas + LED verde + franja de luz; la lógica lo pone ANTES de la
 // línea que lo comenta), foto_en_organigrama (foto en VACANTE), planta_empujada_n ≥ 1 (micrófono a la vista).
-// Objetos decorativos del arte (hotspot: false): torno_luces, paraguero, cartel_suelo, fardo_periodicos (oculto hasta 7.5).
+// Objetos decorativos del arte (hotspot: false): torno_luces, fardo_periodicos (oculto hasta 7.5). Paragüero y cartel: solo Mirar.
 // La sala es `dynamic` para que el fondo se repinte cuando cambian.
 import { buildRoom } from '../lib/room.js';
 import art from './art/vestibulo.art.js';
@@ -367,8 +367,8 @@ export default buildRoom({
     // decorado del arte (sin hotspot): lector y franja de luz del carril de Bruno (cambian con torno_abierto), paraguas,
     // cartel de suelo mojado y el fardo de periódicos del epílogo (oculto hasta que llega la furgoneta)
     { id: 'torno_luces', name: 'torno', hotspot: false },
-    { id: 'paraguero', name: 'paragüero', hotspot: false },
-    { id: 'cartel_suelo', name: 'cartel de suelo mojado', hotspot: false },
+    { id: 'paraguero', name: 'paragüero', poly: [[43, 90], [61, 90], [61, 102], [43, 102]], handlers: { mirar: 'Un paragüero con tres paraguas. Ninguno es mío.' } },
+    { id: 'cartel_suelo', name: 'cartel de suelo mojado', handlers: { mirar: 'Un cartel de suelo mojado. El suelo está mojado.' } },
     { id: 'fardo_periodicos', name: 'fardo de periódicos', hotspot: false, visible: false },
     { id: 'planta_plastico', name: 'ficus', handlers: {
       mirar: async (api) => {

@@ -577,8 +577,8 @@ export default buildRoom({
       hablar: 'Le digo adiós a 1994. 1994 no contesta: está maquetando.',
       coger: 'Esta puerta separa 1994 del clic. No se toca.',
     } },
-    // mueble de plano medio (solo dibujo: tapa las rodillas de Teodoro, sentado tras él; sin hotspot)
-    { id: 'mesa_teodoro', name: 'mesa de Teodoro', hotspot: false },
+    // mueble de plano medio (tapa las rodillas de Teodoro, sentado tras él); solo Mirar
+    { id: 'mesa_teodoro', name: 'mesa de Teodoro', poly: [[98, 100], [170, 100], [170, 111], [98, 111]], handlers: { mirar: 'La mesa de Teodoro. Muy ordenada.' } },
     { id: 'galeradas', name: 'galeradas', handlers: {
       mirar: async (api) => {
         const n = api.inc('catacumba_galeradas_n');
