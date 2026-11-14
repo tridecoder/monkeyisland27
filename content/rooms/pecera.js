@@ -38,7 +38,6 @@ const DISCUSIONES = [
   [['D1', '¿Quién ha puesto este margen de ocho píxeles?'], ['D2', 'Diseño.'], ['D1', '...Queda bien.'], ['D2', 'No se lo digas.']],
   [['D1', 'Internet está mal hecho.'], ['D2', 'Desde el principio.'], ['D3', '...Sí.']],
 ];
-// «De fondo» (§5.14, VELADO): queda solo una, una vez por partida, sin comentario, sin opción y sin objeto.
 // paso 13 (E2 §7.4): sentado, el correo se ve; la réplica R11 (contra Maripaz). Con Mirar o con Usar el ordenador
 // (crítica 3 · N1); una sola vez: con `rep_11` ya sabida, cada verbo dice lo suyo.
 async function leerCorreoRamirez(api) {
@@ -50,18 +49,14 @@ async function leerCorreoRamirez(api) {
 
 // crítica 3 · N11: el coro (D1-D3) solo habla con Bruno cerca de su zona (umbral en x desde el centro de su mesa; la
 // pantalla mide 320: con 200 px el coro está a la vista o justo fuera). Desde la otra punta de la Redacción, nada.
+// Vale también para la discusión de fondo con Yoli (FONDO_YOLI): la empieza el coro.
 export const CORO_UMBRAL = 200;
 const CORO_X = art.layout.coro_desarrollo.rect[0] + art.layout.coro_desarrollo.rect[2] / 2;
 function cercaDelCoro(api) {
   const b = api.actorPos('bruno');
   return !!b && Math.abs(b.x - CORO_X) <= CORO_UMBRAL;
 }
-/** La discusión con Yoli (FONDO_YOLI): Bruno entre la mesa de Yoli y la del coro (los dos cerca). */
-function entreYoliYCoro(api) {
-  const b = api.actorPos('bruno'), y = api.actorPos(Y);
-  const yx = y && y.room === 'pecera' ? y.x : CORO_X;
-  return !!b && b.x >= Math.min(yx, CORO_X) - 60 && b.x <= Math.max(yx, CORO_X) + 60;
-}
+// «De fondo» (§5.14, VELADO): queda solo una, una vez por partida, sin comentario, sin opción y sin objeto.
 const FONDO_YOLI = [[['D1', 'Le he explicado a Yoli su artículo de buscadores.'], ['D2', '¿Y?'],
   ['D1', 'Lo ha entendido a la primera.'], [Y, 'Es que lo escribí yo. Ayuda bastante.']]];
 // E2 §2.5: murmullos de Leoncio y Anselmo, como mucho UNO por visita entre los dos, en la misma cola que el coro
@@ -539,7 +534,7 @@ export default buildRoom({
   ambient: [
     { id: 'coro', if: ['!lector_derribado', cercaDelCoro], voces: VOCES_CORO, discusiones: DISCUSIONES },
     { id: 'murmullos', if: '!lector_derribado', run: murmullo },
-    { id: 'fondo', if: ['!lector_derribado', entreYoliYCoro], voces: VOCES_CORO, discusiones: FONDO_YOLI },
+    { id: 'fondo', if: ['!lector_derribado', cercaDelCoro], voces: VOCES_CORO, discusiones: FONDO_YOLI },
   ],
 
   async onEnter(api) {

@@ -158,7 +158,7 @@ try {
   ok('N1: D3 (Gervasio): falta R07 → «' + d07[1] + '»');
   // D4 (Íñigo, objetivo inigo): faltan R15 y R16
   await setFlags({ sala_abierta: true, rep_07: true, rep_10: true, rep_12: true, rep_13: true, rep_15: false, rep_16: false });
-  [, L2, L3] = await tresLlamadas('sala_amazonas');
+  [, L2, L3] = await tresLlamadas('pajarera');   // (en la Sala, sala_abierta lanza el clímax)
   const d15 = await DONDE('rep_15'), d16 = await DONDE('rep_16');
   must(L2.includes('A: ' + d16[0]) && L3.includes('B: ' + d16[1]) && L3.includes('B: ' + d15[1]), `N1: D4 sin R15 ni R16: ${JSON.stringify(L3)}`);
   ok('N1: D4 (Íñigo): faltan R16 y R15 → Evaristo y Rubén, con sitio y objeto');
@@ -218,7 +218,7 @@ try {
     const g = __game.game, api = g.condApi(), am = g.room.def.ambient.find(a => a.id === 'coro'), p = g.player, x0 = p.x;
     const r = g.room.def.layout.coro_desarrollo.rect, cx = r[0] + r[2] / 2;
     const en = (x) => { p.x = x; return g.cond(am.if, api); };
-    const out = { cerca: en(cx), borde: en(cx + 150), lejos: en(cx - 520), otraPunta: en(1200), cx };
+    const out = { cerca: en(cx), borde: en(cx - 190), lejos: en(cx - 260), otraPunta: en(100), cx };
     p.x = x0; return out;
   });
   must(coro.cerca && coro.borde && !coro.lejos && !coro.otraPunta, `N11: umbral del coro mal (${JSON.stringify(coro)})`);
@@ -227,7 +227,7 @@ try {
     const g = __game.game; g.player.x = 90; g.player.path = []; g.snapCamera(); g.finDialogo = -1e9;
     const n0 = g.log.length;
     for (let k = 0; k < 3; k++) { g.room.amb.count = 0; g.room.amb.next = g.time; await new Promise(r => setTimeout(r, 1400)); }
-    return g.log.slice(n0).filter(l => /^D[123]: /.test(String(l.text))).map(l => l.text);
+    return g.log.slice(n0).filter(l => /^DEV [123]: /.test(String(l.text))).map(l => l.text);
   });
   must(!sinCoro.length, `N11: el coro habla desde la otra punta: ${JSON.stringify(sinCoro)}`);
   await G(() => { const g = __game.game; g.speeches.slice().forEach(s => g.endSpeech(s)); });
@@ -237,7 +237,7 @@ try {
     for (let k = 0; k < 6; k++) {
       g.room.amb.count = 0; g.room.amb.next = g.time;
       await new Promise(r => setTimeout(r, 1500));
-      if (g.log.slice(n0).some(l => /^D[123]: /.test(String(l.text)))) return true;
+      if (g.log.slice(n0).some(l => /^DEV [123]: /.test(String(l.text)))) return true;
     }
     return false;
   });
