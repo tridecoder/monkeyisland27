@@ -16,7 +16,7 @@ const repInfo = {
   rep_01: 'C · office · Mirar tablon', rep_02: 'C · catacumba · Aurora A3', rep_03: 'C · office · chisme nº 1 de Gertrudis',
   rep_04: 'C · office · chisme nº 2', rep_05: 'A · vestibulo · Celestino C4', rep_06: 'C · catacumba · Mirar fax_enmarcado',
   rep_07: 'B · pajarera · Mirar ordenador_gervasio (C también en el Acto III)', rep_08: 'B · pecera · Yoli Y2 (con cms_vivo)',
-  rep_09: 'B · pecera · Anselmo [3] «¿Qué tal con Yoli?» (E2 §2.6; antes Nemesio)', rep_10: 'C · office · chisme nº 3', rep_11: 'B · pecera · Mirar ordenador_bruno (con silla_libre)',
+  rep_09: 'B · pecera · Anselmo [3] «¿Qué tal con Yoli?» (E2 §2.6; antes Nemesio)', rep_10: 'C · office · chisme nº 3', rep_11: 'B · pecera · Mirar o Usar ordenador_bruno (con silla_libre; crítica 3 · N1)',
   rep_12: 'A · cpd · Paco P3 (con cms_vivo)', rep_13: 'A · cpd · Rubén R2 (Acto III)', rep_14: 'C · office · chisme nº 4',
   // adenda 7.1 (R15/R16; Íñigo D4 al final del mazo)
   rep_15: 'P1 · cpd · Rubén «¿Te llegaban correos de Tadeo?» (plan §5.12; antes, portátil de Tadeo)',   // [P1]

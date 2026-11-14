@@ -81,6 +81,10 @@ const mercadosActor = (id, i) => ({
 // ---- D1 (plan §7.4-7.7; E2 §4.3): Maripaz, en la Sala. Mazo R08, R04, R11, R14; remate con la ficha de la página 7.
 // La entrada (`intro`) va vacía: el duelo se abre siempre desde el árbol `maripaz_sala`, que ya dice su línea (E2 §7.4,
 // paso 26); la de «Te lo pongo por escrito. Con banner.» la dice el árbol en las revanchas.
+// crítica 3 · N8: quién ha sellado de verdad la ficha. La da Aurora con su sello; si antes de D1 Bruno ha ganado a
+// Teodoro (D2) y él la ha sellado (casilla_firma), el sello que se ve es el de Teodoro.
+const selloTeodoro = (api) => !!api.flag('casilla_firma');
+const fichaSellada = (api) => `Ficha de la página 7. Sellada por ${selloTeodoro(api) ? 'Teodoro' : 'Aurora'}. Impar.`;
 const INTRO_REVANCHA = '¿Llamar yo a Siestatón un viernes? Te lo pongo por escrito. Con banner.';
 export const duelMaripaz = {
   actor: MARIPAZ,
@@ -100,7 +104,7 @@ export const duelMaripaz = {
   finishers: [
     { atScore: 3, text: '¿Y quién me firma que esa página es noticia y no un hueco para anuncios?', object: 'ficha_pagina_7',
       wrongObject: { '*': 'Eso no lo facturo. Ni lo firmo. Ni lo entiendo.' },
-      script: async (api) => { await api.say('Ficha de la página 7. Sellada por Aurora. Impar.'); } },
+      script: async (api) => { await api.say(fichaSellada(api)); } },
   ],
   cc1: 'Colchones Siestatón',
   defeatLine: 'RESPUESTA AUTOMÁTICA DE COMERCIAL: «Cierre este anuncio para leer la respuesta».',
@@ -108,7 +112,8 @@ export const duelMaripaz = {
   defeatScene: 'd1_siestaton',
   defeatHeadline: 'BECARIO LLAMA A UN COLCHÓN UN VIERNES. EL COLCHÓN NO LO COGE',
   onWin: async (api) => {
-    await sayM(api, ['...Aurora no sella nada sin café. Has invitado a la correctora.',
+    // crítica 3 · N8: si ha sellado Teodoro (D2 antes que D1), Maripaz no habla del café de Aurora
+    await sayM(api, [selloTeodoro(api) ? '...Teodoro no sella nada que no quepa. Y tú has cabido.' : '...Aurora no sella nada sin café. Has invitado a la correctora.',
       'Vale. Siestatón, a la web. Allí caben en todas partes.']);
     // se levanta; debajo, el planillo: lo dobla y se lo da a Bruno, que lo mete en la ficha
     api.pose(MARIPAZ, 'de_pie');
@@ -331,7 +336,8 @@ export default buildRoom({
         mirar: 'Maripaz, Comercial. Sentada en el planillo, con una tableta llena de anuncios.',
         hablar: async (api) => {
           if (!api.flag('reunion_terminada')) { await sayM(api, 'Ahora no. Le estoy vendiendo el orden del día a Mercados.'); return; }
-          await popupMaripaz(api);
+          // crítica 3 · punto 12: en las revanchas (D1 ya perdido) no hay pop-up obligatorio; solo antes del primer intento
+          if (!((api.flag('duel:maripaz:perdido_n') || 0) > 0)) await popupMaripaz(api);
           await api.dialog('maripaz_sala');
         },
         usar: async (api) => { await api.say('Le toco el hombro.'); await sayM(api, 'Has hecho clic en un anuncio. Ahora te sigo toda la noche.'); },

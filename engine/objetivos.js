@@ -7,6 +7,7 @@
 //   api.objetivo.hecho('torno')        ¿hecho? (marcado o su condición se cumple)
 //   api.objetivo.pendientes()          ids activos y sin hacer, en el orden de la lista
 //   api.objetivo.actual(sala?)         el primero pendiente asociado a la sala (por defecto, la de Bruno); si no, el 1.º
+//                                      (con `acto` en los objetivos y `G.acto`, solo entre los del acto en curso)
 //   api.objetivo.meta(sala?)           la línea de Bruno para «Mirar a Bruno» (plan §8.2)
 //   api.objetivo.pista()               { obj, nivel 1-3, repetida } — la siguiente pista de la abuela (avanza el nivel)
 //   api.hora()                         '18:30' … '21:00' (nunca retrocede; los relojes del edificio siguen en 20:59)
@@ -26,9 +27,28 @@ export function hecho(game, id) {
 export function activo(game, o) { return cumple(game, o.activo); }
 export function pendientes(game) { return lista(game).filter(o => !hecho(game, o.id) && activo(game, o)).map(o => o.id); }
 const enSala = (o, room) => { const S = asArray(o && o.salas); return S.includes(room) || S.includes('*'); };
+// crítica 3 · N2: el ACTO. Si content/game.js da `acto(view)` (el acto en curso) y un objetivo dice `acto: n` (o
+// `[n, m]`: sigue valiendo en el acto m), «Mirar a Bruno» y la abuela miran primero los objetivos del acto en curso
+// (los que son de ese acto, antes que los que se arrastran de otro) y solo si no queda ninguno, los demás. Así un
+// objetivo viejo que siga pendiente no tapa la meta del acto.
+function actoEnCurso(game) {
+  const A = game.G.acto;
+  if (typeof A !== 'function' || !game.state) return null;
+  try { return Number(A(C(game))) || null; } catch (e) { game.error('acto() falló', e); return null; }
+}
+function candidatos(game) {
+  const P = pendientes(game);
+  const ac = actoEnCurso(game);
+  if (ac == null) return P;
+  const actos = (id) => asArray(def(game, id).acto);
+  const propios = P.filter(id => actos(id).length && actos(id)[0] === ac);
+  const arrastrados = P.filter(id => !actos(id).length || (actos(id)[0] !== ac && actos(id).includes(ac)));
+  const C2 = propios.concat(arrastrados);
+  return C2.length ? C2 : P;
+}
 export function actual(game, sala) {
   const room = sala || (game.state && game.state.room);
-  const P = pendientes(game);
+  const P = candidatos(game);
   return P.find(id => enSala(def(game, id), room)) || P[0] || null;
 }
 /** La meta en voz de Bruno (plan §8.2): la del objetivo actual (o su `meta` heredada del grupo). */
@@ -42,7 +62,7 @@ export function meta(game, sala) {
  *  Mismo objetivo que la vez anterior = un nivel más (hasta 3); otro = nivel 1. Guarda `abuela_obj` / `abuela_nivel`. */
 export function siguientePista(game) {
   const F = game.state.flags;
-  const P = pendientes(game);
+  const P = candidatos(game);                      // crítica 3 · N2: primero los del acto en curso
   const room = game.state.room;
   const aqui = P.find(id => enSala(def(game, id), room));
   const id = aqui || (F.abuela_obj && P.includes(F.abuela_obj) ? F.abuela_obj : null) || P[0] || null;

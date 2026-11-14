@@ -214,6 +214,25 @@ const celestinoDialog = {
   },
 };
 
+// crítica 3 · N4: la tarjeta va igual al organigrama que a su rama de abajo (de ella cuelga la casilla VACANTE)
+async function fotoEnOrganigrama(api) {
+  if (api.flag('foto_en_organigrama')) { await api.say('Ya estoy colgado. Dos veces sería duplicidad. Begoña me lo sellaría.'); return; }
+  await api.anim('bruno', 'reach', 400);
+  if (!api.flag('tarjeta_con_chicle')) {
+    api.sfx('drop');
+    await api.say('La pongo en la casilla. Se cae. Ni mi foto quiere estar en el organigrama.');
+    return;
+  }
+  api.sfx('paper');
+  api.setFlag('foto_en_organigrama', true);
+  await api.say('Ya consto.');                                                // E2 L5 (G)
+  await api.wait(500);
+  api.setFlag('vestibulo_foto_resbalo', true);                                // la foto resbala un centímetro. Se para.
+  api.sfx('click');
+  await api.wait(700);
+  await api.say('...Un centímetro por debajo de donde la puse. Me parece justo.');
+}
+
 export default buildRoom({
   id: 'vestibulo',
   name: 'Vestíbulo',
@@ -249,23 +268,7 @@ export default buildRoom({
         else await api.say('Abajo hay una casilla que pone VACANTE. Sin cara. Con hueco de becario.');
         api.setFlag('vestibulo_organigrama_visto', true);
       },
-      'usar:tarjeta_becario': async (api) => {
-        if (api.flag('foto_en_organigrama')) { await api.say('Ya estoy colgado. Dos veces sería duplicidad. Begoña me lo sellaría.'); return; }
-        await api.anim('bruno', 'reach', 400);
-        if (!api.flag('tarjeta_con_chicle')) {
-          api.sfx('drop');
-          await api.say('La pongo en la casilla. Se cae. Ni mi foto quiere estar en el organigrama.');
-          return;
-        }
-        api.sfx('paper');
-        api.setFlag('foto_en_organigrama', true);
-        await api.say('Ya consto.');                                                // E2 L5 (G)
-        await api.wait(500);
-        api.setFlag('vestibulo_foto_resbalo', true);                                // la foto resbala un centímetro. Se para.
-        api.sfx('click');
-        await api.wait(700);
-        await api.say('...Un centímetro por debajo de donde la puse. Me parece justo.');
-      },
+      'usar:tarjeta_becario': fotoEnOrganigrama,
       'usar:chicle': 'El chicle solo no. Necesito algo que pegar. Por ejemplo, mi cara.',
       coger: 'Es de la empresa. Y la empresa es del organigrama.',
       empujar: 'Si lo empujo, se reestructura solo. Y luego me lo facturan.',
@@ -423,6 +426,7 @@ export default buildRoom({
       coger: 'La rama es suya. Yo solo cuelgo.',
       tirar: 'Si tiro de la rama, se cae la casilla. Y yo con ella.',
       empujar: 'Es la única rama del organigrama que está recta. La dejo.',
+      'usar:tarjeta_becario': fotoEnOrganigrama,                                    // crítica 3 · N4
       hablar: 'Le pregunto a la rama si me quiere. No contesta. Se fue a las 18:30.',
     } },
     // ADENDA 8bis.1

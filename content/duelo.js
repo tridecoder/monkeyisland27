@@ -115,6 +115,9 @@ export default {
     ccSteps: ['Toda la planta', 'Toda la empresa'],
     // §7.1.10: retirarse no tiene consecuencia; el hilo lo dice
     retireThread: { from: 'RV:', text: 'Bruno ha abandonado el hilo.' },
+    // crítica 3 · N7: lo que dice Bruno al retirarse (solo se puede en un remate: le falta el adjunto). Un rival puede
+    // poner la suya con `retireLine` en su bloque `duels.<id>`.
+    retireLine: 'Me salgo del hilo. Vuelvo cuando tenga algo que adjuntar.',
   },
 
   music: 'm_duelo',

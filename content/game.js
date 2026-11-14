@@ -9,7 +9,7 @@ import { drawText, measure } from '../engine/font.js';
 import music from './music.js';
 import flags, { ADENDA_FLAGS } from './flags.js';
 import { RV_TADEO } from './lib/movil.js';
-import { OBJETIVOS, SALUDOS, OTRA_VEZ, ABUELA_VIRAL, DESPEDIDA, horaMovil } from './pistas.js';
+import { OBJETIVOS, SALUDOS, OTRA_VEZ, ABUELA_VIRAL, DESPEDIDA, horaMovil, actoActual, DONDE, FALTAN_REPLICAS } from './pistas.js';
 
 // ------------------------------------------------------------------ §8.2 respuestas por defecto (rotan en orden)
 const DEFAULTS = {
@@ -42,12 +42,22 @@ defaults['*'] = rotating('mirar');
 // ------------------------------------------------------------------ plan §8.5: la abuela, tres niveles por objetivo
 // Textos: content/pistas.js. Elección del objetivo y del nivel: engine/objetivos.js (api.objetivo.pista()). Nivel 3: la
 // abuela dice su línea y, AL COLGAR, Bruno traduce la acción en voz alta. Nunca dos llamadas idénticas seguidas.
+/** crítica 3 · N1: réplicas del mazo del duelo `id` que Bruno aún no sabe, en el orden del mazo (flags `rep_XX`). */
+function replicasQueFaltan(api, id) {
+  const D = api.game.content.duels, opp = id && D.opponents && D.opponents[id];
+  if (!opp) return [];
+  const flagDe = new Map((D.pairs || []).map(p => [p.id, p.flag]));
+  return (opp.deck || []).map(pid => flagDe.get(pid)).filter(f => f && !api.flag(f));
+}
 async function pistas(api) {
   const n = api.inc('abuela_llamadas');
   const A = 'abuela_remedios';
   const P = api.objetivo.pista();                       // { obj, nivel, repetida, def }
   const N = P.def ? P.def.niveles : null;
   const tres = N && P.nivel >= 3 ? N[2] : null;
+  // crítica 3 · N1: si el objetivo es un duelo y faltan réplicas, nivel 2-3: la abuela dice dónde está la primera;
+  // nivel 3: Bruno, al colgar, dice sitio y objeto de cada una (como mucho tres líneas, sin repetir sitio)
+  const faltan = P.def && P.def.duelo && P.nivel >= 2 ? replicasQueFaltan(api, P.def.duelo).filter(f => DONDE[f]) : [];
   // Bruno llama a su abuela: primer plano del móvil (api.phone) con su retrato; ella habla desde el móvil
   await api.phone.call({ caller: A, label: 'Abuela', outgoing: true }, async () => {
     await api.phone.say(SALUDOS[(n - 1) % SALUDOS.length]);
@@ -64,12 +74,17 @@ async function pistas(api) {
       const pre = P.def.previa;
       if (pre && P.nivel === (pre.nivel || 1) && api.cond(pre.si)) await api.phone.say(pre.abuela);
       await api.phone.say(tres ? tres[0] : N[P.nivel - 1]);
+      if (faltan.length) await api.phone.say(DONDE[faltan[0]][0]);
       const ex = P.def.extra;
       if (tres && ex && api.cond(ex.si)) await api.phone.say(ex.abuela);
     }
     await api.phone.say(DESPEDIDA);
   });
   if (tres) await api.say(tres[1]);                     // nivel 3: Bruno, al colgar, dice la acción
+  if (tres && faltan.length) {
+    const sitios = [...new Set(faltan.map(f => DONDE[f][1]))].slice(0, 3);
+    await api.say([FALTAN_REPLICAS, ...sitios]);
+  }
 }
 
 // ------------------------------------------------------------------ ADENDA §2 + ENMIENDA E2 §5.7: avisos al entrar en sala
@@ -309,6 +324,7 @@ export default {
 
   // plan §8: objetivos (ficha, «Mirar a Bruno», abuela) y hora del móvil por hitos — datos en content/pistas.js
   objetivos: OBJETIVOS,
+  acto: actoActual,                                     // crítica 3 · N2: «Mirar a Bruno» y la abuela, por acto
   hora: horaMovil,
   metaFinal: 'Lo hemos conseguido. Bueno: lo he conseguido. Lo pongo en «logros».',
 

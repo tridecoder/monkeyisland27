@@ -15,11 +15,11 @@
 //  - defeat (maxMisses): the rival's own `defeatLine` → `defeatLines` → `duel:<id>:perdido_n` + 1 → the rival's defeat
 //    scene (`defeatScene` name or `onLose`) → optional `defeatHeadline` as a Titulator headline strip. Never fatal.
 //    The rematch deck starts with the attack that won (flag `duel:<id>:empieza`).
-//  - retiring = no consequence; the thread says «RV: Bruno ha abandonado el hilo.».
+//  - retiring = no consequence; the thread says «RV: Bruno ha abandonado el hilo.» and Bruno says `retireLine`.
 //  - nothing is learned in a duel; points always restart from 0. No autosave while a duel is open; a save made during
 //    a duel restarts that duel when it is loaded (core.js `load`).
 //  - HUD = mail window (63 px): De / Para / CC · Asunto (RE: RE: ...) · Cuerpo · Asignado a · «ACIERTOS 2/3 · FALLOS 1/3».
-import { drawText, measure, wrap } from './font.js';
+import { drawText, measure, wrap, citar } from './font.js';
 import { rect, hline, frameRect } from './draw.js';
 
 const asArray = x => x == null ? [] : Array.isArray(x) ? x : [x];
@@ -181,7 +181,13 @@ export async function runDuel(game, api, idOrDef) {
       delete flags['duel:' + id + ':empieza'];
       if (opp.onWin) await opp.onWin(api, ctl);
     } else if (S.result === 'retired') {
-      if (T.retireThread) ctl.thread(T.retireThread.from, T.retireThread.text, 2400);
+      if (T.retireThread) {
+        ctl.thread(T.retireThread.from, T.retireThread.text, 2400);
+        game.log.push({ who: 'aviso', name: null, text: `${T.retireThread.from} ${T.retireThread.text}`, room: game.state && game.state.room, t: Math.round(game.time) });
+      }
+      // crítica 3 · N7: Bruno lo dice (una línea; la del rival `retireLine` manda sobre la común `texts.retireLine`)
+      const rl = opp.retireLine !== undefined ? opp.retireLine : T.retireLine;
+      if (rl) await say('player', rl);
       await api.wait(900);
       game.hud = null; game.hudTop = 0;
       if (opp.onLose) await opp.onLose(api, ctl, 'retired');
@@ -198,7 +204,8 @@ export async function runDuel(game, api, idOrDef) {
       if (opp.defeatScene) await api.scene(opp.defeatScene, { duel: id, perdidos: n, ctl });
       if (opp.onLose) await opp.onLose(api, ctl, 'lost');
       const head = typeof opp.defeatHeadline === 'function' ? opp.defeatHeadline(n, api) : opp.defeatHeadline;
-      if (head) await api.titular(head, { from: opp.headlineFrom });
+      // crítica 3 · N10: el titular de la derrota es del Titulator, no de Bruno (registro: who 'titulator')
+      if (head) await api.titular(head, { from: opp.headlineFrom || 'titulator' });
     }
     game.lastDuel = { id, result: S.result, hits: S.hits, misses: S.misses, perdidos: flags['duel:' + id + ':perdido_n'] || 0 };
     return won;
@@ -206,6 +213,7 @@ export async function runDuel(game, api, idOrDef) {
     game.inDialog = Math.max(0, (game.inDialog || 1) - 1);
     game.hud = null; game.hudTop = 0;
     game.duelInfo = null; game.duelActive = null;
+    game.finDialogo = game.time;                      // crítica 3 · N6: margen del ambiente (engine/efectos.js)
     if (music) api.music(prevMusic || null, 0.8);
   }
 
@@ -294,7 +302,7 @@ function drawHud(g, game, S) {
   let subj = wrap(subjectText(S), subjW);
   if (subj.length > 1) subj = [fit(subj.join(' '), subjW)];       // one line: the body needs the room
   const bodyW = w - measure('Cuerpo:') - 12;
-  let body = S.body ? wrap('«' + S.body + '»', bodyW) : [];
+  let body = S.body ? wrap(citar(S.body), bodyW) : [];
   if (body.length > 2) body = [body[0], fit(body.slice(1).join(' '), bodyW)];
   const h = 63;
   game.hudTop = y + h + 3;

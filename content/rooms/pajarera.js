@@ -268,7 +268,7 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'pajarera_a_pecera', name: 'cristal de la Redacción', exit: { room: 'pecera', tipo: 'cristal' }, handlers: {
+    { id: 'pajarera_a_pecera', name: 'Redacción', exit: { room: 'pecera', tipo: 'cristal' }, handlers: {   // crítica 3 · N5 (antes «cristal de la Redacción»)
       mirar: 'Tras el cristal, la Redacción. Desde aquí parece un acuario con wifi.',
       abrir: async (api) => api.goto('pecera', 'pajarera'), usar: async (api) => api.goto('pecera', 'pajarera'),
       hablar: 'Le hago gestos al tótem del vestíbulo. Me contesta: «AQUÍ». Ya lo sé.',

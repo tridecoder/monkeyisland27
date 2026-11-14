@@ -335,7 +335,12 @@ try {
         alAbrir: async () => { await page.mouse.click(480, 300); await page.waitForTimeout(120); return !!(await state()).detalle; } });
       ok(d && d.cerrarX === 0 && d.cuenta === 3000 && d.bloqueado, 'pop-up 3: sin X, «Podrá cerrar en 3», bloqueado');
       ok(extra === true, 'pop-up 3: un clic no lo cierra durante la cuenta atrás');
-    } else await verb('hablar', 'maripaz_remitido');
+    } else {
+      // crítica 3 · punto 12: en la revancha, sin pop-up (ni plano detalle) antes del menú
+      const pn0 = await flag('maripaz_popup_n');
+      await verb('hablar', 'maripaz_remitido');
+      ok((await flag('maripaz_popup_n')) === pn0 && await logHas('Plano detalle: PUBLICIDAD') === 0, `revancha (${n}): sin pop-up`);
+    }
     await choose('Siestatón no ha confirmado la página 7.');
     const st = await state();
     ok(st.duel && st.duel.id === 'maripaz', `D1 abierto (${n})`);
@@ -350,7 +355,7 @@ try {
     ok(await logHas('«Cierre este anuncio para leer la respuesta».') === 1 && await logHas('Antes, un anuncio.') === 1, `derrota (${n})`);
     if (n === 3) ok(await logHas('tarifa de proximidad') === 1, '3.ª derrota: Maripaz a tres metros');
   }
-  ok((await flag('maripaz_popup_n')) === 5, 'maripaz_popup_n = 5');
+  ok((await flag('maripaz_popup_n')) === 3, 'maripaz_popup_n = 3 (las revanchas no suman pop-up)');
   await G(() => __game.clearLog());
   await verb('hablar', 'maripaz_remitido');
   await choose('Siestatón no ha confirmado la página 7.');

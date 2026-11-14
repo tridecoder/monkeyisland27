@@ -25,7 +25,9 @@ export function reset(game) {
 }
 
 // ================================================================== AMBIENTE
-export const AMBIENT_DEFAULTS = { every: [60000, 120000], max: 3 };
+// trasDialogo: margen (ms) tras cerrar una conversación o un duelo antes de que hable el ambiente (crítica 3 · N6: que no
+// parezca que contesta a Bruno). Una sala puede cambiarlo en `ambientRules`.
+export const AMBIENT_DEFAULTS = { every: [60000, 120000], max: 3, trasDialogo: 8000 };
 
 /** Nada en pantalla que el ambiente pueda pisar (plan §1.1 «Coro» y §5.14). */
 export function quiet(game) {
@@ -56,6 +58,7 @@ export function updateAmbient(game) {
   if (!A || A.running || !rt.ambient.length) return;
   if (A.count >= A.max || game.time < A.next) return;
   if (!quiet(game)) return;                         // pospuesta: sale en cuanto haya silencio
+  if (game.finDialogo != null && game.time - game.finDialogo < (rules(rt).trasDialogo || 0)) return;   // N6: pospuesta
   const api = makeApi(game, {});
   const n = rt.ambient.length;
   for (let k = 0; k < n; k++) {

@@ -58,6 +58,7 @@ if (salas) {
   add('contrast', 'contrast.mjs');
   for (const p of ['p1', 'p2', 'p3', 'p4']) add('comedia-' + p, `test-comedia-${p}.mjs`);
   add('heredado', 'test-heredado.mjs');               // lo que comprobaban los test-paquete-a/b/c/d retirados y sigue valiendo
+  add('critica3', 'test-critica3.mjs');               // arreglos de la crítica 3 (N1-N11, revanchas de Maripaz sin pop-up)
 }
 const solo = args.solo ? String(args.solo).split(',') : null;
 const plan = solo ? T.filter(t => solo.some(s => t.name.startsWith(s) || t.file.startsWith(s))) : T;

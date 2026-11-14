@@ -5,7 +5,7 @@
 // (handlers 'usar:<item>' / 'dar:<item>' del hotspot o del PNJ).
 // Regla anti-callejón (§4): ningún objeto se gasta salvo en su uso correcto.
 import { PAL, rect, px, hline, vline, ellipse, poly, ditherPick, frameRect, line } from '../engine/draw.js';
-import { drawText } from '../engine/font.js';
+import { drawText, citar } from '../engine/font.js';
 import { menuMovil } from './lib/movil.js';
 
 /** La libreta de réplicas: cuántas llevo y la lista en el panel (cualquier opción, Esc o un toque fuera la cierran). */
@@ -14,7 +14,7 @@ async function abrirLibreta(api) {
   const learned = (D.pairs || []).filter(p => api.flag(p.flag));
   await api.say(`Mi libreta de réplicas: ${learned.length} de ${N_REPLICAS}. En otra empresa esto sería un máster.`);
   if (!learned.length) return;
-  await api.choose(learned.map(p => '«' + p.reply + '»').concat(['[Cerrar la libreta]']), { escape: learned.length });
+  await api.choose(learned.map(p => citar(p.reply)).concat(['[Cerrar la libreta]']), { escape: learned.length });
 }
 
 // ------------------------------------------------------------------ icon helpers
