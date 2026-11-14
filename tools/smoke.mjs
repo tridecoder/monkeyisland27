@@ -227,9 +227,9 @@ try {
   await G(() => __game.newGame());          // partida limpia (modo rápido) para el resto de pruebas
 
   // ---------------------------------------------------------------- inventory
-  step('Inventario: los 18 objetos (plan de comedia: fuera planillo y pósit de baja; + taper_huerfano; give-all de depuración)');
+  step('Inventario: los 19 objetos (plan de comedia: fuera planillo y pósit de baja; + taper_huerfano; E2: + correo_evaristo; give-all de depuración)');
   const inv = await G(() => __game.giveAll());
-  ok(inv.length === 18 && !inv.includes('planillo') && !inv.includes('posit_baja_ruben'), `18 objetos en el inventario (${inv.length})`);
+  ok(inv.length === 19 && inv.includes('correo_evaristo') && !inv.includes('planillo') && !inv.includes('posit_baja_ruben'), `19 objetos en el inventario (${inv.length})`);
   await fast(false);
   await clickClient(await G(() => __game.verbPos('mirar')));
   await clickClient(await G(() => __game.invPos('tarjeta_becario')));
@@ -382,36 +382,36 @@ try {
   ok((await state()).lastDuel.result === 'won' && (await state()).lastDuel.misses === 1, 'el duelo de prueba se gana');
   ok(await G(() => __game.state().flags['once:cameo:inigo'] === undefined && !!__game.game.state.once['once:cameo:inigo']), 'cameo de Tadeo consumido (api.once)');
 
-  step('Adenda: avisos al entrar en sala (llamadas de Evaristo, «RV:» de Tadeo)');
+  step('Avisos al entrar en sala (ENMIENDA E2 §5.7: L1, L3, L4, L5; los «RV:» de Tadeo llegan solos al correo)');
   await G(() => { __game.setFlag('torno_abierto', true); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); __game.clearLog(); });
   await G(() => __game.gotoRoom('office'));
   let av = await state();
   ok(av.flags.evaristo_llamadas === 1 && !av.aviso, 'L1 al entrar en una sala con torno_abierto (evaristo_llamadas = 1)');
-  ok(await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Una cosita. Muy pequeña. Evaristo Salvedad, Controlling.')), 'texto literal de L1');
+  ok(await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Una cosita. Evaristo Salvedad, Controlling. Su tarjeta pone «Pellizco».')), 'texto literal de L1 (E2 §7.4, paso 10)');
   await G(() => __game.gotoRoom('pecera'));
-  ok((await state()).flags.evaristo_llamadas === 1 && !(await state()).flags.tadeo_rv_n, 'sin condición cumplida (L2 / RV1) no sale nada');
-  await G(() => { __game.setFlag('inigo_presentado', true); });
+  ok((await state()).flags.evaristo_llamadas === 1 && !(await state()).flags.tadeo_rv_n, 'sin condición cumplida (L3 / RV1) no sale nada');
+  await G(() => { __game.setFlag('inigo_presentado', true); __game.clearLog(); });
   await G(() => __game.gotoRoom('office'));
   av = await state();
-  ok(av.flags.tadeo_rv_n === 1 && av.flags.evaristo_llamadas === 1, 'RV1 con inigo_presentado (una sola cosa por entrada)');
-  await G(() => __game.gotoRoom('pecera'));
-  ok((await state()).flags.tadeo_rv_n === 1, 'RV2 espera a acto_2_iniciado (no salta a otro; plan §5.16: tres RV)');
+  ok(av.flags.tadeo_rv_n === 1 && av.flags.evaristo_llamadas === 1 && await G(() => !__game.log.some(l => l.who === 'tadeo_adjunto' || /¡ding!/.test(l.text))), 'RV1 llega al correo sin aviso (E2 §7.4)');
   await G(() => { __game.setFlag('acto_2_iniciado', true); __game.setFlag('acto_3_iniciado', true); __game.clearLog(); });
   await G(() => __game.gotoRoom('sala_amazonas'));
   ok((await state()).flags.evaristo_llamadas === 1, 'nunca en sala_amazonas con acto_3_iniciado');
   await G(() => __game.gotoRoom('office'));
-  ok((await state()).flags.evaristo_llamadas === 2 && (await state()).flags.evaristo_convoco === true, 'L2 (acto_2_iniciado): pone evaristo_convoco');
-  await G(() => { __game.doVerb('mirar', 'movil'); });
-  ok(await G(() => __game.log.some(l => l.text.startsWith('Y 1 correos de Tadeo'))), 'Mirar móvil con tadeo_rv_n >= 1: «Y 1 correos de Tadeo...»');
-  // plan §5.13: la llamada LC (coma_bendecida sin correo) sale antes que cualquier otra y pone correo_evaristo_listo
-  await G(() => { __game.setFlag('coma_bendecida', true); __game.setFlag('acto_3_iniciado', false); __game.clearLog(); });   // (sin el momento 8 de la Redacción)
-  await G(() => __game.gotoRoom('pecera'));
   av = await state();
-  ok(av.flags.correo_evaristo_listo === true && av.flags.evaristo_lc === true && av.flags.evaristo_llamadas === 3 && av.flags.tadeo_rv_n === 1
-    && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text.includes('Llevo diez minutos junto al teléfono.'))), 'LC: la coma se cierra por teléfono (correo_evaristo_listo, evaristo_llamadas = 3)');
+  ok(av.flags.evaristo_llamadas === 1 && av.flags.tadeo_rv_n === 3 && !('evaristo_convoco' in av.flags), 'sin L2 (E2, fase B 4): nada suena; los tres RV en el correo; sin evaristo_convoco (retirado en la integración)');
+  await G(() => { __game.doVerb('mirar', 'movil'); });
+  ok(await G(() => __game.log.some(l => l.text.startsWith('Y 3 correos de Tadeo'))), 'Mirar móvil con tadeo_rv_n = 3: «Y 3 correos de Tadeo...»');
+  await G(() => { __game.setFlag('pieza_recortada', true); __game.setFlag('acto_3_iniciado', false); __game.clearLog(); });
+  await G(() => __game.gotoRoom('pecera'));
+  ok((await state()).flags.evaristo_llamadas === 2 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Veintitrés líneas. Ni una coma fuera de sitio. Era solo eso.')), 'L3 (pieza_recortada), sin la coma de 4,15 € (E2 §5.7)');
+  await G(() => { __game.setFlag('acto_3_iniciado', true); __game.setFlag('ruben_encontrado', true); __game.clearLog(); });
   await G(() => __game.gotoRoom('office'));
-  ok((await state()).flags.evaristo_llamadas === 3 && (await state()).flags.tadeo_rv_n === 2, 'tras la LC, L3 sigue esperando a su condición (sale el RV2)');
-  await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'acto_2_iniciado', 'acto_3_iniciado', 'coma_bendecida', 'correo_evaristo_listo', 'evaristo_lc']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); __game.setFlag('evaristo_convoco', false); });
+  ok((await state()).flags.evaristo_llamadas === 2, 'L4 se pierde si Rubén ya ha aparecido; L5 espera a ruben_libre');
+  await G(() => { __game.setFlag('ruben_libre', true); __game.clearLog(); });
+  await G(() => __game.gotoRoom('administracion'));      // (en la Redacción, con Rubén libre, la entrada lanza su escena)
+  ok((await state()).flags.evaristo_llamadas === 3 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Una cosita. Me dicen que va a la Sala. ¿Lleva mi correo?')), 'L5 (ruben_libre): «¿Lleva mi correo?»');
+  await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'acto_2_iniciado', 'acto_3_iniciado', 'pieza_recortada', 'ruben_encontrado', 'ruben_libre']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); __game.setFlag('evaristo_convoco', false); });
 
   step('Llamadas: primer plano del móvil (api.phone) en pista, aviso e intro; se retira siempre');
   const phoneState = () => G(() => __game.state().phone);
@@ -585,6 +585,15 @@ try {
   await dp.waitForFunction(() => window.__game && __game.state().mode === 'title');
   const dm = await dp.evaluate(() => { const c = document.getElementById('screen'); return { cw: c.width, ch: c.height, label: __game.game.titleLayout.map(i => i.label) }; });
   ok(dm.cw % 320 === 0 && dm.ch % 200 === 0, `escritorio: escala entera (${dm.cw}x${dm.ch})`);
+  // B1: con partida guardada («Continuar» + «Pantalla completa»: 4 entradas) el menú no se solapa con el lema del pie (y 187)
+  await dp.evaluate(() => { __game.skipText(true); return __game.newGame(); });
+  await dp.reload();
+  await dp.waitForFunction(() => window.__game && __game.state().mode === 'title');
+  await dp.waitForTimeout(300);
+  const lay = await dp.evaluate(() => __game.game.titleLayout.map(i => ({ label: i.label, y: i.y })));
+  ok(lay.length >= 4 && lay.every((it, i) => !i || it.y >= lay[i - 1].y + 12), `título con partida guardada: ${lay.length} entradas sin solaparse entre sí`);
+  ok(lay[lay.length - 1].y + 12 <= 190, `título con partida guardada: «${lay[lay.length - 1].label}» acaba por encima del lema (y ${lay[lay.length - 1].y}+12 ≤ 190)`);
+  await dp.screenshot({ path: path.join(shots, 'bugs2-test-titulo.png') });
   await dp.mouse.click(10, 10);
   await dp.keyboard.press('f');
   await dp.waitForTimeout(500);

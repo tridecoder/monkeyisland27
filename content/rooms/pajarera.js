@@ -1,5 +1,6 @@
 // SALA `pajarera` (en pantalla: «Despachos») — LÓGICA. Paquete P2 del plan de comedia (docs/guion2/PLAN_COMEDIA.md §4.1,
-// §4.3, §5.10, §5.11, §6.3, §7.4-7.7, §8.3; ENMIENDA E1.5). El arte y la geometría están en ./art/pajarera.art.js.
+// §4.3, §5.10, §5.11, §6.3, §7.4-7.7, §8.3; ENMIENDA E1.5) y de la ENMIENDA E2 (L15, paso 11, fase B (2) sin el eco viral
+// de Íñigo, fase B (15) D3 sin R14, §7.6 Íñigo, §4.2.3 Gervasio y el adhesivo, §8). El arte, en ./art/pajarera.art.js.
 // Actos I-II: Íñigo (sofá) y el Lector Medio (expositor junto a los pósits: nunca en una mesa de mando); Gervasio en su
 // mesa tras la reunión (`reunion_terminada`). Acto III: Gervasio EN LA PUERTA de la Sala hasta ganarle el duelo D3 (que
 // se define aquí: se muda desde office.js); luego se va al Vending.
@@ -182,7 +183,7 @@ async function escenaChaqueta(api) {
   if (api.room !== 'pajarera' || !api.flag('bruno_con_chaqueta') || !here(api, I)) return;
   if (!api.once('pajarera_chaqueta_vista')) return;
   await api.cutscene(async (api) => {
-    await talk(api, [[I, 'Ramírez. Bolsa. «Prescindible» desde 2019. Siéntese donde no se vea.'], ['B', 'Soy Bruno.'],
+    await talk(api, [[I, 'Ramírez. Bolsa. «Prescindible». Siéntese donde no se vea.'], ['B', 'Soy Bruno.'],
       [I, 'Entonces quítese eso. Confunde a la matriz.']]);
     api.sfx('beep');
     await talk(api, [[LM, GRABACION], [I, '¿Ve? Él sí sabe estar. Y sin chaqueta.'],
@@ -193,13 +194,7 @@ async function escenaChaqueta(api) {
   });
   api.setFlag('bruno_con_chaqueta', false);
 }
-async function escenaViral(api) {
-  await api.cutscene(async (api) => {
-    await talk(api, [[I, 'Vacante. ¿Has visto el Titulator? Once mil. Viral.'], ['B', 'Lo de la cafetera fui yo.'],
-      [I, 'Tú pusiste el saludo. Él puso el titular. El valor está en el titular.'],
-      [I, 'Te lo apunto en verde: oportunidad. Para él.']]);
-  });
-}
+// (E2 §7.5 fase B (2): fuera el eco viral de Íñigo en los Despachos.)
 
 // ------------------------------------------------------------------ §7.4-7.7: el duelo D3 · Gervasio (se muda aquí)
 async function remateHidrovoltia(api, duel) {
@@ -215,13 +210,12 @@ const dueloGervasio = {
   subject: 'Redactar el acta de la última Reunión de Dirección',
   assigned: 'Vacante (becario)',
   assignedWin: 'Gervasio Acta',
-  deck: ['R07', 'R01', 'R14', 'R03', 'R05'],
-  winScore: 3,
+  deck: ['R07', 'R01', 'R03', 'R05'],              // E2 §7.5 fase B (15): sin R14; remate a los dos aciertos
+  winScore: 2,
   maxMisses: 3,
   attackText: {
     R07: 'Esto ya se... se habló. Me consta. Lo hablamos.',
     R01: 'Ya se dijo en el otro correo. Ese que no se leyó...',
-    R14: 'Esto se podría ver en una reunión rápida. Que se convocaría.',
     R03: 'El acta se necesitaba para ayer. Por alguien. No digo quién.',
     R05: 'Lo del acta, entre tú y yo. Que no salga de esta puerta.',
   },
@@ -230,7 +224,7 @@ const dueloGervasio = {
   taunt: ['Eso se... Eso no venía a cuento. Se agradece.', 'Se toma nota. La tomas tú.'],
   wrongObject: { '*': 'Eso no es mío. Ni lo ha sido nunca. Siguiente adjunto.' },
   finishers: [
-    { atScore: 3, text: 'Yo con Hidrovoltia no he comido en mi vida. Ni cenado.', object: 'fotocopia_nota_direccion',
+    { atScore: 2, text: 'Yo con Hidrovoltia no he comido en mi vida. Ni cenado.', object: 'fotocopia_nota_direccion',
       script: remateHidrovoltia },
   ],
   cc1: 'Sus tres móviles',
@@ -281,7 +275,7 @@ export default buildRoom({
       empujar: 'Empujo el cristal. Desde la Redacción parece que pido auxilio. Un poco sí.',
     } },
     { id: 'persiana', name: 'persiana', handlers: {
-      mirar: 'Persiana a media altura desde 2015. Mitad transparencia, mitad no preguntes.',
+      mirar: 'Persiana a media altura. Mitad transparencia, mitad no preguntes.',
       tirar: 'No. Si sube, se ve todo. Si baja, se sospecha todo.',
       abrir: 'Subirla del todo sería transparencia. Aquí eso va en otra partida.',
       cerrar: 'Bajarla del todo sería reconocer algo. No pienso reconocer nada.',
@@ -324,7 +318,7 @@ export default buildRoom({
       abrir: 'El cajón tiene llave. La mesa, no. Aquí decide el cajón.',
       usar: 'No me siento ahí. Esa mesa tiene más cargos que yo.',
       'usar:pieza_opa': 'Si la dejo en esta mesa, la validan. En blanco.',
-      hablar: 'El cartelito dice «RESERVADO». Desde 2015. Para una reunión que nunca empieza.',
+      hablar: 'El cartelito dice «RESERVADO». Para una reunión que nunca empieza.',
     } },
     { id: 'perchero', name: 'perchero', handlers: {
       mirar: 'El perchero de los Despachos, vacío. Aquí colgada no asiente nadie.',
@@ -342,12 +336,12 @@ export default buildRoom({
       mirar: async (api) => {
         if (acto3(api)) await api.say('"OCUPADO – hasta 2031".');
         else if (api.flag('reunion_terminada')) await api.say('"LIBRE". Es la primera vez que lo veo.');
-        else await api.say('Pantallita: "REUNIÓN EN CURSO – DESDE MARZO".');
+        else await api.say('Pantallita: "REUNIÓN EN CURSO". Debajo, a boli: "Y EN CURSO".');
       },
       ir: entrarSala, usar: entrarSala, abrir: entrarSala, empujar: entrarSala,
       hablar: async (api) => api.say(acto3(api) ? 'Toc, toc. Desde dentro: "Siguiente diapositiva". No era a mí.' : 'Toc, toc en el marco. Desde dentro: "Siguiente punto".'),
       cerrar: async (api) => api.say(salaCerrada(api) ? 'Cerrada por dentro. Se oye pasar una diapositiva. Muy despacio.'
-        : 'Tiene una cuña desde marzo. Si la quito, alguien tendría que salir.'),
+        : 'Tiene una cuña. Si la quito, alguien tendría que salir.'),
     } },
     { id: 'hoja_reservas', name: 'hoja de reservas', handlers: {
       mirar: async (api) => {
@@ -444,11 +438,13 @@ export default buildRoom({
                   [I, 'Entonces eres barato con antigüedad. Eso no tiene cuadrante.']]);
                 await api.anim(I, 'reach', 500);              // (escribe un pósit y lo pega fuera de la matriz)
                 api.sfx('paper');
-                await talk(api, [[I, 'Te invento uno: «Vacante (histórico)». Enhorabuena.'], ['B', 'Primer ascenso en seis años. Hacia fuera, pero ascenso.']]);
+                await talk(api, [[I, 'Te invento uno: «Vacante (histórico)». Enhorabuena.']]);
+                await api.wait(1200);                       // L15: (Bruno mira el pósit, fuera de la matriz.)
+                await talk(api, [[I, 'Siguiente.']]);
               } },
             { text: '¿Usted va a despedir a alguien esta noche?', once: true,
               reply: ['Yo no recorto personas, Vacante.', 'Recorto la distancia entre las personas y la puerta.'] },
-            { text: '¿Y si en la Reunión de Dirección dicen que no?', reply: 'El Lector Medio nunca dice que no. Lleva tres semanas asintiendo.' },
+            { text: '¿Y si en la Reunión de Dirección dicen que no?', once: true, reply: 'El Lector Medio nunca dice que no. Lleva tres semanas asintiendo.' },
             { text: '¿Y el de Controlling?', once: true,
               reply: ['Me llama por las comas de las facturas. Le tengo en azul.', 'Excusas. Pero muy bien puntuadas.'] },
             { text: 'Me voy.', exit: true, reply: 'Perfecto. Eso libera sinergias.' },
@@ -459,7 +455,11 @@ export default buildRoom({
     // §5.10 Gervasio: en su mesa (Acto II) y en la puerta de la Sala (Acto III, con el duelo D3)
     gervasio_puerta: {
       actor: G, start: 'GV_PUERTA',
-      onStart: async (api) => { await gv(api, 'Vacante. Se te iba a llamar. Por alguien. Ya se verá por quién.'); },
+      onStart: async (api) => {
+        // E2 §4.2.3: el adhesivo «SU ANUNCIO AQUÍ» en la espalda de Bruno (una vez; en lugar del saludo)
+        if (api.flag('bruno_con_banner') && api.once('pajarera_gervasio_banner')) { await gv(api, 'Ese anuncio en la espalda... se agradece. Pero lo hablamos.'); return; }
+        await gv(api, 'Vacante. Se te iba a llamar. Por alguien. Ya se verá por quién.');
+      },
       nodes: {
         GV_PUERTA: {
           options: [
@@ -494,14 +494,13 @@ export default buildRoom({
   async onEnter(api) {
     if (api.restoring || api.flag('lector_derribado')) return;
     if (api.flag('bruno_con_chaqueta') && here(api, I)) await escenaChaqueta(api);
-    else if (api.flag('cafetera_viral') && here(api, I) && api.once('pajarera_viral')) await escenaViral(api);
     titularAlEntrar(api);
   },
 }, art);
 
 async function leerEnviados(api) {
   if (here(api, G)) { await api.say('Con Gervasio delante, leerle el correo sería periodismo de investigación.'); return; }
-  await api.say(['Sesión abierta. Enviados.', 'Gervasio a Teodoro: "Me consta que esto ya lo hablamos".',
-    'Teodoro, por fax escaneado: "A ti te consta. A mí me consta que hablabas tú".', 'Me la apunto.']);
+  await api.say(['Enviados. Gervasio a Teodoro: "Me consta que esto ya lo hablamos".',            // paso 11 (E2 §7.4)
+    'Teodoro, por fax escaneado: "A ti te consta. A mí me consta que hablabas tú".']);
   api.learnReply('rep_07');
 }

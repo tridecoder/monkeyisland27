@@ -22,6 +22,9 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   baja: 'A las nueve apagan la rotativa. Y Rubén sigue de alta en un armario.',
   acta: 'Para entrar en la Sala hace falta un acta. Gervasio no ha escrito una nunca.',
   climax: 'Respondo a todos. Es lo único que sé hacer bien.',
+  // E2 §10.3: la coma de Evaristo (pasos 28 y 32)
+  coma: 'Evaristo me llama y Begoña me manda a verle. Algo le quita el sueño.',   // integración: en el paso 28 solo ha sonado la L1
+  bendicion: 'Evaristo duda de su propia coma. Necesita a alguien que sepa de comas.',
 };
 const faltanD1 = (api) => ['rep_08', 'rep_04', 'rep_11'].filter(f => !api.flag(f)).length > 0;
 
@@ -58,13 +61,18 @@ export const OBJETIVOS = [
     ['Pregunta lo que viene después. Verás cómo corren.', 'A Gervasio: «¿y los siguientes pasos?».']] },
   { id: 'hueco', hecho: 'casilla_hueco', activo: 'reunion_terminada', salas: ['sala_amazonas'], meta: M.hff, niveles: [
     'La que se queda sentada es que quiere que le hables.',
-    'Si alguien tiene algo apartado desde marzo, ya no es suyo.',
-    ['Díselo por escrito, que es como se dicen las cosas.', 'A Maripaz: la página 7, desde marzo.']],
+    'Si alguien tiene algo apartado y no lo usa, ya no es suyo.',                                 // E2 §8 / §10.3
+    ['Díselo por escrito, que es como se dicen las cosas.', 'A Maripaz: «Siestatón no ha confirmado la página 7».']],
     extra: { si: faltanD1, abuela: 'Y antes apúntate contestaciones, hijo. Cotillea, que es gratis.' } },
   { id: 'nota', hecho: 'nota_gasto_presentada', activo: 'acto_2_iniciado', salas: ['ecosistema', 'administracion'], meta: M.hff, niveles: [
     '¿Has hecho la cuenta de gastos? Hazla mal. Te enseñan una buena.',
     'La de la ventanilla enseña las buenas si le das una mala.',
     ['Presenta una cuenta mal hecha. Con lo que lleves.', 'Nota de gasto a Begoña. Con el azúcar.']] },
+  // E2 §10.3 · paso 28: escuchar a Evaristo hasta el final (Administración)
+  { id: 'coma', hecho: 'evaristo_escuchado', activo: 'nota_gasto_presentada', salas: ['administracion', 'ecosistema'], meta: M.coma, niveles: [
+    'A los mayores hay que dejarlos acabar, hijo. Lo bueno lo dicen al final.',
+    'Ese señor que te llama tanto quiere contarte algo. No le metas prisa.',
+    ['Escúchale entero. Sin mirar el reloj.', 'Evaristo: «¿De qué trata?» y «Siga».']] },
   { id: 'papel_fax', hecho: 'fax_con_papel', activo: 'nota_gasto_presentada', salas: ['catacumba'], meta: M.hff, niveles: [
     'Las máquinas viejas, sin papel, no hablan. Dales papel. Y tú cena.',
     'Ese papel que te rechazaron tiene la espalda en blanco.',
@@ -73,6 +81,11 @@ export const OBJETIVOS = [
     'Lo que me cuenta una vecina no me lo creo hasta que me lo cuenta otra.',
     'Tienes un papel del fax y otro de la ventanilla. Dos vecinas.',
     ['Llévale las dos vecinas a la que corrige.', 'El fax de F.P. y la nota, a Aurora.']] },
+  // E2 §10.3 · paso 32: Aurora bendice la coma y la manda por el fax (Redacción de papel)
+  { id: 'bendicion', hecho: 'coma_bendecida', activo: ['evaristo_escuchado', 'fax_con_papel'], salas: ['catacumba'], meta: M.bendicion, niveles: [
+    'Si dudas de una coma, pregúntale a la que corrige.',
+    'La señora del boli rojo sabe de comas más que el cura.',
+    ['Pregúntale a la del boli por la coma de ese señor.', 'A Aurora: la coma de Evaristo.']] },
   { id: 'firma', hecho: 'casilla_firma', activo: 'fax_con_papel', salas: ['catacumba'], meta: M.hff, niveles: [
     'Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor.',
     'Si el del fax se pone terco, que le conteste su propia máquina.',
@@ -87,7 +100,7 @@ export const OBJETIVOS = [
     'La de la ventanilla no lee: corta. Y el fax llega a todas partes.',
     ['Mándaselo a la que corta, por la máquina o en mano.', 'La pieza a Begoña: fax, tecla 2, o subir.']],
     // E1.4.1: con `herminia_midio`, antes del nivel 1
-    previa: { si: 'herminia_midio', nivel: 1, abuela: 'Hasta la maquinita de los dibujos sabe cuánto te sobra, hijo.' } },
+    previa: { si: 'herminia_midio', nivel: 1, abuela: 'Hasta la maquinita de los dibujos sabe cuánto te sobra, hijo. Y es lista.' } },   // E2 §10.3
   { id: 'cierre', hecho: 'pagina_cerrada', activo: ['casilla_hueco', 'casilla_fuente', 'casilla_firma', 'pieza_recortada'], salas: ['*'], meta: M.cierre, niveles: [
     '¿Y a qué esperas para darle los papeles a ese señor del fax?',
     'Tienes las tres cosas, hijo. Llévalas a quien manda en el papel.',
@@ -103,7 +116,7 @@ export const OBJETIVOS = [
   { id: 'baja', hecho: 'ruben_libre', activo: (api) => api.has('album_eventos') || !!api.flag('posit_descopeado'), salas: ['pecera'], meta: M.baja, niveles: [
     'A los que echan con palabras bonitas se les saca con las mismas.',
     'Ese chico te dio una frase de despedir sin despedir. Úsala.',
-    ['Dile al de los papelitos esa frase tan fina.', 'El álbum a Nemesio. «Salida en valor».']],
+    ['Dile al del tablero esa frase tan fina.', 'El álbum a Anselmo. «Salida en valor».']],          // E2 §2.6 / §10.3
     extra: { si: ['!rep_13', '!oyo_descopear'], abuela: 'Pero antes pregúntale al chico por los discursos de ese señor.' } },
   { id: 'acta', hecho: 'sala_abierta', activo: 'acto_3_iniciado', salas: ['pajarera'], meta: M.acta, niveles: [
     'En una reunión manda el que escribe el acta. Que la escriba otro.',
@@ -111,8 +124,9 @@ export const OBJETIVOS = [
     ['Gánale al de la puerta y enséñale su cuenta de la comida.', 'Duelo con Gervasio. Remate: su nota.']] },
   { id: 'inigo', hecho: 'duelo_inigo_ganado', activo: 'sala_abierta', salas: ['sala_amazonas'], meta: M.climax, niveles: [
     'A los que hablan mucho se les contesta corto. Y con papeles.',
-    'Cuando pida papeles, dale lo del chico y lo de la reunión.',
-    ['Primero el papel del chico; luego el de la reunión.', 'Remates: el ticket nº 1 y el acta.']] },
+    'Cuando pida papeles, dale lo del chico, lo de la reunión y lo de las comas.',                   // E2 §10.3
+    ['Primero lo del chico; luego la reunión; luego la coma.', 'Remates: el ticket nº 1, el acta y el correo de Evaristo.']],
+    extra: { si: '!has:correo_evaristo', abuela: 'Y el papel del señor de las comas, que lo vas a necesitar.' } },
   { id: 'empujon', hecho: 'lector_derribado', activo: 'duelo_inigo_ganado', salas: ['sala_amazonas'], meta: M.climax, niveles: [
     'A los que nunca dicen nada, hijo, un empujoncito. Con educación.',
     'Ese de cartón lleva semanas diciendo que sí. Que diga otra cosa.',

@@ -1,39 +1,33 @@
 // SALA `pecera` (en pantalla: «Redacción») — LÓGICA. Paquete P2 del plan de comedia (docs/guion2/PLAN_COMEDIA.md §4.1-4.3,
-// §5.4, §5.5, §5.14, §5.15, §6.3; ENMIENDA E1.4-E1.8). El arte y la geometría están en ./art/pecera.art.js.
+// §5.4, §5.14, §5.15, §6.3; ENMIENDA E1.4-E1.8) y de la ENMIENDA E2 (§2 Anselmo, Infografía e IA, fusión Nemesio →
+// Anselmo; §6 L8-L13, L29, L38; §7.4 paso 13; §8; §9 B4, C4-C6). El arte y la geometría están en ./art/pecera.art.js.
 // Archivos propios: ./pecera.dialogos.js (árboles), ./pecera.escenas.js (escenas), ./pecera.voces.js (ayudas de voz),
 // ./pecera.secretaria.js (Custodia).
 //
 // ESTADOS QUE LEE EL ARTE (la lógica pone el flag o el estado ANTES de la línea que lo comenta):
 //  - pantalla_metricas: apagada con `cms_vivo`; estados de escena 'negra' (apagón), 'viral' y 'viral_baja' (§4.1).
 //  - enchufe_pantalla: estado 'con_ticket' (camino antiguo: «SALVO TICKET Nº 3»). monitor_yoli: 'publicado' | 'guardando'.
-//  - herminia_portatil (E1.8, 4 estados): por flags `cinta_1` → `cinta_2` (herminia_midio) → `paquete` (dos_ias_vista) →
-//    `anexionada` (infografia_integrada); durante la anexión, estado explícito 'desenvuelta' / 'anexionada'.
+//  - herminia_portatil (E1.8 + E2 §2.2): por flags `limpio` (sin inigo_presentado) → `cinta_1` → `cinta_2` (herminia_midio)
+//    → `paquete` (dos_ias_vista) → `anexionada` (infografia_integrada); en la 7.2 la escena pone `cinta_1` a mano; durante
+//    la anexión, estado explícito 'desenvuelta' / 'anexionada'. Pegatina «IA» junto a la de «INFOGRAFÍA» (no en paquete).
 //  - frontera_carrocero: solo recta; con `infografia_integrada`, marca de pegamento (E1.3.4).
-//  - pantalla_anselmo: DENEGADO · REVOCADO con `ruben_libre` (cambia sola en N_SALIDA, E1.4.3) · OK con integrada.
+//  - pantalla_anselmo: DENEGADO · REVOCADO con `ruben_libre` (cambia sola en la salida en valor, E2 §2.6.4) · OK con integrada.
+//  - mesa_guardia (E2 §2.6.5): la mesa vacía donde estaba Nemesio, con la silla vacía y sus pósits de guardia.
 //  - kanban: columna SALIDA EN VALOR con `posit_descopeado`. silla_ramirez / ordenador_bruno: `silla_libre`.
 import { buildRoom } from '../lib/room.js';
 import art from './art/pecera.art.js';
-import dialogos from './pecera.dialogos.js';
+import dialogos, { anselmoCtx } from './pecera.dialogos.js';
 import escenas from './pecera.escenas.js';
-import { talk, seq, num, PREFIX } from './pecera.voces.js';
+import { talk, seq, PREFIX } from './pecera.voces.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
 import { dialogoCustodia, objetosSecretaria, flagsSecretaria } from './pecera.secretaria.js';
 import { darTaper } from './cpd.js';                      // [integrador] el táper también vale con Rubén en la Redacción
 
-const Y = 'yoli_tendencias', N = 'nerea_backlog', L = 'leoncio_quesitos', A = 'anselmo_monolito', R = 'ruben', V = 'valentin_reticula';
+const Y = 'yoli_tendencias', L = 'leoncio_quesitos', A = 'anselmo_monolito', R = 'ruben', V = 'valentin_reticula';
 const ley = (...lines) => async (api) => { await api.sayAs(L, lines); };
 const ans = (...lines) => async (api) => { await api.sayAs(A, lines); };
 
-// ------------------------------------------------------------------ rumores (se quedan A y C; fuera B y D, §5.1)
-async function rumorYoli(api) {
-  if (num(api, 'rumor_firma_n') === 3) {                                    // A, paso 4
-    api.setFlag('rumor_firma_n', 4);
-    await api.sayAs(Y, 'Dicen que eres el nuevo dueño del Contable. Ya es tendencia en tu pueblo.');
-  } else if (num(api, 'rumor_teodoro_n') === 1) {                           // C, paso 2
-    api.setFlag('rumor_teodoro_n', 2);
-    await api.sayAs(Y, 'Teodoro vive en la Redacción de papel. Empadronado. Lo dice el wifi.');
-  }
-}
+// (E2 §7.5 fase B (1) y §7.4 pasos 23/39: Yoli ya no cuenta rumores; la cadena C es Aurora → Maripaz → Teodoro.)
 
 // ------------------------------------------------------------------ §5.14: el coro, las cuatro discusiones (una sobre Diseño)
 const VOCES_CORO = Object.fromEntries(Object.entries(PREFIX).map(([k, p]) => [k, { from: 'coro_desarrollo', prefijo: p }]));
@@ -47,12 +41,13 @@ const DISCUSIONES = [
 // «De fondo» (§5.14, VELADO): queda solo una, una vez por partida, sin comentario, sin opción y sin objeto.
 const FONDO_YOLI = [[['D1', 'Le he explicado a Yoli su artículo de buscadores.'], ['D2', '¿Y?'],
   ['D1', 'Lo ha entendido a la primera.'], [Y, 'Es que lo escribí yo. Ayuda bastante.']]];
-// E1.6: murmullos de Leoncio y Anselmo, como mucho UNO por visita entre los dos, en la misma cola que el coro
+// E2 §2.5: murmullos de Leoncio y Anselmo, como mucho UNO por visita entre los dos, en la misma cola que el coro
 const MURMULLOS = [
   [L, 'Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.'],
   [A, 'Esto no ha pasado por mí. Esto tampoco. Esto, de refilón.'],
-  [L, 'Cuarenta y un pósits a Anselmo. Cuarenta y un "no". Serie muy estable.'],
+  [L, 'Cuatro décimas. Yo tardaba una semana. Qué semanas aquellas.'],
   [A, '(al termo) Tú sí eres de la casa.'],
+  [A, 'Mañana es sábado. Lo dice la ferretería. Es de fuera, pero acierta.'],
 ];
 let murmuradoEstaVisita = false;
 async function murmullo(api) {
@@ -74,6 +69,7 @@ const MONITORES = [
 export function estadoPortatil(api) {
   const st = api.getState('herminia_portatil');
   if (st) return st;
+  if (!api.flag('inigo_presentado')) return 'limpio';
   if (api.flag('infografia_integrada')) return 'anexionada';
   if (api.flag('dos_ias_vista')) return 'paquete';
   if (api.flag('herminia_midio')) return 'cinta_2';
@@ -85,9 +81,9 @@ async function portatilPieza(api) {
   if (!api.flag('herminia_midio')) { await api.say('Se la acerco. La pantalla parpadea. Aún no la ha leído nadie.'); return; }
   if (estadoPortatil(api) === 'paquete') { await api.say('No se puede. La han integrado en un paquete.'); return; }
   if (api.flag('pieza_recortada')) {
-    await talk(api, [['H', '› pieza_opa · 23 líneas · faldón: 23 · cabe'], [L, 'Cabe. Ni ella ni yo hemos tocado nada. Mi parte favorita.']]);
+    await talk(api, [['H', 'pieza_opa · 23 líneas · hueco: 23 · cabe'], [L, 'Cabe. Ni ella ni yo hemos tocado nada. Mi parte favorita.']]);
   } else {
-    await talk(api, [['H', '› pieza_opa · ya medida · sobra: 26 % · sin cambios'], [L, 'Medida dos veces, mismo resultado. Eso, en mi época, era un milagro.']]);
+    await talk(api, [['H', 'pieza_opa · ya medida · sobra: 26 % · sin cambios'], [L, 'Medida dos veces, mismo resultado. Eso, en mi época, era un milagro.']]);
   }
 }
 
@@ -102,7 +98,7 @@ export default buildRoom({
     pecera_valentin_n: 'int · P2 · +1 por Hablar con Valentín (1.ª: el casco)',
     pecera_bandeja_abierta: 'bool · integrador · Abrir bandeja_diseno · arte (la bandeja de arriba, sacada)',
     pecera_murmullo_n: 'int · P2 · rotación de los murmullos de Leoncio y Anselmo',
-    pecera_album_n: 'int · P2 · Nemesio N_ALBUM: «hecho» y «funeral» probados',
+    pecera_album_n: 'int · P2 · Anselmo AN_ALBUM (E2 §2.6.3): «hecho» y «funeral» probados',
     ...flagsSecretaria,
   },
 
@@ -110,7 +106,7 @@ export default buildRoom({
     // ---------------------------------------------------------------- salidas
     { id: 'pecera_a_vestibulo', name: 'escalera al vestíbulo', exit: { room: 'vestibulo', tipo: 'escalera' }, handlers: {
       mirar: async (api) => { await api.say(['La escalera de bajada al vestíbulo. Planta 0.', 'Abajo espera el torno. Ya no me da miedo. Un poco.']); },
-      abrir: 'Es una escalera. Está abierta desde 1987. Lo cerrado es el torno de abajo.',
+      abrir: 'Es una escalera. No tiene puerta. Lo cerrado es el torno de abajo.',
       usar: async (api) => api.goto('vestibulo', 'pecera'),
       cerrar: 'Una escalera no se cierra. Para eso ya está el torno, abajo.',
       empujar: 'Empujar a alguien escaleras abajo sería una salida en valor. No.',
@@ -129,7 +125,7 @@ export default buildRoom({
     } },
     { id: 'pecera_a_catacumba', name: 'Redacción de papel', exit: { room: 'catacumba', tipo: 'puerta_doble' }, handlers: {
       mirar: async (api) => { await api.say(['La Redacción de papel. Misma planta, otro siglo.', 'El umbral de latón es la frontera. Nadie lo pisa sin motivo.']); },
-      abrir: 'Está abierta de par en par. Desde 1994. Nadie se atreve a cerrarla.',
+      abrir: 'Está abierta de par en par. Nadie se atreve a cerrarla. Ni a cruzarla.',
       cerrar: 'Si cierro esa puerta, Teodoro lo publica en la página 7.',
       usar: async (api) => api.goto('catacumba', 'pecera'),
       hablar: '"¿Hola?" Me contesta un fax. Dentro de un rato.',
@@ -166,9 +162,9 @@ export default buildRoom({
           else if (n === 2) await api.say('Los dos únicos que quedan. Están de guardia. Lo demás son chaquetas.');
           else await api.say(['En sus pantallas:', MONITORES[(n - 3) % MONITORES.length]]);
         },
-        hablar: 'Ni me miran. Están en directo desde 2020.',
+        hablar: 'Ni me miran. Están en directo. Yo no soy noticia.',
         coger: 'No se cogen. Son la guardia. Si me llevo uno, la web cae a la mitad.',
-        empujar: 'Ni se inmutan. Llevan en directo desde las tres: un empujón no es noticia.',
+        empujar: 'Ni se inmutan. Un empujón no es noticia. Si me caigo, quizá.',
         'dar:cafe': 'Les dejo el café al lado. Lo titulan sin mirarlo: "Café, en directo".',
       } },
     { id: 'sillas_con_chaqueta', name: 'sillas con chaqueta', handlers: {
@@ -183,7 +179,7 @@ export default buildRoom({
     } },
     { id: 'pantalla_metricas', name: 'pantalla de métricas', handlers: {
       mirar: async (api) => api.say(api.flag('cms_vivo')
-        ? 'Apagada. La Redacción trabaja a ciegas. Y publica. Lo apunto como mío.'
+        ? 'Apagada. Y la web publica. Nadie se atreve a decirlo en voz alta.'
         : 'Lectores concurrentes: 3.418. Se refresca cada segundo. Igual que Yoli.'),
       usar: 'No sé usarla. Ni ella a mí.',
       hablar: async (api) => api.say(api.flag('cms_vivo')
@@ -203,7 +199,7 @@ export default buildRoom({
     { id: 'enchufe_pantalla', name: 'enchufe', handlers: {
       mirar: async (api) => {
         await api.say(['Cinta: «NO DESENCHUFAR». Y una brida que baja por la pared.', 'Etiqueta de la brida: «R-3, SISTEMAS. PACO».']);
-        if (api.getState('enchufe_pantalla') === 'con_ticket') await api.say('Debajo, a rotulador, la excepción de Nemesio. Con número.');
+        if (api.getState('enchufe_pantalla') === 'con_ticket') await api.say('Debajo, a rotulador, la excepción de Anselmo. Con número.');
       },
       tirar: async (api) => {
         if (api.flag('cms_vivo')) { await api.say('Ya está fuera. Y el CMS, dentro. Que siga así.'); return; }
@@ -212,7 +208,7 @@ export default buildRoom({
       },
       empujar: async (api) => api.say(api.flag('cms_vivo')
         ? 'Ni hablar. Nueve años esperando a que alguien la desenchufara.'
-        : 'Ya está enchufado. Lo dicen la cinta, el cable y Nemesio con la mirada.'),
+        : 'Ya está enchufado. Lo dicen la cinta, el cable y Anselmo con la mirada.'),
       usar: 'Enchufar algo más aquí sería pedirle demasiado a esa pantalla. Y a la regleta.',
       coger: 'La cinta dice NO DESENCHUFAR. No dice NO COGER. Pero se sobreentiende.',
     } },
@@ -228,30 +224,34 @@ export default buildRoom({
     { id: 'mesa_dibujo', name: 'mesa de dibujo', handlers: {
       mirar: 'Una mesa de dibujo inclinada. Tiene polvo con forma de regla.',
       usar: 'Dibujo un quesito. El portátil de al lado lo corrige en una décima.',
-      empujar: 'Está inclinada desde 2024. Si la enderezo, Leoncio me pide el gráfico.',
+      empujar: 'Está inclinada. Si la enderezo, Leoncio tendría que volver a dibujar.',
     } },
-    { id: 'herminia_portatil', name: 'Herminia (portátil)', color: '#FF8C3C', handlers: {
+    { id: 'herminia_portatil', name: 'Herminia, la IA de Infografía', color: '#FF8C3C', handlers: {
       mirar: async (api) => {
         const st = estadoPortatil(api);
         if (st === 'anexionada' || st === 'desenvuelta') await api.say('Sin cinta. Pegatina nueva: «DESARROLLO». Los gráficos, idénticos.');
-        else if (st === 'paquete') await api.say(['Envuelta entera. «PENDIENTE DE INTEGRAR».', 'Por un hueco, la pantalla trabaja.']);
-        else if (st === 'cinta_2') await api.say('Dos tiras de cinta. Por debajo, la pantalla sigue haciendo gráficos.');
-        else await api.say('Herminia. Un portátil con pegatina «INFOGRAFÍA». Y una tira de cinta encima.');
+        else if (st === 'paquete') await api.say('Envuelta entera. «PENDIENTE DE INTEGRAR». Por un hueco, la pantalla trabaja.');
+        else if (st === 'cinta_2') await api.say('Dos tiras de cinta de Desarrollo. Por debajo, la IA sigue haciendo gráficos.');
+        else {
+          await api.say(['Herminia, la IA de Leoncio: un portátil que hace solo las infografías.',
+            st === 'limpio' ? 'Delante, dos sillas vacías con chaqueta. Mirándola.'
+              : 'Delante, dos sillas vacías con chaqueta. Mirándola. Encima, una tira de cinta.']);
+        }
       },
       usar: async (api) => {
         const st = estadoPortatil(api);
         if (st === 'paquete') { await api.say('No se puede. La han integrado en un paquete.'); return; }
-        if (st === 'anexionada') { await talk(api, [['H', '› propietario: Desarrollo · cambios en los gráficos: 0']]); return; }
-        await talk(api, [['H', '› quesito de Desarrollo · suma: 130 % · corrección: bloqueada'],
+        if (st === 'anexionada') { await talk(api, [['H', 'propietario: Desarrollo · cambios en los gráficos: 0']]); return; }
+        await talk(api, [['H', 'quesito de Desarrollo · suma: 130 % · corregir: bloqueado'],
           [L, 'Ella lo arreglaría en una décima. No la dejan. Él lo publica.']]);
       },
       hablar: async (api) => {
         if (estadoPortatil(api) === 'paquete') { await api.say('Le digo hola al paquete. Por el hueco, una barra sube un poco.'); return; }
-        await talk(api, [['H', '› saludo recibido · hola: 100 %'], ['B', 'Un gráfico de un saludo. Me ha entendido.']]);
+        await talk(api, [['H', 'saludo recibido · hola: 100 %'], ['B', 'Me ha entendido a la primera. Aquí eso no pasa.']]);
       },
       'usar:ficha_pagina_7': async (api) => {
         const n = casillas(api);
-        await talk(api, [['H', `› ficha página 7 · casillas hechas: ${n} de 3 · semáforo: ${n >= 3 ? 'verde' : n ? 'ámbar' : 'rojo'}`]]);
+        await talk(api, [['H', `ficha página 7 · casillas hechas: ${n} de 3 · semáforo: ${n >= 3 ? 'verde' : n ? 'ámbar' : 'rojo'}`]]);
       },
       'usar:pieza_opa': portatilPieza,
       coger: ley('Herminia no sale de esta mesa. Fuera está Anselmo.'),
@@ -265,12 +265,12 @@ export default buildRoom({
     // ---------------------------------------------------------------- ECONOMÍA: mesas de Bruno y Ramírez
     { id: 'ordenador_bruno', name: 'mi ordenador', handlers: {
       mirar: async (api) => {
-        if (!api.flag('silla_libre')) { await api.say('Mi ordenador. Escribo de pie desde 2020. Para leer el correo necesito silla.'); return; }
-        if (!api.flag('rep_11')) {
-          await api.say(['Con silla, el correo se ve. Bandeja de entrada. Un hilo de 2019.', 'Ramírez: "Quedo a la espera de tus comentarios".',
-            'Respuesta: "Espera sentado. Si encuentras silla". Me la apunto.']);
+        if (!api.flag('silla_libre')) { await api.say('Mi ordenador. De pie llego al teclado. A la pantalla, no.'); return; }
+        if (!api.flag('rep_11')) {                                          // paso 13 (E2 §7.4)
+          await api.say(['Con silla, el correo se ve. Ramírez: «Quedo a la espera de tus comentarios».',
+            'Respuesta: «Espera sentado. Si encuentras silla».']);
           api.learnReply('rep_11');
-          await api.say(['Y una autorrespuesta de Rubén, de Sistemas:', '"Estoy fuera de la oficina desde julio".', '"Bueno, fuera no. Dentro. Muy dentro".']);
+          await api.say(['Y una autorrespuesta de Rubén: «Estoy fuera de la oficina desde julio».', '«Bueno, fuera no. Dentro. Muy dentro».']);
         } else {
           await api.say(['Bandeja de entrada. Ramírez sigue a la espera de mis comentarios.', 'Y Rubén sigue fuera de la oficina. Bueno, dentro. Muy dentro.']);
         }
@@ -296,7 +296,7 @@ export default buildRoom({
     } },
     { id: 'silla_ramirez', name: 'silla de Ramírez', handlers: {
       mirar: async (api) => {
-        if (!api.flag('chaqueta_cogida')) await api.say(['La única silla libre. Tiene una chaqueta: Ramírez, el de Bolsa.', 'Bajó a desayunar en 2019. No ha vuelto.']);
+        if (!api.flag('chaqueta_cogida')) await api.say(['La única silla libre. Tiene una chaqueta: Ramírez, el de Bolsa.', 'En el bolsillo, un tique: «1 cruasán. Para tomar aquí».']);
         else await api.say('Una silla. Libre. Me tiembla algo que no sabía que tenía.');
       },
       usar: async (api) => {
@@ -320,11 +320,11 @@ export default buildRoom({
         api.give('sobre_azucar');
         api.setFlag('chaqueta_cogida', true);
         api.repaint();
-        await api.say('Del bolsillo cae un sobre de azúcar. Me lo quedo. Todo aquí es de 2019.');
+        await api.say('Del bolsillo cae un sobre de azúcar. Me lo quedo. Es casi un ticket de gasto.');
       },
       usar: 'No me la pongo aún. Primero la descuelgo. Hay un orden.',
       tirar: 'Tiro un poco. Cruje. Hace siete años que nadie la mueve.',
-      hablar: '"¿Ramírez?" La chaqueta no contesta. Igual que Ramírez desde 2019.',
+      hablar: '"¿Ramírez?" La chaqueta no contesta. Uno de la guardia, sin mirar: «Presente».',
     } },
 
     // ---------------------------------------------------------------- DESARROLLO y DISEÑO Y PRODUCTO
@@ -368,9 +368,9 @@ export default buildRoom({
       'dar:*': seq([['D1', '¿Eso quién lo ha hecho?'], ['D2', 'Alguien de fuera.'], ['D3', 'No.']]),
     } },
     { id: 'semaforo_ruido', name: 'semáforo de ruido', state: 'rojo', states: ['rojo', 'ambar', 'verde'], handlers: {
-      mirar: seq([['B', 'Semáforo de ruido de Prevención. Rojo.'], ['B', 'Pósit de Nemesio: "Verde: 14 de agosto. Estaban de vacaciones".']]),
+      mirar: seq([['B', 'Semáforo de ruido de Prevención. Rojo.'], ['B', 'Pósit de Anselmo: "Verde: 14 de agosto. Estaban de vacaciones".']]),
       usar: 'Lo toco. Se pone más rojo. Existe un rojo más rojo.',
-      tirar: async (api) => api.sayAs(N, 'No. Es lo único que les mide sin que se enfaden.'),
+      tirar: async (api) => api.sayAs(A, 'No. Es lo único que les mide sin que se enfaden.'),
       hablar: '"Shhh", le digo. Es la primera vez que alguien le da la razón.',
       coger: 'Si me lo llevo, Desarrollo deja de hacer ruido oficialmente. No sería verdad.',
     } },
@@ -387,7 +387,7 @@ export default buildRoom({
         api.setFlag('pecera_bandeja_abierta', true);      // solo el dibujo (fuera el flag cruzado bandeja_diseno_abierta, §3.4)
         await api.say(['«Entregado a las 18:29». Y al fondo, de 2017, una hoja con una flecha.', '«La pantalla tumbará el CMS». Sello: «LEÍDO (PERO NO)».']);
       },
-      coger: async (api) => api.sayAs(N, 'Déjala. Es lo único ordenado del rincón. Y no es nuestro.'),
+      coger: async (api) => api.sayAs(A, 'Déjala. Es lo único ordenado del rincón. Y no es nuestro.'),
       cerrar: 'Ya está cerrada. Es una bandeja: lo suyo es que alguien la abra.',
       'usar:pieza_opa': 'No. Si la dejo aquí, la leen en 2033. Con sello de LEÍDO (PERO NO).',
     } },
@@ -395,24 +395,30 @@ export default buildRoom({
       mirar: async (api) => {
         const lines = ['Columnas: POR HACER, EN CURSO, BLOQUEADO, HECHO y HECHO (PERO NO).'];
         if (api.flag('posit_descopeado')) lines.push('Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Rubén.');
-        else if (api.flag('acto_3_iniciado')) lines.push('En POR HACER, desde julio: "Baja becario Rubén".');
+        else if (api.flag('acto_3_iniciado')) lines.push('En POR HACER, amarillo de puro viejo: "Baja becario Rubén".');
         await api.say(lines);
       },
-      coger: async (api) => api.sayAs(N, 'Ni se te ocurra. Un pósit solo sale del tablero hecho o muerto.'),
-      empujar: 'Tiene ruedas. Lo empujo un palmo y Nemesio lo devuelve a su sitio con la mirada.',
-      tirar: 'Si tiro, se caen los pósits. Y Nemesio me pone en BLOQUEADO.',
+      coger: async (api) => api.sayAs(A, 'Ni se te ocurra. De mi tablero se sale hecho o muerto.'),
+      empujar: 'Tiene ruedas. Lo empujo un palmo y Anselmo lo devuelve con la mirada.',
+      tirar: 'Si tiro, se caen los pósits. Y Anselmo me pone en BLOQUEADO.',
       usar: 'Me escribo un pósit: "Firmar en papel". Lo pego en POR HACER. Desde hoy.',
     } },
     { id: 'posit_1998', name: 'pósit amarillísimo', handlers: {
       mirar: seq([['B', 'Un pósit amarillísimo: "Contratar al becario de marzo – 1998".'], ['B', 'Está en HECHO (PERO NO). Nadie lo hizo.']]),
-      coger: async (api) => api.sayAs(N, 'Ni se te ocurra. Un pósit solo sale del tablero hecho o muerto.'),
+      coger: async (api) => api.sayAs(A, 'Ni se te ocurra. De mi tablero se sale hecho o muerto.'),
       usar: 'No lo muevo. En HECHO (PERO NO) se está calentito.',
     } },
     { id: 'calendario_ferreteria', name: 'calendario de ferretería', handlers: {
-      mirar: seq([['B', 'Calendario de Ferretería Hermanos Tornillo. Nemesio solo se fía de este.'], ['B', 'Trae santoral, fases de la luna y una oferta de tacos del 8.']]),
-      tirar: async (api) => api.sayAs(N, '¡Quieto! Es la única fuente fiable de este departamento.'),
-      coger: 'Si me lo llevo, Nemesio no sabría en qué día vive.',
+      mirar: seq([['B', 'Calendario de Ferretería Hermanos Tornillo. Anselmo solo se fía de este.'], ['B', 'Trae santoral, fases de la luna y una oferta de tacos del 8.']]),
+      tirar: async (api) => api.sayAs(A, '¡Quieto! Es lo único de fuera que dejo entrar. Por los tacos.'),
+      coger: 'Si me lo llevo, Anselmo no sabría en qué día vive.',
       abrir: 'Lo hojeo. En diciembre regalan una llave inglesa. Hay que llegar a diciembre.',
+    } },
+    // E2 §2.6.5: la mesa vacía de Desarrollo (donde estaba Nemesio). Anselmo hace la guardia. Y la guardia de la guardia.
+    { id: 'mesa_guardia', name: 'mesa vacía de Desarrollo', handlers: {
+      mirar: seq([['B', 'Una mesa de Desarrollo, vacía. Pósit: «GUARDIA: ANSELMO».'], ['B', 'Debajo, otro: «GUARDIA DE LA GUARDIA: ANSELMO».']]),
+      usar: 'No me siento. Es de Desarrollo. Hasta el polvo pasa por sus sistemas.',
+      coger: 'Si me llevo un pósit, Anselmo me abre expediente. Mental.',
     } },
     { id: 'ventana', name: 'ventana', handlers: {
       mirar: 'Ahí fuera hay un mundo real. Sin contador de lectores. Qué descanso.',
@@ -427,10 +433,10 @@ export default buildRoom({
     { id: Y, handlers: {
       mirar: 'Yoli, audiencias. Le tiembla el párpado al ritmo de la gráfica.',
       hablar: async (api) => {
-        await rumorYoli(api);
-        if (!api.flag('cms_vivo')) {
-          await api.sayAs(Y, ['Bruno, Bruno becario, becario sin silla... Ahora no. Se nos cae el CMS.',
-            'Vuelve con un titular con número. El siete. El siete convierte.']);
+        if (!api.flag('cms_vivo')) {                                        // E2 §9 B4
+          await api.sayAs(Y, [api.flag('silla_libre') ? 'Bruno, Bruno becario, becario con silla... ¿Con silla? Ahora no. Se cae el CMS.'
+            : 'Bruno, Bruno becario, becario sin silla... Ahora no. Se nos cae el CMS.',
+          'Vuelve con un titular con número. El siete convierte.']);
           return;
         }
         await api.dialog('yoli');
@@ -440,14 +446,8 @@ export default buildRoom({
       'dar:pieza_opa': async (api) => api.sayAs(Y, '¿Sin número en el titular? ¿Sin "lo que nadie te cuenta"? Valiente.'),
       'dar:album_eventos': async (api) => api.sayAs(Y, ['¿Fotos de eventos? Eso no lo ve nadie.', 'Bueno. Uno. El del fondo.']),
     },
-      murmurs: ['Esto sube — 3.402 — esto baja — 3.398 — esto soy yo.', 'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.'] },
-    { id: N, when: '!lector_derribado', handlers: {
-      mirar: 'Nemesio, Desarrollo. Mueve pósits con precisión de cirujano.',
-      hablar: async (api) => api.dialog('nerea'),
-      'dar:album_eventos': async (api) => api.dialog('nerea', 'N_ALBUM_INTRO'),
-    },
-      murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.',
-        'No hay urgentes. Hay POR HACER escrito más fuerte.'] },
+      murmurs: ['Esto sube. Esto baja. Esto soy yo.', 'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.'] },   // L29
+    // (E2 §2.6: Nemesio, `nerea_backlog`, ya no está: su mesa es el hotspot `mesa_guardia` y lo suyo lo hace Anselmo.)
     { id: R, when: ['ruben_libre', '!lector_derribado'], handlers: {
       mirar: 'Rubén mira por la ventana. Espera al sol como quien espera una nómina.',
       hablar: async (api) => {
@@ -457,7 +457,7 @@ export default buildRoom({
         }
         await api.sayAs(R, 'Estoy esperando a que salga el sol. Me han dicho que existe.');
       },
-      'dar:cafe': async (api) => api.sayAs(R, 'Gracias. Es lo primero caliente desde julio. Sin contar el armario.'),
+      'dar:cafe': async (api) => api.sayAs(R, 'Gracias. Lo primero caliente que no es un servidor.'),
       'dar:ticket_n1': async (api) => api.sayAs(R, 'Guárdalo tú. Si lo toco, me vuelvo a dar de alta.'),
       'dar:taper_huerfano': darTaper,
     },
@@ -481,9 +481,9 @@ export default buildRoom({
       murmurs: null },
     // solo durante la escena 7.2: la escena lo coloca con api.placeActor
     { id: 'inigo_sinergia', when: () => false, handlers: {} },
-    // E1.6 · Leoncio Quesitos (Infografía), con árbol
+    // E2 §2.5 · Leoncio Quesitos (Infografía), con árbol
     { id: L, when: '!lector_derribado', handlers: {
-      mirar: 'Leoncio, Infografía. Un quesito de cartulina prendido en el pecho. Se lo dio él.',
+      mirar: 'Leoncio, Infografía. Ya no dibuja: mira dibujar a su IA.',
       hablar: async (api) => api.dialog('leoncio'),
       'dar:cafe': ley('Gracias. Herminia dice que es mi quinto. Me lo ha puesto en barras. Suben.'),
       'dar:ficha_pagina_7': ley('Tres casillas. Herminia lo pinta en semáforo. Estás en ámbar.'),
@@ -496,14 +496,15 @@ export default buildRoom({
       empujar: 'No. Está mirando a Herminia trabajar. Es lo único que hace.',
     },
       murmurs: null },
-    // E1.6 · Anselmo Monolito (Desarrollo), con árbol
+    // E2 §2.5-2.6 · Anselmo Monolito, director de Desarrollo y dueño del tablero (hereda a Nemesio), con árbol
     { id: A, when: '!lector_derribado', handlers: {
-      mirar: 'Anselmo, director de Desarrollo. Un rollo de cinta en el cinto. Cargado.',
+      mirar: 'Anselmo, director de Desarrollo. Cinta en el cinto. Y su tablero detrás.',
       hablar: async (api) => api.dialog('anselmo'),
+      'dar:album_eventos': async (api) => { anselmoCtx.sinSaludo = true; await api.dialog('anselmo', 'AN_ALBUM_INTRO'); },
+      'dar:correo_evaristo': ans('¿Un correo impreso? De Controlling. De fuera. Pero con buena puntuación.'),
       'dar:pieza_opa': ans('¿Escrita fuera del CMS? Sistema paralelo. Te abro expediente. Mental.'),
       'dar:cafe': ans('¿De Gertrudis? No. Yo bebo de mi termo. Café de la casa.'),
       'dar:ticket_n1': ans('Un ticket cerrado. Es de Sistemas. Yo no lo he visto.'),
-      'dar:album_eventos': ans('Fotos de Eventos. ¿De dónde vienen? Ya. Bonitas, pero no.'),
       'dar:*': ans('¿De dónde viene? Si no lo sabes, no lo cojo.'),
       empujar: 'Está detrás de su cinta. Empujarle sería cruzar sin visado.',
     },
@@ -530,6 +531,7 @@ export default buildRoom({
     if (api.flag('herminia_de_alta') && !api.flag('infografia_integrada')) { await api.scene('pecera_anexion'); return; }
     if (api.flag('cms_vivo') && api.once('pecera_cms_entrada')) { await api.scene('pecera_cms_entrada'); return; }
     if (api.flag('cafetera_viral') && api.once('pecera_viral')) { await api.scene('pecera_viral'); return; }
-    if (api.flag('bruno_con_chaqueta')) await api.scene('pecera_chaqueta');
+    if (api.flag('bruno_con_chaqueta')) { await api.scene('pecera_chaqueta'); return; }
+    if (api.flag('bruno_con_banner')) await api.scene('pecera_banner');            // E2 §4.2.3 (una vez)
   },
 }, art);

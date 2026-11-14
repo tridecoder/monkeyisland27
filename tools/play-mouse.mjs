@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// PARTIDA CON RATÓN REAL (QA): juega la partida ENTERA (pasos 1-42 del plan de comedia §3.2: Actos I-III, los cuatro duelos,
+// PARTIDA CON RATÓN REAL (QA): juega la partida ENTERA (pasos 1-44 de la ENMIENDA E2 §10.1: Actos I-III, los cuatro duelos,
 // el clímax y el final) SOLO con
 // eventos de ratón reales sobre el canvas (clic en verbo, clic en objeto / icono del inventario, clic en opciones de
 // diálogo con sus flechas de scroll, clic derecho = verbo por defecto, clics para pasar los globos). `window.__game` solo
@@ -79,16 +79,41 @@ async function vclick(x, y, button = 'left') {
   await wait(45);
 }
 let maxOptLines = 0, scrolledMenus = 0;
+// E2 §4.2: los anuncios de Maripaz se cierran como lo haría un jugador, sin modo rápido: clic real en la «×» (3 px, luego
+// 1 px), y sin «×» (3.ª vez y el anuncio de entrada) un clic durante la cuenta atrás (que NO debe cerrarlo) y otro al
+// acabar. `anuncios` cuenta lo visto para el resumen.
+const anuncios = { x: [], bloqueoRespetado: 0, bloqueoRoto: 0, cuentas: [] };
+let detalleVisto = null;
 /** Deja correr el juego: pasa cada globo con un clic real; vuelve cuando hay opciones / selector o está libre. */
-async function settle(timeout = 90000) {
+async function settle(timeout = 240000) {   // el paso 44 (empujón, epílogo y créditos) pasa del minuto y medio sin modo rápido
   const t0 = Date.now(); let stuckSince = 0, lastLog = -1;
   while (Date.now() - t0 < timeout) {
-    const s = await G(() => { const g = __game.game; return { mode: g.mode, busy: g.busy > 0 || !!g.acting, choice: !!g.choice, pick: !!g.itemPick, speaking: g.speeches.filter(x => x.blocking).length, walking: Object.values(g.actors).some(a => a.path.length), fades: g.fades.length, timers: g.timers.length, log: g.log.length, menu: !!g.menu, card: !!g.card }; });
+    const s = await G(() => { const g = __game.game, D = g.detalle; return { mode: g.mode, busy: g.busy > 0 || !!g.acting, choice: !!g.choice, pick: !!g.itemPick, speaking: g.speeches.filter(x => x.blocking).length, walking: Object.values(g.actors).some(a => a.path.length), fades: g.fades.length, timers: g.timers.length, log: g.log.length, menu: !!g.menu, card: !!g.card,
+      detalle: D ? { x: D.x, y: D.y, w: D.w, h: D.h, titulo: D.titulo, cerrarX: D.cerrarX, cuenta: !!D.cuenta, hold: !!D.skip, t: g.time - D.t0, bloq: !!(D.bloqueo && !g.instant && g.time - D.t0 < D.bloqueo), id: D.t0 } : null }; });
     if (s.mode === 'ending') { await vclick(160, 100); await wait(150); continue; }
     if (s.card) { await wait(400); await vclick(160, 100); stuckSince = 0; continue; }     // la tarjeta FE DE ERRATAS (plan §9): un clic tras su tiempo mínimo
     if (s.mode !== 'play') return s;
     if (s.choice || s.pick) return s;
     if (!s.busy) { await wait(60); const s2 = await G(() => __game.game.busy || __game.game.acting || __game.game.choice); if (!s2) return s; continue; }
+    const D = s.detalle;
+    if (D && (D.cerrarX || D.cuenta)) {                  // un anuncio de Maripaz abierto
+      if (D.t < 260) { await wait(120); continue; }      // se está abriendo
+      if (D.cerrarX) {                                   // clic real en la «×» (el centro de sus N px)
+        const c = Math.floor(D.cerrarX / 2);
+        if (detalleVisto !== D.id) { detalleVisto = D.id; anuncios.x.push(D.cerrarX); }
+        await wait(140); await vclick(D.x + D.w - D.cerrarX - 2 + c, D.y + 2 + c); stuckSince = 0; continue;
+      }
+      if (D.bloq) {                                      // cuenta atrás: un clic impaciente no lo cierra
+        if (detalleVisto !== D.id) {
+          detalleVisto = D.id; anuncios.cuentas.push(D.titulo);
+          await vclick(D.x + D.w / 2, D.y + D.h / 2); await wait(200);
+          const sigue = await G((id) => !!(__game.game.detalle && __game.game.detalle.t0 === id), D.id);
+          if (sigue) anuncios.bloqueoRespetado++; else anuncios.bloqueoRoto++;
+        }
+        await wait(150); stuckSince = 0; continue;
+      }
+      if (D.hold) { await vclick(D.x + D.w - 16, D.y + D.h - 8); await wait(120); stuckSince = 0; continue; }   // «Saltar anuncio ›» / «Cerrar ›»
+    }
     if (s.speaking) { await wait(140); await vclick(...SAFE); stuckSince = 0; continue; }
     if (s.walking || s.fades || s.timers || s.log !== lastLog) { lastLog = s.log; stuckSince = 0; await wait(80); continue; }
     if (!stuckSince) stuckSince = Date.now();
@@ -261,7 +286,7 @@ try {
   await wait(400);
 
   if (!args.solo || args.solo === 'raton') {
-    console.log('Partida con ratón real: pasos 1-42 del plan de comedia (la partida entera, hasta los créditos)\n');
+    console.log('Partida con ratón real: pasos 1-44 de E2 (la partida entera, sin modo rápido, hasta los créditos)\n');
     // título: clic real en «Nueva partida»
     const it = await G(() => { const it = __game.game.titleLayout[0]; return [it.x + 8, it.y + 5]; });
     await vclick(...it);
@@ -283,6 +308,12 @@ try {
     await clickTarget('vestibulo_a_redaccion'); await settle();
     ok(!(await inner()) && (await state()).room === 'vestibulo', 'clic real en la escalera de la Redacción antes de abrir el torno: no llega');
     for (const s of STEPS.filter(s => s.n >= 2)) {
+      if (s.n === 26) {                  // E2 §4.2.1: el pop-up de la X menguante, tres veces antes de la D1 (sin modo rápido)
+        for (let k = 1; k <= 3; k++) { await verbOn('hablar', 'maripaz_remitido'); await closeDialogMouse(); }
+        const pn = await G(() => __game.getFlag('maripaz_popup_n'));
+        ok(pn === 3 && anuncios.x.join() === '3,1' && anuncios.cuentas.length === 1 && anuncios.bloqueoRespetado === 1,
+          `pop-up de Maripaz ×3 con el ratón: clic en la «×» de 3 px y de 1 px; la 3.ª, sin «×»: un clic durante «Podrá cerrar en 3» no la cierra, y al acabar sí (popup_n=${pn}, X=${anuncios.x}, cuentas=${anuncios.cuentas.length}, bloqueo ${anuncios.bloqueoRespetado}/${anuncios.bloqueoRoto})`);
+      }
       for (const a of s.acc) await runMouse(a);
       await settle();
       await R.check(s.esp);
@@ -301,6 +332,7 @@ try {
       }
       if (args.lento) await page.screenshot({ path: path.join(here, 'shots', `raton-${String(s.n).padStart(2, '0')}.png`) });
     }
+    ok(anuncios.bloqueoRoto === 0 && anuncios.cuentas.includes('ANUNCIO'), `anuncio de entrada en Marketing y Comercial (5 s) visto sin modo rápido: el clic no lo salta antes de tiempo (cuentas: ${anuncios.cuentas.join(', ')})`);
     ok(maxOptLines > 5 && scrolledMenus > 0, `menús más largos que el panel se desplazan con sus flechas (máx. ${maxOptLines} líneas; ${scrolledMenus} elecciones tras desplazar)`);
     const fin = await G(() => { const L = __game.log; return { t: L.some(l => l.who === 'tarjeta'), a: L.some(l => String(l.text).includes('Abrígate tú.')), p: L.some(l => String(l.text).includes('¡Me ha contestado el periódico!')), st: __game.state() }; });
     ok(fin.t && fin.a && fin.p && (fin.st.mode === 'title' || !!fin.st.finished), '«Abrígate tú.» → «¡Me ha contestado el periódico!» → tarjeta FE DE ERRATAS (con un clic) → créditos → título');
@@ -316,7 +348,7 @@ try {
     await G(() => __game.skipText(true));
     await R.startDismisser();
     await G(() => __game.newGame());
-    for (const s of STEPS.filter(s => s.n > 1 && s.n <= 38)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }   // 38: Rubén libre
+    for (const s of STEPS.filter(s => s.n > 1 && s.n <= 40)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }   // 40: Rubén libre
     await G(() => { clearInterval(window.__dismisser); window.__dismisser = null; });
     const exits = await G(() => { const out = []; for (const [rid, r] of Object.entries(__game.game.content.rooms)) for (const o of r.objects || []) { if (o.exit) out.push({ room: rid, id: o.id, to: o.exit.room, entry: o.exit.entry || rid }); if (o.ascensor) out.push({ room: rid, id: o.id, lift: true }); } return out; });
     const lifts = exits.filter(e => e.lift);
@@ -367,7 +399,7 @@ try {
     await G(() => __game.skipText(true));
     await R.startDismisser();
     await G(() => __game.newGame());
-    const cps = [[8, 'ACTO I (tras 7.2)'], [16, 'ACTO II (inicio)'], [26, 'ACTO II (tras D1)'], [34, 'ACTO III (inicio)'], [36, 'ACTO III (Rubén encontrado)'], [38, 'ACTO III (Rubén libre)']];
+    const cps = [[8, 'ACTO I (tras 7.2)'], [16, 'ACTO II (inicio)'], [26, 'ACTO II (tras D1)'], [36, 'ACTO III (inicio)'], [38, 'ACTO III (Rubén encontrado)'], [40, 'ACTO III (Rubén libre)']];
     let done = 1;
     for (const [n, tag] of cps) {
       for (const s of STEPS.filter(s => s.n > done && s.n <= n)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }

@@ -3,6 +3,11 @@
 // Antes: PAQUETE D · CLÍMAX (biblia §7.4, P16) con los insertos de la adenda §9.4, §9.5, §9.6 (A/B) y §9.7 (orden final),
 // duelo D4 de Íñigo (biblia §6.4-6.5; mazo ampliado con R15/R16 al final, adenda §7.2). Lo importa ./../rooms/sala_amazonas.js.
 // Al acabar, lanza la escena del FINAL 7.5 del paquete A: api.scene('final') (si no existe, el motor solo avisa).
+// ENMIENDA E2 §5.5-5.6: Evaristo entra en el camino principal. Mazo D4 con R16 en el quinto puesto, PUNTOS_D4 = 5 y un
+// TERCER REMATE (`correo_evaristo`, atScore 5): Bruno envía el correo «en el momento oportuno» y Evaristo llama a la sala
+// por el teléfono de conferencias (CONTROLLING) y desmonta los 48.000 € (`heroeDeLaComa`). Tras el empujón, la factura
+// de Begoña, con coma. Fuera la frase críptica de la coma (`correoQueSeEscapa`) y las coletillas de §7.2; `onWin` de
+// Íñigo en una línea (fase B (14)). El Lector Medio sigue sin presidir: de pie junto a la pantalla, y su empujón, igual.
 import { SFX, sello, fundidoBlanco } from './planta_noble.js';
 import artAdmin from '../rooms/art/administracion.art.js';
 import artSala, { LECTOR_AT, detalleAtrezo } from '../rooms/art/sala_amazonas.art.js';
@@ -16,7 +21,6 @@ const sayI = (api, t) => api.sayAs(INIGO, t);
 const sayG = (api, t) => api.sayAs(GERV, t);
 const sayR = (api, t) => api.sayAs(RUBEN, t);
 const sayBe = (api, t) => api.sayAs(BEGONA, t);
-const sayEv = (api, t) => api.sayAs(EV, t);
 
 // staging (coordenadas de la sala rediseñada, docs/GUIA_REDISENO.md §5; la puerta es la entrada `pajarera` del arte).
 // Mesa en el centro con la cabecera a la DERECHA (Gervasio, de pie junto a su sillón vacío en [304, 112]); el Lector
@@ -34,8 +38,8 @@ async function entraPorDelante(api, id, [x, y]) {
 }
 
 const SIGUIENTES_312 = 'Me alegra que lo preguntes. Diapositiva 312.';
-export const DECK_D4 = ['R10', 'R12', 'R13', 'R05', 'R01', 'R07', 'R15', 'R16'];
-export const PUNTOS_D4 = 4;          // 2 + remate A + 2 + remate B
+export const DECK_D4 = ['R10', 'R12', 'R13', 'R05', 'R16', 'R01', 'R07', 'R15'];
+export const PUNTOS_D4 = 5;          // 2 + remate A + 2 + remate B + 1 (R16) + remate C (E2 §5.5)
 
 /** ¿Están puestas las condiciones de entrada al clímax (P16: «Usar puerta_sala con todo»)? */
 export const climaxActivo = (api) => !!(api.flag('acto_3_iniciado') && api.flag('sala_abierta') && api.flag('ruben_libre'));
@@ -81,6 +85,11 @@ export const duelInigo = {
         await api.say('Acta de la última reunión. Acuerdos: uno, pedir más café. Dos, ninguno más.');
         await sayG(api, 'Es la única que hay. Las demás no las escribí.');
       } },
+    // E2 §5.5 · remate C: el correo de Evaristo, «en el momento oportuno»
+    { atScore: 5, text: 'Cuarenta y ocho mil al mes. Firmado. Fin del hilo.', object: 'correo_evaristo',
+      wrongObject: { ticket_n1: 'Eso ya me lo has enseñado. No escala dos veces.',
+        acta_reunion: 'Un acta de café. Ya la he leído.' },
+      script: (api, duel) => heroeDeLaComa(api, duel) },
   ],
   // plan §7 (paquete común): CC que crece y derrota propia; sin titular (el Titulator es Rubén y está en la sala)
   cc1: 'Optimal Brains & Partners',
@@ -98,9 +107,7 @@ export const duelInigo = {
   },
   onWin: async (api) => {
     api.setFlag('duelo_inigo_ganado', true);
-    await sayI(api, ['Eso es un acta de hace un mes. Me da igual el acta.',
-      '¡El Lector Medio lleva tres semanas asintiendo a mis diapositivas!',
-      'Ni un gesto en contra. Ni una pregunta. El mejor lector que he tenido.']);
+    await sayI(api, 'Ni un gesto en contra. Ni una pregunta. El mejor lector que he tenido.');   // E2 fase B (14)
   },
   onLose: async (api) => {
     // «el duelo vuelve a empezar: Íñigo regresa a la diapositiva 247» (se reintenta Hablando con él, regla 6.2.6)
@@ -128,8 +135,6 @@ export async function climaxEntrada(api) {
       await api.wait(700);
       await sayI(api, ['Siguiente.', 'Perfecto. La 247, como veis, tiene mucho recorrido.']);
       await api.say(['El proyector se colgó en la 247 hace tres semanas.', 'Él cree que avanza. El Lector Medio cree que asiente.']);
-      // §8.4: por fin coinciden el móvil (hora de la historia) y los relojes parados del edificio
-      if (api.hora() === '20:59') await api.say('Por primera vez esta noche, mi móvil y los relojes de la casa dicen lo mismo.');
       await sayI(api, ['...y en la fase 3, el papel pasa a ser un recuerdo de marca.',
         '¿Vacante? Esto es una Reunión de Dirección. Los becarios no tienen voz.']);
       await api.say('Pero tienen correo.');
@@ -228,21 +233,23 @@ export async function climaxEmpujon(api) {
     await api.wait(500);
     await api.sayFrom('proyector', 'EL VIAJE CONTINÚA');
     await sayI(api, '...Ahora no.');
-    await api.say('Quedan ciento cincuenta y dos. No las verá nadie.');
     // Begoña y la factura (Rubén se la ha bajado del armario)
     api.sfx('door');
     api.placeActor(BEGONA, 'sala_amazonas', PUERTA[0], PUERTA[1], 'right');
     api.show(BEGONA);
     await entraPorDelante(api, BEGONA, SITIO_BEGONA);
     api.faceActor(BEGONA, INIGO);
-    await sayBe(api, ['Factura de Optimal Brains. 48.000 euros. Concepto: «IA».', '¿Qué es una IA? ¿Un taxi?']);
-    // §4.5: el recorte estándar, también a la factura (48.000 × 0,74)
-    await sayBe(api, 'Recorte estándar del 26 %: 35.520 euros.');
+    // E2 §5.6: la factura, con coma (48 × 0,74 = 35,52)
+    await sayBe(api, ['Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.', 'Concepto: «IA». ¿Qué es una IA? ¿Un taxi?']);
+    await sayBe(api, 'Recorte estándar del 26 %: treinta y cinco euros con cincuenta y dos.');
     sello(api);
     await sayBe(api, 'Y rechazada igual. Al lado del ministro.');
-    // adenda 9.6 · el héroe de la coma (refuerzo opcional, A o B)
-    if (api.flag('correo_evaristo_listo')) await heroeDeLaComa(api);
-    else await correoQueSeEscapa(api);
+    if (!enSala(api, RUBEN)) { api.placeActor(RUBEN, 'sala_amazonas', SITIO_RUBEN[0], SITIO_RUBEN[1], 'up'); api.show(RUBEN); }
+    api.faceActor(RUBEN, BEGONA);
+    await sayR(api, 'Cuarenta y ocho euros al mes... Es lo que me como en atún.');
+    await sayBe(api, 'Con lo que nos deben hay para un contrato. Con coma.');
+    await sayR(api, '¿Con táper?');
+    await sayBe(api, 'Con ticket.');
     // «Goyita. Tira.» (por los altavoces, la voz de Teodoro por el teléfono rojo): un inserto en la esquina enseña
     // la Catacumba, con Teodoro al aparato, el auricular en la oreja y el cable rizado hasta el teléfono descolgado.
     api.sfx('phone');
@@ -314,40 +321,30 @@ function insertoTeodoro(game) {
   };
 }
 
-// adenda 9.6, versión A (con `correo_evaristo_listo`)
-async function heroeDeLaComa(api) {
-  api.sfx('beep');
-  await api.wait(500);                                             // el teléfono de conferencias: CONTROLLING
-  await sayEv(api, 'Buenas noches. Una cosita. Muy pequeña.');
-  await sayI(api, '¿Quién es Evaristo?');
-  await sayG(api, 'El que llama. De mis tres móviles, uno es para no cogerle.');
-  await sayEv(api, 'Les anuncié un correo. Lo envío ahora. Con todos en copia.');
-  for (let i = 0; i < 4; i++) { api.sfx(SFX.plin); await api.wait(160); }
-  api.notice('De: Evaristo Salvedad · Asunto: Una coma', { color: '#F0F0A8', ms: 2600 });
-  await api.say(['«Contrato Optimal Brains. Cláusula 4: 48,000 euros al mes.»',
-    '«Cláusula 12: punto de miles y coma decimal. Son 48 euros.»']);
-  await sayI(api, '¡Es formato internacional! ¡Lo entiende todo el mundo!');
-  await sayEv(api, ['Cláusula 13: ley española. Y lo oscuro, contra quien lo escribe.',
-    'Hemos pagado cuarenta y ocho mil al mes. El contrato dice cuarenta y ocho.',
-    'Cuatro meses. Nos deben 191.808 euros. Lo he revisado tres veces.']);
-  await sayBe(api, 'Cuatro. La cuarta la he hecho yo.');
-  await sayBe(api, '...Una cuarta copia. Esto acaba en un juzgado.');
-  await sayEv(api, 'Exacto, Begoña. Esta vez, a favor.');
-  await sayR(api, 'Cuarenta y ocho euros al mes... Es lo que me como en atún.');
-  await sayEv(api, ['Veinticuatro bocadillos a dos euros. La única cifra que cuadraba.',
-    'Con lo que nos deben hay partida para un contrato. Con coma.']);
-  await sayR(api, '¿Con táper?');
-  await sayEv(api, 'El táper, con ticket. Era solo eso. Buenas noches.');
-  api.sfx('click');
-  await api.wait(500);
-  await api.sayAs(LECTOR, '...Y ahorrar.');
-}
-
-// adenda 9.6, versión B (sin `correo_evaristo_listo`)
-async function correoQueSeEscapa(api) {
-  api.sfx('phone');
-  await api.wait(600);                                             // vibra uno de los tres móviles de Gervasio
-  await sayG(api, ['Es Evaristo. Dice que nos va a escribir un correo.', 'Lo hablamos.']);
-  api.sfx('click');
-  await api.say('Algo importante se nos acaba de escapar. Por una coma.');
+// E2 §5.5 · remate C del duelo D4: el correo de Evaristo «en el momento oportuno». Se dice con el hilo oculto (la
+// ventana del correo tapa el globo de arriba): Bruno pulsa «Enviar»; cuatro plins; suena el teléfono de conferencias y
+// Evaristo habla por el altavoz (globo arriba con la etiqueta CONTROLLING; no entra en la sala).
+const evTel = (api, t) => api.megafonia(EV, t, { blocking: true, etiqueta: 'CONTROLLING', sfx: false });
+async function heroeDeLaComa(api, duel) {
+  if (duel) duel.hide();
+  try {
+    await api.say('Momento oportuno.');
+    await api.anim('bruno', 'reach', 450);                         // pulsa «Enviar»
+    for (let i = 0; i < 4; i++) { api.sfx(SFX.plin); await api.wait(160); }
+    api.notice('De: Evaristo Salvedad · Asunto: Una coma', { color: '#F0F0A8', ms: 2600 });
+    await api.wait(700);
+    api.sfx('phone');                                              // el teléfono de conferencias: CONTROLLING
+    await api.wait(600);
+    await evTel(api, 'Buenas noches. Una cosita. Muy pequeña.');
+    await sayI(api, '¿Quién es Evaristo?');
+    await sayG(api, 'El que llama. De mis tres móviles, uno es para no cogerle.');
+    await evTel(api, 'Cláusula 12: punto de miles y coma decimal. «48,000» son 48 euros.');
+    await sayI(api, '¡Es formato internacional! ¡Lo entiende todo el mundo!');
+    await evTel(api, ['Cláusula 13: ley española. Lo oscuro, contra quien lo escribe.',
+      'Cuatro meses pagando mil veces de más. Nos deben 191.808 euros.',
+      'Lo he revisado tres veces. Era solo eso. Buenas noches.']);
+    api.sfx('click');
+    await api.wait(600);
+    await api.sayAs(LECTOR, '...Y ahorrar.');
+  } finally { if (duel) duel.show(); }
 }

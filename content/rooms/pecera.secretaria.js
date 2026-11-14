@@ -44,7 +44,7 @@ export const dialogoCustodia = {
         { text: 'Me manda Gervasio.', once: true, do: async (api) => { await cu(api, 'Gervasio no manda. Delega. Y a mí no se me delega.'); } },
         { text: 'Begoña dice que hay que rellenar algo.', once: true,
           do: async (api) => { await cu(api, ['Begoña tiene formularios. Yo tengo memoria.', 'La memoria no se rellena. Se gana.']); } },
-        { text: '¿Por qué no se le ve la cara?', do: async (api) => { await cu(api, 'Porque la cara no es material. Siguiente.'); } },
+        { text: '¿Por qué no se le ve la cara?', once: true, do: async (api) => { await cu(api, 'Porque la cara no es material. Siguiente.'); } },
         { text: '¿Usted sabe dónde está todo?', if: '!custodia_ablandada', exit: true,
           do: async (api) => { await cu(api, 'Todo. Siguiente.'); } },
         { text: '¿Dónde está...?', if: 'custodia_ablandada', goto: 'CU_DONDE' },
@@ -115,7 +115,7 @@ export const dialogoCustodia = {
       onEnter: async (api) => { await cu(api, 'Diga.'); },
       options: [
         { text: '¿Dónde está Ramírez?', once: true,
-          do: async (api) => { await cu(api, 'Desayunando.'); await api.say('¿Desde 2019?'); await cu(api, 'Él desayuna despacio. Yo apunto rápido.'); } },
+          do: async (api) => { await cu(api, 'Desayunando.'); await api.say('¿Todavía?'); await cu(api, 'Él desayuna despacio. Yo apunto rápido.'); } },
         { text: '¿Dónde está la bandeja 2 de la impresora de la tercera?', once: true,
           do: async (api) => { await cu(api, 'No existe. Por eso es la única bandeja que no se atasca.'); } },
         { text: '¿Dónde está la gente? La redacción está vacía.', once: true,
@@ -144,7 +144,7 @@ export const objetosSecretaria = [
       murmurs: ['Ochenta y tres bolis. Los tengo contados. Los que faltan.', 'Las paredes no oyen. Oigo yo.', '...Buenas noches.'],
       murmurColor: '#A0A0FF',
       handlers: {
-        mirar: async (api) => { await api.say(['La Secretaría de Redacción. Bajo la persiana, dos manos. Y una llave.', 'Nadie le ha visto la cara desde 2012. Se le oye la mirada.']); },
+        mirar: async (api) => { await api.say(['La Secretaría de Redacción. Bajo la persiana, dos manos. Y una llave.', 'Nadie le ha visto la cara. Se le oye la mirada.']); },
         hablar: hablarCustodia,
         'dar:boli_muerto': async (api) => { await api.dialog('custodia', 'CU_CADAVER'); },
         'dar:cafe': async (api) => { await cu(api, ['¿Me soborna con un café de Gertrudis.', 'Gertrudis me debe catorce. No cuenta.']); },

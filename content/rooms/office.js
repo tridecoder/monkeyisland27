@@ -1,7 +1,9 @@
 // SALA `office` — en pantalla, «VENDING» (el id interno no cambia). LÓGICA. Dueño: paquete P3 de la reescritura de
 // comedia (docs/guion2/PLAN_COMEDIA.md): §4.1 la cafetera viral, §5.2 árbol de Gertrudis, §4.4 el fugitivo de Mercados
 // y su táper, §5.10 Gervasio aquí SOLO tras D3 (`sala_abierta`: su gag con Gertrudis). El duelo D3 ya no vive aquí: lo
-// define `pajarera.js` (Despachos, paquete P2). Se conservan el rumor A (paso 2) y la porra del garaje (adenda 8bis).
+// define `pajarera.js` (Despachos, paquete P2). Se conserva la porra del garaje (adenda 8bis).
+// ENMIENDA E2 (P3): §6 L17 (E-47…E-50 con `office_error_n`), L18, L26, L27; §2.6.5 y §4.5 (chismes de Anselmo y
+// Maripaz); §7.2 (fuera las coletillas de Bruno); §7.5 fase B (1) (fuera el rumor A) y (9) (fuera «CORTADO…» y «Me lo...»).
 // Solo tiene una puerta, el arco a la Redacción. El arte y la geometría están en ./art/office.art.js.
 //
 // Gertrudis es un ACTOR (su LCD sale encima, en #39FF14, en MAYÚSCULAS): api.sayAs('gertrudis', ...). El piloto
@@ -20,9 +22,9 @@ const mer = (api, lines) => api.sayAs(MER, lines);
 // los cuatro chismes con réplica (citan las réplicas NUEVAS de content/duelo.js: R03, R04, R14 reescritas; R10 igual)
 const CHISMES = [
   ['CHISME: EL DE BOLSA A YOLI: "ESTO LO NECESITABA PARA AYER".', 'YOLI: "AYER NO PUEDO. TE MIRO HUECO PARA ANTEAYER".', 'rep_03'],
-  ['CHISME: GERVASIO A NEMESIO: "ES QUE TÚ ERES EL QUE MEJOR ESCRIBE".', 'NEMESIO: "Y TÚ EL QUE MEJOR DELEGA. POR ESO ME ESCRIBES A MÍ".', 'rep_04'],
+  ['CHISME: GERVASIO A ANSELMO: "ES QUE TÚ ERES EL QUE MEJOR ESCRIBE".', 'ANSELMO: "Y TÚ EL QUE MEJOR DELEGA. POR ESO ME ESCRIBES A MÍ".', 'rep_04'],
   ['CHISME: ÍÑIGO A PACO: "ESTAMOS ANALIZANDO TODAS LAS OPCIONES".', 'PACO: "O SEA, QUE NO SABÉIS QUÉ HACER, PERO EN TABLA DINÁMICA".', 'rep_10'],
-  ['CHISME: MARIPAZ A BORJA: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".', 'BORJA: "¿TE VA EN MARZO? ES CUANDO ACABAN LAS RÁPIDAS".', 'rep_14'],
+  ['CHISME: GERVASIO A MARIPAZ: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".', 'MARIPAZ: "¿TE VA EN MARZO, CARIÑO? ES CUANDO ACABAN LAS RÁPIDAS".', 'rep_14'],
 ];
 // chismes de relleno (rotan, saludos después del torrente); el del garaje (adenda 8bis), al final
 const RELLENO = [
@@ -56,11 +58,11 @@ async function primerSaludo(api) {
   // (Muele. Pita. Cae un vaso.)
   if (!api.has('cafe')) await servirCafe(api);
   api.setFlag('gertrudis_saludada', true);
-  await lcd(api, 'CORTADO. DE QUÉ, NO SE PREGUNTA.');
   const [p1, p2, rep] = CHISMES[0];
   await lcd(api, [p1, p2]);
   api.learnReply(rep);
-  await api.say('Me lo apunto.');
+  // E2 L18: (Bruno saca la libreta y apunta.) La libreta ya avisa.
+  await api.anim(api.player, 'reach', 600);
   api.setFlag('chisme_indice', Math.max(1, api.flag('chisme_indice') || 0));
   await lcd(api, 'SALUDO RECIBIDO. COMPARTIENDO...');
   await api.say('¿Compartiendo con quién?');
@@ -82,7 +84,7 @@ async function torrente(api) {
     contador: [3418, 11302], etiqueta: 'en directo', ms: 2800 });
   await lcd(api, 'BUENAS NOCHES, PAÍS. ESTO NO LO SABE NADIE.');
   const BRUNO = {
-    rep_04: async () => { api.anim(api.player, 'reach', 500); await api.say('Me lo...', { ms: 900 }); },
+    rep_04: async () => { await api.anim(api.player, 'reach', 500); },     // E2 fase B (9): sin «Me lo...»
     rep_10: async () => {
       api.anim(api.player, 'reach', 500);
       await api.say('Más despacio, que escribo a mano.');
@@ -104,7 +106,6 @@ async function torrente(api) {
   // (Bruno se sacude la mano.)
   await api.anim(api.player, 'reach', 300);
   await api.anim(api.player, 'idle');
-  await api.say('Cuatro réplicas en un minuto. Récord personal de taquigrafía.');
 }
 
 /** Saludos después del torrente: el 3.º, una vez, «agotada»; luego chismes de relleno. Café, solo como seguro. */
@@ -124,13 +125,15 @@ async function saludoDeRelleno(api) {
   else await lcd(api, 'YA TE DI UNO. NO SOY UNA FUENTE. SOY UNA CAFETERA.');
 }
 
+/** E2 L17: «¿Me da un café sin saludar?», repetible hasta saludarla; cada vez, un error peor (`office_error_n`). */
+const ERRORES = ['E-47: LLAMAR A SISTEMAS.', 'E-48: SISTEMAS NO CONTESTA.', 'E-49: YA SÉ QUE ERES TÚ OTRA VEZ.', 'E-50: ESTOY EN UNA REUNIÓN.'];
+async function cafeSinSaludar(api) {
+  const n = api.inc('office_error_n');
+  api.sfx('error');
+  await lcd(api, ERRORES[Math.min(n, ERRORES.length) - 1]);
+}
+
 async function buenasNoches(api) {
-  // adenda 8.1 · rumor A, paso 2 (antes del resultado; no toca chisme_indice)
-  if ((api.flag('rumor_firma_n') || 0) === 1) {
-    await lcd(api, 'RUMOR: EL BECARIO VA A FIRMAR EL CIERRE DEL PAPEL.');
-    await api.say('«Firmar el cierre» suena a que lo cierro yo.');
-    api.inc('rumor_firma_n');
-  }
   if (!api.flag('gertrudis_saludada')) return primerSaludo(api);
   if ((api.flag('chisme_indice') || 0) < CHISMES.length) return torrente(api);
   return saludoDeRelleno(api);
@@ -147,8 +150,7 @@ const dialogoGertrudis = {
         { text: 'Buenas noches, Gertrudis.', do: buenasNoches },
         { text: 'Buenas noches otra vez.', if: ['gertrudis_saludada', (api) => (api.flag('chisme_indice') || 0) < CHISMES.length],
           do: torrente },
-        { text: '¿Me da un café sin saludar?', once: true, if: '!gertrudis_saludada',
-          do: async (api) => { api.sfx('error'); await lcd(api, 'E-31: SIN SALUDO NO HAY CAFÉ. CON SALUDO, YA VEREMOS.'); } },
+        { text: '¿Me da un café sin saludar?', if: '!gertrudis_saludada', do: cafeSinSaludar },
         // plan §5.2 [4], con «Nada.» delante: así la reconoce la despedida de walk-lib
         { text: 'Nada. Gracias, Gertrudis.', exit: true, reply: 'E-00: DE NADA. ESO TAMBIÉN SE DICE.' },
       ],
@@ -189,8 +191,8 @@ const dialogoMercados = {
   nodes: {
     M0: {
       options: [
-        { text: '¿Qué tal la reunión?', once: true, reply: 'Desde marzo. La mejor de mi vida. No me la nombres.' },
-        { text: '¿Y cuáles son los siguientes pasos?', do: huidaMercados },
+        { text: '¿Qué tal la reunión?', once: true, reply: '¿La de la Sala? Sigue. Yo no. No me la nombres.' },
+        { text: '¿Y cuáles son los siguientes pasos?', once: true, do: huidaMercados },
         { text: 'Nada. Siga haciendo cola.', exit: true, reply: 'Eso hago. Desde la hora de comer.' },
       ],
     },
@@ -272,7 +274,7 @@ export default buildRoom({
         await api.say([
           'Un hilo impreso: «RE: RE: RE: ¿De quién es el yogur?». 214 respuestas.',
           'Uno: «Como ya comenté en mi anterior correo, que parece que nadie ha leído...»',
-          'Respuesta: «Lo leímos todos. Por eso no contestó nadie». Me la apunto.',
+          'Respuesta: «Lo leímos todos. Por eso no contestó nadie».',
         ]);
         api.learnReply('rep_01');
       },
@@ -299,7 +301,7 @@ export default buildRoom({
       cerrar: 'Cierro el grifo. Gotea igual. Es su manera de opinar.',
     } },
     // mueble de plano medio (solo dibujo: tapa lo que queda tras su tablero; sin hotspot)
-    { id: 'mesa_alta', name: 'mesa alta', hotspot: false },
+    { id: 'mesa_alta', name: 'mesa alta', handlers: { mirar: 'Una mesa alta, sin taburetes.' } },
     // ADENDA §8bis · la porra de las plazas de garaje
     { id: 'porra_plazas', name: 'hoja de la porra', handlers: {
       mirar: async (api) => {
@@ -349,7 +351,7 @@ export default buildRoom({
       } },
     // plan §4.4: uno de Mercados se esconde en la cola del microondas (Acto II-III, tras la estampida)
     { id: MER, when: ['reunion_terminada', '!mercados_huido'], defaultVerb: 'hablar',
-      murmurs: ['Desde marzo. Desde marzo...', 'Aquí nadie convoca nada. Qué paz.'],
+      murmurs: ['Punto tres. Punto tres...', 'Aquí nadie convoca nada. Qué paz.'],
       handlers: {
         mirar: 'Uno de Mercados, en la cola del microondas. Detrás de un táper.',
         hablar: async (api) => { await api.dialog('mercados_office', 'M0'); },
@@ -371,7 +373,7 @@ export default buildRoom({
         'dar:*': async (api) => { await gv(api, 'Eso lo coges tú, que tienes la agenda más limpia.'); },
         empujar: 'Diecinueve años sin moverse de su sitio. No voy a ser yo quien empiece.',
         tirar: 'Si le tiro de la manga, me la delega.',
-        coger: 'Gervasio no se coge. Se le espera. Desde marzo.',
+        coger: 'Gervasio no se coge. Se le espera. Él también espera algo. No sabe qué.',
       } },
   ],
 

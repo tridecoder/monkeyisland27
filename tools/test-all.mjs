@@ -8,7 +8,7 @@
 //   node tools/test-all.mjs --sala=pecera        lo que toca a esa sala: check, motor, vista previa (tools/sala.mjs),
 //                                                geometría de esa sala, fuzz de objetos en esa sala, walkthroughs, el test
 //                                                de comedia del paquete que la cubre (tools/test-comedia-p1..p4.mjs),
-//                                                text-audit (con las reglas del plan como fallo) y contraste
+//                                                text-audit (con las reglas del plan y de E2 como fallo) y contraste
 //   node tools/test-all.mjs --solo=smoke,fuzz    solo esas
 //   --jobs=3 (en paralelo) · --log=<dir> (registros; por defecto tools/shots/test-all/) · --lista (enseña el plan)
 // Sale con 1 si algo falla. Los registros completos de cada prueba quedan en <log>/<nombre>.log.
@@ -41,7 +41,7 @@ if (salas) {
   add('extras', 'extras.mjs');
   add('fuzz (objetos)', 'fuzz.mjs', ['--solo=objetos', '--sala=' + salas.join(','), ...(rapido ? ['--rapido'] : [])]);
   for (const p of [...new Set(salas.map(s => PAQ[s]).filter(Boolean))]) add('comedia-' + p, `test-comedia-${p}.mjs`);
-  add('text-audit', 'text-audit.mjs', ['--plan']);
+  add('text-audit', 'text-audit.mjs', ['--plan', '--e2']);
   add('contrast', 'contrast.mjs');
 } else {
   add('check', 'check.mjs');
@@ -54,7 +54,7 @@ if (salas) {
   add('extras', 'extras.mjs');
   add('play-mouse', 'play-mouse.mjs', rapido ? ['--solo=geometria'] : [], 2400);   // la partida entera con ratón + conexiones + geometría
   add('fuzz', 'fuzz.mjs', rapido ? ['--rapido'] : [], 2400);
-  add('text-audit', 'text-audit.mjs', ['--plan']);      // reglas del plan de comedia (§6.1, §12.2, topes §2.4) como FALLO
+  add('text-audit', 'text-audit.mjs', ['--plan', '--e2']);   // reglas del plan de comedia (§6.1, §12.2, topes §2.4) y de E2 (§12.4, §7.6) como FALLO
   add('contrast', 'contrast.mjs');
   for (const p of ['p1', 'p2', 'p3', 'p4']) add('comedia-' + p, `test-comedia-${p}.mjs`);
   add('heredado', 'test-heredado.mjs');               // lo que comprobaban los test-paquete-a/b/c/d retirados y sigue valiendo

@@ -5,17 +5,18 @@
 //
 // La lanza el clímax (P4) al terminar la escena 7.4, como ÚLTIMA instrucción de su script: cuando el jugador sale de los
 // créditos el juego vuelve al título y ya no hay partida.
-// Orden (§9): Sábado, 6:00 → Vestíbulo (Rubén, Íñigo y la taza, Gervasio, el periódico, [Evaristo], Ramírez, la plaza 1,
-// Yoli) → la abuela («Abrígate tú.» → «¡Me ha contestado el periódico!») → fundido, `juego_terminado` → tarjeta fija
+// Orden (§9 + ENMIENDA E2 §4.5, §5.8, §7.4, fase B (5), (10)-(12), (16), (17)): Sábado, 6:00 → Vestíbulo (Íñigo y la
+// taza, el periódico, Maripaz y su banner a rotulador, Evaristo —siempre—, Ramírez, la plaza 1, Yoli) → la abuela
+// («Abrígate tú.» → «¡Me ha contestado el periódico!») → fundido, `juego_terminado` → tarjeta fija
 // FE DE ERRATAS (`api.tarjeta`) → créditos cortos (`api.ending`, con la viñeta de Aurora y el LCD de Gertrudis) → título.
 // Nada después: ni poscréditos ni impresora. En modo rápido de pruebas (`__game.skipText(true)`) todo se resuelve al
 // instante; el estado de la partida terminada queda en `__game.state().finished`.
 import { PAL, rect, hline, vline, frameRect, gradV, ellipse, line, glow } from '../../engine/draw.js';
 import { drawText, LINE_H } from '../../engine/font.js';
 import game from '../game.js';
-import vestArt, { drawCajaInigo, drawCruasan } from '../rooms/art/vestibulo.art.js';
+import vestArt, { drawCajaInigo, drawCruasan, drawPeriodicoMaripaz } from '../rooms/art/vestibulo.art.js';
 
-const C = 'celestino', A = 'abuela_remedios', Y = 'yoli_tendencias', R = 'ruben', I = 'inigo_sinergia', GV = 'gervasio_acta',
+const C = 'celestino', A = 'abuela_remedios', Y = 'yoli_tendencias', R = 'ruben', I = 'inigo_sinergia', MP = 'maripaz_remitido',
   EV = 'evaristo_salvedad', RA = 'ramirez';
 const at = (layout, id, fb) => (layout && layout[id] && layout[id].at) || fb;
 const LH = LINE_H + 2;
@@ -70,16 +71,10 @@ async function final(api) {
     api.placeActor('bruno', 'vestibulo', EP.bruno[0], EP.bruno[1], EP.bruno[2]); api.show('bruno');
     await api.fadeIn(900);
     await api.wait(500);
-    await api.sayAs(R, '¿Sigue gobernando el mismo?');
-    api.faceActor(C, R);
-    await api.sayAs(C, '¿Tú eres el nuevo?');
-    api.faceActor(R, C);
-    await api.sayAs(R, 'Sí.');
-    await api.wait(900);
-    await api.sayAs(R, '...Sí. Qué bien suena.');
+    // (E2 fase B (10): fuera Rubén y Celestino «¿Tú eres el nuevo?»; el epílogo empieza con Íñigo y su caja)
 
     // Íñigo sale del ascensor con su caja
-    const ei = EP.inigo_sinergia, eg = EP.gervasio_acta;
+    const ei = EP.inigo_sinergia;
     api.placeActor(I, 'vestibulo', ei.from[0], ei.from[1], ei.from[2]); api.show(I);
     api.sostener(I, { draw: drawCajaInigo });                                  // pósits, la matriz y el portátil
     api.sfx('door');
@@ -105,19 +100,9 @@ async function final(api) {
     await api.anim(I, 'reach', 400);                                           // mete la taza en la caja
     await api.sayAs(I, 'Suerte, Bruno.');
     await api.wait(1200);                                                      // primera vez que dice su nombre; Bruno no contesta
-
-    // Gervasio, del ascensor
-    api.placeActor(GV, 'vestibulo', eg.from[0], eg.from[1], eg.from[2]); api.show(GV);
-    api.sfx('door');
-    await api.walkActor(GV, eg.at[0], eg.at[1]);
-    await api.sayAs(GV, 'Íñigo. Hay una beca en Mercados. Lo hablamos.');
-    api.faceActor(I, GV);
-    await api.sayAs(I, '¿Cuándo?');
-    await api.sayAs(GV, 'Ahora. Lo estamos hablando, ¿no?');
-    api.background(async (b) => { await b.walkActor(I, EP.salida[0], EP.salida[1]); b.hide(I); });
-    api.background(async (b) => { await b.walkActor(GV, eg.salida[0], eg.salida[1]); b.hide(GV); });
+    // E2 fase B (5): sin Gervasio ni beca; Íñigo sale solo, con su caja (y sin el «¡Se retiran los dos!» de Celestino)
     api.faceActor(C, 'left');
-    await api.sayAs(C, '¡Y se retiran los dos del campo! ¡Uno con taza! ¡El otro, con beca!');
+    await api.walkActor(I, EP.salida[0], EP.salida[1]); api.hide(I);
 
     // el fardo de periódicos
     api.sfx('drop');
@@ -128,8 +113,9 @@ async function final(api) {
     await api.walkTo(EP.periodicos[0], EP.periodicos[1]); api.face(C);
     await api.anim('bruno', 'reach', 400);
     api.sfx('paper');
+    // E2 §9 B9: el titular ya se lee en el plano; fuera las dos líneas del narrador
     await api.detalle({ titulo: 'PÁGINA 7', x: 40, y: 3, w: 240, h: 100, draw: paginaSiete, color: '#f2ecd8', oscurecer: 0.55,
-      lines: ['Hidrovoltia lanza una opa sobre Banco Robledal', 'Por Bruno Pellejo', ['player', 'Bien escrito. Bruno. Pellejo. Con jota y dos eles.']] });
+      lines: [['player', 'Bien escrito. Bruno. Pellejo. Con jota y dos eles.']] });
     await api.sayAs(C, '¡Hidrovoltia se lanza a por el Robledal! ¡Eso es opa, árbitro!');
     await api.say('Celestino, que la noticia es mía.');
     await api.sayAs(C, '¿Tú eres el nuevo?');
@@ -137,20 +123,36 @@ async function final(api) {
     await api.wait(1000);
     await api.sayAs(C, '...Pues bienvenido, Bruno Pellejo. Ya te ve hasta el torno.');
 
-    // Evaristo, solo con correo_evaristo_listo (se queda)
-    if (api.flag('correo_evaristo_listo')) {
-      const pe = at(L, EV, [196, 113, 'left']);
-      api.placeActor(EV, 'vestibulo', 300, pe[1], 'left'); api.show(EV);
-      await api.walkActor(EV, pe[0] + 12, pe[1]);
-      api.faceActor(EV, 'bruno'); api.face(EV);
-      await api.sayAs(EV, ['Pellejo. Lo he revisado en el periódico. Con jota y dos eles.', 'Correcto.']);
-      await api.say('Gracias, don Evaristo.');
-      await api.sayAs(EV, 'Le escribiré un correo para felicitarle.');
-      await api.say('¿Y si me lo dice ahora?');
-      await api.wait(1400);                                                    // se lo piensa. Mucho.
-      await api.sayAs(EV, '...Felicidades. Es la primera vez que lo digo sin adjunto.');
-      await api.walkActor(EV, 300, pe[1]); api.hide(EV);
-    }
+    // E2 §4.5: Maripaz, del ascensor, con el periódico abierto por la página 7 y un rotulador (el sitio de Gervasio)
+    const em = EP.maripaz_remitido;
+    api.placeActor(MP, 'vestibulo', em.from[0], em.from[1], em.from[2]); api.show(MP);
+    api.sostener(MP, { draw: drawPeriodicoMaripaz });
+    api.sfx('door');
+    api.faceActor(C, MP);
+    await api.walkActor(MP, em.at[0], em.at[1]);
+    api.faceActor(MP, 'bruno'); api.face(MP);
+    await api.sayAs(MP, ['Página 7. Tu noticia, entera. Ni un anuncio. Me ha dolido, cariño.',
+      'Aunque mira: entre línea y línea todavía cabía un banner.']);
+    await api.anim(MP, 'reach', 700);                                          // lo dibuja con el rotulador, entre dos líneas
+    api.sostener(MP, { draw: (g, x, y, sc, dir) => drawPeriodicoMaripaz(g, x, y, sc, dir, true) });
+    api.sfx('click');
+    await api.wait(500);
+    await api.say('Es papel. No se le puede hacer clic.');
+    await api.sayAs(MP, 'Eso te lo arreglo con un pop-up. De cartulina.');
+    api.sfx('hit'); api.shake(150, 1);                                         // golpe de mazo en el fardo. Pum.
+    await api.wait(400);
+    await api.walkActor(MP, EP.salida[0], EP.salida[1]); api.hide(MP);         // sale a la calle
+
+    // E2 §5.8: Evaristo, siempre (deja de depender de correo_evaristo_listo), en tres líneas
+    const pe = at(L, EV, [196, 113, 'left']);
+    api.placeActor(EV, 'vestibulo', 300, pe[1], 'left'); api.show(EV);
+    await api.walkActor(EV, pe[0] + 12, pe[1]);
+    api.faceActor(EV, 'bruno'); api.face(EV);
+    await api.sayAs(EV, 'Pellejo. Lo he revisado en el periódico. Con jota y dos eles.');
+    await api.say('Gracias, don Evaristo.');
+    await api.wait(1400);                                                      // se lo piensa. Mucho.
+    await api.sayAs(EV, '...Felicidades. Es la primera vez que lo digo sin adjunto.');
+    await api.walkActor(EV, 300, pe[1]); api.hide(EV);
 
     // Ramírez entra por la puerta de la calle, con un cruasán mordido (paga el momento 4.3)
     const era = EP.ramirez;
@@ -163,9 +165,7 @@ async function final(api) {
     api.faceActor(C, RA);
     await api.sayAs(C, '¡Vuelve Ramírez! ¡Del desayuno más largo de la historia del club!');
     await api.say('Su chaqueta está en la Sala Amazonas. En el suelo. Con el Lector Medio.');
-    await api.sayAs(RA, '...¿Y qué ha decidido?');
-    await api.say('Que la rotativa no se apaga.');
-    await api.sayAs(RA, 'Siempre fue muy sensata.');
+    // (E2 fase B (12): fuera «...¿Y qué ha decidido?» / «Que la rotativa no se apaga.» / «Siempre fue muy sensata.»)
     const esc = (L.vestibulo_a_redaccion && L.vestibulo_a_redaccion.walkTo) || [300, 112];
     api.background(async (b) => { await b.walkActor(RA, esc[0], esc[1]); b.hide(RA); });   // sube la escalera, masticando
 
@@ -179,7 +179,7 @@ async function final(api) {
     api.sfx('paper');
     await api.anim(C, 'reach', 400);
     api.setState('vestibulo.cuadro_plazas', 'tachado');                        // tacha una línea en el cuadro de llaves
-    await api.sayAs(C, 'La línea de sucesión acaba de enloquecer.');
+    await api.wait(700);                                                       // (E2 §7.4: sin «La línea de sucesión…»)
     api.hide(RA);
 
     // Yoli baja por la escalera, con el abrigo puesto y el colirio en la mano
@@ -190,8 +190,7 @@ async function final(api) {
     await api.sayAs(Y, ['Bruno. Esa cuenta que comenta «abrígate» en todo...',
       'Se ha leído tu opa entera. Cuarenta y siete minutos. La portada dura nueve.']);
     await api.say('¿Cuántos lectores?');
-    await api.sayAs(Y, 'Una. Pero se lo lee TODO. La tengo como KPI.');
-    if (api.flag('cafetera_viral')) await api.sayAs(Y, 'Y comentó en lo de la cafetera: «Ese chico está flaco».');
+    await api.sayAs(Y, 'Una. Pero se lo lee TODO. La he puesto de objetivo de empresa.');   // E2 L28 (fase B (16): sin la cafetera)
     await api.sayAs(Y, 'Y desde esta noche, otro. Comenta «gracias por sacarme». En mayúsculas.');
     api.faceActor(R, Y);
     await api.walkActor(Y, EP.salida[0], EP.salida[1]); api.hide(Y);
@@ -204,13 +203,7 @@ async function final(api) {
       await api.phone.say('Ay, hijo. El papel lo dejé en 2011, que me manchaba el sofá.');
       await api.say('...');
       await api.phone.say('Yo te leo todas las mañanas en el móvil. Te pongo un corazoncito.');
-      await api.say('¿En todo?');
-      await api.phone.say(['En todo. Hasta en lo del Euríbor.', 'No lo entiendo, pero lo escribes muy bonito.']);
-      if ((api.flag('rumor_firma_n') || 0) >= 4) {
-        await api.phone.say('En el pueblo digo que eres el dueño. Que suena más.');
-        await api.say('Abuela...');
-        await api.phone.say(['Tú déjame. Los rumores, en el pueblo, son como el periódico.', 'Si lo dice mucha gente, sale.']);
-      }
+      // (E2 fase B (17): fuera «¿En todo?» / «En todo. Hasta en lo del Euríbor.» / «…muy bonito.»; (1): fuera el rumor A)
       await api.phone.say('Y te pongo «abrígate». Que nunca contestas.');
     });
     // Bruno baja el móvil y teclea con el pulgar, despacio: primer plano, bajo su pieza, un comentario nuevo
@@ -269,9 +262,9 @@ function creditos(api) {
     ...Array(PLANO_N).fill(''),                                               // hueco: la viñeta de Aurora
     ...asig('Café', 'Asignado a: Gertrudis. Se lo había ganado.'),
     ...asig('Audiencia', 'Asignado a: una lectora. Cuarenta y siete minutos.'),
-    ...asig('Controlling', api.flag('correo_evaristo_listo') ? 'El único que leyó hasta el final.' : 'Un correo que nadie quiso oír.'),
+    ...asig('Controlling', 'Asignado a: don Evaristo Salvedad. Leyó hasta el final.'),          // E2 §5.8
     ...asig('Eventos', 'Asignado a: Pilar Escaleta. Empezamos en cinco minutos.'),
-    ...asig('Marketing', 'Asignado a: Borja Engagement. Lo ha compartido sin leerlo.'),
+    ...asig('Marketing', 'Asignado a: el móvil de Borja. Lo publicó a las nueve.'),              // E2 §3.3
     ...asig('Reenvíos', 'Asignado a: Tadeo Adjunto. La IA estaba de acuerdo.'),
     ...asig('Material', 'Asignado a: Custodia Precinto. Devuélvanle el boli.'),
     ...asig('Salas', 'Asignado a: Ramírez (viernes, 20:59, recurrente)'),

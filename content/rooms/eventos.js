@@ -1,4 +1,5 @@
-// SALA `eventos` — LA SALA POLIVALENTE (Eventos, planta 2). LÓGICA. Dueño: paquete D. Adenda §13 (Pilar Escaleta) y
+// SALA `eventos` — LA SALA POLIVALENTE (Eventos, planta 2). LÓGICA. Dueño: P4 (sala PROTEGIDA: E2 solo quita las dos
+// fechas de §8; el resto, intacto). Adenda §13 (Pilar Escaleta) y
 // §13.4-13.6 (sala propia de Eventos, encargo de dirección). El arte y la geometría están en ./art/eventos.art.js; el
 // árbol de Pilar en ./eventos.dialogos.js.
 //
@@ -47,7 +48,7 @@ const LISTA = [
   [2, '«La impresora de la tercera. Con su bandeja 2». La bandeja no consta.'],
   [2, '«Piel de plátano, plaza 7. Asistencia: por confirmar».'],
   [3, '«Titulator 3000: DENEGADA. Motivo: trae su propio atún».'],
-  [3, '«El chico del táper. Acreditado desde 2021. Sale en todas las fotos».'],
+  [3, '«El chico del táper. Acreditado. Sale en todas las fotos».'],
 ];
 async function mirarLista(api) {
   const disp = LISTA.filter(([a]) => a <= acto(api));
@@ -189,7 +190,7 @@ export default buildRoom({
     } },
     { id: 'atril', name: 'atril', handlers: {
       mirar: async (api) => api.say(['Un atril con micro. Encima, el discurso: «Buenas noches y bienvenidos a...».',
-        'Ahí se acaba. Lleva así desde 2019, esperando un sustantivo.']),
+        'Ahí se acaba. Lleva años esperando un sustantivo.']),
       usar: async (api) => { await api.say('«Buenas noches y bienvenidos a...».'); await sayP(api, '¡Aún no! ¡Faltan cinco minutos! ...Pero muy bien proyectado.'); },
       hablar: async (api) => { await api.say('«Sí, sí, probando». El micro me devuelve un eco.'); await sayP(api, '¡Probando, cambio! Se te oye en Comercial.'); },
       coger: 'Si me llevo el atril, empiezo yo el evento. Y no sé de qué va.',

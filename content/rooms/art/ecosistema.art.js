@@ -4,11 +4,12 @@
 //   NÚCLEO 0-96 ........... el kit del edificio (kit.nucleo, FL = 94): escalera que BAJA «1 REDACCIÓN ▼» y ascensor «2».
 //                           Marketing le ha puesto los PUFS delante al ascensor (gag A§14.2), sin tapar la botonera.
 //   MARKETING 96-190 ...... moqueta lila gruesa, Memphis: el embudo «VEN · MIRA · COMPARTE · ?», la pizarra SINERGIA sobre
-//                           la mesa vacía de Tadeo (con su portátil, que nunca se cierra) y Borja con su anillo de luz.
+//                           la mesa vacía de Tadeo (con su portátil, que nunca se cierra) y el aro de luz de Borja (E2: Borja ya no está;
+//                           su móvil, en el aro, publica solo).
 //   puerta de EVENTOS 190-242 doble hoja ciruela con ojos de buey por los que se escapan los focos, piloto «5 MIN»,
 //                           placa «2 EVENTOS» (en la fila de placas y rótulos, y 2) y umbral granate.
 //   COMERCIAL 242-384 ..... roll-up «SU ANUNCIO AQUÍ» (desplegado / enrollado), termómetro de ventas al 97 %, el lema
-//                           ENTERO en 4 líneas, la mesa de Maripaz.
+//                           ENTERO en 4 líneas, la mesa de Maripaz con el monitor de Comercial (E2 §4.4).
 //   PASILLO 384-432 ....... boca de 46 px (dibujada en coordenadas de 400 px, `corrido` +32) en perspectiva hacia Administración (ventanilla al fondo, placa
 //                           «2 ADMINISTRACIÓN ►»), con la impresora de la tercera ENTERA dentro y, en el suelo delante
 //                           de su bandeja, la piel de plátano de la plaza 7.
@@ -16,6 +17,7 @@
 import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, ditherPick, ditherOverlay, glow, gradV,
   rng, hash2, shade, shadowEllipse, bevel, vignette, mug, label } from '../../../engine/draw.js';
 import * as kit from '../../lib/kit.js';
+import { drawText } from '../../../engine/font.js';
 import { nucleoGeom } from '../../lib/edificio.js';
 
 const W = 432, FL = 94;
@@ -53,8 +55,11 @@ const layout = {
   // el pasillo a Administración, con la impresora dentro (la impresora, a la izquierda de la boca; la salida, el resto)
   impresora_tercera: { rect: [354 + PX, 56, 20, 40], walkTo: [366 + PX, 108], face: 'up', priority: 1, draw: (g, v, t) => corrido(drawImpresora)(g, v, t) },
   ecosistema_a_administracion: { rect: [370 + PX, 20, 28, 80], walkTo: [384 + PX, 108], face: 'right' },
-  // PNJ (guía §10): Borja delante del embudo; Maripaz de pie junto a su mesa, con el lema detrás
-  borja_engagement: { at: [118, 112, 'right'], walkTo: [94, 124], face: 'right' },
+  // [P4] E2 §3.2: el aro de luz de Borja (Borja ya no está): trípode con ruedas delante del embudo, móvil en el centro
+  aro_borja: { rect: [107, 62, 24, 48], walkTo: [94, 124], face: 'right', priority: 2, layer: 'sorted', zy: 109, draw: drawAro },
+  // [P4] E2 §4.4: el monitor de Comercial, sobre la mesa de Maripaz (la portada de la web como la ve Comercial)
+  pantalla_comercial: { rect: [291, 56, 28, 23], walkTo: [302, 114], face: 'up', priority: 1, draw: drawPantallaComercial },
+  // PNJ (guía §10): Maripaz de pie junto a su mesa, con el lema detrás
   maripaz_remitido: { at: [328, 104, 'left'], walkTo: [302, 124], face: 'right' },
 };
 
@@ -70,6 +75,108 @@ function drawPlatano(g) {
   rect(g, x + 11, y - 1, 5, 4, PAL.paper[7]); kit.micro(g, '7', x + 12, y - 1, PAL.red[3], { registrar: false });
   kit.cantoVivo(g, x, y, 16, 8);
 }
+/** [P4] E2 §3.2 · el aro de luz de Borja, solo: trípode con ruedas, el anillo encendido y el móvil en el centro con la
+ *  pantalla viva; encima, el piloto «DIRECTO» que parpadea (2 frames). Borja se fue a las seis; el móvil, no. */
+function drawAro(g, view, t) {
+  const cx = 119, cy = 76;
+  const on = Math.floor((t || 0) / 520) % 2 === 0;
+  // trípode con ruedas
+  shadowEllipse(g, cx, 110, 12, 2, 0.6);
+  vline(g, cx, cy + 9, 20, PAL.metal[4]); vline(g, cx + 1, cy + 9, 20, PAL.metal[2]);
+  line(g, cx, cy + 27, cx - 9, 108, PAL.metal[4]); line(g, cx + 1, cy + 27, cx + 10, 108, PAL.metal[3]); line(g, cx, cy + 27, cx + 1, 109, PAL.metal[5]);
+  for (const wx of [cx - 9, cx + 10, cx + 1]) { rect(g, wx - 1, 108, 3, 2, PAL.ink[1]); px(g, wx, 108, PAL.metal[3]); }
+  // el halo y el anillo (hueco por dentro: se ve el embudo detrás)
+  glow(g, cx, cy, 16, 14, '#fff6d8', 0.16, 4);
+  for (let dy = -10; dy <= 10; dy++) for (let dx = -10; dx <= 10; dx++) {
+    const d = Math.hypot(dx, dy * 1.05);
+    if (d >= 6.6 && d <= 9.4) px(g, cx + dx, cy + dy, d < 7.6 ? '#fffbe8' : d < 8.6 ? '#ffe8a8' : '#c8a868');
+  }
+  // brazo del soporte y el móvil en el centro, con la pantalla encendida (publicando)
+  hline(g, cx - 1, cy + 7, 3, PAL.metal[3]);
+  rect(g, cx - 2, cy - 4, 5, 9, PAL.ink[0]);
+  rect(g, cx - 1, cy - 3, 3, 7, on ? '#4FD8E8' : '#2a9ab0');
+  px(g, cx, cy - 2, PAL.white); hline(g, cx - 1, cy + 1, 3, on ? '#e8fcff' : '#7ad8e8');
+  // el piloto «DIRECTO»
+  const py = cy - 15;
+  rect(g, cx - 15, py, 31, 7, on ? '#d82020' : '#6a1414'); frameRect(g, cx - 15, py, 31, 7, PAL.ink[0]);
+  kit.micro(g, 'DIRECTO', cx + 1, py + 1, on ? PAL.white : '#d0a0a0', { align: 'center', registrar: false });
+  if (on) glow(g, cx, py + 3, 16, 5, '#ff4040', 0.18, 3);
+}
+/** [P4] E2 §4.4 · el monitor de Comercial: la portada de la web con cuatro anuncios, un vídeo con su ▶ y una franja
+ *  gris finísima (la noticia). Mientras «reproduce» (estado `video`), el vídeo se mueve y suena. */
+function drawPantallaComercial(g, view, t) {
+  const x = 293, y = 58, w = 23, h = 15;
+  const video = String(view.objState ? view.objState('pantalla_comercial') : view.state) === 'video';
+  // pie y peana sobre la mesa
+  rect(g, x + 9, y + h + 1, 5, 4, PAL.metal[3]); rect(g, x + 6, y + h + 4, 11, 2, PAL.metal[4]);
+  rect(g, x - 1, y - 1, w + 2, h + 2, PAL.ink[0]); frameRect(g, x - 1, y - 1, w + 2, h + 2, PAL.metal[3]);
+  rect(g, x, y, w, h, '#f4efe0');
+  // cuatro anuncios
+  rect(g, x + 1, y + 1, 7, 4, '#3a7ac8'); rect(g, x + 15, y + 1, 7, 4, '#2c9a4c');
+  rect(g, x + 1, y + 10, 7, 4, '#c83a8a'); rect(g, x + 15, y + 10, 7, 4, '#ffcc33');
+  // el vídeo (centro) con su ▶; reproduciéndose, parpadea en colores de colchón
+  const vc = video ? (Math.floor((t || 0) / 140) % 2 ? '#2a3c78' : '#5a7ad8') : '#1c2a58';
+  rect(g, x + 9, y + 1, 5, 7, vc);
+  if (!video) { px(g, x + 11, y + 3, PAL.white); px(g, x + 11, y + 4, PAL.white); px(g, x + 12, y + 4, PAL.white); px(g, x + 11, y + 5, PAL.white); }
+  else { px(g, x + 10, y + 3, PAL.white); px(g, x + 12, y + 5, PAL.white); }
+  // la noticia: una línea gris de 1 px
+  hline(g, x + 9, y + 10, 5, '#a8a49a');
+  // el pósit «Se ve demasiado» pegado al marco
+  rect(g, x + w - 2, y + 8, 5, 5, '#ffe14a'); hline(g, x + w - 1, y + 10, 3, PAL.ink[3]);
+  glow(g, x + w / 2, y + h / 2, 18, 12, video ? '#9fc0ff' : '#fff4e0', video ? 0.2 : 0.1, 3);
+}
+
+/** [P4] E2 §4.2.4 · el anuncio antes de entrar (interstitial): un cartel de Colchones Siestatón a toda la caja, con
+ *  colchón, luna y zetas. La cuenta atrás («Podrá continuar en 5… 1», «Saltar anuncio ›») la pinta el motor. */
+export function interstitialComercial(g, r, t) {
+  const { x, y, w, h } = r;
+  gradV(g, x, y, w, h, ['#0e1636', '#1c2a58', '#2a3c78']);
+  // estrellas y luna
+  for (let i = 0; i < 28; i++) px(g, x + Math.floor(hash2(i, 3, 7) * w), y + Math.floor(hash2(i, 5, 7) * (h * 0.55)), i % 3 ? '#8aa0d8' : '#ffffff');
+  ellipse(g, x + w - 30, y + 20, 10, 10, '#fff4c0'); ellipse(g, x + w - 26, y + 17, 9, 9, '#1c2a58');
+  // la marca, grande
+  drawText(g, 'COLCHONES SIESTATÓN', x + (w >> 1), y + 8, '#ffffff', { align: 'center', outline: '#0e1430', scale: 1 });
+  drawText(g, 'DUERMA YA', x + (w >> 1), y + 24, '#ffcc33', { align: 'center', outline: '#0e1430', scale: 2 });
+  // el colchón con su almohada, y las zetas que suben
+  const kx = x + (w >> 1) - 50, ky = y + h - 36;
+  rect(g, kx + 2, ky + 14, 100, 4, '#0a0f24');
+  rect(g, kx, ky, 100, 14, '#e8ecf8'); frameRect(g, kx, ky, 100, 14, '#9aa8c8');
+  for (let i = 1; i < 10; i++) vline(g, kx + i * 10, ky + 2, 10, '#d0d8ee');
+  rect(g, kx + 6, ky - 7, 26, 8, '#ffffff'); frameRect(g, kx + 6, ky - 7, 26, 8, '#9aa8c8');
+  const z = Math.floor((t || 0) / 450) % 4;
+  for (let i = 0; i < z; i++) drawText(g, 'z', kx + 40 + i * 9, ky - 12 - i * 6, '#ffffff', { outline: '#0e1430' });
+  // letra pequeña de verdad (la del anuncio, no la de Maripaz)
+  kit.micro(g, 'SIESTATÓN: DORMIR TAMBIÉN ES TRABAJAR', x + 4, y + h - 7, '#6a7ab0', { registrar: false });
+}
+
+/** [P4] E2 §4.4 · plano detalle de la portada de la web en el monitor de Maripaz (Mirar, 1.ª vez): anuncio, anuncio,
+ *  vídeo, UNA línea de noticia, anuncio. 180×90. */
+export function portadaComercial(g, r, t) {
+  const { x, y, w, h } = r;
+  rect(g, x, y, w, h, '#f4efe0');
+  rect(g, x, y, w, 9, '#2a2430');
+  kit.micro(g, 'PORTADA', x + 4, y + 2, '#f4efe0', { registrar: false });
+  rect(g, x + w - 26, y + 2, 22, 5, '#ff7a20'); kit.micro(g, 'OFERTA', x + w - 15, y + 2, '#ffffff', { align: 'center', registrar: false });
+  // anuncio, anuncio
+  rect(g, x + 3, y + 11, (w >> 1) - 5, 16, '#3a7ac8'); kit.micro(g, 'ANUNCIO', x + 3 + ((w >> 1) - 5) / 2, y + 17, '#ffffff', { align: 'center', registrar: false });
+  rect(g, x + (w >> 1) + 2, y + 11, (w >> 1) - 5, 16, '#2c9a4c'); kit.micro(g, 'ANUNCIO', x + (w >> 1) + 2 + ((w >> 1) - 5) / 2, y + 17, '#ffffff', { align: 'center', registrar: false });
+  // el vídeo que se pone solo, con su ▶ y el altavoz a tope
+  const vx = x + 3, vy = y + 30, vw = w - 6, vh = 30;
+  gradV(g, vx, vy, vw, vh, ['#1c2a58', '#2a3c78']);
+  poly(g, [[vx + (vw >> 1) - 5, vy + 8], [vx + (vw >> 1) + 7, vy + 15], [vx + (vw >> 1) - 5, vy + 22]], '#ffffff');
+  kit.micro(g, 'SIESTATÓN', vx + 4, vy + 3, '#ffcc33', { registrar: false });
+  rect(g, vx + vw - 14, vy + vh - 8, 4, 4, '#ffffff'); poly(g, [[vx + vw - 10, vy + vh - 9], [vx + vw - 7, vy + vh - 11], [vx + vw - 7, vy + vh - 1], [vx + vw - 10, vy + vh - 3]], '#ffffff');
+  const k = Math.floor((t || 0) / 300) % 3;
+  for (let i = 0; i <= k; i++) vline(g, vx + vw - 5 + i * 2, vy + vh - 9 - i, 5 + i * 2, '#ffffff');
+  // UNA línea de noticia (gris, 1 px) con su pósit
+  const ny = y + 64;
+  hline(g, x + 30, ny, w - 70, '#9a968c');
+  kit.micro(g, 'NOTICIA', x + 4, ny - 2, '#9a968c', { registrar: false });
+  rect(g, x + w - 38, ny - 4, 34, 9, '#ffe14a'); kit.micro(g, 'SE VE', x + w - 21, ny - 2, PAL.ink[2], { align: 'center', registrar: false });
+  // otro anuncio
+  rect(g, x + 3, y + 70, w - 6, h - 72, '#c83a8a'); kit.micro(g, 'TILAS CALMÍN', x + (w >> 1), y + 74, '#ffffff', { align: 'center', registrar: false });
+}
+
 /** Portátil de Tadeo: abierto con notificaciones y un globo que parpadea; cerrado (Acto III) apagado y en silencio. */
 function drawPortatil(g, view, t) {
   const x = 148, y = 60;
@@ -320,10 +427,9 @@ function drawMesaMaripaz(g) {
   hline(g, x, y + 4, w, PAL.dusk[6]); vline(g, x, y + 4, FL - y - 4, PAL.dusk[5]); vline(g, x + w - 1, y + 4, FL - y - 4, PAL.dusk[2]);
   rect(g, x + 4, y + 8, w - 8, 6, PAL.dusk[3]); frameRect(g, x + 4, y + 8, w - 8, 6, PAL.dusk[2]);
   for (let i = 0; i < 5; i++) rect(g, x + 6 + i * 5, y + 9, 3, 4, i % 2 ? PAL.gold[5] : PAL.paper[6]);
-  // teléfono, calculadora y agenda
-  rect(g, x + 3, y - 4, 8, 4, PAL.ink[2]); rect(g, x + 2, y - 6, 10, 2, PAL.ink[3]);
-  rect(g, x + 14, y - 3, 7, 3, PAL.metal[4]); hline(g, x + 14, y - 3, 7, PAL.metal[6]); rect(g, x + 15, y - 6, 5, 3, PAL.paper[7]);
-  rect(g, x + 23, y - 3, 9, 3, '#c03a28'); hline(g, x + 23, y - 3, 9, '#ff7a52');
+  // [P4] el teléfono, a la derecha del monitor de Comercial (el monitor es el objeto `pantalla_comercial`)
+  rect(g, x + 26, y - 4, 8, 4, PAL.ink[2]); rect(g, x + 25, y - 6, 10, 2, PAL.ink[3]);
+  rect(g, x + 1, y - 2, 9, 2, '#c03a28'); hline(g, x + 1, y - 2, 9, '#ff7a52');
 }
 /** El PASILLO a Administración: boca de 46 px en perspectiva, linóleo verde oliva, fluorescente y la ventanilla al
  *  fondo que «brilla como un faro». La placa «2 ADMINISTRACIÓN ►» cuelga encima. */

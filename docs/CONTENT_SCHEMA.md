@@ -315,18 +315,20 @@ What the shared `content/game.js` provides (you use it, you don't edit it):
 | `scenes.pistas` | plan §8.5: the grandmother's hints in three levels per objective (Usar `movil` → Llamar a la abuela), texts in `content/pistas.js`; see §7 «Objetivos, pistas y hora» |
 | `objetivos`, `hora`, `metaFinal` | plan §8: the objectives list and the phone time function (`content/pistas.js`), read by `engine/objetivos.js` (`api.objetivo`, `api.hora()`) |
 | `afterEnter`, `scenes.avisos` | **Automatic notices** (addendum §2), see «Avisos» below |
-| `migrarPartida(state)` | plan §3.4: called by the engine on **every** load (idempotent), after its own position migrations: removes retired items (`planillo`; `posit_baja_ruben` → `ticket_n1` + `ruben_libre`) and retired flags |
+| `migrarPartida(state)` | plan §3.4: called by the engine on **every** load (idempotent), after its own position migrations: removes retired items (`planillo`; `posit_baja_ruben` → `ticket_n1` + `ruben_libre`) and retired flags; E2: old Evaristo calls (counter) → per-call marks, `correo_evaristo_listo` → item `correo_evaristo`; a `coma_bendecida` without `correo_evaristo_listo` is undone (step 32 can be played); drops `evaristo_lc`, `evaristo_convoco`, `rumor_firma_n`, `planta_oyo`, `pecera_nemesio_saludo` and the saved positions of the retired actors `nerea_backlog` / `borja_engagement` |
+| `pantallas` | E2: objects that «speak» with a fixed prefix/colour, used by `api.pantalla(obj, text)`: `herminia_portatil` → «HERMINIA (IA) › » #FF8C3C; `aro_borja`, `eventos_a_ecosistema` #4FD8E8; `pantalla_comercial` #FF8A60 |
 | `startFlags` | the 28 flags of addendum 6.2 initialised: counters `0`, booleans `false` |
 | `title`, `ending`, `credits` | title screen (front page), credits shell with the «Fe de erratas» box and Gertrudis' LCD (§14) |
 | `music` | imports `content/music.js` |
 
 ### Avisos (addendum §2): incoming calls and «RV:» notices — common, nobody has to call them
 After the `onEnter` of **every** room the engine runs `game.afterEnter`, which plays the scene `avisos`
-(`content/game.js`): **at most one notice per room entry** — first the call **LC** of plan §5.13 if it is due
-(`coma_bendecida` without `correo_evaristo_listo`: it sets `correo_evaristo_listo` and `evaristo_lc`), else the next
-Evaristo call (L1…L5) whose condition holds (counter `evaristo_llamadas` counts L1-L5 and LC, up to 6), otherwise the next
-Tadeo mail (RV1…RV3, plan §5.16; counter `tadeo_rv_n`). They come in
-numeric order and wait for their condition; they never set bible flags (L2 sets `evaristo_convoco`). They do **not** play
+(`content/game.js`): **at most one notice per room entry**. **ENMIENDA E2 §5.7:** only Evaristo's calls L1
+(`torno_abierto`), L3 (`pieza_recortada`), L4 (`acto_3_iniciado` and `!ruben_encontrado`; lost if Rubén is found first)
+and L5 (`ruben_libre` and `!climax_entrada`); L2 and the LC are gone (counter `evaristo_llamadas` = calls heard; each
+call also leaves `once:evaristo_L<n>`). Tadeo's «RV:» mails are **no longer notices** (E2 §7.4): they arrive silently in
+the phone's mailbox when their condition holds (`tadeo_rv_n` = arrived). Calls come in order and wait for their
+condition; they never set bible flags (the E2 bridge for `evaristo_convoco` was removed at integration). They do **not** play
 when the entry already ran a scene / dialog / duel / cutscene (the engine counts `api.scene` (except `avisos`/`pistas`),
 `api.dialog`, `api.duel`, `api.cutscene` during `onEnter`), when loading a save, in `sala_amazonas` with
 `acto_3_iniciado`, or after `juego_terminado`. Consequences for room authors:
@@ -405,9 +407,9 @@ Object state & visibility are saved (`state.objects['room.id']`). Other rooms' o
 
 ### 5.1 Definitions (`content/actors.js`, shared)
 All characters of bible §2 with their exact ids, names and text colours:
-`bruno` (player), `celestino`, `yoli_tendencias`, `nerea_backlog`, `teodoro_cuerpodoce`, `aurora_galerada`,
-`gervasio_acta`, `begona_triplicado`, `borja_engagement`, `maripaz_remitido`, `paco_ticket`, `inigo_sinergia`,
-`ruben`, `abuela_remedios` (**phone only**: never placed in a room; `api.sayAs('abuela_remedios', ...)` shows her text at
+`bruno` (player), `celestino`, `yoli_tendencias`, `teodoro_cuerpodoce`, `aurora_galerada`,
+`gervasio_acta`, `begona_triplicado`, `maripaz_remitido`, `paco_ticket`, `inigo_sinergia`, `anselmo_monolito`, `leoncio_quesitos`,
+`ruben` (E2: `nerea_backlog` —Nemesio, merged into Anselmo— and `borja_engagement` —now the `aro_borja` object of Marketing— no longer exist), `abuela_remedios` (**phone only**: never placed in a room; `api.sayAs('abuela_remedios', ...)` shows her text at
 the top), `ramirez` (post-credits only), and the two "objects with character", which are actors so that their text
 appears above them in their colour: `gertrudis` (LCD `#39FF14`, custom sprite, `defaultVerb: 'hablar'`) and
 `lector_medio` (the Lector Medio, a marketing buyer-persona cardboard standee: stock-photo smile, blue jumper, folded
@@ -526,6 +528,7 @@ time. Blocking scripts lock input; errors are caught and logged (`[motor] Error 
 | `await api.say(text \| [lines], opts?)` | Bruno speaks; arrays = consecutive balloons |
 | `await api.sayAs(actorId, text \| [lines], opts?)` | another actor (above its head if in the room, else at the top) |
 | `await api.sayFrom(objId, text \| [lines], opts?)` | an **object** speaks: text above the object in `opts.color` or the object's `color` (LCD, fax, torno LED, TV) |
+| `await api.pantalla(objId, text \| [lines], opts?)` | E2: like `sayFrom` with the prefix and colour registered in `game.js` `pantallas` (`api.pantalla('herminia_portatil', 'hola: 100 %')` → «HERMINIA (IA) › hola: 100 %»); a leading «›» is not doubled; `opts.prefijo`/`opts.color` override |
 | `await api.narrate(text \| [lines], opts?)` | narrator/caption («rótulo») at the top (`game.narratorColor`) |
 | `await api.sayRandom([lines])` | |
 | `api.notice(text, { color, ms })` | non-blocking notice at the bottom of the room view |
@@ -576,7 +579,14 @@ opened; `k` = opening 0..1) with an optional caption tab. Balloons go below it (
 `lines` are said (`[who, text]` with who = actor id, `'player'`/`'B'` or `'narrador'`; a plain string = narrator) and/or
 its body runs; with neither, for `ms` or until a click / «.». Esc (skipped cutscene) and fast mode resolve it at once;
 it always closes when the script that opened it ends (even on an exception) and on loading a save (never saved). The
-log gets `aviso: Plano detalle: <titulo>`; `__game.state().detalle = { titulo } | null`. Used by the 7.2 Titulator.
+log gets `aviso: Plano detalle: <titulo>`; `__game.state().detalle = { titulo, cerrarX, cuenta, bloqueado } | null`.
+Used by the 7.2 Titulator.
+**Ads (ENMIENDA E2 §4.2):** `bloqueo: ms` (a click / «.» cannot close it before; Esc and fast mode can),
+`cuenta: { ms, texto: 'Podrá continuar en {n}', fin: 'Saltar anuncio ›' }` (the engine paints the countdown at the
+bottom right; implies `bloqueo: cuenta.ms`; without `ms` it stays `cuenta.ms + 1500`), `cerrarX: px` (the engine paints
+the close «×» of that size in the top-right corner; 1-2 px = a dot; 0 = none). Helpers exported by `engine/detalle.js`:
+`cuentaAtras(t, ms)`, `dibujarX(g, x, y, px, color)`, `bloqueado(game)`. Demo: `tools/demo-fase0.js` (`demo_popup`,
+`demo_anuncio`).
 
 ### Time & effects
 `api.wait(ms)`, `api.fadeOut(ms)`, `api.fadeIn(ms)`, `api.shake(ms, px)`, `api.sfx(name|def)`, `api.music(id|null, fade)`.
@@ -692,6 +702,15 @@ Option order: player line (unless `silent`; `say` overrides the text) → `reply
 → `do()` → `setFlag` → navigation (`do` returning a node id wins; `'exit'`/`exit: true` ends; else `goto`; else stay).
 `once` is tracked per `dialogId.nodeId.(option.id || index)`. Bible «(se queda)» = no `once`; options that "disappear"
 = `once: true` or an `if`. **Use the bible's option text verbatim**: the walkthrough selects options by text.
+
+**Farewells are heard once (ENMIENDA E2 §7.2, engine).** An option with `exit: true` is said in full (player line,
+`reply`, `lines` and whatever its `do` says) only the **first** time that option is chosen in that tree; afterwards the
+dialog closes silently: nothing is said, but `do` still runs (effects, sfx, flags) with its lines muted (`game.mudo`).
+The mark is internal and per tree and option (`game.state.dialogs['despedida_oida:<tree id>.<option id or text>']`, saved
+with the game; not a flag), so a sub-node exit such as «Mejor no.» is not muted because «Me voy.» was already heard. Opt out with
+`siempre: true` on the option (a farewell with plot effects that must be heard) or `despedidasSiempre: true` on the tree.
+**Repeatable options (E2 §7.6):** every option is `once` unless it advances the plot while not done (with its `if`),
+is a declared rotating one, is a state one or is an exit; `node tools/text-audit.mjs --estatico` lists the others.
 
 ---
 

@@ -1,38 +1,27 @@
-// SALA `eventos` — ÁRBOL DE PILAR ESCALETA (paquete D). Adenda §13.2 (árbol original, intacto: mismas opciones,
-// mismas líneas, mismo orden) + §13.5 (opciones nuevas de la Sala Polivalente, añadidas antes de «Me voy.»).
-// Importado por ./eventos.js. Antes vivía en ./ecosistema.dialogos.js: Eventos tiene ahora sala propia.
-//
-// P14a (álbum): Pilar lo presta aquí; Borja, que lo ha oído desde Marketing, SE ASOMA por la puerta de la sala para
-// soltar lo de «descopear» (misma línea de siempre) y se vuelve a su sitio. Ver `borjaSeAsoma`.
-import ecoArt from './art/ecosistema.art.js';
-
-const BORJA = 'borja_engagement', PILAR = 'pilar_escaleta';
+// SALA `eventos` — ÁRBOL DE PILAR ESCALETA. Adenda §13.2 (árbol original, intacto: mismas opciones, mismas líneas,
+// mismo orden) + §13.5 (opciones nuevas de la Sala Polivalente, añadidas antes de «Me voy.»).
+// Importado por ./eventos.js. Sala PROTEGIDA: solo los cambios que nombra la ENMIENDA E2 (P4):
+//  · §3.5 (C7): Borja ya no existe; el «descopear» lo publica su móvil, oído por la puerta de Marketing
+//    (`movilBorjaSeOye`; Pilar: «¡Ese móvil!»). Fuera «O sea, quitado del plan» y «Me lo apunto. Por si acaso.».
+//  · §7.6: `once: true` en «¿Para qué es el photocall?» y «¿Hay catering?» (sin tocar el texto).
+//  · El rumor C de Pilar se queda (orden del dueño, Eventos protegida) como gag suelto: ya no suma a la cadena.
+const PILAR = 'pilar_escaleta';
 const sayP = (api, t) => api.sayAs(PILAR, t);
-const sayB = (api, t) => api.sayAs(BORJA, t);
+const movilBorja = (api, t) => api.pantalla('eventos_a_ecosistema', t);   // E2 §3.5: #4FD8E8, sin prefijo
 
 /** biblia 5.5 `bruno_sellado_frente` (opcional): un comentario por PNJ, una vez. */
 async function frente(api, who) {
   if (api.flag('bruno_sellado_frente') && api.once('frente_' + who)) await api.sayAs(who, 'Llevas RECHAZADO en la frente.');
 }
 
-/** P14a: Borja entra un paso por la puerta del Ecosistema, suelta «descopear», Pilar le para los pies y vuelve a
- *  Marketing exactamente donde estaba (si algo falla, vuelve igual: `finally`). */
-async function borjaSeAsoma(api) {
-  const prev = api.actorPos(BORJA);
-  const home = (prev && prev.room) ? prev : { room: 'ecosistema', x: ecoArt.layout[BORJA].at[0], y: ecoArt.layout[BORJA].at[1], dir: 'right' };
-  try {
-    api.placeActor(BORJA, 'eventos', 8, 118, 'right');
-    api.show(BORJA);
-    await api.walkActor(BORJA, 34, 118);
-    api.faceActor(BORJA, 'bruno');
-    await sayB(api, '¡Hemos descopeado la ética del Q3! O sea, quitado del plan. Con cariño.');
-    await api.say('Descopear. Quitar algo sin que se note. Me lo apunto. Por si acaso.');
-    await sayP(api, '¡Borja! Sin acreditación, de la puerta no se pasa.');
-    await sayB(api, '¡Me voy! Pero esto lo cuento. En vertical.');
-    await api.walkActor(BORJA, 6, 118);
-  } finally {
-    api.placeActor(BORJA, home.room, home.x, home.y, home.dir || 'right');
-  }
+/** E2 §3.5 · P14a: Pilar presta el álbum; por la puerta de Marketing, entornada, el aro de luz se enciende solo y el
+ *  móvil de Borja publica. Nadie entra en la sala. */
+async function movilBorjaSeOye(api) {
+  api.sfx('beep');
+  await movilBorja(api, 'Publicando: Hemos descopeado la ética del trimestre. Emoji de fuego.');
+  await api.say('Descopear. Quitar algo sin que se note.');
+  await sayP(api, '¡Ese móvil! Sin acreditación, de la puerta no se pasa.');
+  await movilBorja(api, 'Publicando: Nos vamos. Pero esto lo contamos. En vertical.');
 }
 
 const sillasN = (api) => api.flag('ecosistema_sillas_n') || 0;
@@ -44,8 +33,9 @@ export default {
   pilar: {
     actor: PILAR, start: 'PE0',
     onStart: async (api) => {
-      if ((api.flag('rumor_teodoro_n') || 0) === 2) {                     // rumor C, paso 3 (también lo cuenta Maripaz)
-        api.inc('rumor_teodoro_n');
+      // rumor C de Pilar (restaurado en la integración de E2: Eventos está protegida). Gag autónomo: sale una vez, con
+      // el Acto II empezado; ya no suma a la cadena (Aurora → Maripaz → Teodoro) y su marca es local a Eventos.
+      if (api.flag('acto_2_iniciado') && api.once('eventos_pilar_rumor')) {
         await sayP(api, 'Teodoro tiene acreditación vitalicia. Del 97. Plastificada a mano.');
         await sayP(api, 'Dicen que el edificio lo compró él. Por fax. Con acuse de recibo.');
       }
@@ -57,7 +47,7 @@ export default {
         options: [
           { text: '¿Qué evento hay hoy?', once: true,
             reply: ['Ninguno. Pero siempre estamos a cinco minutos de empezar.', 'Así nunca llegamos tarde. Ni a lo que no hay.'] },
-          { text: '¿Para qué es el photocall?',
+          { text: '¿Para qué es el photocall?', once: true,
             reply: ['Lo que no está en el photocall no ha ocurrido.', 'Lo que está, tampoco. Pero sale mejor iluminado.'] },
           { text: '¿Cuántas sillas hay?',                                                  // (se queda)
             do: async (api) => {
@@ -66,11 +56,11 @@ export default {
             } },
           { text: '¿Por qué hay que acreditarse?', once: true,
             reply: ['Tres personas juntas ya son un evento. Y un evento sin acreditar es un caos.', 'Ayer acredité a la cola de la máquina de café. Funcionó.'] },
-          { text: '¿Hay catering?',                                                          // (se queda)
+          { text: '¿Hay catering?', once: true,                                                       // (se queda)
             reply: ['Croquetas a las 21:05. Si el cierre se retrasa, se enfrían.', 'Una croqueta fría es una crisis de reputación.'] },
           { text: '¿Me prestas el álbum?', if: ['ruben_encontrado', '!oyo_descopear'],
             reply: ['¿El de la cena de Navidad? Está acreditado. Firma aquí. Y aquí.', 'Cuídamelo. Sale todo el mundo. Hasta el chico del táper.'],
-            do: async (api) => { await borjaSeAsoma(api); api.give('album_eventos'); api.setFlag('oyo_descopear', true); api.sfx('pickup'); return 'exit'; } },
+            do: async (api) => { await movilBorjaSeOye(api); api.give('album_eventos'); api.setFlag('oyo_descopear', true); api.sfx('pickup'); return 'exit'; } },
           { text: '¿Qué es esa cinta en la muñeca?', once: true,
             reply: ['Cinta americana. Con ella acredito, señalizo y arreglo un atril.', 'Una vez sujeté un evento entero. Con dos tiras.'] },
           // ---- §13.5 · opciones nuevas de la Sala Polivalente

@@ -1,11 +1,11 @@
-// SALA `ecosistema` (a la vista: «Marketing y Comercial») — ÁRBOLES DE DIÁLOGO. Dueño: P4. Plan de comedia §5.16 (Borja,
-// cuatro opciones; el asistente de Tadeo, tres) y §5.17 (Maripaz: su «cariño» pasa a letra pequeña; el duelo D1 se ha
-// mudado a la Sala Amazonas). Rumores: se quedan A3 (Borja) y C3 (Maripaz); fuera B y D (§10.1). Importado por ./ecosistema.js.
+// SALA `ecosistema` (a la vista: «Marketing y Comercial») — ÁRBOLES DE DIÁLOGO. Dueño: P4.
+// ENMIENDA E2: §3 Borja ya no es personaje (fuera su árbol: lo que queda de él es su aro de luz, objeto de ./ecosistema.js);
+// §4.4 el árbol de Maripaz (cada píxel es espacio publicitario; «cariño» y gong, de condimento); el rumor C pasa por ella
+// en segundo lugar (Aurora 1 → Maripaz 2 → desmentido de Teodoro). El asistente de Tadeo, igual.
 // El árbol de Pilar Escaleta (Eventos) vive en ./eventos.dialogos.js.
 import { gong, SFX } from '../escenas/planta_noble.js';
 
-const BORJA = 'borja_engagement', MARIPAZ = 'maripaz_remitido';
-const sayB = (api, t) => api.sayAs(BORJA, t);
+const MARIPAZ = 'maripaz_remitido';
 const sayM = (api, t) => api.sayAs(MARIPAZ, t);
 const tadeo = (api, t) => api.sayFrom('portatil_tadeo', t);
 
@@ -15,49 +15,56 @@ async function frente(api, who) {
 }
 
 export default {
-  // ---------------------------------------------------------------- §5.16 Borja (la cara de Marketing)
-  borja: {
-    actor: BORJA, start: 'BJ0',
-    onStart: async (api) => {
-      await sayB(api, '¡Bruno! ¡Justo hablábamos de tu marca personal!');
-      // rumor A3 (se queda): como mucho uno por conversación
-      if ((api.flag('rumor_firma_n') || 0) === 2) {
-        api.inc('rumor_firma_n');
-        await sayB(api, '¡Me dicen que vas a comprar el periódico! ¡Eso es un lanzamiento!');
-        await sayB(api, 'Te hago la campaña: «Sonríe como si tuvieras liquidez».');
-      }
-      await frente(api, BORJA);
-    },
-    nodes: {
-      BJ0: {
-        options: [
-          { text: '¿Qué hacéis en Marketing?', once: true,
-            reply: ['¡Contenido! Todo lo que pasa delante de mí es contenido.', '¡No te muevas! ¡Así, triste! ¡Eso en vertical lo peta!'] },
-          { text: '¿Has leído mi pieza?', once: true, reply: 'No lo he leído. Lo he compartido. Es más rápido.' },
-          { text: 'Esta noche hay una opa.', once: true, reply: '¿Una opa? ¡Qué bonito! ¿Es un evento? ¿Hay croquetas?' },
-          { text: 'Me voy.', exit: true, do: async (api) => { await sayB(api, '¿Te vas? ¡Eso es una salida de escena! ¡Lo subo!'); } },
-        ],
-      },
-    },
-  },
-
-  // ---------------------------------------------------------------- §5.17 Maripaz (Acto I y tras D1)
+  // ---------------------------------------------------------------- E2 §4.4 Maripaz (Acto I y tras D1)
   maripaz: {
     actor: MARIPAZ, start: 'M0',
     onStart: async (api) => {
-      if ((api.flag('rumor_teodoro_n') || 0) === 2) {
+      // rumor C (Aurora lo deja en 1; Maripaz lo sube a 2; Teodoro lo desmiente con >= 2)
+      if ((api.flag('rumor_teodoro_n') || 0) === 1) {
         api.inc('rumor_teodoro_n');
-        await sayM(api, 'Teodoro es el dueño del edificio. Lo compró en el 97. Por fax. (*Fuente: yo.)');
+        await sayM(api, 'Teodoro es el dueño del edificio. Lo compró en el 97. Por fax.');
       }
       await frente(api, MARIPAZ);
-      await sayM(api, '¿Esa cara? Te la patrocino. «Agobio, con Tilas Calmín».');
+      if (api.once('ecosistema_maripaz_saludo')) await sayM(api, '¿Esa cara? Te la patrocino. «Agobio, con Tilas Calmín».');
+      else if (api.flag('duelo_maripaz_ganado') && api.once('ecosistema_maripaz_comision')) await sayM(api, 'Mi becario favorito. Te debo una comisión. No te la voy a pagar.');
+      else await sayM(api, '¿Vuelves? En la web eso se llama fidelización. Se cobra el doble.');
     },
     nodes: {
       M0: {
         options: [
-          { text: '¿Qué vende Comercial?', reply: 'No vendemos anuncios. Vendemos contenido que paga. (*Paga usted.)' },
-          { text: '¿Qué tal con Siestatón?', if: 'duelo_maripaz_ganado', reply: 'Encantados. Ahora la web respira. El banner, digo.' },
-          { text: 'Me voy.', exit: true, do: async (api) => { gong(api); await sayM(api, 'Eso ha sido una despedida. La facturo.'); } },
+          { text: '¿Qué vende Comercial?', once: true,
+            do: async (api) => {
+              await sayM(api, ['Contenido que paga. Lo vuestro es contenido que no paga.',
+                'Branded content: una noticia que es un anuncio, pero no lo dice.']);
+              await api.say('¿Eso no es engañar al lector?');
+              await sayM(api, 'Es contarle una historia. De una marca. Que paga.');
+            } },
+          { text: '¿Me vende algo a mí?', once: true,
+            do: async (api) => {
+              await sayM(api, 'Tengo tres paquetes. Básico, Premium y Gong.');
+              await api.say('¿Qué lleva el Gong?');
+              gong(api);
+              await api.wait(500);
+              await sayM(api, 'Esto. Ya lo has consumido. Son doce euros.');
+            } },
+          { text: 'La web va muy lenta.', once: true,
+            do: async (api) => {
+              await sayM(api, 'Eso te lo arreglo con un pop-up, cariño.');
+              await api.say('¿Un pop-up la hace más rápida?');
+              await sayM(api, 'No. Pero mientras lo cierras, no te das cuenta.');
+            } },
+          { text: 'Mi abuela dice que no encuentra las noticias.', once: true,
+            reply: ['Están ahí. Debajo del vídeo que se pone solo.', 'Que baje un poco. Y otro poco. Ahí, entre los colchones.'] },
+          { text: '¿Por qué tiene un gong?', once: true,
+            do: async (api) => {
+              await sayM(api, 'Cada vez que vendo un banner, lo toco.');
+              await api.say('¿Y cuando no vende ninguno?');
+              await sayM(api, 'Lo toco más fuerte. Que parezca.');
+            } },
+          { text: '¿Qué tal con Siestatón?', if: 'duelo_maripaz_ganado', once: true,
+            reply: 'Encantados. En la web caben en todas partes. Hasta en la X de cerrar.' },
+          { text: 'Me voy.', exit: true,
+            do: async (api) => { gong(api); await sayM(api, '¿Seguro que quieres salir? Era una pregunta. Y un anuncio.'); } },
         ],
       },
     },

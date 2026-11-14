@@ -1,4 +1,4 @@
-// INVENTARIO de FE DE ERRATAS (biblia §4, 18 objetos + `boli_muerto` de la adenda 6.1). ARCHIVO COMPARTIDO: no lo edita ningún autor de sala.
+// INVENTARIO de FE DE ERRATAS (biblia §4, 18 objetos + `boli_muerto` de la adenda 6.1 + `correo_evaristo` de la E2 §5.3). ARCHIVO COMPARTIDO: no lo edita ningún autor de sala.
 // Contiene: nombre, icono (28×18), Mirar (con estados), Usar del móvil (pistas), y las combinaciones
 // objeto+objeto que no dependen de una sala (P01b chicle+tarjeta, §8.1 azúcar+café).
 // Las interacciones «objeto con objeto de sala / PNJ» las implementa la sala en su lógica
@@ -155,6 +155,15 @@ const icons = {
     textLines(g, 9, 9, 9, 2, P.paper[2], 2);
     stamp(g, 9, 12, 10, 5, P.leaf[4]);
   },
+  correo_evaristo(g) {
+    // E2 §5.3: folio impreso con membrete de Controlling y una coma roja, enorme, subrayada dos veces
+    sheet(g, 5, 0, 18, 18);
+    rect(g, 7, 2, 14, 2, '#33427a'); px(g, 8, 2, '#f2ecc4'); px(g, 11, 2, '#f2ecc4');           // membrete (su corbata)
+    textLines(g, 7, 6, 11, 2, P.paper[2], 2, 2);
+    rect(g, 16, 9, 3, 3, P.red[3]); px(g, 17, 12, P.red[3]); px(g, 16, 13, P.red[3]);            // la coma
+    hline(g, 13, 15, 8, P.red[4]); hline(g, 14, 16, 7, P.red[4]);                                // subrayada dos veces, con regla
+    textLines(g, 7, 10, 7, 2, P.paper[2], 2, 4);
+  },
   acta_reunion(g) {
     sheet(g, 3, 0, 22, 18);
     drawText(g, 'ACTA', 5, -1, P.ink[2], { outline: null });
@@ -166,14 +175,19 @@ const icons = {
 
 // ------------------------------------------------------------------ helpers for handlers
 const say = (lines) => async (api) => { await api.say(lines); };
-const N_REPLICAS = 16;       // adenda 6.1: «[N] de 16» (14 de la biblia + R15/R16)
+const N_REPLICAS = 16;
+/** Una línea de un PNJ si está en la sala; si no, la dice Bruno citándole (los «Dar» del correo, E2 §5.3). */
+const dice = (who, line) => async (api) => {
+  const p = api.actorPos(who);
+  if (p && p.room === api.room) await api.sayAs(who, line); else await api.say(line);
+};       // adenda 6.1: «[N] de 16» (14 de la biblia + R15/R16)
 
 // ------------------------------------------------------------------ plan §8.1: la ficha viva (textos literales del plan)
 export const FICHA = {
   titulo: 'Ficha de la página 7. Hueco, fuente, firma.',
-  hueco: ['HUECO: vendida a Siestatón desde marzo. Se decide en la Sala Amazonas.',
+  hueco: ['HUECO: vendida a Siestatón, sin confirmar. Lo decide la Sala Amazonas.',          // E2 L34
     'HUECO: la reunión ha acabado. Maripaz no. Sigue sentada en el planillo.',
-    'HUECO, hecho: Siestatón, a la web. El faldón es mío. Veintitrés líneas.'],
+    'HUECO, hecho: Siestatón, a la web. Veintitrés líneas abajo, mías.'],
   fuente: ['FUENTE: dos fuentes, dice Aurora. Tengo cero.',
     'FUENTE: tengo una nota de gasto con un reverso. Me falta otra fuente.',
     'FUENTE, hecho: una anónima y otra con IVA.'],
@@ -182,9 +196,13 @@ export const FICHA = {
     'FIRMA, hecho: «Trece con espacios. Cabe.»'],
   margen: 'Al margen, a lápiz: «Arriba no me atiende nadie. El CMS está en coma».',
   pieza: ['PIEZA: sin escribir. Primero las fuentes; luego, mi ordenador.',
-    'PIEZA: treinta y una líneas. El faldón, veintitrés. Me sobran ocho.',
+    'PIEZA: treinta y una líneas. El hueco, veintitrés. Me sobran ocho.',                    // E2 L34
     'PIEZA: veintitrés líneas. Lista para Teodoro.',
     'PIEZA: treinta y una líneas. Sobra un 26 %, dice Herminia. ¿Quién recorta?'],      // E1.4.1 (herminia_midio)
+  // E2 §10.4: notas a lápiz de la trama de la coma (Evaristo)
+  evaristo: ['Al margen, a lápiz: «Evaristo me ha llamado. Planta 2. Escucharle entero».',
+    'Al margen, a lápiz: «La coma de Evaristo, a Aurora».',
+    'Al margen, a lápiz: «El correo, en el momento oportuno».'],
 };
 /** Las líneas de Mirar la ficha según el estado de la partida (también las usa tools/test-fase0.mjs). */
 export function fichaViva(api) {
@@ -195,6 +213,10 @@ export function fichaViva(api) {
   out.push(FICHA.firma[f('casilla_firma') ? 2 : f('fax_con_papel') ? 1 : 0]);
   if (!f('cms_vivo')) out.push(FICHA.margen);
   if (f('casilla_fuente') || f('pieza_escrita')) out.push(FICHA.pieza[f('pieza_recortada') ? 2 : f('pieza_escrita') ? (f('herminia_midio') ? 3 : 1) : 0]);
+  // E2 §10.4: la coma de Evaristo (una nota como mucho)
+  if (api.has('correo_evaristo') && !f('duelo_inigo_ganado')) out.push(FICHA.evaristo[2]);
+  else if (f('evaristo_escuchado') && !f('coma_bendecida')) out.push(FICHA.evaristo[1]);
+  else if (f('nota_gasto_presentada') && !f('evaristo_escuchado')) out.push(FICHA.evaristo[0]);
   return out;
 }
 
@@ -260,7 +282,7 @@ export default {
         if (api.flag('bruno_con_chaqueta')) { api.setFlag('bruno_con_chaqueta', false); await api.say('Me la quito. Vuelvo a ser yo. Con mangas de camisa.'); return; }
         await api.anim(api.player, 'reach', 400);
         api.setFlag('bruno_con_chaqueta', true);
-        await api.say(['Me la pongo. Por probar. Huele a 2019 y a cruasán.', 'Me queda grande. Lo apunto como «proyección de futuro».']);
+        await api.say(['Me la pongo. Por probar. Huele a 2019 y a cruasán.', 'Me queda grande. De hombros y de cargo.']);   // E2 §7.2
         if (api.room === 'pecera') await api.scene('pecera_chaqueta');   // [P2] §4.3: Yoli y el coro, si se la pone allí
         else if (api.room === 'pajarera') await api.scene('pajarera_chaqueta');   // [P2] §4.3: Íñigo le confunde
       },
@@ -306,7 +328,7 @@ export default {
     handlers: {
       mirar: async (api) => {
         if (api.flag('pieza_recortada')) await api.say(['Veintitrés líneas exactas. Begoña ha quitado la conclusión.', 'Y una coma que le caía mal.']);
-        else await api.say('Mi exclusiva. Treinta y una líneas. El faldón tiene veintitrés.');
+        else await api.say('Mi exclusiva. Treinta y una líneas. El hueco tiene veintitrés.');   // E2 C10: «faldón» → «hueco»
       },
     },
   },
@@ -328,6 +350,19 @@ export default {
     name: 'boli muerto', icon: icons.boli_muerto,
     handlers: { mirar: 'Un boli rojo sin tinta. Murió corrigiendo un «detrás mío».' },
     combine: { ficha_pagina_7: 'No escribe. Le guardo un minuto de silencio. ...Ya.' },     // adenda 4.8 (A)
+  },
+  // E2 §5.3: el correo de Evaristo, impreso por el fax (lo da P3 en el paso 32, con `coma_bendecida` y
+  // `correo_evaristo_listo`); es el TERCER REMATE del duelo final (P4, D4 `atScore: 5`). No se gasta antes.
+  correo_evaristo: {
+    name: 'correo de Evaristo', icon: icons.correo_evaristo,
+    handlers: {
+      mirar: say(['Asunto: «Una coma». Todos en copia. Envío: «en el momento oportuno».', 'La cláusula 12, subrayada dos veces. Con regla.']),
+      'dar:begona_triplicado': dice('begona_triplicado', 'Una copia de un correo. Esto ya es casi un triplicado.'),
+      'dar:aurora_galerada': dice('aurora_galerada', 'Ya lo he leído, criatura. Está perfecto. Guárdalo.'),
+      'dar:inigo_sinergia': dice('inigo_sinergia', 'Eso, por escrito. Si no está en el hilo, no escala.'),
+      'dar:*': 'Lo guardo. Evaristo dijo «en el momento oportuno». Y no es este.',
+      'usar:*': 'Lo guardo. Evaristo dijo «en el momento oportuno». Y no es este.',
+    },
   },
   // [P3] plan §4.4: el táper que suelta el de Mercados al huir del Vending; se da a `ruben` en Sistemas (P1, `taper_dado`)
   taper_huerfano: {

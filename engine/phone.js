@@ -278,14 +278,14 @@ function drawApp(g, game, P, sx, sy, sw, sh) {
   const hora = A.hora || horaJuego(game);           // la hora de la historia, por hitos (plan §8.4)
   drawText(g, hora, sx + (sw >> 1), sy + 1, '#c8d0e8', { align: 'center' });
   rect(g, sx, sy + 12, sw, 12, '#22305a'); hline(g, sx, sy + 24, sw, '#4a6ab0');
-  drawText(g, fit(A.title || 'Móvil', sw - 6), sx + 3, sy + 13, '#ffffff', { bold: true });
+  drawText(g, fit(A.title || 'Móvil', sw - 6, { bold: true }), sx + 3, sy + 13, '#ffffff', { bold: true });
   let y = sy + 27;
   if (A.rows) {
     for (const r of A.rows) {
       if (y > sy + sh - 10) break;
       if (r.dot) { rect(g, sx + 2, y + 4, 3, 3, '#4ab0ff'); }
       if (r.icon) { rect(g, sx + 2, y + 2, 5, 6, r.icon); }
-      drawText(g, fit(r.text, sw - 10), sx + 8, y, r.color || (r.dot ? '#ffffff' : '#b8c0d8'), r.dot ? { bold: true } : {});
+      drawText(g, fit(r.text, sw - 10, r.dot ? { bold: true } : {}), sx + 8, y, r.color || (r.dot ? '#ffffff' : '#b8c0d8'), r.dot ? { bold: true } : {});
       y += 10;
       if (r.sub) { drawText(g, fit(r.sub, sw - 10), sx + 8, y, '#7a86a8'); y += 10; }
       hline(g, sx + 2, y, sw - 4, '#1e2440'); y += 2;
@@ -299,10 +299,10 @@ function drawApp(g, game, P, sx, sy, sw, sh) {
   }
 }
 /** recorta un texto con «…» para que quepa en `w` px */
-function fit(t, w) {
+function fit(t, w, o = {}) {
   t = String(t);
-  if (measure(t) <= w) return t;
-  while (t.length > 1 && measure(t + '…') > w) t = t.slice(0, -1);
+  if (measure(t, o) <= w) return t;
+  while (t.length > 1 && measure(t + '…', o) > w) t = t.slice(0, -1);
   return t + '…';
 }
 

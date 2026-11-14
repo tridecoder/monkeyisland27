@@ -73,6 +73,24 @@ export function makeApi(game, ctx = {}) {
         await game.speak(null, l, { blocking, at: [cx, top - 2], color: opts.color || d.color || '#e8e8e8', who: d.id, ...(amb ? { ambient: true } : {}), ...opts });
       }
     },
+    /** PANTALLA DE UN OBJETO (ENMIENDA E2 §2.2, §3.1, §4.4): como `sayFrom`, pero con el prefijo y el color que el juego
+     *  registra para ese objeto en `game.js` → `pantallas` (p. ej. `herminia_portatil` → «HERMINIA (IA) › », #FF8C3C).
+     *  Si el texto ya empieza por «›», no se duplica. opts: los de sayFrom (`prefijo` y `color` mandan sobre el registro).
+     *    await api.pantalla('herminia_portatil', 'tu pieza · 31 líneas · hueco de la página 7: 23 · sobra: 26 %');
+     *    → «HERMINIA (IA) › tu pieza · 31 líneas · …» */
+    pantalla: async (objId, text, opts = {}) => {
+      const R = ((game.G.pantallas || {})[objId]) || {};
+      const pre = opts.prefijo ?? R.prefijo ?? '';
+      const lines = (Array.isArray(text) ? text : [text]).map(l => {
+        let t = String(l);
+        if (pre && t.startsWith(pre)) return t;
+        if (pre && /›\s*$/.test(pre)) t = t.replace(/^›\s*/, '');
+        return pre + t;
+      });
+      const o = { ...opts }; delete o.prefijo;
+      if (!o.color && R.color) o.color = R.color;
+      return api.sayFrom(objId, lines, o);
+    },
     /** MEGAFONÍA (plan §4.7): la voz de un actor por un altavoz (ascensor, edificio): globo arriba, en su color, con la
      *  etiqueta «MEGAFONÍA» encima (no cuenta en los 80 caracteres), sin que el actor esté en la sala. No bloquea salvo
      *  `{ blocking: true }`. El log lleva `tag: 'MEGAFONÍA'`. */
@@ -309,8 +327,11 @@ export function makeApi(game, ctx = {}) {
         const leer = [opts.titulo, opts.texto].filter(Boolean).join(' ');
         const minMs = leer ? game.timedMs('detalle', leer, opts.ms || 0) : (opts.ms || 0);
         const abierto = game.time - D.t0;
-        if (!opts.lines && typeof body !== 'function') await Detalle.hold(game, Math.max(opts.ms ?? 1800, minMs));
-        else if (minMs > abierto) await Detalle.hold(game, minMs - abierto);
+        // E2 §4.2: un anuncio con `cuenta`/`bloqueo` no se cierra antes de su cuenta atrás (y sin `ms`, deja 1,5 s
+        // para leer «Saltar anuncio ›» o ver que la X ya no está)
+        const porDefecto = D.cuenta ? D.cuenta.ms + 1500 : 1800;
+        if (!opts.lines && typeof body !== 'function') await Detalle.hold(game, Math.max(opts.ms ?? porDefecto, minMs, D.bloqueo || 0));
+        else if (Math.max(minMs, D.bloqueo || 0) > abierto) await Detalle.hold(game, Math.max(minMs, D.bloqueo || 0) - abierto);
       } finally { if (game.detalle === D) Detalle.close(game); }
     },
     /** Alias del plano detalle con el nombre de la propuesta (M2). */

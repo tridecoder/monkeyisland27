@@ -1,4 +1,7 @@
-// DATOS COMUNES del duelo «RESPONDER A TODOS» (biblia §6; plan de comedia §7). ARCHIVO COMPARTIDO: no lo edita ningún autor de sala.
+// DATOS COMUNES del duelo «RESPONDER A TODOS» (biblia §6; plan de comedia §7; ENMIENDA E2 §4.3, §5.5, §7.5).
+// E2 — lo que va en las SALAS (no aquí): mazos de D1 (igual), D2 sin R03 (['R06', 'R02', 'R09'], remate en atScore 2,
+// P3), D3 sin R14 (['R07', 'R01', 'R03', 'R05'], remate en atScore 2, P2) y D4 (['R10', 'R12', 'R13', 'R05', 'R16',
+// 'R01', 'R07', 'R15'], PUNTOS_D4 = 5, remate C con `correo_evaristo` en atScore 5, P4). ARCHIVO COMPARTIDO: no lo edita ningún autor de sala.
 // Cada rival (mazo, asunto, líneas, remates) lo define el autor de SU sala en `duels: { <id>: {...} }`
 // de su archivo de lógica — ver docs/CONTENT_SCHEMA.md §10. Ids de duelo: maripaz, teodoro, gervasio, inigo.
 
@@ -21,6 +24,7 @@ export default {
     { id: 'R14', flag: 'rep_14', attack: 'Esto lo podemos ver en una reunión rápida.', reply: 'Perfecto. ¿Te va en marzo? Es cuando acaban las rápidas.' },
     // adenda 7.1: solo las usa D4 (Íñigo), al final del mazo
     { id: 'R15', flag: 'rep_15', attack: 'Lo he consultado con la IA y está de acuerdo conmigo.', reply: 'Lo sé. Me lo ha contado ella. Se llama Rubén.' },
+    // E2 §5.2: se aprende al escuchar a Evaristo hasta el final (E_REVELA, paso 28); en D4 va QUINTA (mazo de P4)
     { id: 'R16', flag: 'rep_16', attack: 'Eso es un detalle sin importancia.', reply: 'Una coma también lo era. Hasta que alguien la firmó.' },
   ],
 
@@ -33,7 +37,7 @@ export default {
     { text: '¿Eso no lo llevaba otro departamento?', answer: 'Lo llevaba. Ahora lo llevas tú.',
       answers: { maripaz: 'Lo llevaba. Ahora lo llevas tú. Con IVA.', teodoro: 'AQUÍ NO HAY OTRO. HAY ESTE.', gervasio: 'Lo llevaba. Se ha delegado. Mira quién está delante.', inigo: 'Ya no hay departamentos. Hay cuadrantes.' } },
     { text: '¿Me lo pones por escrito?', answer: 'Te lo estoy poniendo por escrito. Es un correo.',
-      answers: { maripaz: 'Por escrito es más caro. (*Tinta aparte.)', teodoro: 'ES UN FAX, CHAVAL. MÁS ESCRITO, IMPOSIBLE.', gervasio: '¿Por escrito? ¿Con mi nombre? No, no, no.', inigo: 'Ya está por escrito. En la diapositiva 247.' } },
+      answers: { maripaz: 'Por escrito es más caro. Lleva anuncio.', teodoro: 'ES UN FAX, CHAVAL. MÁS ESCRITO, IMPOSIBLE.', gervasio: '¿Por escrito? ¿Con mi nombre? No, no, no.', inigo: 'Ya está por escrito. En la diapositiva 247.' } },
     { text: 'Eso lo ha hecho la IA.', answer: 'Pues que conteste ella.',
       answers: { maripaz: '¿La IA? ¿Y quién la patrocina?', teodoro: 'LA IA NO MIDE. NO CABE.', gervasio: 'Pues se le delega a la IA. ¿Tiene agenda?', inigo: 'La IA no se equivoca, Vacante. Se optimiza.' } },
     { text: '¿Y usted cómo se encuentra? De salud, digo.', answer: 'Estupendamente. La plaza no se hereda.',
@@ -45,8 +49,10 @@ export default {
   // plan §7.6 — acertar hace gracia: { <id de duelo>: { <pareja>: línea | [líneas] | [[actor, línea], ...] } }. Manda
   // sobre la rotación `hurt` del rival. Otro actor (Rubén en D4) solo habla si está en la sala.
   hurtByPair: {
-    maripaz: { R08: '¿Modo avión? Eso me lo patrocina una aerolínea. (*No.)', R11: 'Me lo apunto.' },
+    // E2 §4.3 (y C9: «Me lo apunto» es de Bruno, no de Maripaz)
+    maripaz: { R08: '¿Modo avión? Sin cobertura no me cargan los anuncios. Eso duele.', R11: '¿Sentado? Sentado se ven mejor los banners.' },
     teodoro: { R02: ['ESO ME LO DIJO ELLA. EN 1996.', '...CABE.'], R06: 'LA MEDIA FUENTE ERA YO. NO LO REPITAS.' },
+    // E2 fase B (15): D3 pierde R14 (mazo ['R07', 'R01', 'R03', 'R05'], P2); la línea de R14 se queda sin uso hasta entonces
     gervasio: { R07: 'Me consta que... Bueno. Se constaba.', R14: '¿Marzo? Marzo está muy bien. Se agradece. Pero no.' },
     inigo: {
       R10: 'Interesante. Lo pongo en azul.',
@@ -89,6 +95,7 @@ export default {
       boli_muerto: '¿Un boli? Yo firmo con el dedo. En la tableta.',            // adenda 7.5
       '*': 'Ese input no escala.',
       // «ticket_n1 en el remate B» y «acta_reunion en el remate A» van en el `wrongObject` de cada remate (paquete D)
+      // E2 §5.5: el correo de Evaristo es el remate C (`atScore: 5`); antes de su momento, el `wrongObject` de cada remate
     },
   },
 

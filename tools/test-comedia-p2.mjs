@@ -1,10 +1,12 @@
 #!/usr/bin/env node
-// Test del paquete P2 del PLAN DE COMEDIA (Redacción `pecera` + Despachos `pajarera`; docs/guion2/PLAN_COMEDIA.md §4.1-4.3,
-// §5.4, §5.5, §5.10, §5.11, §5.14, §5.15, §7.4-7.7, §8.3 y ENMIENDA E1). Juega la parte de P2 vía window.__game, simulando
-// con setFlag / giveItem lo que viene de otros paquetes, y comprueba flags, objetos, presencia de PNJ, líneas clave del
-// log, reglas de la casa (Lector Medio, Diseño/Infografía, coro) y que no haya errores de consola ni del motor.
+// Test del paquete P2 (Redacción `pecera` + Despachos `pajarera`): plan de comedia (§4.1-4.3, §5.4, §5.10, §5.11, §5.14,
+// §5.15, §7.4-7.7, §8.3), ENMIENDA E1 y ENMIENDA E2 (§2 entero: 7.2 con la IA de Leoncio, paso 34 «El modelo es de fuera.
+// El prompt es de dentro.», momento 8, paso 40 con la salida en valor de Anselmo, árboles, fusión Nemesio → Anselmo,
+// Yoli; §4.2.3 el adhesivo; §6, §7, §8, §9 en estas salas). Juega la parte de P2 vía window.__game, simulando con
+// setFlag / giveItem lo que viene de otros paquetes, y comprueba flags, objetos, presencia de PNJ, líneas clave del log,
+// reglas de la casa (Lector Medio, Diseño/Infografía, coro, Desarrollo) y que no haya errores de consola ni del motor.
 //   node tools/test-comedia-p2.mjs              modo rápido
-//   node tools/test-comedia-p2.mjs --capturas   además, capturas de los momentos nuevos en tools/shots/comedia-p2-*.png
+//   node tools/test-comedia-p2.mjs --capturas   además, capturas de las escenas nuevas en tools/shots/e2-p2-*.png
 //   node tools/test-comedia-p2.mjs --solo-capturas
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -67,7 +69,7 @@ async function abrir() {
   return T;
 }
 const BASE_FLAGS = ['intro_vista', 'celestino_dio_chicle', 'tarjeta_con_chicle', 'foto_en_organigrama', 'torno_abierto'];
-const INFOGRAFIA = /Infograf|Herminia|PORTÁTIL:|Leoncio/;
+const HERMINIA = 'HERMINIA (IA) › ';
 
 try {
   if (!soloCapturas) await principal();
@@ -84,227 +86,274 @@ async function principal() {
   const T = await abrir();
   const { G, R } = T;
   await G(() => __game.skipText(true));
-  console.log('Paquete P2 (plan de comedia) · Redacción + Despachos\n');
+  console.log('Paquete P2 (E2) · Redacción + Despachos\n');
+  const sinNemesio = async (ctx) => {
+    const lg = await T.log();
+    must(!lg.some(l => l.who === 'nerea_backlog' || /Nemesio|PORTÁTIL:/.test(l.text)), `${ctx}: aparece Nemesio o «PORTÁTIL:»`);
+    must(lg.filter(l => l.text.startsWith(HERMINIA)).every(l => l.who === 'herminia_portatil' && l.text.length <= 80), `${ctx}: línea de Herminia mal`);
+  };
 
-  // ------------------------------------------------------------ 7.2 (§5.11): sin Valentín, sin Leoncio ni Anselmo
+  // ------------------------------------------------------------ 7.2 (E2 §2.3.1): Íñigo, el Titulator y la IA de Leoncio
   for (const f of BASE_FLAGS) await T.setFlag(f);
+  must((await T.roomOf('nerea_backlog')) !== 'pecera', 'Nemesio sigue en la Redacción');
   await T.clearLog();
   await T.goto('pecera', 'vestibulo');
   await T.expectFlags({ inigo_presentado: true }, '7.2');
-  await T.musts(['Vengo a reimaginar el perímetro.', 'No hay despidos, Yoli. Hay noticias mal posicionadas.',
-    'Coste cero, disponibilidad total. Te tengo en la matriz, Vacante.', 'Te ha puesto en rosa. Yo me preocuparía'], '7.2');
+  await T.musts(['¡No entra nada! El CMS, el programa de publicar, lleva dos horas colgado.', 'Vengo a reimaginar el perímetro.',
+    'Trescientos titulares esta tarde. Sin CMS. Sin silla. Sin convenio.', 'Aquí ya tenemos una IA. Herminia. Hace sola las infografías.',
+    '¿Cuánto factura?', 'Entonces no es una IA. Es un hobby.', 'Y no ha pasado por mis sistemas.',
+    HERMINIA + 'cinta de Desarrollo · tiras: 1 · motivo: no consta', 'Coste cero, disponibilidad total. Te tengo en la matriz, Vacante.'], '7.2');
   let lg = await T.log();
-  must(lg.filter(l => /Diseño/.test(l.text)).length === 1, '7.2: «Diseño» debe sonar exactamente una vez');
-  const mal72 = lg.filter(l => ['valentin_reticula', 'leoncio_quesitos', 'anselmo_monolito', 'herminia_portatil'].includes(l.who) || INFOGRAFIA.test(l.text));
-  must(!mal72.length, '7.2: habla Valentín o Infografía: ' + JSON.stringify(mal72));
-  must(!(await T.logHas('El rosa es "emociones"')), '7.2: el rosa se sigue explicando en la escena');
-  ok('7.2 retocada: «noticias mal posicionadas», rosa sin explicar, un solo «Diseño», sin Valentín ni Infografía');
+  must(lg.length <= 19, `7.2: ${lg.length} líneas (guion: 17)`);
+  must(!lg.some(l => /Diseño/.test(l.text) || l.who === 'valentin_reticula' || l.who === 'coro_desarrollo'), '7.2: Diseño, Valentín o el coro en la escena');
+  must(!(await T.logHas('Las seis y media. Se ha ido todo el mundo.')), '7.2: sigue el cierre de Bruno');
+  await sinNemesio('7.2');
+  must(Math.abs((await T.actor('anselmo_monolito')).x - 1082) < 3, '7.2: Anselmo no vuelve a su sitio');
+  ok('7.2 E2: 17 líneas; Leoncio presenta a Herminia como IA, Íñigo «hobby», Anselmo la encinta; sin Diseño ni coro');
 
   // ------------------------------------------------------------ §4.3 la chaqueta: Redacción → Despachos → matriz
+  await T.verb('mirar', 'silla_ramirez');
+  must(await T.logHas('En el bolsillo, un tique: «1 cruasán. Para tomar aquí».'), 'L10');
+  await T.verb('hablar', 'chaqueta_ramirez_hotspot');
+  must(await T.logHas('Uno de la guardia, sin mirar: «Presente».'), 'L12');
   await T.verb('coger', 'chaqueta_ramirez_hotspot');
   await T.expectInv(['chaqueta_ramirez', 'sobre_azucar'], [], 'paso 9');
+  must(await T.logHas('Es casi un ticket de gasto.'), 'L11');
   await T.clearLog();
   await T.verb('usar', 'chaqueta_ramirez');
   await T.expectFlags({ bruno_con_chaqueta: true }, '4.3 ponérsela');
   await T.musts(['Por un segundo te he respetado.', '¿Viene a por el yogur?'], '4.3 Redacción');
   await T.verb('usar', 'silla_ramirez');
   must(await T.logHas('la silla sigue siendo suya. Y yo, encima.'), '4.3: silla con la chaqueta puesta');
-  ok('4.3 Redacción: Usar chaqueta → bruno_con_chaqueta; Yoli y el coro; la silla');
+  ok('L10-L12 (silla, chaqueta, sobre) y 4.3 Redacción');
   await T.clearLog();
   await R.travel('pajarera'); await T.idle();
-  await T.musts(['Siéntese donde no se vea.', 'Confunde a la matriz.', 'Aquí manda el que asiente.'], '4.3 Despachos');
+  await T.musts(['Ramírez. Bolsa. «Prescindible». Siéntese donde no se vea.', 'Confunde a la matriz.', 'Aquí manda el que asiente.'], '4.3 Despachos');
   await T.expectFlags({ bruno_con_chaqueta: false }, '4.3 Despachos (se la quita)');
-  await T.expectInv(['chaqueta_ramirez'], [], '4.3 Despachos');
   lg = await T.log();
   must(lg.some(l => l.who === 'pantalla_titulator' && l.text.includes('ORGANIGRAMA')), '§8.3: el Titulator no anuncia la hazaña al entrar');
-  ok('4.3 Despachos: Íñigo le confunde con Ramírez y Bruno se la quita; §8.3 titular al entrar');
+  ok('4.3 Despachos (sin «desde 2019»); §8.3 titular al entrar');
   await T.clearLog();
   await T.verb('usar', 'lector_medio', 'chaqueta_ramirez');
   await T.expectFlags({ chaqueta_en_lector: true, silla_libre: true }, 'paso 10');
-  await T.expectInv([], ['chaqueta_ramirez'], 'paso 10');
-  await T.musts(['...Ramírez. Ha vuelto. Y asiente.', 'Lo subo a «Ideal».', 'Por tradición, es mía. Por antigüedad, también.'], 'paso 10');
-  await T.verb('mirar', 'matriz_2x2'); await T.verb('mirar', 'perchero'); await T.verb('mirar', 'postits');
-  await T.musts(['«VACANTE» y «RAMÍREZ (LECTOR)»', 'Aquí colgada no asiente nadie.', 'Uno por estado de ánimo.'], 'matriz/perchero/pósits');
-  // el Lector Medio nunca presidiendo ni tras la mesa de un jefe (tampoco con la chaqueta)
+  await T.musts(['...Ramírez. Ha vuelto. Y asiente.', 'Lo subo a «Ideal».'], 'paso 10');
   const lec = await G(() => { const g = __game.game, a = g.actors.lector_medio, objs = g.roomObjects();
     const mesa = objs.find(o => o.id === 'mesa_direccion'), gv = objs.find(o => o.id === 'ordenador_gervasio');
     return { x: a.x, y: a.y, mesa: [mesa.x, mesa.x + mesa.w], gv: [gv.x, gv.x + gv.w] }; });
   must(lec.x + 12 < lec.mesa[0] && lec.x + 12 < lec.gv[0], `el Lector Medio está junto a una mesa de mando (${JSON.stringify(lec)})`);
-  ok('paso 10: Íñigo levanta la vista y lo sube a «Ideal»; matriz con pósit beige; el Lector, lejos de las mesas de mando');
+  ok('paso 10; el Lector Medio, lejos de las mesas de mando');
+  await T.clearLog();
   await T.verb('mirar', 'ordenador_gervasio');
   for (let i = 0; i < 3; i++) await T.verb('mirar', 'pantalla_titulator');
   await T.expectFlags({ rep_07: true, vio_armario_27: true }, 'pasos 11-12');
+  must(await T.logHas('Enviados. Gervasio a Teodoro: "Me consta que esto ya lo hablamos".') && !(await T.logHas('Sesión abierta.')) && !(await T.logHas('Me la apunto.')), 'paso 11 (E2 §7.4)');
+  await T.verb('mirar', 'persiana'); await T.verb('mirar', 'puerta_sala'); await T.verb('cerrar', 'puerta_sala');
+  await T.musts(['Persiana a media altura. Mitad transparencia', 'Debajo, a boli: "Y EN CURSO".', 'Tiene una cuña. Si la quito'], '§8 Despachos');
   await T.hablar('inigo_sinergia');
-  const io = await T.opciones();
-  must(!io.some(o => o.includes('Herminia')), 'Íñigo: sigue la opción «¿Conoces a Herminia?»');
-  await T.opcion('¿El Titulator escribe solo?');
   await T.opcion('¿Me puede poner en otro cuadrante? Aunque sea "Caro".');
+  await T.opcion('¿Y si en la Reunión de Dirección dicen que no?');
+  must(!(await T.opciones()).includes('¿Y si en la Reunión de Dirección dicen que no?'), '§7.6: la de la Reunión de Dirección no es once');
   await T.opcion('Me voy.');
-  await T.musts(['Y algo de atún. Lo estamos optimizando.', '«Vacante (histórico)»', 'Eso libera sinergias.'], 'Íñigo §5.11');
-  ok('pasos 11-12 y árbol de Íñigo (§5.11)');
+  await T.musts(['«Vacante (histórico)»', 'Siguiente.', 'Eso libera sinergias.'], 'Íñigo');
+  must(!(await T.logHas('Primer ascenso en seis años')), 'L15: sigue la línea de Bruno');
+  ok('pasos 11-12 (E2: «Enviados.» sin coletilla), §8 Despachos, Íñigo (L15 «Siguiente.», §7.6 once)');
 
-  // ------------------------------------------------------------ Redacción, Acto I: Valentín mudo, portátil, Leoncio
+  // ------------------------------------------------------------ Redacción, Acto I: Valentín mudo, Herminia, Leoncio, Anselmo
   await R.travel('pecera'); await T.idle();
-  must(!(await G(() => __game.objects().some(o => o.id === 'monitor_valentin'))), 'monitor_valentin sigue siendo un hotspot');
-  must(!(await G(() => !!__game.game.content.dialogs.valentin)), 'Valentín sigue teniendo árbol');
   await T.clearLog();
   await T.verb('mirar', 'valentin_reticula'); await T.hablar('valentin_reticula'); await T.hablar('valentin_reticula');
-  await T.verb('dar', 'valentin_reticula', 'sobre_azucar');
-  await T.musts(['Cascos puestos. Sin música.', '...Nada. Perdone.', 'Está en la bandeja.', 'Lo alinea con el borde sin mirarlo.'], 'Valentín');
+  await T.musts(['Cascos puestos. Sin música.', '...Nada. Perdone.', 'Está en la bandeja.'], 'Valentín');
   lg = await T.log();
   must(lg.filter(l => l.who === 'valentin_reticula').length === 1, 'Valentín habla más de una línea');
-  ok('§5.14 Valentín: cameo mudo (casco, «Está en la bandeja.»), sin árbol ni monitor');
+  ok('§5.14 Valentín: cameo mudo');
   await T.clearLog();
+  must((await G(() => __game.objects().find(o => o.id === 'herminia_portatil').name)) === 'Herminia, la IA de Infografía', 'E2 §2.2: nombre del portátil');
   await T.verb('mirar', 'herminia_portatil'); await T.verb('usar', 'herminia_portatil'); await T.verb('hablar', 'herminia_portatil');
-  await T.musts(['pegatina «INFOGRAFÍA». Y una tira de cinta encima.', 'PORTÁTIL: › quesito de Desarrollo · suma: 130 %', 'PORTÁTIL: › saludo recibido'], 'portátil');
+  await T.musts(['Herminia, la IA de Leoncio: un portátil que hace solo las infografías.', 'Mirándola. Encima, una tira de cinta.',
+    HERMINIA + 'quesito de Desarrollo · suma: 130 % · corregir: bloqueado', 'Ella lo arreglaría en una décima.',
+    HERMINIA + 'saludo recibido · hola: 100 %', 'Me ha entendido a la primera. Aquí eso no pasa.'], 'portátil');
   lg = await T.log();
   must(!lg.some(l => l.who === 'herminia'), 'Herminia habla como personaje');
-  must(lg.filter(l => l.text.startsWith('PORTÁTIL:')).every(l => l.who === 'herminia_portatil' && l.text.startsWith('PORTÁTIL: ›')), 'PORTÁTIL: formato o emisor mal');
-  ok('E1.6 portátil (cinta_1): Mirar, Usar, Hablar → «PORTÁTIL: › …» desde el objeto');
+  await sinNemesio('portátil');
+  ok('E2 §2.2 «Herminia, la IA de Infografía» (cinta_1): Mirar, Usar, Hablar → «HERMINIA (IA) › …»');
   await T.clearLog();
   await T.hablar('leoncio_quesitos');
   await T.opcion('¿Qué es Herminia?');
+  await T.opcion('¿Y tu departamento?');
+  await T.opcion('¿Por qué no se publica lo que hace?');
   await T.opcion('¿Me hace un gráfico a mí?');                                       // XE1
-  must(!(await T.opciones()).some(o => o.includes('invade') || o.includes('Anselmo pone')), 'Leoncio: la opción del Acto II sale en el Acto I');
+  must(!(await T.opciones()).some(o => o.includes('gráficos de Anselmo')), 'Leoncio: la opción del Acto II sale en el Acto I');
   await T.opcion('Me voy.');
-  await T.musts(['un quesito muy fino. Pero se te ve.', 'PORTÁTIL: › Bruno · aportación a la planta: 0,3 %', 'Al currículum.', 'cuidado con Anselmo'], 'Leoncio');
+  await T.musts(['Vacante. En tarta, eres un quesito muy fino.', 'Mi IA. La hice yo, en tres fines de semana.', 'Me duele, pero me incluyo.',
+    'Dejaron las chaquetas en las sillas, mirándola. Por respeto.', 'Le he mandado cuarenta y un pósits.', 'En su tipografía, que es fea.',
+    HERMINIA + 'Bruno · aportación a la planta: 0,3 % · tendencia: plana', 'Cuidado con la cinta. Se ha movido desde que has llegado.'], 'Leoncio');
+  must(!(await T.logHas('Al currículum.')), 'L14: sigue la línea de Bruno');
   await T.clearLog();
   await T.hablar('anselmo_monolito');
-  await T.opcion('¿Por qué no integras a Herminia?');
-  await T.opcion('¿Quién arregla esto de madrugada?');
+  const ao = await T.opciones();
+  must(ao.length === 4 && ao[0] === '¿Por qué bloqueas a Herminia?' && ao.includes('¿Qué tal con Yoli?'), 'Anselmo, Acto I: 4 opciones ' + JSON.stringify(ao));
+  await T.opcion('¿Por qué bloqueas a Herminia?');
+  await T.opcion('¿Qué tal con Yoli?');                                              // paso 24 (E2)
   await T.opcion('Me voy.');
-  await T.musts(['¿De dónde vienes?', 'Lo de fuera que funciona crea precedente.', 'Paco abre ticket. Bajo yo.'], 'Anselmo');
+  await T.expectFlags({ rep_09: true }, 'paso 24');
+  await T.musts(['Alto. Esto es Desarrollo. ¿Traes algo de fuera?', 'Solo a mí.', 'Lo vacío no se integra, pero tampoco molesta.',
+    'Peor. Si funciona, la gente se acostumbra.', 'Paco abre ticket. Bajo yo.', 'Tráeme el contexto. Le hago una pieza aparte',
+    'Cierra la frontera al salir. No tiene puerta. Ciérrala igual.'], 'Anselmo');
+  must(!(await T.logHas('Bueno, ella no come. Mide.')), 'sigue «ella no come»');
+  await T.hablar('anselmo_monolito'); await T.opcion('Me voy.');
+  must(await T.logHas('¿Otra vez cruzando? Te voy a pedir visado.'), 'Anselmo: saludo de las siguientes veces');
   lg = await T.log();
   must(!lg.some(l => ['leoncio_quesitos', 'anselmo_monolito'].includes(l.who) && /Diseño/.test(l.text)), 'Leoncio o Anselmo dicen «Diseño»');
-  ok('E1.6 árboles de Leoncio (XE1) y Anselmo; ninguno dice «Diseño»');
+  ok('E2 §2.5 Leoncio (P5-P7, L14) y Anselmo (saludo, [1], paso 24 → rep_09, despedida); ninguno dice «Diseño»');
+
+  // ------------------------------------------------------------ E2 §2.6.5: la mesa de guardia y los hotspots de Nemesio
+  await T.clearLog();
+  for (const [v, o] of [['mirar', 'mesa_guardia'], ['usar', 'mesa_guardia'], ['coger', 'mesa_guardia'], ['coger', 'kanban'],
+    ['empujar', 'kanban'], ['tirar', 'calendario_ferreteria'], ['mirar', 'calendario_ferreteria'], ['tirar', 'semaforo_ruido'], ['coger', 'bandeja_diseno']]) await T.verb(v, o);
+  await T.musts(['Pósit: «GUARDIA: ANSELMO».', '«GUARDIA DE LA GUARDIA: ANSELMO».', 'Hasta el polvo pasa por sus sistemas.',
+    'Anselmo me abre expediente. Mental.', 'De mi tablero se sale hecho o muerto.', 'Anselmo lo devuelve con la mirada.',
+    'Es lo único de fuera que dejo entrar. Por los tacos.', 'Anselmo solo se fía de este.'], 'mesa de guardia');
+  lg = await T.log();
+  must(lg.filter(l => l.who === 'anselmo_monolito').length === 4, 'hotspots: no los contesta Anselmo');
+  await sinNemesio('hotspots');
+  ok('E2 §2.6.5: mesa_guardia (Mirar, Usar, Coger) y kanban, calendario, semáforo y bandeja con Anselmo');
 
   // ------------------------------------------------------------ §4.2 el apagón (sin vio_ticket_3): la escalada
   await T.clearLog();
   for (let i = 0; i < 4; i++) await T.verb('tirar', 'enchufe_pantalla');
   await T.expectFlags({ apagon_n: 4, cms_vivo: false }, '4.2 apagones');
-  await T.musts(['¡Estamos ciegos! ¿Hay alguien leyendo?', 'Ese enchufe está en mis sistemas.', '¿Y si va sin pantalla? Peor.',
-    'Si no veo la gráfica, no sé si estoy contenta.', 'Tercera vez. Te paso a BLOQUEADO.', 'Y mira la brida.', 'Eso huele a Paco.',
-    'Sin número, a su enchufe.'], '4.2');
+  await T.musts(['¡Estamos ciegos! ¿Hay alguien leyendo?', 'Ese enchufe está en mis sistemas.', 'Si no veo la gráfica, no sé si estoy contenta.',
+    'Tercera vez. Te paso a BLOQUEADO.', 'Y mira la brida.', 'Eso huele a Paco.', 'Sin número, a su enchufe.'], '4.2');
+  lg = await T.log();
+  must(lg.filter(l => l.who === 'anselmo_monolito').length === 6, '4.2: las veces 3 y 4 no son de Anselmo');
   must(!(await G(() => !!__game.game.apagon)), '4.2: la sala se queda a oscuras');
-  for (const [id, x] of [['anselmo_monolito', 1082], ['nerea_backlog', 1008], ['yoli_tendencias', 719]]) {
+  for (const [id, x] of [['anselmo_monolito', 1082], ['yoli_tendencias', 719]]) {
     const a = await T.actor(id);
     must(a.room === 'pecera' && Math.abs(a.x - x) < 3, `4.2: ${id} no vuelve a su sitio (${JSON.stringify(a)})`);
   }
-  await T.verb('mirar', 'enchufe_pantalla');
-  must(await T.logHas('Etiqueta de la brida: «R-3, SISTEMAS. PACO».'), '4.2: Mirar enchufe');
-  ok('4.2 apagón ×4: Anselmo (E1.7), Yoli, Nemesio (no se muda) y «Sin número»; todos vuelven a su mesa');
-  await T.clearLog();
-  await R.travel('pajarera'); await T.idle();
-  lg = await T.log();
-  must(lg.some(l => l.who === 'pantalla_titulator' && l.text.includes('TRES VECES')), '§8.3: falta el titular de los tres apagones');
-  await R.travel('pecera'); await T.idle();
-  ok('§8.3 titular «ALGUIEN DESENCHUFA UNA PANTALLA TRES VECES» al entrar en los Despachos');
+  await sinNemesio('apagón');
+  ok('4.2 apagón ×4: Anselmo (veces 1, 3 y 4) y Yoli; todos vuelven a su sitio');
 
-  // ------------------------------------------------------------ Yoli y Nemesio
+  // ------------------------------------------------------------ Yoli sin CMS (B4) y camino antiguo del enchufe
   await T.clearLog();
   await T.hablar('yoli_tendencias');
   must(!(await R.state()).dialog, 'Yoli sin cms_vivo abre menú');
-  must(await T.logHas('Ahora no. Se nos cae el CMS.'), 'Yoli sin cms_vivo');
-  await T.hablar('nerea_backlog');
-  const no = await T.opciones();
-  must(no.includes('¿Por qué está bloqueado lo de Herminia?') && !no.some(o => /cinta|madrugada|envuelto/i.test(o)), 'Nemesio: N0 no es el de E1 ' + JSON.stringify(no));
-  await T.opcion('¿Por qué está bloqueado lo de Herminia?');
-  await T.opcion('¿Qué tal con Yoli?');
-  await T.opcion('Me voy.');
-  await T.expectFlags({ rep_09: true }, 'paso 24');
-  await T.musts(['Si no está en el tablero, no existe. Tú, por ejemplo, en POR HACER.', 'Y a Anselmo lo bloquea Anselmo.', 'No te vengas arriba'], 'Nemesio');
-  ok('§5.4 Yoli sin CMS; §5.5 Nemesio (N0 de E1) → rep_09');
-
-  // ------------------------------------------------------------ camino antiguo del enchufe (vio_ticket_3) y entradas
+  await T.musts(['becario con silla... ¿Con silla? Ahora no. Se cae el CMS.', 'Vuelve con un titular con número. El siete convierte.'], 'B4');
+  must(!(await T.logHas('Teodoro vive en la Redacción de papel')) && !(await T.logHas('nuevo dueño del Contable')), 'Yoli sigue con rumores');
   await T.setFlag('vio_ticket_3');
   await T.clearLog();
   await T.verb('tirar', 'enchufe_pantalla');
   await T.expectFlags({ cms_vivo: true }, '4.2 camino antiguo');
-  must((await G(() => __game.game.getObjState('enchufe_pantalla').state)) === 'con_ticket', 'enchufe sin estado con_ticket');
-  await T.musts(['¿Tiene número?', 'Lo pongo en HECHO (PERO NO). Desde 2017.', 'He sido yo. Pero gracias.'], 'camino antiguo');
+  await T.musts(['¿Tiene número?', '...Entonces existe. A HECHO (PERO NO). Con número.'], 'camino antiguo');
+  await T.verb('mirar', 'enchufe_pantalla'); await T.verb('mirar', 'pantalla_metricas');
+  await T.musts(['la excepción de Anselmo. Con número.', 'Apagada. Y la web publica. Nadie se atreve a decirlo en voz alta.'], 'enchufe / L8');
+  ok('B4 (Yoli con silla), sin rumores; camino antiguo con Anselmo; L8');
   await T.setFlag('cafetera_viral');
   await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
   must(await T.logHas('Creo que esto es estar tranquila.'), 'primera entrada con cms_vivo');
   await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
-  await T.musts(['¡Once mil concurrentes!', 'Tengo don de gentes.', '«abrígate». La cuenta de siempre.'], '4.1 Redacción');
-  await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
-  must(!(await T.logHas('¡Once mil')) && !(await T.logHas('estar tranquila')), 'las escenas de entrada se repiten');
-  ok('camino antiguo → cms_vivo (con_ticket); entradas con cms_vivo y cafetera_viral (§4.1), una vez cada una');
+  await T.musts(['¡Once mil concurrentes!', '«abrígate». La cuenta de siempre.'], '4.1 Redacción');
+  await T.clearLog();
   await T.hablar('yoli_tendencias');
   await T.opcion('¿Algún hilo bueno esta noche?');
   await T.opcion('¿Y tú cómo estás? Tú, no la audiencia.');
+  await T.opcion('¿Cuántos me leen a mí?');
+  must(!(await T.opciones()).includes('Íñigo va a cerrar el papel.'), 'Yoli: la del Acto III sale antes');
   await T.opcion('Me voy.');
   await T.expectFlags({ rep_08: true }, 'paso 23');
-  must(await T.logHas('Me ha puesto en copia a mi madre.'), 'Yoli: falta la última línea nueva');
+  await T.musts(['Le contesté: «Y yo te leo desde el más absoluto modo avión».', 'Me ha puesto en copia a mi madre.',
+    '...bien. Bajando, pero bien.', 'Menos una lectora: cuarenta y siete minutos. Comenta «abrígate». En todo.',
+    'Vuelve con un titular con número. El siete convierte.'], 'Yoli E2 §2.7');
+  lg = await T.log();
+  must(!lg.some(l => l.who === 'yoli_tendencias' && /— ?\d/.test(l.text)), 'Yoli: cifras entre rayas');
+  must(lg.filter(l => l.text.includes('modo avión')).length === 1, 'B5: línea duplicada');
+  ok('E2 §2.7 Yoli (B5, C6, sin cifras entre rayas) → rep_08');
+  await T.clearLog();
   await T.hablar('coro_desarrollo');
+  await T.opcion('¿Por qué gritáis tanto?');
+  await T.opcion('El CMS lo he arreglado yo.');
   const co = await T.opciones();
-  must(co.length === 4 && co.includes('El CMS lo he arreglado yo.'), 'coro: no son 3 opciones + salida ' + JSON.stringify(co));
+  must(co.length === 2, '§7.6: las opciones del coro no son once ' + JSON.stringify(co));
   await T.opcion('Me voy.');
-  ok('§5.4 Yoli → rep_08; §5.14 coro: 3 opciones + salida');
-
-  // ------------------------------------------------------------ §5.14 ambiente del coro (por datos)
+  lg = await T.log();
+  must(lg.some(l => l.who === 'anselmo_monolito' && l.text === 'Juntos son un incendio. Por separado, santos.'), 'coro: «Juntos son un incendio» no es de Anselmo');
   const amb = await G(() => { const r = __game.game.content.rooms.pecera; return {
-    ambient: (r.ambient || []).map(a => ({ id: a.id, every: a.every, n: (a.discusiones || []).length, run: !!a.run })),
-    rules: r.ambientRules, src: (r.ambient || []).map(a => String(a.run || '')).join(' ') }; });
-  must(amb.ambient.find(a => a.id === 'coro').n === 4, 'coro: no son 4 discusiones');
-  must(amb.ambient.every(a => !a.every) && !/setInterval/.test(amb.src), 'coro: quedan `every` o setInterval');
-  must(amb.rules.max <= 3 && amb.rules.every[0] >= 60000, 'coro: reglas de ambiente ' + JSON.stringify(amb.rules));
-  const diseno = await G(() => { const r = __game.game.content.rooms.pecera; const c = r.ambient.find(a => a.id === 'coro');
-    return c.discusiones.map(d => (typeof d === 'function' ? d({ flag: () => false }) : d)).flat().filter(l => /Diseño/.test(l[1])).length; });
-  must(diseno === 1, `coro: «Diseño» suena ${diseno} veces en las discusiones`);
-  ok('§5.14 coro por el ambiente del motor: 4 discusiones, una sobre Diseño, sin setInterval');
+    ambient: (r.ambient || []).map(a => ({ id: a.id, every: a.every, n: (a.discusiones || []).length })), rules: r.ambientRules }; });
+  must(amb.ambient.find(a => a.id === 'coro').n === 4 && amb.ambient.every(a => !a.every) && amb.rules.max <= 3, 'coro: ambiente ' + JSON.stringify(amb));
+  ok('coro: §7.6 once; «Juntos son un incendio» de Anselmo; ambiente por el motor');
 
-  // ------------------------------------------------------------ E1.4.1 paso 32: Herminia mide la pieza
+  // ------------------------------------------------------------ E2 §2.3.2 paso 34: Herminia mide la pieza
   await T.setFlag('casilla_fuente'); await T.setFlag('acto_2_iniciado');
   await T.clearLog();
   await T.verb('usar', 'ordenador_bruno');
-  await T.expectFlags({ pieza_escrita: true, herminia_midio: true }, 'paso 32');
-  await T.expectInv(['pieza_opa'], [], 'paso 32');
-  await T.musts(['PORTÁTIL: › pieza_opa · 31 líneas · faldón de la página 7: 23 · sobra: 26 %', 'Yo ya no leo. Superviso.',
-    'Quitar siempre es de otro departamento.', '¿De dónde viene esa imagen?', 'Encintar, no. Aislar el componente.',
-    'Me han medido antes que Teodoro.'], 'paso 32');
+  await T.expectFlags({ pieza_escrita: true, herminia_midio: true }, 'paso 34');
+  await T.expectInv(['pieza_opa'], [], 'paso 34');
+  await T.musts([HERMINIA + 'tu pieza · 31 líneas · hueco de la página 7: 23 · sobra: 26 %', 'Ya te la ha leído. Yo no, ¿eh? Yo ya no leo. Superviso.',
+    '¿Y quién quita un 26 %?', 'Ella no. Ella mide. Quitar siempre es de otro departamento.',
+    HERMINIA + 'infografía de la opa · hecha en 0,4 s · publicar: bloqueado', 'Cuatro décimas. Yo tardaba una semana. Bien hecha, eso sí.',
+    'Hecha con una IA de fuera. No entra en ninguna pieza.', 'Encintar, no. Aislar el componente.', '¿Y vosotros no usáis IA de fuera?',
+    'El modelo es de fuera. El prompt es de dentro.', 'Eso lo hace nuestro.', 'El prompt de Herminia lo escribí yo. En esta mesa.',
+    'A un metro de mi cinta. Fuera.'], 'paso 34');
   lg = await T.log();
-  must(lg.filter(l => l.text.startsWith('PORTÁTIL:')).length <= 3, 'paso 32: más de tres salidas del portátil');
-  must(!lg.some(l => /Diseño/.test(l.text) || l.who === 'valentin_reticula'), 'paso 32: Diseño en una escena de Infografía');
-  const an = await T.actor('anselmo_monolito');
-  must(Math.abs(an.x - 1082) < 3, 'paso 32: Anselmo no vuelve a su mesa');
+  must(lg.filter(l => l.text.startsWith(HERMINIA)).length <= 3, 'paso 34: más de tres salidas de Herminia');
+  must(!lg.some(l => /Diseño/.test(l.text) || ['valentin_reticula', 'coro_desarrollo'].includes(l.who)), 'paso 34: Diseño o el coro en la escena');
+  must(!(await T.logHas('Me han medido antes que Teodoro')), 'paso 34: sigue el cierre de Bruno');
+  must(Math.abs((await T.actor('anselmo_monolito')).x - 1082) < 3, 'paso 34: Anselmo no vuelve a su mesa');
   await T.clearLog();
-  await T.verb('mirar', 'herminia_portatil'); await T.verb('usar', 'herminia_portatil', 'pieza_opa'); await T.verb('dar', 'leoncio_quesitos', 'pieza_opa');
-  await T.musts(['Dos tiras de cinta.', '› pieza_opa · ya medida · sobra: 26 %', 'Te la ha medido ella. Yo te la sostengo'], 'tras el paso 32');
+  await T.verb('mirar', 'herminia_portatil'); await T.verb('usar', 'herminia_portatil', 'pieza_opa');
   await T.hablar('anselmo_monolito');
+  await T.opcion('¿Y tú no usas IA?');
   await T.opcion('¿Por qué invades la sección de Leoncio?');                         // XE2
   await T.opcion('Me voy.');
-  must(await T.logHas('Invadir, no. Desplegar capacidad.'), 'XE2 Anselmo');
-  ok('E1.4.1 paso 32 → pieza_opa, herminia_midio (cinta_2), pista del 26 %; XE2');
+  await T.hablar('leoncio_quesitos');
+  await T.opcion('¿Y esos gráficos de Anselmo en tu sección?');
+  await T.opcion('Me voy.');
+  await T.musts(['Dos tiras de cinta de Desarrollo. Por debajo, la IA sigue haciendo gráficos.', HERMINIA + 'pieza_opa · ya medida · sobra: 26 %',
+    'Notas de gasto generativas para Begoña.', 'Ya te lo he dicho. El prompt es de dentro. Lo escribí yo. En mayúsculas.',
+    'Invadir, no. Desplegar capacidad.', 'Un quesito que suma 130 % no es un gráfico. Es una aspiración.'], 'tras el paso 34');
+  await sinNemesio('paso 34');
+  ok('E2 §2.3.2 paso 34 → herminia_midio (cinta_2), «El modelo es de fuera. El prompt es de dentro.»; árboles [2], [4], [5]');
 
-  // ------------------------------------------------------------ E1.4.2 momento 8: Dos IAs
+  // ------------------------------------------------------------ E2 §2.3.3 momento 8: Dos IAs
   await T.setFlag('pieza_recortada'); await T.setFlag('acto_3_iniciado'); await T.setFlag('pagina_cerrada');
-  await T.take('pieza_opa'); await T.take('ficha_pagina_7');
+  await T.take('pieza_opa');
   await R.travel('catacumba'); await T.clearLog(); await R.travel('pecera'); await T.idle();
   await T.expectFlags({ dos_ias_vista: true, anselmo_dijo_regla: true }, 'momento 8');
-  await T.musts(['Última vuelta. Sellado.', 'PORTÁTIL: › titulares por hora · picos: 14:00 y 14:30', 'PORTÁTIL: › origen: Sistemas, armario 27 · consumo: atún',
-    'Lo que tiene alta es de la casa. Lo de fuera, a la cinta.', 'Eso no es un modelo. Eso es un compañero.'], 'momento 8');
+  await T.musts(['Última vuelta. Integración: en la próxima versión.', 'Envuelta. Parece un regalo. De nadie.',
+    'Antes de que la envolviera le pedí un gráfico del Titulator. Por curiosidad.',
+    HERMINIA + 'titulares por hora · picos: 14:00 y 14:30 · pausas de 5 min: 11', HERMINIA + 'origen: Sistemas, armario 27 · consumo: atún',
+    'Una IA que come a las dos y va once veces al baño.', 'Tiene alta de usuario interno. Lo que tiene alta es de la casa.',
+    'Eso no es un modelo. Eso es un compañero.'], 'momento 8');
   lg = await T.log();
-  must(!lg.some(l => /Diseño/.test(l.text) || l.who === 'valentin_reticula'), 'momento 8: Diseño en una escena de Infografía');
-  await T.verb('mirar', 'herminia_portatil'); await T.verb('usar', 'herminia_portatil');
-  await T.musts(['Envuelta entera. «PENDIENTE DE INTEGRAR».', 'La han integrado en un paquete.'], 'portátil en paquete');
-  ok('E1.4.2 momento 8 → dos_ias_vista, anselmo_dijo_regla (portátil en paquete)');
+  must(lg.length <= 10, `momento 8: ${lg.length} líneas (guion: 9)`);
+  must(!lg.some(l => /Diseño/.test(l.text) || ['valentin_reticula', 'coro_desarrollo'].includes(l.who)), 'momento 8: Diseño o el coro');
+  await T.verb('mirar', 'herminia_portatil');
+  must(await T.logHas('Envuelta entera. «PENDIENTE DE INTEGRAR». Por un hueco, la pantalla trabaja.'), 'portátil en paquete');
+  await T.verb('mirar', 'kanban');
+  must(await T.logHas('En POR HACER, amarillo de puro viejo: "Baja becario Rubén".'), '§8 kanban');
+  await T.hablar('yoli_tendencias');
+  await T.opcion('Íñigo va a cerrar el papel.');
+  await T.opcion('Me voy.');
+  must(await T.logHas('Si cierra el papel, ¿quién me va a odiar con criterio?'), 'Yoli, Acto III');
+  ok('E2 §2.3.3 momento 8 → dos_ias_vista, anselmo_dijo_regla (paquete); Yoli P20');
 
-  // ------------------------------------------------------------ §5.10 Gervasio en la puerta + D3 (derrota y victoria)
-  for (const f of ['reunion_terminada', 'rep_01', 'rep_14', 'ruben_encontrado']) await T.setFlag(f);
+  // ------------------------------------------------------------ §5.10 Gervasio en la puerta + D3 (E2 fase B (15)) + adhesivo
+  for (const f of ['reunion_terminada', 'rep_01', 'ruben_encontrado', 'bruno_con_banner']) await T.setFlag(f);
   await T.give('fotocopia_nota_direccion');
   await R.travel('pajarera'); await T.idle();
-  const gvp = await T.actor('gervasio_acta');
-  must(gvp.room === 'pajarera' && Math.abs(gvp.x - 276) < 3, 'Acto III: Gervasio no está en la puerta ' + JSON.stringify(gvp));
-  must((await T.roomOf('inigo_sinergia')) !== 'pajarera' && (await T.roomOf('lector_medio')) !== 'pajarera', 'Acto III: Íñigo o el Lector siguen aquí');
+  must((await T.roomOf('gervasio_acta')) === 'pajarera', 'Acto III: Gervasio no está en la puerta');
   await T.clearLog();
-  await T.verb('usar', 'puerta_sala');
-  must(await T.logHas('Sin acta de la anterior no se abre la siguiente.'), 'puerta sin acta');
   await T.hablar('gervasio_acta');
   await T.opcion('¿Usted ha escrito alguna vez algo?');
-  await T.opcion('Si quiere, le escribo yo el acta.');
-  await T.musts(['Se te iba a llamar. Por alguien.', 'Se firmó un acuse de recibo. En 2007.', 'Se agradece la iniciativa igual. Se archiva.'], 'GV_PUERTA');
-  // derrota: tres flojas
+  await T.opcion('Me voy.');
+  await T.hablar('gervasio_acta');
+  await T.opcion('Me voy.');
+  lg = await T.log();
+  must(lg.filter(l => l.text === 'Ese anuncio en la espalda... se agradece. Pero lo hablamos.').length === 1, '§4.2.3: Gervasio y el adhesivo, una vez');
+  must(lg.filter(l => l.text.startsWith('Vacante. Se te iba a llamar.')).length === 1, 'Gervasio: el saludo');
+  ok('§4.2.3 Gervasio ve el adhesivo (una vez, en lugar del saludo)');
+  await T.clearLog();
+  await T.hablar('gervasio_acta');
   await T.opcion('Necesito el acta de la última reunión.');
   for (let g = 0; g < 60; g++) {
     const st = await R.state();
@@ -314,122 +363,154 @@ async function principal() {
   }
   await T.idle();
   must((await T.flag('duel:gervasio:perdido_n')) === 1, 'D3: no cuenta la derrota');
-  await T.musts(['«Fuera de la oficina hasta nueva acta.»', '...¿Yo? Asignado a ti. El acta, digo.', 'Mi primera acta.', 'Es un diario.', 'LA ARCHIVA EN "DIARIOS"'], 'D3 derrota');
-  ok('§5.10 Gervasio en la puerta (Acto III) y D3 perdido: línea, escena del acta-diario y titular (§7.7)');
+  await T.musts(['«Fuera de la oficina hasta nueva acta.»', 'Mi primera acta.', 'Es un diario.'], 'D3 derrota');
   await R.closeDialog(); await T.idle();
   await T.clearLog();
   await T.hablar('gervasio_acta');
   await T.opcion('Necesito el acta de la última reunión.');
-  await R.playDuel(['R07', 'R01', 'R14', { objeto: 'fotocopia_nota_direccion' }]);
+  await R.playDuel(['R07', 'R01', { objeto: 'fotocopia_nota_direccion' }]);
   await T.idle();
-  await T.expectFlags({ duelo_gervasio_ganado: true, sala_abierta: true }, 'paso 39');
-  await T.expectInv(['acta_reunion'], ['fotocopia_nota_direccion'], 'paso 39');
-  await T.musts(['Mejor por escrito. Que conste que lo has pedido tú.', 'Yo con Hidrovoltia no he comido en mi vida.', '312 euros',
-    'Se habló un poco.', 'uno, pedir más café. Dos, ninguno más.'], 'D3 victoria');
-  must((await T.roomOf('gervasio_acta')) !== 'pajarera', 'tras D3 Gervasio sigue en los Despachos');
-  ok('paso 39: D3 (R07, R01, R14 + remate fotocopia) → acta_reunion, sala_abierta; Gervasio se va');
+  await T.expectFlags({ duelo_gervasio_ganado: true, sala_abierta: true }, 'paso 41');
+  await T.expectInv(['acta_reunion'], ['fotocopia_nota_direccion'], 'paso 41');
+  await T.musts(['Yo con Hidrovoltia no he comido en mi vida.', 'uno, pedir más café. Dos, ninguno más.'], 'D3 victoria');
+  must(!(await T.log()).some(l => /reunión rápida/.test(l.text)), 'D3: sigue R14');
+  ok('paso 41: D3 sin R14 (R07, R01 + remate a los dos aciertos) → acta_reunion, sala_abierta');
 
-  // ------------------------------------------------------------ §5.5 N_SALIDA (paso 38) con E1.4.3
-  await R.travel('pecera'); await T.idle();
-  await T.setFlag('rep_13'); await T.give('album_eventos');
+  // ------------------------------------------------------------ §4.2.3 Yoli y el adhesivo, una vez al entrar
   await T.clearLog();
-  await T.verb('dar', 'nerea_backlog', 'album_eventos');
+  await R.travel('pecera'); await T.idle();
+  must(await T.logHas('¿Llevas un banner en la espalda? ...Pues convierte. Me han mirado.'), '§4.2.3 Yoli');
+  await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
+  must(!(await T.logHas('¿Llevas un banner')), '§4.2.3 Yoli se repite');
+  await T.setFlag('bruno_con_banner', false);
+  ok('§4.2.3 Yoli ve el adhesivo al entrar (una vez)');
+
+  // ------------------------------------------------------------ E2 §2.6.3-2.6.4 álbum y salida en valor (paso 40)
+  await T.give('album_eventos');
+  await T.clearLog();
+  await T.verb('dar', 'anselmo_monolito', 'album_eventos');
+  await T.opcion('¿Y si lo damos por hecho?');
+  await T.opcion('¿Y si le hacemos un funeral? Con flores. Y diapositivas.');
+  await T.opcion('Lo pienso y vuelvo.');
+  await T.musts(['¿De dónde vienen estas fotos? De Eventos. De fuera.', 'Es de la casa: sale en todas.', 'Y despedir no es una columna de mi tablero.',
+    'Nadie lo ha hecho.', 'Ya tengo la plantilla.', 'Tráeme algo que no sea ni hecho ni muerto. Eso no existe.', 'Eso dijo Rubén en julio.'], 'AN_ALBUM');
+  must(!(await T.logHas('¿Otra vez cruzando?')), 'Dar el álbum: saluda antes de mirar las fotos');
+  await T.setFlag('rep_13');
+  await T.clearLog();
+  await T.verb('dar', 'anselmo_monolito', 'album_eventos');
   await T.opcion('No es un despido: es una salida en valor.');
   await R.closeDialog(); await T.idle();
-  await T.expectFlags({ posit_descopeado: true, ruben_libre: true }, 'paso 38');
-  await T.expectInv(['ticket_n1'], ['album_eventos'], 'paso 38');
-  await T.musts(['Es consultoría.', 'Columna nueva. La primera desde 1998.', 'No se lo digas a Anselmo.', 'No subo. Nunca subo. Paco.',
-    'Estoy esperando a que salga el sol.', 'Revocado. Con fecha de hoy. Y de julio.', 'Integró una IA que era un becario.',
-    'SEGUIREMOS INFORMANDO. Perdón.'], 'N_SALIDA');
-  must((await T.roomOf('ruben')) === 'pecera', 'N_SALIDA: Rubén no está en la Redacción');
-  ok('§5.5 N_SALIDA → ticket_n1, ruben_libre, Rubén a la ventana; E1.4.3 (Revocado, Leoncio, «No se lo digas a Anselmo»)');
+  await T.expectFlags({ posit_descopeado: true, ruben_libre: true }, 'paso 40');
+  await T.expectInv(['ticket_n1'], ['album_eventos'], 'paso 40');
+  await T.musts(['...Eso no es ni hecho ni muerto. Es consultoría.', 'Despedir, no. Salida en valor. ...Eso sí lo sé hacer yo.',
+    'Columna nueva. La primera que no dice que no.', 'Lo único integrado de la casa.', 'Y en nuestros corazones, Rubén está en HECHO.',
+    'No subo. Nunca subo. Paco.', 'Estoy esperando a que salga el sol.', 'Revocado. Con fecha de hoy. Y de julio.',
+    'Integró una IA que era un becario.', 'Nos hemos quedado sin IA de la casa.', HERMINIA + 'alta de usuario: no · propietaria: Infografía',
+    '...Lo miro en la próxima versión.', 'SEGUIREMOS INFORMANDO. Perdón.'], 'AN_SALIDA');
+  lg = await T.log();
+  must(!lg.some(l => ['coro_desarrollo'].includes(l.who) || /Diseño/.test(l.text)), 'paso 40: coro o Diseño');
+  must((await T.roomOf('ruben')) === 'pecera', 'paso 40: Rubén no está en la Redacción');
+  must(Math.abs((await T.actor('anselmo_monolito')).x - 1082) < 3, 'paso 40: Anselmo no vuelve a su sitio');
+  await sinNemesio('paso 40');
+  ok('E2 §2.6.4 paso 40: salida en valor de Anselmo → ticket_n1, posit_descopeado, ruben_libre; Leoncio tapa a Herminia');
 
   // ------------------------------------------------------------ E1.5 anexión (MP1) y titular
   await T.setFlag('herminia_de_alta');
   await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
   await T.expectFlags({ infografia_integrada: true }, 'anexión');
-  await T.musts(['Entonces es estupenda.', 'Quitar, no. Absorber en plataforma.', 'PORTÁTIL: › propietario: Desarrollo',
-    'Todo esto es Desarrollo.', 'Me han anexionado. Pero integrada'], 'anexión');
+  await T.musts(['Entonces es estupenda.', 'Quitar, no. Absorber en plataforma.', HERMINIA + 'propietario: Desarrollo', 'Todo esto es Desarrollo.'], 'anexión');
   lg = await T.log();
   must(!lg.some(l => /Diseño/.test(l.text) || l.who === 'valentin_reticula'), 'anexión: Diseño en una escena de Infografía');
-  await T.verb('mirar', 'herminia_portatil'); await T.verb('mirar', 'frontera_carrocero'); await T.hablar('ruben');
-  await T.musts(['Pegatina nueva: «DESARROLLO».', 'Queda la marca del pegamento.', 'Yo también. Pero sin pegatina.'], 'tras la anexión');
+  await T.verb('mirar', 'herminia_portatil');
+  must(await T.logHas('Pegatina nueva: «DESARROLLO».'), 'tras la anexión');
   await T.clearLog();
   await R.travel('pajarera'); await T.idle();
   must(await T.logHas('UNA HERRAMIENTA CONSIGUE CONTRATO EN 40 SEGUNDOS'), '§8.3: falta el titular de herminia_de_alta');
-  ok('E1.5 anexión → infografia_integrada; Rubén; titular «UNA HERRAMIENTA CONSIGUE CONTRATO» (§8.3)');
+  ok('E1.5 anexión → infografia_integrada; titular (§8.3)');
 
   // ------------------------------------------------------------ errores
   const engineErrors = await G(() => __game.log.filter(l => l.who === 'error' || /^\[motor\]/.test(String(l.text))).map(l => l.text));
   must(!engineErrors.length, 'errores del motor: ' + engineErrors.join(' | '));
   must(!consoleErrors.length, 'errores de consola: ' + consoleErrors.join(' | '));
   ok('sin errores de consola ni del motor');
-
 }
 
-// ================================================================== capturas
+// ================================================================== capturas (tools/shots/e2-p2-*.png)
 async function sacarCapturas() {
   const dir = path.join(here, 'shots');
   fs.mkdirSync(dir, { recursive: true });
-  const shotWhen = async (T, texto, nombre, ms = 400) => {
-    for (let i = 0; i < 400; i++) {
-      if (await T.logHas(texto)) { await T.page.waitForTimeout(ms); await T.page.screenshot({ path: path.join(dir, `comedia-p2-${nombre}.png`) }); return; }
+  const shotWhen = async (T, texto, nombre, ms = 450) => {
+    for (let i = 0; i < 600; i++) {
+      if (await T.logHas(texto)) { await T.page.waitForTimeout(ms); await T.page.screenshot({ path: path.join(dir, `e2-p2-${nombre}.png`) }); return; }
       await T.page.waitForTimeout(100);
     }
-    throw new StepFail(`captura ${nombre}: no aparece «${texto}»`);
+    const st = await T.R.state();
+    throw new StepFail(`captura ${nombre}: no aparece «${texto}» (sala ${st.room}; log: ${JSON.stringify((await T.log()).slice(-4))})`);
   };
   const sin = (T, fn) => { const p = fn(); p.catch(() => {}); T.pend = p; };
-  const prep = async (flags, items = []) => {
+  const prep = async (flags, items = [], conInigo = true) => {
     const T = await abrir();
     await T.G(() => __game.skipText(true));
-    for (const f of [...BASE_FLAGS, 'inigo_presentado', ...flags]) await T.setFlag(f);
+    for (const f of [...BASE_FLAGS, ...(conInigo ? ['inigo_presentado'] : []), ...flags]) await T.setFlag(f);
     for (const i of items) await T.give(i);
     return T;
   };
   const lento = async (T) => { await T.G(() => __game.skipText(false)); };
-  // 1. apagón vez 1
-  let T = await prep(['silla_libre', 'chaqueta_cogida']);
-  await T.goto('pecera', 'vestibulo'); await lento(T);
-  sin(T, () => T.verb('tirar', 'enchufe_pantalla'));
-  await shotWhen(T, '¡Ha entrado una pieza!', 'apagon');
-  await shotWhen(T, 'Ese enchufe está en mis sistemas.', 'apagon-anselmo');
-  if (T.pend) await T.pend.catch(() => {});
-  await T.idle(); await T.page.close();
-  // 2. paso 32 y momento 8, anexión
-  T = await prep(['silla_libre', 'chaqueta_cogida', 'casilla_fuente', 'acto_2_iniciado', 'cafetera_viral']);
+  const rapido = async (T) => { await T.G(() => __game.skipText(true)); };
+  const fin = async (T) => { if (T.pend) await T.pend.catch(() => {}); await T.idle(); await T.page.close(); };
+  // 1. escena 7.2
+  let T = await prep([], [], false);
   await lento(T);
   sin(T, () => T.goto('pecera', 'vestibulo'));
-  await shotWhen(T, '¡Once mil concurrentes!', 'viral');
+  await shotWhen(T, '¡No entra nada!', '72-yoli');
+  await shotWhen(T, 'Aquí ya tenemos una IA.', '72-leoncio');
+  await shotWhen(T, 'Entonces no es una IA. Es un hobby.', '72-hobby');
+  await shotWhen(T, 'cinta de Desarrollo · tiras: 1', '72-cinta');
+  await shotWhen(T, 'Te tengo en la matriz, Vacante.', '72-matriz');
+  await fin(T);
+  // 2. paso 34, momento 8, salida en valor
+  T = await prep(['silla_libre', 'chaqueta_cogida', 'casilla_fuente', 'acto_2_iniciado', 'cms_vivo']);
+  await T.goto('pecera', 'vestibulo'); await T.idle();
+  await T.verb('mirar', 'mesa_guardia');
+  await T.G(() => __game.waitIdle());
+  await lento(T);
+  sin(T, () => T.verb('mirar', 'mesa_guardia'));
+  await shotWhen(T, 'GUARDIA DE LA GUARDIA', 'mesa-guardia', 300);
   await T.pend; await T.idle();
   sin(T, () => T.verb('usar', 'ordenador_bruno'));
-  await shotWhen(T, 'sobra: 26 %', 'paso32-portatil');
-  await shotWhen(T, '¿De dónde viene esa imagen?', 'paso32-anselmo');
-  await T.idle();
-  await T.G(() => __game.skipText(true));
-  await T.setFlag('acto_3_iniciado'); await T.setFlag('reunion_terminada');
+  await shotWhen(T, 'tu pieza · 31 líneas', 'paso34-mide');
+  await shotWhen(T, 'El modelo es de fuera. El prompt es de dentro.', 'paso34-prompt');
+  await shotWhen(T, 'El prompt de Herminia lo escribí yo.', 'paso34-leoncio');
+  await T.pend; await T.idle();
+  await rapido(T);
+  await T.setFlag('acto_3_iniciado'); await T.setFlag('reunion_terminada'); await T.setFlag('ruben_encontrado');
   await T.R.travel('catacumba'); await T.idle(); await lento(T);
   sin(T, () => T.R.travel('pecera'));
+  await shotWhen(T, 'Última vuelta.', 'dos-ias-paquete');
   await shotWhen(T, 'consumo: atún', 'dos-ias');
-  await T.idle();
-  await T.G(() => __game.skipText(true));
-  await T.setFlag('herminia_de_alta');
-  await T.R.travel('office'); await T.idle(); await lento(T);
-  sin(T, () => T.R.travel('pecera'));
-  await shotWhen(T, 'propietario: Desarrollo', 'anexion');
-  await T.idle();
-  if (T.pend) await T.pend.catch(() => {});
-  await T.idle(); await T.page.close();
-  // 3. Despachos: matriz con la chaqueta, Gervasio en la puerta, titular
-  T = await prep(['chaqueta_cogida'], ['chaqueta_ramirez']);
+  await shotWhen(T, 'Tiene alta de usuario interno.', 'dos-ias-anselmo');
+  await T.pend; await T.idle();
+  await rapido(T);
+  await T.setFlag('rep_13'); await T.give('album_eventos');
+  await lento(T);
+  sin(T, () => T.verb('dar', 'anselmo_monolito', 'album_eventos'));
+  await shotWhen(T, 'Y despedir no es una columna de mi tablero.', 'album');
+  for (let i = 0; i < 100 && !(await T.opciones()).length; i++) await T.page.waitForTimeout(100);
+  sin(T, () => T.opcion('No es un despido: es una salida en valor.'));
+  await shotWhen(T, 'Columna nueva. La primera que no dice que no.', 'salida-tablero');
+  await shotWhen(T, 'Estoy esperando a que salga el sol.', 'salida-ruben');
+  await shotWhen(T, 'Integró una IA que era un becario.', 'salida-revocado');
+  await shotWhen(T, 'alta de usuario: no', 'salida-manos', 300);
+  await shotWhen(T, 'La frase con la que Íñigo', 'salida-bruno');
+  await fin(T);
+  // 3. el adhesivo: Yoli y Gervasio
+  T = await prep(['silla_libre', 'chaqueta_cogida', 'chaqueta_en_lector', 'acto_2_iniciado', 'reunion_terminada', 'bruno_con_banner']);
   await T.goto('pajarera', 'pecera'); await T.idle(); await lento(T);
-  sin(T, () => T.verb('usar', 'lector_medio', 'chaqueta_ramirez'));
-  await shotWhen(T, 'Lo subo a «Ideal».', 'matriz-ramirez');
-  await T.idle();
-  await T.G(() => __game.skipText(true));
-  for (const f of ['acto_3_iniciado', 'reunion_terminada', 'ruben_encontrado', 'cms_vivo']) await T.setFlag(f);
-  await T.R.travel('pecera'); await T.idle(); await lento(T);
-  sin(T, () => T.R.travel('pajarera'));
-  await shotWhen(T, 'LOS SIGUIENTES PASOS. HAY HERIDOS', 'titular-gervasio-puerta', 300);
-  if (T.pend) await T.pend.catch(() => {});
-  await T.idle(); await T.page.close();
+  sin(T, () => T.hablar('gervasio_acta'));
+  await shotWhen(T, 'Ese anuncio en la espalda', 'gervasio-banner');
+  for (let i = 0; i < 100 && !(await T.opciones()).length; i++) await T.page.waitForTimeout(100);
+  await T.R.closeDialog(); await T.pend; await T.idle();
+  sin(T, () => T.R.travel('pecera'));
+  await shotWhen(T, '¿Llevas un banner en la espalda?', 'yoli-banner');
+  await fin(T);
 }

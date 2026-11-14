@@ -2,7 +2,15 @@
 //
 // dialog = { actor: 'npcId', start: 'nodeId', onStart?, onEnd?, nodes: { nodeId: {
 //   onEnter?: async api => (nodeId|'exit'|void),
-//   options: [ { id?, text, say?, silent?, if?, once?, reply?, lines?, do?, goto?, exit? } ] } } }
+//   options: [ { id?, text, say?, silent?, if?, once?, reply?, lines?, do?, goto?, exit?, siempre? } ] } } }
+//
+// DESPEDIDAS UNA SOLA VEZ (ENMIENDA E2 §7.2): una opción `exit: true` se oye entera (la frase de Bruno, `reply`,
+// `lines` y lo que diga su `do`) solo la PRIMERA vez que se elige en ese árbol; las siguientes cierran el diálogo en
+// silencio: no se dice nada, pero el `do` se ejecuta igual (efectos, sonidos, flags: el gong de Maripaz suena) con las
+// líneas calladas. La marca es interna y va por árbol y opción (`game.state.dialogs['despedida_oida:<árbol>.<id o
+// texto de la opción>']`: así un «Mejor no.» de un subnodo no se calla porque ya se oyó el «Me voy.» del menú), se
+// guarda con la partida y no es un flag de content/flags.js. Excepciones: `siempre: true` en la opción (una despedida con efectos de
+// trama que deben oírse) o `despedidasSiempre: true` en el árbol.
 
 export function findDialog(game, id) {
   const room = game.room && game.room.def;
@@ -55,15 +63,24 @@ export async function runDialog(game, api, id, startNode) {
     if (idx < 0) break;
     const { o, i } = avail[idx];
     if (o.once) game.state.dialogs[usedKey(nodeId, o, i)] = true;
-    if (!o.silent) await api.say(o.say != null ? (typeof o.say === 'function' ? o.say(api) : o.say) : txt(game, o.text, api));
-    if (o.reply != null) await api.sayAs(o.replyBy || npc, typeof o.reply === 'function' ? o.reply(api) : o.reply);
-    if (o.lines) for (const [who, line] of o.lines) {
-      if (who === 'player' || who === game.G.player) await api.say(line);
-      else if (who === 'narrator') await api.narrate(line);
-      else await api.sayAs(who, line);
-    }
+    const despedida = !!o.exit && !o.siempre && !def.despedidasSiempre;
+    const fKey = 'despedida_oida:' + dId + '.' + (o.id || (typeof o.text === 'string' ? o.text : nodeId + '.' + i));
+    const callada = despedida && !!game.state.dialogs[fKey];
     let r;
-    if (o.do) r = await o.do(api);
+    if (callada) {
+      // E2 §7.2: ya se oyó; se cierra en silencio, pero los efectos del `do` se ejecutan (con las líneas calladas)
+      if (o.do) { game.mudo = (game.mudo || 0) + 1; try { r = await o.do(api); } finally { game.mudo = Math.max(0, game.mudo - 1); } }
+    } else {
+      if (!o.silent) await api.say(o.say != null ? (typeof o.say === 'function' ? o.say(api) : o.say) : txt(game, o.text, api));
+      if (o.reply != null) await api.sayAs(o.replyBy || npc, typeof o.reply === 'function' ? o.reply(api) : o.reply);
+      if (o.lines) for (const [who, line] of o.lines) {
+        if (who === 'player' || who === game.G.player) await api.say(line);
+        else if (who === 'narrator') await api.narrate(line);
+        else await api.sayAs(who, line);
+      }
+      if (o.do) r = await o.do(api);
+      if (despedida) game.state.dialogs[fKey] = true;
+    }
     if (o.setFlag) { for (const [k, v] of Object.entries(typeof o.setFlag === 'string' ? { [o.setFlag]: true } : o.setFlag)) api.setFlag(k, v); }
     if (r === 'exit' || (o.exit && typeof r !== 'string')) break;
     nodeId = typeof r === 'string' ? r : (o.goto || nodeId);

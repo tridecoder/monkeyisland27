@@ -87,6 +87,9 @@ try {
   await wait(300);
   await clic(T, await T.G((i) => __game.optionPos(i), iCorreo));
   ok(await waitFor(T.G, () => { const s = __game.state(); return s.phone && /^Correo/.test(s.phone.title || '') && s.dialog && s.dialog.some(o => o.includes('Eventos')); }), '6. «Correo» → bandeja con los correos fijos');
+  // B7: la cabecera del correo (negrita) cabe entera en la pantalla del móvil (sw 86 - 6): sin «sin le» cortado
+  const cab = await T.G(async () => { const f = await import('./engine/font.js'); const t = __game.state().phone.title; return { t, w: f.measure(t, { bold: true }) }; });
+  ok(cab.w <= 80 && !/…$/.test(cab.t), `   cabecera del correo «${cab.t}» cabe entera (${cab.w} px ≤ 80)`);
   await T.G(() => __game.clearLog());
   const iEv = await T.G(() => __game.state().dialog.findIndex(o => o.includes('Eventos')));
   await wait(300);

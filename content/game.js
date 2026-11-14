@@ -1,7 +1,8 @@
 // FE DE ERRATAS — definición global del juego. ARCHIVO COMPARTIDO: no lo edita ningún autor de sala.
 // Título, sala inicial, respuestas por defecto (§8.2), pistas de la abuela (§5.6), cuarta pared (§8.6),
 // aviso de réplica aprendida (§5.5), avisos comunes de la adenda §2 (llamadas de Evaristo, «RV:» de Tadeo), música y
-// fondo de los créditos (la lista está en content/escenas/final.js).
+// fondo de los créditos (la lista está en content/escenas/final.js). ENMIENDA E2: §5.7 (llamadas), §7.4 (RV sin aviso),
+// §10.2 (migración), `pantallas` (prefijos de objetos que hablan).
 // Hora de juego (biblia v2): viernes, de las 18:30 al cierre de las 21:00; los relojes del edificio, parados en las 20:59.
 import { PAL, rect, px, hline, vline, gradV, glow, rng, ditherPick, frameRect, line, ditherOverlay, vignette } from '../engine/draw.js';
 import { drawText, measure } from '../engine/font.js';
@@ -71,16 +72,16 @@ async function pistas(api) {
   if (tres) await api.say(tres[1]);                     // nivel 3: Bruno, al colgar, dice la acción
 }
 
-// ------------------------------------------------------------------ ADENDA §2: avisos al entrar en sala
-// Llamadas de Evaristo (L1-L5 y la LC de §5.13, contador `evaristo_llamadas`) y «RV:» de Tadeo (RV1-RV3, contador `tadeo_rv_n`).
-// Mecánica única (adenda 2): el MOTOR llama a `afterEnter` (abajo) tras el `onEnter` de CADA sala; los autores de sala
-// NO tienen que hacer nada. No salta si la entrada ya ha lanzado una escena / diálogo / duelo / cinemática, ni al cargar
-// partida, ni en `sala_amazonas` con `acto_3_iniciado`, ni tras el final. Como mucho UN aviso por entrada (también si
-// alguien invoca `api.scene('avisos')` a mano): primero la siguiente llamada cuya condición se cumpla; si no hay,
-// el siguiente RV:. Salen en orden numérico y esperan a su condición. Ninguno pone ni lee flags de la biblia (solo
-// condiciones) ni bloquea nada: el jugador cierra cada globo con un clic. Sus textos son literales de la adenda.
-const EV = 'evaristo_salvedad', TA = 'tadeo_adjunto';
-const topAt = (api) => [api.game.camX + 160, 34];            // el teléfono siempre habla arriba, aunque el actor esté en la sala
+// ------------------------------------------------------------------ ADENDA §2 + ENMIENDA E2 §5.7: avisos al entrar en sala
+// Llamadas de Evaristo (E2: L1, L3, L4 y L5; la L2 y la LC ya no existen) — contador `evaristo_llamadas`.
+// Mecánica única: el MOTOR llama a `afterEnter` (abajo) tras el `onEnter` de CADA sala; los autores de sala NO tienen
+// que hacer nada. No salta si la entrada ya ha lanzado una escena / diálogo / duelo / cinemática, ni al cargar partida,
+// ni en `sala_amazonas` con `acto_3_iniciado`, ni tras el final. Como mucho UN aviso por entrada (también si alguien
+// invoca `api.scene('avisos')` a mano). Las llamadas salen en orden y esperan a su condición; una llamada cuya
+// condición ya no se puede cumplir (`salta`) se da por perdida (L4 si Rubén ya ha aparecido; L5 dentro del clímax).
+// E2 §7.4 (paso 13): los «RV:» de Tadeo YA NO SON AVISOS: llegan solos al correo del móvil (content/lib/movil.js) al
+// entrar en una sala con su condición (`tadeo_rv_n` cuenta los llegados), sin globo ni «¡ding!».
+const EV = 'evaristo_salvedad';
 const callLine = async (api, who, text) => {
   const g = api.game, t0 = g.time, dur = g.speechDuration(text);
   await api.phone.say(text);
@@ -89,9 +90,9 @@ const callLine = async (api, who, text) => {
     await api.say(['No se puede colgar a Evaristo. Lo he intentado. Me ha anotado.']);
   }
 };
-// Las llamadas de Evaristo (L1-L5): el móvil de Bruno en primer plano con el retrato de don Evaristo (api.phone). Cortas.
+// Las llamadas de Evaristo: el móvil de Bruno en primer plano con el retrato de don Evaristo (api.phone). Cortas.
 const EV_CALL = { caller: EV, label: 'Evaristo', sub: 'Controlling', ringMs: 1000 };
-const llamada = (cond, guion) => ({ cond, run: async (api) => {
+const llamada = (id, cond, guion, salta = null) => ({ id, cond, salta, run: async (api) => {
   await api.phone.call(EV_CALL, async () => {
     for (const [who, text] of (typeof guion === 'function' ? guion(api) : guion)) {
       if (who === 'E') await callLine(api, EV, text);
@@ -100,87 +101,101 @@ const llamada = (cond, guion) => ({ cond, run: async (api) => {
     }
   });
 } });
-const LLAMADAS = [
-  llamada('torno_abierto', [                                                                              // L1
-    ['E', 'Una cosita. Muy pequeña. Evaristo Salvedad, Controlling.'], ['E', 'Su tarjeta pone "Pellizco". ¿Es correcto?'],
-    ['B', 'No. Es Pellejo.'], ['E', '¿Con una ele o con dos?'], ['B', 'Con dos.'], ['E', 'Anotado. Era solo eso.'], ['ring'],
+/** E2 §5.7 (textos literales; L1 recortada en §7.4, paso 10). Una sola trama de la coma: la del contrato del Titulator. */
+export const LLAMADAS = [
+  llamada('L1', 'torno_abierto', [
+    ['E', 'Una cosita. Evaristo Salvedad, Controlling. Su tarjeta pone «Pellizco».'], ['B', 'Es Pellejo. Con dos eles.'],
+    ['E', 'Anotado. Era solo eso.'], ['ring'],
     ['E', 'Perdone. ¿Pellejo con jota o con ge?'], ['B', 'Con jota.'], ['E', 'Ahora sí era solo eso.'],
     ['B', 'Es el primero que me lo pregunta.']]),
-  llamada('acto_2_iniciado', [                                                                            // L2
-    ['E', 'Una cosita. ¿Puede pasarse por mi despacho? Es un segundo.'], ['B', '¿Ahora?'], ['E', 'Cuando pueda. Pero ahora.'],
-    ['E', 'Planta 2, al fondo de Administración. Era solo eso.']]),
-  llamada('pieza_recortada', [                                                                            // L3
-    ['E', 'Una cosita. Begoña me manda el triplicado de lo que recorta.'], ['E', 'Ella recorta sin leer. Yo leo sin recortar. Somos un sistema.'],
-    ['E', 'Línea dos de su pieza: "a 4,15 euros por acción".'], ['E', 'Le han quitado la coma. Pone "415".'],
-    ['B', '...Una opa a cuatrocientos quince euros la acción.'], ['E', 'Mañana se nos ríe la Bolsa. Y Celestino lo narra.'],
-    ['E', 'Le he mandado la coma a Teodoro. Por fax. Era solo eso.']]),
-  llamada('acto_3_iniciado', (api) => (api.flag('ruben_encontrado') ? [                                // L4
-    ['E', 'Una cosita. Ya sé quién comía el atún de la -1.'], ['E', 'Veinticuatro al mes, a dos euros. Enhorabuena por encontrarle.'],
-    ['E', 'Era solo eso.']] : [
-    ['E', 'Una cosita. La máquina de la planta -1 vende atún desde julio.'], ['E', 'Veinticuatro bocadillos al mes. En Sistemas no come atún nadie.'],
-    ['E', 'Lo he cruzado con las nóminas. No cuadra con ninguna.'], ['E', 'Alguien come ahí abajo y no cobra. Era solo eso.'],
-    ['B', 'Alguien que come y no cobra. Eso es un becario.']])),
-  llamada('acto_3_iniciado', (api) => (api.flag('correo_evaristo_listo') ? [                          // L5
-    ['E', 'Una cosita. El correo está programado. Para el momento oportuno.'], ['E', 'Era solo eso.']] : [
-    ['E', 'Una cosita. ¿Le ha llegado mi correo?'], ['B', 'No.'], ['E', 'Correcto. Aún no lo he enviado. Quería ver si funcionaba.'],
-    ['E', 'Lleva una coma que me tiene en vela.']])),
+  // (L2 eliminada, fase B (4): a Evaristo le manda Begoña al cerrar el paso 27)
+  llamada('L3', 'pieza_recortada', [
+    ['E', 'Una cosita. Begoña me manda el triplicado de su recorte.'],
+    ['E', 'Ella recorta sin leer. Yo leo sin recortar. Somos un sistema.'],
+    ['E', 'Veintitrés líneas. Ni una coma fuera de sitio. Era solo eso.']]),
+  llamada('L4', ['acto_3_iniciado', '!ruben_encontrado'], [
+    ['E', 'Una cosita. La máquina de la planta -1 vende veinticuatro atunes al mes.'],
+    ['E', 'En Sistemas no come atún nadie. Lo he cruzado con las nóminas.'],
+    ['E', 'Alguien come ahí abajo y no cobra. Era solo eso.'],
+    ['B', 'Alguien que come y no cobra. Eso es un becario.']], 'ruben_encontrado'),
+  llamada('L5', ['ruben_libre', '!climax_entrada'], [
+    ['E', 'Una cosita. Me dicen que va a la Sala. ¿Lleva mi correo?'], ['B', 'En el bolsillo.'],
+    ['E', 'Envíelo en el momento oportuno. Usted lo notará. Era solo eso.']], 'climax_entrada'),
 ];
-// plan §5.13 · LC: la coma se cierra por teléfono. Sale en la siguiente entrada con `coma_bendecida` y sin
-// `correo_evaristo_listo`, con prioridad sobre L1-L5 (que siguen su orden: el índice descuenta la LC); suma
-// `evaristo_llamadas`. La opción E_ENVIO de Administración se queda como camino antiguo.
-const LC = llamada((api) => !!api.flag('coma_bendecida') && !api.flag('correo_evaristo_listo') && !api.flag('evaristo_lc'), [
-  ['E', 'Una cosita. ¿Le ha dicho algo Aurora? Llevo diez minutos junto al teléfono.'],
-  ['B', 'Que una coma bien puesta no espera.'],
-  ['E', '...Entonces lo envío. En el momento oportuno. Con todos en copia.'],
-  ['E', 'Era solo eso. Y gracias. Esto sí lo digo sin adjunto.']]);
-const LC_RUN = LC.run;
-LC.run = async (api) => { api.setFlag('evaristo_lc', true); await LC_RUN(api); api.setFlag('correo_evaristo_listo', true); };
-const rv = (cond, asunto, bruno) => ({ cond, run: async (api) => {
-  api.sfx('beep');
-  api.notice('¡ding!  Correo nuevo: Tadeo Adjunto', { color: '#FFCC99', ms: 1800 });
-  await api.wait(500);
-  await api.sayAs(TA, asunto, { at: topAt(api) });
-  await api.say(bruno);
-} });
-const RVS = RV_TADEO.map(([cond, asunto, bruno]) => rv(cond, asunto, bruno));   // textos: content/lib/movil.js (los lee el correo)
+const oida = (api, L) => !!(api.game.state.once && api.game.state.once['once:evaristo_' + L.id]);
+/** La siguiente llamada pendiente (en orden; las que ya no pueden sonar se saltan) o null. El contador manda: con
+ *  `evaristo_llamadas` a 0 (partida nueva, o una prueba que lo pone a 0) no ha sonado ninguna. */
+function siguienteLlamada(api) {
+  const once = api.game.state.once || {};
+  if (!Number(api.flag('evaristo_llamadas') || 0)) for (const k of Object.keys(once)) if (k.startsWith('once:evaristo_L')) delete once[k];
+  for (const L of LLAMADAS) {
+    if (oida(api, L)) continue;
+    if (L.salta && api.cond(L.salta)) continue;
+    return L;
+  }
+  return null;
+}
+/** E2 §7.4: los RV: de Tadeo llegan solos al correo (sin aviso). Devuelve cuántos han llegado. */
+function rvAlCorreo(api) {
+  let n = Number(api.flag('tadeo_rv_n') || 0);
+  while (n < RV_TADEO.length && api.cond(RV_TADEO[n][0])) n++;
+  if (n !== Number(api.flag('tadeo_rv_n') || 0)) api.setFlag('tadeo_rv_n', n);
+  return n;
+}
 /** Escena común `avisos`: un aviso como mucho por entrada en sala. La lanza el motor (`afterEnter`); también se puede
  *  invocar a mano con `await api.scene('avisos')` (p. ej. al acabar una escena larga que quieras dejar pasar). */
 async function avisos(api) {
   const g = api.game;
+  if (api.flag('juego_terminado')) return false;
+  rvAlCorreo(api);
   if (g.avisoEntryN === g.entryN) return false;                               // ya ha salido uno en esta entrada
-  if (api.flag('juego_terminado') || g.cutscene > 0 || g.inDialog) return false;
+  if (g.cutscene > 0 || g.inDialog) return false;
   if (api.room === 'sala_amazonas' && api.flag('acto_3_iniciado')) return false;
-  const idx = (api.flag('evaristo_llamadas') || 0) - (api.flag('evaristo_lc') ? 1 : 0);   // L1-L5 sin contar la LC
-  const call = api.cond(LC.cond) ? LC : LLAMADAS[idx];
-  const mail = RVS[api.flag('tadeo_rv_n') || 0];
-  const pick = call && api.cond(call.cond) ? ['evaristo_llamadas', call] : mail && api.cond(mail.cond) ? ['tadeo_rv_n', mail] : null;
-  if (!pick) return false;
+  const call = siguienteLlamada(api);
+  if (!call || !api.cond(call.cond)) return false;
   g.avisoEntryN = g.entryN;
   g.avisoActive = true;
   try {
-    api.inc(pick[0]);
-    if (pick[1] === LLAMADAS[1]) api.setFlag('evaristo_convoco', true);   // L2
-    await pick[1].run(api);
-    // la primera vez que suena el móvil o llega un correo: cómo se usa (orden del director: que se descubra)
+    api.once('evaristo_' + call.id);
+    api.inc('evaristo_llamadas');
+    await call.run(api);
+    // la primera vez que suena el móvil: cómo se usa (orden del director: que se descubra)
     if (api.once('movil_pista_uso')) api.notice('Usa el móvil para llamar a la abuela o leer el correo', { color: '#9fd8ff', ms: 4200 });
   } finally { g.avisoActive = false; }
   return true;
 }
 const afterEnter = (api) => avisos(api);
 
-// ------------------------------------------------------------------ plan §3.4: partidas guardadas antiguas
-// Objetos y flags retirados en la reescritura de comedia. Idempotente: el motor la llama en cada carga.
-const FLAGS_RETIRADOS = ['leoncio_acepta_alta', 'bandeja_diseno_abierta', 'rumor_atun_n', 'rumor_plaza_n', 'gertrudis_error_indice'];
+// ------------------------------------------------------------------ plan §3.4 + E2 §10.2: partidas guardadas antiguas
+// Objetos y flags retirados en la reescritura de comedia y en la E2. Idempotente: el motor la llama en cada carga.
+const FLAGS_RETIRADOS = ['leoncio_acepta_alta', 'bandeja_diseno_abierta', 'rumor_atun_n', 'rumor_plaza_n', 'gertrudis_error_indice',
+  'evaristo_lc',                                          // E2 §5.3: la LC ya no existe
+  'rumor_firma_n', 'planta_oyo',                          // E2 fase B (1): el rumor A desaparece
+  'evaristo_convoco', 'pecera_nemesio_saludo'];           // E2 §10.2: sin lector (la L2 y Nemesio ya no existen)
 function migrarPartida(st) {
   const inv = Array.isArray(st.inventory) ? st.inventory : (st.inventory = []);
   const fl = st.flags || (st.flags = {});
+  const once = st.once || (st.once = {});
   const quitar = (id) => { const i = inv.indexOf(id); if (i >= 0) { inv.splice(i, 1); return true; } return false; };
   quitar('planillo');                                     // Maripaz ya está en la Sala por su `when` (sala_amazonas.js)
   if (quitar('posit_baja_ruben')) {                       // el pósit lo cerraba Paco: ahora lo da la escena del tablero
     if (!inv.includes('ticket_n1')) inv.push('ticket_n1');
     fl.ruben_libre = true; fl.posit_descopeado = true;
   }
+  // E2 §5.7: las llamadas antiguas (L1-L5 por contador, y la LC) pasan a marcas por llamada
+  const n = Number(fl.evaristo_llamadas) || 0;
+  if (n > 0 && !Object.keys(once).some(k => k.startsWith('once:evaristo_L'))) {
+    const k = n - (fl.evaristo_lc ? 1 : 0);                // las antiguas L1..Lk ya sonaron
+    for (const [id, min] of [['L1', 1], ['L3', 3], ['L4', 4], ['L5', 5]]) if (k >= min) once['once:evaristo_' + id] = true;
+  }
+  // E2 §5.3: con la coma cerrada por la vía antigua (LC o E_ENVIO), el correo impreso que ahora es objeto
+  if (fl.correo_evaristo_listo && !fl.duelo_inigo_ganado && !inv.includes('correo_evaristo')) inv.push('correo_evaristo');
+  if (fl.correo_evaristo_listo) fl.coma_bendecida = true;
+  // E2 §5.3 (P3): la coma solo está bendecida si el correo salió por el fax; una bendición suelta de la vía antigua
+  // (Aurora sin escuchar a Evaristo) se deshace para que el paso 32 se pueda jugar
+  if (fl.coma_bendecida && !fl.correo_evaristo_listo) fl.coma_bendecida = false;
   for (const k of FLAGS_RETIRADOS) delete fl[k];
+  if (st.actors) for (const id of ['nerea_backlog', 'borja_engagement']) delete st.actors[id];   // E2 §2.6 y §3: ya no existen
   return st;
 }
 
@@ -318,6 +333,13 @@ export default {
 
   // escenas comunes (Usar movil → api.scene('pistas'))
   scenes: { pistas, avisos },
+  // ENMIENDA E2: pantallas y objetos que «hablan» con prefijo y color fijos (api.pantalla(objeto, texto), engine/script.js)
+  pantallas: {
+    herminia_portatil: { prefijo: 'HERMINIA (IA) › ', color: '#FF8C3C' },   // §2.2: «HERMINIA (IA) › …» (texto tras el prefijo ≤ 64)
+    aro_borja: { color: '#4FD8E8' },                                        // §3.1: sin prefijo; el texto empieza por «Publicando:»
+    eventos_a_ecosistema: { color: '#4FD8E8' },                             // §3.5: el móvil de Borja oído desde Eventos
+    pantalla_comercial: { color: '#FF8A60' },                               // §4.4: el vídeo que se pone solo
+  },
   afterEnter,           // motor: tras el onEnter de cada sala (avisos de la adenda §2)
   migrarPartida,        // motor (core.load): partidas guardadas con objetos/flags retirados (plan §3.4)
 
