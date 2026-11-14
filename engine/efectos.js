@@ -164,11 +164,14 @@ export async function estampida(game, api, ids, opts = {}) {
     }
   })();
   const t0 = game.time;
-  if (opts.enAtasco) await opts.enAtasco(api);
+  // el que habla en el atasco se adelanta un paso (no queda tapado por los otros): ctl.alFrente(id)
+  const y0 = base.map(b => b[1]);
+  const ctl = { alFrente: (id) => actors.forEach((a, i) => { base[i][1] = y0[i] + (a.id === id ? 4 : 0); a.y = base[i][1]; }) };
+  if (opts.enAtasco) await opts.enAtasco(api, ctl);
   const rest = (opts.atascoMs ?? 900) - (game.time - t0);
   if (rest > 0) await api.wait(rest);
   jam = false; await temblor;
-  actors.forEach((a, i) => { a.x = base[i][0]; a.y = base[i][1]; });
+  actors.forEach((a, i) => { a.x = base[i][0]; a.y = y0[i]; });
   // «¡plop!»: salen de uno en uno
   for (const a of actors) {
     if (opts.sfx !== false) api.sfx((opts.sfx && opts.sfx.plop) || 'door');

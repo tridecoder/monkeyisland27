@@ -247,7 +247,7 @@ async function teclaAdministracion(api) {
   // (El fax vuelve a pitar. Sale una cuarta hoja, pequeña.)
   api.sfx('beep');
   await imprime(api, 1, 400);
-  await aurora(api, '¿Una cuarta copia? Eso no existe, criatura; eso acaba en un juzgado.');
+  await aurora(api, '¿Una cuarta copia? Eso no existe. Eso acaba en un juzgado.');
   await api.say('«Envío por fax: 0,26 euros». Me ha facturado el recorte.');
   await fax(api, 'Pago yo. Es la primera pieza de la web que me entra.');
   // (Teodoro grapa la factura en su tablón.)
@@ -401,7 +401,7 @@ async function hablarAurora(api) {
   if (!api.flag('acto_2_iniciado')) { await api.dialog('aurora', 'A_SIN_CAFE'); return; }
   // adenda 8.3 · rumor C, paso 1 (una sola vez, antes del árbol)
   if (!(api.flag('rumor_teodoro_n') > 0)) {
-    await aurora(api, 'Teodoro duerme aquí desde 1997, criatura; detrás de esa cortina.');
+    await aurora(api, 'Teodoro duerme aquí desde 1997. Detrás de esa cortina.');
     api.inc('rumor_teodoro_n');
   } else await aurora(api, 'Dime, criatura. Con sujeto y predicado, si puede ser.');
   await api.dialog('aurora', 'A_MENU');

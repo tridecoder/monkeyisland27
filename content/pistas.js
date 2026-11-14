@@ -18,6 +18,8 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   hff: 'Hueco, fuente y firma. Lo pone la ficha. La ficha manda.',
   cierre: 'Lo tengo todo. Solo falta que Teodoro diga «cabe».',
   acto3: 'A las nueve apagan la rotativa. Y alguien teclea en el armario 27.',
+  // [integrador] con Rubén ya fuera del armario, la línea del armario 27 se queda vieja (álbum y baja)
+  baja: 'A las nueve apagan la rotativa. Y Rubén sigue de alta en un armario.',
   acta: 'Para entrar en la Sala hace falta un acta. Gervasio no ha escrito una nunca.',
   climax: 'Respondo a todos. Es lo único que sé hacer bien.',
 };
@@ -29,7 +31,8 @@ export const OBJETIVOS = [
     'Si el torno no te conoce, preséntate en ese cuadro de caras.',
     ['Pega tu cara donde salen los jefes. Con algo que pegue.', 'Chicle, tarjeta, organigrama. Y luego el torno.']],
     extra: { si: ['!has:chicle', '!tarjeta_con_chicle'], abuela: 'El del mostrador siempre está mascando algo. Pídeselo.' } },
-  { id: 'silla', hecho: 'silla_libre', activo: 'inigo_presentado', salas: ['pecera', 'pajarera'], meta: M.silla, niveles: [
+  { id: 'silla', hecho: 'silla_libre', activo: 'torno_abierto',      // [integrador] desde el torno (antes, entre el torno y la 7.2 Bruno decía la meta final)
+    salas: ['pecera', 'pajarera'], meta: M.silla, niveles: [
     '¿Estás de pie? Siéntate, hijo. La silla es del que llega.',
     'Tu abuelo, con chaqueta, mandaba en el bar. Pónsela a alguien que mande.',
     ['El que manda ahí es el que dice a todo que sí.', 'La chaqueta de Ramírez, al Lector Medio.']] },
@@ -93,11 +96,11 @@ export const OBJETIVOS = [
     'Si de un armario sale papel, es que alguien escribe dentro, hijo.',
     'Esos titulares tan raros salen de abajo. De un armario.',
     ['Tira del papel que sale del armario. Con cuidado.', 'Sistemas: el papel continuo del 27.']] },
-  { id: 'album', hecho: (api) => api.has('album_eventos') || !!api.flag('posit_descopeado'), activo: 'ruben_encontrado', salas: ['eventos', 'cpd'], meta: M.acto3, niveles: [
+  { id: 'album', hecho: (api) => api.has('album_eventos') || !!api.flag('posit_descopeado'), activo: 'ruben_encontrado', salas: ['eventos', 'cpd'], meta: M.baja, niveles: [
     'Para que dejen irse a alguien, hay que demostrar que estuvo.',
     'Las fotos de las fiestas las guarda la que las organiza.',
     ['Pídele las fotos a la de las fiestas.', 'El álbum de Pilar. Rubén sale al fondo.']] },
-  { id: 'baja', hecho: 'ruben_libre', activo: (api) => api.has('album_eventos') || !!api.flag('posit_descopeado'), salas: ['pecera'], meta: M.acto3, niveles: [
+  { id: 'baja', hecho: 'ruben_libre', activo: (api) => api.has('album_eventos') || !!api.flag('posit_descopeado'), salas: ['pecera'], meta: M.baja, niveles: [
     'A los que echan con palabras bonitas se les saca con las mismas.',
     'Ese chico te dio una frase de despedir sin despedir. Úsala.',
     ['Dile al de los papelitos esa frase tan fina.', 'El álbum a Nemesio. «Salida en valor».']],

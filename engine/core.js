@@ -238,6 +238,7 @@ export class Game {
       if (a.pose !== undefined) s.pose = a.pose;          // api.pose (explícita); sin ella, la pose sale de la colocación
       if (a.luz !== undefined) s.luz = a.luz;             // api.luz (exención de la penumbra)
       if (a.variante) s.variante = a.variante;            // api.vestir (variante de sprite elegida por guion)
+      if (a.posName) s.posName = a.posName;               // posición con nombre de la colocación (applyPresence)
       this.state.actors[a.id] = s;
     }
   }
@@ -362,7 +363,7 @@ export class Game {
         room: s.room, x: s.x, y: s.y, dir: s.dir || 'down', visible: s.visible !== false,
         anim: 'idle', path: [], walkDist: 0, speed: def.speed || 64, walkResolve: null,
         custom: null, nextBlink: rand(1000, 4000), scale: def.scale,
-        pose: s.pose, luz: s.luz, hold: null, variante: s.variante,
+        pose: s.pose, luz: s.luz, hold: null, variante: s.variante, posName: s.posName,
       };
     }
   }
@@ -402,12 +403,17 @@ export class Game {
       const a = this.actors[p.id]; if (!a || a.id === this.G.player) continue;
       let on = false;
       try { on = this.cond(p.when, this.condApi()); } catch (e) { this.error(`when de ${p.id} en ${rid} falló`, e); }
-      if (on && a.room !== rid) {
+      const pn = on && p.positions ? (typeof p.pos === 'function' ? p.pos(this.viewFor()) : p.pos) : null;
+      // también si sigue en la sala pero su posición con nombre ha cambiado (Gervasio: de su mesa, Acto II, a la puerta
+      // de la Sala, Acto III); los paseos de guion dentro de la sala no cambian el nombre y no se tocan
+      const moved = on && a.room === rid && pn && p.positions[pn] && a.posName && a.posName !== pn;
+      if (on && (a.room !== rid || moved)) {
         let pos = p;
-        const pn = typeof p.pos === 'function' ? p.pos(this.viewFor()) : p.pos;
-        if (pn && p.positions && p.positions[pn]) pos = p.positions[pn];
+        if (pn && p.positions[pn]) pos = p.positions[pn];
         a.room = rid; a.x = pos.x ?? a.x; a.y = pos.y ?? a.y; a.dir = pos.dir || a.dir; a.path = []; a.anim = 'idle';
+        if (moved) a.pose = undefined;                     // la pose vuelve a salir de la colocación nueva
       } else if (!on && a.room === rid) { a.room = null; a.path = []; }
+      if (on && pn) a.posName = pn;
     }
   }
   /** Placement of an actor in the current room (merged with its named position, if any). */
@@ -979,7 +985,11 @@ export class Game {
       if (blocking && this.busy <= 1) for (const a of Object.values(this.actors)) if (a.hold && a.hold.owner) a.hold = null;
       if (blocking && gen === this.gen) {
         this.busy = Math.max(0, this.busy - 1);
-        if (!this.busy) { this.cutscene = 0; this.skipCut = false; this.ui.sentence = null; this.applyPresence(); }
+        if (!this.busy) {
+          this.cutscene = 0; this.skipCut = false; this.ui.sentence = null; this.applyPresence();
+          // el jugador recupera el control: la cámara vuelve a seguirle (un guion que la fijó con cameraTo no la deja clavada)
+          if (this.camTarget != null && this.mode === 'play') { this.camTarget = null; this.camFollow = this.G.player; }
+        }
       }
       if (blocking) this.idleMs = 0;
       this.checkIdle();

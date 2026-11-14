@@ -109,7 +109,7 @@ async function torrente(api) {
 
 /** Saludos después del torrente: el 3.º, una vez, «agotada»; luego chismes de relleno. Café, solo como seguro. */
 async function saludoDeRelleno(api) {
-  if (!api.flag('office_agotada')) {
+  if (api.flag('cafetera_en_directo') && !api.flag('office_agotada')) {      // el 3.er saludo, tras el directo (§3.4)
     api.setFlag('office_agotada', true);
     await lcd(api, 'ESTOY AGOTADA. HABLE CON MI REPRESENTANTE.');
     await api.say('¿Quién es su representante?');
@@ -360,7 +360,7 @@ export default buildRoom({
         coger: 'Su táper, no. Todavía. Hay que esperar a que suelte la presa.',
       } },
     // Gervasio aquí SOLO tras D3 (plan §5.10): se va a ver si la máquina le saluda
-    { id: GV, when: ['sala_abierta', '!juego_terminado'], defaultVerb: 'hablar',
+    { id: GV, when: ['sala_abierta', '!climax_entrada', '!juego_terminado'], defaultVerb: 'hablar',   // en el clímax, escondido en la Sala
       murmurs: ['Diecinueve años. Ni un marrón. Ni uno.', 'Hoy me han preguntado tres veces por mi salud. Debo de estar fatal.'],
       handlers: {
         mirar: 'Gervasio, delante de Gertrudis. Ella no le sirve. Él no la saluda. Del todo.',

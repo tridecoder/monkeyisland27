@@ -61,8 +61,9 @@ export default {
       N0: {
         options: [
           { text: '¿Qué tal con Yoli?', once: true,
-            reply: ['Me dijo que mi dato de tráfico estaba "sacado de contexto".', 'Le contesté: "Dame el contexto y lo pongo en el subtítulo".',
-              '"Que ahí no lo lee nadie". No hemos vuelto a comer juntos.', 'Bueno, ella no come. Mide.'],
+            // §7.3: la anécdota cita la réplica nueva de R09 («Tráeme el contexto. Le hago una pieza aparte…»)
+            reply: ['Me dijo que mi dato de tráfico estaba "sacado de contexto".', 'Le dije que al contexto le hacía una pieza aparte.',
+              '«El contexto, explicado». No hemos vuelto a comer juntos.', 'Bueno, ella no come. Mide.'],
             do: async (api) => { api.learnReply('rep_09'); } },
           { text: '¿Por qué está bloqueado lo de Herminia?', once: true,
             reply: ['Lo bloquea Anselmo. Y a Anselmo lo bloquea Anselmo.', 'Es la dependencia más estable del tablero.'] },

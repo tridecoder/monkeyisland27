@@ -36,15 +36,15 @@ const X = [
   // §4.3 Ramírez ha vuelto
   { n: 'XM3a', tras: 9, sala: 'pecera', txt: 'Usar chaqueta_ramirez (sin destino): Bruno se la pone', acc: [V('usar', 'chaqueta_ramirez')], esp: { flags: { bruno_con_chaqueta: true }, tiene: ['chaqueta_ramirez'] } },
   { n: 'XM3b', tras: 'XM3a', sala: 'pajarera', txt: '(entrar en Despachos) → Íñigo le confunde; Bruno se la quita', acc: [['ir', 'pajarera']], esp: { flags: { bruno_con_chaqueta: false }, tiene: ['chaqueta_ramirez'] } },
-  { n: '—10', tras: 10, sala: 'pajarera', txt: 'Control: al entrar en los Despachos salió la llamada L1', acc: [], esp: { flags: { evaristo_llamadas: 1 } } },
+  { n: '—13', tras: 13, sala: 'pecera', txt: 'Control: la llamada L1 ya salió (en la primera entrada sin escena)', acc: [], esp: { flags: { evaristo_llamadas: 1 } } },
   // E1.9 · XE1: Leoncio y el portátil
-  { n: 'XE1', tras: 13, sala: 'pecera', txt: 'Hablar leoncio_quesitos → «¿Me hace un gráfico a mí?» (sale la línea del PORTÁTIL)', acc: [V('hablar', 'leoncio_quesitos'), O('¿Me hace un gráfico a mí?'), SALIR], esp: { log: ['herminia_portatil:› Bruno · aportación a la planta'] } },
+  { n: 'XE1', tras: 13, sala: 'pecera', txt: 'Hablar leoncio_quesitos → «¿Me hace un gráfico a mí?» (sale la línea del PORTÁTIL)', acc: [V('hablar', 'leoncio_quesitos'), O('¿Me hace un gráfico a mí?'), SALIR], esp: { log: ['herminia_portatil:PORTÁTIL: › Bruno · aportación a la planta'] } },
   { n: '—14', tras: 14, sala: 'office', txt: 'Control: el «Buenas noches» llevó antes el rumor A2', acc: [], esp: { flags: { rumor_firma_n: 2 } } },
-  { n: 'XM1', tras: 14, sala: 'pecera', txt: '(entrar en la Redacción) → reacción viral de Yoli', acc: [['ir', 'pecera']], esp: { flags: ['cafetera_viral'] } },
+  { n: 'XM1', tras: 15, sala: 'pecera', txt: '(entrar en la Redacción) → reacción viral de Yoli', acc: [['ir', 'pecera']], esp: { flags: ['cafetera_viral'] } },
   // §4.2 el apagón (sin el ticket nº 3: escalada, sin CMS)
-  { n: 'XM2', tras: 16, sala: 'pecera', txt: 'Tirar enchufe_pantalla ×3 (sin el ticket nº 3)', acc: [['ir', 'pecera'], V('tirar', 'enchufe_pantalla'), V('tirar', 'enchufe_pantalla'), V('tirar', 'enchufe_pantalla')], esp: { flags: { apagon_n: 3, cms_vivo: false } } },
-  { n: 'XE2', tras: 16, sala: 'pecera', txt: 'Hablar anselmo_monolito → «¿Por qué invades la sección de Leoncio?»', acc: [V('hablar', 'anselmo_monolito'), O('¿Por qué invades la sección de Leoncio?'), SALIR], esp: {} },
-  { n: '—17', tras: 17, sala: 'catacumba', txt: 'Control: A_MENU llevó antes el rumor C1; L2 ya salió', acc: [], esp: { flags: { rumor_teodoro_n: 1, evaristo_convoco: true, evaristo_llamadas: 2 } } },
+  { n: 'XM2', tras: 18, sala: 'pecera', txt: 'Tirar enchufe_pantalla ×3 (sin el ticket nº 3); al entrar, la llamada L2', acc: [['ir', 'pecera'], V('tirar', 'enchufe_pantalla'), V('tirar', 'enchufe_pantalla'), V('tirar', 'enchufe_pantalla')], esp: { flags: { apagon_n: 3, cms_vivo: false, evaristo_convoco: true, evaristo_llamadas: 2 } } },
+  { n: 'XE2', tras: 18, sala: 'pecera', txt: 'Hablar anselmo_monolito → «¿Por qué invades la sección de Leoncio?»', acc: [V('hablar', 'anselmo_monolito'), O('¿Por qué invades la sección de Leoncio?'), SALIR], esp: {} },
+  { n: '—17', tras: 17, sala: 'catacumba', txt: 'Control: A_MENU llevó antes el rumor C1', acc: [], esp: { flags: { rumor_teodoro_n: 1 } } },
   { n: 'X6', tras: 18, sala: 'pecera', txt: 'Custodia → «¿Me deja un boli?» → «¿Y cómo se consigue un boli aquí?»', acc: [['ir', 'pecera'], V('hablar', 'custodia_precinto'), O('¿Me deja un boli?'), O('¿Y cómo se consigue un boli aquí?'), SALIR], esp: { flags: ['custodia_regla'] } },
   { n: 'X11', tras: 22, sala: 'cpd', txt: 'Usar rejilla_cpd ×2 (la primera narra el hito pendiente)', acc: [V('usar', 'rejilla_cpd'), V('usar', 'rejilla_cpd')], esp: { flags: { rejilla_n: 1 } } },
   { n: '—23', tras: 23, sala: 'pecera', txt: 'Control: Y0 llevó antes el rumor C2', acc: [], esp: { flags: { rumor_teodoro_n: 2 } } },
@@ -69,7 +69,7 @@ const X = [
   { n: 'X24', tras: 34, sala: 'pecera', txt: 'Custodia → «¿Dónde está...?» → «¿Dónde está Ramírez?» → «Ya está.»', acc: [V('hablar', 'custodia_precinto'), O('¿Dónde está...?'), O('¿Dónde está Ramírez?'), O('Ya está.'), SALIR], esp: { log: ['Desayunando.'] } },
   { n: 'XM4b', tras: 35, sala: 'cpd', txt: 'El táper huérfano, a Rubén (se entrega en la escena del armario si Bruno lo lleva)', acc: [], esp: { flags: ['taper_dado'], notiene: ['taper_huerfano'] } },
   // E1.5 / E1.9 · MP1 «Alta en cuarenta segundos» y la anexión
-  { n: 'XE3', tras: 35, sala: 'cpd', txt: 'Paco → «¿Me das de alta a una becaria? Se llama Herminia.» → «Herramienta.»', acc: [V('hablar', 'paco_ticket'), O('¿Me das de alta a una becaria? Se llama Herminia.'), O('Herramienta.'), SALIR], esp: { flags: ['herminia_de_alta'] } },
+  { n: 'XE3', tras: 36, sala: 'cpd', txt: 'Paco → «¿Me das de alta a una becaria? Se llama Herminia.» → «Herramienta.»', acc: [V('hablar', 'paco_ticket'), O('¿Me das de alta a una becaria? Se llama Herminia.'), O('Herramienta.'), SALIR], esp: { flags: ['herminia_de_alta'] } },
   { n: 'XE4', tras: 'XE3', sala: 'pecera', txt: '(entrar en la Redacción) → anexión', acc: [['ir', 'pecera']], esp: { flags: ['infografia_integrada'] } },
   { n: 'X16', tras: 37, sala: 'ecosistema', txt: 'Mirar portatil_tadeo ×4 (con Rubén encontrado: la réplica R15)', acc: [['ir', 'ecosistema'], V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo')], esp: { flags: { portatil_tadeo_n: 4, rep_15: true } } },
   { n: 'X25', tras: 38, sala: 'pecera', txt: 'Hablar yoli_tendencias → (rumor A4) → «Me voy.»', acc: [V('hablar', 'yoli_tendencias'), SALIR], esp: { flags: { rumor_firma_n: 4 } } },

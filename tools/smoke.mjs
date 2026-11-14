@@ -227,9 +227,9 @@ try {
   await G(() => __game.newGame());          // partida limpia (modo rápido) para el resto de pruebas
 
   // ---------------------------------------------------------------- inventory
-  step('Inventario: los 19 objetos (18 de la biblia + boli_muerto; give-all de depuración)');
+  step('Inventario: los 18 objetos (plan de comedia: fuera planillo y pósit de baja; + taper_huerfano; give-all de depuración)');
   const inv = await G(() => __game.giveAll());
-  ok(inv.length === 19, `19 objetos en el inventario (${inv.length})`);
+  ok(inv.length === 18 && !inv.includes('planillo') && !inv.includes('posit_baja_ruben'), `18 objetos en el inventario (${inv.length})`);
   await fast(false);
   await clickClient(await G(() => __game.verbPos('mirar')));
   await clickClient(await G(() => __game.invPos('tarjeta_becario')));
@@ -395,7 +395,7 @@ try {
   av = await state();
   ok(av.flags.tadeo_rv_n === 1 && av.flags.evaristo_llamadas === 1, 'RV1 con inigo_presentado (una sola cosa por entrada)');
   await G(() => __game.gotoRoom('pecera'));
-  ok((await state()).flags.tadeo_rv_n === 1, 'RV2 espera a gertrudis_saludada (no salta a otro)');
+  ok((await state()).flags.tadeo_rv_n === 1, 'RV2 espera a acto_2_iniciado (no salta a otro; plan §5.16: tres RV)');
   await G(() => { __game.setFlag('acto_2_iniciado', true); __game.setFlag('acto_3_iniciado', true); __game.clearLog(); });
   await G(() => __game.gotoRoom('sala_amazonas'));
   ok((await state()).flags.evaristo_llamadas === 1, 'nunca en sala_amazonas con acto_3_iniciado');
@@ -403,7 +403,15 @@ try {
   ok((await state()).flags.evaristo_llamadas === 2 && (await state()).flags.evaristo_convoco === true, 'L2 (acto_2_iniciado): pone evaristo_convoco');
   await G(() => { __game.doVerb('mirar', 'movil'); });
   ok(await G(() => __game.log.some(l => l.text.startsWith('Y 1 correos de Tadeo'))), 'Mirar móvil con tadeo_rv_n >= 1: «Y 1 correos de Tadeo...»');
-  await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'acto_2_iniciado', 'acto_3_iniciado']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); __game.setFlag('evaristo_convoco', false); });
+  // plan §5.13: la llamada LC (coma_bendecida sin correo) sale antes que cualquier otra y pone correo_evaristo_listo
+  await G(() => { __game.setFlag('coma_bendecida', true); __game.setFlag('acto_3_iniciado', false); __game.clearLog(); });   // (sin el momento 8 de la Redacción)
+  await G(() => __game.gotoRoom('pecera'));
+  av = await state();
+  ok(av.flags.correo_evaristo_listo === true && av.flags.evaristo_lc === true && av.flags.evaristo_llamadas === 3 && av.flags.tadeo_rv_n === 1
+    && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text.includes('Llevo diez minutos junto al teléfono.'))), 'LC: la coma se cierra por teléfono (correo_evaristo_listo, evaristo_llamadas = 3)');
+  await G(() => __game.gotoRoom('office'));
+  ok((await state()).flags.evaristo_llamadas === 3 && (await state()).flags.tadeo_rv_n === 2, 'tras la LC, L3 sigue esperando a su condición (sale el RV2)');
+  await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'acto_2_iniciado', 'acto_3_iniciado', 'coma_bendecida', 'correo_evaristo_listo', 'evaristo_lc']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); __game.setFlag('evaristo_convoco', false); });
 
   step('Llamadas: primer plano del móvil (api.phone) en pista, aviso e intro; se retira siempre');
   const phoneState = () => G(() => __game.state().phone);

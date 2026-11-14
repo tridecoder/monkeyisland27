@@ -315,14 +315,17 @@ What the shared `content/game.js` provides (you use it, you don't edit it):
 | `scenes.pistas` | plan §8.5: the grandmother's hints in three levels per objective (Usar `movil` → Llamar a la abuela), texts in `content/pistas.js`; see §7 «Objetivos, pistas y hora» |
 | `objetivos`, `hora`, `metaFinal` | plan §8: the objectives list and the phone time function (`content/pistas.js`), read by `engine/objetivos.js` (`api.objetivo`, `api.hora()`) |
 | `afterEnter`, `scenes.avisos` | **Automatic notices** (addendum §2), see «Avisos» below |
+| `migrarPartida(state)` | plan §3.4: called by the engine on **every** load (idempotent), after its own position migrations: removes retired items (`planillo`; `posit_baja_ruben` → `ticket_n1` + `ruben_libre`) and retired flags |
 | `startFlags` | the 28 flags of addendum 6.2 initialised: counters `0`, booleans `false` |
 | `title`, `ending`, `credits` | title screen (front page), credits shell with the «Fe de erratas» box and Gertrudis' LCD (§14) |
 | `music` | imports `content/music.js` |
 
 ### Avisos (addendum §2): incoming calls and «RV:» notices — common, nobody has to call them
 After the `onEnter` of **every** room the engine runs `game.afterEnter`, which plays the scene `avisos`
-(`content/game.js`): **at most one notice per room entry** — first the next Evaristo call (L1…L5, counter
-`evaristo_llamadas`) whose condition holds, otherwise the next Tadeo mail (RV1…RV5, counter `tadeo_rv_n`). They come in
+(`content/game.js`): **at most one notice per room entry** — first the call **LC** of plan §5.13 if it is due
+(`coma_bendecida` without `correo_evaristo_listo`: it sets `correo_evaristo_listo` and `evaristo_lc`), else the next
+Evaristo call (L1…L5) whose condition holds (counter `evaristo_llamadas` counts L1-L5 and LC, up to 6), otherwise the next
+Tadeo mail (RV1…RV3, plan §5.16; counter `tadeo_rv_n`). They come in
 numeric order and wait for their condition; they never set bible flags (L2 sets `evaristo_convoco`). They do **not** play
 when the entry already ran a scene / dialog / duel / cutscene (the engine counts `api.scene` (except `avisos`/`pistas`),
 `api.dialog`, `api.duel`, `api.cutscene` during `onEnter`), when loading a save, in `sala_amazonas` with
@@ -555,7 +558,8 @@ L1–L5 de Evaristo (`game.js`). Los correos «RV:» de Tadeo no son llamadas (s
 ### Movement & animation
 `api.walkTo(x, y | [x,y] | 'objOrActorId')`, `api.walkActor(id, ...)`, `api.face(dir|target)`,
 `api.faceActor(id, dir|target)`, `api.placeActor(id, room, x, y, dir?)`, `api.actorPos(id)`,
-`api.anim(id, name, ms=600)`, `api.cameraTo(x)`, `api.cameraFollow(id?)`, `api.show(id)` / `api.hide(id)` /
+`api.anim(id, name, ms=600)`, `api.cameraTo(x)` (when the last blocking script ends, the camera follows the player again),
+`api.cameraFollow(id?)`, `api.show(id)` / `api.hide(id)` /
 `api.isVisible(id)` (objects and actors), `api.refreshActors()` (re-apply `when` presence now).
 
 ### Poses, light and held objects (redesign)
@@ -581,7 +585,7 @@ log gets `aviso: Plano detalle: <titulo>`; `__game.state().detalle = { titulo } 
 | | |
 |---|---|
 | `await api.apagon({ ms: 3000, alpha: 0.88, color, spots: [[cx, cy, rx, ry]], actor: 0.25, parpadeo: true })` | the room goes dark (same painting as the penumbra: `spots` = screens that stay lit, `actor` = how much actors are spared). With `ms` it resolves when the light comes back; `ms: 0` keeps it until `api.apagon(false)`. Example (§4.2): `await api.apagon({ ms: 3000 }); await api.sayAs('nerea_backlog', 'Pone «NO DESENCHUFAR».')` |
-| `await api.estampida(ids, { puerta: [x, y], atascoMs: 900, gap: 120, destino: null, prisa: 1.8, enAtasco: async (api) => {} })` | several actors flee through one door: they hurry there, get stuck in the frame (±3 px, shake 300 ms, `enAtasco` lines meanwhile) and pop out one by one (`destino`: room id or `null` = gone). §4.4: `await api.estampida(['mercados_1', 'mercados_2', 'mercados_3'], { puerta: [24, 112], enAtasco: async (api) => { await api.sayAs('mercados_1', '¡Usted primero!'); } })` |
+| `await api.estampida(ids, { puerta: [x, y], atascoMs: 900, gap: 120, destino: null, prisa: 1.8, enAtasco: async (api, atasco) => {} })` | several actors flee through one door: they hurry there, get stuck in the frame (±3 px, shake 300 ms, `enAtasco` lines meanwhile; `atasco.alFrente(id)` puts the one who speaks a step in front so nobody covers him) and pop out one by one (`destino`: room id or `null` = gone). §4.4: `await api.estampida(['mercados_1', 'mercados_2', 'mercados_3'], { puerta: [24, 112], enAtasco: async (api) => { await api.sayAs('mercados_1', '¡Usted primero!'); } })` |
 | `await api.megafonia(actorId, text \| [lines], { blocking: false, etiqueta: 'MEGAFONÍA', y: 44, sfx })` | an actor's voice through a speaker (lift, building): balloon at the top in his colour with a «MEGAFONÍA» tag above (not part of the 80 chars), the actor needn't be in the room; non-blocking unless asked. The log gets `who` = actor id and `tag: 'MEGAFONÍA'` |
 | `api.viral({ avisos: [...], contador: [3418, 11302], etiqueta: 'en directo', cada: 260, ms: 3200, color, sfx })` | burst of phone-like notifications in the top-right corner and an optional counter that jumps (`saltos: 3`). Non-blocking; `await` it to wait for the end |
 | `await api.titular(text, { who, from, blocking, ms })` | the line is drawn as a **newspaper headline strip** (paper, bold black, red rule); `who` = actor (default Bruno: his headlines while «contagiado», §4.6), `from` = an object (the Titulator screen). Logged like any line |
@@ -856,13 +860,13 @@ game by itself; `api.ending(opts)` ends the game (a click fast-forwards; at the 
 | `node tools/test-motor.mjs` | redesign engine + kit test on the throwaway demo room `tools/demo-rediseno.js` (poses, U walkbox, per-area scale, penumbra, detalle, ver hotspots, hit-slop, 14 px touch rows, held object, kit registry) and, in the real game, «ver hotspots» in the 10 rooms and Gervasio seated |
 | `node tools/smoke.mjs [--rapido]` | full UI smoke test (title, 10 rooms, inventory, sample duel, save/load, menu, credits, debug, touch); `--rapido` skips the real-time phone part and the device viewports |
 | `node tools/test-movil.mjs` | Bruno's phone (`solo` item) with a real mouse and finger: Usar+icon, icon alone, «Usar móvil con Bruno», right-click, double tap on iPhone landscape; the mail (reading only touches `movil_leidos`), the grandmother call, Esc / tap outside, load with the menu open |
-| `node tools/walkthrough.mjs [--alt] [--hasta=N] [--lento]` | bible §5.4 step by step (data in the file); stops at the first failing step and says why. Fails while rooms are unfinished: expected |
-| `node tools/extras.mjs [--hasta=X10] [--lento]` | walkthrough 5.4 + the «extras» X1…X26 of addendum §12 interleaved (data in the file; fails at the first unimplemented X step: expected). Shares `walk-data.mjs` / `walk-lib.mjs` with the walkthrough; both **dismiss the automatic notices** and keep going |
+| `node tools/walkthrough.mjs [--alt] [--hasta=N] [--lento]` | comedy plan §3.2 (42 steps, data in `walk-data.mjs`, `ALT` = the alternative order) step by step up to the FE DE ERRATAS card and the credits; stops at the first failing step and says why |
+| `node tools/extras.mjs [--hasta=XE3] [--lento]` | the 42 steps + the «extras» of plan §3.5 / E1.9 interleaved (X1…, XM1-XM7, XE1-XE4 and counter checkpoints; `['perder']` loses the open duel; `esp.log` checks lines on screen). Shares `walk-data.mjs` / `walk-lib.mjs` with the walkthrough; both **dismiss the automatic notices** and keep going |
 | `node tools/play-mouse.mjs [--solo=raton\|geometria] [--vis]` | Act I + duel D1 with REAL mouse events only (incl. the vestíbulo barrier: the lift is unreachable before `torno_abierto`, reachable after; the lift panel by clicks), and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, is not fully covered by another hotspot, and every talkable NPC shows ≥ 80 % of head+torso (silhouette render) with ≥ 120 px of own click area — also **with Bruno standing at its talk spot** (talk spots go to the SIDE of the NPC, never in front) (`--vis` prints the figures). Shared with `tools/sala.mjs` (`tools/geo-audit.mjs`), plus the redesign rules R1-R5 (≥ 12×10, overlaps ≤ 30 %, talk spot ≥ 24 px, kit signs whole, inside the room): errors in rooms whose art has `rediseno: true` (or with `--estricto`), warnings elsewhere (`--avisos` lists them); `--sala=a,b` limits the audit |
 | `node tools/fuzz.mjs [--solo=guardar\|duelos\|objetos] [--sala=a,b] [--rapido]` | save/load in every act and play on to the end; lose every duel once; Dar/Usar every item on every NPC and hotspot (no exceptions, no stuck dialogs, list of consumed items) |
 | `node tools/contrast.mjs [--todo]` | legibility: WCAG contrast of every speaker colour against its outline and against the real background of every room under the speech band (`SPEECH_BACKING`), same-room speakers distinguishable, and all UI / menu / duel text colours ≥ 4.5:1 |
 | `node tools/make-icons.mjs` | regenerates the web-app icons `icons/icon-{180,192,512}.png` from the game's own drawing code (the only image files in the project) |
-| `node tools/text-audit.mjs` | every line said in a full game + all 9 verbs on everything: > 80 chars, balloons over 3 rows, missing ¿ ¡, names, clock times, and staging: whoever says a line is not hidden (> 20 % of head+torso) by another actor standing in front |
+| `node tools/text-audit.mjs [--plan]` | every line said in a full game + all 9 verbs on everything: > 80 chars, balloons over 3 rows, missing ¿ ¡, names, clock times, and staging: whoever says a line is not hidden (> 20 % of head+torso) by another actor standing in front |
 | `node tools/review.mjs [--solo=salas\|momentos]` | contact sheets for visual review → `tools/shots/review/` |
 | `node tools/actors.mjs` | cast contact sheet → `tools/shots/actores.png` (sprite-less presences as colour cards) |
 

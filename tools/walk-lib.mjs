@@ -151,7 +151,7 @@ async function check(esp) {
   const errs = [];
   if (esp.sala && st.room !== esp.sala) errs.push(`sala: ${st.room}, se esperaba ${esp.sala}`);
   const flags = Array.isArray(esp.flags) ? Object.fromEntries(esp.flags.map(f => [f, true])) : (esp.flags || {});
-  for (const [f, v] of Object.entries(flags)) if (st.flags[f] !== v) errs.push(`flag ${f} = ${JSON.stringify(st.flags[f])}, se esperaba ${JSON.stringify(v)}`);
+  for (const [f, v] of Object.entries(flags)) if (v === false ? !!st.flags[f] : st.flags[f] !== v) errs.push(`flag ${f} = ${JSON.stringify(st.flags[f])}, se esperaba ${JSON.stringify(v)}`);
   for (const i of esp.tiene || []) if (!st.inventory.includes(i)) errs.push(`falta ${i} en el inventario`);
   for (const i of esp.notiene || []) if (st.inventory.includes(i)) errs.push(`${i} sigue en el inventario (debía gastarse)`);
   if (errs.length) fail(errs.join('; '));

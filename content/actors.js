@@ -195,6 +195,8 @@ export default {
     // plan §4.3: con la chaqueta de Ramírez puesta (flag `bruno_con_chaqueta`, o api.vestir('bruno', 'con_chaqueta'))
     variants: {
       con_chaqueta: { doll: { jacket: '#c8b48a', backpack: null, badge: null, cuffs: '#c8b48a' } },
+      // epílogo (§9): la bufanda del Ibex que le enrolla Celestino (la de Celestino: verde con la raya roja)
+      con_bufanda: { doll: { scarf: '#2a8a3a', scarfStripe: '#d03030' } },
     },
     variant: (v) => (v.flag('bruno_con_chaqueta') && v.has('chaqueta_ramirez') ? 'con_chaqueta' : null),
     // plan §8.2: «Mirar a Bruno» dice la meta actual en su voz (objetivo de la sala, content/pistas.js)
@@ -212,6 +214,7 @@ export default {
       epaulettes: '#e0b840', scarf: '#2a8a3a', scarfStripe: '#d03030', earpiece: '#202020',
       pocketItem: '#303034', pocketKind: 'radio', pants: '#5a5e68', shoes: '#1a1a1e', height: 0.96, build: 'normal', belly: true,
     },
+    variants: { sin_bufanda: { doll: { scarf: null, scarfStripe: null } } },   // epílogo: se la ha dado a Bruno
     murmurs: ['Treinta años en este mostrador. El mostrador, cuarenta.', 'Si me preguntan por el Ibex, digo que va.',
       'Chof, chof... Menta. Lo único de esta casa que no caduca.'],
     // mastica chicle de menta sin parar: de vez en cuando, una pompa rosa (solo de frente)

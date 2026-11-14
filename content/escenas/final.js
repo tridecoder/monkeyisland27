@@ -227,6 +227,8 @@ async function final(api) {
     await api.walkTo(L.celestino && L.celestino.walkTo ? L.celestino.walkTo[0] : 138, 122);
     api.face(C); api.faceActor(C, 'bruno');
     await api.anim(C, 'reach', 900);
+    api.vestir('bruno', 'con_bufanda');                  // unos píxeles: la bufanda verde con la raya roja, ya en Bruno
+    api.vestir(C, 'sin_bufanda');
     api.sfx('pickup');
     await api.wait(700);
     // Bruno sale a la calle con el periódico bajo el brazo. Fundido a negro.

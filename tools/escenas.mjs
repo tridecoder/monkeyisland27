@@ -3,7 +3,7 @@
 // 7.2, duelos, 7.3a, 7.3, clímax, epílogo, créditos, poscréditos), a velocidad normal: en CADA línea dicha saca una
 // captura (pantalla entera, 2×) y mide al que habla: % de su caja dentro de la cámara y % de cabeza+torso tapado por
 // otro actor que esté delante. Falla si alguien habla con < 80 % de su cuerpo en pantalla o tapado > 20 %.
-//   node tools/escenas.mjs [--pasos=1,8,29,...] [--out=dir] [--sin-imagenes]
+//   node tools/escenas.mjs [--pasos=1,8,26,...] [--out=dir] [--sin-imagenes]
 // Salida: tools/shots/escenas/<paso>-<nn>.png y escenas.txt (una línea por captura).
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -16,7 +16,7 @@ import { createRunner } from './walk-lib.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = Object.fromEntries(process.argv.slice(2).filter(a => a.startsWith('--')).map(a => { const [k, v] = a.slice(2).split('='); return [k, v ?? true]; }));
-const PASOS = args.pasos ? String(args.pasos).split(',').map(Number) : [1, 8, 29, 35, 37, 38, 43, 44, 45, 46];
+const PASOS = args.pasos ? String(args.pasos).split(',').map(Number) : [1, 8, 14, 20, 25, 26, 28, 31, 33, 34, 35, 38, 39, 40, 41, 42];   // recorrido del plan de comedia §3.2: intro, 7.2, momentos y duelos, final
 const outDir = path.resolve(args.out || path.join(here, 'shots', 'escenas'));
 fs.mkdirSync(outDir, { recursive: true });
 const server = createServer(path.resolve(here, '..'));

@@ -151,7 +151,7 @@ function fridge(g) {
   mg.forEach(([mx, my, c]) => { rect(g, x + mx, y + my, 3, 3, c); px(g, x + mx, y + my, PAL.paper[7]); });
   rect(g, x + 6, y + 36, 8, 6, PAL.paper[7]); frameRect(g, x + 6, y + 36, 8, 6, PAL.paper[3]); hline(g, x + 7, y + 38, 6, PAL.blue[4]);
   rect(g, x + 22, y + 44, 9, 8, '#f4c0c8'); hline(g, x + 23, y + 46, 7, PAL.red[3]); hline(g, x + 23, y + 48, 5, PAL.red[3]);
-  rect(g, x + 4, y + 53, 15, 6, PAL.paper[6]); kit.micro(g, 'RAMIREZ', x + 5, y + 54, PAL.red[3]);     // «RAMÍREZ NO SE TOCA»
+  rect(g, x + 4, y + 53, 15, 6, PAL.paper[6]); kit.micro(g, 'RAMÍREZ', x + 5, y + 54, PAL.red[3]);     // «RAMÍREZ NO SE TOCA» (con su tilde: la microfuente la pinta encima)
   kit.cantoVivo(g, x, y, w, h);
 }
 
@@ -412,7 +412,7 @@ const layout = {
   gertrudis: { at: GER_AT, walkTo: [134, 110], face: 'right' },
   gervasio_acta: { at: [170, 119, 'up'], walkTo: [136, 128], face: 'right' },
   // [P3] plan §4.4: uno de Mercados, escondido al final de la cola del microondas (junto a la fuente, sin tapar hotspots)
-  mercados_1: { at: [292, 106, 'left'], walkTo: [274, 120], face: 'right' },
+  mercados_1: { at: [292, 106, 'left'], walkTo: [266, 120], face: 'right' },   // [integrador] desde un lado (≥ 24 px)
   // [P3] el táper que suelta al huir: rueda hasta Bruno (9×6 px en el suelo)
   taper_suelo: { rect: [255, 124, 13, 9], walkTo: [278, 132], face: 'left', draw: (g, view) => { if (view.visible !== false) drawTaper(g, 257, 126); } },
 };

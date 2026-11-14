@@ -43,7 +43,7 @@ para girar el móvil: en horizontal el juego ocupa todo el alto.
 - **Clic** durante un texto: pasa al siguiente. **Esc**: salta una escena o abre el menú (guardar, cargar, velocidad
   del texto, volumen). El icono ≡ del panel también abre el menú. **1-9**: elegir opción de diálogo.
 - La partida se autoguarda al cambiar de sala («Continuar» en el título) y hay 3 ranuras manuales.
-- Si te atascas: **Usar el móvil** (llama la abuela: pistas en tres niveles según dónde estés). Mirar la **ficha de la página 7** dice lo que falta; **Mirar a Bruno**, lo que quiere ahora.
+- Si te atascas: **Usar el móvil** (llama la abuela: pistas en tres niveles según dónde estés; también el correo y las llamadas perdidas). Mirar la **ficha de la página 7** dice lo que falta; **Mirar a Bruno**, lo que quiere ahora.
 
 ## Pruebas
 
@@ -51,22 +51,23 @@ Necesitan Node 18+ y `playwright` (con Chromium) accesible para Node.
 
 | comando | qué hace |
 |---|---|
-| `node tools/test-all.mjs [--rapido] [--sala=<id>]` | **todas las pruebas** en paralelo con tabla de resumen (cada una en su propio puerto libre) |
+| `node tools/test-all.mjs [--rapido] [--sala=<id>]` | **todas las pruebas** en paralelo con tabla de resumen (cada una en su propio puerto libre); con `--sala`, solo lo que toca a esa sala (incluido el test de comedia de su paquete) |
 | `node tools/sala.mjs <id>` | vista previa de una sala para los artistas: todos los actos, depuración, «ver hotspots» e informe de PNJ (rediseño: `docs/GUIA_REDISENO.md`) |
 | `node tools/test-motor.mjs` | motor y kit del rediseño (pose sentada, penumbra, plano detalle, ver hotspots, objetivos táctiles) sobre una sala de demostración |
 | `node tools/test-fase0.mjs` | sistemas comunes del plan de comedia (duelo, ficha viva, pistas en 3 niveles, hora por hitos, ambiente, doble clic/correr, apagón, estampida, megafonía, titular, tarjeta final) sobre `tools/demo-fase0.js` |
 | `node tools/check.mjs` | comprobación estática del contenido (ids lógica/arte, flags, salidas, líneas de más de 80 caracteres) |
 | `node tools/smoke.mjs` | prueba de humo de la interfaz (título, 10 salas, inventario, duelo, guardar/cargar, menú, créditos, táctil) |
-| `node tools/walkthrough.mjs [--alt]` | la partida completa (46 pasos del guion), en el orden de la tabla o en el alternativo |
-| `node tools/extras.mjs` | la partida completa con todos los extras intercalados (90 pasos) |
-| `node tools/test-paquete-{a,b,c,d}.mjs` | pruebas detalladas por grupo de salas |
-| `node tools/play-mouse.mjs [--solo=raton\|conexiones\|geometria]` | la partida **entera** (pasos 1-46, los cuatro duelos y el final) **solo con ratón real**, cada salida del edificio en los dos sentidos con clics reales, y la auditoría de geometría de todos los hotspots en cada acto |
-| `node tools/escenas.mjs [--pasos=8,46]` | revisión de escenas: una captura por línea dicha (intro, 7.2, duelos, 7.3a, 7.3, clímax, epílogo, créditos, poscréditos) y quién habla fuera de cámara o tapado |
+| `node tools/walkthrough.mjs [--alt]` | la partida completa (los 42 pasos del plan de comedia §3.2) hasta la tarjeta FE DE ERRATAS y los créditos, en el orden de la tabla o en el alternativo |
+| `node tools/extras.mjs` | la partida completa con todos los extras y momentos de situación intercalados (81 pasos: plan §3.5 y E1.9) |
+| `node tools/test-comedia-p{1,2,3,4}.mjs` | pruebas detalladas de cada paquete de la reescritura de comedia: P1 Vestíbulo, Sistemas y final · P2 Redacción y Despachos · P3 Vending, Redacción de papel y Administración · P4 Sala Amazonas, Marketing y Comercial, Eventos y clímax |
+| `node tools/test-heredado.mjs` | lo que comprobaban los antiguos tests de paquete y sigue valiendo (bloqueos del torno, ascensor, armario tras guardar, el Lector Medio nunca preside, Eventos, migración de partidas viejas) |
+| `node tools/play-mouse.mjs [--solo=raton\|conexiones\|geometria]` | la partida **entera** (pasos 1-42, los cuatro duelos, el final y los créditos) **solo con ratón real**, cada salida del edificio en los dos sentidos con clics reales, y la auditoría de geometría de todos los hotspots en cada acto |
+| `node tools/escenas.mjs [--pasos=8,42]` | revisión de escenas: una captura por línea dicha (intro, 7.2, duelos, 7.3a, 7.3, clímax, epílogo, tarjeta FE DE ERRATAS, créditos) y quién habla fuera de cámara o tapado |
 | `node tools/contactos.mjs [--actos=a1]` | hoja de contactos del edificio: las 10 salas en cada acto y los cuatro núcleos lado a lado (`tools/shots/rediseno/final/`) |
 | `node tools/fuzz.mjs` | guardar/cargar en cada acto, perder cada duelo, y Dar/Usar todo con todo (sin callejones) |
 | `node tools/contrast.mjs` | legibilidad: contraste de los colores de cada personaje sobre los fondos reales, del panel, los menús y el duelo |
 | `node tools/make-icons.mjs` | regenera los iconos de la web app (`icons/`) con el propio código de dibujo del juego |
-| `node tools/text-audit.mjs [--estatico] [--plan]` | auditoría de textos (longitud, signos de apertura, nombres, horas y palabras prohibidas a la vista: «Pajarera», «Office»); avisos del plan de comedia (remates «Como…», palabras vetadas, topes de muletilla) |
+| `node tools/text-audit.mjs [--estatico] [--plan]` | auditoría de textos (longitud, signos de apertura, nombres, horas y palabras prohibidas a la vista: «Pajarera», «Office»); reglas del plan de comedia (remates «Como…», palabras vetadas, «Dirección» solo en «Reunión de Dirección», Diseño e Infografía nunca juntos, topes de muletilla): con `--plan` cuentan como fallo (así la lanza `test-all`) |
 | `node tools/music-check.mjs` | comprueba las pistas de música |
 | `node tools/review.mjs` | hojas de contactos para revisión visual (todas las salas por acto y los momentos clave) |
 | `node tools/shot.mjs <sala> [--debug]` | captura de una sala · `node tools/actors.mjs`: hoja del reparto |

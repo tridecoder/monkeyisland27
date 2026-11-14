@@ -446,10 +446,10 @@ async function reunionTerminada(api) {
   api.setState('botellines', 'volando'); api.sfx(SFX.botellines);
   api.setWalkbox('fondo', true);
   try {
-    await api.estampida(MERC, { puerta: PUERTA, atascoMs: 900, enAtasco: async (api) => {
-      await sayMe(api, 1, '¡Usted primero!');
-      await sayMe(api, 2, '¡No, usted, que es de Bolsa!');
-      await sayMe(api, 3, '¡Yo soy de Bolsa y de Mercados! ¡Tengo doble prioridad!');
+    await api.estampida(MERC, { puerta: PUERTA, atascoMs: 900, enAtasco: async (api, atasco) => {
+      atasco.alFrente('mercados_1'); await sayMe(api, 1, '¡Usted primero!');
+      atasco.alFrente('mercados_2'); await sayMe(api, 2, '¡No, usted, que es de Bolsa!');
+      atasco.alFrente('mercados_3'); await sayMe(api, 3, '¡Yo soy de Bolsa y de Mercados! ¡Tengo doble prioridad!');
     } });
   } finally { api.setWalkbox('fondo', false); }
   api.setState('botellines', 'tumbados');

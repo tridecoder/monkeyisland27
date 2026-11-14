@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// PARTIDA CON RATÓN REAL (QA): juega la partida ENTERA (pasos 1-46 de la biblia §5.4: Actos I-III, los cuatro duelos,
+// PARTIDA CON RATÓN REAL (QA): juega la partida ENTERA (pasos 1-42 del plan de comedia §3.2: Actos I-III, los cuatro duelos,
 // el clímax y el final) SOLO con
 // eventos de ratón reales sobre el canvas (clic en verbo, clic en objeto / icono del inventario, clic en opciones de
 // diálogo con sus flechas de scroll, clic derecho = verbo por defecto, clics para pasar los globos). `window.__game` solo
@@ -83,8 +83,9 @@ let maxOptLines = 0, scrolledMenus = 0;
 async function settle(timeout = 90000) {
   const t0 = Date.now(); let stuckSince = 0, lastLog = -1;
   while (Date.now() - t0 < timeout) {
-    const s = await G(() => { const g = __game.game; return { mode: g.mode, busy: g.busy > 0 || !!g.acting, choice: !!g.choice, pick: !!g.itemPick, speaking: g.speeches.filter(x => x.blocking).length, walking: Object.values(g.actors).some(a => a.path.length), fades: g.fades.length, timers: g.timers.length, log: g.log.length, menu: !!g.menu }; });
+    const s = await G(() => { const g = __game.game; return { mode: g.mode, busy: g.busy > 0 || !!g.acting, choice: !!g.choice, pick: !!g.itemPick, speaking: g.speeches.filter(x => x.blocking).length, walking: Object.values(g.actors).some(a => a.path.length), fades: g.fades.length, timers: g.timers.length, log: g.log.length, menu: !!g.menu, card: !!g.card }; });
     if (s.mode === 'ending') { await vclick(160, 100); await wait(150); continue; }
+    if (s.card) { await wait(400); await vclick(160, 100); stuckSince = 0; continue; }     // la tarjeta FE DE ERRATAS (plan §9): un clic tras su tiempo mínimo
     if (s.mode !== 'play') return s;
     if (s.choice || s.pick) return s;
     if (!s.busy) { await wait(60); const s2 = await G(() => __game.game.busy || __game.game.acting || __game.game.choice); if (!s2) return s; continue; }
@@ -174,6 +175,7 @@ async function chooseOption(want) {
       if (i < 0) return { notfound: ch.options };
       if (ch.disabled.has(i)) return { disabled: true };
       const lines = ch.layout; if (!lines) return { wait: true };
+      if (ch.escape != null && g.realTime - ch.t0 < 320) return { wait: true };   // el motor ignora el toque de los primeros 250 ms (doble toque)
       const li = lines.findIndex(l => l.opt === i);
       const sc = ch.scroll || 0;
       if (li < sc) return { arrow: [310, 152], lines: lines.length };
@@ -259,7 +261,7 @@ try {
   await wait(400);
 
   if (!args.solo || args.solo === 'raton') {
-    console.log('Partida con ratón real: pasos 1-46 (la partida entera)\n');
+    console.log('Partida con ratón real: pasos 1-42 del plan de comedia (la partida entera, hasta los créditos)\n');
     // título: clic real en «Nueva partida»
     const it = await G(() => { const it = __game.game.titleLayout[0]; return [it.x + 8, it.y + 5]; });
     await vclick(...it);
@@ -300,6 +302,8 @@ try {
       if (args.lento) await page.screenshot({ path: path.join(here, 'shots', `raton-${String(s.n).padStart(2, '0')}.png`) });
     }
     ok(maxOptLines > 5 && scrolledMenus > 0, `menús más largos que el panel se desplazan con sus flechas (máx. ${maxOptLines} líneas; ${scrolledMenus} elecciones tras desplazar)`);
+    const fin = await G(() => { const L = __game.log; return { t: L.some(l => l.who === 'tarjeta'), a: L.some(l => String(l.text).includes('Abrígate tú.')), p: L.some(l => String(l.text).includes('¡Me ha contestado el periódico!')), st: __game.state() }; });
+    ok(fin.t && fin.a && fin.p && (fin.st.mode === 'title' || !!fin.st.finished), '«Abrígate tú.» → «¡Me ha contestado el periódico!» → tarjeta FE DE ERRATAS (con un clic) → créditos → título');
     ok(true, 'partida COMPLETA con el ratón: Actos I-III, los cuatro duelos, el clímax, el epílogo y los créditos');
   }
 
@@ -312,7 +316,7 @@ try {
     await G(() => __game.skipText(true));
     await R.startDismisser();
     await G(() => __game.newGame());
-    for (const s of STEPS.filter(s => s.n > 1 && s.n <= 42)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }
+    for (const s of STEPS.filter(s => s.n > 1 && s.n <= 38)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }   // 38: Rubén libre
     await G(() => { clearInterval(window.__dismisser); window.__dismisser = null; });
     const exits = await G(() => { const out = []; for (const [rid, r] of Object.entries(__game.game.content.rooms)) for (const o of r.objects || []) { if (o.exit) out.push({ room: rid, id: o.id, to: o.exit.room, entry: o.exit.entry || rid }); if (o.ascensor) out.push({ room: rid, id: o.id, lift: true }); } return out; });
     const lifts = exits.filter(e => e.lift);
@@ -363,7 +367,7 @@ try {
     await G(() => __game.skipText(true));
     await R.startDismisser();
     await G(() => __game.newGame());
-    const cps = [[8, 'ACTO I (tras 7.2)'], [16, 'ACTO II (inicio)'], [29, 'ACTO II (tras D1)'], [37, 'ACTO III (inicio)'], [39, 'ACTO III (Rubén en el armario)'], [42, 'ACTO III (Rubén libre)']];
+    const cps = [[8, 'ACTO I (tras 7.2)'], [16, 'ACTO II (inicio)'], [26, 'ACTO II (tras D1)'], [34, 'ACTO III (inicio)'], [36, 'ACTO III (Rubén encontrado)'], [38, 'ACTO III (Rubén libre)']];
     let done = 1;
     for (const [n, tag] of cps) {
       for (const s of STEPS.filter(s => s.n > done && s.n <= n)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }

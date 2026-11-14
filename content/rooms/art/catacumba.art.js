@@ -47,7 +47,7 @@ const layout = {
   fotos_jefes_cierre: { rect: [198, 27, 42, 26], walkTo: [214, 114], face: 'up' },
   fax_enmarcado: { rect: [220, 55, 18, 24], walkTo: [230, 114], face: 'up' },
   // [P3] plan §4.5: la factura del envío (0,26 €), grapada en la pared de Teodoro, sobre el fax
-  factura_fax: { rect: [104, 56, 11, 13], walkTo: [114, 112], face: 'up', draw: (g) => drawFactura(g, 105, 57) },
+  factura_fax: { rect: [104, 56, 12, 13], walkTo: [114, 112], face: 'up', draw: (g) => drawFactura(g, 105, 57) },
   cartel_aurora: { rect: [248, 36, 50, 30], walkTo: [266, 114], face: 'up' },
   libro_estilo: { rect: [244, 89, 28, 11], walkTo: [258, 114], face: 'up' },
   bolis_aurora: { rect: [284, 62, 14, 20], walkTo: [290, 114], face: 'up', priority: 1 },

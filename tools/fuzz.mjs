@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// AUDITORÍA DE CALLEJONES Y ROBUSTEZ (QA). Tres partidas en modo rápido sobre el walkthrough 5.4 (walk-data.mjs):
+// AUDITORÍA DE CALLEJONES Y ROBUSTEZ (QA). Tres partidas en modo rápido sobre el recorrido del plan de comedia §3.2 (walk-data.mjs, 42 pasos):
 //  1. GUARDAR / CARGAR en mitad de cada acto: en varios puntos guarda, empieza una partida nueva, carga, comprueba que el
 //     estado es idéntico (inventario sin duplicados, flags, sala), que cargar NO relanza escenas de una vez (ni una línea
 //     nueva en el registro) y sigue hasta el final (juego_terminado).
@@ -87,7 +87,7 @@ const snap = () => G(() => { const s = __game.state(); return { room: s.room, in
 async function saveLoad() {
   console.log('\n1. Guardar / cargar en mitad de cada acto y seguir hasta el final\n');
   await fresh();
-  const CP = args.rapido ? [13, 29, 42] : [5, 9, 13, 20, 21, 25, 27, 29, 33, 34, 37, 38, 40, 42, 43];
+  const CP = args.rapido ? [13, 26, 38] : [5, 9, 13, 16, 19, 20, 22, 25, 26, 27, 30, 31, 34, 35, 37, 38, 39];   // recorrido del plan §3.2
   for (const s of STEPS) {
     if (s.n === 1) continue;
     await step(s.n);
@@ -129,16 +129,16 @@ async function duels() {
   await fresh();
   for (const s of STEPS) {
     if (s.n === 1) continue;
-    if (s.n === 29) { await R.travel('ecosistema'); await R.run(['dar', 'planillo', 'maripaz_remitido']); await loseDuel('D1 Maripaz'); }
-    if (s.n === 35) { await R.travel('catacumba'); await R.run(['verbo', 'hablar', 'teodoro_cuerpodoce']); await R.run(['opcion', 'Quiero firmar en tu página 7.']); await loseDuel('D2 Teodoro'); }
-    if (s.n === 43) { await R.travel('office'); await R.run(['verbo', 'hablar', 'gervasio_acta']); await R.run(['opcion', 'Necesito el acta de la última reunión.']); await loseDuel('D3 Gervasio'); }
-    if (s.n === 45) {
+    if (s.n === 26) { await R.travel('sala_amazonas'); await R.run(['verbo', 'hablar', 'maripaz_remitido']); await R.run(['opcion', 'La página 7 está pendiente desde marzo.']); await loseDuel('D1 Maripaz'); }
+    if (s.n === 31) { await R.travel('catacumba'); await R.run(['verbo', 'hablar', 'teodoro_cuerpodoce']); await R.run(['opcion', 'Quiero firmar en tu página 7.']); await loseDuel('D2 Teodoro'); }
+    if (s.n === 39) { await R.travel('pajarera'); await R.run(['verbo', 'hablar', 'gervasio_acta']); await R.run(['opcion', 'Necesito el acta de la última reunión.']); await loseDuel('D3 Gervasio'); }
+    if (s.n === 41) {
       await loseDuel('D4 Íñigo');
       await R.run(['verbo', 'hablar', 'inigo_sinergia']);
       ok(!!(await state()).duel, 'D4: Hablar con Íñigo reabre el duelo');
     }
     await step(s.n);
-    if ([29, 35, 43, 45].includes(s.n)) ok(true, `paso ${s.n}: el duelo se gana al segundo intento`);
+    if ([26, 31, 39, 41].includes(s.n)) ok(true, `paso ${s.n}: el duelo se gana al segundo intento`);
   }
   const st = await state();
   ok(st.mode === 'title' && st.finished && st.finished.flags.juego_terminado, 'con los cuatro duelos perdidos una vez, la partida llega al final');
@@ -184,12 +184,12 @@ async function everyItem(tag) {
 async function objects() {
   console.log('\n3. Dar / Usar cada objeto con cada PNJ y hotspot\n');
   await fresh();
-  const at = args.rapido ? { 29: 'ACTO II' } : { 13: 'ACTO I', 29: 'ACTO II', 42: 'ACTO III' };
+  const at = args.rapido ? { 26: 'ACTO II' } : { 13: 'ACTO I', 26: 'ACTO II', 38: 'ACTO III' };
   for (const s of STEPS) {
     if (s.n === 1) continue;
     await step(s.n);
     if (at[s.n]) await everyItem(at[s.n]);
-    if (s.n === (args.rapido ? 29 : 42)) break;
+    if (s.n === (args.rapido ? 26 : 38)) break;
   }
 }
 

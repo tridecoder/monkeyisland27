@@ -559,8 +559,9 @@ const layout = {
   carteles_amazonas: { rect: [38, 57, 74, 35], walkTo: [70, 114], face: 'up' },
   orden_del_dia: { rect: [118, 18, 128, 46], walkTo: [182, 124], face: 'up', draw: drawOrden },
   proyector: { rect: [170, 0, 26, 14], walkTo: [182, 124], face: 'up', priority: 2, layer: 'front', draw: drawProyector },
-  planillo_bajo_maripaz: { rect: [MARIPAZ_AT[0] + 2, 77, 14, 9], walkTo: [94, 124], face: 'right', priority: 3, layer: 'sorted', zy: 107, draw: drawPlanilloBajo },
-  botellines: { rect: [114, 80, 60, 13], walkTo: [144, 124], face: 'up', priority: 1, layer: 'sorted', zy: 106, prop: true, draw: drawBotellines },
+  planillo_bajo_maripaz: { rect: [MARIPAZ_AT[0] + 2, 76, 14, 10], walkTo: [94, 124], face: 'right', priority: 3, layer: 'sorted', zy: 107, draw: drawPlanilloBajo },
+  botellines: { rect: [137, 80, 37, 13],   // [integrador] sin pisar el planillo (solape ≤ 30 %)
+  walkTo: [144, 124], face: 'up', priority: 1, layer: 'sorted', zy: 106, prop: true, draw: drawBotellines },
   minicruasanes: { rect: [194, 83, 30, 10], walkTo: [210, 124], face: 'up', priority: 1, layer: 'sorted', zy: 108, draw: drawCruasanes },
   // ADENDA §3.9: la tele (muerta en el Acto III, cuando el objeto se oculta) y la caja de cables, sobre la credencia
   tele_amazonas: { rect: [244, 17, 36, 37], walkTo: [262, 124], face: 'up', prop: true, draw: drawTele },

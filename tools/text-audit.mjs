@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// AUDITORÍA DE TEXTOS (QA): juega el walkthrough 5.4 en modo rápido y, en tres momentos (Actos I, II y III), prueba los
+// AUDITORÍA DE TEXTOS (QA): juega el recorrido del plan de comedia (42 pasos) en modo rápido y, en tres momentos (Actos I, II y III), prueba los
 // 9 verbos con TODO lo visible de las 10 salas (saliendo de diálogos con su despedida); recoge cada línea dicha
 // (`__game.log`) y comprueba:
 //   · ninguna intervención de más de 80 caracteres (biblia §0);
@@ -134,7 +134,7 @@ await collect();
 for (const s of STEPS) {
   if (s.n > 1) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); }
   await collect();
-  if ([13, 29, 42].includes(s.n)) await everything();
+  if ([13, 26, 38].includes(s.n)) await everything();     // Actos I, II (tras D1) y III (Rubén libre)
 }
 await collect();
 
@@ -146,6 +146,7 @@ const NAME_RULES = [[/\bInigo\b/, 'Íñigo'], [/\bÍnigo\b/, 'Íñigo'], [/\bBeg
   [/\bReticula\b/, 'Retícula'], [/\belcontable|\bEl ?Contable\.es|\bElContable/, 'elContable.es / «el Contable»'], [/\bCatacumbas\b/, 'Catacumba'], [/\bTeodor\b/, 'Teodoro']];
 texts.forEach((t, i) => {
   const who = lines.get(t).who;
+  if (who === 'tarjeta') return;     // la tarjeta FE DE ERRATAS (plan §9) es una pantalla fija, no un globo
   if (t.length > 80) long.push(`[${t.length}] ${who}: ${t}`);
   if (widths[i] > 3) tall.push(`[${widths[i]} renglones] ${who}: ${t}`);
   // signos de apertura, frase a frase (los rótulos del narrador y las pantallas en MAYÚSCULAS también cuentan)
@@ -169,7 +170,7 @@ const PROHIBIDAS = /pajarera|office|nerea/i;
 // «Dirección» como nombre de la sala de los despachos (orden del director: se llama «Despachos»)
 const DIR_FRASE = /\b(puerta|pasillo|cristal|placa|despacho|perchero|mueble) de (la )?Direcci[oó]n\b/i, DIR_PLACA = /^\s*(1 )?DIRECCIÓN\s*$/;
 const DIR_SALA = { test: (t) => DIR_FRASE.test(t) || DIR_PLACA.test(t) };
-const esId = (t) => /^[A-Za-z0-9_.:\-/]+$/.test(t) || /^(bool|int|str|num|flag)\b.*·/.test(t);
+const esId = (t) => /^!?[A-Za-z0-9_.:\-/]+$/.test(t) || /^(bool|int|str|num|flag)\b.*·/.test(t);
 // el gag de Desarrollo es VELADO (adenda §17, orden del director): nada visible puede nombrar el tema ni ponerlo sobre la mesa
 const VELADO = /feminis|machis|igualdad|brecha|compañeras|8 de marzo|\b8M\b|en morado|logo morado|\bda[rn]? voz\b/i;
 const prohibidas = [];
