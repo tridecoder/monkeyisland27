@@ -142,18 +142,12 @@ function rvAlCorreo(api) {
   if (n !== Number(api.flag('tadeo_rv_n') || 0)) api.setFlag('tadeo_rv_n', n);
   return n;
 }
-/** [E2: retirar en integración] puentes mientras las salas no estén adaptadas a E2. */
-function puenteE2(api) {
-  // la opción «¿Para qué me ha llamado?» de Evaristo (Administración, P3) aún pide `evaristo_convoco`, que ponía la L2
-  if (api.flag('acto_2_iniciado') && !api.flag('evaristo_convoco')) api.setFlag('evaristo_convoco', true);
-}
 /** Escena común `avisos`: un aviso como mucho por entrada en sala. La lanza el motor (`afterEnter`); también se puede
  *  invocar a mano con `await api.scene('avisos')` (p. ej. al acabar una escena larga que quieras dejar pasar). */
 async function avisos(api) {
   const g = api.game;
   if (api.flag('juego_terminado')) return false;
   rvAlCorreo(api);
-  puenteE2(api);
   if (g.avisoEntryN === g.entryN) return false;                               // ya ha salido uno en esta entrada
   if (g.cutscene > 0 || g.inDialog) return false;
   if (api.room === 'sala_amazonas' && api.flag('acto_3_iniciado')) return false;
@@ -175,9 +169,9 @@ const afterEnter = (api) => avisos(api);
 // ------------------------------------------------------------------ plan §3.4 + E2 §10.2: partidas guardadas antiguas
 // Objetos y flags retirados en la reescritura de comedia y en la E2. Idempotente: el motor la llama en cada carga.
 const FLAGS_RETIRADOS = ['leoncio_acepta_alta', 'bandeja_diseno_abierta', 'rumor_atun_n', 'rumor_plaza_n', 'gertrudis_error_indice',
-  'evaristo_lc'];                                         // E2 §5.3: la LC ya no existe
-/** [E2: retirar en integración] se borrarán de las partidas cuando ninguna sala los lea (§10.2): pasarlos a FLAGS_RETIRADOS. */
-export const FLAGS_E2_PENDIENTES = ['rumor_firma_n', 'planta_oyo', 'evaristo_convoco'];
+  'evaristo_lc',                                          // E2 §5.3: la LC ya no existe
+  'rumor_firma_n', 'planta_oyo',                          // E2 fase B (1): el rumor A desaparece
+  'evaristo_convoco', 'pecera_nemesio_saludo'];           // E2 §10.2: sin lector (la L2 y Nemesio ya no existen)
 function migrarPartida(st) {
   const inv = Array.isArray(st.inventory) ? st.inventory : (st.inventory = []);
   const fl = st.flags || (st.flags = {});
@@ -197,7 +191,11 @@ function migrarPartida(st) {
   // E2 §5.3: con la coma cerrada por la vía antigua (LC o E_ENVIO), el correo impreso que ahora es objeto
   if (fl.correo_evaristo_listo && !fl.duelo_inigo_ganado && !inv.includes('correo_evaristo')) inv.push('correo_evaristo');
   if (fl.correo_evaristo_listo) fl.coma_bendecida = true;
+  // E2 §5.3 (P3): la coma solo está bendecida si el correo salió por el fax; una bendición suelta de la vía antigua
+  // (Aurora sin escuchar a Evaristo) se deshace para que el paso 32 se pueda jugar
+  if (fl.coma_bendecida && !fl.correo_evaristo_listo) fl.coma_bendecida = false;
   for (const k of FLAGS_RETIRADOS) delete fl[k];
+  if (st.actors) for (const id of ['nerea_backlog', 'borja_engagement']) delete st.actors[id];   // E2 §2.6 y §3: ya no existen
   return st;
 }
 

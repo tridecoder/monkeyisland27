@@ -246,21 +246,6 @@ export default {
       'Ahí al lado imprimen lo que yo publiqué ayer. Con las faltas corregidas.',   // orden 2: la Redacción de papel, al lado
       'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.'],
   },
-  // [E2: retirar en integración] ENMIENDA E2 §2.6: Nemesio DESAPARECE (se funde en Anselmo). Se queda declarado solo
-  // porque la Redacción (P2) y el recorrido antiguo de 42 pasos aún lo colocan y le hablan; cuando P2 lo quite de
-  // `pecera.js` (actors, arte y diálogos), se borra esta entrada. No escribáis nada nuevo para él.
-  // Nemesio Backlog (id histórico `nerea_backlog`: el personaje se llamó Nerea hasta que dirección pidió que Desarrollo
-  // fuera solo de hombres; el id no se toca para no romper partidas, pruebas ni flags). El dueño del kanban: chaleco de
-  // punto MOSTAZA, pósits pegados en la manga, rotulador azul detrás de la oreja, pelo de punta y barba de tres días.
-  nerea_backlog: {
-    name: 'Nemesio', color: '#7FE08A', speed: 60,
-    doll: {
-      skin: '#e0aa84', hair: '#2e1c14', hairStyle: 'spiky', beard: 'stubble', shirt: '#ece4d4', vest: '#d4a020',
-      sleeveNotes: '#f0e050', pencil: true, pencilColor: '#3070d0', pants: '#4a3a32', shoes: '#2a1a14', height: 1.02, build: 'normal',
-    },
-    murmurs: ['Esto a POR HACER. Esto a BLOQUEADO. Esto a la basura, pero con cariño.', 'Mañana es sábado. Lo dice la ferretería.',
-      'No hay urgentes. Hay POR HACER escrito más fuerte.'],   // [integrador] fuera los dos murmullos con «Diseño» (tope §5.14)
-  },
   teodoro_cuerpodoce: {
     // No habla: sus líneas salen del fax (prefijo «TEODORO (fax):», §3.4). Solo habla en voz alta al teléfono rojo.
     name: 'Teodoro', color: '#D9CFA6', speed: 44,
@@ -305,19 +290,6 @@ export default {
       armbands: '#34343e', prop: 'stamps', skirt: '#3a3448', shoes: '#2a1a24', lipstick: '#b03040', earrings: '#e0c050', height: 0.95,
     },
     murmurs: ['Original. Duplicado. Triplicado. Original. Duplicado...', 'Las 19:07. Qué rápido pasa la tarde. No pasa.'],
-  },
-  // [E2: retirar en integración] ENMIENDA E2 §3: Borja DESAPARECE como personaje: queda su aro de luz con el móvil
-  // (`aro_borja`, objeto de Marketing, P4; voz con api.pantalla('aro_borja', …) / sayFrom, color #4FD8E8). Se queda
-  // declarado solo porque Marketing y Eventos (P4) y el extra X17 aún lo usan; cuando P4 lo quite, se borra.
-  // Marketing (problema 8 del director): sin cámara ni acreditaciones (eso es de Eventos). Flipado de manual: móvil en
-  // la mano como si fuera un micro, tupé, americana eléctrica y zapatillas blancas.
-  borja_engagement: {
-    name: 'Borja', color: '#4FD8E8', speed: 72,
-    doll: {
-      skin: '#e8b890', hair: '#2a1810', hairStyle: 'quiff', shirt: '#f2f2f2', jacket: '#1e5adc',
-      prop: 'phone', propColor: '#202024', pants: '#2a3048', shoes: '#ffffff', build: 'slim', height: 1.04,
-    },
-    murmurs: ['Esto es contenido. Aquello es contenido. ¿Tú eres contenido?', 'Si no está en vertical, no ha pasado.'],
   },
   // EVENTOS (problema 8): Pilar Escaleta. Negro de equipo técnico, cascos con micro, walkie al cinto, la escaleta en
   // una carpeta, seis acreditaciones al cuello y cinta americana en la muñeca. Todo está «a cinco minutos de empezar».

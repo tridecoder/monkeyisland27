@@ -4,7 +4,7 @@
 //  · §3.5 (C7): Borja ya no existe; el «descopear» lo publica su móvil, oído por la puerta de Marketing
 //    (`movilBorjaSeOye`; Pilar: «¡Ese móvil!»). Fuera «O sea, quitado del plan» y «Me lo apunto. Por si acaso.».
 //  · §7.6: `once: true` en «¿Para qué es el photocall?» y «¿Hay catering?» (sin tocar el texto).
-//  · §7.4 (pasos 23 y 39): fuera el rumor C de Pilar (la cadena queda Aurora → Maripaz → Teodoro).
+//  · El rumor C de Pilar se queda (orden del dueño, Eventos protegida) como gag suelto: ya no suma a la cadena.
 const PILAR = 'pilar_escaleta';
 const sayP = (api, t) => api.sayAs(PILAR, t);
 const movilBorja = (api, t) => api.pantalla('eventos_a_ecosistema', t);   // E2 §3.5: #4FD8E8, sin prefijo
@@ -33,6 +33,12 @@ export default {
   pilar: {
     actor: PILAR, start: 'PE0',
     onStart: async (api) => {
+      // rumor C de Pilar (restaurado en la integración de E2: Eventos está protegida). Gag autónomo: sale una vez, con
+      // el Acto II empezado; ya no suma a la cadena (Aurora → Maripaz → Teodoro) y su marca es local a Eventos.
+      if (api.flag('acto_2_iniciado') && api.once('eventos_pilar_rumor')) {
+        await sayP(api, 'Teodoro tiene acreditación vitalicia. Del 97. Plastificada a mano.');
+        await sayP(api, 'Dicen que el edificio lo compró él. Por fax. Con acuse de recibo.');
+      }
       await frente(api, PILAR);
       await sayP(api, '¿Vienes acreditado? Empezamos en cinco minutos.');
     },

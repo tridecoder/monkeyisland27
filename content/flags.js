@@ -26,10 +26,10 @@ for (const [k, v] of Object.entries(repInfo)) reps[k] = `bool · ${v} (con api.l
 
 // Flags de la adenda (§6.2): se inicializan en game.js `startFlags` (contadores a 0, booleanos a false).
 export const ADENDA_FLAGS = [
-  'evaristo_llamadas', 'evaristo_convoco', 'evaristo_escuchado',   // [E2: retirar en integración] evaristo_convoco (evaristo_lc ya no se inicializa) 'coma_bendecida', 'correo_evaristo_listo', 'tadeo_rv_n',
+  'evaristo_llamadas', 'evaristo_escuchado', 'coma_bendecida', 'correo_evaristo_listo', 'tadeo_rv_n',
   'portatil_tadeo_n', 'anselmo_dijo_regla', 'herminia_de_alta', 'infografia_integrada',
-  'custodia_regla', 'boli_muerto_cogido', 'custodia_ablandada', 'planta_oyo', 'planta_empujada_n',
-  'rejilla_n', 'hoja_reservas_n', 'tele_n', 'rumor_firma_n', 'rumor_teodoro_n',   // [E2: retirar en integración] rumor_firma_n, planta_oyo
+  'custodia_regla', 'boli_muerto_cogido', 'custodia_ablandada', 'planta_empujada_n',
+  'rejilla_n', 'hoja_reservas_n', 'tele_n', 'rumor_teodoro_n',   // E2 (integración): fuera rumor_firma_n, planta_oyo, evaristo_convoco
   'cuadro_plazas_n', 'piel_platano_n', 'rep_15', 'rep_16',
   // ENMIENDA E2 §10.2 (altas): contadores a 0 y booleanos a false desde el principio
   'office_error_n', 'aro_borja_hablar_n', 'aro_borja_mirar_n', 'maripaz_empujon_n', 'maripaz_popup_n',
@@ -95,14 +95,9 @@ export default {
   // ---------------------------------------------------------------- ADENDA «guiños de la casa» (§6.2): todos opcionales
   // (el walkthrough 5.4 no lee ninguno). Contadores = int, valor inicial 0; booleanos, false.
   evaristo_llamadas: 'int · A · común (avisos, game.js) · +1 por llamada de Evaristo (2.1) · A (cola de avisos, saludo de la abuela), C (línea opcional de 7.3a, ≥ 3)',
-  // [E2: retirar en integración] sin lector en E2 (§10.2): la L2 se ha eliminado; mientras Administración (P3) lo lea,
-  // game.js lo pone solo al entrar en una sala con acto_2_iniciado (puente; ver content/game.js `puenteE2`)
-  evaristo_convoco: 'bool · P0 · game.js (puente E2: con acto_2_iniciado) · P3 (E0, opción 1, hasta reescribirla)',
   evaristo_escuchado: 'bool · P3 · administracion · E_REVELA, paso 28 (E2 §5.2) · P3 (Aurora, paso 32), P0 (pistas, ficha), P1 (armario, §5.4)',
   coma_bendecida: 'bool · P3 · catacumba · Aurora, paso 32 (E2 §5.3; a la vez que correo_evaristo_listo) · P3 (E0), P4 (clímax), P0 (pistas, ficha)',
   correo_evaristo_listo: 'bool · P3 · catacumba · paso 32, con give(correo_evaristo) (E2 §5.3) · P3 (E0 «¿Ha enviado ya el correo?»), P4 (clímax), P2 (titular); P1 (epílogo) deja de leerlo',
-  // [E2: retirar en integración] la llamada LC ya no existe (E2 §5.3: el fax la sustituye); nadie lo pone
-  evaristo_lc: 'bool · (retirado en E2) · nadie · nadie',
   tadeo_rv_n: 'int · P0 · game.js (sin aviso, E2 §7.4: llegan solos al correo al entrar en sala) · RV: que ya han llegado · P0 (Mirar movil, correo del móvil), P3 (murmullo de Aurora)',
   portatil_tadeo_n: 'int · D · ecosistema · +1 por Mirar portatil_tadeo · D',
   anselmo_dijo_regla: 'bool · P2 · pecera · momento 8 «Dos IAs» (E1.4.2) · P1 (Paco P_ALTA, MP1)',
@@ -111,13 +106,11 @@ export default {
   custodia_regla: 'bool · C · office · CU_PARAQUE opción 4 · C (bolis_aurora, CU_CADAVER, Aurora)',
   boli_muerto_cogido: 'bool · C · catacumba · Coger bolis_aurora · C (no se vuelve a dar)',
   custodia_ablandada: 'bool · C · office · CU_DA · C (CU_DONDE), B (titular), A (créditos)',
-  planta_oyo: 'bool · A · vestibulo · Hablar planta_plastico · A (Mirar planta; arranque del rumor A) · [E2: retirar en integración si no tiene otro lector] (fase B (1))',
   planta_empujada_n: 'int · A · vestibulo · +1 por Empujar planta_plastico · A',
   rejilla_n: 'int · A · cpd · +1 por Usar rejilla_cpd · A',
   hoja_reservas_n: 'int · B · pajarera · +1 por Mirar hoja_reservas · B',
   tele_n: 'int · D · sala_amazonas · +1 por Usar tele_amazonas / caja_cables · D',
-  rumor_firma_n: 'int · A, C, D, B · lo suma quien cuenta el rumor A (8.1) · el siguiente de la cadena, A (epílogo, ≥ 4) · [E2: retirar en integración] (fase B (1): el rumor A desaparece)',
-  rumor_teodoro_n: 'int · C, B, D · lo suma quien cuenta el rumor C (8.3) · el siguiente de la cadena, C (Teodoro, = 3)',
+  rumor_teodoro_n: 'int · P3, P4 · lo suma quien cuenta el rumor C (E2 §7.5: Aurora → 1, Maripaz en Marketing → 2) · el siguiente de la cadena, P3 (desmentido de Teodoro, ≥ 2)',
   cuadro_plazas_n: 'int · A · vestibulo · +1 por Mirar cuadro_plazas · A',
   piel_platano_n: 'int · D · ecosistema · +1 por Mirar piel_platano · D',
 
