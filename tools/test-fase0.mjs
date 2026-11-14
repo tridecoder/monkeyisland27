@@ -10,7 +10,10 @@
 //   · movimiento: doble clic en salida = salir ya; doble clic en el suelo = correr (≥ 2×); mantener pulsado = seguir;
 //     los paseos de guion no corren; un PNJ que anda se para mientras se le apunta;
 //   · efectos: apagón, estampida, megafonía (y Celestino por la megafonía del ascensor), viral, titular, tarjeta final,
-//     Bruno con la chaqueta de Ramírez (variante por flag y api.vestir); sin selector de dificultad.
+//     Bruno con la chaqueta de Ramírez (variante por flag y api.vestir); sin selector de dificultad;
+//   · ENMIENDA E2: despedidas una sola vez, pop-up de la X menguante y anuncio con cuenta atrás (capturas
+//     tools/shots/e2-fase0-*.png), api.pantalla con «HERMINIA (IA) › », Bruno con el adhesivo (y con la chaqueta),
+//     objetivos «coma» y «bendicion», notas a lápiz de la ficha, objeto correo_evaristo y migración de partidas.
 //   node tools/test-fase0.mjs
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -174,11 +177,11 @@ try {
   await G(() => { __game.giveItem('ficha_pagina_7'); __game.setFlag('cms_vivo', false); __game.game.state.flags['obj:cms'] = false; });
   const ficha = () => G(async () => { __game.clearLog(); await __game.doVerb('mirar', 'ficha_pagina_7'); return __game.log.filter(l => l.who === 'bruno').map(l => l.text); });
   let F = await ficha();
-  ok(F[0] === 'Ficha de la página 7. Hueco, fuente, firma.' && F.includes('HUECO: vendida a Siestatón desde marzo. Se decide en la Sala Amazonas.') && F.includes('FUENTE: dos fuentes, dice Aurora. Tengo cero.') && F.includes('FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.') && F.includes('Al margen, a lápiz: «Arriba no me atiende nadie. El CMS está en coma».'), 'ficha (estado inicial): casillas pendientes y la nota al margen');
+  ok(F[0] === 'Ficha de la página 7. Hueco, fuente, firma.' && F.includes('HUECO: vendida a Siestatón, sin confirmar. Lo decide la Sala Amazonas.') && F.includes('FUENTE: dos fuentes, dice Aurora. Tengo cero.') && F.includes('FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.') && F.includes('Al margen, a lápiz: «Arriba no me atiende nadie. El CMS está en coma».'), 'ficha (estado inicial): casillas pendientes y la nota al margen');
   const icon0 = await G(() => __game.game.content.items.ficha_pagina_7.iconKey(__game.game.viewFor()));
   await G(() => { for (const f of ['reunion_terminada', 'fax_con_papel', 'cms_vivo', 'casilla_fuente', 'pieza_escrita']) __game.setFlag(f, true); __game.giveItem('fotocopia_nota_direccion'); });
   F = await ficha();
-  ok(F.includes('HUECO: la reunión ha acabado. Maripaz no. Sigue sentada en el planillo.') && F.includes('FUENTE, hecho: una anónima y otra con IVA.') && F.includes('FIRMA: el fax ya habla. Ahora hay que ganárselo contestando.') && F.includes('PIEZA: treinta y una líneas. El faldón, veintitrés. Me sobran ocho.') && !F.some(x => x.startsWith('Al margen')), 'ficha (a medias): lo hecho, corto; lo pendiente, qué falta; la pieza');
+  ok(F.includes('HUECO: la reunión ha acabado. Maripaz no. Sigue sentada en el planillo.') && F.includes('FUENTE, hecho: una anónima y otra con IVA.') && F.includes('FIRMA: el fax ya habla. Ahora hay que ganárselo contestando.') && F.includes('PIEZA: treinta y una líneas. El hueco, veintitrés. Me sobran ocho.') && !F.some(x => x.startsWith('Al margen')), 'ficha (a medias): lo hecho, corto; lo pendiente, qué falta; la pieza');
   const icon1 = await G(() => __game.game.content.items.ficha_pagina_7.iconKey(__game.game.viewFor()));
   ok(icon0 !== icon1, `el icono de la ficha refleja el progreso (${icon0} → ${icon1})`);
   await G(() => { __game.skipText(false); __game.game.runScript(a => a.say(['FUENTE, hecho: una anónima y otra con IVA.'])); });
@@ -186,7 +189,7 @@ try {
   await G(() => { __game.skipText(true); return __game.waitIdle(); });
   await G(() => { for (const f of ['casilla_hueco', 'casilla_firma', 'pieza_recortada']) __game.setFlag(f, true); });
   F = await ficha();
-  ok(F.includes('HUECO, hecho: Siestatón, a la web. El faldón es mío. Veintitrés líneas.') && F.includes('FIRMA, hecho: «Trece con espacios. Cabe.»') && F.includes('PIEZA: veintitrés líneas. Lista para Teodoro.'), 'ficha (completa): tres casillas hechas y la pieza lista');
+  ok(F.includes('HUECO, hecho: Siestatón, a la web. Veintitrés líneas abajo, mías.') && F.includes('FIRMA, hecho: «Trece con espacios. Cabe.»') && F.includes('PIEZA: veintitrés líneas. Lista para Teodoro.'), 'ficha (completa): tres casillas hechas y la pieza lista');
   // la hora, por hitos
   await G(() => __game.newGame()); await G(() => __game.waitIdle());
   const hora = () => G(() => __game.game.condApi().hora());
@@ -304,7 +307,7 @@ try {
   ok(await until(G, () => __game.log.some(l => l.text === '¡Usted primero!'), null, 10000), 'estampida: atasco en la puerta con su línea');
   await shot(page, 'estampida-atasco');
   await G(() => __game.waitIdle());
-  ok(await G(() => ['gervasio_acta', 'yoli_tendencias', 'nerea_backlog'].every(id => __game.game.actors[id].room === null)), 'estampida: salen los tres (de uno en uno)');
+  ok(await G(() => ['gervasio_acta', 'yoli_tendencias', 'anselmo_monolito'].every(id => __game.game.actors[id].room === null)), 'estampida: salen los tres (de uno en uno)');
   await G(() => __game.scene('demo_megafonia'));
   ok(await G(() => __game.log.some(l => l.who === 'celestino' && l.tag === 'MEGAFONÍA')), 'megafonía: la voz de Celestino sin Celestino en pantalla');
   G(() => __game.scene('demo_viral'));
@@ -343,11 +346,113 @@ try {
   await until(G, () => __game.state().dialog);
   await G(() => __game.chooseText('-1'));
   await G(() => __game.waitIdle());
-  ok(await G(() => __game.log.some(l => l.who === 'celestino' && l.tag === 'MEGAFONÍA' && l.text === '¡Apagón desde el banquillo de Sistemas! ¡Y arriba ni se enteran!')), 'ascensor: Celestino narra la última hazaña por la megafonía (§4.7)');
+  // E2 §7.4: el hito del apagón (cms_vivo) ya no se narra; narra el más reciente que queda (el torno)
+  ok(await G(() => __game.log.some(l => l.who === 'celestino' && l.tag === 'MEGAFONÍA' && l.text === '¡Vacante supera al torno! ¡Por la banda! ¡Con chicle! ¡Qué técnica!')
+    && !__game.log.some(l => /Apagón desde el banquillo/.test(l.text))), 'ascensor: Celestino narra la última hazaña por la megafonía (§4.7; E2: sin el apagón)');
   // sin selector de dificultad
   await G(() => __game.game.toggleMenu()); await wait(150);
   ok(await G(() => !(__game.game.menu.layout || []).some(it => /Dificultad/.test(it.label))), 'el menú de pausa ya no tiene el selector de dificultad (crítica §6.7)');
   await G(() => __game.game.toggleMenu());
+
+  // ================================================================ ENMIENDA E2 (paquete común)
+  console.log('\nENMIENDA E2: despedidas, anuncios, pantalla con prefijo, adhesivo de Bruno, pistas, migración');
+  await G(() => __game.newGame()); await G(() => { __game.skipText(true); return __game.waitIdle(); });
+  await page.evaluate(async (base) => {          // la demo otra vez (newGame recoloca a los actores)
+    const g = __game.game, R = window.__demo;
+    for (const p of R.actors) { const a = g.actors[p.id]; const L = R.layout[p.id]; a.room = R.id; a.x = L.at[0]; a.y = L.at[1]; a.dir = L.at[2]; a.visible = true; a.path = []; }
+  }, base);
+  await enter();
+  // §7.2 despedidas una sola vez (el `do` corre igual)
+  const despedida = async (pre) => {
+    await G(() => { __game.clearLog(); });
+    G(() => __game.doVerb('hablar', 'celestino'));
+    await until(G, () => __game.state().dialog);
+    if (pre) { await G(t => __game.chooseText(t), pre); await until(G, () => __game.state().dialog); }
+    await G(() => __game.chooseText('Me voy.')); await G(() => __game.waitIdle());
+    return G(() => __game.log.map(l => l.text));
+  };
+  let Ld = await despedida();
+  ok(Ld.includes('Me voy.') && Ld.includes('Abrígate, que refresca.') && Ld.includes('¡Y cierra al salir!') && (await G(() => __game.state().flags.demo_fase0_despedidas)) === 1,
+    'despedida, 1.ª vez: se oye entera (Bruno, la respuesta y lo que dice su `do`)');
+  Ld = await despedida('¿Qué tal el Ibex?');
+  ok(Ld.includes('Plano, chaval.') && !Ld.includes('Me voy.') && !Ld.includes('Abrígate, que refresca.') && !Ld.includes('¡Y cierra al salir!')
+    && (await G(() => __game.state().flags.demo_fase0_despedidas)) === 2, 'despedida, 2.ª vez: cierra en silencio y su `do` se ejecuta igual (contador 2)');
+  ok(await G(() => __game.game.state.dialogs['despedida_oida:demo_desp.Me voy.'] === true && !Object.keys(__game.state().flags).some(k => k.startsWith('despedida_oida'))), 'la marca es interna (state.dialogs), no un flag');
+  // §4.2.1 el pop-up de la X menguante
+  await G(() => __game.skipText(false));
+  G(() => __game.scene('demo_popup'));
+  ok(await until(G, () => __game.state().detalle && __game.state().detalle.cerrarX === 3), 'pop-up 1.ª vez: la X mide 3 px');
+  await wait(700); await page.screenshot({ path: path.join(shots, 'e2-fase0-popup-x3.png') });
+  await G(() => { __game.skipText(true); return __game.waitIdle(); }); await G(() => __game.skipText(false));
+  G(() => __game.scene('demo_popup'));
+  ok(await until(G, () => __game.state().detalle && __game.state().detalle.cerrarX === 1), 'pop-up 2.ª vez: la X es un punto (1 px)');
+  await wait(700); await page.screenshot({ path: path.join(shots, 'e2-fase0-popup-x1.png') });
+  await G(() => { __game.skipText(true); return __game.waitIdle(); }); await G(() => __game.skipText(false));
+  G(() => __game.scene('demo_popup'));
+  ok(await until(G, () => __game.state().detalle && __game.state().detalle.cerrarX === 0 && __game.state().detalle.cuenta === 3000), 'pop-up 3.ª vez: sin X y con cuenta atrás de 3 s');
+  await wait(900);
+  ok(await G(() => __game.state().detalle.bloqueado), 'durante la cuenta atrás el plano está bloqueado');
+  await click(page, G, 160, 100); await wait(200);
+  ok(await G(() => !!__game.state().detalle), 'un clic durante la cuenta atrás no lo cierra');
+  await page.screenshot({ path: path.join(shots, 'e2-fase0-popup-cuenta.png') });
+  await until(G, () => !__game.state().detalle.bloqueado, null, 4000);
+  await click(page, G, 160, 100);
+  ok(await until(G, () => !__game.state().detalle, null, 1500), 'acabada la cuenta atrás, un clic lo cierra');
+  await G(() => __game.waitIdle());
+  // §4.2.4 el anuncio antes de entrar
+  G(() => __game.scene('demo_anuncio'));
+  await until(G, () => !!__game.state().detalle); await wait(1500);
+  await click(page, G, 160, 100); await wait(200);
+  ok(await G(() => !!__game.state().detalle && __game.state().detalle.titulo === 'ANUNCIO'), 'anuncio antes de entrar: el clic no lo cierra antes de los 5 s');
+  await page.screenshot({ path: path.join(shots, 'e2-fase0-anuncio-cuenta.png') });
+  await until(G, () => !__game.state().detalle || !__game.state().detalle.bloqueado, null, 5000); await wait(300);
+  await page.screenshot({ path: path.join(shots, 'e2-fase0-anuncio-saltar.png') });
+  await click(page, G, 160, 100);
+  ok(await until(G, () => !__game.state().detalle, null, 1500), 'tras la cuenta atrás («Saltar anuncio ›»), un clic lo cierra');
+  await G(() => __game.waitIdle());
+  // §2.2 la pantalla de Herminia con su prefijo
+  await G(() => __game.clearLog());
+  G(() => __game.scene('demo_herminia'));
+  ok(await until(G, () => __game.game.speeches.some(s => s.text === 'HERMINIA (IA) › saludo recibido · hola: 100 %' && s.color === '#FF8C3C')), 'api.pantalla: «HERMINIA (IA) › …» en su color (#FF8C3C)');
+  await wait(400); await page.screenshot({ path: path.join(shots, 'e2-fase0-herminia.png') });
+  await G(() => { __game.skipText(true); return __game.waitIdle(); }); await G(() => __game.skipText(false));
+  ok(await G(() => __game.log.some(l => l.who === 'herminia_portatil' && l.text === 'HERMINIA (IA) › quesito de Desarrollo · suma: 130 %')), 'api.pantalla: un texto que ya empieza por «›» no duplica el signo');
+  // §4.2.3 el adhesivo en la espalda de Bruno (variante por flag, combinable con la chaqueta)
+  const spr = () => G(() => { const g = __game.game, p = g.player; return Object.entries(p.variants).find(([, v]) => v === g.spriteOf(p))?.[0] || null; });
+  await page.mouse.move(2, 2);                    // que el cursor no tape a Bruno en las capturas
+  await G(() => { __game.setFlag('bruno_con_banner', true); const p = __game.game.player; p.x = 330; p.y = 128; p.dir = 'up'; __game.game.snapCamera(); });
+  const brunoClip = async (name) => {               // recorte ampliado (la ventana va a 3×) alrededor de Bruno
+    const c = await G(() => { const p = __game.game.player; return __game.virtualToClient(p.x - __game.game.camX, p.y); });
+    await page.screenshot({ path: path.join(shots, `e2-fase0-${name}-zoom.png`), clip: { x: Math.max(0, c.x - 60), y: Math.max(0, c.y - 200), width: 120, height: 210 } });
+  };
+  ok(await spr() === 'con_banner', 'bruno_con_banner: Bruno sale con el adhesivo (variante con_banner)');
+  await wait(300); await page.screenshot({ path: path.join(shots, 'e2-fase0-bruno-banner-espalda.png') }); await brunoClip('bruno-banner-espalda');
+  await G(() => { __game.game.player.dir = 'left'; }); await wait(300); await page.screenshot({ path: path.join(shots, 'e2-fase0-bruno-banner-perfil.png') }); await brunoClip('bruno-banner-perfil');
+  await G(() => { __game.giveItem('chaqueta_ramirez'); __game.setFlag('bruno_con_chaqueta', true); __game.game.player.dir = 'up'; });
+  ok(await spr() === 'con_chaqueta_banner', 'con la chaqueta de Ramírez: chaqueta y adhesivo a la vez (con_chaqueta_banner)');
+  await wait(300); await page.screenshot({ path: path.join(shots, 'e2-fase0-bruno-banner-chaqueta.png') }); await brunoClip('bruno-banner-chaqueta');
+  await G(() => __game.setFlag('bruno_con_banner', false));
+  ok(await spr() === 'con_chaqueta', 'Aurora lo despega (bruno_con_banner = false): solo la chaqueta');
+  await G(() => { __game.setFlag('bruno_con_chaqueta', false); __game.takeItem('chaqueta_ramirez'); __game.game.player.dir = 'down'; });
+  // §10.3-10.4 pistas y ficha de la coma
+  await G(() => { __game.skipText(true); for (const f of ['torno_abierto', 'inigo_presentado', 'silla_libre', 'rep_11', 'gertrudis_saludada', 'acto_2_iniciado', 'cms_vivo', 'reunion_terminada', 'casilla_hueco', 'nota_gasto_presentada']) __game.setFlag(f, true); __game.giveItem('ficha_pagina_7'); });
+  ok(await G(() => __game.game.condApi().objetivo.actual('administracion') === 'coma' && __game.game.condApi().objetivo.meta('administracion') === 'Don Evaristo me ha llamado tres veces. Algo le quita el sueño.'), 'objetivo nuevo «coma» (paso 28) en Administración, con su meta');
+  F = await ficha();
+  ok(F.includes('Al margen, a lápiz: «Evaristo me ha llamado. Planta 2. Escucharle entero».'), 'ficha: nota a lápiz de Evaristo (sin escuchar)');
+  await G(() => { __game.setFlag('evaristo_escuchado', true); __game.setFlag('fax_con_papel', true); __game.setFlag('casilla_fuente', true); });   // (va tras «fuente» en la lista)
+  ok(await G(() => __game.game.condApi().objetivo.actual('catacumba') === 'bendicion'), 'objetivo nuevo «bendicion» (paso 32) en la Redacción de papel');
+  F = await ficha();
+  ok(F.includes('Al margen, a lápiz: «La coma de Evaristo, a Aurora».'), 'ficha: «La coma de Evaristo, a Aurora»');
+  await G(() => { __game.setFlag('coma_bendecida', true); __game.setFlag('correo_evaristo_listo', true); __game.giveItem('correo_evaristo'); });
+  F = await ficha();
+  ok(F.includes('Al margen, a lápiz: «El correo, en el momento oportuno».'), 'ficha: «El correo, en el momento oportuno» (con el correo en el inventario)');
+  await G(async () => { __game.clearLog(); await __game.doVerb('mirar', 'correo_evaristo'); });
+  ok(await G(() => __game.log.some(l => l.text === 'Asunto: «Una coma». Todos en copia. Envío: «en el momento oportuno».')), 'objeto nuevo correo_evaristo: Mirar');
+  // §10.2 migración de partidas guardadas (llamadas antiguas y la LC)
+  const mig = await G(() => __game.game.G.migrarPartida({ flags: { evaristo_llamadas: 3, evaristo_lc: true, correo_evaristo_listo: true }, inventory: [], once: {} }));
+  ok(mig.once['once:evaristo_L1'] && !mig.once['once:evaristo_L3'] && mig.inventory.includes('correo_evaristo') && !('evaristo_lc' in mig.flags) && mig.flags.coma_bendecida,
+    `migración: L1 oída, L3 pendiente, el correo pasa a objeto y fuera evaristo_lc (${JSON.stringify(mig.once)})`);
+  await G(() => { __game.skipText(false); });
 
   // ================================================================ iPhone horizontal: el duelo cabe
   console.log('\nTáctil (iPhone horizontal): el duelo cabe');

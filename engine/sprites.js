@@ -95,6 +95,7 @@ export function paperDoll(p = {}) {
     headset: null, earpiece: null, backpack: null, pocketItem: null, pocketKind: 'pen', prop: null, propColor: null,
     badges: 1, emblem: null, keys: null, epaulettes: null, scarfStripe: null, crumbs: null, dots: null, untucked: false,
     tieDots: null, loupe: null,       // tieDots: little marks on the tie (Evaristo's commas); loupe: magnifier on a cord
+    backSign: null, backSignBorder: '#c83030',   // [E2 §4.2.3] adhesivo «SU ANUNCIO AQUÍ» en la espalda (5×4, borde rojo)
     ...p,
   };
   const W = 28, H = 64, cx = 14;
@@ -418,6 +419,8 @@ export function paperDoll(p = {}) {
         const ch = ['#e0b030', '#c03030', '#30a0d0', '#f0f0f0'];
         [[-3, 2], [1, 3], [-1, 4], [2, 8], [-3, 9]].forEach(([dx, dy], i) => D(cx + dx, tl + dy, ch[i % ch.length]));
       }
+      // [E2] adhesivo en la espalda (sobre la mochila o, con la chaqueta, sobre la espalda): 5×4 con borde rojo
+      if (P.backSign) { const by = tl + (P.backpack ? 2 : 3); R(cx - 3, by, 5, 4, P.backSignBorder); R(cx - 2, by + 1, 3, 2, P.backSign); }
     }
     // belt
     if (P.untucked && !jacket && !skirt) { R(cx - (ww >> 1), waist, ww, 2, body[1]); R(cx + (ww >> 1) - 2, waist, 2, 2, body[0]); D(cx - 2, waist + 1, body[0]); }
@@ -553,6 +556,8 @@ export function paperDoll(p = {}) {
       else if (P.prop === 'phone') R(hx + 1, hy - 1, 2, 3, '#202028');
     }
     if (P.backpack) { const bc = r3(P.backpack); R(L - 3, top + 1, 4, 10, bc[1]); R(L - 3, top + 10, 4, 1, bc[0]); D(L - 3, top + 1, bc[2]); D(L - 2, top + 4, '#e0b030'); D(L - 3, top + 7, '#c03030'); }
+    // [E2] el adhesivo, de canto: asoma por la espalda (sobre la mochila o pegado a la chaqueta)
+    if (P.backSign) { const bx = P.backpack ? L - 4 : L - 2; R(bx, top + 3, 2, 4, P.backSignBorder); D(bx, top + 4, P.backSign); D(bx, top + 5, P.backSign); }
     if (P.hood) { const hc = r3(P.hood); R(L - 1, top - 2, 3, 4, hc[1]); D(L - 1, top - 2, hc[2]); }
     if (P.suspenders) R(L + sideW - 3, top, 1, torsoLen, P.suspenders);
     if (P.prop === 'folder' || P.prop === 'laptop') { const c = P.propColor || (P.prop === 'laptop' ? '#c8ccd4' : '#c0a060'); R(cx - 3, top + 5, 6, 2, c); }

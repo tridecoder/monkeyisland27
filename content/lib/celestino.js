@@ -6,16 +6,15 @@
 // Al narrar uno, los anteriores ya conseguidos se dan por narrados (nunca se cuentan hazañas viejas). Sin hito
 // pendiente devuelve false y la sala dice lo de siempre (el Ibex, la frase del ascensor).
 export const CELESTINO = 'celestino';
+// ENMIENDA E2 §7.4 (pasos 23, 27 y 37): fuera los hitos del apagón (cms_vivo), de D1 (casilla_hueco) y del recorte
+// (pieza_recortada). Las retransmisiones del torno y de Rubén en el Vestíbulo (fase B (8)) son de la sala (P1).
 export const HITOS = [
   ['torno_abierto', '¡Vacante supera al torno! ¡Por la banda! ¡Con chicle! ¡Qué técnica!'],
   ['chaqueta_en_lector', '¡El chaval viste al Lector Medio! ¡Cambio de camiseta en pleno partido!'],
   ['cafetera_viral', '¡Buenas noches a la cafetera! ¡Juego limpio! ¡Eso no se veía desde el 82!'],
-  ['cms_vivo', '¡Apagón desde el banquillo de Sistemas! ¡Y arriba ni se enteran!'],
   ['reunion_terminada', '¡Desbandada en la Sala Amazonas! ¡Mercados se retira al vestuario!'],
-  ['casilla_hueco', '¡Gana a Comercial en el descuento! ¡Y la sala, pagada hasta las nueve!'],
   ['nota_gasto_presentada', '¡Tarjeta en Administración! ¡Por triplicado! ¡Y el chaval sigue jugando!'],
   ['casilla_firma', '¡Teodoro le da la firma! ¡Un fax de cabeza! ¡Golazo de papel!'],
-  ['pieza_recortada', '¡Recorte por la banda! ¡Ocho líneas al vestuario! ¡Cabe!'],
   ['ruben_encontrado', '¡Sale un chaval del banquillo de Sistemas! ¡Cuatro meses calentando!'],
   ['ruben_libre', '¡Y el chaval de Sistemas pide el cambio! ¡Sale a ver el sol!'],
 ];

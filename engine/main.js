@@ -2,6 +2,7 @@
 import { Game } from './core.js';
 import * as UI from './ui.js';
 import * as HS from './hotspots.js';
+import * as Detalle from './detalle.js';
 
 const params = new URLSearchParams(location.search);
 const debug = params.get('debug') === '1';
@@ -59,7 +60,8 @@ function makeTestApi(game) {
         menu: game.menu ? game.menu.page : null,
         speaking: game.speeches.map(s => ({ who: s.actor, text: s.text })),
         phone: game.phone ? { caller: game.phone.caller, label: game.phone.label, state: game.phone.state, side: game.phone.side, mode: game.phone.mode || 'llamada', title: game.phone.app ? game.phone.app.title || null : null } : null,   // llamada en curso (api.phone)
-        detalle: game.detalle ? { titulo: game.detalle.titulo } : null,   // plano detalle abierto (api.detalle)
+        detalle: game.detalle ? { titulo: game.detalle.titulo, cerrarX: game.detalle.cerrarX || 0, cuenta: game.detalle.cuenta ? game.detalle.cuenta.ms : 0,
+          bloqueado: Detalle.bloqueado(game) } : null,   // plano detalle abierto (api.detalle; E2: X, cuenta atrás, bloqueo)
         hotspotsShown: !!game.hsShow,       // «ver hotspots» en pantalla
         poses: Object.fromEntries(Object.values(game.actors).filter(a => game.room && a.room === game.room.def.id).map(a => [a.id, game.poseOf(a)]).filter(([, p]) => p)),
         aviso: !!game.avisoActive,          // true mientras suena una llamada / un RV: / un aviso común (game.js `avisos`)

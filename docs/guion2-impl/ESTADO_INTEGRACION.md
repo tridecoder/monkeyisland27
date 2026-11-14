@@ -47,3 +47,14 @@ ENMIENDA E1) y las peticiones de los informes de P1-P4.
 - `fax_tecla_n` lo leen las pruebas; la sala usa sus flags locales (`catacumba_tecla1/3`) para Teodoro y Evaristo.
 - El tope de «Diseño» (≤ 11) cuenta las líneas que se oyen en una partida automática; las ramas raras no se cuentan.
 - `tools/review.mjs` y `tools/escenas.mjs` (fuera de `test-all`) no se han vuelto a ejecutar enteros.
+
+## ENMIENDA E2 — paquete común (P0) entregado
+
+Detalle para los autores en `docs/guion2-impl/GUIA_AUTORES.md` §E2. Resumen: motor (despedidas una sola vez,
+`api.detalle` con `cerrarX` / `cuenta` / `bloqueo`, `api.pantalla` con los prefijos de `game.js` `pantallas`, adhesivo
+`backSign` del muñeco y variantes `con_banner` / `con_chaqueta_banner` de Bruno, `game.mudo`); datos (llamadas L1, L3,
+L4, L5; RV sin aviso; objeto `correo_evaristo`; ficha y pistas de la coma; altas de §10.2; migración de partidas);
+`plan-rules.mjs` / `text-audit.mjs` con los topes de E2 §12.4 y el aviso de §7.6 como avisos (`--e2` para que fallen).
+**Pendiente de la integración (tras P1-P4):** `walk-data.mjs` (44 pasos) y `extras.mjs` de §10.1; retirar lo marcado
+`// [E2: retirar en integración]` (Nemesio, Borja, `evaristo_lc`, `evaristo_convoco` y su puente, `rumor_firma_n`,
+`planta_oyo`); pasar `--e2` en `test-all`.

@@ -5,7 +5,7 @@
 //   node tools/extras.mjs              todo, hasta la tarjeta FE DE ERRATAS y los créditos
 //   node tools/extras.mjs --hasta=XE3  se para (con éxito) tras ese paso X (o tras el paso numérico, p. ej. --hasta=20)
 //   node tools/extras.mjs --lento      sin modo rápido y con capturas
-// Tras cada paso se comprueban sus resultados. Las llamadas de Evaristo (L1-L5 y la LC), los «RV:» de Tadeo y los rumores
+// Tras cada paso se comprueban sus resultados. Las llamadas de Evaristo (E2: L1, L3, L4, L5), los «RV:» de Tadeo y los rumores
 // salen solos (entrar en salas / Hablar): el test cierra el globo y sigue (walk-lib.mjs `startDismisser`) y comprueba los
 // CONTADORES en los puntos de control (filas «—»).
 // Acciones y formato de `esp`: ver la cabecera de walkthrough.mjs; además `['perder']` (pierde el duelo abierto con flojas)
@@ -42,11 +42,11 @@ const X = [
   { n: '—14', tras: 14, sala: 'office', txt: 'Control: el «Buenas noches» llevó antes el rumor A2', acc: [], esp: { flags: { rumor_firma_n: 2 } } },
   { n: 'XM1', tras: 15, sala: 'pecera', txt: '(entrar en la Redacción) → reacción viral de Yoli', acc: [['ir', 'pecera']], esp: { flags: ['cafetera_viral'] } },
   // §4.2 el apagón (sin el ticket nº 3: escalada, sin CMS)
-  { n: 'XM2', tras: 18, sala: 'pecera', txt: 'Tirar enchufe_pantalla ×3 (sin el ticket nº 3); al entrar, la llamada L2', acc: [['ir', 'pecera'], V('tirar', 'enchufe_pantalla'), V('tirar', 'enchufe_pantalla'), V('tirar', 'enchufe_pantalla')], esp: { flags: { apagon_n: 3, cms_vivo: false, evaristo_convoco: true, evaristo_llamadas: 2 } } },
+  { n: 'XM2', tras: 18, sala: 'pecera', txt: 'Tirar enchufe_pantalla ×3 (sin el ticket nº 3); E2: sin L2 (evaristo_convoco, por el puente de game.js)', acc: [['ir', 'pecera'], V('tirar', 'enchufe_pantalla'), V('tirar', 'enchufe_pantalla'), V('tirar', 'enchufe_pantalla')], esp: { flags: { apagon_n: 3, cms_vivo: false, evaristo_convoco: true, evaristo_llamadas: 1 } } },
   { n: 'XE2', tras: 18, sala: 'pecera', txt: 'Hablar anselmo_monolito → «¿Por qué invades la sección de Leoncio?»', acc: [V('hablar', 'anselmo_monolito'), O('¿Por qué invades la sección de Leoncio?'), SALIR], esp: {} },
   { n: '—17', tras: 17, sala: 'catacumba', txt: 'Control: A_MENU llevó antes el rumor C1', acc: [], esp: { flags: { rumor_teodoro_n: 1 } } },
   { n: 'X6', tras: 18, sala: 'pecera', txt: 'Custodia → «¿Me deja un boli?» → «¿Y cómo se consigue un boli aquí?»', acc: [['ir', 'pecera'], V('hablar', 'custodia_precinto'), O('¿Me deja un boli?'), O('¿Y cómo se consigue un boli aquí?'), SALIR], esp: { flags: ['custodia_regla'] } },
-  { n: 'X11', tras: 22, sala: 'cpd', txt: 'Usar rejilla_cpd ×2 (la primera narra el hito pendiente)', acc: [V('usar', 'rejilla_cpd'), V('usar', 'rejilla_cpd')], esp: { flags: { rejilla_n: 1 } } },
+  { n: 'X11', tras: 22, sala: 'cpd', txt: 'Usar rejilla_cpd ×2 (E2 §7.4: el hito del apagón ya no se narra; sin hito pendiente, las dos cuentan)', acc: [V('usar', 'rejilla_cpd'), V('usar', 'rejilla_cpd')], esp: { flags: { rejilla_n: 2 } } },
   { n: '—23', tras: 23, sala: 'pecera', txt: 'Control: Y0 llevó antes el rumor C2', acc: [], esp: { flags: { rumor_teodoro_n: 2 } } },
   { n: 'X9', tras: 24, sala: 'pecera', txt: 'Abrir bandeja_diseno (sin flag cruzado)', acc: [V('abrir', 'bandeja_diseno')], esp: { flags: { pecera_bandeja_abierta: true } } },
   { n: 'X11b', tras: 24, sala: 'pecera', txt: 'Hablar valentin_reticula ×2 (cameo mudo: «Está en la bandeja.»)', acc: [V('hablar', 'valentin_reticula'), V('hablar', 'valentin_reticula')], esp: { log: ['valentin_reticula:Está en la bandeja.'] } },
@@ -62,7 +62,7 @@ const X = [
   { n: 'X20', tras: 28, sala: 'catacumba', txt: 'Coger bolis_aurora', acc: [V('coger', 'bolis_aurora')], esp: { tiene: ['boli_muerto'], flags: ['boli_muerto_cogido'] } },
   { n: 'X21', tras: 30, sala: 'catacumba', txt: 'Aurora → «Don Evaristo pregunta si su coma está bien.»', acc: [V('hablar', 'aurora_galerada'), O('Don Evaristo pregunta si su coma está bien.'), SALIR], esp: { flags: ['coma_bendecida'] } },
   { n: '—T0', tras: 31, sala: 'catacumba', txt: 'Control: T0 llevó antes el desmentido C de Teodoro', acc: [], esp: { flags: { rumor_teodoro_n: 3, catacumba_desmentido_c: true } } },
-  { n: '—LC', tras: 32, sala: 'pecera', txt: 'Control: al entrar en la Redacción salió la llamada LC (la coma, por teléfono)', acc: [], esp: { flags: { correo_evaristo_listo: true, evaristo_lc: true } } },
+  { n: '—LC', tras: 32, sala: 'pecera', txt: 'Control: E2 §5.3, ya no hay llamada LC (la coma irá por el fax de Aurora, paso 32 nuevo)', acc: [], esp: { flags: { evaristo_lc: false, correo_evaristo_listo: false } } },
   // §4.5 el fax de teclas
   { n: 'XM5', tras: 32, sala: 'catacumba', txt: 'Usar pieza_opa con fax → «1: GOYITA», de nuevo → «3: CONTROLLING»', acc: [['ir', 'catacumba'], ['usar', 'pieza_opa', 'fax'], O('1: GOYITA'), SALIR, ['usar', 'pieza_opa', 'fax'], O('3: CONTROLLING'), SALIR], esp: { flags: { fax_tecla_n: 2, pieza_recortada: false } } },
   { n: 'X23', tras: 34, sala: 'pecera', txt: 'Dar boli_muerto a custodia_precinto → «Para apuntar lo que me digan. Sin grabadora.»', acc: [['ir', 'pecera'], ['dar', 'boli_muerto', 'custodia_precinto'], O('Para apuntar lo que me digan. Sin grabadora.'), SALIR], esp: { flags: ['custodia_ablandada', 'dos_ias_vista'], notiene: ['boli_muerto'] } },
@@ -73,7 +73,9 @@ const X = [
   { n: 'XE4', tras: 'XE3', sala: 'pecera', txt: '(entrar en la Redacción) → anexión', acc: [['ir', 'pecera']], esp: { flags: ['infografia_integrada'] } },
   { n: 'X16', tras: 37, sala: 'ecosistema', txt: 'Mirar portatil_tadeo ×4 (con Rubén encontrado: la réplica R15)', acc: [['ir', 'ecosistema'], V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo')], esp: { flags: { portatil_tadeo_n: 4, rep_15: true } } },
   { n: 'X25', tras: 38, sala: 'pecera', txt: 'Hablar yoli_tendencias → (rumor A4) → «Me voy.»', acc: [V('hablar', 'yoli_tendencias'), SALIR], esp: { flags: { rumor_firma_n: 4 } } },
-  { n: '—38', tras: 38, sala: 'pecera', txt: 'Control: L1-L5, la LC y los tres RV de Tadeo ya han salido', acc: [], esp: { flags: { evaristo_llamadas: 6, tadeo_rv_n: 3 } } },
+  // E2 §5.7: L1 y L3 han sonado; la L4 se pierde (Rubén aparece antes de otra entrada sin escena); la L5 espera a la
+  // siguiente entrada con ruben_libre. Los tres RV de Tadeo, ya en el correo (sin aviso).
+  { n: '—38', tras: 38, sala: 'pecera', txt: 'Control: L1 y L3 ya han sonado (L4 perdida, L5 pendiente); los tres RV, en el correo', acc: [], esp: { flags: { evaristo_llamadas: 2, tadeo_rv_n: 3 } } },
 ];
 const hasta = args.hasta ?? null;
 const order = [];

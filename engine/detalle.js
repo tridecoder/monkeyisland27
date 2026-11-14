@@ -11,7 +11,21 @@
 //     lines: ['narrador', ['inigo_sinergia', '...'], ['player', '...']],   // se dicen con el inserto abierto
 //     ms: 1800,                     // sin `lines` ni cuerpo: cuánto se queda (un clic o «.» lo cierra antes)
 //     oscurecer: 0.45,              // velo sobre la sala detrás del inserto
+//     // --- ANUNCIOS (ENMIENDA E2 §4.2: el pop-up de Maripaz, el «anuncio antes de entrar») ---
+//     bloqueo: 5000,                // el clic / «.» NO cierra el plano antes de estos ms (Esc y el modo rápido, sí)
+//     cuenta: { ms: 5000, texto: 'Podrá continuar en {n}', fin: 'Saltar anuncio ›' },
+//                                   // rótulo de cuenta atrás pintado por el motor al pie del contenido ({n} = segundos
+//                                   // que faltan, 5… 1); al llegar a 0 cambia a `fin` (si lo hay). Implica
+//                                   // `bloqueo: cuenta.ms` y, sin `ms`, el plano se queda cuenta.ms + 1500
+//     cerrarX: 3,                   // botón de cerrar «×» de N px en la esquina superior derecha (1 = un punto; 0 o
+//                                   // null = sin X). El motor lo pinta encima del dibujo del contenido.
 //   }, async (api) => { ... })      // opcional: cuerpo con el inserto abierto (se cierra al acabar, aunque lance)
+//
+// Ejemplo (Sala Amazonas, 3.ª vez: sin X, «Podrá cerrar en 3»):
+//   await api.detalle({ titulo: 'PUBLICIDAD', w: 150, h: 60, draw: popupComercial, cerrarX: 0,
+//                       cuenta: { ms: 3000, texto: 'Podrá cerrar en {n}' } });
+// Helpers para el dibujo del contenido: `cuentaAtras(t, ms)` (segundos que faltan, 0 al acabar) y
+// `dibujarX(g, x, y, px, color)` (la «×» de cerrar, por si el contenido quiere más de una).
 //
 // Seguro: Esc (cinemática saltada) y el modo rápido lo resuelven al instante; se cierra siempre al acabar el guion que
 // lo abrió y al cargar partida (no se guarda). Las líneas van al registro (`__game.log`) como cualquier otra.
@@ -30,7 +44,10 @@ export function open(game, ctx, opts = {}) {
   const D = game.detalle = {
     x, y, w, h, draw: opts.draw, titulo: opts.titulo || null, color: opts.color || '#f2ecd8',
     oscurecer: opts.oscurecer ?? 0.45, t0: game.time, owner: ctx, skip: null, prevTop: game.hudTop,
+    cuenta: opts.cuenta ? { ms: 5000, texto: 'Podrá continuar en {n}', ...opts.cuenta } : null,
+    cerrarX: Math.max(0, Math.round(Number(opts.cerrarX) || 0)),
   };
+  D.bloqueo = Math.max(0, Number(opts.bloqueo ?? (D.cuenta ? D.cuenta.ms : 0)) || 0);
   game.hudTop = y + h + (D.titulo ? 13 : 5);        // los globos, debajo del inserto
   game.log.push({ who: 'aviso', name: null, text: 'Plano detalle' + (D.titulo ? ': ' + D.titulo : ''), room: game.state && game.state.room, t: Math.round(game.time) });
   return D;
@@ -44,11 +61,25 @@ export function close(game) {
   if (D.skip) { const r = D.skip; D.skip = null; r(); }
 }
 
-/** Un clic / «.» durante la espera sin líneas cierra el plano. */
+/** Un clic / «.» durante la espera sin líneas cierra el plano (salvo durante su `bloqueo`, E2 §4.2.4). */
 export function skip(game) {
   const D = game.detalle;
-  if (D && D.skip) { const r = D.skip; D.skip = null; r(); return true; }
+  if (D && D.skip && !bloqueado(game)) { const r = D.skip; D.skip = null; r(); return true; }
   return false;
+}
+/** ¿El plano abierto aún no se deja cerrar con un clic? (anuncio con cuenta atrás) */
+export function bloqueado(game) {
+  const D = game.detalle;
+  return !!(D && D.bloqueo && !game.instant && game.time - D.t0 < D.bloqueo);
+}
+/** Segundos que faltan de una cuenta atrás de `ms` a los `t` ms de abrirse (5, 4… 1; 0 al acabar). */
+export function cuentaAtras(t, ms) { return Math.max(0, Math.ceil((ms - t) / 1000)); }
+/** La «×» de cerrar de un anuncio: un cuadrado de `n` px (n ≥ 3: aspa dentro de un cuadradito; 1-2: un punto). */
+export function dibujarX(g, x, y, n, color = '#5a5a66') {
+  if (!(n > 0)) return;
+  if (n < 3) { rect(g, x, y, n, n, color); return; }
+  rect(g, x, y, n, n, '#f4f4f0');
+  for (let i = 0; i < n; i++) { rect(g, x + i, y + i, 1, 1, color); rect(g, x + n - 1 - i, y + i, 1, 1, color); }
 }
 
 /** Espera `ms` o hasta que se salte (clic, «.», Esc). */
@@ -60,6 +91,9 @@ export function hold(game, ms) {
     const fin = () => { if (!done) { done = true; res(); } };
     D.skip = fin;
     game.sleep(ms).then(fin);
+    // Esc (cinemática saltada) también lo resuelve durante el bloqueo: el modo rápido pone game.instant
+    const poll = () => { if (done) return; if (game.instant || game.detalle !== D) { fin(); return; } game.sleep(100).then(poll); };
+    if (D.bloqueo) game.sleep(100).then(poll);
   });
 }
 
@@ -80,6 +114,17 @@ export function draw(g, game) {
   if (k >= 1) {
     g.beginPath(); g.rect(x, y, w, h); g.clip();
     if (D.draw) { try { D.draw(g, { x, y, w, h }, t, k); } catch (e) { game.error('detalle draw() falló: ' + e.message, e); D.draw = null; } }
+    // E2 §4.2: la «×» de cerrar (cada vez más pequeña) y la cuenta atrás del anuncio, encima del contenido
+    if (D.cerrarX) dibujarX(g, x + w - D.cerrarX - 2, y + 2, D.cerrarX);
+    if (D.cuenta) {
+      const n = cuentaAtras(t, D.cuenta.ms);
+      const msg = n > 0 ? String(D.cuenta.texto).replace('{n}', n) : (D.cuenta.fin || '');
+      if (msg) {
+        const mw = measure(msg) + 6, mx = x + w - mw - 4, my = y + h - 13;
+        rect(g, mx, my, mw, 10, '#141220'); frameRect(g, mx, my, mw, 10, n > 0 ? '#8a8aa0' : '#f2ecd8');
+        drawText(g, msg, mx + 3, my + 1, n > 0 ? '#c8c8d8' : '#ffffff', { outline: null });
+      }
+    }
   }
   g.restore();
   if (k >= 1) {

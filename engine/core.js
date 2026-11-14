@@ -320,7 +320,7 @@ export class Game {
     this.speeches = []; this.timers.forEach(t => t.resolve()); this.timers = [];
     // un menú con salida (`escape`, p. ej. el del móvil) se cierra por su salida: su guion termina y suelta la entrada
     if (this.choice && this.choice.escape != null) { const ch = this.choice; ch.resolve(ch.escape); }
-    this.choice = null; this.menu = null; this.hud = null; this.phone = null; this.detalle = null; this.hsShow = null; this.hsHold = false; this.hudTop = 0; this.cutscene = 0; this.skipCut = false; this.inDialog = 0;
+    this.choice = null; this.menu = null; this.hud = null; this.phone = null; this.detalle = null; this.mudo = 0; this.hsShow = null; this.hsHold = false; this.hudTop = 0; this.cutscene = 0; this.skipCut = false; this.inDialog = 0;
     if (this.itemPick) { const r = this.itemPick.resolve; this.itemPick = null; r(null); }
     this.notices = []; this.idleMs = 0; this.idleFired = false; this.comboFails = 0; this.duelInfo = null; this.duelActive = null;
     Fx.reset(this); Mov.reset(this);
@@ -591,6 +591,8 @@ export class Game {
     text = String(text ?? '');
     const a = actorId ? this.actors[actorId] : null;
     if (actorId && !a) this.error('Actor desconocido en sayAs: ' + actorId);
+    // E2 §7.2: despedida ya oída (engine/dialog.js): sus líneas se callan (ni globo ni registro); el ambiente sigue
+    if (this.mudo > 0 && !opts.ambient) return Promise.resolve();
     this.log.push({ who: a ? a.id : (opts.who || (opts.narrator ? 'narrador' : null)), name: a ? a.name : null, text, room: this.state && this.state.room, t: Math.round(this.time), ...(opts.tag ? { tag: opts.tag } : {}) });
     if (this.debug.on) console.log(`[diálogo] ${a ? a.name : '—'}: ${text}`);
     // el que llama por el móvil habla SIEMPRE anclado al teléfono (aunque el contenido no lo pida)

@@ -1,10 +1,12 @@
 // Acciones del walkthrough (ir, verbo, usar, dar, opcion, cerrar, duelo) y comprobación de resultados esperados.
 // Uso: const R = createRunner(page); await R.run(['verbo','mirar','tablon']); await R.check({ flags: [...] });
-// AVISOS AUTOMÁTICOS (adenda §2: llamadas de Evaristo, «RV:» de Tadeo, que salen al entrar en una sala): `startDismisser`
-// cierra su globo (como un clic) en cuanto `state().aviso` es true, de modo que el test los acepta y sigue.
+// AVISOS AUTOMÁTICOS (adenda §2: llamadas de Evaristo, que salen al entrar en una sala; E2: los «RV:» de Tadeo ya no son
+// aviso): `startDismisser` cierra su globo (como un clic) en cuanto `state().aviso` es true, y el test sigue.
+// E2 §7.2: las despedidas (`exit`) solo se oyen la primera vez; FAREWELLS elige por el TEXTO de la opción, no por lo
+// que se oye, así que no cambia. Un plano detalle con `bloqueo` (anuncios de Maripaz) se resuelve solo en modo rápido.
 export class StepFail extends Error {}
 export const fail = (msg) => { throw new StepFail(msg); };
-export const FAREWELLS = ['nada, me quedo en esta planta', 'nada, celestino', 'nada, aurora', 'nada. me iba', 'nada, ya me voy', 'nada, solo miraba', 'me voy', 'ahora vuelvo', 'lo pienso y vuelvo', 'gracias, begoña', 'prometo cuidarlo', 'nada'];
+export const FAREWELLS = ['nada, me quedo en esta planta', 'nada, celestino', 'nada, aurora', 'nada. me iba', 'nada, ya me voy', 'nada, solo miraba', 'me voy', 'ahora vuelvo', 'lo pienso y vuelvo', 'luego vuelvo', 'gracias, begoña', 'prometo cuidarlo', 'nada'];   // E2: «Luego vuelvo.» (Maripaz en la Sala)
 export function createRunner(page) {
   const G = (fn, arg) => page.evaluate(fn, arg);
   const state = () => G(() => __game.state());

@@ -193,12 +193,20 @@ export default {
       badge: '#c83030', backpack: '#4a6070', pants: '#3a4562', shoes: '#c8c0b0', build: 'slim', height: 1.02,
     },
     // plan §4.3: con la chaqueta de Ramírez puesta (flag `bruno_con_chaqueta`, o api.vestir('bruno', 'con_chaqueta'))
+    // E2 §4.2.3: el adhesivo «SU ANUNCIO AQUÍ» de Maripaz en la espalda (flag `bruno_con_banner`: lo pone P4 al ganar D1,
+    // lo quita Aurora, P3). Se combina con la chaqueta: la chaqueta manda en la ropa y el adhesivo va encima, en la
+    // espalda (`con_chaqueta_banner`). Se ve de espaldas y de perfil (de frente, no).
     variants: {
       con_chaqueta: { doll: { jacket: '#c8b48a', backpack: null, badge: null, cuffs: '#c8b48a' } },
+      con_banner: { doll: { backSign: '#ffffff' } },
+      con_chaqueta_banner: { doll: { jacket: '#c8b48a', backpack: null, badge: null, cuffs: '#c8b48a', backSign: '#ffffff' } },
       // epílogo (§9): la bufanda del Ibex que le enrolla Celestino (la de Celestino: verde con la raya roja)
       con_bufanda: { doll: { scarf: '#2a8a3a', scarfStripe: '#d03030' } },
     },
-    variant: (v) => (v.flag('bruno_con_chaqueta') && v.has('chaqueta_ramirez') ? 'con_chaqueta' : null),
+    variant: (v) => {
+      const chaqueta = v.flag('bruno_con_chaqueta') && v.has('chaqueta_ramirez'), banner = !!v.flag('bruno_con_banner');
+      return chaqueta ? (banner ? 'con_chaqueta_banner' : 'con_chaqueta') : (banner ? 'con_banner' : null);
+    },
     // plan §8.2: «Mirar a Bruno» dice la meta actual en su voz (objetivo de la sala, content/pistas.js)
     handlers: {
       mirar: async (api) => { await api.say(api.objetivo.meta() || 'Respondo a todos. Es lo único que sé hacer bien.'); },
@@ -234,10 +242,13 @@ export default {
       skin: '#f0c4a0', hair: '#3a2018', hairStyle: 'highponytail', hairStreak: '#FF78B8', glasses: 'thick', glassesColor: '#1a1418',
       shirt: '#4a5a80', emblem: '#FF78B8', pants: '#2a2a3a', shoes: '#f0f0f0', prop: 'eyedrops', build: 'slim', height: 0.97,
     },
-    murmurs: ['Esto sube — 3.402 — esto baja — 3.398 — esto soy yo.',   // plan §5.4
+    murmurs: ['Esto sube. Esto baja. Esto soy yo.',   // E2 §2.7 / L29: sin cifras entre rayas
       'Ahí al lado imprimen lo que yo publiqué ayer. Con las faltas corregidas.',   // orden 2: la Redacción de papel, al lado
       'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.'],
   },
+  // [E2: retirar en integración] ENMIENDA E2 §2.6: Nemesio DESAPARECE (se funde en Anselmo). Se queda declarado solo
+  // porque la Redacción (P2) y el recorrido antiguo de 42 pasos aún lo colocan y le hablan; cuando P2 lo quite de
+  // `pecera.js` (actors, arte y diálogos), se borra esta entrada. No escribáis nada nuevo para él.
   // Nemesio Backlog (id histórico `nerea_backlog`: el personaje se llamó Nerea hasta que dirección pidió que Desarrollo
   // fuera solo de hombres; el id no se toca para no romper partidas, pruebas ni flags). El dueño del kanban: chaleco de
   // punto MOSTAZA, pósits pegados en la manga, rotulador azul detrás de la oreja, pelo de punta y barba de tres días.
@@ -295,6 +306,9 @@ export default {
     },
     murmurs: ['Original. Duplicado. Triplicado. Original. Duplicado...', 'Las 19:07. Qué rápido pasa la tarde. No pasa.'],
   },
+  // [E2: retirar en integración] ENMIENDA E2 §3: Borja DESAPARECE como personaje: queda su aro de luz con el móvil
+  // (`aro_borja`, objeto de Marketing, P4; voz con api.pantalla('aro_borja', …) / sayFrom, color #4FD8E8). Se queda
+  // declarado solo porque Marketing y Eventos (P4) y el extra X17 aún lo usan; cuando P4 lo quite, se borra.
   // Marketing (problema 8 del director): sin cámara ni acreditaciones (eso es de Eventos). Flipado de manual: móvil en
   // la mano como si fuera un micro, tupé, americana eléctrica y zapatillas blancas.
   borja_engagement: {
@@ -323,7 +337,9 @@ export default {
       headset: '#2a2a30', bracelets: '#e8c040', earrings: '#e8c040', lipstick: '#d04060', prop: 'mallet', propColor: '#b03028',
       shoes: '#a02838', height: 1.0,
     },
-    murmurs: ['Te pongo un «ofrecido por» tan pequeño que solo lo verá el supervisor.', '¿Y una portada desplegable con olor a chorizo? Piénsalo.'],
+    // E2 §4.4: cada píxel es espacio publicitario (uno por visita)
+    murmurs: ['Entre línea y línea todavía cabe un banner. Lo he medido.', 'Si la noticia se ve demasiado, se le pone un vídeo encima.',
+      'Te pongo un «ofrecido por» tan pequeño que solo lo verá el supervisor.', 'Tadeo, cariño, te patrocino el reenvío.'],
   },
   paco_ticket: {
     name: 'Paco', color: '#92C0FF', speed: 50,
@@ -382,9 +398,10 @@ export default {
       emblem: '#3CE0C6', pocketItem: '#c8ccd4', pocketKind: 'ruler', prop: 'folder', propColor: '#e8d49a',
       sleeves: 'short', pants: '#4e5a48', shoes: '#3a2e26', height: 0.99,
     },
-    murmurs: ['Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.', 'Cuarenta y un pósits a Anselmo. Cuarenta y un «no». Serie muy estable.'],   // E1.6
+    murmurs: ['Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.', 'Cuatro décimas. Yo tardaba una semana. Qué semanas aquellas.'],   // E2 §2.5
   },
   anselmo_monolito: {
+    // E2 §2.6: único personaje de Desarrollo (con el coro): director y dueño del tablero (hereda lo de Nemesio).
     // Director de Desarrollo (pecera, 560-610 px). Chaleco acolchado gris con muchos bolsillos, un rollo de cinta de
     // carrocero colgado del cinturón como una pistolera (`keys`, color cinta), un archivador bajo el brazo.
     name: 'Anselmo', color: '#E496FF', speed: 54,
@@ -392,7 +409,8 @@ export default {
       skin: '#dcae88', hair: '#2e2830', hairStyle: 'short', shirt: '#b4503c', vest: '#8c9098', keys: '#e8d8a0',
       prop: 'folder', propColor: '#2f4f86', pants: '#5c5c46', shoes: '#34281c', height: 1.02, build: 'normal',
     },
-    murmurs: ['Esto no ha pasado por mí. Esto tampoco. Esto, de refilón.', '(al termo) Tú sí eres de la casa.'],   // E1.6
+    murmurs: ['Esto no ha pasado por mí. Esto tampoco. Esto, de refilón.', '(al termo) Tú sí eres de la casa.',
+      'Mañana es sábado. Lo dice la ferretería. Es de fuera, pero acierta.'],   // E2 §2.5 (el tercero, heredado de Nemesio)
   },
   evaristo_salvedad: {
     // Director de Controlling y Financiero (administracion; epílogo, vestibulo). Chaqueta de punto gris perla abrochada,
@@ -424,7 +442,7 @@ export default {
   // las representa es un objeto de la sala con el mismo id, o un objeto cercano). Para que el texto salga encima de
   // su objeto usa `api.sayFrom('<objeto>', texto)`, que toma el `color` del objeto (declarado igual en el stub).
   custodia_precinto: { name: 'Custodia', color: '#A0A0FF', hotspot: false, presence: 'manos bajo una persiana metálica (Secretaría de Redacción, en la Redacción)', doll: {} },
-  tadeo_adjunto: { name: 'Tadeo', color: '#FFCC99', hotspot: false, presence: 'portátil (Marketing y Comercial) y móvil (avisos RV:)', doll: {} },
+  tadeo_adjunto: { name: 'Tadeo', color: '#FFCC99', hotspot: false, presence: 'portátil (Marketing y Comercial) y correo del móvil (RV:; E2: ya no son avisos)', doll: {} },
   coro_desarrollo: { name: 'CORO', color: '#7FFFD4', hotspot: false, presence: 'los tres devs, a la vez', doll: {} },
   dev_1: { name: 'DEV 1', color: '#7FFFD4', hotspot: false, presence: 'del coro: indignado', doll: {} },
   dev_2: { name: 'DEV 2', color: '#7FFFD4', hotspot: false, presence: 'del coro: más indignado', doll: {} },

@@ -468,3 +468,11 @@ export function cantoVivo(g, x, y, w, h) {
   hline(g, x + 1, y, w - 2, LUZ_CALIDA); vline(g, x, y + 1, Math.max(1, h - 3), '#ffe8a0');
   ditherOverlay(g, x + 1, y + h, w, 2, PAL.ink[0], 0.6);
 }
+
+// ================================================================== números (ENMIENDA E2 §9, B10)
+/** Entero con punto de miles SIEMPRE, también con cuatro cifras (1.234), como lo escribe el periódico:
+ *  `miles(48531)` → «48.531». (toLocaleString('es-ES') no agrupa las de cuatro cifras.) */
+export function miles(n) {
+  const v = Math.trunc(Number(n) || 0);
+  return (v < 0 ? '-' : '') + String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}

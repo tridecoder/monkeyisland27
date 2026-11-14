@@ -1,7 +1,7 @@
 // EL MÓVIL DE BRUNO (objeto `movil`, `solo: true`): «Usar móvil» (o Usar móvil con Bruno, clic derecho, doble toque)
 // abre el primer plano del móvil en MODO APLICACIÓN (engine/phone.js) con su menú en el panel:
 //   · «Llamar a la abuela»   → la escena de pistas de siempre (content/game.js `pistas`, líneas sin cambios)
-//   · «Correo (N sin leer)»  → la bandeja: los «RV:» de Tadeo que ya han llegado (los textos reales de los avisos) y
+//   · «Correo (N sin leer)»  → la bandeja: los «RV:» de Tadeo que ya han llegado (E2: ya no hay aviso; llegan solos) y
 //                              tres correos fijos de la casa; del más nuevo al más viejo; se leen de uno en uno
 //   · «Llamadas perdidas»    → la eterna de la abuela y las de Evaristo hasta ahora
 //   · «Guardar el móvil»     → cierra (también Esc o un toque en la sala)
@@ -10,11 +10,12 @@
 // 18:30 → 21:00; los relojes del edificio siguen parados en las 20:59.
 // Seguro: el móvil no se guarda, se retira al acabar el guion (aunque falle) y al cargar; en modo rápido, todo es instantáneo.
 
-/** Los «RV:» de Tadeo (adenda §2.2; plan §5.16): condición, asunto (lo que dice Tadeo) y el comentario de Bruno. Los usa también la
- *  cola de avisos (content/game.js) para que el correo y el aviso digan exactamente lo mismo. */
+/** Los «RV:» de Tadeo (adenda §2.2; plan §5.16): condición, asunto (lo que dice Tadeo) y el comentario de Bruno ('' = sin
+ *  comentario). ENMIENDA E2 §7.4: ya NO son avisos; llegan solos al correo al entrar en una sala con su condición
+ *  (content/game.js cuenta los llegados en `tadeo_rv_n`). E2 §7.2: RV1 y RV2 sin comentario de Bruno. */
 export const RV_TADEO = [   // plan §5.16: tres, sin siglas
-  ['inigo_presentado', 'RV: Cómo hacer que la web cargue en la mitad de tiempo (40 págs.)!!', 'Cuarenta páginas para que cargue antes. Las abro mañana. Si cargan.'],
-  ['acto_2_iniciado', 'RV: RV: RV: La IA dice que la web va más rápida sin lo más grande!!', 'Lo más grande de un periódico es la portada. Mal asunto.'],
+  ['inigo_presentado', 'RV: Cómo hacer que la web cargue en la mitad de tiempo (40 págs.)!!', ''],
+  ['acto_2_iniciado', 'RV: RV: RV: La IA dice que la web va más rápida sin lo más grande!!', ''],
   ['acto_3_iniciado', 'RV x5: Reflexión sobre armarios: "AYÚDAME ESTOY EN EL ARMARIO 27"', 'Lo ha visto toda la empresa. Y nadie lo ha leído.'],
 ];
 
@@ -28,7 +29,7 @@ const FIJOS = [
     bruno: '«Pensar no es deducible». Lo enmarco. Mi primer documento oficial.' },
   { bit: 10, de: 'elContable.es', who: null, fecha: 'hace 6 años', asunto: '¡Bienvenido a elContable.es, Bruno!',
     cuerpo: ['¡Bienvenido, Bruno! Tu acceso estará listo en 24 horas.', 'Mientras, lee el libro de estilo: página 1 de 900. Un abrazo, Personal.'],
-    bruno: 'Sin leer desde hace seis años. Ya casi me ha llegado el acceso.' },
+    bruno: 'Sin leer. El acceso «en 24 horas» sigue en camino.' },                 // E2 §8
 ];
 const COLOR_SISTEMA = '#c8d0e8';
 
@@ -79,7 +80,7 @@ async function correo(api) {
 }
 
 async function llamadas(api) {
-  const ev = Math.min(num(api, 'evaristo_llamadas'), 6);   // L1-L5 y la LC (plan §5.13)
+  const ev = Math.min(num(api, 'evaristo_llamadas'), 6);   // E2 §5.7: L1, L3, L4, L5 (las partidas antiguas pueden llevar hasta 6)
   const rows = [{ text: 'Abuela', sub: 'perdida · siempre', icon: '#d83a2a' }];
   for (let i = ev; i >= 1; i--) rows.push({ text: 'Evaristo', sub: i === ev ? 'contestada · hoy' : 'contestada', icon: '#F0F0A8' });
   await api.phone.app({ title: 'Llamadas', rows });
