@@ -20,6 +20,7 @@ import dialogos, { anselmoCtx } from './pecera.dialogos.js';
 import escenas from './pecera.escenas.js';
 import { talk, seq, PREFIX } from './pecera.voces.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
+import { usarDirectorio, DIRECTORIO_COLOR } from '../lib/directorio.js';   // crítica 3 §9.8: atajo de desplazamiento
 import { dialogoCustodia, objetosSecretaria, flagsSecretaria } from './pecera.secretaria.js';
 import { darTaper } from './cpd.js';                      // [integrador] el táper también vale con Rubén en la Redacción
 
@@ -149,9 +150,14 @@ export default buildRoom({
       empujar: 'Está abierta. Empujarla sería meterme en la guerra fría a traición.',
     } },
     ...objetosSecretaria,
-    { id: 'directorio_planta', name: 'directorio de la planta', handlers: {
-      mirar: seq([['B', 'Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.'], ['B', 'Un punto rojo: «ESTÁ AQUÍ». Gracias. Me hacía falta.']]),
-      usar: 'Busco «becario» en la lista. No sale. Será que va dentro de «Redacción».',
+    // crítica 3 §9.8: el directorio con atajos (content/lib/directorio.js): Ir a / Usar / Mirar abren la lista de las salas
+    // ya pisadas; la 1.ª vez, Mirar dice antes lo de siempre
+    { id: 'directorio_planta', name: 'directorio con atajos', defaultVerb: 'usar', color: DIRECTORIO_COLOR, handlers: {
+      ir: usarDirectorio, usar: usarDirectorio,
+      mirar: async (api) => {
+        if (api.once('pecera_directorio_mirado')) await seq([['B', 'Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.'], ['B', 'Un punto rojo: «ESTÁ AQUÍ». Gracias. Me hacía falta.']])(api);
+        await usarDirectorio(api);
+      },
       empujar: 'No se mueve. Está donde dice que está.',
       coger: 'Es un tótem. Se consulta, no se adopta.',
     } },
@@ -386,7 +392,15 @@ export default buildRoom({
       mirar: seq([['B', 'Semáforo de ruido de Prevención. Rojo.'], ['B', 'Pósit de Anselmo: "Verde: 14 de agosto. Estaban de vacaciones".']]),
       usar: 'Lo toco. Se pone más rojo. Existe un rojo más rojo.',
       tirar: async (api) => api.sayAs(A, 'No. Es de Prevención. El pósit, mío.'),
-      hablar: '"Shhh", le digo. Se pone verde un segundo. Luego, rojo otra vez.',
+      // E3 P8: lo que dice la línea pasa en pantalla: verde un segundo (con el globo ya fuera) y vuelta al rojo
+      hablar: async (api) => {
+        api.setState('semaforo_ruido', 'verde');
+        const vuelta = api.wait(1000).then(() => api.setState('semaforo_ruido', 'rojo'));
+        // el globo, a los pies de Bruno: encima de su cabeza taparía el semáforo justo cuando se pone verde
+        const b = api.actorPos('bruno');
+        try { await api.say('"Shhh", le digo. Se pone verde un segundo. Luego, rojo otra vez.', b ? { at: [b.x, 141] } : undefined); await vuelta; }
+        finally { api.setState('semaforo_ruido', 'rojo'); }
+      },
       coger: 'Si me lo llevo, Desarrollo deja de hacer ruido oficialmente. No sería verdad.',
     } },
     { id: 'taza_no', name: 'taza «NO»', handlers: {
@@ -538,6 +552,7 @@ export default buildRoom({
 
   async onEnter(api) {
     murmuradoEstaVisita = false;
+    if (api.getState('semaforo_ruido') !== 'rojo') api.setState('semaforo_ruido', 'rojo');   // E3 P8: el verde dura un segundo, nunca una partida
     // epílogo (lector_derribado): la escena final coloca a la gente ella misma; aquí no se hace nada
     if (api.flag('lector_derribado') || api.flag('juego_terminado') || api.restoring) return;
     // como mucho una escena de entrada por visita, por este orden

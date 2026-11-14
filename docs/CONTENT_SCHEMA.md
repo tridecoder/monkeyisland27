@@ -243,6 +243,24 @@ and does not travel. A ride: door sfx, fade, a cabin `hud` with the floor counte
 for any entry. Lift objects carry `ascensor: { planta, label }` (no `exit`): `tools/check.mjs` and the test travel helpers
 (`walk-lib.mjs`, `play-mouse.mjs`) add lift edges to the exit graph and pick the floor by its label.
 
+### 2.5b El directorio con atajos (`content/lib/directorio.js`, crítica 3 §9.8)
+The shortcut for the long walks of Act II. The floor directory of the Redacción (`pecera.directorio_planta`, the totem at
+x 100-148 next to the core, where the stairs and the lift of every other floor arrive) is named **«directorio con
+atajos»**: a plain click («Ir a»), Usar (right click) or Mirar (the first time, after its two old lines) opens `api.choose`
+with the rooms **already entered** in this game (`api.visitada`), with their official visible names and floor
+(«Redacción de papel · planta 1», «Sistemas · planta -1»…) and «Nada, me quedo aquí.» (the `escape`). Choosing one does
+`api.goto(room, entry)` to its usual entry (`DESTINOS`: Despachos/Vending/Redacción de papel ← `pecera`, Sala Amazonas ←
+`pajarera`, Marketing y Comercial ← `pecera`, Eventos/Administración ← `ecosistema`, Vestíbulo ← `pecera`, Sistemas ←
+`ascensor`), so the destination's `onEnter` and the common notices run exactly as by the long way. The first trip, Bruno
+says `PRIMER_VIAJE` («Toco un nombre y el tótem me lleva. Ni ticket, ni cita previa.», `api.once('directorio_primer_viaje')`).
+**Locks** (`destinoAbierto(api, room)`): never the current room nor a room not yet entered; everything but the Vestíbulo
+needs `torno_abierto` (`plantaPermitida` of the lift); the Sala Amazonas only before `acto_3_iniciado` (in Act III it is
+entered through its door in the Despachos, `entrarSala`: acta + Rubén, and the climax starts there); after
+`lector_derribado` / `juego_terminado` the directory offers nothing. It is optional: the 44-step walkthrough never uses it.
+The engine already had the other half of the shortcut: **double click / double tap on an exit** = leave at once
+(`engine/mover.js`, §7 «Movement»). Both are in the pause menu «Cómo se juega». Tests: `tools/test-critica3.mjs` (§9.8:
+lists, locks, save/load, old saves, mouse and touch).
+
 ### 2.6 Mapa del edificio (plantas y conexiones: arte, guion y botonera coinciden)
 Fuente única de la geografía (biblia §3.0, adenda §14, `content/lib/edificio.js`, órdenes de dirección 1-3 del cierre del
 rediseño). Toda placa, indicador de ascensor y escalera debe cuadrar con esto; una salida nueva se añade aquí primero.
@@ -417,7 +435,14 @@ the top), `ramirez` (post-credits only), and the two "objects with character", w
 appears above them in their colour: `gertrudis` (LCD `#39FF14`, custom sprite, `defaultVerb: 'hablar'`) and
 `lector_medio` (the Lector Medio, a marketing buyer-persona cardboard standee: stock-photo smile, blue jumper, folded
 newspaper, chest card «LECTOR MEDIO · 43 años…», taped speaker; recording colour `#CCCCCC`; variants `chaqueta` when
-`chaqueta_en_lector`, `caido` when `lector_derribado`, chosen automatically).
+`chaqueta_en_lector`, `caido` when `lector_derribado`, `cae1..3` during the fall, chosen automatically; crítica 3 §9.9,
+**the push signal**: once `duelo_inigo_ganado` and until it falls, every 3.2 s it wobbles by itself towards where it will
+fall —`tamb1`/`tamb2` (4° and 2° on the same base corner as the fall, `j` suffix with the jacket), six frames of 160 ms,
+`TAMBALEO`/`tambaleo(t)` in `content/actors.js`—; «Mirar a Bruno» then says the `empujon` goal of `content/pistas.js`:
+«El Lector Medio se tambalea. Un empujoncito y deja de asentir.»).
+The noise traffic light of Desarrollo (`pecera.semaforo_ruido`, states `rojo`/`ambar`/`verde`): Hablar turns it green for
+one second while Bruno's line (shown at his feet, so the light stays visible) says so, then red again (E3 P8); the room's
+`onEnter` puts it back to red.
 **Addendum cast** (adenda §1/§11.2/§13): sprite characters `pilar_escaleta` (Eventos, `#A8F07A`), `leoncio_quesitos` (`#3CE0C6`), `anselmo_monolito` (`#E496FF`),
 `evaristo_salvedad` (`#F0F0A8`) and the cameo `valentin_reticula` (`#C0E8FF`). **Sprite-less presences** only give a
 speaking name/colour to `api.sayAs` (flag `presence` in the definition, `hotspot: false`, never placed in a room):
@@ -656,6 +681,7 @@ while the player has a verb/item selected or the pointer over him, and a walking
 `api.give(id)`, `api.take(id)`, `api.has(id)`, `api.inventory()`.
 
 ### Flags & state
+`api.visitada(room)` / `api.visitadas()` (rooms already entered, saved: the directory with shortcuts, §2.5b) ·
 `api.flag(name)`, `api.setFlag(name, value = true)`, `api.inc(name, by = 1)`, `api.once(key)` (true only the first
 time, saved), `api.cond(c)`, `api.getState(objId)`, `api.setState(objId, v)`, `api.setWalkbox(id, on)`, `api.repaint()`.
 
@@ -859,7 +885,9 @@ Anti-dead-end rule (§4): an item is only removed (`api.take`) by its correct us
   reads or sets an undeclared flag. `node tools/check.mjs` checks the sources statically.
 - Engine-reserved: `duel:<id>:won`, `walkbox:<room>.<id>`; `api.once` uses its own store.
 - Saved automatically: room, inventory, flags, object states/visibility, actor rooms/positions/visibility, dialog
-  `once`, `api.once` keys, play time. Not saved: running scripts. `onEnter` must be idempotent.
+  `once`, `api.once` keys, play time, and the rooms already entered (`state.visitadas`, crítica 3 §9.8: the engine marks
+  each room on entry and on load; `api.visitada(room)` / `api.visitadas()`; `__game.state().visitadas`; old saves get
+  them deduced from the plot flags in `migrarPartida`). Not saved: running scripts. `onEnter` must be idempotent.
 - Slots: 3 manual + `auto` (autosave on every room change). Pause menu: Esc or ≡.
 
 ---

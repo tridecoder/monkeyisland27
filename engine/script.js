@@ -242,6 +242,8 @@ export function makeApi(game, ctx = {}) {
     flag: (name) => { game.checkFlag(name, 'flag'); return game.state.flags[name]; },
     setFlag: (name, value = true) => { game.checkFlag(name, 'setFlag'); game.state.flags[name] = value; game.refreshWalkboxes(); if (game.room && game.room.def.dynamic) game.repaint(); return value; },
     inc: (name, by = 1) => { game.checkFlag(name, 'inc'); game.state.flags[name] = (game.state.flags[name] || 0) + by; game.refreshWalkboxes(); if (game.room && game.room.def.dynamic) game.repaint(); return game.state.flags[name]; },
+    visitada: (room) => !!(game.state && Array.isArray(game.state.visitadas) && game.state.visitadas.includes(room)),
+    visitadas: () => (game.state && Array.isArray(game.state.visitadas) ? [...game.state.visitadas] : []),
     once: (key) => { const k = 'once:' + key; if (game.state.once[k]) return false; game.state.once[k] = true; return true; },
     cond: (c) => game.cond(c, api),
     getState: (id) => game.getObjState(id).state,

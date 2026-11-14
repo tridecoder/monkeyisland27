@@ -332,7 +332,7 @@ export class Game {
     const C = this.content;
     const st = {
       room: null, inventory: [...asArray(this.G.startInventory)], flags: { ...(this.G.startFlags || {}) },
-      objects: {}, actors: {}, dialogs: {}, once: {}, playTime: 0,
+      objects: {}, actors: {}, dialogs: {}, once: {}, visitadas: [], playTime: 0,
     };
     // Placements without `when` give the initial room; conditional placements are applied on room entry.
     for (const r of Object.values(C.rooms)) for (const p of asArray(r.actors)) {
@@ -520,6 +520,7 @@ export class Game {
     }
     this.speeches.filter(s => !s.blocking).forEach(s => this.endSpeech(s));
     this.state.room = id;
+    this.marcarVisitada(id);
     const rt = { def, width: Math.max(SCREEN_W, def.width || SCREEN_W), dirty: true };
     rt.walk = new WalkMap(asArray(def.walkboxes).map(b => {
       const k = 'walkbox:' + id + '.' + (b.id || '');
@@ -562,6 +563,13 @@ export class Game {
       await this.runScript((api) => this.G.afterEnter(api, { room: id, entryN: this.entryN }), { label: id + '.afterEnter' });
     }
     return true;
+  }
+  /** Salas pisadas en esta partida (`state.visitadas`, se guarda con ella): el directorio con atajos solo ofrece estas
+   *  (content/lib/directorio.js). Se marca al entrar, también al cargar (la sala de la partida cuenta como pisada). */
+  marcarVisitada(id) {
+    if (!this.state || !id) return;
+    const v = Array.isArray(this.state.visitadas) ? this.state.visitadas : (this.state.visitadas = []);
+    if (!v.includes(id)) v.push(id);
   }
   snapCamera() {
     const W = this.room ? this.room.width : SCREEN_W;

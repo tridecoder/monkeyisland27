@@ -37,6 +37,7 @@ para girar el móvil: en horizontal el juego ocupa todo el alto.
 
 - **F**: pantalla completa (ordenador).
 - **Clic izquierdo** en el suelo: andar (doble clic: correr; mantener pulsado: seguir al puntero). Sobre un objeto o persona: «Ir a». Doble clic en una salida: salir ya.
+- **Directorio con atajos** (el tótem de la Redacción, junto al ascensor): lleva a cualquier sala ya visitada.
 - **Verbo + objeto**: clic en un verbo y luego en el objeto, la persona o el icono del inventario.
   «Usar» y «Dar» con un objeto del inventario: verbo → objeto → destino.
 - **Clic derecho** (pulsación larga en táctil): verbo por defecto (Mirar, Hablar, Ir a).

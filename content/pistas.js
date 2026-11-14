@@ -27,6 +27,7 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   baja: 'A las nueve apagan la rotativa. Y Rubén sigue de alta en un armario.',
   acta: 'Para entrar en la Sala hace falta un acta. Gervasio no ha escrito una nunca.',
   climax: 'Respondo a todos. Por fin algo que sé hacer.',
+  empujon: 'El Lector Medio se tambalea. Un empujoncito y deja de asentir.',   // crítica 3 §9.9: la señal del empujón
   // E2 §10.3: la coma de Evaristo (pasos 28 y 32)
   coma: 'Evaristo me llama y Begoña me manda a verle. Algo le quita el sueño.',   // integración: en el paso 28 solo ha sonado la L1
   bendicion: 'Evaristo duda de su propia coma. Necesita a alguien que sepa de comas.',
@@ -132,7 +133,7 @@ export const OBJETIVOS = [
     'Cuando pida papeles, dale lo del chico, lo de la reunión y lo de las comas.',                   // E2 §10.3
     ['Primero lo del chico; luego la reunión; luego la coma.', 'Remates: el ticket nº 1, el acta y el correo de Evaristo.']], duelo: 'inigo',
     extra: { si: '!has:correo_evaristo', abuela: 'Y el papel del señor de las comas, que lo vas a necesitar.' } },
-  { id: 'empujon', acto: 3, hecho: 'lector_derribado', activo: 'duelo_inigo_ganado', salas: ['sala_amazonas'], meta: M.climax, niveles: [
+  { id: 'empujon', acto: 3, hecho: 'lector_derribado', activo: 'duelo_inigo_ganado', salas: ['sala_amazonas'], meta: M.empujon, niveles: [
     'A los que nunca dicen nada, hijo, un empujoncito. Con educación.',
     'Ese de cartón lleva semanas diciendo que sí. Que diga otra cosa.',
     ['Empújalo, que es de cartón y no se hace daño.', 'Empujar al Lector Medio.']] },
