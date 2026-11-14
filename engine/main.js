@@ -45,6 +45,7 @@ function makeTestApi(game) {
         flags: s ? s.flags : {},
         objects: s ? s.objects : {},
         actors: s ? s.actors : {},
+        visitadas: s && Array.isArray(s.visitadas) ? s.visitadas : [],   // salas pisadas (directorio con atajos)
         player: game.player && game.state ? { x: Math.round(game.player.x), y: Math.round(game.player.y), dir: game.player.dir } : null,
         dialog: game.choice ? game.choice.options.slice() : null,
         dialogDisabled: game.choice ? [...game.choice.disabled] : null,

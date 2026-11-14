@@ -141,6 +141,17 @@ function lectorInclinado(deg, jacket) {
 }
 const lectorCae = [22, 50, 76].map(deg => lectorInclinado(deg, false));
 const lectorCaeChaqueta = [22, 50, 76].map(deg => lectorInclinado(deg, true));
+// crítica 3 §9.9 · la señal del empujón: ganado D4 y antes de caer, el cartón se tambalea solo hacia donde caerá (4° y 2°
+// sobre la misma esquina de la base) un instante cada pocos segundos. Situación, no texto: pide un empujoncito.
+const lectorTambalea = [4, 2].map(deg => lectorInclinado(deg, false));
+const lectorTambaleaChaqueta = [4, 2].map(deg => lectorInclinado(deg, true));
+export const TAMBALEO = { cada: 3200, frames: [4, 0, 2, 0, 4, 0], ms: 160 };   // cada 3,2 s: seis fotogramas de 160 ms
+/** Fotograma del tambaleo en el instante `t` (null = de pie, quieto). */
+export function tambaleo(t) {
+  const k = Math.floor(((Number(t) || 0) % TAMBALEO.cada) / TAMBALEO.ms);
+  const deg = TAMBALEO.frames[k];
+  return deg === 4 ? 'tamb1' : deg === 2 ? 'tamb2' : null;
+}
 // Caído de cara en el suelo, a la derecha de donde estaba (la cabeza a la derecha; el actor queda en el CENTRO del
 // cartón: la escena lo recoloca al caer, `xCaido()` en content/escenas/climax.js): el reverso de cartón crudo, el
 // puntal plegado, el altavoz boca abajo y la pegatina «ATREZO · FOCUS GROUP 2014» (el texto lo pinta drawExtra a 1:1,
@@ -469,11 +480,16 @@ export default {
       caido: { sprite: lectorCaido },
       cae1: { sprite: lectorCae[0] }, cae2: { sprite: lectorCae[1] }, cae3: { sprite: lectorCae[2] },
       cae1j: { sprite: lectorCaeChaqueta[0] }, cae2j: { sprite: lectorCaeChaqueta[1] }, cae3j: { sprite: lectorCaeChaqueta[2] },
+      tamb1: { sprite: lectorTambalea[0] }, tamb2: { sprite: lectorTambalea[1] },
+      tamb1j: { sprite: lectorTambaleaChaqueta[0] }, tamb2j: { sprite: lectorTambaleaChaqueta[1] },
     },
     variant: (v) => {
       if (v.flag('lector_derribado')) return 'caido';
       const k = Number(v.flag('sala_amazonas_lector_cae')) || 0;          // clímax: fotogramas de la caída
       if (k >= 1 && k <= 3) return 'cae' + k + (v.flag('chaqueta_en_lector') ? 'j' : '');
+      // crítica 3 §9.9: tras ganar D4 se tambalea (pide el empujón); la escena de la caída manda en cuanto empieza
+      const tb = v.flag('duelo_inigo_ganado') ? tambaleo(v.t) : null;
+      if (tb) return tb + (v.flag('chaqueta_en_lector') ? 'j' : '');
       return v.flag('chaqueta_en_lector') ? 'chaqueta' : null;
     },
     // la pegatina del reverso, legible (a escala 1, sin el escalado de la perspectiva)

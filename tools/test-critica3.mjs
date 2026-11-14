@@ -78,6 +78,203 @@ async function jugarDuelo(id, alRemate) {
   must(!(await state()).duel, `el duelo ${id} no termina`);
 }
 
+// ================================================================== §9.8 atajo · E3 P8 semáforo · §9.9 señal del empujón
+const shot = (nombre) => page.screenshot({ path: path.join(here, 'shots', `e3b-${nombre}.png`) });
+const opciones = () => G(() => __game.currentDialogOptions());
+const dir = () => G(async () => { const m = await import('/content/lib/directorio.js'); return { PRIMER_VIAJE: m.PRIMER_VIAJE, QUEDARSE: m.QUEDARSE }; });
+/** Abre el directorio con un verbo y devuelve las opciones (sin elegir). */
+async function abrirDirectorio(v = 'usar') {
+  G(([v]) => __game.doVerb(v, 'directorio_planta'), [v]);
+  await until(() => !!__game.state().dialog || (!__game.state().busy && __game.state().room !== 'pecera'), null, 8000);
+  return opciones();
+}
+async function atajoSemaforoSenal() {
+  const D = await dir();
+  await G(() => __game.newGame()); await idle();
+  must(JSON.stringify((await state()).visitadas) === '["vestibulo"]', `partida nueva: visitadas ${JSON.stringify((await state()).visitadas)}`);
+  await setFlags({ torno_abierto: true, inigo_presentado: true, intro_vista: true });
+  await goto('pecera');
+  // 1. solo salas pisadas (y nunca la actual)
+  let o = await abrirDirectorio();
+  must(JSON.stringify(o) === JSON.stringify(['Vestíbulo · planta 0', D.QUEDARSE]), `directorio recién llegado: ${JSON.stringify(o)}`);
+  await chooseByText(D.QUEDARSE); await idle();
+  must((await state()).room === 'pecera', 'quedarse cambia de sala');
+  ok('§9.8: el directorio solo ofrece las salas ya pisadas (Vestíbulo), nunca la actual; «Nada, me quedo aquí.» no viaja');
+  // 2. Acto II: Despachos, Sala Amazonas y Sistemas pisados; el Vending no
+  await setFlags({ acto_2_iniciado: true, silla_libre: true, gertrudis_saludada: true });
+  for (const r of ['pajarera', 'sala_amazonas', 'cpd', 'pecera']) await goto(r);
+  await clearLog();
+  o = await abrirDirectorio('ir');
+  for (const want of ['Despachos · planta 1', 'Sala Amazonas · planta 1', 'Vestíbulo · planta 0', 'Sistemas · planta -1']) must(o.includes(want), `falta «${want}» en ${JSON.stringify(o)}`);
+  must(!o.some(t => /Vending|Marketing|Eventos|Administración|papel/.test(t)), `ofrece una sala no pisada: ${JSON.stringify(o)}`);
+  await chooseByText('Sistemas'); await idle();
+  let st = await state();
+  const entCpd = await G(() => { const e = __game.game.content.rooms.cpd.entries.ascensor; return Array.isArray(e) ? e : [e.x, e.y]; });
+  must(st.room === 'cpd' && st.player.x === entCpd[0] && st.player.y === entCpd[1], `Sistemas: sala ${st.room} en ${st.player.x},${st.player.y} (entrada ${entCpd})`);
+  must(await logCount(D.PRIMER_VIAJE) === 1 && D.PRIMER_VIAJE.length <= 80, 'primer viaje: falta la línea de Bruno');
+  ok(`§9.8: Acto II: ofrece Despachos, Sala Amazonas, Sistemas y Vestíbulo (no el Vending, sin pisar); a Sistemas por su entrada; «${D.PRIMER_VIAJE}»`);
+  // 3. segunda vez, sin línea; la sala de destino corre su onEnter (la Sala Amazonas)
+  await goto('pecera'); await clearLog();
+  o = await abrirDirectorio();
+  await chooseByText('Sala Amazonas'); await idle();
+  must((await state()).room === 'sala_amazonas' && await logCount(D.PRIMER_VIAJE) === 0, 'segundo viaje: repite la línea o no llega');
+  ok('§9.8: el segundo viaje, en silencio (la línea solo la primera vez)');
+  // 4. bloqueos: Acto III sin Sala Amazonas; torno cerrado; tras el empujón, nada
+  await setFlags({ acto_3_iniciado: true, dos_ias_vista: true });
+  await goto('pecera');
+  o = await abrirDirectorio();
+  must(o.includes('Despachos · planta 1') && !o.some(t => t.startsWith('Sala Amazonas')), `Acto III: ${JSON.stringify(o)}`);
+  await chooseByText(D.QUEDARSE); await idle();
+  const bloqueos = await G(async () => {
+    const m = await import('/content/lib/directorio.js');
+    const g = __game.game, f = g.state.flags;
+    const api = { room: 'pecera', flag: (k) => f[k], visitada: (r) => g.state.visitadas.includes(r) };
+    const out = {};
+    out.salaActo3 = m.destinoAbierto(api, 'sala_amazonas');
+    out.noPisada = m.destinoAbierto(api, 'eventos');
+    f.torno_abierto = false; out.tornoCpd = m.destinoAbierto(api, 'cpd'); out.tornoVest = m.destinoAbierto(api, 'vestibulo'); f.torno_abierto = true;
+    f.acto_3_iniciado = false; out.salaActo2 = m.destinoAbierto(api, 'sala_amazonas'); f.acto_3_iniciado = true;
+    f.lector_derribado = true; out.final = m.destinos(api).length; f.lector_derribado = false;
+    return out;
+  });
+  must(!bloqueos.salaActo3 && !bloqueos.noPisada && !bloqueos.tornoCpd && bloqueos.tornoVest && bloqueos.salaActo2 && bloqueos.final === 0, 'bloqueos: ' + JSON.stringify(bloqueos));
+  await setFlags({ lector_derribado: true });
+  await clearLog();
+  await G(() => __game.doVerb('usar', 'directorio_planta'));
+  must(!(await opciones()) && (await state()).room === 'pecera', 'tras el empujón el directorio sigue abriendo la lista');
+  await setFlags({ lector_derribado: false });
+  ok('§9.8: no deja saltar a una sala sin pisar ni a la Sala Amazonas en el Acto III (se entra por su puerta); sin torno, solo el Vestíbulo; tras el empujón, nada');
+  // 5. guardar / cargar (y partidas de antes del directorio)
+  await G(() => __game.save('e3b'));
+  await G(() => __game.newGame()); await idle();
+  must((await state()).visitadas.length === 1, 'partida nueva tras guardar: visitadas no se reinicia');
+  await G(() => __game.load('e3b'));
+  st = await state();
+  must(['pajarera', 'sala_amazonas', 'cpd', 'pecera', 'vestibulo'].every(r => st.visitadas.includes(r)) && st.room === 'pecera', `cargar: visitadas ${JSON.stringify(st.visitadas)}`);
+  o = await abrirDirectorio();
+  must(o.includes('Despachos · planta 1') && o.includes('Sistemas · planta -1'), `tras cargar: ${JSON.stringify(o)}`);
+  await chooseByText(D.QUEDARSE); await idle();
+  const vieja = await G(async () => {
+    const m = await import('/content/game.js');
+    const st = { room: 'catacumba', inventory: [], flags: { torno_abierto: true, acto_2_iniciado: true, vio_ticket_3: true }, once: {} };
+    m.default.migrarPartida(st);
+    return st.visitadas;
+  });
+  must(['vestibulo', 'catacumba', 'pecera', 'office', 'cpd'].every(r => vieja.includes(r)) && !vieja.includes('eventos'), 'partida vieja: ' + JSON.stringify(vieja));
+  ok('§9.8: guardar/cargar conserva las salas pisadas; una partida de antes del directorio las deduce de la trama');
+  // 6. con el ratón (sin verbo: «Ir a directorio con atajos») y elegir con clic; captura del menú
+  await setFlags({ acto_3_iniciado: false, dos_ias_vista: false });
+  await G(() => __game.skipText(false));
+  const p0 = await G(() => __game.screenPos('directorio_planta'));
+  must(await G(() => __game.objects().find(o => o.id === 'directorio_planta').name === 'directorio con atajos'), 'el hotspot no se llama «directorio con atajos»');
+  await page.mouse.click(p0.x, p0.y);
+  must(await until(() => !!__game.state().dialog, null, 8000), 'clic en el directorio: no se abre la lista');
+  await wait(400);
+  await shot('atajo-menu-escritorio');
+  const iDesp = (await opciones()).indexOf('Despachos · planta 1');
+  const po = await G(i => __game.optionPos(i), iDesp);
+  await page.mouse.click(po.x, po.y);
+  must(await until(() => __game.state().room === 'pajarera' && !__game.state().busy, null, 8000), 'clic en «Despachos»: no viaja');
+  ok('§9.8: con el ratón: clic en el directorio (sin verbo) → lista; clic en «Despachos» → los Despachos');
+  // táctil (iPhone en horizontal)
+  const ctx = await browser.newContext({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 });
+  const mp = await ctx.newPage();
+  mp.on('console', m => { if (m.type() === 'error') consoleErrors.push('[móvil] ' + m.text()); });
+  mp.on('pageerror', e => consoleErrors.push('[móvil] pageerror: ' + e.message));
+  await mp.goto(base); await mp.waitForFunction(() => !!window.__game);
+  const MG = (fn, a) => mp.evaluate(fn, a);
+  const muntil = async (fn, ms = 8000) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { if (await MG(fn)) return true; await wait(60); } return false; };
+  await MG(() => { try { localStorage.clear(); } catch (e) { /* */ } });
+  await MG(() => __game.skipText(true));
+  await MG(() => __game.newGame());
+  await MG(() => { for (const [k, v] of Object.entries({ torno_abierto: true, inigo_presentado: true, intro_vista: true })) __game.setFlag(k, v); __game.game.state.visitadas.push('cpd', 'pajarera'); });
+  await MG(() => __game.gotoRoom('pecera'));
+  await MG(() => __game.skipText(false));
+  await MG(() => __game.waitIdle());
+  const t0 = await MG(() => __game.screenPos('directorio_planta'));
+  await mp.touchscreen.tap(t0.x, t0.y);
+  must(await muntil(() => !!__game.state().dialog), 'táctil: el toque en el directorio no abre la lista');
+  await wait(450);
+  await mp.screenshot({ path: path.join(here, 'shots', 'e3b-atajo-menu-movil.png') });
+  must(await MG(() => __game.state().room === 'pecera'), 'táctil: el toque que abre la lista ya ha elegido algo');
+  const iSis = (await MG(() => __game.currentDialogOptions())).indexOf('Sistemas · planta -1');
+  const tp = await MG(i => __game.optionPos(i), iSis);
+  await mp.touchscreen.tap(tp.x, tp.y);
+  must(await muntil(() => __game.state().room === 'cpd' && !__game.state().busy), 'táctil: el toque en «Sistemas» no viaja');
+  await ctx.close();
+  ok('§9.8: táctil: un toque en el directorio abre la lista (sin elegir nada) y otro en «Sistemas» lleva a Sistemas');
+
+  // ------------------------------------------------------------ E3 P8: el semáforo se pone verde un segundo
+  await G(() => __game.skipText(true));
+  await goto('pecera');
+  await G(() => __game.doVerb('ir', 'semaforo_ruido'));
+  await G(() => __game.skipText(false));
+  await until(() => { const g = __game.game, s = (window.__camS = window.__camS || []); s.push(Math.round(g.camX)); return s.length > 8 && s.slice(-8).every(x => x === s[s.length - 1]); }, null, 6000);   // cámara quieta
+  await G(() => { window.__camS = null; });
+  await page.mouse.move(5, 5);
+  must(await G(() => __game.game.getObjState('semaforo_ruido', 'pecera').state) === 'rojo', 'semáforo: no empieza en rojo');
+  await shot('semaforo-antes');
+  G(() => __game.doVerb('hablar', 'semaforo_ruido'));
+  must(await until(() => __game.game.getObjState('semaforo_ruido', 'pecera').state === 'verde', null, 3000), 'Hablar al semáforo: no se pone verde');
+  const tVerde = Date.now();
+  await wait(250);
+  await shot('semaforo-durante');
+  must(await until(() => __game.game.getObjState('semaforo_ruido', 'pecera').state === 'rojo', null, 3000), 'el semáforo no vuelve al rojo');
+  const dur = Date.now() - tVerde;
+  const globo = await G(() => __game.state().speaking.some(s => s.text.startsWith('"Shhh"')));
+  await idle();
+  must(dur >= 700 && dur <= 1800 && globo, `semáforo: verde ${dur} ms (globo aún en pantalla: ${globo})`);
+  must(await G(() => __game.game.getObjState('semaforo_ruido', 'pecera').state) === 'rojo', 'semáforo: acaba en verde');
+  ok(`E3 P8: Hablar al semáforo: verde ${dur} ms con el globo en pantalla y vuelta al rojo`);
+
+  // ------------------------------------------------------------ §9.9 señal del empujón
+  await G(() => __game.skipText(true));
+  await setFlags({ acto_3_iniciado: true, dos_ias_vista: true, sala_abierta: true, ruben_libre: true, chaqueta_en_lector: true,
+    climax_entrada: true, sala_amazonas_climax_visto: true });
+  await G(() => __game.giveItem('acta_reunion')); await G(() => __game.giveItem('ticket_n1'));
+  await setFlags({ duelo_inigo_ganado: true });          // (sin ganar, entrar lanza el clímax)
+  await goto('sala_amazonas');
+  const variantes = async (ms) => G(async (ms) => {
+    const g = __game.game, a = g.actors.lector_medio, vs = new Set(), t0 = performance.now();
+    while (performance.now() - t0 < ms) {
+      const sp = g.spriteOf(a);
+      vs.add(Object.entries(a.variants).find(([, v]) => v === sp)?.[0] || 'base');
+      await new Promise(r => setTimeout(r, 30));
+    }
+    return [...vs].sort();
+  }, ms);
+  // sin ganar D4: quieto
+  await setFlags({ duelo_inigo_ganado: false });
+  let vs = await variantes(3600);
+  must(JSON.stringify(vs) === '["chaqueta"]', 'antes de ganar D4 ya se tambalea: ' + JSON.stringify(vs));
+  await setFlags({ duelo_inigo_ganado: true });
+  await idle();
+  vs = await variantes(3600);
+  must(vs.includes('chaqueta') && vs.includes('tamb1j') && vs.includes('tamb2j'), 'ganado D4 no se tambalea: ' + JSON.stringify(vs));
+  // captura en pleno tambaleo
+  await G(() => __game.skipText(false));
+  await page.mouse.move(5, 5);
+  await wait(1500);
+  await shot('senal-quieto');
+  await G(() => { __game.game.actors.lector_medio.variante = 'tamb1j'; });     // el fotograma más inclinado, fijo para la foto
+  await wait(200);
+  await shot('senal-tambaleo');
+  await G(() => { __game.game.actors.lector_medio.variante = null; });
+  await G(() => __game.skipText(true));
+  const meta = await brunoDice();
+  const M = await G(async () => (await import('/content/pistas.js')).OBJETIVOS.find(o => o.id === 'empujon'));
+  must(meta.includes('El Lector Medio se tambalea. Un empujoncito y deja de asentir.'), '«Mirar a Bruno» tras D4: ' + JSON.stringify(meta));
+  const ll = await tresLlamadas('sala_amazonas');
+  must(ll[0].some(l => l.includes('empujoncito')) && ll[1].some(l => l.includes('cartón')) && ll[2].some(l => l.includes('Empújalo')) && ll[2].some(l => l === 'B: Empujar al Lector Medio.'),
+    'la abuela no apunta al cartón y a Empujar: ' + JSON.stringify(ll));
+  await setFlags({ lector_derribado: true });
+  vs = await variantes(3400);
+  must(JSON.stringify(vs) === '["caido"]', 'derribado sigue tambaleándose: ' + JSON.stringify(vs));
+  await setFlags({ lector_derribado: false });
+  ok(`§9.9: ganado D4 el Lector Medio se tambalea solo (quieto antes; caído, quieto); «Mirar a Bruno»: «${M.meta}»; la abuela: empujoncito → cartón → «Empujar al Lector Medio.»`);
+  await G(() => __game.skipText(true));
+}
+
 try {
   await page.goto(base);
   await page.evaluate(() => { try { localStorage.clear(); } catch (e) { /* ignore */ } });
@@ -283,6 +480,8 @@ try {
   must(await logCount('Ficha de la página 7. Sellada por Teodoro. Impar.') === 1 && await logCount('Sellada por Aurora') === 0, 'N8: con el sello de Teodoro, Bruno sigue diciendo «Sellada por Aurora»');
   must(await logCount('Aurora no sella nada sin café') === 0, 'N8: Maripaz sigue hablando del sello de Aurora');
   ok('N8: ganada D2 antes que D1, el remate dice «Sellada por Teodoro» (y Maripaz no habla del café de Aurora)');
+
+  await atajoSemaforoSenal();
 
   const errs = await G(() => __game.errors.filter(e => !e.warn).map(e => e.msg));
   must(!errs.length, 'errores del motor: ' + errs.join(' | '));

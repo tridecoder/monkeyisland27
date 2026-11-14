@@ -209,6 +209,17 @@ function migrarPartida(st) {
   // E2 §5.3 (P3): la coma solo está bendecida si el correo salió por el fax; una bendición suelta de la vía antigua
   // (Aurora sin escuchar a Evaristo) se deshace para que el paso 32 se pueda jugar
   if (fl.coma_bendecida && !fl.correo_evaristo_listo) fl.coma_bendecida = false;
+  // crítica 3 §9.8: partidas de antes del directorio con atajos (sin `visitadas`): las salas que la trama ya ha hecho pisar
+  if (!Array.isArray(st.visitadas)) {
+    const v = new Set(['vestibulo', st.room]);
+    const si = (f, ...salas) => { if (fl[f]) salas.forEach(r => v.add(r)); };
+    si('torno_abierto', 'pecera'); si('chaqueta_en_lector', 'pajarera'); si('gertrudis_saludada', 'office');
+    si('acto_2_iniciado', 'catacumba', 'office'); si('vio_ticket_3', 'cpd'); si('cms_vivo', 'cpd');
+    si('reunion_terminada', 'pajarera', 'sala_amazonas'); si('nota_gasto_presentada', 'ecosistema', 'administracion');
+    si('evaristo_escuchado', 'ecosistema', 'administracion'); si('oyo_descopear', 'ecosistema', 'eventos');
+    si('ruben_encontrado', 'cpd');
+    st.visitadas = [...v].filter(Boolean);
+  }
   for (const k of FLAGS_RETIRADOS) delete fl[k];
   if (st.actors) for (const id of ['nerea_backlog', 'borja_engagement']) delete st.actors[id];   // E2 §2.6 y §3: ya no existen
   return st;
@@ -340,6 +351,8 @@ export default {
     '· El MÓVIL: clic en su icono (o clic derecho): llamar a la abuela,',
     '  que da pistas, o leer el correo.',
     '· La LIBRETA: clic en su icono para repasar las réplicas.',
+    '· DIRECTORIO de la Redacción: atajo a salas visitadas.',
+    'Doble clic en una salida: se sale ya.',
     'Esc: pausa. F: pantalla completa. Toque largo: ver objetos.',
   ],
   quitConfirm: { text: '¿Seguro que quiere salir?', yes: 'Sí', no: 'Lo hablamos' },

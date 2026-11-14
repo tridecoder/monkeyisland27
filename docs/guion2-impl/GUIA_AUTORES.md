@@ -278,3 +278,24 @@ Se hereda.»): una línea ASCII también cuenta para los topes, los «Como X.» 
 - Dosis: seis líneas en su boca (murmullo B20, Dar el acta B14, la opción `once` «¿Usted se lee el periódico?» de su árbol
   y M1: Dar `pieza_opa` en Marketing, con variante recortada y respuesta repetida de eje), ninguna en el duelo. El resto,
   eje (inventario publicitario).
+
+### E3.3 Crítica 3 §9.8-9.9 y E3 P8 (lo que ya está hecho; no lo dupliquéis)
+
+- **Atajo de desplazamiento (§9.8)**: el tótem-directorio del vestíbulo de planta de la Redacción
+  (`pecera.directorio_planta`, ahora «directorio con atajos») abre con un clic, Usar o Mirar la lista de las salas **ya
+  pisadas** (nombre visible oficial y planta) y lleva a Bruno a la entrada de siempre de la elegida
+  (`content/lib/directorio.js`: `DESTINOS`, `destinoAbierto`, `usarDirectorio`). Bloqueos: ni la sala actual ni una sin
+  pisar; todo menos el Vestíbulo pide `torno_abierto`; la Sala Amazonas solo antes del Acto III (en el III se entra por su
+  puerta: acta, Rubén y clímax); tras el empujón, nada. La sala de destino corre su `onEnter` y los avisos como siempre: si
+  vuestra sala tiene una escena de entrada, también salta por el atajo. Salas pisadas: `api.visitada(room)` /
+  `api.visitadas()` (las marca el motor; se guardan con la partida). Línea nueva (una, la primera vez): «Toco un nombre y
+  el tótem me lleva. Ni ticket, ni cita previa.». El doble clic / doble toque en una salida ya existía (`engine/mover.js`).
+  Los dos, en «Cómo se juega».
+- **Semáforo (E3 P8)**: Hablar con `semaforo_ruido` lo pone en verde un segundo y vuelve al rojo; el globo de Bruno sale a
+  sus pies para no tapar la luz (`api.say(texto, { at: [x, 141] })`).
+- **Señal del empujón (§9.9)**: ganado D4, el Lector Medio se tambalea solo cada 3,2 s (variantes `tamb1`/`tamb2` de
+  `content/actors.js`); «Mirar a Bruno» dice la meta nueva del objetivo `empujon` («El Lector Medio se tambalea. Un
+  empujoncito y deja de asentir.»); las tres pistas de la abuela ya iban de «empujoncito» a «cartón» a «Empujar al Lector
+  Medio.». El final no cambia.
+- Pruebas: `node tools/test-critica3.mjs` (atajo con ratón y dedo, bloqueos, guardar/cargar, semáforo, señal); capturas en
+  `tools/shots/e3b-*.png`.
