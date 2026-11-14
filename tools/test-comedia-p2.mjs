@@ -284,6 +284,7 @@ async function principal() {
 
   // ------------------------------------------------------------ E2 §2.3.2 paso 34: Herminia mide la pieza
   await T.setFlag('casilla_fuente'); await T.setFlag('acto_2_iniciado');
+  await T.setFlag('rep_11');          // crítica 3 · N1: sin R11, el primer Usar lee el correo de Ramírez (paso 13)
   await T.clearLog();
   await T.verb('usar', 'ordenador_bruno');
   await T.expectFlags({ pieza_escrita: true, herminia_midio: true }, 'paso 34');
