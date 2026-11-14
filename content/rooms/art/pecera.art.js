@@ -1132,7 +1132,7 @@ const layout = {
     yoli_tendencias: { at: [309, 116, 'down'], walkTo: [284, 126], face: 'right' },
     leoncio_quesitos: { at: [434, 114, 'down'], walkTo: [410, 126], face: 'right' },
     // E2 §2.6.5: donde estaba Nemesio, su mesa vacía (sin sprite): «GUARDIA: ANSELMO»
-    mesa_guardia: { rect: [592, 84, 26, 30], walkTo: [612, 124], face: 'up', draw: drawMesaGuardia },
+    mesa_guardia: { rect: [592, 84, 26, 30], walkTo: [628, 124], face: 'up', draw: drawMesaGuardia },
     anselmo_monolito: { at: [672, 118, 'left'], walkTo: [696, 128], face: 'left' },
     // solo en la escena 7.2 (pecera.escenas.js): presenta bajo la pantalla de métricas, entre Bruno y Yoli
     inigo_sinergia: { at: [246, 122, 'down'] },
