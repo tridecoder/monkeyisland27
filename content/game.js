@@ -9,19 +9,19 @@ import { drawText, measure } from '../engine/font.js';
 import music from './music.js';
 import flags, { ADENDA_FLAGS } from './flags.js';
 import { RV_TADEO } from './lib/movil.js';
-import { OBJETIVOS, SALUDOS, OTRA_VEZ, ABUELA_VIRAL, DESPEDIDA, horaMovil } from './pistas.js';
+import { OBJETIVOS, SALUDOS, OTRA_VEZ, ABUELA_VIRAL, DESPEDIDA, horaMovil, actoActual, DONDE, FALTAN_REPLICAS } from './pistas.js';
 
 // ------------------------------------------------------------------ §8.2 respuestas por defecto (rotan en orden)
 const DEFAULTS = {
   mirar: ['Es exactamente lo que parece. En esta casa, eso ya es noticia.', 'Lo miro con intensidad de periodista sin cenar. No descubro nada.', 'Nada que contrastar.', 'Si lo miro más, Yoli me lo cuenta como tiempo de permanencia.', 'Visto. Ni una errata. Sospechoso.'],
   coger: ['Está inventariado. Aquí todo está inventariado menos yo.', 'Si lo cojo, alguien me pedirá una nota de gasto por tocarlo.', 'No es mío. Aquí nada es mío. Ni la silla, hasta hace poco.', 'Mejor no. Luego desaparece algo y el becario es el primero en la lista.', 'No me cabe. Mi mochila ya va llena de chapas de eventos.'],
   usar: ['No veo cómo. El manual lo tiene alguien que se jubiló en 2011.', 'Usarlo así sería innovación. Y la innovación la cobra la consultora.', 'No funciona. Lo añado a mis competencias: «equipos averiados».', 'No se me ocurre para qué. Y eso que he hecho un máster.', 'Mejor no lo toco. Si se rompe, sale en el parte con mi nombre mal escrito.'],
-  dar: ['No creo que lo quiera. Y si lo acepta, luego hay que declararlo.', 'Aquí si das algo sin acta, te lo devuelven con tareas.', 'Lo rechazaría. Tiene cara de quien ya tiene uno.', 'Regalar cosas en una redacción se considera soborno o despedida.', 'No. Si le doy eso, me pide factura.'],
+  dar: ['No creo que lo quiera. Y si lo acepta, luego hay que declararlo.', 'Aquí si das algo sin acta, te lo devuelven con tareas.', 'Lo rechazaría. Tiene cara de quien ya tiene uno.', 'Regalar cosas en una redacción se considera soborno o despedida.', 'No. Aquí los regalos vuelven con acuse de recibo.'],
   hablar: ['No contesta. O es un objeto o está en una videollamada.', 'Le hablo. No me contesta. Es lo más parecido a una fuente oficial.', 'Hablarle a eso sería como responder a todos: posible, pero imperdonable.', 'Silencio. Al menos no me ha dicho «lo hablamos».', 'No me contesta. Bueno, no me ha llamado Pellizco. Algo es algo.'],
   abrir: ['No se abre. Lo apunto como «acceso restringido». Suena a ascenso.', 'Cerrado. Hay una pegatina: «No forzar». Me ha convencido.', 'No tiene por dónde. Lo ha montado alguien que no quería visitas.', 'Si lo abro, me hacen responsable de lo que salga.', 'No se abre. Lo dejo así: está en su derecho.'],
-  cerrar: ['Ya está cerrado. Aquí lo único que no cierra a tiempo es la edición.', 'Cerrarlo no cierra nada. Bueno, cerraría el tema, que aquí es lo difícil.', 'No hay nada que cerrar. Lo apunto en «tareas completadas».', 'Lo cierro. No pasa nada. Igual que en las reuniones.', '¿Cerrar algo yo? ¿Con qué cargo?'],
+  cerrar: ['Ya está cerrado. Hasta en eso llego tarde.', 'Cerrarlo no cierra nada. Bueno, cerraría el tema, que aquí es lo difícil.', 'No hay nada que cerrar. Lo apunto en «tareas completadas».', 'Lo cierro. No pasa nada. Igual que en las reuniones.', '¿Cerrar algo yo? ¿Con qué cargo?'],
   empujar: ['Empujo con las dos manos. Nada. Sigo un poco, por si alguien mira.', 'No pienso empujar eso. Saldría en el próximo comité. En diapositiva.', 'Ni se inmuta. Tiene más estabilidad laboral que yo.', 'Empujo. Nada. Es como empujar la prima de riesgo con la mirada.', 'No, que luego se cae y el becario es el último que lo tocó.'],
-  tirar: ['Tiro. Nada. Tiene más resistencia que el papel.', 'Aquí el que tira de algo se convierte en el responsable.', 'No pienso tirar de eso. En esta empresa ya tira siempre el becario.', 'Tiro. No sale. Le pido perdón. Me parece lo correcto.', 'Mejor no. Si viene con cable, Paco me lo factura.'],
+  tirar: ['Tiro. Nada. Tiene más resistencia que el papel.', 'Aquí el que tira de algo se convierte en el responsable.', 'No pienso tirar de eso. En esta empresa ya tira siempre el becario.', 'Tiro. No sale. Le pido perdón. Me parece lo correcto.', 'Mejor no. Todo lo que tiene cable acaba en Sistemas. Y yo detrás.'],
 };
 // §8.6: «Combinar 10 cosas seguidas sin éxito»
 const COMBO_GAG = '¿Estás probando todo con todo? Así trabajan en Administración. Y no funciona.';
@@ -42,12 +42,22 @@ defaults['*'] = rotating('mirar');
 // ------------------------------------------------------------------ plan §8.5: la abuela, tres niveles por objetivo
 // Textos: content/pistas.js. Elección del objetivo y del nivel: engine/objetivos.js (api.objetivo.pista()). Nivel 3: la
 // abuela dice su línea y, AL COLGAR, Bruno traduce la acción en voz alta. Nunca dos llamadas idénticas seguidas.
+/** crítica 3 · N1: réplicas del mazo del duelo `id` que Bruno aún no sabe, en el orden del mazo (flags `rep_XX`). */
+function replicasQueFaltan(api, id) {
+  const D = api.game.content.duels, opp = id && D.opponents && D.opponents[id];
+  if (!opp) return [];
+  const flagDe = new Map((D.pairs || []).map(p => [p.id, p.flag]));
+  return (opp.deck || []).map(pid => flagDe.get(pid)).filter(f => f && !api.flag(f));
+}
 async function pistas(api) {
   const n = api.inc('abuela_llamadas');
   const A = 'abuela_remedios';
   const P = api.objetivo.pista();                       // { obj, nivel, repetida, def }
   const N = P.def ? P.def.niveles : null;
   const tres = N && P.nivel >= 3 ? N[2] : null;
+  // crítica 3 · N1: si el objetivo es un duelo y faltan réplicas, nivel 2-3: la abuela dice dónde está la primera;
+  // nivel 3: Bruno, al colgar, dice sitio y objeto de cada una (como mucho tres líneas, sin repetir sitio)
+  const faltan = P.def && P.def.duelo && P.nivel >= 2 ? replicasQueFaltan(api, P.def.duelo).filter(f => DONDE[f]) : [];
   // Bruno llama a su abuela: primer plano del móvil (api.phone) con su retrato; ella habla desde el móvil
   await api.phone.call({ caller: A, label: 'Abuela', outgoing: true }, async () => {
     await api.phone.say(SALUDOS[(n - 1) % SALUDOS.length]);
@@ -64,12 +74,17 @@ async function pistas(api) {
       const pre = P.def.previa;
       if (pre && P.nivel === (pre.nivel || 1) && api.cond(pre.si)) await api.phone.say(pre.abuela);
       await api.phone.say(tres ? tres[0] : N[P.nivel - 1]);
+      if (faltan.length) await api.phone.say(DONDE[faltan[0]][0]);
       const ex = P.def.extra;
       if (tres && ex && api.cond(ex.si)) await api.phone.say(ex.abuela);
     }
     await api.phone.say(DESPEDIDA);
   });
   if (tres) await api.say(tres[1]);                     // nivel 3: Bruno, al colgar, dice la acción
+  if (tres && faltan.length) {
+    const sitios = [...new Set(faltan.map(f => DONDE[f][1]))].slice(0, 3);
+    await api.say([FALTAN_REPLICAS, ...sitios]);
+  }
 }
 
 // ------------------------------------------------------------------ ADENDA §2 + ENMIENDA E2 §5.7: avisos al entrar en sala
@@ -309,6 +324,7 @@ export default {
 
   // plan §8: objetivos (ficha, «Mirar a Bruno», abuela) y hora del móvil por hitos — datos en content/pistas.js
   objetivos: OBJETIVOS,
+  acto: actoActual,                                     // crítica 3 · N2: «Mirar a Bruno» y la abuela, por acto
   hora: horaMovil,
   metaFinal: 'Lo hemos conseguido. Bueno: lo he conseguido. Lo pongo en «logros».',
 

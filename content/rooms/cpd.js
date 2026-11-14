@@ -251,7 +251,7 @@ const rubenDialog = {
             api.learnReply('rep_15');
           } },
         { id: 'fuera', text: '¿Qué es lo primero que vas a hacer fuera?', once: true,
-          reply: 'Comer algo que no sea atún. Y que no me lo facture nadie.' },
+          reply: 'Comer algo que no sea atún. Y que nadie me lo titule.' },
         { id: 'taper', text: '¿Y el táper?', if: '!taper_dado',
           do: async (api) => {
             if (api.has('taper_huerfano')) { await api.say('Aquí lo tienes. Es huérfano.'); await darTaper(api); return; }
@@ -272,7 +272,7 @@ const rubenDialog = {
 const REJILLA = [
   () => ['(Planta 2) «Te lo dejo en doscientos. Más IVA.» Maripaz.', '(¡GONG!)'],
   () => ['(Administración) «Original. Duplicado. Triplicado. Original...»'],
-  () => ['(Despachos) «Amarillo, facturación. Verde, oportunidades...»'],
+  () => ['(Despachos) «Amarillo, prescindible. Verde, prescindible pero barato...»'],
   // §4.7: entrada nueva de la rotación, Acto II en adelante
   (api) => (acto2(api) ? { cobertura: true } : ['(Vestíbulo) «¡Ibersideral entra por la banda!». También narra para el sótano.']),
   (api) => (api.flag('ruben_libre') ? ['(Desde el 27) Nada. Solo la matricial, imprimiendo por respeto.']
@@ -312,7 +312,7 @@ export default buildRoom({
 
   objects: [
     ascensorObjeto('ascensor_cpd', {
-      mirar: 'El ascensor. Sube. Es lo único que sube aquí sin abrir ticket.',
+      mirar: 'El ascensor. En el sótano, el «tin» suena más bajito. Por respeto.',
       cerrar: 'Se cierra solo. Lo programó Paco. Tiene número de incidencia.',
       empujar: 'No. Si lo empujo, Paco lo apunta como «impulso no autorizado».',
       hablar: '«Subo». No contesta. Pero sube. Ya es más que la mayoría.',
@@ -336,14 +336,14 @@ export default buildRoom({
         if (api.flag('ruben_libre')) { await api.say('Vacío. Cables, envoltorios de atún y un «Gracias, Tadeo» pegado.'); return; }
         if (api.flag('ruben_encontrado')) { await api.say('Ya está abierto. Por dentro. Rubén lo prefiere entornado.'); return; }
         await api.say('Pegatina: «PROPIEDAD DE OPTIMAL BRAINS. NO ABRIR: SE ENFRÍA EL MODELO».');
-        await api.sayAs(P, 'Lo alquiló el consultor. Yo ahí no entro, que me factura.');
+        await api.sayAs(P, 'Lo alquiló el consultor. Sin ticket. Para mí, ese armario no existe.');
       },
       cerrar: async (api) => {
         if (api.flag('ruben_encontrado') && !api.flag('ruben_libre')) await api.say('¿Cerrarlo con él dentro? Eso ya lo hizo un consultor. No seré el segundo.');
         else await api.say('Está cerrado. Por fuera y por dentro.');
       },
       tirar: 'La puerta no cede. El papel que sale por debajo, a lo mejor sí.',
-      empujar: 'Si lo empujo, se enfría el modelo. Y luego me lo factura.',
+      empujar: 'Ni se mueve. Pesa más de lo que debería pesar un armario de servidores.',
       hablar: async (api) => {
         if (api.flag('ruben_libre')) await api.say('Le hablo al armario vacío. Contesta el eco. Con faltas.');
         else if (api.flag('ruben_encontrado')) await api.dialog('ruben');
@@ -378,7 +378,7 @@ export default buildRoom({
       tirar: tirarRegleta,
       usar: tirarRegleta,
       empujar: 'La empujo con el pie. El piloto ni parpadea. Tiene brida.',
-      coger: 'Lo que lleva brida no se coge. Se respeta. O se desenchufa.',
+      coger: 'Tiene brida. No me la llevo. Pero el enchufe no tiene brida.',
       abrir: 'No se abre. Dentro solo hay corriente. Y no es la mía.',
       cerrar: async (api) => { await api.say(api.getState('regleta_r3') === 'apagada' ? '¿Volver a encenderla? Arriba ya se han acostumbrado.' : 'Ya está cerrada. Y encendida. Y con brida.'); },
       hablar: 'Le hablo a la regleta. Zumba. Es su forma de pedir un ticket.',
@@ -392,7 +392,6 @@ export default buildRoom({
           '«(Nota del autor: tengo sueño).» La vuelvo a poner. El ventilador la necesita.']);
         api.setFlag('profecia_leida', true);
       },
-      coger: 'Es la única brisa de Sistemas. Los servidores me odiarían en mi bemol.',
       usar: 'Ya está encendido. Nadie sabe dónde está el botón. Paco no pregunta.',
       empujar: 'La cuña es una hoja doblada: «Libro de Estilo». Pesa más que el ventilador.',
       hablar: 'Le hablo. Me contesta con prosa. Ventilada.',
@@ -425,7 +424,6 @@ export default buildRoom({
       },
       abrir: async (api) => { await api.say('Lo abro por donde siempre: por el principio. Nadie llega al final.'); },
       coger: 'Pesa más que la paciencia de Paco. No me lo llevo.',
-      cerrar: 'Ya está cerrado. Es lo único cerrado de todo el registro.',
       hablar: 'Le leo en voz alta el número 3. Paco suspira desde su silla.',
     } },
     { id: 'cementerio_ratones', name: 'caja de ratones', handlers: {
@@ -454,14 +452,14 @@ export default buildRoom({
       handlers: {
         mirar: 'Paco Ticket. No le da la luz natural desde que había fax en cada mesa.',
         hablar: async (api) => { await api.dialog('paco'); },
-        'dar:cafe': paco('¿Tiene número de ticket? Pues no es un café: es un rumor.'),
+        'dar:cafe': paco('Café sin ticket. Estado: rumor. Olor: confirmado.'),
         'dar:manual_fax': paco('Ese manual ya es tuyo. Las devoluciones van por ticket. Y tardan.'),
         'dar:ticket_n1': paco('Quédatelo. Yo ya tengo el recuerdo. Y una foto mental.'),
         'dar:tarjeta_becario': paco('«Pellizco». Te abro un ticket: «Nombre mal escrito». Ponte a la cola.'),
         'dar:album_eventos': paco('Fotos de eventos. Yo no salgo en ninguna. Lo tengo por ticket.'),
         'dar:taper_huerfano': paco('Un táper sin nombre. Ticket abierto: «Táper huérfano». Estado: tuyo.'),
         'dar:*': paco('¿Viene con número de ticket? Pues no lo veo.'),
-        empujar: 'A Paco no se le empuja. Se le apunta en la cola. Y se espera.',
+        empujar: 'Paco ni se gira. Escribe algo. Creo que ya consto.',
         tirar: 'Le tiro del forro polar. Me mira como a una impresora sin driver.',
         coger: 'Paco no se mueve de Sistemas. Es infraestructura. Tiene número de inventario.',
       } },

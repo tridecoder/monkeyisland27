@@ -33,7 +33,7 @@ const PORTATIL = [
     'Es lo primero sensato que leo hoy. Lo ha escrito una máquina.'],
 ];
 async function mirarPortatil(api) {
-  if (api.flag('ecosistema_portatil_cerrado')) { await api.say(['Cerrado. Por primera vez desde las seis.', 'Se oye la moqueta.']); return; }
+  if (api.flag('ecosistema_portatil_cerrado')) { await api.say(['Cerrado.', 'Se oye la moqueta.']); return; }
   if ((api.flag('portatil_tadeo_n') || 0) === 0) await api.say(['El portátil de Tadeo, de Negocio. Se fue a las seis.', 'Su portátil, no.']);
   const n = api.inc('portatil_tadeo_n');
   const k = (n - 1) % PORTATIL.length;
@@ -113,7 +113,7 @@ const aroObjeto = {
     hablar: hablarAro,
     usar: async (api) => {
       if (api.once('aro_borja_usado')) {
-        await api.say('Me pongo delante. El aro me ilumina. Salgo favorecido por primera vez.');
+        await api.say('Me pongo delante. El aro me ilumina. Se me ven seis años de ojeras.');
         await movil(api, 'Publicando: Damos la bienvenida a [NOMBRE]. Emoji de aplausos.');
       } else await movil(api, 'Publicando: [NOMBRE], otra vez. Emoji de aplausos.');
     },
@@ -217,8 +217,7 @@ export default buildRoom({
     } },
     ascensorObjeto('ascensor_ecosistema', {
       mirar: async (api) => api.say(['El ascensor. Marketing le ha puesto pufs delante.', 'Para que la gente no se vaya. Que se «ubique».']),
-      cerrar: 'Se cierra solo. Es lo único de la planta que no pide feedback.',
-      empujar: 'No se empuja. Se activa. Lo dice el vinilo.',
+      cerrar: 'Se cierra solo. Al rato, Marketing le pregunta qué tal la experiencia.',
       tirar: 'Tiro de la puerta. El móvil de Borja lo publica: «Abriendo caminos».',
       hablar: async (api) => {
         if (maripazAqui(api)) await api.say('«¿Bajas?». Hace «tin». Maripaz quiere ponerle un anuncio al «tin».');
@@ -237,7 +236,7 @@ export default buildRoom({
     } },
     aroObjeto,
     { id: 'embudo_marketing', name: 'embudo de Marketing', handlers: {
-      mirar: async (api) => api.say(['Un embudo de Marketing: «VEN · MIRA · COMPARTE · ¿?».', 'El último paso es una interrogación. Es el único honesto.']),
+      mirar: async (api) => api.say(['Un embudo de Marketing: «VEN · MIRA · COMPARTE · ¿?».', 'El último paso es una interrogación. Ese paso ya lo domino.']),
       usar: 'Me meto en el embudo. Salgo por abajo convertido. En becario.',
       // E2 §3.3: lo que contestaba Borja lo publica ahora su móvil
       hablar: async (api) => { await api.say('¿Y qué hay al final del embudo?'); await movil(api, 'Publicando: ¿Qué hay al final del embudo? Emoji de embudo.'); },
@@ -254,22 +253,21 @@ export default buildRoom({
       },
       empujar: async (api) => {
         api.setState('rollup_comercial', 'enrollado'); api.sfx('whoosh');
-        await mp(api, 'Eso es una baja de campaña, cariño. Te la facturo.', 'Se enrolla sin factura. Lo disfruto.');
+        await mp(api, 'Eso es una baja de campaña, cariño. Con tres días de preaviso.', 'Se enrolla solo. Sin testigos. Lo disfruto.');
       },
       coger: async (api) => { await mp(api, 'El roll-up no se toca. Está contratado hasta 2030.', 'Contratado hasta 2030. Lo pone abajo, en pequeño.'); },
       tirar: async (api) => { api.setState('rollup_comercial', 'desplegado'); await api.say('Tiro de la lona. Sube como una persiana con objetivos.'); },
     } },
     { id: 'termometro_ventas', name: 'termómetro de ventas', handlers: {
       mirar: async (api) => api.say(['Un termómetro pintado a rotulador: «OBJETIVO Q3». Rojo hasta el 97 %.', 'El 3 % que falta se lo lleva el gong de al lado.']),
-      usar: async (api) => { await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Eso no es una venta. Es una ilusión. Y no la facturo.', 'Rojo hasta el 98 %. Nadie lo nota. Ni las ventas.'); },
+      usar: async (api) => { await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Así lo pinto yo los viernes. Pero con más pulso.', 'Rojo hasta el 98 %. Nadie lo nota. Ni las ventas.'); },
       empujar: 'Si lo empujo, sube la temperatura. No las ventas.',
-      coger: 'Es la única cosa de la planta que sube sola. No lo toco.',
       hablar: async (api) => { await api.say('¿Cuándo llegas al cien?'); await mp(api, 'Cuando la noticia ocupe una línea. Vamos por dos.', 'No contesta. Le falta el 3 %. A mí, el contrato.'); },
     } },
     { id: 'pizarra_sinergia', name: 'pizarra', handlers: {
       mirar: 'Pone SINERGIA en tres colores. Si la miras fijamente, aparece un velero.',
       usar: 'Debajo escribo «¿Y qué es?». Se borra solo. Por vergüenza.',
-      coger: 'No me llevo la pizarra. Es lo único que Marketing tiene por escrito.',
+      coger: 'No me llevo la pizarra. Si la muevo, se escapa el velero.',
       empujar: 'La empujo. Se ve otro velero. Hay más sinergia de la que parece.',
       hablar: 'Le pregunto qué es sinergia. Me contesta un velero.',
     } },
@@ -279,9 +277,9 @@ export default buildRoom({
         const n = rota(api, 'ecosistema_pufs_n');
         await api.say(n === 0 ? 'Me ubico. Me hundo. Me desubico.' : 'Otra vez no. Aún tengo la forma del puf en la espalda.');
       },
-      coger: 'Un puf no se coge. Se adopta. Y no tengo piso.',
+      coger: 'Lo cojo. Lo abrazo. Lo dejo. No tengo piso.',
       empujar: 'Rueda hacia la puerta de Eventos. Hasta el puf quiere salir en una foto.',
-      tirar: 'Tiro. Suspira. Es el único de la planta que se queja con razón.',
+      tirar: 'Tiro. Suspira.',
     } },
     { id: 'lema_enmarcado', name: 'lema enmarcado', handlers: {
       mirar: '«TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO.»',
@@ -353,7 +351,7 @@ export default buildRoom({
         mirar: async (api) => { await api.say(['Maripaz, Comercial. Lleva el mazo del gong como otros el bolso.', 'La funda del móvil lleva anuncio.']); },
         hablar: async (api) => api.dialog('maripaz'),
         usar: async (api) => { await api.say('Le toco el hombro.'); await sayM(api, 'Has hecho clic en un anuncio. Ahora te sigo toda la noche.'); },
-        coger: async (api) => { await sayM(api, 'A mí no se me coge. Se me contrata. Por impresiones.'); },
+        coger: async (api) => { await sayM(api, '¿Cogerme? Rellena antes el formulario. Catorce campos. Ocho obligatorios.'); },
         empujar: async (api) => {
           if (api.inc('maripaz_empujon_n') === 1) { gong(api); await sayM(api, 'Uy. Eso en la web se llama «interacción». Te la facturo.'); }
           else await sayM(api, 'Segunda interacción: tarifa plana. Ya puedes empujar lo que quieras.');
@@ -364,11 +362,24 @@ export default buildRoom({
           if (api.flag('casilla_hueco')) await sayM(api, 'Ya te he firmado. Firmar dos veces es un contrato de permanencia.');
           else await sayM(api, 'Una ficha sin hueco. El hueco lo tengo yo. En la Sala Amazonas.');
         },
-        'dar:pieza_opa': async (api) => { await sayM(api, '¿Toda esta noticia sin un anuncio en medio? Se ve demasiado.'); },
-        'dar:acta_reunion': async (api) => { await sayM(api, '¿Un acta? Con un banner arriba sería rentable. Por primera vez.'); },
+        // ENMIENDA E3 §4.4.1 · M1 «La lectora del inventario»: lee la pieza de hoy (nunca a Bruno) y la tasa en huecos
+        'dar:pieza_opa': async (api) => {
+          if (api.flag('pieza_recortada')) { await sayM(api, 'Te han quitado la conclusión. Era mi hueco de cierre. Lo daba por vendido.'); return; }
+          if (!api.once('ecosistema_maripaz_lee')) { await sayM(api, '¿Toda esta noticia sin un anuncio en medio? Se ve demasiado.'); return; }
+          await api.cutscene(async (api) => {
+            api.faceActor(MARIPAZ, 'bruno'); await api.anim(MARIPAZ, 'reach', 400); api.sfx('paper');   // la coge
+            api.faceActor(MARIPAZ, 'down'); await api.wait(1400);                                        // la lee, con el dedo
+            for (let i = 0; i < 3; i++) { api.sfx('click'); await api.wait(350); }                       // tres golpecitos: ahí iría un banner
+            await api.wait(600); api.faceActor(MARIPAZ, 'bruno');
+            await sayM(api, 'Línea nueve: «Hidrovoltia, a por el Robledal». Quita el sueño. Siestatón.');
+            await sayM(api, 'Y la conclusión vale un faldón entero. Que no te la recorten.');
+            await api.anim(MARIPAZ, 'reach', 400); api.sfx('paper');                                     // se la devuelve; no se consume
+          });
+        },
+        'dar:acta_reunion': async (api) => { await sayM(api, '¿El acta? Ya la he leído. «Pedir más café». Ahí cabe Cafés Madrugón.'); },
         'dar:correo_evaristo': async (api) => { await sayM(api, '¿Evaristo? Me revisa los contratos. Por él cobro lo pactado. Qué pena.'); },
         'usar:movil': async (api) => { await sayM(api, 'Si me fotografías, cobro por impresión.'); },
-        'dar:*': async (api) => { await sayM(api, 'Si no lleva logo, no lo cojo. Y si lo lleva, lo cobro.'); },
+        'dar:*': async (api) => { await sayM(api, 'Me lo quedo cinco segundos. Lo que dura un anuncio. Toma.'); },
       } },
   ],
 

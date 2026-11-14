@@ -61,6 +61,10 @@ export default {
               await api.say('¿Y cuando no vende ninguno?');
               await sayM(api, 'Lo toco más fuerte. Que parezca.');
             } },
+          // ENMIENDA E3 §4.3 B19: el segundo registro (lee el periódico, nunca a Bruno); el remate vuelve al eje
+          { text: '¿Usted se lee el periódico?', once: true,
+            reply: ['De la cabecera a las esquelas. Para vender un hueco hay que leer lo de al lado.',
+              'Lo más leído es la fe de erratas. Y ahí no me dejan poner ni un banner.'] },
           { text: '¿Qué tal con Siestatón?', if: 'duelo_maripaz_ganado', once: true,
             reply: 'Encantados. En la web caben en todas partes. Hasta en la X de cerrar.' },
           { text: 'Me voy.', exit: true,

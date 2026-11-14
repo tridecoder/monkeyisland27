@@ -4,8 +4,8 @@
 // «1 REDACCIÓN ◄ / REDACCIÓN WEB»; por ella se ve el azul de las pantallas. La placa esmaltada «TALLERES» (que antes
 // colgaba en la puerta del Office) cuelga aquí dentro, sobre el camastro. Tres zonas con su suelo, filete y pilastra: la mesa de TEODORO (camastro tras
 // la cortina, el fax y el teléfono rojo bajo su cartel «ROTATIVA», el tipómetro; Teodoro SENTADO frente al fax, de perfil,
-// con la mesa por delante), la PARED DE CIERRE (reloj de las 20:59, galería de ex-jefes de cierre, fax enmarcado, cajonera
-// de tipos) y la mesa de AURORA (cartel, Libro de Estilo y tableta calzando la pata, bolis rojos). Galeradas colgadas como
+// con la mesa por delante), la PARED DE CIERRE (reloj de las 20:59, galería de ex-jefes de cierre, cajonera
+// de tipos; el fax enmarcado cuelga en la pared de Teodoro, crítica 3 · N3) y la mesa de AURORA (cartel, Libro de Estilo y tableta calzando la pata, bolis rojos). Galeradas colgadas como
 // jamones, conductos viejos del aire en el techo (edificio de 1987), bombillas desnudas. Primer plano: bobinas de papel (oclusor que no tapa a nadie).
 import { PAL, px, rect, hline, vline, frameRect, line, poly, ellipse, paint, ditherPick, ditherOverlay, noise, glow, gradV,
   rng, hash2, shade, shadowEllipse, bevel, vignette, floorPlanks, desk, wallClock,
@@ -22,6 +22,7 @@ const OLDW = PAL.wood.map((c) => shade(c, -0.12));
 const FL = 97;                       // línea pared / suelo
 const FAX = { x: 103, y: 77 };       // el fax, sobre la mesa de Teodoro (a su derecha: Teodoro lo mira de perfil)
 const DESK_Y = 91, DESK_ZY = 110;    // tablero de la mesa de Teodoro; z de su frente (quien está más abajo va delante)
+const FAX_ENM = { x: 89, y: 40, w: 16, h: 22 };   // crítica 3 · N3: el fax enmarcado, en la pared de Teodoro (nadie delante)
 const layout = {
   catacumba_a_pecera: { rect: [3, 26, 42, 72], walkTo: [30, 112], face: 'left' },
   galeradas: { rect: [74, 15, 98, 24], walkTo: [120, 112], face: 'up' },
@@ -49,9 +50,9 @@ const layout = {
   tipometro: { rect: [134, 89, 28, 11], walkTo: [150, 113], face: 'up', layer: 'sorted', zy: DESK_ZY + 1, cache: true, cachePad: 4, draw: (g) => drawTipometro(g) },
   reloj_2147: { rect: [176, 29, 22, 22], walkTo: [187, 114], face: 'up' },
   fotos_jefes_cierre: { rect: [198, 27, 42, 26], walkTo: [214, 114], face: 'up' },
-  fax_enmarcado: { rect: [220, 55, 18, 24], walkTo: [230, 114], face: 'up' },
+  fax_enmarcado: { rect: [FAX_ENM.x, FAX_ENM.y, FAX_ENM.w, FAX_ENM.h], walkTo: [72, 114], face: 'up' },
   // [P3] plan §4.5: la factura del envío (0,26 €), grapada en la pared de Teodoro, sobre el fax
-  factura_fax: { rect: [104, 56, 12, 13], walkTo: [114, 112], face: 'up', draw: (g) => drawFactura(g, 105, 57) },
+  factura_fax: { rect: [107, 56, 12, 13], walkTo: [116, 112], face: 'up', draw: (g) => drawFactura(g, 108, 57) },
   cartel_aurora: { rect: [248, 36, 50, 30], walkTo: [266, 114], face: 'up' },
   libro_estilo: { rect: [244, 89, 28, 11], walkTo: [258, 114], face: 'up' },
   bolis_aurora: { rect: [284, 62, 14, 20], walkTo: [290, 114], face: 'up', priority: 1 },
@@ -334,17 +335,18 @@ function drawFotos(g) {
 }
 
 function drawFaxEnmarcado(g) {
-  const fx = 220, fy = 55;
-  dropShadow(g, fx, fy, 18, 24, 2, 2, 0.55);
-  rect(g, fx, fy, 18, 24, PAL.wood[2]); hline(g, fx, fy, 18, PAL.wood[6]); vline(g, fx, fy, 24, PAL.wood[5]); hline(g, fx, fy + 23, 18, PAL.wood[0]); vline(g, fx + 17, fy, 24, PAL.wood[0]);
-  gradV(g, fx + 2, fy + 2, 14, 20, ['#e8e0c4', '#cfc6a2']);
-  hline(g, fx + 3, fy + 3, 12, PAL.ink[3]); hline(g, fx + 3, fy + 5, 8, PAL.metal[4]);
-  kit.micro(g, '?', fx + 9, fy + 8, PAL.ink[1], { align: 'center' });
-  greek(g, fx + 3, fy + 14, 12, 2, PAL.metal[3], 5);
-  line(g, fx + 3, fy + 19, fx + 7, fy + 18, PAL.blue[3]); line(g, fx + 7, fy + 18, fx + 11, fy + 20, PAL.blue[3]); line(g, fx + 11, fy + 20, fx + 14, fy + 18, PAL.blue[3]);
-  for (let y = fy + 3; y < fy + 20; y += 3) px(g, fx + 2, y, '#b8ae88');
-  px(g, fx + 15, fy + 2, PAL.white); px(g, fx + 14, fy + 3, PAL.white);
-  kit.cantoVivo(g, fx, fy, 18, 24);
+  // crítica 3 · N3: en la pared de Teodoro, entre la pilastra y la factura (antes, detrás de la cabeza de Aurora)
+  const fx = FAX_ENM.x, fy = FAX_ENM.y, w = FAX_ENM.w, h = FAX_ENM.h;
+  dropShadow(g, fx, fy, w, h, 2, 2, 0.55);
+  rect(g, fx, fy, w, h, PAL.wood[2]); hline(g, fx, fy, w, PAL.wood[6]); vline(g, fx, fy, h, PAL.wood[5]); hline(g, fx, fy + h - 1, w, PAL.wood[0]); vline(g, fx + w - 1, fy, h, PAL.wood[0]);
+  gradV(g, fx + 2, fy + 2, w - 4, h - 4, ['#e8e0c4', '#cfc6a2']);
+  hline(g, fx + 3, fy + 3, w - 6, PAL.ink[3]); hline(g, fx + 3, fy + 5, w - 9, PAL.metal[4]);
+  kit.micro(g, '?', fx + (w >> 1), fy + 7, PAL.ink[1], { align: 'center' });
+  greek(g, fx + 3, fy + 13, w - 6, 2, PAL.metal[3], 5);
+  line(g, fx + 3, fy + 17, fx + 6, fy + 16, PAL.blue[3]); line(g, fx + 6, fy + 16, fx + 9, fy + 18, PAL.blue[3]); line(g, fx + 9, fy + 18, fx + 12, fy + 16, PAL.blue[3]);
+  for (let y = fy + 3; y < fy + h - 4; y += 3) px(g, fx + 2, y, '#b8ae88');
+  px(g, fx + w - 3, fy + 2, PAL.white); px(g, fx + w - 4, fy + 3, PAL.white);
+  kit.cantoVivo(g, fx, fy, w, h);
 }
 
 function drawCajonera(g) {

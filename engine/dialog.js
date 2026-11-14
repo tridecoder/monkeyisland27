@@ -37,7 +37,8 @@ export async function runDialog(game, api, id, startNode) {
     if (a && p && a.room === p.room && a.visible && Math.abs(a.x - p.x) > 4) game.faceTowards(a, p.x, a.y);
   } catch (e) { /* solo cosmético */ }
   game.inDialog = (game.inDialog || 0) + 1;
-  try { await dialogLoop(); } finally { game.inDialog = Math.max(0, game.inDialog - 1); }
+  // crítica 3 · N6: el ambiente guarda un margen tras cerrar una conversación (engine/efectos.js `trasDialogo`)
+  try { await dialogLoop(); } finally { game.inDialog = Math.max(0, game.inDialog - 1); game.finDialogo = game.time; }
   async function dialogLoop() {
   if (def.onStart) await def.onStart(api);
   let guard = 0;

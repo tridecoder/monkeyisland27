@@ -29,7 +29,7 @@ const HAZANAS = [
   ['reunion_terminada', 'reunion_terminada', 'UN BECARIO PREGUNTA POR LOS SIGUIENTES PASOS. HAY HERIDOS'],
   ['mercados_huido', 'mercados_huido', 'UN REDACTOR DE MERCADOS HUYE DEL VENDING. DEJA UN TÁPER Y UN VACÍO'],
   ['maripaz_perdido', (api) => num(api, 'duel:maripaz:perdido_n') >= 1, 'BECARIO LLAMA A UN COLCHÓN UN VIERNES. EL COLCHÓN NO LO COGE'],
-  ['casilla_hueco', 'casilla_hueco', 'UNA COMERCIAL SE QUEDA SOLA EN UNA REUNIÓN. Y FACTURA LA SALA'],
+  ['casilla_hueco', 'casilla_hueco', 'UNA COMERCIAL SE QUEDA SOLA EN UNA REUNIÓN. Y LA AMORTIZA'],
   ['nota_gasto_presentada', 'nota_gasto_presentada', 'ADMINISTRACIÓN, EN ALERTA: UN BECARIO JUSTIFICA CON AZÚCAR'],
   ['casilla_firma', 'casilla_firma', 'UN HOMBRE QUE SOLO HABLA POR FAX SE CONTESTA A SÍ MISMO. LLORA'],
   ['pieza_recortada', 'pieza_recortada', 'ADMINISTRACIÓN RECORTA A DISTANCIA. LA CONCLUSIÓN, DESAPARECIDA'],
@@ -268,7 +268,7 @@ export default buildRoom({
   },
 
   objects: [
-    { id: 'pajarera_a_pecera', name: 'cristal de la Redacción', exit: { room: 'pecera', tipo: 'cristal' }, handlers: {
+    { id: 'pajarera_a_pecera', name: 'Redacción', exit: { room: 'pecera', tipo: 'cristal' }, handlers: {   // crítica 3 · N5 (antes «cristal de la Redacción»)
       mirar: 'Tras el cristal, la Redacción. Desde aquí parece un acuario con wifi.',
       abrir: async (api) => api.goto('pecera', 'pajarera'), usar: async (api) => api.goto('pecera', 'pajarera'),
       hablar: 'Le hago gestos al tótem del vestíbulo. Me contesta: «AQUÍ». Ya lo sé.',
@@ -301,7 +301,7 @@ export default buildRoom({
     } },
     { id: 'sofa', name: 'sofá', handlers: {
       mirar: async (api) => api.say(acto3(api) ? 'Un sofá blanco. Sin consultor parece todavía más caro.' : 'Un sofá blanco en el que nunca se sentó nadie. Ahora se sienta el consultor.'),
-      usar: async (api) => (acto3(api) ? api.say('Me siento. Me hundo. Me levanto antes de que me lo facturen.') : api.sayAs(I, 'Este sofá es un espacio de alto valor. Tú eres bajo coste.')),
+      usar: async (api) => (acto3(api) ? api.say('Me siento. Me hundo. Huele a consultor. Me levanto.') : api.sayAs(I, 'Este sofá es un espacio de alto valor. Tú eres bajo coste.')),
       empujar: 'Pesa como un contrato de consultoría. No se mueve sin adenda.',
       coger: 'Es de cuero blanco. Si lo toco, le dejo la huella de un sueldo bajo.',
     } },
@@ -310,11 +310,11 @@ export default buildRoom({
       usar: async (api) => (acto3(api) ? api.say('No hay nada que usar. Solo el atril y un cable que se va hacia la Sala.') : api.sayAs(I, 'No toques el modelo. Se enfría.')),
       'usar:movil': 'No le hago fotos. Luego me titula: "BECARIO FOTOGRAFÍA UNA IA. LA IA, INCÓMODA".',
       hablar: async (api) => (acto3(api) ? api.say('Le hablo a un atril vacío. Contesta lo mismo que la Reunión de Dirección.') : api.say('Le pregunto quién le escribe los titulares. Parpadea. En mayúsculas.')),
-      coger: async (api) => (acto3(api) ? api.say('Se lo ha llevado Íñigo. Con cuidado de que no se enfríe.') : api.sayAs(I, 'No se coge. Se licencia. Cuarenta y ocho mil al mes.')),
+      coger: async (api) => (acto3(api) ? api.say('Se lo ha llevado Íñigo. Con cuidado de que no se enfríe.') : api.sayAs(I, 'Cuidado, que es una licencia. Cuarenta y ocho mil al mes. Una inversión.')),
     } },
     { id: 'mesa_direccion', name: 'mesa grande', handlers: {
       mirar: seq([['B', 'Una mesa enorme. Encima, un informe: "Lo que quiere el Lector Medio".'], ['B', 'Lo abro. Está en blanco. Se nota que lo ha validado.']]),
-      coger: '¿El informe en blanco? Es lo único validado de esta planta. Se queda.',
+      coger: '¿El informe en blanco? Se queda. Está validado.',
       abrir: 'El cajón tiene llave. La mesa, no. Aquí decide el cajón.',
       usar: 'No me siento ahí. Esa mesa tiene más cargos que yo.',
       'usar:pieza_opa': 'Si la dejo en esta mesa, la validan. En blanco.',
@@ -324,7 +324,6 @@ export default buildRoom({
       mirar: 'El perchero de los Despachos, vacío. Aquí colgada no asiente nadie.',
       'usar:chaqueta_ramirez': 'En el perchero no asiente. Encima de alguien que asiente, sí.',
       usar: 'Me cuelgo la mochila. El perchero se tambalea. No está hecho para becarios.',
-      coger: 'Es el único mueble de los Despachos sin pósit. No pienso estropearlo.',
     } },
     { id: 'ordenador_gervasio', name: 'ordenador de Gervasio', handlers: {
       mirar: async (api) => leerEnviados(api),
@@ -335,7 +334,7 @@ export default buildRoom({
     { id: 'puerta_sala', name: 'puerta de la Sala Amazonas', exit: { room: 'sala_amazonas', tipo: 'puerta' }, handlers: {
       mirar: async (api) => {
         if (acto3(api)) await api.say('"OCUPADO – hasta 2031".');
-        else if (api.flag('reunion_terminada')) await api.say('"LIBRE". Es la primera vez que lo veo.');
+        else if (api.flag('reunion_terminada')) await api.say('"LIBRE". Lo leo dos veces. Sigue poniendo "LIBRE".');
         else await api.say('Pantallita: "REUNIÓN EN CURSO". Debajo, a boli: "Y EN CURSO".');
       },
       ir: entrarSala, usar: entrarSala, abrir: entrarSala, empujar: entrarSala,
@@ -384,9 +383,9 @@ export default buildRoom({
       'usar:chicle': 'No. Ya lleva celo. Dos adhesivos en un lector es golpe de Estado.',
       hablar: grabacion,
       'dar:*': grabacion,
-      empujar: 'No. Es la única autoridad de esta planta. Si se cae, se cae todo.',
+      empujar: 'No. Si se cae, se cae todo. Y todavía no toca.',
       tirar: 'Si tiro, se dobla. Un lector doblado ya no se endereza.',
-      coger: 'No puedo llevármelo. Es el único lector que nunca se da de baja.',
+      coger: 'No me lo llevo. Lleva tres semanas asintiendo. Se ha ganado el sitio.',
       abrir: 'Le abro el periódico. Lo tiene pintado cerrado. Lee los titulares desde fuera.',
     } },
     { id: I, when: '!acto_3_iniciado', handlers: {
@@ -395,7 +394,7 @@ export default buildRoom({
       'dar:cafe': async (api) => api.sayAs(I, 'Yo solo tomo agua con gas y sinergias.'),
       'dar:tarjeta_becario': async (api) => api.sayAs(I, 'Perfecto. Con esto te doy de baja más rápido.'),
       'dar:mensaje_fp': async (api) => api.sayAs(I, '¿Un fax? Qué entrañable. Te lo pongo en la matriz: "Vintage".'),
-      empujar: 'Un consultor no se empuja. Te factura el empujón y el desplazamiento.',
+      empujar: 'Lo empujo. Se deja. Me da las gracias por el feedback.',
     },
       murmurs: ['Esto en verde. Esto en rosa. Esto en azul, que es excusa.', 'Diapositiva 248: «El viaje continúa».',
         '¿Y esto el Lector Medio lo entiende? Perfecto: asiente.'] },
@@ -428,7 +427,7 @@ export default buildRoom({
                 ['wait', 800], [I, 'Y algo de atún. Lo estamos optimizando.']]) },
             { text: '¿Qué es eso del armario 27?', once: true, if: 'vio_armario_27',
               do: async (api) => talk(api, [[I, 'Alucinaciones. Es normal en modelos tan avanzados.'], ['B', 'Ha escrito «ayúdame».'],
-                [I, 'Es un modelo muy empático. No es un armario: es un entorno de concentración.']]) },
+                [I, 'Es un modelo muy empático. Le tenemos en un entorno de concentración.']]) },
             { text: 'Usted no ha escrito un titular en su vida, ¿verdad?', once: true,
               do: async (api) => talk(api, [[I, 'Yo no escribo, Vacante. Yo hago que las cosas estén escritas.'], ['B', 'Eso lo hace un becario.'],
                 ['wait', 1200], [I, 'Siguiente pregunta.']]) },
@@ -473,7 +472,7 @@ export default buildRoom({
                 await api.sayAs(LM, GRABACION);
                 await gv(api, '...Pues ya está decidido.');
               } },
-            { text: '¿Cuántos marrones lleva este año?', once: true, reply: 'Cero. Diecinueve años en cero. Es mi único dato bueno.' },
+            { text: '¿Cuántos marrones lleva este año?', once: true, reply: 'Cero. Los marrones se... se reparten. Muy bien repartidos.' },
             { text: '¿Usted ha escrito alguna vez algo?', once: true,
               do: async (api) => talk(api, [[G, 'Se firmó un acuse de recibo. En 2007.'], ['wait', 900], [G, 'Fue muy duro. No se volvió a pedir.']]) },
             { text: 'Si quiere, le escribo yo el acta.', once: true,

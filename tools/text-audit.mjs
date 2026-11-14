@@ -27,7 +27,8 @@
 //     Eventos, «(*» = 0, «interstitial» ≤ 2, «pop-up» ≤ 8, «Emoji de fuego» ≤ 8, «PORTÁTIL:» = 0…), topes por personaje
 //     (Anselmo, Leoncio, Maripaz, «Me lo apunto» de Bruno) y opciones repetibles sin `once` (§7.6). Avisos; con --e2
 //     cuentan como fallo (test-all pasa `--plan --e2`).
-//   node tools/text-audit.mjs [--plan] [--e2] · node tools/text-audit.mjs --estatico [--plan] [--e2] [--sala=pecera] (solo el repaso estático)
+//   node tools/text-audit.mjs [--plan] [--e2] · node tools/text-audit.mjs --estatico [--plan] [--e2] [--sala=pecera] [--recuento] (solo el repaso estático; --recuento:
+//     cuántas lleva cada tope «en todo el juego», también los que no se pasan, E2 y E3)
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -35,7 +36,7 @@ import { fileURLToPath } from 'node:url';
 import { createServer } from './serve.mjs';
 import { STEPS } from './walk-data.mjs';
 import { createRunner, FAREWELLS } from './walk-lib.mjs';
-import { estatico, topes, COMO_PERMITIDAS, topesE2Juego, topesE2, opcionesRepetibles } from './plan-rules.mjs';
+import { estatico, topes, COMO_PERMITIDAS, topesE2Juego, recuentoE2Juego, topesE2, opcionesRepetibles } from './plan-rules.mjs';
 import { pathToFileURL } from 'node:url';
 
 // ---------------------------------------------------------------- reglas del plan de comedia (tools/plan-rules.mjs)
@@ -61,6 +62,7 @@ const E2 = await (async () => {
   const out = [];
   const sec = (t, arr) => { out.push(`\n${t}: ${arr.length}`); arr.slice(0, ARGS.todo ? 9999 : 60).forEach(x => out.push('  · ' + x)); };
   if (!ARGS.sala) sec('[E2 §12.4] Topes en todo el juego (cadenas de content/)', juego);
+  if (!ARGS.sala && ARGS.recuento) out.push('\n[recuento] Topes en todo el juego (n / tope):\n' + recuentoE2Juego(root).map(T => `  · ${T.n} / ${T.max}  ${T.txt}`).join('\n'));
   sec('[E2 §7.6] Opciones repetibles sin «once» (menú principal; fuera de la lista de repetibles)', ops);
   return { out, malos: juego.length + ops.length };
 })();

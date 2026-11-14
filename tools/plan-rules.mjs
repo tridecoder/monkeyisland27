@@ -86,7 +86,11 @@ export function literales(src) {
   return out;
 }
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : e.name.endsWith('.js') ? [path.join(d, e.name)] : []);
-const esTexto = (t) => /\s/.test(t) && /[a-záéíóúñ]/i.test(t) && !/^[\w.:\-/ ]+$/.test(t) && !/^(bool|int|str|num)\b.*·/.test(t);
+// ENMIENDA E3 §1.5: sin el espacio en la clase (antes descartaba toda frase sin tildes, eñes ni comas, y con ella
+// fórmulas y remates «Como X.»); los ids (`fax_enmarcado`, `ecosistema/maripaz`) siguen fuera porque no llevan espacio
+const esTexto = (t) => /\s/.test(t) && /[a-záéíóúñ]/i.test(t) && !/^[\w.:\-/]+$/.test(t) && !/^(bool|int|str|num)\b.*·/.test(t);
+/** E3 §1.5: el campo `apodo:` de la tabla `SALA` de content/lib/edificio.js (ids internos, nada los enseña). */
+const APODO = /^(?:la|el) (?:Pecera|Catacumba|Ecosistema|Ventanilla)$/;
 
 /** Repaso estático de content/ (sin art/ ni flags.js): remates «Como…» y palabras vetadas, por archivo. */
 export function estatico(root, salas = null) {
@@ -98,6 +102,7 @@ export function estatico(root, salas = null) {
     for (const t of literales(fs.readFileSync(f, 'utf8'))) {
       if (!esTexto(t)) continue;
       if (COMO_RE.test(t)) como.push(`${rel}: ${t}`);
+      if (APODO.test(t)) continue;
       for (const [re, name] of VETADAS) if (prueba(re, t)) vetadas.push(`${rel}: [${name}] ${t}`);
     }
   }
@@ -119,17 +124,30 @@ const MESES = 'enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octu
 /** «desde» + año, mes o «hace N años/meses» (la muletilla, §8). No cuentan las horas del día («desde las seis») ni
  *  «Desde el Mundial del 82». */
 export const DESDE_FECHA = new RegExp(`\\bdesde\\s+(?:(?:19|20)\\d\\d\\b|(?:${MESES})\\b|hace\\s+\\S+\\s+(?:años|meses|semanas)\\b)`, 'gi');
+/** Cadenas de Eventos (sala protegida): fuera de «cariño» (E2) y de los topes de fórmulas (E3 §2). */
+const FUERA_EVENTOS = /[\\/]eventos[.\w]*\.js$/;
 export const TOPES_E2_JUEGO = [
   { re: DESDE_FECHA, max: 6, txt: '«desde [fecha]» (§8: quedan seis)' },
   // integración (orden del director): el tope global sube de 14 a 20 para devolver a Maripaz sus mejores «cariño»; las
   // cadenas de Eventos (sala protegida) no cuentan para este tope (`fuera`)
-  { re: /\bcariño\b/gi, max: 20, txt: '«cariño» (§4.1; tope global 20, sin Eventos)', fuera: /[\\/]eventos[.\w]*\.js$/ },
+  { re: /\bcariño\b/gi, max: 20, txt: '«cariño» (§4.1; tope global 20, sin Eventos)', fuera: FUERA_EVENTOS },
   { re: /\(\*/g, max: 0, txt: 'letra pequeña «(*…)» (§4.1)' },
   { re: /\binterstitial/gi, max: 2, txt: '«interstitial» (§4.1, M6)' },
   { re: /\bpop-?up/gi, max: 8, txt: '«pop-up» (§12.4)' },
   { re: /Emoji de fuego/g, max: 8, txt: '«Emoji de fuego» (§3.1)' },
   { re: /PORTÁTIL:/g, max: 0, txt: '«PORTÁTIL:» (§2.2: ahora «HERMINIA (IA) › »)' },
   { re: /\bDiseño\b/g, max: 11, txt: '«Diseño» (cadenas; el tope de lo que se oye está en TOPES)' },
+  // ENMIENDA E3 §2 (revisión 2) · fórmulas de remate: en todo el juego salvo Eventos (sala protegida, `fuera`);
+  // flag `u` para que «ÚNICO» y las tildes cuenten. Requiere el arreglo de esTexto() (E3 §1.5).
+  { re: /(?<!\p{L})(?:lo|la|el|los|las|su|sus|mi|mis)\s+(?:\p{L}+\s+)?únic[oa]s?(?!\p{L})/giu, max: 8, fuera: FUERA_EVENTOS,
+    txt: '«lo único / la única…» (E3 §2)' },
+  { re: /\bno se (?:l[aeo]s? |me |te )?\p{L}+(?: \p{L}+){0,5}\s*[.:;,]\s*(?:y )?se (?:l[aeo]s? |me |te )?\p{L}+/giu, max: 6,
+    fuera: FUERA_EVENTOS, txt: '«X no se coge. Se Y.» (E3 §2)' },
+  { re: /\bprimera vez\b/gi, max: 5, fuera: FUERA_EVENTOS, txt: '«primera vez» (E3 §2)' },
+  { re: /\bmi primer[oa]?\b/gi, max: 6, fuera: FUERA_EVENTOS, txt: '«Mi primer/a…» (E3 §2)' },
+  { re: /\bno (?:es|son|era)\s[^.!?;:]{1,45}[.:;,]\s*(?:es|son|era)\s/giu, max: 12, fuera: FUERA_EVENTOS,
+    txt: '«No es X. Es Y.» (E3 §1, cuarta fórmula)' },
+  { re: /factur/gi, max: 11, fuera: FUERA_EVENTOS, txt: '«factur…» (E3 §4)' },
 ];
 export const TOPES_E2 = [
   { who: 'bruno', re: /\bMe l[ao] apunto\b/i, max: 0, txt: '«Me la/lo apunto» en boca de Bruno (§7.2)' },
@@ -149,6 +167,11 @@ const normOp = (t) => String(t).toLowerCase().replace(/[¿?¡!.,«»"“”]/g, 
 
 /** Topes de E2 «en todo el juego» sobre las cadenas literales de content/ (sin arte, flags ni plantilla). */
 export function topesE2Juego(root) {
+  return cuentaE2Juego(root).filter(T => T.hits.length > T.max).map(T => `${T.txt}: ${T.hits.length} (tope ${T.max}):\n      ${[...new Set(T.hits)].join('\n      ')}`);
+}
+/** Recuento de cada tope «en todo el juego», pase o no (text-audit --estatico --recuento). */
+export const recuentoE2Juego = (root) => cuentaE2Juego(root).map(T => ({ txt: T.txt, n: T.hits.length, max: T.max }));
+function cuentaE2Juego(root) {
   const cuenta = TOPES_E2_JUEGO.map(T => ({ ...T, hits: [] }));
   for (const f of walk(path.join(root, 'content'))) {
     const rel = path.relative(root, f);
@@ -158,7 +181,7 @@ export function topesE2Juego(root) {
       for (const T of cuenta) { if (T.fuera && T.fuera.test(rel)) continue; const n = (t.match(T.re) || []).length; for (let i = 0; i < n; i++) T.hits.push(`${rel}: ${t}`); }
     }
   }
-  return cuenta.filter(T => T.hits.length > T.max).map(T => `${T.txt}: ${T.hits.length} (tope ${T.max}):\n      ${[...new Set(T.hits)].join('\n      ')}`);
+  return cuenta;
 }
 /** Topes de E2 por personaje sobre [{ who, text, room }] (las líneas oídas). */
 export function topesE2(lines) {

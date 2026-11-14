@@ -38,6 +38,24 @@ const DISCUSIONES = [
   [['D1', '¿Quién ha puesto este margen de ocho píxeles?'], ['D2', 'Diseño.'], ['D1', '...Queda bien.'], ['D2', 'No se lo digas.']],
   [['D1', 'Internet está mal hecho.'], ['D2', 'Desde el principio.'], ['D3', '...Sí.']],
 ];
+// paso 13 (E2 §7.4): sentado, el correo se ve; la réplica R11 (contra Maripaz). Con Mirar o con Usar el ordenador
+// (crítica 3 · N1); una sola vez: con `rep_11` ya sabida, cada verbo dice lo suyo.
+async function leerCorreoRamirez(api) {
+  await api.say(['Con silla, el correo se ve. Ramírez: «Quedo a la espera de tus comentarios».',
+    'Respuesta: «Espera sentado. Si encuentras silla».']);
+  api.learnReply('rep_11');
+  await api.say(['Y una autorrespuesta de Rubén: «Estoy fuera de la oficina desde julio».', '«Bueno, fuera no. Dentro. Muy dentro».']);
+}
+
+// crítica 3 · N11: el coro (D1-D3) solo habla con Bruno cerca de su zona (umbral en x desde el centro de su mesa; la
+// pantalla mide 320: con 200 px el coro está a la vista o justo fuera). Desde la otra punta de la Redacción, nada.
+// Vale también para la discusión de fondo con Yoli (FONDO_YOLI): la empieza el coro.
+export const CORO_UMBRAL = 200;
+const CORO_X = art.layout.coro_desarrollo.rect[0] + art.layout.coro_desarrollo.rect[2] / 2;
+function cercaDelCoro(api) {
+  const b = api.actorPos('bruno');
+  return !!b && Math.abs(b.x - CORO_X) <= CORO_UMBRAL;
+}
 // «De fondo» (§5.14, VELADO): queda solo una, una vez por partida, sin comentario, sin opción y sin objeto.
 const FONDO_YOLI = [[['D1', 'Le he explicado a Yoli su artículo de buscadores.'], ['D2', '¿Y?'],
   ['D1', 'Lo ha entendido a la primera.'], [Y, 'Es que lo escribí yo. Ayuda bastante.']]];
@@ -115,7 +133,6 @@ export default buildRoom({
       mirar: async (api) => { await api.say(['Los Despachos. Cristal de arriba abajo: se ven las broncas, pero no se oyen.', 'Al fondo, la puerta de la Sala de Reuniones.']); },
       abrir: async (api) => api.goto('pajarera', 'pecera'), usar: async (api) => api.goto('pajarera', 'pecera'),
       hablar: 'Golpeo el cristal con los nudillos. Al otro lado lo apuntan en un pósit.',
-      cerrar: 'Ya está cerrada. En los Despachos las puertas no se cierran: se delegan.',
     } },
     { id: 'pecera_a_office', name: 'Vending', exit: { room: 'office', tipo: 'arco' }, handlers: {
       mirar: 'El Vending. Un arco sin puerta: se ve la máquina y a Gertrudis. Ahí vive ella.',
@@ -133,9 +150,9 @@ export default buildRoom({
     } },
     ...objetosSecretaria,
     { id: 'directorio_planta', name: 'directorio de la planta', handlers: {
-      mirar: seq([['B', 'Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.'], ['B', 'Un punto rojo: «ESTÁ AQUÍ». Es la primera vez que algo me ubica.']]),
+      mirar: seq([['B', 'Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.'], ['B', 'Un punto rojo: «ESTÁ AQUÍ». Gracias. Me hacía falta.']]),
       usar: 'Busco «becario» en la lista. No sale. Será que va dentro de «Redacción».',
-      empujar: 'No se mueve. Es lo único de esta planta que está donde dice que está.',
+      empujar: 'No se mueve. Está donde dice que está.',
       coger: 'Es un tótem. Se consulta, no se adopta.',
     } },
     ascensorObjeto('ascensor_pecera', {
@@ -159,7 +176,7 @@ export default buildRoom({
         mirar: async (api) => {
           const n = api.inc('pecera_figurantes_n');
           if (n === 1) await api.say('Dos redactores. Teclean desde las tres. Uno escribe "pensiones" en bucle.');
-          else if (n === 2) await api.say('Los dos únicos que quedan. Están de guardia. Lo demás son chaquetas.');
+          else if (n === 2) await api.say('Siguen tecleando. De guardia. El resto de la planta son chaquetas.');
           else await api.say(['En sus pantallas:', MONITORES[(n - 3) % MONITORES.length]]);
         },
         hablar: 'Ni me miran. Están en directo. Yo no soy noticia.',
@@ -183,9 +200,9 @@ export default buildRoom({
         : 'Lectores concurrentes: 3.418. Se refresca cada segundo. Igual que Yoli.'),
       usar: 'No sé usarla. Ni ella a mí.',
       hablar: async (api) => api.say(api.flag('cms_vivo')
-        ? 'Le hablo. Está apagada. Es la primera vez que no me contesta con una cifra.'
+        ? 'Le hablo. Está apagada. No me da ni una cifra.'
         : '"¿Me lees?" Baja a 3.417. Creo que se ha ido el que me leía.'),
-      tirar: 'Está atornillada a la pared. Es lo único fijo de esta planta.',
+      tirar: 'Está atornillada a la pared. Y Yoli, a la pantalla.',
       empujar: 'Ni la toco. Se refresca cada segundo: me vería venir.',
     } },
     { id: 'monitor_yoli', name: 'monitor de Yoli', handlers: {
@@ -267,16 +284,14 @@ export default buildRoom({
       mirar: async (api) => {
         if (!api.flag('silla_libre')) { await api.say('Mi ordenador. De pie llego al teclado. A la pantalla, no.'); return; }
         if (!api.flag('rep_11')) {                                          // paso 13 (E2 §7.4)
-          await api.say(['Con silla, el correo se ve. Ramírez: «Quedo a la espera de tus comentarios».',
-            'Respuesta: «Espera sentado. Si encuentras silla».']);
-          api.learnReply('rep_11');
-          await api.say(['Y una autorrespuesta de Rubén: «Estoy fuera de la oficina desde julio».', '«Bueno, fuera no. Dentro. Muy dentro».']);
+          await leerCorreoRamirez(api);
         } else {
           await api.say(['Bandeja de entrada. Ramírez sigue a la espera de mis comentarios.', 'Y Rubén sigue fuera de la oficina. Bueno, dentro. Muy dentro.']);
         }
       },
       usar: async (api) => {
         if (!api.flag('silla_libre')) { await api.say('Sin silla no hay ordenador. Lo dice la ergonomía y lo dice Begoña.'); return; }
+        if (!api.flag('rep_11')) { await leerCorreoRamirez(api); return; }   // crítica 3 · N1: Usar también lee el correo
         if (api.flag('pieza_escrita')) { await api.say('Ya está escrita. Si la toco más, le salen adjetivos.'); return; }
         if (!api.flag('casilla_fuente')) { await api.say('Abro un documento en blanco. Me mira. Sin fuentes no escribo.'); return; }
         // paso 32
@@ -296,7 +311,7 @@ export default buildRoom({
     } },
     { id: 'silla_ramirez', name: 'silla de Ramírez', handlers: {
       mirar: async (api) => {
-        if (!api.flag('chaqueta_cogida')) await api.say(['La única silla libre. Tiene una chaqueta: Ramírez, el de Bolsa.', 'En el bolsillo, un tique: «1 cruasán. Para tomar aquí».']);
+        if (!api.flag('chaqueta_cogida')) await api.say(['Una silla libre. Tiene una chaqueta: Ramírez, el de Bolsa.', 'En el bolsillo, un tique: «1 cruasán. Para tomar aquí».']);
         else await api.say('Una silla. Libre. Me tiembla algo que no sabía que tenía.');
       },
       usar: async (api) => {
@@ -370,8 +385,8 @@ export default buildRoom({
     { id: 'semaforo_ruido', name: 'semáforo de ruido', state: 'rojo', states: ['rojo', 'ambar', 'verde'], handlers: {
       mirar: seq([['B', 'Semáforo de ruido de Prevención. Rojo.'], ['B', 'Pósit de Anselmo: "Verde: 14 de agosto. Estaban de vacaciones".']]),
       usar: 'Lo toco. Se pone más rojo. Existe un rojo más rojo.',
-      tirar: async (api) => api.sayAs(A, 'No. Es lo único que les mide sin que se enfaden.'),
-      hablar: '"Shhh", le digo. Es la primera vez que alguien le da la razón.',
+      tirar: async (api) => api.sayAs(A, 'No. Es de Prevención. El pósit, mío.'),
+      hablar: '"Shhh", le digo. Se pone verde un segundo. Luego, rojo otra vez.',
       coger: 'Si me lo llevo, Desarrollo deja de hacer ruido oficialmente. No sería verdad.',
     } },
     { id: 'taza_no', name: 'taza «NO»', handlers: {
@@ -387,7 +402,7 @@ export default buildRoom({
         api.setFlag('pecera_bandeja_abierta', true);      // solo el dibujo (fuera el flag cruzado bandeja_diseno_abierta, §3.4)
         await api.say(['«Entregado a las 18:29». Y al fondo, de 2017, una hoja con una flecha.', '«La pantalla tumbará el CMS». Sello: «LEÍDO (PERO NO)».']);
       },
-      coger: async (api) => api.sayAs(A, 'Déjala. Es lo único ordenado del rincón. Y no es nuestro.'),
+      coger: async (api) => api.sayAs(A, 'Déjala. Está ordenada. Se nota que no es nuestra.'),
       cerrar: 'Ya está cerrada. Es una bandeja: lo suyo es que alguien la abra.',
       'usar:pieza_opa': 'No. Si la dejo aquí, la leen en 2033. Con sello de LEÍDO (PERO NO).',
     } },
@@ -410,7 +425,7 @@ export default buildRoom({
     } },
     { id: 'calendario_ferreteria', name: 'calendario de ferretería', handlers: {
       mirar: seq([['B', 'Calendario de Ferretería Hermanos Tornillo. Anselmo solo se fía de este.'], ['B', 'Trae santoral, fases de la luna y una oferta de tacos del 8.']]),
-      tirar: async (api) => api.sayAs(A, '¡Quieto! Es lo único de fuera que dejo entrar. Por los tacos.'),
+      tirar: async (api) => api.sayAs(A, '¡Quieto! Es de fuera, pero trae tacos del 8. Tiene permiso.'),
       coger: 'Si me lo llevo, Anselmo no sabría en qué día vive.',
       abrir: 'Lo hojeo. En diciembre regalan una llave inglesa. Hay que llegar a diciembre.',
     } },
@@ -493,7 +508,7 @@ export default buildRoom({
         else await api.sayAs(L, 'Sobra un 26 %. Te la ha medido ella. Yo te la sostengo, que pesa.');
       },
       'dar:*': ley('Herminia ya lo ha contado. Yo lo sostengo. Es mi parte.'),
-      empujar: 'No. Está mirando a Herminia trabajar. Es lo único que hace.',
+      empujar: 'No. Está mirando a Herminia trabajar.',
     },
       murmurs: null },
     // E2 §2.5-2.6 · Anselmo Monolito, director de Desarrollo y dueño del tablero (hereda a Nemesio), con árbol
@@ -516,9 +531,9 @@ export default buildRoom({
   // §5.14: el motor decide cuándo (60-120 s, máx. 3 por visita, nunca encima de otro texto); aquí, solo las líneas.
   ambientRules: { max: 3, every: [60000, 120000] },
   ambient: [
-    { id: 'coro', if: '!lector_derribado', voces: VOCES_CORO, discusiones: DISCUSIONES },
+    { id: 'coro', if: ['!lector_derribado', cercaDelCoro], voces: VOCES_CORO, discusiones: DISCUSIONES },
     { id: 'murmullos', if: '!lector_derribado', run: murmullo },
-    { id: 'fondo', if: '!lector_derribado', voces: VOCES_CORO, discusiones: FONDO_YOLI },
+    { id: 'fondo', if: ['!lector_derribado', cercaDelCoro], voces: VOCES_CORO, discusiones: FONDO_YOLI },
   ],
 
   async onEnter(api) {

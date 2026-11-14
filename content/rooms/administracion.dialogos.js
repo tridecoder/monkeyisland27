@@ -62,7 +62,7 @@ export default {
             do: async (api) => { await recorte(api); return 'exit'; } },
           // adenda 4.7 y 8bis (antes de la despedida; se quedan)
           { text: '¿Qué le parece Custodia, la de Secretaría?', once: true,
-            reply: ['¿Custodia? No es burocracia, niño. Es temperamento.', 'Eso no se sella.'] },
+            reply: ['¿Custodia? Temperamento, niño. Eso no hay quien lo selle.'] },
           { text: '¿Le han pedido algo raro hoy?', once: true,
             reply: ['Un yunque. Por nota de gasto. Concepto: «Sucesión, plaza 7».',
               'Rechazado. Si lo aprobara, tendría que justificar la caída.'] },
@@ -76,7 +76,7 @@ export default {
             do: async (api) => {
               await api.wait(900);                         // (Pausa. Revisa la nada por las dos caras.)
               await sayBe(api, '...Correcta. Aprobada. Vete. Me has hecho daño.');
-              await api.say('He hecho un trámite bien. Primera vez. Lo pongo en «logros».');
+              await api.say('He hecho un trámite bien. Lo pongo en «logros».');
             } },
           { text: 'Café para entender el capitalismo.', goto: 'B_IMPORTE' },
           { text: 'Varios.', once: true, goto: 'B0',
@@ -87,7 +87,7 @@ export default {
               await api.say('RECHAZADO, en la frente. Mi primer documento oficial. Con sello.');
             } },
           { text: 'Representación. Me represento a mí mismo.', once: true,
-            reply: 'Eso no es representación. Es autoestima. Y no desgrava.' },
+            reply: 'Eso es autoestima. Y no desgrava.' },
         ],
       },
       B_IMPORTE: {
@@ -128,7 +128,7 @@ export default {
         onEnter: async (api) => {
           api.sfx('open');
           await api.wait(600);
-          await sayBe(api, ['Esto. Esto es una nota de gasto. Como Dios manda.', 'Concepto claro. Importe con céntimos. NIF. Firma.',
+          await sayBe(api, ['Esto. Esto es una nota de gasto.', 'Concepto claro. Importe con céntimos. NIF. Firma.',
             '«Comida de trabajo con Hidrovoltia. 312,00 euros. Firmado: Gervasio.»']);
           await api.say('¿Gervasio come con Hidrovoltia?');
           await sayBe(api, 'Gervasio come con quien haga falta. Y lo justifica. Es su gran talento.');

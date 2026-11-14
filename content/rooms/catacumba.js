@@ -257,7 +257,7 @@ async function faldonComercial(api) {
   api.setState('fax', 'faldon');
   for (let i = 0; i < 6; i++) { api.sfx('paper'); await api.wait(420); }
   await api.face('left');
-  await api.say('De Comercial. Mi pieza, con un faldón de Siestatón. Más largo que la pieza.');
+  await api.say('Mi pieza, con faldón de Comercial: «¿La opa le quita el sueño? Siestatón».');
   await fax(api, ['El anuncio mide cuarenta líneas. La noticia, veintitrés.', 'En mi página la noticia se ve. Devuelto.']);
   // (Teodoro mete la hoja larga en el fax al revés. El fax la traga entera, despacio.)
   await api.anim(TEO, 'reach', 500);
@@ -268,12 +268,12 @@ async function faldonComercial(api) {
 }
 async function usarPiezaConFax(api) {
   if (!api.flag('fax_con_papel')) { await api.say('Sin papel, este fax no traga ni una coma.'); return; }
-  if (api.flag('pieza_recortada')) { await api.say('Ya está recortada. Si la vuelvo a enviar, me la facturan dos veces.'); return; }
+  if (api.flag('pieza_recortada')) { await api.say('Ya está recortada. Si la vuelvo a enviar, Begoña recorta el recorte.'); return; }
   const i = await api.choose(['1: GOYITA', '2: ADMINISTRACIÓN', '3: CONTROLLING', 'Mejor no.'], { escape: 3 });
   if (i === 0) await teclaGoyita(api);
   else if (i === 1) await teclaAdministracion(api);
   else if (i === 2) await teclaControlling(api);
-  else await api.say('Lo pienso. Un fax mal marcado no se borra. Se archiva.');
+  else await api.say('Lo pienso. En este fax, un número mal marcado también llega. A otro.');
 }
 
 // ------------------------------------------------------------------ Árbol de Aurora (plan §5.3)
@@ -305,7 +305,7 @@ async function comaDeEvaristo(api) {
   api.setFlag('correo_evaristo_listo', true);
   api.give('correo_evaristo');
   api.sfx('pickup');
-  await fax(api, 'Eso no es mío. Es de Controlling. Lo respeto.');
+  await fax(api, 'De Controlling. Ni lo mido. Lo respeto.');
   await api.say(['Su correo, impreso. «Asunto: Una coma. Envío: en el momento oportuno».',
     '¿Y cuándo es el momento oportuno?']);
   await aurora(api, 'Cuando alguien diga que una coma es un detalle sin importancia, criatura.');
@@ -382,7 +382,7 @@ const dialogoAurora = {
         api.sfx('hit');
         api.take('mensaje_fp');
         api.setFlag('casilla_fuente', true);
-        await aurora(api, 'La nota te la devuelvo; las fuentes no se quedan, se citan.');
+        await aurora(api, 'Te devuelvo la nota. Una fuente se cita y se devuelve: es prestada.');
         return 'A_MENU';
       },
     },
@@ -448,7 +448,7 @@ async function hablarAurora(api) {
 /** Dar fotocopia_nota_direccion o mensaje_fp a Aurora (paso 30). */
 async function darFuente(api) {
   if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc al cartel. Antes del café, ni fuentes ni nada.'); return; }
-  if (api.flag('casilla_fuente')) { await aurora(api, 'Ya está citada, criatura. Una fuente no se cita dos veces; se gasta.'); return; }
+  if (api.flag('casilla_fuente')) { await aurora(api, 'Ya está citada, criatura. Dos veces sería abusar de su confianza.'); return; }
   if (dosFuentes(api)) { await api.dialog('aurora', 'A_FUENTE'); return; }
   await aurora(api, UNA_FUENTE);
 }
@@ -471,7 +471,7 @@ const dialogoTeodoro = {
           do: async (api) => { await fax(api, ['¿«Nota del autor: tengo sueño»? La escribí yo. En 1998.', 'No se lo digas a Aurora.']); } },
         // [E1.8] se queda: casa con el paso 32 («Teodoro le manda faxes»)
         { text: '¿Conoce a Herminia, la de Infografía?', once: true,
-          do: async (api) => { await fax(api, ['La máquina de Leoncio respeta el cuerpo 9. Es la única.', 'Le mando faxes. Me contesta con un quesito. Nos entendemos.']); } },
+          do: async (api) => { await fax(api, ['La máquina de Leoncio respeta el cuerpo 9. Lo he medido. Nueve.', 'Le mando faxes. Me contesta con un quesito. Nos entendemos.']); } },
         { text: '¿Conoce a don Evaristo?', once: true,
           do: async (api) => { await fax(api, ['Es de los nuestros. Él cuenta comas. Yo, líneas.', 'Una vez me devolvió un fax corregido. Lo tengo enmarcado.']); } },
         { text: 'Me voy.', exit: true, do: async (api) => { await fax(api, 'Cierra al salir. El reloj no se toca: las 20:59 caben.'); } },
@@ -625,7 +625,6 @@ export default buildRoom({
         else await api.say('Teodoro asiente. Sin papel, es lo más parecido a un abrazo.');
       },
       coger: 'Si descuelgo una, Teodoro me mide. Con la regla.',
-      tirar: 'No. Las galeradas no se tiran: se curan.',
       usar: 'Las leo. Tienen más erratas que la web, pero se notan menos.',
       hablar: 'Les leo el titular en voz alta. Aquí eso es casi una misa.',
     } },
@@ -669,7 +668,6 @@ export default buildRoom({
         },
         coger: 'Es un fax de 1992. Pesa lo que pesa una década.',
         hablar: async (api) => { intento(api); await api.say('Le hablo al fax. Teodoro lo considera una grosería.'); },
-        empujar: 'No. Es la única boca de Teodoro. Y muerde.',
       } },
     { id: 'telefono_rojo', name: 'teléfono rojo', state: 'colgado', states: ['colgado', 'descolgado'], handlers: {
       mirar: async (api) => { await api.say(['Línea directa con la rotativa, en el polígono.', 'Teodoro la usa para hablar de sentimientos.']); },
@@ -696,7 +694,7 @@ export default buildRoom({
     } },
     { id: 'fotos_jefes_cierre', name: 'fotos de jefes de cierre', handlers: {
       mirar: async (api) => { await api.say(['Jefes de cierre en blanco y negro. Todos con bigote.', 'El bigote también era de plantilla.']); },
-      coger: 'No. Llevan cuarenta años colgadas. Es la única antigüedad que se respeta.',
+      coger: 'No. Llevan cuarenta años colgadas. Debajo, la pared es de otro color.',
       hablar: 'Les digo que voy a firmar en papel. Ninguno se ríe. Es el bigote.',
       usar: 'No tengo bigote que comparar. Ni contrato.',
     } },
@@ -705,7 +703,7 @@ export default buildRoom({
         await api.say(['Un fax enmarcado de 2003: «¿Esto lo has contrastado?».', 'Debajo, a mano: «Con dos fuentes y media.', 'La media dijo "yo no te he dicho nada"».']);
         api.learnReply('rep_06');
       },
-      coger: 'Un fax enmarcado no se coge. Se hereda.',
+      coger: 'No hace falta. La réplica ya me la sé. El marco, que se quede.',
       abrir: 'Si abro el marco, se escapa la réplica.',
       usar: 'Ya lo he contrastado: está enmarcado. Más contraste, imposible.',
     } },
@@ -713,7 +711,7 @@ export default buildRoom({
     { id: 'factura_fax', name: 'factura del fax', when: 'catacumba_factura', handlers: {
       mirar: 'Grapada: «Envío por fax: 0,26 €». Pagado: Teodoro. Lo mira más que a mí.',
       coger: async (api) => { await fax(api, 'Eso es mío. La primera pieza de la web que pago.'); },
-      usar: 'Ya está pagada. Es la factura más sentimental de la casa.',
+      usar: 'La toco. Teodoro carraspea por el fax. La dejo donde estaba.',
     } },
     { id: 'cartel_aurora', name: 'cartel', handlers: {
       mirar: '«NO HABLO ANTES DEL CAFÉ. NI DESPUÉS, PERO ANTES MENOS.»',
@@ -727,7 +725,7 @@ export default buildRoom({
       mirar: async (api) => { await api.say(['El Libro de Estilo. Más grueso que la plantilla fija.', 'Página 1: «No se dice a nivel de». Página 2: «A nivel de comas, ver pág. 3».']); },
       coger: async (api) => {
         if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc en el lomo. El libro no se mueve. Y yo, tampoco.'); return; }
-        await aurora(api, 'Ese libro no se mueve. Es lo único que sostiene esta mesa.');
+        await aurora(api, 'Ese libro, ni tocarlo. Se consulta aquí, de pie. Con las manos limpias.');
       },
       abrir: 'Lo abro por cualquier página: «Así no se dice». Tiene razón. Siempre.',
       usar: 'Consulto «becario senior». Remite a «contradicción».',
@@ -760,7 +758,7 @@ export default buildRoom({
         if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc en la tableta. La tableta calla. Aurora, también.'); return; }
         await aurora(api, ['Déjala. Me cambiaba «detrás de mí» por «detrás mío».', 'La desenchufé con el boli. Rojo.']);
       },
-      usar: 'Si la saco, se cae la mesa. Es su única función con futuro.',
+      usar: 'Si la saco, se cae la mesa.',
       hablar: 'Le digo «detrás de mí». Se queda callada. Ha aprendido.',
     } },
   ],
@@ -788,9 +786,9 @@ export default buildRoom({
         'dar:acta_reunion': async (api) => { await fax(api, 'Dos líneas. Cabe en un faldón. Y sobra.'); },
         'dar:tarjeta_becario': async (api) => { await fax(api, '«Pellizco». Once con espacios. Mal medido y peor escrito.'); },
         'dar:taper_huerfano': async (api) => { await fax(api, 'Un táper. Vacío. Cabe todo. No lo quiero.'); },
-        'dar:correo_evaristo': async (api) => { await fax(api, 'Eso no es mío. Es de Controlling. Lo respeto.'); },
+        'dar:correo_evaristo': async (api) => { await fax(api, 'De Controlling. Ni lo mido. Lo respeto.'); },
         'dar:*': async (api) => { await fax(api, 'Eso no se faxea. No cabe. Lo he medido de lejos.'); },
-        empujar: 'No se empuja a un jefe de cierre. Se le entrega a tiempo.',
+        empujar: '¿Empujar al jefe de cierre antes del cierre? ¿Y quién cierra?',
         tirar: 'Tirarle de los tirantes sería el último gesto de mi carrera.',
         coger: 'No. Teodoro no sale de aquí. Yo no voy a inaugurar la costumbre.',
       } },

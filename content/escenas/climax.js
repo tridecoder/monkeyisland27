@@ -83,7 +83,7 @@ export const duelInigo = {
       wrongObject: { ticket_n1: 'Eso ya me lo has enseñado. No escala dos veces.' },
       script: async (api) => {
         await api.say('Acta de la última reunión. Acuerdos: uno, pedir más café. Dos, ninguno más.');
-        await sayG(api, 'Es la única que hay. Las demás no las escribí.');
+        await sayG(api, 'Es la que hay. Las demás no las escribí.');
       } },
     // E2 §5.5 · remate C: el correo de Evaristo, «en el momento oportuno»
     { atScore: 5, text: 'Cuarenta y ocho mil al mes. Firmado. Fin del hilo.', object: 'correo_evaristo',
@@ -224,7 +224,7 @@ export async function climaxEmpujon(api) {
     await sayI(api, '...¿Y quién ha validado la fase 1?');
     await api.wait(1800);                                          // (silencio largo; alguien deja de teclear)
     await sayG(api, 'Diecinueve años y nadie lo había preguntado.');
-    await sayI(api, 'Sin Lector Medio no hay plan. Era mi único dato.');
+    await sayI(api, 'Sin Lector Medio no hay plan. Era toda mi muestra.');
     await api.wait(700);                                           // saca su matriz 2x2. Se busca. Se encuentra.
     await sayI(api, ['«Prescindible. Caro.»', 'Es la primera vez que la matriz me pone en algún sitio.']);
     // adenda 9.5 · la diapositiva 248

@@ -92,7 +92,7 @@ export default {
               await api.anim(L, 'reach', 900);              // L14: (vuelve a girar el portátil hacia sí, despacio)
             } },
           { text: '¿Y esos gráficos de Anselmo en tu sección?', once: true, if: 'acto_2_iniciado',
-            reply: ['Me los pone desde su pantalla. Sin preguntar.', 'Un quesito que suma 130 % no es un gráfico. Es una aspiración.',
+            reply: ['Me los pone desde su pantalla. Sin preguntar.', 'Un quesito que suma 130 %. Yo los hacía de 100. Vieja escuela.',
               'Herminia lo arreglaría en una décima. Pero está encintada.'] },
           { text: '¿Y si Herminia te sustituye a ti también?', once: true,
             reply: ['Ya lo ha hecho. En septiembre. No se lo he dicho a nadie.', 'Ni a ella. Es muy sensible a los datos.'] },
@@ -217,7 +217,7 @@ async function salida(api, via) {
   await api.cutscene(async (api) => {
     // (Anselmo, quieto. Tres segundos. Las tres espaldas del coro se giran por primera vez.)
     await api.wait(1500);
-    if (via === 3) await api.sayAs(A, ['...Eso no es ni hecho ni muerto. Es consultoría.', 'Despedir, no. Salida en valor. ...Eso sí lo sé hacer yo.']);
+    if (via === 3) await api.sayAs(A, ['...Ni hecho ni muerto. Consultoría.', 'Despedir, no. Salida en valor. ...Eso sí lo sé hacer yo.']);
     else await api.sayAs(A, 'Descopear. Quitar sin que se note. Eso es infraestructura.');
     // (Anda al tablero. Rotulador. Una columna nueva: SALIDA EN VALOR. El pósit, dentro.)
     api.cameraTo(TABLERO_X + 40);
@@ -229,7 +229,7 @@ async function salida(api, via) {
     api.setFlag('posit_descopeado', true);
     api.repaint();
     api.faceActor(A, api.player);
-    await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Paco. Lo único integrado de la casa.',
+    await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Paco.',
       'Y en nuestros corazones, Rubén está en HECHO.']);
     // (Tin. El ascensor se abre. Vacío. En el suelo, un papel.)
     api.sfx('beep');

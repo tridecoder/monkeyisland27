@@ -198,6 +198,10 @@ function normalize(text) {
 }
 
 /** Width in pixels of a single line (no outline). */
+/** Cita un texto entre comillas españolas; las «…» de dentro pasan a “…” (crítica 3 · N9: nunca «… «…» …»). */
+export function citar(text) {
+  return '«' + String(text ?? '').replace(/«/g, '“').replace(/»/g, '”') + '»';
+}
 export function measure(text, opts = {}) {
   const bold = opts.bold ? 1 : 0;
   let w = 0;

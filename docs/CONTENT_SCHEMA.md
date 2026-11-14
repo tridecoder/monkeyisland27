@@ -199,9 +199,12 @@ Art may **read** flags (`view.flag('cms_vivo')`, `view.state`), never change the
 - `ambient: [...]` — ambient chatter. **One shared scheduler** (`engine/efectos.js`, plan §5.14) decides WHEN: never
   while there is another balloon, a menu, a notice, the phone, a close-up, a duel or a card on screen (it waits and
   goes out as soon as there is silence; a real line that starts cuts an ambient balloon), **60-120 s** between two
-  interventions and **at most 3 per visit** (re-entering the room resets the count). Per-room rules:
-  `ambientRules: { every: [60000, 120000], max: 3, first: [min, max] }` (`first` = delay of the first one; default
-  `every`). An entry's own `every` is ignored. The author supplies only the LINES:
+  interventions and **at most 3 per visit** (re-entering the room resets the count), and **8 s of silence after a
+  conversation or a duel closes** (`trasDialogo`, crítica 3 · N6: so the room never seems to answer Bruno; the engine
+  stamps `game.finDialogo` when a dialog or a duel ends). Defaults: `AMBIENT_DEFAULTS = { every: [60000, 120000], max: 3,
+  trasDialogo: 8000 }` (`engine/efectos.js`). Per-room rules override any of them:
+  `ambientRules: { every: [60000, 120000], max: 3, first: [min, max], trasDialogo: 8000 }` (`first` = delay of the
+  first one; default `every`; `trasDialogo: 0` = no margin). An entry's own `every` is ignored. The author supplies only the LINES:
   ```js
   ambientRules: { max: 3 },
   ambient: [
@@ -608,7 +611,7 @@ the ending returns to the title after a click; nothing runs after it.
 
 ### Objetivos, pistas y hora (plan §8, `engine/objetivos.js`; datos en `content/pistas.js`)
 The objectives list (`content/pistas.js` `OBJETIVOS`: id, `hecho` condition, `activo` condition, `salas`, `meta`,
-three hint levels, `extra`) is shared data; **each objective is done by its own flag**, so room authors normally do
+three hint levels, `extra`, `previa`, `acto`, `duelo`) is shared data; **each objective is done by its own flag**, so room authors normally do
 nothing. The ficha (`ficha_pagina_7`) is a living checklist (`content/items.js` `fichaViva`), «Mirar a Bruno» says the
 current goal, and the grandmother (Usar móvil → Llamar a la abuela) gives hints in three levels.
 | | |
@@ -619,6 +622,19 @@ current goal, and the grandmother (Usar móvil → Llamar a la abuela) gives hin
 | `api.objetivo.meta(sala?)` | Bruno's goal line for «Mirar a Bruno» |
 | `api.objetivo.pista()` | `{ obj, nivel, repetida, def }`: next grandmother hint (advances `abuela_obj` / `abuela_nivel`); used by `game.js pistas` |
 | `api.hora()` | the story time on the phone: `'18:30'` → `'21:00'` by milestones (§8.4), never goes back. **Building clocks stay at 20:59** (draw them with `wallClock`, default 20:59). Use it for any «Son las…» that is not a wall clock: `await api.say(\`Son las ${api.hora()}.\`)` |
+
+Two optional fields of an objective (crítica 3):
+- **`acto`** (N2): `1`, `2` or `3`, or `[n, m]` (an act-`n` goal that still counts in act `m`). When `content/game.js`
+  gives `acto(view)` (the act in progress; today `actoActual` of `pistas.js`: `acto_3_iniciado` → 3,
+  `acto_2_iniciado` → 2, else 1), «Mirar a Bruno» and the grandmother look first at the pending goals **of that act**
+  (those whose first act is the current one), then at those dragged into it (`[n, m]` containing it), and only if
+  there are none, at all pending ones. An old goal still pending never hides the goal of the act. Without `acto`, a
+  goal counts as dragged.
+- **`duelo`** (N1): the duel id of the goal (`'maripaz'`, `'teodoro'`, `'gervasio'`, `'inigo'`). If Bruno lacks a
+  reply of that rival's `deck`, from hint level 2 the grandmother adds where the first missing one is learned, and at
+  level 3 Bruno, after hanging up, says «Me faltan réplicas.» (`FALTAN_REPLICAS`) and up to three places. The places
+  are `DONDE` in `pistas.js`: `rep_XX → [grandmother's line, Bruno's line: room and object/option]`; if where a reply
+  is learned changes (the `rep_XX` description in `flags.js`), change `DONDE` too.
 
 Hint algorithm (§8.5): objective of the room → the previous call's if still pending → the first pending; same
 objective as last time = one level more (1 metaphor → 2 concrete → 3: the grandmother's line and, after hanging up,
@@ -745,7 +761,10 @@ D3 in `office`, `inigo` D4 in `sala_amazonas`).
   `defeatScene: '<scene name>'` (called with `{ duel, perdidos, ctl }`) and/or `onLose(api, duel, 'lost')` (`duel.perdidos`
   = defeats so far) → `defeatHeadline` (string or `(n) => string`) shown as a headline strip (`api.titular`). Never
   takes anything from the inventory.
-- Retiring: no consequence (no `perdido_n`), thread «RV: Bruno ha abandonado el hilo.», `onLose(api, duel, 'retired')`.
+- Retiring: no consequence (no `perdido_n`), thread «RV: Bruno ha abandonado el hilo.», Bruno says the
+  **`retireLine`** (crítica 3 · N7: the rival's own `duels.<id>.retireLine` if defined — `null` or `''` = silent —, else
+  the common `duelo.js texts.retireLine`, «Me salgo del hilo. Vuelvo cuando tenga algo que adjuntar.»), then
+  `onLose(api, duel, 'retired')`.
 - **No autosave while a duel is open.** A save made during a duel (only possible by the test API) remembers it: loading
   it **restarts that duel from 0** (with the notice «Se retoma el hilo.»), it never drops the player in the room.
 - `await api.duel(id)` returns `true` only on victory. `__game.state().lastDuel = { id, result, hits, misses, perdidos }`;
@@ -775,6 +794,7 @@ duels: {
     hurt: ['Ese input no lo tenía en el framework.', 'Interesante. Lo pongo en azul.'],   // rotate in order
     taunt: ['Ese input no escala.', 'Rosa. Emociones. Siguiente.'],
     comodinAnswer: undefined,                // override «Te espero.»
+    retireLine: undefined,                   // what Bruno says on retiring (default duelo.js texts.retireLine; null = silent)
     wrongObject: {},                         // rival-level wrong-object lines (id → line, '*' → any)
     wrongObjectKey: 'inigo',                 // which column of duelo.js wrongObject to use (default: duel id)
     finishers: [
@@ -796,6 +816,10 @@ duels: {
   },
 },
 ```
+The attack in the window and the replies in Bruno's notebook are quoted with **`citar(text)`** (`engine/font.js`,
+crítica 3 · N9): it wraps the text in «…» and turns any «…» inside into “…”, so a quote never shows as «… «…» …». Use
+it (`import { citar } from '../../engine/font.js'`) whenever code quotes a line that may already contain «».
+
 `duel` (the control object handed to `script`/`onWin`/`onHit`): `hits`, `misses`, `setAssigned(text)`,
 `setSubject(text)`, `setCc(text)`, `thread(from, text)`, `hide()` / `show()` (the mail window, e.g. during a
 finisher cutscene).

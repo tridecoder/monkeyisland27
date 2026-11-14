@@ -209,7 +209,7 @@ export default {
     },
     // plan §8.2: «Mirar a Bruno» dice la meta actual en su voz (objetivo de la sala, content/pistas.js)
     handlers: {
-      mirar: async (api) => { await api.say(api.objetivo.meta() || 'Respondo a todos. Es lo único que sé hacer bien.'); },
+      mirar: async (api) => { await api.say(api.objetivo.meta() || 'Respondo a todos. Por fin algo que sé hacer.'); },
       'usar:tarjeta_becario': 'Me identifico. Me reconozco. Es más de lo que hace el torno.',
     },
   },
@@ -224,7 +224,7 @@ export default {
     },
     variants: { sin_bufanda: { doll: { scarf: null, scarfStripe: null } } },   // epílogo: se la ha dado a Bruno
     murmurs: ['Treinta años en este mostrador. El mostrador, cuarenta.', 'Si me preguntan por el Ibex, digo que va.',
-      'Chof, chof... Menta. Lo único de esta casa que no caduca.'],
+      'Chof, chof... Menta.'],
     // mastica chicle de menta sin parar: de vez en cuando, una pompa rosa (solo de frente)
     drawExtra(g, a, t, c) {
       if (a.dir !== 'down' || !c) return;
@@ -311,7 +311,7 @@ export default {
     },
     // E2 §4.4: cada píxel es espacio publicitario (uno por visita)
     murmurs: ['Entre línea y línea todavía cabe un banner. Lo he medido.', 'Si la noticia se ve demasiado, se le pone un vídeo encima.',
-      'Te pongo un «ofrecido por» tan pequeño que solo lo verá el supervisor.', 'Tadeo, cariño, te patrocino el reenvío.'],
+      'Te pongo un «ofrecido por» tan pequeño que solo lo verá el supervisor.', '(lee la web) Incendio en un polígono. Y al lado, barbacoas. Lo cambio.'],
   },
   paco_ticket: {
     name: 'Paco', color: '#92C0FF', speed: 50,
@@ -394,7 +394,7 @@ export default {
       loupe: '#F0F0A8', pencil: true, pencilColor: '#c03030', prop: 'phone', propColor: '#f0f0f2',
       pants: '#54545e', shoes: '#2e2420', height: 0.97, build: 'slim',
     },
-    murmurs: ['Coma. Coma. Punto y coma. Esto es un punto y coma disfrazado.', 'Cláusula 12... sigue ahí. Bien. Buenas noches, cláusula 12.', '(al teléfono) No, no es urgente. Solo es importante. No es lo mismo.', 'Plaza 3, sucesión en disputa. Esto no es un garaje. Es una herencia.'],
+    murmurs: ['Coma. Coma. Punto y coma. Esto es un punto y coma disfrazado.', 'Cláusula 12... sigue ahí. Bien. Buenas noches, cláusula 12.', '(al teléfono) No, no es urgente. Solo es importante. No es lo mismo.', 'Plaza 3, sucesión en disputa. Tres herederos. Ningún coche.'],
   },
   valentin_reticula: {
     // Cameo: director de Diseño y Producto (cpd, mesa plegable entre los armarios 24 y 25). Alto, sin barba, con gafas,
