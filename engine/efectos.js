@@ -30,7 +30,7 @@ export const AMBIENT_DEFAULTS = { every: [60000, 120000], max: 3 };
 /** Nada en pantalla que el ambiente pueda pisar (plan §1.1 «Coro» y §5.14). */
 export function quiet(game) {
   if (game.mode !== 'play' || !game.room) return false;
-  if (game.busy || game.acting || game.choice || game.itemPick || game.menu || game.phone || game.detalle || game.hud || game.card) return false;
+  if (game.busy || game.acting || game.choice || game.itemPick || game.menu || game.phone || game.detalle || game.hud || game.card || game.apagon || game.burst) return false;
   if (game.cutscene > 0 || game.inDialog > 0 || game.duelInfo) return false;
   if (game.speeches.length) return false;
   if (game.notices.some(n => game.realTime < n.until)) return false;

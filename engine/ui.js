@@ -229,6 +229,9 @@ export function itemPickClick(game, x, y) {
  *  objetivo táctil mínimo de la propuesta (§1.10). */
 export function optGeom(game) {
   const big = !!(game.touchUI ? game.touchUI() : game.mouse && game.mouse.touch);
+  // menú compacto (el del duelo, ≤ 5 líneas, plan §7.1.3): al tacto, 5 filas de 11 px en vez de 4 de 14 (sin scroll)
+  const ch = game.choice;
+  if (big && ch && ch.compact && ch.layout && ch.layout.length <= 5) return { big: true, y: 144, h: 11, n: 5, dy: 1 };
   return big ? { big, y: 144, h: 14, n: 4, dy: 3 } : { big, y: LAYOUT.optY, h: LAYOUT.optLineH, n: LAYOUT.optLines, dy: 0 };
 }
 function choiceLayout(game) {
@@ -242,7 +245,8 @@ function choiceLayout(game) {
     wrap(o, 288).forEach((l, k) => lines.push({ opt: i, text: (k ? '  ' : '') + l }));   // 288: never under the scroll arrows (x ≥ 304)
   });
   ch.layout = lines;
-  ch.maxScroll = Math.max(0, lines.length - L.optLines);
+  ch.maxScroll = Math.max(0, lines.length - optGeom(game).n);      // (compact menus get 5 rows once laid out)
+  void L;
   return lines;
 }
 function drawChoice(game, g) {

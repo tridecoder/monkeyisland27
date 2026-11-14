@@ -48,7 +48,8 @@ async function waitDuelChoice() {
   throw new Error('el duelo no pide respuesta');
 }
 async function duelWeak(n) {         // n respuestas flojas seguidas
-  for (let i = 0; i < n; i++) { const st = await waitDuelChoice(); if (!st) return; await G(k => __game.chooseDialog(k), st.dialog.indexOf('Te lo miro y te digo.')); }
+  // la floja del asalto (plan §7.5: rota; el comodín, la 1.ª vez, no cuenta como fallo: se repite el asalto)
+  for (let i = 0; i < n; i++) { const st = await waitDuelChoice(); if (!st) return; if (st.dialog[st.duel.weakIndex].startsWith('Enviado desde mi')) i--; await G(k => __game.chooseDialog(k), st.duel.weakIndex); }
 }
 async function duelCorrect(n) {
   for (let i = 0; i < n; i++) { const st = await waitDuelChoice(); if (!st || st.duel.phase !== 'reply') return; await G(k => __game.chooseDialog(k), st.duel.correctIndex); }
@@ -220,11 +221,13 @@ try {
   await duelWeak(3); await idle();
   st = await state();
   ok(st.lastDuel && st.lastDuel.result === 'lost' && !st.flags.duelo_teodoro_ganado, 'tres flojas = derrota sin castigo');
-  ok(await logHas('Es un fax, chaval. Más por escrito, imposible.') || await logHas('Ya. Como lo del trimestre pasado.'), 'contestación a la floja');
+  // plan §7.5: cada floja tiene contestación propia de Teodoro (content/duelo.js answers.teodoro)
+  ok(await G(() => __game.game.content.duels.weakReplies.some(w => w.answers && w.answers.teodoro && __game.log.some(l => l.text.includes(w.answers.teodoro)))), 'contestación a la floja (la de Teodoro)');
   ok(await logHas('Lo que está cerrado no se abre. Vuelve cuando sepas escribir.'), 'línea de victoria de Teodoro');
   await close().catch(() => {});
   // segundo intento sin manual: remate → objeto equivocado → retirarse
   await clearLog();
+  await setFlags({ 'duel:teodoro:empieza': false });                 // (la revancha empezaría por la carta que ganó, plan §7.1.9)
   await verb('hablar', 'teodoro_cuerpodoce'); await choose('Quiero firmar en tu página 7.');
   ok(!(await logHas('NO ESTOY EMPADRONADO.')), 'el desmentido solo sale una vez');
   await duelCorrect(3);

@@ -23,7 +23,7 @@ export const PLANTAS = [
   { n: 2, room: 'ecosistema', obj: 'ascensor_ecosistema', label: 'Planta 2 · Marketing · Eventos · Comercial · Administración' },
   { n: 1, room: 'pecera', obj: 'ascensor_pecera', label: 'Planta 1 · Redacción · Despachos · Vending' },
   { n: 0, room: 'vestibulo', obj: 'ascensor_vestibulo', label: 'Planta 0 · Vestíbulo' },
-  { n: -1, room: 'cpd', obj: 'ascensor_cpd', label: 'Planta -1 · Sistemas y CPD' },
+  { n: -1, room: 'cpd', obj: 'ascensor_cpd', label: 'Planta -1 · Sistemas' },
 ];
 export const QUEDARSE = 'Nada, me quedo en esta planta.';
 
@@ -36,7 +36,7 @@ export function plantaPermitida(api, room) {
 // frases del ascensor durante el viaje (rotan en orden)
 export const FRASES = [
   'Su planta ha quedado registrada con el ticket 48.216. Paco le atenderá.',
-  'Ascensor rediseñado por Diseño y Producto. Si no lo nota, está bien hecho.',
+  'Este ascensor tiene espejo. Para que el becario se vea subir, aunque sea aquí.',
   'Le recordamos que lo que se dice en el ascensor no sale. Ni el wifi.',
   'Hilo musical: el Ibex en diferido. Narra Celestino, desde el mostrador.',
   'Capacidad: ocho personas o una reunión que pudo ser un correo.',

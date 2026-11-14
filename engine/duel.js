@@ -24,6 +24,7 @@ import { rect, hline, frameRect } from './draw.js';
 
 const asArray = x => x == null ? [] : Array.isArray(x) ? x : [x];
 export const MAX_REPLY_OPTIONS = 4;          // correct + 3 decoys; + 1 weak = 5 lines
+export const OPTION_W = 288;                 // width of a menu line (engine/ui.js choiceLayout)
 
 /** Lines a duel datum may hold: 'line' (rival) · ['line', 'line'] (rival) · [who, line] · [[who, line], ...].
  *  `who` = 'player' | 'narrator' | 'rival' | 'obj:<object>' | an actor id. */
@@ -221,6 +222,13 @@ export async function runDuel(game, api, idOrDef) {
       const n = flags[k] || 0;
       flags[k] = n + 1;
       opts.push(pool[n % pool.length]);
+    }
+    // ≤ 5 LINES without scroll (a long reply wraps to two): decoys go first, never the correct one or the weak one
+    const lines = () => opts.reduce((n, o) => n + wrap(o.text, OPTION_W).length, 0);
+    while (lines() > 5) {
+      const j = opts.map((o, i) => (o.kind === 'reply' && o.pair !== pid ? i : -1)).filter(i => i >= 0).pop();
+      if (j == null) break;
+      opts.splice(j, 1);
     }
     return opts;
   }

@@ -420,9 +420,9 @@ export default {
   // Son actores solo para tener nombre y color al hablar (`api.sayAs`): NUNCA se colocan en una sala (el hotspot que
   // las representa es un objeto de la sala con el mismo id, o un objeto cercano). Para que el texto salga encima de
   // su objeto usa `api.sayFrom('<objeto>', texto)`, que toma el `color` del objeto (declarado igual en el stub).
-  custodia_precinto: { name: 'Custodia', color: '#A0A0FF', hotspot: false, presence: 'manos bajo una persiana metálica (Secretaría de Redacción, en la pecera)', doll: {} },
-  tadeo_adjunto: { name: 'Tadeo', color: '#FFCC99', hotspot: false, presence: 'portátil (ecosistema) y móvil (avisos RV:)', doll: {} },
-  herminia: { name: 'Herminia', color: '#FF8C3C', hotspot: false, presence: 'rótulos en el portátil de Leoncio (pecera)', doll: {} },
+  custodia_precinto: { name: 'Custodia', color: '#A0A0FF', hotspot: false, presence: 'manos bajo una persiana metálica (Secretaría de Redacción, en la Redacción)', doll: {} },
+  tadeo_adjunto: { name: 'Tadeo', color: '#FFCC99', hotspot: false, presence: 'portátil (Marketing y Comercial) y móvil (avisos RV:)', doll: {} },
+  herminia: { name: 'Herminia', color: '#FF8C3C', hotspot: false, presence: 'rótulos en el portátil de Leoncio (Redacción)', doll: {} },
   coro_desarrollo: { name: 'CORO', color: '#7FFFD4', hotspot: false, presence: 'los tres devs, a la vez', doll: {} },
   dev_1: { name: 'DEV 1', color: '#7FFFD4', hotspot: false, presence: 'del coro: indignado', doll: {} },
   dev_2: { name: 'DEV 2', color: '#7FFFD4', hotspot: false, presence: 'del coro: más indignado', doll: {} },

@@ -309,6 +309,10 @@ export class Game {
 
   // ------------------------------------------------------------------ new game / actors
   resetRuntime() {
+    // scripts left waiting on a menu/choice of the previous game never resume: their input lock must not leak into the
+    // loaded game (a save loaded from inside a duel or a dialog left the game «busy» for ever). `gen` makes any late
+    // finally of those orphan scripts a no-op.
+    this.gen = (this.gen || 0) + 1; this.busy = 0; this.acting = 0;
     this.speeches.forEach(s => s.resolve && s.resolve());
     this.speeches = []; this.timers.forEach(t => t.resolve()); this.timers = [];
     // un menú con salida (`escape`, p. ej. el del móvil) se cierra por su salida: su guion termina y suelta la entrada
@@ -564,8 +568,9 @@ export class Game {
     return new Promise(res => this.timers.push({ at: this.time + ms, resolve: res }));
   }
   fadeTo(level, ms = 400) {
-    if (this.instant || ms <= 0) { this.fadeLevel = level; this.fades = []; return Promise.resolve(); }
-    return new Promise(res => { this.fades = [{ from: this.fadeLevel, to: level, start: this.time, ms, resolve: res }]; });
+    if (this.instant || ms <= 0) { const old = this.fades; this.fadeLevel = level; this.fades = []; old.forEach(f => f.resolve()); return Promise.resolve(); }
+    // a fade replaced by another never leaves its script waiting for ever (two room changes at once)
+    return new Promise(res => { const old = this.fades; this.fades = [{ from: this.fadeLevel, to: level, start: this.time, ms, resolve: res }]; old.forEach(f => f.resolve()); });
   }
   shake(ms = 400, amp = 2) { if (!this.instant) { this.shakeUntil = this.time + ms; this.shakeAmp = amp; } }
 
@@ -578,7 +583,7 @@ export class Game {
     text = String(text ?? '');
     const a = actorId ? this.actors[actorId] : null;
     if (actorId && !a) this.error('Actor desconocido en sayAs: ' + actorId);
-    this.log.push({ who: a ? a.id : (opts.who || (opts.narrator ? 'narrador' : null)), name: a ? a.name : null, text, room: this.state && this.state.room, t: Math.round(this.time) });
+    this.log.push({ who: a ? a.id : (opts.who || (opts.narrator ? 'narrador' : null)), name: a ? a.name : null, text, room: this.state && this.state.room, t: Math.round(this.time), ...(opts.tag ? { tag: opts.tag } : {}) });
     if (this.debug.on) console.log(`[diálogo] ${a ? a.name : '—'}: ${text}`);
     // el que llama por el móvil habla SIEMPRE anclado al teléfono (aunque el contenido no lo pida)
     if (this.phone && a && a.id === this.phone.caller && !opts.at && !opts.narrator) opts = { ...opts, ...Phone.anchor(this) };
@@ -590,7 +595,7 @@ export class Game {
     return new Promise(resolve => {
       const color = opts.color || (a ? a.color : (this.G.narratorColor || '#f0e8c0'));
       const lines = wrap(text, opts.width || 210);
-      const sp = { actor: a ? a.id : null, at: opts.at || null, text, lines: opts.style === 'titular' ? wrap(text, 290, { bold: true }) : lines, color, end: this.time + durMs, blocking: opts.blocking !== false, tail: opts.tail || null, phone: !!opts.phone, ambient: !!opts.ambient, style: opts.style || null, resolve };
+      const sp = { actor: a ? a.id : null, at: opts.at || null, text, lines: opts.style === 'titular' ? wrap(text, 290, { bold: true }) : lines, color, end: this.time + durMs, blocking: opts.blocking !== false, tail: opts.tail || null, phone: !!opts.phone, ambient: !!opts.ambient, style: opts.style || null, tag: opts.tag || null, resolve };
       this.speeches.push(sp);
     });
   }
@@ -877,8 +882,9 @@ export class Game {
     // un objeto que se usa solo, «usado con» el propio Bruno, es usarlo (el gesto natural: «Usar móvil con Bruno»)
     if (itemId && verb === 'usar' && this.isSolo(itemId) && target && target.id === this.G.player) { target = this.itemTarget(itemId); itemId = null; }
     this.acting = (this.acting || 0) + 1;
+    const gen = this.gen;
     try { return await this.executeInner(verb, target, itemId); }
-    finally { this.acting--; this.checkIdle(); }
+    finally { if (gen === this.gen) this.acting = Math.max(0, this.acting - 1); this.checkIdle(); }
   }
   async executeInner(verb, target, itemId) {
     const token = ++this.actionToken;
@@ -959,6 +965,7 @@ export class Game {
   async runScript(fn, ctx = {}) {
     const blocking = ctx.blocking !== false;
     if (blocking) this.busy++;
+    const gen = this.gen;
     const api = makeApi(this, ctx);
     try { await fn(api); }
     catch (e) {
@@ -968,7 +975,7 @@ export class Game {
       if (this.phone && (this.phone.owner === ctx || (blocking && this.busy <= 1))) Phone.kill(this);   // nunca queda el móvil colgado
       if (this.detalle && (this.detalle.owner === ctx || (blocking && this.busy <= 1))) Detalle.close(this);   // ni el plano detalle
       if (blocking && this.busy <= 1) for (const a of Object.values(this.actors)) if (a.hold && a.hold.owner) a.hold = null;
-      if (blocking) {
+      if (blocking && gen === this.gen) {
         this.busy = Math.max(0, this.busy - 1);
         if (!this.busy) { this.cutscene = 0; this.skipCut = false; this.ui.sentence = null; this.applyPresence(); }
       }
@@ -986,7 +993,7 @@ export class Game {
       // `escape`: la opción que eligen Esc y un toque en la sala (fuera del panel y del móvil); `t0`: los toques de los
       // primeros 250 ms no cuentan (el segundo toque de un doble toque no elige una opción por accidente)
       const escape = Number.isInteger(opts.escape) ? opts.escape : null;
-      this.choice = { options: texts, disabled, escape, t0: this.realTime, resolve: i => { this.choice = null; res(i); this.checkIdle(); }, scroll: 0, hover: -1 };
+      this.choice = { options: texts, disabled, escape, compact: !!opts.duel, t0: this.realTime, resolve: i => { this.choice = null; res(i); this.checkIdle(); }, scroll: 0, hover: -1 };
       this.checkIdle();
     });
   }
@@ -1322,6 +1329,7 @@ export class Game {
       let top = bottom - sp.lines.length * LINE_H;
       const minTop = (this.hud || this.detalle) ? Math.max(2, this.hudTop) : 2;
       if (top < minTop) top = minTop;
+      if (sp.tag && top < minTop + 12) top = minTop + 12;
       // legibilidad (problema 5): bajo cada línea, una banda oscura translúcida pegada al texto (el contorno negro de
       // 8 vecinos sigue ahí). Así el texto de color se lee sobre fondos claros (planta 2 lila) y oscuros (CPD).
       const SB = this.G.speechBacking === undefined ? SPEECH_BACKING : this.G.speechBacking;
@@ -1330,6 +1338,7 @@ export class Game {
         sp.lines.forEach((l, i) => { const lw = measure(l) + 6; g.fillRect(Math.round(cx - lw / 2), top + i * LINE_H - 2, lw, LINE_H + 1); });
         g.restore();
       }
+      if (sp.tag) { const tw = measure(sp.tag) + 6; g.save(); g.globalAlpha = 0.9; g.fillStyle = '#06050c'; g.fillRect(Math.round(cx - tw / 2), top - 12, tw, 10); g.restore(); drawText(g, sp.tag, cx, top - 13, sp.color, { align: 'center' }); }   // «MEGAFONÍA» (api.megafonia)
       if (sp.tail) this.drawTail(g, sp, cx, top, w);
       sp.lines.forEach((l, i) => drawText(g, l, cx, top + i * LINE_H, sp.color, { align: 'center' }));
     }

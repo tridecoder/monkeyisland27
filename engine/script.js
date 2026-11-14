@@ -73,15 +73,16 @@ export function makeApi(game, ctx = {}) {
         await game.speak(null, l, { blocking, at: [cx, top - 2], color: opts.color || d.color || '#e8e8e8', who: d.id, ...(amb ? { ambient: true } : {}), ...opts });
       }
     },
-    /** MEGAFONÍA (plan §4.7): la voz de un actor por un altavoz (ascensor, edificio): globo arriba, en su color, con el
-     *  prefijo «MEGAFONÍA: », sin que el actor esté en la sala. No bloquea salvo `{ blocking: true }`. */
+    /** MEGAFONÍA (plan §4.7): la voz de un actor por un altavoz (ascensor, edificio): globo arriba, en su color, con la
+     *  etiqueta «MEGAFONÍA» encima (no cuenta en los 80 caracteres), sin que el actor esté en la sala. No bloquea salvo
+     *  `{ blocking: true }`. El log lleva `tag: 'MEGAFONÍA'`. */
     megafonia: async (id, text, opts = {}) => {
       const a = actorOr(id); if (!a) return;
       const lines = Array.isArray(text) ? text : [text];
       if (opts.sfx !== false) game.audio.sfx(opts.sfx || 'beep');
       for (const l of lines) {
         if (gone()) return;
-        await game.speak(null, (opts.prefijo ?? 'MEGAFONÍA: ') + l, { blocking: !!opts.blocking, at: [Math.round(game.camX) + 160, opts.y ?? 40], color: a.color, who: a.id, width: 260, ms: opts.ms });
+        await game.speak(null, l, { blocking: !!opts.blocking, at: [Math.round(game.camX) + 160, opts.y ?? 44], color: a.color, who: a.id, width: 260, ms: opts.ms, tag: opts.etiqueta ?? 'MEGAFONÍA' });
       }
     },
     /** TITULAR (plan §4.6): la línea sale como franja de titular de periódico. opts: { who (actor; por defecto Bruno),

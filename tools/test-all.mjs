@@ -32,6 +32,7 @@ const add = (name, file, a = [], timeout = 900) => T.push({ name, file, args: a,
 if (salas) {
   add('check', 'check.mjs');
   add('motor', 'test-motor.mjs');
+  add('fase0', 'test-fase0.mjs');
   for (const s of salas) add('sala ' + s, 'sala.mjs', [s, '--sin-imagenes']);
   add('geometria', 'play-mouse.mjs', ['--solo=geometria', '--sala=' + salas.join(',')]);
   add('walkthrough', 'walkthrough.mjs');
@@ -46,6 +47,7 @@ if (salas) {
   add('motor', 'test-motor.mjs');
   add('smoke', 'smoke.mjs', rapido ? ['--rapido'] : []);
   add('movil', 'test-movil.mjs');                     // el móvil de Bruno con ratón y dedo (menú, correo, abuela)
+  add('fase0', 'test-fase0.mjs');                     // sistemas comunes del plan de comedia (duelo, objetivo, pistas, hora, ambiente, movimiento, efectos)
   add('walkthrough', 'walkthrough.mjs');
   add('walkthrough --alt', 'walkthrough.mjs', ['--alt']);
   add('extras', 'extras.mjs');
@@ -58,7 +60,7 @@ if (salas) {
 const solo = args.solo ? String(args.solo).split(',') : null;
 const plan = solo ? T.filter(t => solo.some(s => t.name.startsWith(s) || t.file.startsWith(s))) : T;
 // las largas primero (mejor reparto en paralelo)
-const WEIGHT = { fuzz: 5, 'play-mouse': 4, smoke: 4, motor: 2, 'test-paquete-a': 2, 'text-audit': 2 };
+const WEIGHT = { fuzz: 5, 'play-mouse': 4, smoke: 4, motor: 2, fase0: 2, 'test-paquete-a': 2, 'text-audit': 2 };
 plan.sort((a, b) => (WEIGHT[b.name.split(' ')[0]] || 1) - (WEIGHT[a.name.split(' ')[0]] || 1));
 if (args.lista) { for (const t of plan) console.log(`${t.name.padEnd(22)} node tools/${t.file} ${t.args.join(' ')}`); process.exit(0); }
 

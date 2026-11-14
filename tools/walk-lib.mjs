@@ -68,7 +68,8 @@ async function travel(to) {
   }, to);
   if (!r.ok) fail(r.msg);
 }
-async function playDuel(seq) {
+async function playDuel(seq0) {
+  let seq = seq0;
   const pairs = await G(() => Object.fromEntries(__game.game.content.duels.pairs.map(p => [p.id, p.reply])));
   let i = 0;
   for (let guard = 0; guard < 80; guard++) {
@@ -82,8 +83,16 @@ async function playDuel(seq) {
     if (want === undefined) fail(`el duelo sigue tras las ${seq.length} jugadas previstas (fase ${st.duel.phase})`);
     if (st.duel.phase === 'reply') {
       if (typeof want !== 'string') fail(`se esperaba un remate (objeto ${want.objeto}) y el rival ataca con ${st.duel.attack}`);
-      if (st.duel.attack !== want) fail(`el rival ataca con ${st.duel.attack}; según la biblia tocaba ${want} (orden del mazo, §6.4)`);
-      const k = st.dialog.findIndex(o => o === pairs[want]);
+      if (st.duel.attack !== want) {
+        // plan §7.1.9: la REVANCHA empieza por el ataque que ganó (flag duel:<id>:empieza); el orden de las parejas puede
+        // girar, pero las parejas que tocan antes del siguiente remate son las mismas
+        // girado: se contesta el ataque que llega (un acierto es un acierto; los remates llegan por puntos)
+        const revancha = st.flags && st.flags['duel:' + st.duel.id + ':perdido_n'] > 0;
+        if (!revancha) fail(`el rival ataca con ${st.duel.attack}; según la biblia tocaba ${want} (orden del mazo, §6.4)`);
+        if (!st.dialog.includes(pairs[st.duel.attack])) { await G(k => __game.chooseDialog(k), st.duel.weakIndex); continue; }   // no la sabe: un fallo (va al final)
+        seq = seq.slice(); seq[i] = st.duel.attack;
+      }
+      const k = st.dialog.findIndex(o => o === pairs[seq[i]]);
       if (k < 0) fail(`la réplica de ${want} no está en el menú (¿no se aprendió? flag rep_${want.slice(1)}). Menú: ${JSON.stringify(st.dialog)}`);
       await G(k => __game.chooseDialog(k), k);
       i++;

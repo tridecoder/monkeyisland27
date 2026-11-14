@@ -196,8 +196,28 @@ Art may **read** flags (`view.flag('cms_vivo')`, `view.state`), never change the
   Prefer state-dependent visuals in objects (`sprites` per state; drawn every frame).
 - Actor `y` is the **feet**. Floor line y≈92–100, walkboxes start a few px below. Z-order: actors and `layer:'sorted'`
   objects sort by feet/baseline (`zy`).
-- `ambient: [{ every: [9000, 16000], if: '!acto_3_iniciado', run: async (api) => {...} }]` — non-blocking, only when
-  the player is idle; their speech cannot be skipped.
+- `ambient: [...]` — ambient chatter. **One shared scheduler** (`engine/efectos.js`, plan §5.14) decides WHEN: never
+  while there is another balloon, a menu, a notice, the phone, a close-up, a duel or a card on screen (it waits and
+  goes out as soon as there is silence; a real line that starts cuts an ambient balloon), **60-120 s** between two
+  interventions and **at most 3 per visit** (re-entering the room resets the count). Per-room rules:
+  `ambientRules: { every: [60000, 120000], max: 3, first: [min, max] }` (`first` = delay of the first one; default
+  `every`). An entry's own `every` is ignored. The author supplies only the LINES:
+  ```js
+  ambientRules: { max: 3 },
+  ambient: [
+    { id: 'coro', if: '!lector_derribado', orden: 'fijo',          // 'fijo' (default): in order, then silence for the
+      voces: { D1: { from: 'coro_desarrollo', prefijo: 'D1: ' },    //   rest of the game · 'rotar': loops
+               D2: { from: 'coro_desarrollo', prefijo: 'D2: ' }, D3: { from: 'coro_desarrollo', prefijo: 'D3: ' } },
+      discusiones: [
+        [['D1', '¡Se ha caído el CMS!'], ['D2', '¡Hay que levantarlo!'], ['D3', 'No.']],
+        (api) => [['D1', 'Ha llovido y ha bajado el tráfico.'], ['D2', '¡Abrid una incidencia a la lluvia!']],
+      ] },
+    { if: 'acto_2_iniciado', run: async (api) => { await api.sayAs('aurora_galerada', '...'); } },   // still valid
+  ],
+  ```
+  Who: `'B'`/`'player'` (Bruno), an actor id, `'obj:<object>'` (sayFrom), `'narrador'`, `'wait'` (ms), `'sfx'`, or a
+  key of `voces` (`{ from: actorOrObject, prefijo, color }` or an actor id). Progress is saved in the engine flag
+  `ambient:<room>.<id>`. The same line format is `await api.decir(lines, voces)` anywhere.
 - `walkboxes` can be toggled from the logic with `api.setWalkbox(id, on)` — the art must give the box that `id`
   (agree on the name in the room's logic header comment).
 - **Conditional walkboxes:** a walkbox may carry `when` (a condition, §8): `{ id: 'paso_torno', when: 'torno_abierto',
@@ -287,13 +307,13 @@ What the shared `content/game.js` provides (you use it, you don't edit it):
 | `id: 'fe_de_erratas'`, `player: 'bruno'`, `startRoom: 'vestibulo'`, `startEntry: 'inicio'` | |
 | `startInventory` | `tarjeta_becario`, `libreta_replicas`, `movil` (bible §4) |
 | `onStart` | runs `api.scene('intro')` — the intro §7.1 is package A's scene in `vestibulo.js` |
-| `defaults` | bible §8.2: 5 lines per verb, **rotating in order** (not random). Item-on-item with no combo uses the `usar` list. After 10 consecutive failed item combinations, Bruno says the §8.6 line instead |
+| `defaults` | bible §8.2 (with the plan §6.2 rewrites, no «Como…» endings): 5 lines per verb, **rotating in order** (not random). Item-on-item with no combo uses the `usar` list. After 10 consecutive failed item combinations, Bruno says the §8.6 line instead |
 | `idle` | §8.6: after 60 s without input, Bruno's fourth-wall line |
 | `saveMessages`, `saveFirstLine` | §8.6: «Guardando...» ×3 (original, duplicado, triplicado) and Begoña's line the first time |
-| `difficulty` | §8.6: decorative menu item (Normal / Difícil / Cierre en viernes) |
 | `quitConfirm` | §8.6: «¿Seguro que quiere salir? [ Sí ] [ Lo hablamos ]» |
 | `learnReply` | §5.5: notice «Réplica apuntada en la libreta.» + sfx `good`, shown only the first time (see `api.learnReply`) |
-| `scenes.pistas` | §5.6: the grandmother's hints (Usar `movil`): +1 `abuela_llamadas`, rotating greeting, first matching hint, «Abrígate.» |
+| `scenes.pistas` | plan §8.5: the grandmother's hints in three levels per objective (Usar `movil` → Llamar a la abuela), texts in `content/pistas.js`; see §7 «Objetivos, pistas y hora» |
+| `objetivos`, `hora`, `metaFinal` | plan §8: the objectives list and the phone time function (`content/pistas.js`), read by `engine/objetivos.js` (`api.objetivo`, `api.hora()`) |
 | `afterEnter`, `scenes.avisos` | **Automatic notices** (addendum §2), see «Avisos» below |
 | `startFlags` | the 28 flags of addendum 6.2 initialised: counters `0`, booleans `false` |
 | `title`, `ending`, `credits` | title screen (front page), credits shell with the «Fe de erratas» box and Gertrudis' LCD (§14) |
@@ -557,6 +577,51 @@ log gets `aviso: Plano detalle: <titulo>`; `__game.state().detalle = { titulo } 
 ### Time & effects
 `api.wait(ms)`, `api.fadeOut(ms)`, `api.fadeIn(ms)`, `api.shake(ms, px)`, `api.sfx(name|def)`, `api.music(id|null, fade)`.
 
+### Efectos de situación (plan de comedia §4 y §9, `engine/efectos.js`; demo: `tools/demo-fase0.js`)
+| | |
+|---|---|
+| `await api.apagon({ ms: 3000, alpha: 0.88, color, spots: [[cx, cy, rx, ry]], actor: 0.25, parpadeo: true })` | the room goes dark (same painting as the penumbra: `spots` = screens that stay lit, `actor` = how much actors are spared). With `ms` it resolves when the light comes back; `ms: 0` keeps it until `api.apagon(false)`. Example (§4.2): `await api.apagon({ ms: 3000 }); await api.sayAs('nerea_backlog', 'Pone «NO DESENCHUFAR».')` |
+| `await api.estampida(ids, { puerta: [x, y], atascoMs: 900, gap: 120, destino: null, prisa: 1.8, enAtasco: async (api) => {} })` | several actors flee through one door: they hurry there, get stuck in the frame (±3 px, shake 300 ms, `enAtasco` lines meanwhile) and pop out one by one (`destino`: room id or `null` = gone). §4.4: `await api.estampida(['mercados_1', 'mercados_2', 'mercados_3'], { puerta: [24, 112], enAtasco: async (api) => { await api.sayAs('mercados_1', '¡Usted primero!'); } })` |
+| `await api.megafonia(actorId, text \| [lines], { blocking: false, etiqueta: 'MEGAFONÍA', y: 44, sfx })` | an actor's voice through a speaker (lift, building): balloon at the top in his colour with a «MEGAFONÍA» tag above (not part of the 80 chars), the actor needn't be in the room; non-blocking unless asked. The log gets `who` = actor id and `tag: 'MEGAFONÍA'` |
+| `api.viral({ avisos: [...], contador: [3418, 11302], etiqueta: 'en directo', cada: 260, ms: 3200, color, sfx })` | burst of phone-like notifications in the top-right corner and an optional counter that jumps (`saltos: 3`). Non-blocking; `await` it to wait for the end |
+| `await api.titular(text, { who, from, blocking, ms })` | the line is drawn as a **newspaper headline strip** (paper, bold black, red rule); `who` = actor (default Bruno: his headlines while «contagiado», §4.6), `from` = an object (the Titulator screen). Logged like any line |
+| `await api.tarjeta({ titulo: 'FE DE ERRATAS', lineas: [...], minMs: 6000, boli: true, pie, draw(g, t), music })` | static full-screen card over everything (the final «fe de erratas», §9): it cannot be closed before `minMs`; then a click closes it. Instant in fast mode |
+| `api.vestir(actorId, variante \| null)` | explicit sprite variant (one of the actor's `variants`), saved with the game; `null` = back to `variant(view)`. Bruno has `con_chaqueta` (automatic with `bruno_con_chaqueta` + the jacket in the inventory: `Usar chaqueta_ramirez` sets it, §4.3) |
+| `await api.decir([[who, text], ...], voces?)` | says a sequence in the ambient line format (§2.4) |
+
+Short credits without post-credits (§9): `await api.tarjeta({...})` and then `await api.ending({ credits: [...] })` —
+the ending returns to the title after a click; nothing runs after it.
+
+### Objetivos, pistas y hora (plan §8, `engine/objetivos.js`; datos en `content/pistas.js`)
+The objectives list (`content/pistas.js` `OBJETIVOS`: id, `hecho` condition, `activo` condition, `salas`, `meta`,
+three hint levels, `extra`) is shared data; **each objective is done by its own flag**, so room authors normally do
+nothing. The ficha (`ficha_pagina_7`) is a living checklist (`content/items.js` `fichaViva`), «Mirar a Bruno» says the
+current goal, and the grandmother (Usar móvil → Llamar a la abuela) gives hints in three levels.
+| | |
+|---|---|
+| `api.objetivo.marcar('hueco')` | marks a milestone by hand (engine flag `obj:<id>`), for a goal without its own flag |
+| `api.objetivo.hecho(id)` · `api.objetivo.pendientes()` · `api.objetivo.lista()` | queries (`lista()` = `[{ id, hecho, activo }]`) |
+| `api.objetivo.actual(sala?)` | first pending objective of that room (default: Bruno's), else the first pending one |
+| `api.objetivo.meta(sala?)` | Bruno's goal line for «Mirar a Bruno» |
+| `api.objetivo.pista()` | `{ obj, nivel, repetida, def }`: next grandmother hint (advances `abuela_obj` / `abuela_nivel`); used by `game.js pistas` |
+| `api.hora()` | the story time on the phone: `'18:30'` → `'21:00'` by milestones (§8.4), never goes back. **Building clocks stay at 20:59** (draw them with `wallClock`, default 20:59). Use it for any «Son las…» that is not a wall clock: `await api.say(\`Son las ${api.hora()}.\`)` |
+
+Hint algorithm (§8.5): objective of the room → the previous call's if still pending → the first pending; same
+objective as last time = one level more (1 metaphor → 2 concrete → 3: the grandmother's line and, after hanging up,
+Bruno says the action); a repeated level 3 starts with «Te lo digo otra vez, hijo, que no comes.»; every call ends in
+«Abrígate.»; the first call with `cafetera_viral` tells the viral video once.
+
+### Celestino narra (plan §4.7, `content/lib/celestino.js`)
+`await narrarHito(api, { via: 'globo' | 'megafonia' })` narrates the most recent milestone not yet told (and marks the
+older ones); returns false if there is none. `hitoPendiente(api)` peeks. The lift already does it by megafonía
+instead of its rotating phrase; the Vestíbulo (P1) calls it on entry.
+
+### Movement (engine/mover.js)
+Double click / double tap on an **exit** Bruno is walking to = he is there at once and leaves; double click on the
+**floor** = he runs (×2.2, small hop); **holding** the button (or dragging a finger on the floor) = he follows the
+pointer. Scripted walks (`api.walkTo`, `api.walkActor`) never run. A NPC walking under a non-blocking script waits
+while the player has a verb/item selected or the pointer over him, and a walking NPC's click box is 4 px larger.
+
 ### Inventory
 `api.give(id)`, `api.take(id)`, `api.has(id)`, `api.inventory()`.
 
@@ -632,29 +697,36 @@ The engine implements bible §6.2/§6.8; shared data is in `content/duelo.js`; *
 its room** in the logic file's `duels` (ids: `maripaz` D1 in `ecosistema`, `teodoro` D2 in `catacumba`, `gervasio`
 D3 in `office`, `inigo` D4 in `sala_amazonas`).
 
-### Rules (what the engine does)
-- The rival always attacks, with its `deck` **in order**. Bruno's menu = every learned pair (flags `rep_XX`, in pair
-  order R01…R14) + the 3 weak replies + the comodín. Nothing is filtered by rival and **nothing is learned in a duel**.
-- Correct reply: +1 point, the attack leaves the deck, the thread shows «planta.vestibulo@: +1. Totalmente de acuerdo
-  con Bruno.», the rival says its next `hurt` line (rotating) — or `duelo.js hurtByPair[<duel id>][<pair>]` when defined (addendum 7.2: Íñigo on R15/R16); `duelo.js cameos[<duel id>]` (Tadeo, addendum 7.4) enters the thread once after the first hit.
-- Miss (wrong learned reply → next `taunt`; weak reply → `answers[<duel id>]` if present, else `answerFax` for `style: 'fax'`, else `answer`; a weak reply may carry `offOnce: [actor, line]`, heard the first time in the whole game): one more
-  `RE:` in the subject, the attack goes to the **end** of the deck. 3 misses (`maxMisses`) = defeat.
-- Comodín: first use per duel → rival's «Te espero.» (Teodoro: «Enviado desde mi fax...»), same attack again, no score
-  change; second use = miss with «Llevas toda la noche con el móvil. Ya no te creo.».
-- Before starting, if Bruno knows fewer replies of the deck than the points needed, he says «Aún no tengo con qué
-  contestarle. Debería cotillear más.» (the duel starts anyway).
-- Normal win at `winScore` (default 3): «Asignado a:» changes to the rival (`assignedWin`, default `from`), sfx `good`,
-  flag `duel:<id>:won`, then `onWin`.
-- **Finishers (remates)**: when points reach a finisher's `atScore`, the rival says its `text`; the replies turn grey
-  and only **[Usar objeto]** (opens the inventory picker) and **[Retirarse del hilo]** remain. Right object → its
-  `script`; then the duel ends (win) if it was the last finisher (or `end: true`), otherwise continues. Wrong object →
-  the wrong-object line (not a miss): `finisher.wrongObject[item]` → `opp.wrongObject[item]` →
-  `duelo.js wrongObject[<id>][item]` → `opp.wrongObject['*']` → `wrongObject[<id>]['*']` → `wrongObject['*']`.
-  [Retirarse del hilo] = defeat without punishment.
-- Defeat (3 misses or retiring): subject becomes `RV: RE: ...`, «CC: Dirección», a narrator caption says «RESPUESTA AUTOMÁTICA DE
-  DIRECCIÓN: «Lo que diga Gervasio.»», «Asignado a: Vacante», the window closes, the rival says `defeatLines`, then `onLose(api, ctl,
-  'lost' | 'retired')`. Points always restart from 0 next time. Never fatal.
-- `await api.duel(id)` returns `true` only on victory. `__game.state().lastDuel = { id, result, hits, misses }`.
+### Rules (what the engine does) — plan de comedia §7
+- The rival always attacks, with its `deck` **in order** (rematch: it starts with the card that won last time, flag
+  `duel:<id>:empieza`). The attack (or its paraphrase `attackText[pair]`) is said in a balloon **and stays written in
+  the window** as `Cuerpo: «…»` while the player chooses.
+- **Menu ≤ 5 lines, no scroll**: the correct reply if learned + up to 3 other learned replies (first those of this
+  deck, then others, as decoys; a long reply that wraps costs a decoy) + **one weak reply** that rotates per rival
+  (engine flag `duel:<id>:floja`; the comodín is part of the rotation). The position of the correct one changes every
+  round. Nothing is learned in a duel. On touch screens the duel menu uses 5 rows of 11 px (no scroll).
+- Correct reply: +1, the attack leaves the deck, «+1» line in the thread, `onHit(api, duel, pairId)`, then the rival
+  takes it with `hurtByPair[pair]` (rival or `duelo.js hurtByPair[<duel id>][<pair>]`; a string, a list of strings or
+  a list of `[actor, line]` — another actor, e.g. Rubén in D4, speaks only if he is in the room) or its `hurt` rotation.
+- Miss: one more `RE:`, somebody more in copy (`cc1` / `ccSteps[0]` = the rival's own CC, then «Toda la planta», then
+  «Dirección»), the attack goes to the end of the deck, and the rival **always** answers (wrong learned reply → `taunt`;
+  weak reply → `opp.weakAnswers[text]` → `answers[<duel id>]` → `answerFax` → `answer`) **before** the defeat is decided.
+- Comodín: first use per duel → no score change, same attack again; second use = miss.
+- Score as text in the title bar: `ACIERTOS 2/3 · FALLOS 1/3` (plus the stamps). Window: 63 px.
+- Fair warning before starting if Bruno knows fewer replies of the deck than needed (unchanged).
+- Win: «Asignado a:» → the rival, flag `duel:<id>:won`, `onWin`.
+- Finishers (remates): unchanged — replies greyed out, **[Usar objeto]** / **[Retirarse del hilo]**; wrong object =
+  a line, not a miss.
+- **Defeat** (`maxMisses`): the rival's `defeatLine` (string = narrator caption, or `[who, line]`; default the
+  «Lo que diga Gervasio» caption) → window closes → `duel:<id>:perdido_n` + 1 → `defeatLines` → the **defeat scene**
+  `defeatScene: '<scene name>'` (called with `{ duel, perdidos, ctl }`) and/or `onLose(api, duel, 'lost')` (`duel.perdidos`
+  = defeats so far) → `defeatHeadline` (string or `(n) => string`) shown as a headline strip (`api.titular`). Never
+  takes anything from the inventory.
+- Retiring: no consequence (no `perdido_n`), thread «RV: Bruno ha abandonado el hilo.», `onLose(api, duel, 'retired')`.
+- **No autosave while a duel is open.** A save made during a duel (only possible by the test API) remembers it: loading
+  it **restarts that duel from 0** (with the notice «Se retoma el hilo.»), it never drops the player in the room.
+- `await api.duel(id)` returns `true` only on victory. `__game.state().lastDuel = { id, result, hits, misses, perdidos }`;
+  while open, `__game.state().duel` = `{ attack, body, options, optionPairs, correctIndex, weakIndex, cc, score, … }`.
 
 ### Rival definition (in your room's `duels`)
 ```js
@@ -672,7 +744,10 @@ duels: {
     maxMisses: 3,
     style: 'mail',                           // 'fax' = fax-paper window + answerFax lines (Teodoro)
     say: undefined,                          // async (api, line) => {} custom speaking (e.g. Teodoro through the fax)
-    attackText: {},                          // optional { R10: 'different wording' } (normally not used: same words!)
+    attackText: {},                          // plan §7.4: the rival's PARAPHRASE of each attack { R10: '...' }
+    cc1: 'Optimal Brains & Partners',        // CC added on the 1st miss (then «Toda la planta», «Dirección»); or ccSteps: [...]
+    weakAnswers: {},                         // optional { 'Te lo miro y te digo.': 'own answer' } (else duelo.js answers[id])
+    hurtByPair: {},                          // optional { R13: [['inigo_sinergia', '...'], ['ruben', 'Yo. Perdón.']] }
     intro: ['Perfecto. Te lo pongo por escrito.'],       // before the window opens: strings (rival) or [who, line]
     hurt: ['Ese input no lo tenía en el framework.', 'Interesante. Lo pongo en azul.'],   // rotate in order
     taunt: ['Ese input no escala.', 'Rosa. Emociones. Siguiente.'],
@@ -688,7 +763,10 @@ duels: {
         script: async (api, duel) => { /* ... */ } },                       // last one: Bruno wins
     ],
     defeatLines: ['Asignado a Vacante. Llama tú a la rotativa.', ['player', 'Ni hablar. Lo vuelvo a intentar.']],
-    onHit: async (api, duel) => {},          // after every correct reply (instead of nothing)
+    onHit: async (api, duel, pairId) => {},  // after every correct reply (receives the matched pair)
+    defeatLine: 'RESPUESTA AUTOMÁTICA DE OPTIMAL BRAINS: «Gracias por su feedback.»',   // the rival's own (§7.7)
+    defeatScene: 'inigo_derrota',            // scene of the comic consequence (≤ 6 lines, < 15 s): (api, { duel, perdidos, ctl })
+    defeatHeadline: (n) => 'UN BECARIO ...', // Titulator headline after the scene (string or function of the defeat count)
     onWin: async (api, duel) => { api.setFlag('duelo_inigo_ganado', true); },
     onLose: async (api, duel, result) => {},
     music: undefined,                        // default 'm_duelo' (duelo.js); previous music restored after
@@ -763,6 +841,11 @@ game by itself; `api.ending(opts)` ends the game (a click fast-forwards; at the 
 
 ## 15. Testing & tools
 
+- `node tools/test-fase0.mjs` — the shared systems of the comedy plan on the demo room `tools/demo-fase0.js`
+  (duel, objective, hints, clock, ambient, movement, situation effects, iPhone duel layout); screenshots `tools/shots/fase0-*.png`.
+- `node tools/text-audit.mjs --estatico [--plan] [--sala=<id>]` — static pass of the comedy-plan rules (`tools/plan-rules.mjs`):
+  «… Como X.» endings and forbidden visible words; the full run adds the catchphrase caps (§2.4). Warnings unless `--plan`.
+
 | command | what |
 |---|---|
 | `node tools/serve.mjs 8080` | static server → `http://localhost:8080/` |
@@ -818,6 +901,11 @@ hover, camX, music, menu, speaking, aviso, finished }` · `newGame()` · `gotoRo
 ---
 
 ## 17. Guía para autores de sala (checklist)
+
+> **Reescritura de comedia (2026-11):** la lista de comprobación vigente para los paquetes P1-P4 es
+> `docs/guion2-impl/GUIA_AUTORES.md` (APIs de objetivo, pistas, hora, ambiente, duelo y efectos; qué no tocar; cómo
+> probar). Lo de abajo sigue valiendo para lo que no contradiga esa guía.
+
 
 1. Lee en la biblia: §0, tu sala en §3, tus puzles en §5.2, tus filas de §5.4 y §5.5, tus árboles en §7, tus duelos en
    §6.4–6.5 y §9 (qué cruza con otros paquetes).

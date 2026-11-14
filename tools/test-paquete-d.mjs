@@ -49,9 +49,14 @@ const shot = async (name) => {
 };
 const inRoom = async (id) => (await state()).actors[id] && (await state()).actors[id].room;
 async function pickWeak() {
-  const st = await state();
-  const i = st.dialog.findIndex(o => o === '¿Me lo pones por escrito?');
-  await G(i => __game.chooseDialog(i), i);
+  // plan §7.5: una sola floja por asalto, que rota (el comodín, la 1.ª vez, no cuenta: se elige y se repite el asalto)
+  for (let k = 0; k < 3; k++) {
+    const st = await state();
+    const i = st.duel.weakIndex;
+    const comodin = st.dialog[i].startsWith('Enviado desde');
+    await G(i => __game.chooseDialog(i), i);
+    if (!comodin) return;
+  }
 }
 async function finisher(item) {           // [Usar objeto] → item (fase de remate)
   await choose('[Usar objeto]');
@@ -450,6 +455,8 @@ try {
   ok((await state()).room === 'sala_amazonas', 'sabiendo las réplicas, la puerta sigue cerrada');
   await verb('empujar', 'lector_medio');
   ok(await logHas('Todavía no. Primero, por escrito.') === 1 && !(await flag('lector_derribado')), 'Empujar antes de ganar: «Todavía no»');
+  ok(!!(await flag('duel:inigo:empieza')), 'plan §7.1.9: la revancha empezaría por la carta que ganó (duel:inigo:empieza)');
+  await setFlags({ 'duel:inigo:empieza': false });          // (el resto de la prueba mira el mazo en su orden)
   await verb('hablar', 'inigo_sinergia');
   st = await state();
   ok(st.duel && st.duel.attack === 'R10' && st.duel.hits === 0, 'Hablar con Íñigo: el duelo vuelve a empezar desde 0');

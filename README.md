@@ -36,14 +36,14 @@ para girar el móvil: en horizontal el juego ocupa todo el alto.
 ## Controles
 
 - **F**: pantalla completa (ordenador).
-- **Clic izquierdo** en el suelo: andar. Sobre un objeto o persona: «Ir a».
+- **Clic izquierdo** en el suelo: andar (doble clic: correr; mantener pulsado: seguir al puntero). Sobre un objeto o persona: «Ir a». Doble clic en una salida: salir ya.
 - **Verbo + objeto**: clic en un verbo y luego en el objeto, la persona o el icono del inventario.
   «Usar» y «Dar» con un objeto del inventario: verbo → objeto → destino.
 - **Clic derecho** (pulsación larga en táctil): verbo por defecto (Mirar, Hablar, Ir a).
 - **Clic** durante un texto: pasa al siguiente. **Esc**: salta una escena o abre el menú (guardar, cargar, velocidad
   del texto, volumen). El icono ≡ del panel también abre el menú. **1-9**: elegir opción de diálogo.
 - La partida se autoguarda al cambiar de sala («Continuar» en el título) y hay 3 ranuras manuales.
-- Si te atascas: **Usar el móvil** (llama la abuela y da una pista).
+- Si te atascas: **Usar el móvil** (llama la abuela: pistas en tres niveles según dónde estés). Mirar la **ficha de la página 7** dice lo que falta; **Mirar a Bruno**, lo que quiere ahora.
 
 ## Pruebas
 
@@ -54,6 +54,7 @@ Necesitan Node 18+ y `playwright` (con Chromium) accesible para Node.
 | `node tools/test-all.mjs [--rapido] [--sala=<id>]` | **todas las pruebas** en paralelo con tabla de resumen (cada una en su propio puerto libre) |
 | `node tools/sala.mjs <id>` | vista previa de una sala para los artistas: todos los actos, depuración, «ver hotspots» e informe de PNJ (rediseño: `docs/GUIA_REDISENO.md`) |
 | `node tools/test-motor.mjs` | motor y kit del rediseño (pose sentada, penumbra, plano detalle, ver hotspots, objetivos táctiles) sobre una sala de demostración |
+| `node tools/test-fase0.mjs` | sistemas comunes del plan de comedia (duelo, ficha viva, pistas en 3 niveles, hora por hitos, ambiente, doble clic/correr, apagón, estampida, megafonía, titular, tarjeta final) sobre `tools/demo-fase0.js` |
 | `node tools/check.mjs` | comprobación estática del contenido (ids lógica/arte, flags, salidas, líneas de más de 80 caracteres) |
 | `node tools/smoke.mjs` | prueba de humo de la interfaz (título, 10 salas, inventario, duelo, guardar/cargar, menú, créditos, táctil) |
 | `node tools/walkthrough.mjs [--alt]` | la partida completa (46 pasos del guion), en el orden de la tabla o en el alternativo |
@@ -65,7 +66,7 @@ Necesitan Node 18+ y `playwright` (con Chromium) accesible para Node.
 | `node tools/fuzz.mjs` | guardar/cargar en cada acto, perder cada duelo, y Dar/Usar todo con todo (sin callejones) |
 | `node tools/contrast.mjs` | legibilidad: contraste de los colores de cada personaje sobre los fondos reales, del panel, los menús y el duelo |
 | `node tools/make-icons.mjs` | regenera los iconos de la web app (`icons/`) con el propio código de dibujo del juego |
-| `node tools/text-audit.mjs` | auditoría de textos (longitud, signos de apertura, nombres, horas y palabras prohibidas a la vista: «Pajarera», «Office») |
+| `node tools/text-audit.mjs [--estatico] [--plan]` | auditoría de textos (longitud, signos de apertura, nombres, horas y palabras prohibidas a la vista: «Pajarera», «Office»); avisos del plan de comedia (remates «Como…», palabras vetadas, topes de muletilla) |
 | `node tools/music-check.mjs` | comprueba las pistas de música |
 | `node tools/review.mjs` | hojas de contactos para revisión visual (todas las salas por acto y los momentos clave) |
 | `node tools/shot.mjs <sala> [--debug]` | captura de una sala · `node tools/actors.mjs`: hoja del reparto |

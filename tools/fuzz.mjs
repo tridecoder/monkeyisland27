@@ -58,7 +58,7 @@ async function escape() {
     const st = await state();
     if (st.pickItem) { await G(() => __game.chooseItem(null)); continue; }
     if (st.duel && st.dialog) {
-      const i = st.duel.phase === 'reply' ? st.dialog.findIndex(o => o.startsWith('Te lo miro y te digo')) : st.dialog.findIndex(o => o === '[Retirarse del hilo]');
+      const i = st.duel.phase === 'reply' ? st.duel.weakIndex : st.dialog.findIndex(o => o === '[Retirarse del hilo]');
       await G(i => __game.chooseDialog(i), i < 0 ? st.dialog.length - 1 : i);
       continue;
     }
@@ -115,7 +115,7 @@ async function loseDuel(label) {
     await G(() => __game.waitIdle());
     const st = await state();
     if (!st.duel) break;
-    if (st.duel.phase === 'reply') await R.chooseByText('Te lo miro y te digo');
+    if (st.duel.phase === 'reply') await G(i => __game.chooseDialog(i), st.duel.weakIndex);   // la floja del asalto (plan §7.5)
     else if (st.duel.phase === 'finisher') await R.chooseByText('[Retirarse del hilo]');
   }
   await G(() => __game.waitIdle());

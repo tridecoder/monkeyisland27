@@ -125,7 +125,7 @@ try {
   await G(() => __game.doVerb('abrir', 'logo_pared'));
   ok(await G(t => __game.log.some(l => l.who === 'bruno' && l.text === t), DEF_ABRIR[1]), 'Abrir el logo rota a la 2.ª respuesta por defecto');
   await G(() => __game.doVerb('mirar', 'bruno'));
-  ok(await G(() => __game.log.some(l => l.text.startsWith('Soy yo. Joven'))), 'Mirar a Bruno (cuarta pared §8.6)');
+  ok(await G(() => __game.log.some(l => l.who === 'bruno' && __game.game.G.objetivos.some(o => o.meta === l.text))), 'Mirar a Bruno: dice la meta actual (plan §8.2)');
 
   // ---------------------------------------------------------------- the 10 rooms
   step('Recorrido por las 10 salas por sus salidas (juego real)');
@@ -287,20 +287,19 @@ try {
   G(code => __game.game.runScript(api => api.duel(eval(code)), { label: 'duelo de prueba' }), TEST_DUEL);
   ok(await waitFor(() => __game.state().duel && __game.state().dialog), 'se abre el duelo con opciones');
   let d = (await state()).duel;
-  ok(d.attack === 'R05' && d.correctIndex === 1, 'primer ataque del mazo: R05; su réplica es la 2.ª opción (orden de número)');
   const opts = (await state()).dialog;
-  ok(opts.length === 2 + 5 + 1, `menú = 2 réplicas + 5 flojas (3 de la biblia + 2 de la adenda) + comodín (${opts.length})`);
+  ok(d.attack === 'R05' && d.correctIndex >= 0, 'primer ataque del mazo: R05; su réplica está en el menú');
+  ok(opts.length <= 5 && d.weakIndex === opts.length - 1, `menú ≤ 5 líneas (réplicas aprendidas + 1 floja al final): ${opts.length}`);
+  ok(d.body === 'Que esto no salga de aquí.' && d.score === 'ACIERTOS 0/2 · FALLOS 0/3', `el ataque queda escrito en la ventana y el marcador en texto (${d.body} · ${d.score})`);
   await wait(200);
   await shot('07-duelo');
   await fast(true);
-  await chooseText('Te lo miro y te digo');                         // weak → miss
+  await G(() => __game.chooseDialog(__game.state().duel.weakIndex));   // weak → miss
   await waitFor(() => __game.state().dialog);
   d = (await state()).duel;
   ok(d.misses === 1 && d.subject.startsWith('RE: RE: ') && d.attack === 'R03', 'floja = fallo: +RE: y el ataque fallado va al final (ahora R03)');
-  await chooseText('Enviado desde mi móvil');                         // comodín: no change
-  await waitFor(() => __game.state().dialog);
-  d = (await state()).duel;
-  ok(d.misses === 1 && d.hits === 0 && d.attack === 'R03', 'comodín: ni suma ni resta, repite el ataque');
+  ok(d.cc === 'Toda la planta', `fallo: alguien más en copia (CC: ${d.cc})`);
+  ok((await state()).dialog[d.weakIndex] !== opts[opts.length - 1], 'la floja rota en cada asalto');
   await G(() => __game.chooseDialog(__game.state().duel.correctIndex));   // R03 ok
   await waitFor(() => __game.state().dialog);
   await G(() => __game.chooseDialog(__game.state().duel.correctIndex));   // R05 ok → finisher
@@ -308,7 +307,7 @@ try {
   d = (await state()).duel;
   const fs1 = await state();
   ok(d.phase === 'finisher' && d.hits === 2, 'a 2 puntos llega el REMATE');
-  ok(fs1.dialogDisabled.length === 2 && fs1.dialog.includes('[Usar objeto]') && fs1.dialog.includes('[Retirarse del hilo]'), 'réplicas en gris + [Usar objeto] + [Retirarse del hilo]');
+  ok(fs1.dialogDisabled.length >= 1 && fs1.dialogDisabled.length <= 3 && fs1.dialog.includes('[Usar objeto]') && fs1.dialog.includes('[Retirarse del hilo]'), 'réplicas en gris + [Usar objeto] + [Retirarse del hilo]');
   await fast(false); await wait(150); await shot('08-duelo-remate'); await fast(true);
   await chooseText('[Usar objeto]');
   ok(await waitFor(() => __game.state().pickItem), 'se abre el selector de objetos');
@@ -328,49 +327,59 @@ try {
   ok(sw.lastDuel && sw.lastDuel.result === 'won', 'objeto correcto: duelo ganado');
   ok(sw.flags['duel:prueba:won'] === true && sw.flags.cpd_prueba === true, 'flags de resultado (duel:prueba:won + script de victoria)');
 
-  step('Duelo de prueba: derrota a 3 fallos y retirada');
-  G(code => __game.game.runScript(api => api.duel(eval(code)), { label: 'duelo de prueba 2' }), TEST_DUEL.replace("id: 'prueba'", "id: 'prueba2'"));
-  for (let i = 0; i < 3; i++) { await waitFor(() => __game.state().dialog); await chooseText('Te lo miro y te digo'); }
+  step('Duelo de prueba: derrota (la floja se contesta SIEMPRE), revancha y retirada');
+  await G(() => __game.clearLog());
+  const D2 = TEST_DUEL.replace("id: 'prueba'", "id: 'prueba2', maxMisses: 2");
+  G(code => __game.game.runScript(api => api.duel(eval(code)), { label: 'duelo de prueba 2' }), D2);
+  let ultimaFloja = null;
+  for (let i = 0; i < 2; i++) { await waitFor(() => __game.state().dialog); ultimaFloja = await G(() => __game.state().dialog[__game.state().duel.weakIndex]); await G(() => __game.chooseDialog(__game.state().duel.weakIndex)); }
   await G(() => __game.waitIdle());
   const sl = await state();
-  ok(sl.lastDuel.result === 'lost' && !sl.flags['duel:prueba2:won'], 'tres fallos = derrota sin castigo');
-  ok(await G(() => __game.log.some(l => l.who === 'narrador' && l.text.includes('Lo que diga Gervasio.'))), 'RESPUESTA AUTOMÁTICA DE DIRECCIÓN: «Lo que diga Gervasio.»');
-  G(code => __game.game.runScript(api => api.duel(eval(code)), { label: 'duelo de prueba 3' }), TEST_DUEL.replace("id: 'prueba'", "id: 'prueba3'"));
-  for (let i = 0; i < 2; i++) { await waitFor(() => __game.state().dialog); await G(() => __game.chooseDialog(__game.state().duel.correctIndex)); }
+  ok(sl.lastDuel.result === 'lost' && !sl.flags['duel:prueba2:won'] && sl.flags['duel:prueba2:perdido_n'] === 1, 'dos fallos (maxMisses 2) = derrota; duel:prueba2:perdido_n = 1');
+  ok(await G(t => { const w = __game.game.content.duels.weakReplies.find(x => x.text === t); const i = __game.log.findIndex(l => l.text === w.answer); const j = __game.log.findIndex(l => l.who === 'narrador' && l.text.includes('Lo que diga Gervasio.')); return i >= 0 && j > i; }, ultimaFloja), 'la contestación de la última floja se oye ANTES de la derrota (crítica §9.4)');
+  ok(sl.flags['duel:prueba2:empieza'] === 'R03', `la revancha empezará por el ataque que ganó (R03): ${sl.flags['duel:prueba2:empieza']}`);
+  G(code => __game.game.runScript(api => api.duel(eval(code)), { label: 'duelo de prueba 2 (revancha)' }), D2);
+  await waitFor(() => __game.state().dialog);
+  ok((await state()).duel.attack === 'R03', 'revancha: el mazo empieza por R03');
+  await G(() => __game.chooseDialog(__game.state().duel.correctIndex));
+  await G(() => __game.chooseDialog(__game.state().duel.correctIndex));
   await waitFor(() => __game.state().dialog);
   await chooseText('[Retirarse del hilo]');
   await G(() => __game.waitIdle());
-  ok((await state()).lastDuel.result === 'retired', '[Retirarse del hilo] = derrota sin castigo');
+  const sr = await state();
+  ok(sr.lastDuel.result === 'retired' && sr.flags['duel:prueba2:perdido_n'] === 1, '[Retirarse del hilo] = sin consecuencia (no suma derrota)');
+  await G(() => __game.setFlag('duel:prueba4:floja', 5));
+  G(code => __game.game.runScript(api => api.duel(eval(code)), { label: 'duelo de prueba 4' }), TEST_DUEL.replace("id: 'prueba'", "id: 'prueba4'"));
+  await waitFor(() => __game.state().dialog);
+  ok((await state()).dialog.includes('Enviado desde mi móvil, disculpa la brevedad.'), 'el comodín entra en la rotación de flojas');
+  await chooseText('Enviado desde mi móvil');
+  await waitFor(() => __game.state().dialog);
+  d = (await state()).duel;
+  ok(d.misses === 0 && d.hits === 0 && d.attack === 'R05', 'comodín: ni suma ni resta, repite el ataque');
+  for (let k = 0; k < 6 && (await state()).duel; k++) { await waitFor(() => __game.state().dialog || !__game.state().duel); if ((await state()).duel) await G(() => __game.chooseDialog(__game.state().duel.weakIndex >= 0 ? __game.state().duel.weakIndex : __game.state().dialog.length - 1)); }
+  await G(() => __game.waitIdle());
 
-  // ---------------------------------------------------------------- adenda: datos comunes
-  step('Adenda: flojas nuevas, R15/R16, hurt por pareja, cameo de Tadeo, off del coro (duelo con id `inigo`)');
+  // ---------------------------------------------------------------- datos comunes (plan §7.5-7.6)
+  step('Plan §7: flojas con contestación por rival, hurt por pareja y cameo de Tadeo (duelo con id `inigo`)');
   await G(() => { for (const f of ['rep_01', 'rep_05', 'rep_15', 'rep_16']) __game.setFlag(f, true); __game.clearLog(); });
-  const ADU = `({ id: 'inigo', actor: 'celestino', from: 'Íñigo', subject: 'Prueba adenda (no es de la biblia)', deck: ['R05', 'R15', 'R16', 'R01'],
-    winScore: 4, maxMisses: 4, intro: ['Te lo pongo por escrito.'], hurt: ['¡Uy!'], taunt: ['¡Ja!'], defeatLines: ['x'] })`;
+  const ADU = `({ id: 'inigo', actor: 'celestino', from: 'Íñigo', subject: 'Prueba adenda (no es de la biblia)', deck: ['R05', 'R16', 'R01'],
+    winScore: 3, maxMisses: 4, intro: ['Te lo pongo por escrito.'], hurt: ['¡Uy!'], taunt: ['¡Ja!'], defeatLines: ['x'] })`;
   G(code => __game.game.runScript(api => api.duel(eval(code)), { label: 'duelo adenda' }), ADU);
   await waitFor(() => __game.state().dialog);
-  { const st = await state(); ok(st.dialog.length === st.learnedReplies.length + 5 + 1, `menú del duelo: ${st.learnedReplies.length} réplicas + 5 flojas + comodín`); }
+  { const st = await state(); ok(st.dialog.length <= 5 && st.duel.weakIndex === st.dialog.length - 1, `menú del duelo: ${st.dialog.length} líneas (≤ 5)`); }
   const logHas = (t) => G(txt => __game.log.filter(l => l.text === txt).length, t);
-  await chooseText('Eso es cosa de Diseño');                          // ataque R05 → floja nueva 1
+  const floja = await G(() => __game.state().dialog[__game.state().duel.weakIndex]);
+  await G(() => __game.chooseDialog(__game.state().duel.weakIndex));
   await waitFor(() => __game.state().dialog);
-  ok(await logHas('CORO: ¡ESO! ¡DISEÑO!') === 1, 'floja «Diseño»: el coro grita en off la 1.ª vez');
-  ok(await logHas('Diseño entrega a tiempo. No sé en qué cuadrante ponerlos.') === 1, '... y Íñigo contesta con su línea propia (answers.inigo)');
-  ok((await state()).duel.attack === 'R15', 'tras el fallo el ataque va al final: ahora R15');
-  await G(() => __game.chooseDialog(__game.state().duel.correctIndex));   // R15 ok
-  await waitFor(() => __game.state().dialog);
-  ok(await logHas('...Lo pongo en azul.') === 1, 'hurt de Íñigo al recibir R15 (duelo.js hurtByPair)');
+  const resp = await G(t => { const w = __game.game.content.duels.weakReplies.find(x => x.text === t); return w && w.answers && w.answers.inigo; }, floja);
+  ok(!!resp && await logHas(Array.isArray(resp) ? resp[0] : resp) === 1, `floja «${floja}»: Íñigo contesta con su línea propia (answers.inigo)`);
+  ok((await state()).duel.attack === 'R16', 'tras el fallo el ataque va al final: ahora R16');
   await G(() => __game.chooseDialog(__game.state().duel.correctIndex));   // R16 ok
   await waitFor(() => __game.state().dialog);
-  ok(await logHas('Esa coma no estaba en mi framework.') === 1, 'hurt de Íñigo al recibir R16');
-  await chooseText('Eso es cosa de Diseño');                          // R01 → floja 1 otra vez
-  await waitFor(() => __game.state().dialog);
-  ok(await logHas('CORO: ¡ESO! ¡DISEÑO!') === 1, 'el coro NO grita una segunda vez');
-  await chooseText('¿Y usted cómo se encuentra');                     // R05 → floja nueva 2
-  await waitFor(() => __game.state().dialog);
-  ok(await logHas('Yo no tengo plaza. Tengo chófer. Es escalable.') === 1, 'floja «de salud»: contestación de Íñigo');
+  ok(await logHas('Esa coma no estaba en mi framework.') === 1, 'hurt de Íñigo al recibir R16 (duelo.js hurtByPair)');
   for (let i = 0; i < 2; i++) { await G(() => __game.chooseDialog(__game.state().duel.correctIndex)); await waitFor(() => __game.state().dialog || !__game.state().duel); }
   await G(() => __game.waitIdle());
-  ok((await state()).lastDuel.result === 'won' && (await state()).lastDuel.misses === 3, 'el duelo de prueba se gana (3 fallos de 4 permitidos)');
+  ok((await state()).lastDuel.result === 'won' && (await state()).lastDuel.misses === 1, 'el duelo de prueba se gana');
   ok(await G(() => __game.state().flags['once:cameo:inigo'] === undefined && !!__game.game.state.once['once:cameo:inigo']), 'cameo de Tadeo consumido (api.once)');
 
   step('Adenda: avisos al entrar en sala (llamadas de Evaristo, «RV:» de Tadeo)');

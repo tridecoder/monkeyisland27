@@ -311,7 +311,7 @@ export default {
   },
   manual_fax: {
     name: 'manual del fax', icon: icons.manual_fax,
-    handlers: { mirar: say(['Manual del fax de la Catacumba. Página 9: «Respuesta automática».', 'Las demás páginas son fotos del fax. Posando.']) },
+    handlers: { mirar: say(['Manual del fax de la Redacción de papel. Página 9: «Respuesta automática».', 'Las demás páginas son fotos del fax. Posando.']) },
   },
   pieza_opa: {
     name: 'mi exclusiva', icon: icons.pieza_opa,
@@ -344,6 +344,6 @@ export default {
     // Combinaciones con salas/PNJ (4.8): las implementa la sala (handlers 'dar:boli_muerto').
     name: 'boli muerto', icon: icons.boli_muerto,
     handlers: { mirar: 'Un boli rojo sin tinta. Murió corrigiendo un «detrás mío».' },
-    combine: { ficha_pagina_7: 'No escribe. Pero lo intenta. Como yo.' },     // adenda 4.8 (A)
+    combine: { ficha_pagina_7: 'No escribe. Le guardo un minuto de silencio. ...Ya.' },     // adenda 4.8 (A)
   },
 };
