@@ -142,19 +142,32 @@ export function makeApi(game, ctx = {}) {
     },
 
     // movement
-    walkTo: async (target, y) => {
+    /** Lleva a Bruno a un punto (x, y), [x, y], { x, y } o al punto de acercamiento de un objeto/actor ('kanban').
+     *  ENMIENDA E5 §6.1: `opts.run` → corre (×2,2, con el saltito y la cámara adelantada), como el doble clic:
+     *    await api.walkTo(640, 126, { run: true });   await api.walkTo('kanban', { run: true });
+     *  Sin `opts`, los paseos de guion nunca corren (como siempre). */
+    walkTo: async (target, y, opts) => {
+      if (y && typeof y === 'object' && !Array.isArray(y)) { opts = y; y = undefined; }
       const p = resolvePoint(target, y);
       if (!p) return false;
-      const ok = await game.walkActor(P(), p[0], p[1]);
+      const ok = await game.walkActor(P(), p[0], p[1], { run: !!(opts && opts.run) });
       const a = game.player;
       if (p[2]) a.dir = p[2]; else if (p[3]) game.faceTowards(a, p[3][0], p[3][1]);
       return ok;
     },
-    walkActor: async (id, target, y) => {
+    /** Como walkTo, para cualquier actor; también admite `opts.run` (E5 §6.1). */
+    walkActor: async (id, target, y, opts) => {
+      if (y && typeof y === 'object' && !Array.isArray(y)) { opts = y; y = undefined; }
       const p = resolvePoint(target, y);
       if (!p || !actorOr(id)) return false;
-      return game.walkActor(id, p[0], p[1]);
+      return game.walkActor(id, p[0], p[1], { run: !!(opts && opts.run) });
     },
+    /** ENMIENDA E5 §6.3: un PNJ que anda bajo un guion NO bloqueante se para cuando el jugador le apunta (verbo u
+     *  objeto elegido, o el ratón encima: engine/mover.js `frozen`). `api.sinCongelar(id)` lo exime: sigue andando
+     *  aunque se le apunte (Anselmo cruzando a oscuras con la linterna). `api.sinCongelar(id, false)` lo devuelve a lo de
+     *  siempre. No se guarda y se borra al entrar en cualquier sala.
+     *    api.sinCongelar('anselmo_monolito'); api.walkActor('anselmo_monolito', 'enchufe_pantalla');   // sin await */
+    sinCongelar: (id, on = true) => { const a = actorOr(id); if (a) a.noFreeze = !!on; },
     face: (dirOrTarget) => api.faceActor(P(), dirOrTarget),
     /** Variante de sprite elegida por guion (se guarda con la partida): api.vestir('bruno', 'con_chaqueta'); null = la
      *  de siempre (o la que diga `variant(view)` en actors.js). */
@@ -164,7 +177,8 @@ export function makeApi(game, ctx = {}) {
       a.variante = variante || undefined;
       if (game.state && game.state.actors[id]) { if (variante) game.state.actors[id].variante = variante; else delete game.state.actors[id].variante; }
     },
-    /** Huida en grupo por una puerta con atasco (plan §4.4). Ver engine/efectos.js `estampida`. */
+    /** Huida en grupo por una puerta con atasco (plan §4.4). Ver engine/efectos.js `estampida`. E5 §6.4: con
+     *  `{ esperar: true }` resuelve con `ctl = { alFrente(id), soltar(), activo }` y los deja encajados. */
     estampida: (ids, opts) => Fx.estampida(game, api, ids, opts),
     faceActor: (id, dirOrTarget) => {
       const a = actorOr(id); if (!a) return;
@@ -207,8 +221,20 @@ export function makeApi(game, ctx = {}) {
 
     // time & effects
     wait: (ms) => game.sleep(ms),
+    /** ENMIENDA E5 §6.5: ¿está el juego «quieto»? (engine/efectos.js `quiet`): en juego, sin globo (tampoco de ambiente),
+     *  menú, opciones, diálogo, duelo, móvil, plano detalle, cinemática, guion bloqueante, aviso, ráfaga ni apagón. Mover
+     *  el ratón NO cuenta. Para relojes de «tiempo quieto» en `update(api, dt)` de una sala:
+     *    update(api, dt) { if (api.quieto()) S.quieto += dt; if (S.quieto >= 10 && api.once('x')) api.megafonia(…); } */
+    quieto: () => Fx.quiet(game),
+    /** ENMIENDA E5 §6.6: `api.sinGuardar(true)` mientras dura algo que no debe guardarse a medias (un atasco, una
+     *  ventana a oscuras): «Guardar partida» sale en gris en el menú de pausa y la autoguarda se salta. `false` lo
+     *  devuelve. El motor lo pone a `false` al cambiar de sala y al cargar partida. */
+    sinGuardar: (on = true) => { game.noSave = !!on; },
+    get sinGuardarActivo() { return !!game.noSave; },
     shake: (ms, amp) => game.shake(ms, amp),
-    /** Apagón de la sala (plan §4.2): api.apagon({ ms: 3000, spots, alpha }) · api.apagon(false) devuelve la luz. */
+    /** Apagón de la sala (plan §4.2): api.apagon({ ms: 3000, spots, alpha }) · api.apagon(false) devuelve la luz.
+     *  E5 §6.2: focos que siguen a un actor (`spots: [{ actor, rx, ry, dy }]`), `nombres: true` (nameDark / «algo» /
+     *  «alguien») e `interceptar(api, verbo, id, item)` (ver engine/efectos.js `apagon`). */
     apagon: (opts) => Fx.apagon(game, opts),
     /** Ráfaga de notificaciones + contador (plan §4.1, la cafetera viral). Ver engine/efectos.js `viral`. */
     viral: (opts) => Fx.viral(game, opts),

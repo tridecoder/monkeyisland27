@@ -11,9 +11,17 @@
 //    2 ecosistema torno_abierto (antes: escalera de la Pecera, sin bloqueo propio, detrás del torno)
 // Si no se cumple, el botón contesta con una negativa (rota, `ascensor_negativas_n`) y no se viaja.
 //
+// ATAJOS (ENMIENDA E5 §2.7, §6.10): tras elegir planta (y pasar el bloqueo), si en esa planta hay OTRAS salas ya pisadas
+// que el directorio deja abrir (`directorio.js` `destinos`: visitadas, torno, Sala Amazonas solo en los Actos I-II, nada
+// tras el empujón), sale un submenú: la opción 0 es la sala de llegada del ascensor por su nombre visible
+// («Redacción», «Marketing y Comercial»; Escape = esa, el rellano de siempre) y después esas salas, por su nombre; se
+// llega por su entrada habitual (la del directorio). En las plantas −1 y 0 (una sala cada una) no hay submenú. Cabina
+// y frase, igual. Cero líneas. Las pruebas automáticas que usan el ascensor eligen la opción 0 si sale el submenú.
+//
 // Cada sala con ascensor tiene un objeto con `ascensor: { planta, label }` (lo leen los tests y tools/check.mjs para el
 // grafo de salidas) y la entrada `ascensor` en su arte. Los objetos se crean con `ascensorObjeto(id, handlers)`.
 import { narrarHito } from './celestino.js';
+import { destinos, nombreDe } from './directorio.js';
 import { rect, hline, vline, frameRect, gradV, paint, ditherPick, glow, PAL } from '../../engine/draw.js';
 import { drawText } from '../../engine/font.js';
 
@@ -37,9 +45,7 @@ export function plantaPermitida(api, room) {
 export const FRASES = [
   'Su planta ha quedado registrada con el ticket 48.216. Paco le atenderá.',
   'Este ascensor tiene espejo. Para que el becario se vea subir, aunque sea aquí.',
-  'Le recordamos que lo que se dice en el ascensor no sale. Ni el wifi.',
   'Hilo musical: el Ibex en diferido. Narra Celestino, desde el mostrador.',
-  'Capacidad: ocho personas o una reunión que pudo ser un correo.',
   'Prohibido hablar de plazas de garaje. La rejilla del sótano lo oye todo.',
   'RV de Tadeo: «La IA dice que subir es lo contrario de bajar. Por si os sirve!!».',
   'Este ascensor no consta en el organigrama. Funciona igual. O por eso.',
@@ -97,6 +103,13 @@ export async function usarAscensor(api) {
     await api.sayFrom(aqui ? aqui.obj : dest.obj, NEGATIVAS[dest.room] || 'Planta no disponible.', { color: ASCENSOR_COLOR });
     return false;
   }
+  // E5 §2.7: submenú de atajos (salas ya pisadas de esa planta); 0 / Escape = el rellano de siempre
+  let final = { room: dest.room, entry: 'ascensor' };
+  const atajos = destinos(api).filter(d => d.planta === dest.n && d.room !== dest.room);
+  if (atajos.length) {
+    const j = await api.choose([nombreDe(dest.room), ...atajos.map(d => d.nombre)], { escape: 0 });
+    if (j != null && j > 0 && j <= atajos.length) final = { room: atajos[j - 1].room, entry: atajos[j - 1].entry };
+  }
   const n = api.inc('ascensor_viajes_n');
   const game = api.game;
   api.sfx('doorClose');
@@ -110,7 +123,7 @@ export async function usarAscensor(api) {
     api.sfx('beep');
   } finally { game.hud = null; }
   api.sfx('open');
-  await api.goto(dest.room, 'ascensor');
+  await api.goto(final.room, final.entry);
   return true;
 }
 

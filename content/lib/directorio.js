@@ -4,6 +4,8 @@
 // marca el motor al entrar en cada sala: `api.visitada(room)`), con su nombre visible oficial; al elegir una, Bruno aparece
 // en su entrada de siempre y la sala corre su `onEnter` y los avisos comunes igual que por el camino largo. Es opcional:
 // el recorrido de 44 pasos no lo usa.
+// ENMIENDA E5 §2.7: el ASCENSOR reutiliza esta lista (`destinos`, `nombreDe`) para su submenú de atajos por planta, con
+// los mismos bloqueos.
 //
 // BLOQUEOS (nunca deja saltarse un puzle ni una escena):
 //   · solo salas visitadas, y nunca la sala en la que ya se está;
@@ -51,6 +53,13 @@ export function destinos(api) {
 }
 
 export const etiqueta = (d) => `${d.nombre} · planta ${d.planta}`;
+
+/** Nombre visible oficial de una sala (el de DESTINOS: «Redacción», «Marketing y Comercial»…); si no está, su id.
+ *  Lo usa el submenú de atajos del ascensor (E5 §2.7, §6.10). */
+export function nombreDe(room) {
+  const d = DESTINOS.find(d => d.room === room);
+  return d ? d.nombre : String(room);
+}
 
 /** Abre la lista y, si se elige una sala, lleva a Bruno a su entrada habitual. Devuelve true si ha viajado. */
 export async function usarDirectorio(api) {

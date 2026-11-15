@@ -308,7 +308,7 @@ export class Game {
     p.x = x; p.y = y; p.path = [];
     this.snapCamera(); this.syncState();
   }
-  autosave() { if (this.G.autosave !== false && !this.duelActive) this.save('auto'); }      // plan §7.1.14: never inside a duel
+  autosave() { if (this.G.autosave !== false && !this.duelActive && !this.noSave) this.save('auto'); }      // plan §7.1.14: never inside a duel; E5 §6.6: ni con api.sinGuardar(true)
 
   // ------------------------------------------------------------------ new game / actors
   resetRuntime() {
@@ -324,6 +324,7 @@ export class Game {
     if (this.itemPick) { const r = this.itemPick.resolve; this.itemPick = null; r(null); }
     this.notices = []; this.idleMs = 0; this.idleFired = false; this.comboFails = 0; this.duelInfo = null; this.duelActive = null;
     Fx.reset(this); Mov.reset(this);
+    this.noSave = false;          // E5 §6.6 api.sinGuardar: nunca pasa de una partida a otra
     this.ui.verb = null; this.ui.item = null; this.ui.invScroll = 0; this.ui.sentence = null;
     this.fadeLevel = 0; this.fades = [];
     this.room = null;
@@ -519,6 +520,11 @@ export class Game {
       if (!this.instant) await this.fadeTo(1, 220);
     }
     this.speeches.filter(s => !s.blocking).forEach(s => this.endSpeech(s));
+    // E5 §6.2-6.6: lo que vale solo mientras se está en una sala no cruza la puerta: el apagón (con su interceptor), los
+    // atascos abiertos (se sueltan sin animación), «sin guardar» y los PNJ que no se paran al apuntarles
+    Fx.salaNueva(this);
+    this.noSave = false;
+    for (const a of Object.values(this.actors)) a.noFreeze = false;
     this.state.room = id;
     this.marcarVisitada(id);
     const rt = { def, width: Math.max(SCREEN_W, def.width || SCREEN_W), dirty: true };
@@ -751,7 +757,7 @@ export class Game {
   actorTarget(a) {
     const place = this.placementOf(a.id);
     return {
-      kind: 'actor', id: a.id, def: { ...a.def, ...place }, actor: a, name: place.name || a.name,
+      kind: 'actor', id: a.id, def: { ...a.def, ...place }, actor: a, name: Fx.nombreOscuro(this, { ...a.def, ...place }, 'actor') || place.name || a.name,
       handlers: { ...(a.def.handlers || {}), ...(place.handlers || {}) },
     };
   }
@@ -761,6 +767,8 @@ export class Game {
     return { kind: 'inv', id, def: it, name: this.nameOf(it), handlers: it.handlers || {} };
   }
   nameOf(def, st) {
+    // E5 §6.2: con un apagón con `nombres`, los objetos de la sala se llaman `nameDark` o «algo» (el inventario, no)
+    if (this.apagon && this.apagon.nombres && def && !(this.content.items[def.id] === def)) { const n = Fx.nombreOscuro(this, def, 'obj'); if (n) return n; }
     try { return typeof def.name === 'function' ? def.name(this.viewFor(st)) : (def.name || def.id); } catch (e) { return def.id; }
   }
   hitObject(def, x, y) {
@@ -790,6 +798,14 @@ export class Game {
     const objs = this.roomObjects();
     let hits = objs.filter(o => this.hitObject(o, x, y));
     if (!hits.length) hits = this.slopHits(objs, x, y);
+    else if (this.touchUI()) {
+      // E5 §6.7 (F8, solo al tacto): si el dedo cae en la caja crecida de un objeto pequeño y lo que hay exactamente
+      // debajo es un objeto «grande» (más de 4 veces el área del pequeño crecido), gana el pequeño (centro más cercano)
+      const top = hits.slice().sort((a, b) => (b.priority || 0) - (a.priority || 0) || objs.indexOf(b) - objs.indexOf(a))[0];
+      const tb = Ver.bbox(top);
+      const small = this.slopHits(objs, x, y, (o, area) => o !== top && tb && tb.w * tb.h > 4 * area);
+      if (small.length) hits = small;
+    }
     if (!hits.length) {
       // the player is clickable (lowest priority) when its definition has handlers (e.g. "Mirar a Bruno")
       const p = this.player;
@@ -803,10 +819,11 @@ export class Game {
     return this.objectTarget(hits[0]);
   }
   /** Tamaño mínimo efectivo de un hotspot (docs/GUIA_REDISENO.md): si un clic no cae en ningún objeto, los objetos
-   *  pequeños crecen (centrados) hasta 12×10 px con ratón y 16×12 px al tacto; gana el centro más cercano. */
-  slopHits(objs, x, y) {
+   *  pequeños crecen (centrados) hasta 12×10 px con ratón y 20×16 px al tacto (E5 §6.7; antes 16×12); gana el centro
+   *  más cercano. `filtro(o, areaCrecida)` opcional (lo usa pickAt al tacto para que el pequeño gane al grande). */
+  slopHits(objs, x, y, filtro = null) {
     const touch = this.touchUI();
-    const MW = touch ? 16 : 12, MH = touch ? 12 : 10;
+    const MW = touch ? 20 : 12, MH = touch ? 16 : 10;
     let best = null, bd = Infinity;
     for (const o of objs) {
       if (o.hotspot === false) continue;
@@ -814,6 +831,7 @@ export class Game {
       if (b.w >= MW && b.h >= MH) continue;
       const w = Math.max(b.w, MW), h = Math.max(b.h, MH), cx = b.x + b.w / 2, cy = b.y + b.h / 2;
       if (Math.abs(x - cx) > w / 2 || Math.abs(y - cy) > h / 2) continue;
+      if (filtro && !filtro(o, w * h)) continue;
       if (!this.getObjState(o.id).visible) continue;
       const d = Math.hypot(x - cx, y - cy);
       if (d < bd) { bd = d; best = o; }
@@ -847,7 +865,9 @@ export class Game {
   }
   sentenceText() {
     if (this.ui.sentence) return this.ui.sentence;
-    const h = this.ui.hover;
+    let h = this.ui.hover;
+    // E5 §6.2: el nombre se recalcula si cambia la luz con el ratón quieto (apagón con `nombres`, y al volver la luz)
+    if (h && h.kind !== 'inv' && (this.apagon || h.oscuro)) h = this.ui.hover = this.renombrar(h);
     const v = this.ui.verb;
     if (this.ui.item) {
       const it = this.content.items[this.ui.item];
@@ -856,6 +876,12 @@ export class Game {
     }
     if (!v && h && h.kind === 'inv') return `${this.verbLabel('usar')} ${h.name}`;
     return `${this.verbPhrase(v)}${h ? ' ' + h.name : ''}`;
+  }
+  /** El mismo objetivo con el nombre de ahora (a oscuras o con luz). `oscuro` marca que se nombró a oscuras. */
+  renombrar(h) {
+    const t = h.kind === 'actor' ? this.actorTarget(h.actor) : h.kind === 'obj' ? this.objectTarget(h.def) : h;
+    t.oscuro = !!(this.apagon && this.apagon.nombres);
+    return t;
   }
   /** Verb label plus its optional preposition (e.g. 'Hablar con'). */
   verbPhrase(id) {
@@ -908,6 +934,15 @@ export class Game {
     const token = ++this.actionToken;
     this.ui.sentence = this.composeSentence(verb, target, itemId);
     this.ui.verb = null; this.ui.item = null;
+    // E5 §6.2: a oscuras, el interceptor del apagón decide ANTES de andar (salidas, ascensor y directorio incluidos)
+    const A = this.apagon;
+    if (A && A.interceptar && target) {
+      let parar = false;
+      await this.runScript(async (api) => { parar = !!(await A.interceptar(api, verb, target.id, itemId || null)); },
+        { verb, target, item: itemId, label: `apagón:interceptar ${verb} → ${target.id}` });
+      if (parar) { if (token === this.actionToken) this.ui.sentence = null; return true; }
+      if (token !== this.actionToken) return false;
+    }
     const p = this.player;
     if (this.needsWalk(verb, target)) {
       const ap = this.approachPoint(target);
@@ -1081,9 +1116,12 @@ export class Game {
         const a = this.actors[this.camFollow];
         const sx = a.x - this.camX;
         if (sx < 110 || sx > 210) target = a.x - SCREEN_W / 2;
-        if (a.path.length) target = a.x - SCREEN_W / 2 + (a.dir === 'left' ? -30 : a.dir === 'right' ? 30 : 0);
+        // andando, la cámara mira 30 px por delante; corriendo (doble clic, api.walkTo con run), 60 (E5 §6.8d)
+        const lead = a.running ? 60 : 30;
+        if (a.path.length) target = a.x - SCREEN_W / 2 + (a.dir === 'left' ? -lead : a.dir === 'right' ? lead : 0);
       }
       target = Math.max(0, Math.min(W - SCREEN_W, target));
+      this.camGoal = target;                          // adonde va la cámara (las pruebas miran el adelanto, E5 §6.8d)
       this.camX += (target - this.camX) * Math.min(1, dt * 3.2);
       if (Math.abs(target - this.camX) < 0.3) this.camX = target;
       // ambient: one shared scheduler (engine/efectos.js) — never over a balloon, menu, notice, phone or close-up;
@@ -1577,14 +1615,26 @@ export class Game {
     }
     if (t) {
       if (this.ui.item) { this.execute(this.ui.verb, t, this.ui.item); return; }
+      // the click is registered (world coords, E5 §6.8a) also when a verb is chosen: the second click of a double click
+      // comes without a verb (the first one used it)
+      const verb0 = this.ui.verb;
+      const dbl = Mov.isDouble(this, x, y, t.id, ev);
       // double click / double tap on an exit while Bruno walks to it: he is there already (classic convention)
-      if (!this.ui.verb && t.def.exit && Mov.isDouble(this, x, y, t.id, ev) && Mov.skipToExit(this, t)) return;
-      this.execute(this.ui.verb || 'ir', t);
+      if (!verb0 && dbl && t.def.exit && Mov.skipToExit(this, t)) return;
+      // E5 §6.8c: double click on an object that is not an exit while Bruno walks to it: he RUNS and the action in
+      // course (Ir a, or the verb chosen with the first click) goes on
+      const p = this.player;
+      if (!verb0 && dbl && !t.def.exit && p && p.path.length && this.acting) { p.running = true; return; }
+      this.execute(verb0 || 'ir', t);
       return;
     }
-    // walk to point (a double click / double tap on the floor runs: engine/mover.js)
+    // walk to point (a double click / double tap on the floor runs: engine/mover.js); E5 §6.8b: at the edge band of a
+    // scrolling room, the double click runs on to the next stop (`parada: true`) or to the end of the floor
     this.cancelAction();
     this.ui.verb = null; this.ui.item = null;
-    this.walkActor(this.G.player, x + Math.round(this.camX), y, { run: Mov.isDouble(this, x, y, null, ev) });
+    const run = Mov.isDouble(this, x, y, null, ev);
+    const dest = run && Mov.paradaBorde(this, x, y);
+    if (dest) this.walkActor(this.G.player, dest[0], dest[1], { run: true });
+    else this.walkActor(this.G.player, x + Math.round(this.camX), y, { run });
   }
 }

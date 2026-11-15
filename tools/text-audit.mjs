@@ -27,7 +27,9 @@
 //     Eventos, «(*» = 0, «interstitial» ≤ 2, «pop-up» ≤ 8, «Emoji de fuego» ≤ 8, «PORTÁTIL:» = 0…), topes por personaje
 //     (Anselmo, Leoncio, Maripaz, «Me lo apunto» de Bruno) y opciones repetibles sin `once` (§7.6). Avisos; con --e2
 //     cuentan como fallo (test-all pasa `--plan --e2`).
-//   node tools/text-audit.mjs [--plan] [--e2] · node tools/text-audit.mjs --estatico [--plan] [--e2] [--sala=pecera] [--recuento] (solo el repaso estático; --recuento:
+//   · ENMIENDA E5 §8: coletilla «Y/Con/Sin/Ni + 1-3 palabras» ≤ 46 sin Eventos, «chaval» ≤ 12, «criatura» ≤ 6, la frente
+//     sellada ≤ 2 sin Eventos (cadenas) y la coletilla por personaje (≤ 10 % de lo oído). Avisos; con --e5, fallo.
+//   node tools/text-audit.mjs [--plan] [--e2] [--e5] · node tools/text-audit.mjs --estatico [--plan] [--e2] [--sala=pecera] [--recuento] (solo el repaso estático; --recuento:
 //     cuántas lleva cada tope «en todo el juego», también los que no se pasan, E2 y E3)
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -36,7 +38,7 @@ import { fileURLToPath } from 'node:url';
 import { createServer } from './serve.mjs';
 import { STEPS } from './walk-data.mjs';
 import { createRunner, FAREWELLS } from './walk-lib.mjs';
-import { estatico, topes, COMO_PERMITIDAS, topesE2Juego, recuentoE2Juego, topesE2, opcionesRepetibles } from './plan-rules.mjs';
+import { estatico, topes, COMO_PERMITIDAS, topesE2Juego, recuentoE2Juego, topesE2, opcionesRepetibles, topesE5Juego, recuentoE5Juego, coletillaPorPersonaje } from './plan-rules.mjs';
 import { pathToFileURL } from 'node:url';
 
 // ---------------------------------------------------------------- reglas del plan de comedia (tools/plan-rules.mjs)
@@ -66,14 +68,30 @@ const E2 = await (async () => {
   sec('[E2 §7.6] Opciones repetibles sin «once» (menú principal; fuera de la lista de repetibles)', ops);
   return { out, malos: juego.length + ops.length };
 })();
+// ENMIENDA E5 §8 (I1): topes nuevos (coletilla, «chaval», «criatura», la frente sellada). Avisos; con --e5 cuentan como
+// fallo (se activan cuando las salas hayan aplicado la poda de E5 §4).
+const E5 = (() => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const juego = ARGS.sala ? [] : topesE5Juego(root);
+  const out = [];
+  if (!ARGS.sala) {
+    out.push(`\n[E5 §8] Topes en todo el juego (cadenas de content/): ${juego.length}`);
+    juego.slice(0, ARGS.todo ? 9999 : 60).forEach(x => out.push('  · ' + x));
+    if (ARGS.recuento) out.push('\n[recuento E5] (n / tope):\n' + recuentoE5Juego(root).map(T => `  · ${T.n} / ${T.max ?? '—'}  ${T.txt}`).join('\n'));
+  }
+  return { out, malos: juego.length };
+})();
 if (ARGS.estatico) {
   console.log('Repaso estático del plan de comedia (avisos' + (ARGS.plan ? '; --plan: cuentan como fallo' : '') + ')');
   console.log(PLAN.out.join('\n'));
   console.log('\n--- ENMIENDA E2 (avisos' + (ARGS.e2 ? '; --e2: cuentan como fallo' : ', no cuentan hasta la integración: --e2') + ') ---');
   console.log(E2.out.join('\n'));
-  const e2Malos = ARGS.e2 ? E2.malos : 0;
+  console.log('\n--- ENMIENDA E5 (avisos' + (ARGS.e5 ? '; --e5: cuentan como fallo' : ', no cuentan hasta la poda de las salas: --e5') + ') ---');
+  console.log(E5.out.join('\n'));
+  const e2Malos = (ARGS.e2 ? E2.malos : 0) + (ARGS.e5 ? E5.malos : 0);
   console.log(ARGS.plan && PLAN.malos ? `\nPLAN: ${PLAN.malos} AVISOS` : '\nPLAN: ' + (PLAN.malos ? `${PLAN.malos} avisos (no cuentan sin --plan)` : 'OK'));
   console.log(`E2: ${E2.malos ? `${E2.malos} avisos${ARGS.e2 ? '' : ' (no cuentan sin --e2)'}` : 'OK'}`);
+  console.log(`E5: ${E5.malos ? `${E5.malos} avisos${ARGS.e5 ? '' : ' (no cuentan sin --e5)'}` : 'OK'}`);
   process.exit((ARGS.plan && PLAN.malos) || e2Malos ? 1 : 0);
 }
 
@@ -250,12 +268,16 @@ const e2Topes = topesE2(texts.map(t => ({ text: t, ...lines.get(t) })));
 out.push('\n--- ENMIENDA E2 (avisos' + (ARGS.e2 ? '; --e2: cuentan como fallo' : ', no cuentan hasta la integración: --e2') + ') ---');
 out.push(...E2.out);
 sec('[E2 §2.5, §4.1, §7.2] Topes por personaje (líneas distintas oídas)', e2Topes);
+const e5Col = coletillaPorPersonaje(texts.map(t => ({ text: t, ...lines.get(t) })));
+out.push('\n--- ENMIENDA E5 (avisos' + (ARGS.e5 ? '; --e5: cuentan como fallo' : ', no cuentan hasta la poda de las salas: --e5') + ') ---');
+out.push(...E5.out);
+sec('[E5 §8] Coletilla por personaje (≥ 20 líneas oídas, ≤ 10 %)', e5Col);
 console.log(out.join('\n'));
 fs.mkdirSync(path.join(here, 'shots'), { recursive: true });
 fs.writeFileSync(path.join(here, 'shots', 'textos.json'), JSON.stringify(texts.map(t => ({ ...lines.get(t), text: t })), null, 1));
 if (consoleErrors.length) console.log('\nErrores de consola:\n  ' + [...new Set(consoleErrors)].join('\n  '));
 const bad = long.length + tall.length + punct.length + names.length + ocl.length + consoleErrors.length + new Set(prohibidas).size + cortos.length;
-const planBad = (ARGS.plan ? PLAN.malos + planTopes.length : 0) + (ARGS.e2 ? E2.malos + e2Topes.length : 0);
+const planBad = (ARGS.plan ? PLAN.malos + planTopes.length : 0) + (ARGS.e2 ? E2.malos + e2Topes.length : 0) + (ARGS.e5 ? E5.malos + e5Col.length : 0);
 const e2Avisos = E2.malos + e2Topes.length;
 console.log(bad + planBad ? `\nTEXTOS: ${bad + planBad} AVISOS` : `\nTEXTOS: OK${PLAN.malos + planTopes.length ? ` (plan de comedia: ${PLAN.malos + planTopes.length} avisos pendientes de los paquetes de sala)` : ''}${e2Avisos && !ARGS.e2 ? ` (E2: ${e2Avisos} avisos)` : ''}`);
 await browser.close();

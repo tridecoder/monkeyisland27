@@ -103,6 +103,7 @@ function slotPickerClick(game, x, y, kind) {
   game.audio.sfx('select');
   if (it.act === 'back') { if (game.menu) game.menu.page = 'main'; else game.titleSub = null; return; }
   if (kind === 'save') {
+    if (game.noSave) { game.menu.page = 'main'; return; }               // por si acaso: E5 §6.6
     game.save(it.slot); game.menu.page = 'main';
     // optional gag (game.saveMessages, game.saveFirstLine): messages shown one after another
     const seq = (game.G.saveMessages || []).map((t, i) => ({ text: t, at: game.realTime + i * 450 }));
@@ -129,7 +130,8 @@ function menuItems(game) {
   const items = [
     { label: 'Continuar', act: 'resume' },
     { label: 'Ver objetos de la sala (H)', act: 'hotspots', enabled: !!game.room && game.mode === 'play' },
-    { label: 'Guardar partida', act: 'save', enabled: !game.busy },
+    // E5 §6.6: con api.sinGuardar(true) (atasco, ventana a oscuras) «Guardar» sale en gris
+    { label: 'Guardar partida', act: 'save', enabled: !game.busy && !game.noSave },
     { label: 'Cargar partida', act: 'load', enabled: !game.busy },
     ...(game.G.help ? [{ label: 'Cómo se juega', act: 'help' }] : []),
     { label: `Velocidad del texto: ${sp}`, act: 'speed' },

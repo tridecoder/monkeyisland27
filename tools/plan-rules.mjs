@@ -225,3 +225,66 @@ export function opcionesRepetibles(content) {
   }
   return out;
 }
+
+// ======================================================================================== ENMIENDA E5 §8 (I1)
+// Topes nuevos. text-audit los enseña siempre como AVISO; con `--e5` cuentan como fallo (se activan cuando los paquetes
+// de sala PA-PE hayan aplicado la poda de §4; hasta entonces el texto de hoy los pasa a propósito). Mismas cadenas que
+// los de E2 (literales de content/ sin comentarios, sin art/, flags.js ni plantilla, y sin los bloques `@solo-pantalla`
+// de los datos del titulador de E4).
+/** La coletilla «frase + Y/Con/Sin/Ni + 1-3 palabras» (crítica 4 §4.5). Sin `g`: una cadena cuenta una vez. Las
+ *  preguntas y las frases que no terminan («...») no cuentan. Hoy 160 sin Eventos → tras E5, 40. */
+export const COLETILLA_RE =
+  /(?:[.!?…][»"”)]?\s+|^)(?:\.\.\.|…)?¡?(?:Y|Con|Sin|Ni)\s+[^\s.!?…¿]+(?:\s+[^\s.!?…¿]+){0,2}(?:\.|!+)[»"”)]?\s*$/u;
+/** `porCadena: true`: cada cadena cuenta 0 o 1 (la regex no lleva `g`). `max: null`: solo recuento (sin tope). */
+export const TOPES_E5_JUEGO = [
+  { re: COLETILLA_RE, porCadena: true, max: 46, fuera: FUERA_EVENTOS, txt: 'coletilla «Y/Con/Sin/Ni + 1-3 palabras» (E5 §8)' },   // 160 → 40
+  { re: /\bchaval\b/gi, max: 12, txt: '«chaval» en todo el juego (E5 §8)' },                                       // 22 → 11
+  { re: /\bcriatura\b/gi, max: 6, txt: '«criatura» en todo el juego (E5 §8)' },                                   // 13 → 6
+  { re: /RECHAZADO[»,]? en la frente/g, max: 2, fuera: FUERA_EVENTOS, txt: 'la frente sellada (E5 §8)' },          // 4 → 2
+  // vigilar, sin tope (§8 «Además»): la columna suma una «de la casa» a propósito; «mis sistemas» de Anselmo (las oídas
+  // tienen tope 5 en TOPES_E2; si pasa, «Ese enchufe está en mis sistemas.» → «Ese enchufe es de Desarrollo.»)
+  { re: /\bde (?:la|esta) casa\b/gi, max: null, txt: '«de la/esta casa» (E5 §8, solo recuento)' },
+  { re: /\bmis sistemas\b/gi, max: null, txt: '«mis sistemas» en cadenas (E5 §8, solo recuento; las oídas, TOPES_E2)' },
+];
+function cuentaJuego(root, lista) {
+  const cuenta = lista.map(T => ({ ...T, hits: [] }));
+  for (const f of walk(path.join(root, 'content'))) {
+    const rel = path.relative(root, f);
+    if (/[\\/]art[\\/]/.test(rel) || /flags\.js$/.test(rel) || /_plantilla/.test(rel)) continue;
+    for (const t of literales(sinSoloPantalla(rel, fs.readFileSync(f, 'utf8')))) {
+      if (!esTexto(t)) continue;
+      for (const T of cuenta) {
+        if (T.fuera && T.fuera.test(rel)) continue;
+        const n = T.porCadena ? (T.re.test(t) ? 1 : 0) : (t.match(T.re) || []).length;
+        for (let i = 0; i < n; i++) T.hits.push(`${rel}: ${t}`);
+      }
+    }
+  }
+  return cuenta;
+}
+/** Topes de E5 «en todo el juego» que se pasan (los de solo recuento no fallan nunca). */
+export function topesE5Juego(root) {
+  return cuentaJuego(root, TOPES_E5_JUEGO).filter(T => T.max != null && T.hits.length > T.max)
+    .map(T => `${T.txt}: ${T.hits.length} (tope ${T.max}):\n      ${[...new Set(T.hits)].join('\n      ')}`);
+}
+/** Recuento de cada tope de E5, pase o no (text-audit --estatico --recuento). */
+export const recuentoE5Juego = (root) => cuentaJuego(root, TOPES_E5_JUEGO).map(T => ({ txt: T.txt, n: T.hits.length, max: T.max }));
+
+/** E5 §8 · la coletilla por personaje (guionista §7) sobre las líneas OÍDAS [{ who, text, room }]: quien diga ≥ 20 líneas
+ *  distintas no puede pasar del 10 % con coletilla. Sin `lector_medio` ni Eventos. Tras E5, el más alto es Begoña (≈ 8 %). */
+export const COLETILLA_PERSONAJE = { minimo: 20, max: 0.10 };
+export function coletillaPorPersonaje(lines) {
+  const por = new Map();
+  for (const l of lines) {
+    if (!l.who || l.who === 'lector_medio' || l.room === 'eventos' || l.who === 'aviso') continue;
+    const p = por.get(l.who) || { n: 0, hits: [] };
+    p.n++; if (COLETILLA_RE.test(l.text)) p.hits.push(l.text);
+    por.set(l.who, p);
+  }
+  const out = [];
+  for (const [who, p] of por) {
+    if (p.n < COLETILLA_PERSONAJE.minimo || p.hits.length / p.n <= COLETILLA_PERSONAJE.max) continue;
+    out.push(`coletilla de ${who}: ${p.hits.length} de ${p.n} (${Math.round(100 * p.hits.length / p.n)} %, tope ${COLETILLA_PERSONAJE.max * 100} %):\n      ${p.hits.join('\n      ')}`);
+  }
+  return out;
+}

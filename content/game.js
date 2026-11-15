@@ -21,10 +21,10 @@ const DEFAULTS = {
   abrir: ['No se abre. Lo apunto como «acceso restringido». Suena a ascenso.', 'Cerrado. Hay una pegatina: «No forzar». Me ha convencido.', 'No tiene por dónde. Lo ha montado alguien que no quería visitas.', 'Si lo abro, me hacen responsable de lo que salga.', 'No se abre. Lo dejo así: está en su derecho.'],
   cerrar: ['Ya está cerrado. Hasta en eso llego tarde.', 'Cerrarlo no cierra nada. Bueno, cerraría el tema, que aquí es lo difícil.', 'No hay nada que cerrar. Lo apunto en «tareas completadas».', 'Lo cierro. No pasa nada. Igual que en las reuniones.', '¿Cerrar algo yo? ¿Con qué cargo?'],
   empujar: ['Empujo con las dos manos. Nada. Sigo un poco, por si alguien mira.', 'No pienso empujar eso. Saldría en el próximo comité. En diapositiva.', 'Ni se inmuta. Tiene más estabilidad laboral que yo.', 'Empujo. Nada. Es como empujar la prima de riesgo con la mirada.', 'No, que luego se cae y el becario es el último que lo tocó.'],
-  tirar: ['Tiro. Nada. Tiene más resistencia que el papel.', 'Aquí el que tira de algo se convierte en el responsable.', 'No pienso tirar de eso. En esta empresa ya tira siempre el becario.', 'Tiro. No sale. Le pido perdón. Me parece lo correcto.', 'Mejor no. Todo lo que tiene cable acaba en Sistemas. Y yo detrás.'],
+  tirar: ['Tiro. Nada. Tiene más resistencia que el papel.', 'Aquí el que tira de algo se convierte en el responsable.', 'No pienso tirar de eso. En esta empresa ya tira siempre el becario.', 'Tiro. No sale. Le pido perdón. Me parece lo correcto.', 'Mejor no. Todo lo que tiene cable acaba en Sistemas.'],
 };
 // §8.6: «Combinar 10 cosas seguidas sin éxito»
-const COMBO_GAG = '¿Estás probando todo con todo? Así trabajan en Administración. Y no funciona.';
+const COMBO_GAG = '¿Estás probando todo con todo? Así trabajan en Administración.';
 const rotation = {};
 function rotating(verb) {
   return async (api) => {

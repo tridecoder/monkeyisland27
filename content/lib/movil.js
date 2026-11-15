@@ -10,6 +10,8 @@
 // 18:30 → 21:00; los relojes del edificio siguen parados en las 20:59.
 // Seguro: el móvil no se guarda, se retira al acabar el guion (aunque falle) y al cargar; en modo rápido, todo es instantáneo.
 
+import { decir } from '../../engine/efectos.js';
+
 /** Los «RV:» de Tadeo (adenda §2.2; plan §5.16): condición, asunto (lo que dice Tadeo) y el comentario de Bruno ('' = sin
  *  comentario). ENMIENDA E2 §7.4: ya NO son avisos; llegan solos al correo al entrar en una sala con su condición
  *  (content/game.js cuenta los llegados en `tadeo_rv_n`). E2 §7.2: RV1 y RV2 sin comentario de Bruno. */
@@ -65,6 +67,27 @@ async function leerCorreo(api, c) {
   marcar(api, c.bit);
   for (const l of c.cuerpo) await api.phone.read(c.who, l, c.who ? {} : { color: COLOR_SISTEMA });
   if (c.bruno) await api.say(c.bruno);
+  if (c.who === 'tadeo_adjunto') await avisoAurora(api);
+}
+
+/** ENMIENDA E5 §2.8 · N6: al leer un «RV:» de Tadeo en la Redacción de papel, Aurora suelta en ese momento su par de
+ *  ambiente (`aurora_tadeo` de content/rooms/catacumba.js), con el MISMO contador (`ambient:catacumba.aurora_tadeo`):
+ *  si ya lo dijo, no lo repite; si lo dice aquí, el ambiente ya no lo dirá. Las líneas y la condición son de la sala. */
+export const AURORA_RV = { sala: 'catacumba', ambiente: 'aurora_tadeo' };
+async function avisoAurora(api) {
+  const g = api.game;
+  if (api.room !== AURORA_RV.sala || !g.room || !g.actors.aurora_galerada) return;
+  const am = (g.room.ambient || []).find(a => a.def && a.def.id === AURORA_RV.ambiente);
+  if (!am || am.running) return;
+  const key = `ambient:${AURORA_RV.sala}.${AURORA_RV.ambiente}`;
+  if ((g.state.flags[key] || 0) >= 1) return;
+  let ok = true;
+  try { ok = !am.def.if || api.cond(am.def.if); } catch (e) { ok = false; }
+  const list = am.def.discusiones || (am.def.lineas ? [am.def.lineas] : null);
+  if (!ok || !list || !list.length) return;
+  g.state.flags[key] = 1;
+  const lines = typeof list[0] === 'function' ? list[0](api) : list[0];
+  await decir(api, lines, am.def.voces || {});
 }
 
 async function correo(api) {
