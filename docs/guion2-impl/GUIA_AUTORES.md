@@ -359,7 +359,7 @@ Un fichero de datos nuevo con textos de pantalla se declara en `SOLO_PANTALLA` (
 - El plano mide 304 × 102 (el motor limita el ancho a 304) y lleva una fila de tres casillas tocables; el contador va a
   escala 2 (con 576.000, 62 px) y la etiqueta debajo. El menú principal es compacto (5 filas al tacto, sin scroll) y cada
   submenú se abre enseñando la pieza elegida (`choose({ inicio })`). «¡Publicar!» dice cuántas quedan.
-- Los globos van 1 px más abajo bajo un plano con rótulo (`hudTop`: +14) para no tapar el rótulo.
+- Los globos van 2 px más abajo bajo un plano con rótulo (`hudTop`: +15, antes +13) para no tapar el rótulo.
 - La demo del paso 34 se rotula «TITULADOR · PRUEBA» (es la prueba A/B de Yoli) y no guarda nada.
 - Versiones tachadas del paso 40 si el jugador no ha publicado: la demo y los secretos por debajo del ganador, de menos a
   más (las cuatro últimas). La hoja de lo más leído mide 300 px de ancho (no 220) para que la letra sea la del juego.

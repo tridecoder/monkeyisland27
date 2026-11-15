@@ -477,7 +477,7 @@ function resultado(gan, versiones, bruno, url) {
       const cx = x + w - 30, cyy = cy + 6;
       for (const [dx, dh] of [[0, 4], [4, 6], [8, 4]]) rect(g, cx + dx, cyy + 6 - dh, 3, dh, PAL.gold[4]);
       rect(g, cx, cyy + 6, 11, 3, PAL.gold[3]); rect(g, cx + 5, cyy - 1, 1, 1, PAL.red[4]);
-      drawText(g, miles(gan.u), x + w - 12, cy + ch - 13, '#1a7a2a', { align: 'right', bold: true, outline: null });
+      drawText(g, miles(gan.u), x + w - 12, cy + 16, '#1a7a2a', { align: 'right', bold: true, outline: null });
     }
     // la URL, en gris, con «opa» en rojo
     const uy = y + h - 9;
@@ -504,7 +504,7 @@ async function opaGanadora(api) {
     await api.sayAs(Y, '¡Bruno! Ya hay ganador. A las 00:01 le meto tu opa dentro.');
     const hist = (api.flag('pecera_disc_hist') || []).slice(-4).map(([a, s, g]) => combinacion([a, s, g])).filter(c => c.k !== k);
     const versiones = (hist.length ? hist : versionesDefecto()).slice(-4);
-    await api.detalle({ titulo: 'PRUEBA · RESULTADO', w: 296, h: 110, x: 12, y: 4, color: '#FF78B8',
+    await api.detalle({ titulo: 'PRUEBA · RESULTADO', w: 296, h: 106, x: 12, y: 2, color: '#FF78B8',
       draw: resultado(combinacion(k), versiones, combinacion(BRUNO), urlBruno()) }, async (api) => {
       await api.wait(1500);
       await api.say('¿Y dónde se ve la opa?');
