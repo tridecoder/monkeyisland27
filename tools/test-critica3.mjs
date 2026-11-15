@@ -113,6 +113,18 @@ async function atajoSemaforoSenal() {
   must(st.room === 'cpd' && st.player.x === entCpd[0] && st.player.y === entCpd[1], `Sistemas: sala ${st.room} en ${st.player.x},${st.player.y} (entrada ${entCpd})`);
   must(await logCount(D.PRIMER_VIAJE) === 1 && D.PRIMER_VIAJE.length <= 80, 'primer viaje: falta la línea de Bruno');
   ok(`§9.8: Acto II: ofrece Despachos, Sala Amazonas, Sistemas y Vestíbulo (no el Vending, sin pisar); a Sistemas por su entrada; «${D.PRIMER_VIAJE}»`);
+  // ENMIENDA E5 §2.7 (petición de P0): el ascensor de Sistemas → Planta 1 abre el submenú de atajos (Redacción primero);
+  // Escape = la sala de llegada, el rellano de siempre (la entrada `ascensor` de la Redacción)
+  await G(() => __game.doVerb('usar', 'ascensor_cpd'));
+  await chooseByText('Planta 1'); await wait(350);
+  const sub = await G(() => __game.currentDialogOptions());
+  must(Array.isArray(sub) && sub[0] === 'Redacción' && sub.some(t => /Despachos/.test(t)), `submenú de atajos: ${JSON.stringify(sub)}`);
+  await page.keyboard.press('Escape'); await idle();
+  st = await state();
+  const entPec = await G(() => { const e = __game.game.content.rooms.pecera.entries.ascensor; return Array.isArray(e) ? e : [e.x, e.y]; });
+  must(st.room === 'pecera' && !st.dialog && st.player.x === entPec[0] && st.player.y === entPec[1], `Escape del submenú: sala ${st.room} en ${st.player.x},${st.player.y} (rellano ${entPec})`);
+  ok('E5 §2.7: ascensor → Planta 1 → submenú (Redacción, Despachos…); Escape → el rellano de la Redacción');
+  await goto('cpd');
   // 3. segunda vez, sin línea; la sala de destino corre su onEnter (la Sala Amazonas)
   await goto('pecera'); await clearLog();
   o = await abrirDirectorio();
@@ -251,6 +263,7 @@ async function atajoSemaforoSenal() {
   await idle();
   vs = await variantes(3600);
   must(vs.includes('chaqueta') && vs.includes('tamb1j') && vs.includes('tamb2j'), 'ganado D4 no se tambalea: ' + JSON.stringify(vs));
+  must(vs.every(v => ['chaqueta', 'tamb1j', 'tamb2j', 'tamb3j'].includes(v)), 'fotogramas del tambaleo fuera de tamb1/2/3 (E5 §2.6): ' + JSON.stringify(vs));
   // captura en pleno tambaleo
   await G(() => __game.skipText(false));
   await page.mouse.move(5, 5);
@@ -358,7 +371,7 @@ try {
   [, L2, L3] = await tresLlamadas('pajarera');   // (en la Sala, sala_abierta lanza el clímax)
   const d15 = await DONDE('rep_15'), d16 = await DONDE('rep_16');
   must(L2.includes('A: ' + d16[0]) && L3.includes('B: ' + d16[1]) && L3.includes('B: ' + d15[1]), `N1: D4 sin R15 ni R16: ${JSON.stringify(L3)}`);
-  ok('N1: D4 (Íñigo): faltan R16 y R15 → Evaristo y Rubén, con sitio y objeto');
+  ok('N1: D4 (Íñigo): faltan R16 y R15 → Evaristo y Zacarías, con sitio y objeto');
 
   // ------------------------------------------------------------ N5 salida de los Despachos
   const nombre = await G(() => (__game.game.content.rooms.pajarera.objects || []).find(o => o.id === 'pajarera_a_pecera').name);
@@ -396,7 +409,7 @@ try {
   ok(`N3: el fax enmarcado es suyo en ${fax.total} de ${fax.total} puntos (con Aurora en la sala); su centro da R06`);
 
   // ------------------------------------------------------------ N6 margen del ambiente tras cerrar una conversación
-  await setFlags({ tadeo_rv_n: 1, 'ambient:catacumba.aurora_tadeo': 0 });
+  await setFlags({ tadeo_rv_n: 1, movil_leidos: 1, 'ambient:catacumba.aurora_tadeo': 0 });   // E5 N6: con el RV1 ya leído (rvLeido)
   await G(() => __game.skipText(false));
   G(() => { __game.game.runScript(api => api.dialog({ id: 'test_n6', actor: 'aurora_galerada', nodes: { a: { options: [{ text: 'Adiós.', exit: true, silent: true }] } } }), { label: 'test' }); });
   await until(() => !!__game.currentDialogOptions());

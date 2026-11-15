@@ -5,6 +5,8 @@
 // ENMIENDA E2 (P3): §5.2 (paso 28: escuchar a Evaristo hasta el final, dos aciertos, `evaristo_escuchado` y `rep_16`;
 // Begoña le manda a Controlling al cerrar el paso 27), §7.4 (paso 27 y 35), §7.5 fase B (7) (tres sellos, una línea),
 // §7.6 (`once`), §8 (la única fecha de la sala: «Nadie lo hacía desde 2009.»).
+// ENMIENDA E5 (PE): C57, C82, C83, R2. Por decisión del dueño, fuera la opción de Begoña «¿Usted ha sido feliz alguna
+// vez?» y su respuesta (F-1 de Felicidad): no la pedía ningún flag, pista ni paso.
 import { sello } from '../escenas/planta_noble.js';
 
 const BEGONA = 'begona_triplicado', EV = 'evaristo_salvedad';
@@ -52,12 +54,6 @@ export default {
           { text: 'Vengo a ver la pared. Dicen que es un museo de facturas.', once: true,
             reply: ['Mi favorita: «Cena con el ministro». Motivo: «el ministro pagó».',
               'Algún día enmarcaré una buena. Para que se vea la diferencia.'] },
-          { text: '¿Usted ha sido feliz alguna vez?', if: 'nota_gasto_presentada', once: true,
-            do: async (api) => {
-              await sayBe(api, 'Rellene el F-1 de Felicidad. Por triplicado.');
-              await api.say('¿Y cuándo me contesta?');
-              await sayBe(api, 'En marzo. Con los demás F-1. Hay uno de 1987.');
-            } },
           { text: 'Necesito recortar ocho líneas.', if: ['has:pieza_opa', '!pieza_recortada'],
             do: async (api) => { await recorte(api); return 'exit'; } },
           // adenda 4.7 y 8bis (antes de la despedida; se quedan)
@@ -84,7 +80,7 @@ export default {
               await sayBe(api, 'Te lo he avisado.');
               sello(api);
               api.setFlag('bruno_sellado_frente', true);
-              await api.say('RECHAZADO, en la frente. Mi primer documento oficial. Con sello.');
+              await api.say('RECHAZADO, en la frente. Mi primer documento oficial.');   // E5 C57
             } },
           { text: 'Representación. Me represento a mí mismo.', once: true,
             reply: 'Eso es autoestima. Y no desgrava.' },
@@ -103,7 +99,7 @@ export default {
         options: [
           { text: 'Aquí tiene. Un sobre de azúcar. Es casi un ticket.', if: 'has:sobre_azucar', goto: 'B_INSULTO' },
           { text: 'Mi palabra de honor.', reply: 'La palabra de honor dejó de ser moneda de curso legal con la peseta.' },
-          { text: 'Una foto mental. ¿Se la describo?', reply: 'Las fotos mentales solo se aceptan con NIF. Y por triplicado.' },
+          { text: 'Una foto mental. ¿Se la describo?', reply: 'Las fotos mentales solo se aceptan con NIF.' },   // E5 C82
           { text: '¿Usted cree en los tickets, Begoña? Pero de verdad.', reply: 'Yo no creo en los tickets, niño. Los tickets creen en mí.' },
           { text: 'Lo busco y vuelvo.', if: '!has:sobre_azucar', exit: true, reply: 'Aquí estaré. A las 19:07.' },
         ],
@@ -111,8 +107,7 @@ export default {
       B_INSULTO: {
         onEnter: async (api) => {
           if (api.once('administracion_b_insulto')) {
-            await sayBe(api, ['Un sobre de azúcar. Caducado en 2021. Del bolsillo de Ramírez, por el olor.',
-              'Cuarenta años en esta ventanilla. He visto un ticket en sánscrito.']);
+            await sayBe(api, 'Un sobre de azúcar. Caducado en 2021. Del bolsillo de Ramírez, por el olor.');   // E5 R2
           } else await sayBe(api, 'Esto... esto sigue siendo un insulto a la contabilidad.');
         },
         options: [
@@ -172,7 +167,7 @@ export default {
       E0: {
         options: [
           { text: '¿Para qué me ha llamado?', if: ['acto_2_iniciado', '!evaristo_escuchado'], goto: 'E_CORREO' },
-          { text: '¿Por qué llama tanto?', once: true, reply: 'Porque por escrito se pierden matices. Y en persona, comas.' },
+          { text: '¿Por qué llama tanto?', once: true, reply: 'Por escrito se pierden matices. En persona, comas. Por teléfono, nada.' },   // E5 C83
           { text: '¿Qué hay en esas carpetas?', once: true,
             reply: ['Todos los contratos de la casa. Leídos. Sobre todo la letra pequeña.', 'La grande la lee cualquiera.'] },
           { text: '¿Ha visto mi contrato?', once: true,

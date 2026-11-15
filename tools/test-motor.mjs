@@ -56,7 +56,7 @@ try {
 
   // ---------------------------------------------------------------- poses
   const poses = await G(() => __game.state().poses);
-  ok(poses.paco_ticket === 'sentado' && poses.celestino === 'tras_mesa', `pose por colocación: Paco sentado, Celestino tras la mesa (${JSON.stringify(poses)})`);
+  ok(poses.paco_ticket === 'sentado' && poses.celestino === 'tras_mesa', `pose por colocación: Eutimio sentado, Celestino tras la mesa (${JSON.stringify(poses)})`);
   const boxes = await G(() => { const g = __game.game, a = g.actors.paco_ticket; const b1 = g.actorBox(a); const p = a.pose; a.pose = 'de_pie'; const b0 = g.actorBox(a); a.pose = p; return { b0, b1 }; });
   ok(boxes.b1.y > boxes.b0.y + 4, `sentado, la cabeza baja (caja ${Math.round(boxes.b0.y)} → ${Math.round(boxes.b1.y)})`);
   await G(() => __game.game.runScript(async api => { api.pose('paco_ticket', 'de_pie'); }));

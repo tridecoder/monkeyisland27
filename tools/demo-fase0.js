@@ -103,7 +103,7 @@ export const logic = {
   ],
   duels: {
     demo: {
-      actor: 'paco_ticket', from: 'Paco Ticket', subject: 'Demo del duelo (no es del guion)', assigned: 'B. Pellizco',
+      actor: 'paco_ticket', from: 'Eutimio Ticket', subject: 'Demo del duelo (no es del guion)', assigned: 'B. Pellizco',
       deck: ['R05', 'R03', 'R13'], winScore: 3, maxMisses: 3, cc1: 'Sistemas',
       attackText: { R05: 'Esto, entre tú y yo. Que no salga de la rejilla.' },
       intro: ['Te abro un ticket por escrito.'], hurt: ['Estado: tocado.'], taunt: ['Estado: no procede.'],
@@ -151,7 +151,7 @@ export const logic = {
     },
     demo_tarjeta: async (api) => {
       await api.tarjeta({ titulo: 'FE DE ERRATAS', minMs: 6000, lineas: ['En la edición de ayer, donde decía «inteligencia artificial»',
-        'debía decir «Rubén».', 'Donde decía «Por Bruno Pellejo»', 'debía decir «Por Bruno Pellejo».', '', 'Lamentamos el acierto.'] });
+        'debía decir «Zacarías».', 'Donde decía «Por Bruno Pellejo»', 'debía decir «Por Bruno Pellejo».', '', 'Lamentamos el acierto.'] });
     },
   },
 };

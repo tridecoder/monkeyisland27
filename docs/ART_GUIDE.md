@@ -82,7 +82,7 @@ export default {
 - Barriers that run front-to-back (the turnstile line) must be split into `layer: 'sorted'` pieces with their own `zy`
   so people in front of / behind each piece are occluded correctly (see `torno`, `torno_bancada` in the vestíbulo).
 - Talkable NPCs must stay readable: head, shoulders and torso visible (≥ 80 %, checked by `tools/play-mouse.mjs`):
-  keep counters/desks low in front of them, and give dark-clad NPCs a lighter backdrop (Paco's partition in the CPD).
+  keep counters/desks low in front of them, and give dark-clad NPCs a lighter backdrop (Eutimio's partition in the CPD).
 
 ## 1. Canvas & coordinates
 - Screen 320×200. The room viewport is **320×144** (y 0–143). Rooms can be wider (`width`), the camera scrolls.

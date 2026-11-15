@@ -8,6 +8,8 @@
 // (el faldón de Comercial por fax, paso 35, y Aurora despegando el adhesivo `bruno_con_banner`), §5.7 (línea de 7.3a),
 // §6 L19-L21, §7.3 (Aurora tras el café; 7.3a sin Íñigo), §7.4 (pasos 31 y 35), §7.5 fase B (6) (D2 con un ataque
 // menos), §7.6 (opciones `once`), §8 (sus «desde»).
+// ENMIENDA E5 (PD): D01 (Aurora: «el punto que nadie toca»), §2.3 la pegatina del fax (`vio_pegatina_fax`), §2.8 N6
+// (`aurora_tadeo` con `rvLeido`), C32-C39, C85-C88 y M02-M08 (sin coletillas, sin «criatura» ni «chaval» en ellas).
 // El arte y la geometría están en ./art/catacumba.art.js.
 //
 // Regla de Teodoro: NUNCA habla. Sus líneas salen del fax, EN MAYÚSCULAS (telegrama), con su color y el prefijo
@@ -65,6 +67,13 @@ async function palmada(api) {
   await api.say('¡Au! Una palmada en la mano. Sin papel, Teodoro se expresa así.');
 }
 const aurora = (api, lines) => api.sayAs(AUR, lines);
+/** E5 §2.8 · N6: ¿ha leído Bruno algún «RV:» de Tadeo ya llegado? (bits 0-2 de `movil_leidos`, content/lib/movil.js) */
+function rvLeido(api) {
+  const n = Math.min(Number(api.flag('tadeo_rv_n') || 0), 3);
+  const bits = Number(api.flag('movil_leidos') || 0);
+  for (let i = 0; i < n; i++) if ((bits >> i) & 1) return true;
+  return false;
+}
 /** Golpecito con el boli al cartel (Aurora antes del café). Siempre va con una línea de Bruno. */
 async function golpecito(api, n = 1) {
   for (let i = 0; i < n; i++) { api.sfx('click'); await api.anim(AUR, 'reach', 260); await api.wait(120); }
@@ -148,7 +157,7 @@ async function escenaActo3a(api) {
     await api.anim(AUR, 'reach', 450); await api.wait(500); await api.anim(AUR, 'reach', 450);
     await aurora(api, 'Ha hablado. En voz alta. Delante de mí.');
     // E2 §7.3 / fase B (3): fuera la visita de Íñigo; lo que venía a decir lo dice el fax
-    await fax(api, ['Chaval. La Reunión de Dirección apaga la rotativa a las nueve.', 'Si no hay rotativa, no hay firma.']);
+    await fax(api, ['La Reunión de Dirección apaga la rotativa a las nueve.', 'Si no hay rotativa, no hay firma.']);   // E5 M08
     await aurora(api, 'Y con buena letra, criatura.');
     await api.narrate('ACTO III: CIERRE', { ms: 2600 });
   });
@@ -283,7 +292,7 @@ const UNA_FUENTE = ['Con una fuente se hace un rumor; con dos, una noticia.', 'C
 
 /** E2 §5.3 · paso 32. (Teodoro y Aurora no se hablan desde 1996: que ella toque SU fax y él lo permita es el gag.) */
 async function comaDeEvaristo(api) {
-  await aurora(api, ['¿Evaristo? ¿El de las comas? Siéntate, criatura. Bueno, no hay silla.',
+  await aurora(api, ['¿Evaristo? ¿El de las comas? Siéntate. Bueno, no hay silla.',
     'Punto de miles y coma decimal. Si su cláusula lo dice, manda la cláusula.',
     'Son cuarenta y ocho euros. Y su corbata, lo único bien puntuado de la casa.']);
   // (Aurora se levanta, va al fax, escribe una línea a mano y pulsa la tecla 3. Teodoro la mira. No la para.)
@@ -308,14 +317,14 @@ async function comaDeEvaristo(api) {
   await fax(api, 'De Controlling. Ni lo mido. Lo respeto.');
   await api.say(['Su correo, impreso. «Asunto: Una coma. Envío: en el momento oportuno».',
     '¿Y cuándo es el momento oportuno?']);
-  await aurora(api, 'Cuando alguien diga que una coma es un detalle sin importancia, criatura.');
+  await aurora(api, 'Cuando alguien diga que una coma es un detalle sin importancia.');
   await api.walkActor(AUR, ax, ay);
   api.faceActor(AUR, adir || 'right');
 }
 
 /** E2 §4.2.6 · Aurora despega el adhesivo de Maripaz («SU ANUNCIO AQUÍ»), la 1.ª vez que Bruno le habla con él. */
 async function quitarAdhesivo(api) {
-  await aurora(api, 'Llevas un anuncio en la espalda, criatura. En esta planta, no.');
+  await aurora(api, 'Llevas un anuncio en la espalda. En esta planta, no.');
   const b = api.actorPos(api.player);
   const [ax, ay, adir] = art.layout.aurora_galerada.at;
   await api.face('left');                             // Bruno se da la vuelta: el adhesivo, hacia ella
@@ -346,7 +355,7 @@ const dialogoAurora = {
             await api.anim(AUR, 'reach', 500); api.sfx('click'); await api.anim(AUR, 'reach', 300);
             await api.say('Me ha corregido sin hablar. Es buenísima.');
           } },
-        { text: 'Ya vuelvo. Con café.', exit: true,
+        { text: 'Ya vuelvo con café.', exit: true,   // E5 C39
           do: async (api) => { await golpecito(api); await api.say('Un toc. Uno solo. Suena a «eso espero».'); } },
       ],
     },
@@ -361,7 +370,7 @@ const dialogoAurora = {
         api.give('ficha_pagina_7');
         api.sfx('pickup');
         await aurora(api, ['La página está vendida a unos colchones. Eso se decide en la Sala Amazonas.',
-          'Y una reunión solo se acaba cuando alguien pregunta por los siguientes pasos.']);
+          'Y una reunión solo se acaba cuando alguien pregunta por el punto que nadie toca.']);
         api.setFlag('aurora_conto_pasos', true);
         api.setFlag('aurora_hablo_fax', true);
         api.setFlag('acto_2_iniciado', true);
@@ -471,7 +480,7 @@ async function hablarAurora(api) {
 /** Dar fotocopia_nota_direccion o mensaje_fp a Aurora (paso 30). */
 async function darFuente(api) {
   if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc al cartel. Antes del café, ni fuentes ni nada.'); return; }
-  if (api.flag('casilla_fuente')) { await aurora(api, 'Ya está citada, criatura. Dos veces sería abusar de su confianza.'); return; }
+  if (api.flag('casilla_fuente')) { await aurora(api, 'Ya está citada. Dos veces sería abusar de su confianza.'); return; }
   if (dosFuentes(api)) { await api.dialog('aurora', 'A_FUENTE'); return; }
   await aurora(api, UNA_FUENTE);
 }
@@ -525,7 +534,7 @@ async function hablarTeodoro(api) {
     api.setFlag('catacumba_desmentido_c', true);
     await fax(api, ['No estoy empadronado.', 'Estoy maquetado.']);
   }
-  await fax(api, '¿Qué quieres, chaval?');
+  await fax(api, '¿Qué quieres?');                          // E5 M07
   await api.dialog('teodoro', 'T0');
 }
 
@@ -559,10 +568,10 @@ async function derrotaTeodoro(api, { perdidos } = {}) {
   }
   api.setState('fax', 'con_papel');
   if ((perdidos || 1) <= 1) {
-    await aurora(api, 'Ha perdido usted con dos faltas, criatura. Y en cuerpo 72.');
+    await aurora(api, 'Ha perdido usted con dos faltas, en cuerpo 72; se ven desde la escalera.');
     await api.say('Seis folios para una palabra. Es mi pieza más larga en papel.');
   } else {
-    await aurora(api, 'Otros seis folios, criatura. Con esto ya se encuaderna.');
+    await aurora(api, 'Otros seis folios. Con esto ya se encuaderna.');
     await api.say('Doce folios. Ya tengo una obra completa. En una palabra.');
   }
 }
@@ -606,7 +615,7 @@ const dueloTeodoro = {
       api.sfx('hit');                     // ¡SELLO!
       api.setFlag('casilla_firma', true);
       await api.say('...Lo ha escrito bien.', { ms: 1800 });
-      await fax(api, 'En mi página no hay erratas, chaval. Ni en los nombres.');
+      await api.wait(1200);               // E5 C88: tras «...Lo ha escrito bien.» no habla nadie
     } else {
       await fax(api, 'Tráeme la ficha y te la sello.');
     }
@@ -630,7 +639,7 @@ export default buildRoom({
   objects: [
     // la Redacción (web) está AL LADO, al mismo nivel, tras la puerta doble y el umbral de latón
     { id: 'catacumba_a_pecera', name: 'Redacción', exit: { room: 'pecera', tipo: 'puerta_doble' }, handlers: {
-      mirar: 'Vuelta a la Redacción web. Al otro lado del latón, el siglo XXI. Con escalas.',
+      mirar: 'Vuelta a la Redacción web. Al otro lado del latón, el siglo XXI.',
       abrir: 'Está abierta de par en par. Aquí lo que se cierra son páginas.',
       usar: async (api) => api.goto('pecera', 'catacumba'),
       cerrar: 'Ya lo intentó Teodoro en 2009. La web entró igual. Por el fax.',
@@ -647,7 +656,7 @@ export default buildRoom({
         if (api.flag('fax_con_papel')) await fax(api, 'Has contado. Sin que te lo pida. Hijo mío.');
         else await api.say('Teodoro asiente. Sin papel, es lo más parecido a un abrazo.');
       },
-      coger: 'Si descuelgo una, Teodoro me mide. Con la regla.',
+      coger: 'Si descuelgo una, Teodoro me mide.',
       usar: 'Las leo. Tienen más erratas que la web, pero se notan menos.',
       hablar: 'Les leo el titular en voz alta. Aquí eso es casi una misa.',
     } },
@@ -668,7 +677,9 @@ export default buildRoom({
           if (api.flag('fax_con_papel')) {
             await api.say(['Tiene papel. Teodoro lo mira como quien mira a un hijo que vuelve.',
               'Tres teclas de marcación rápida: 1 GOYITA, 2 ADMINISTRACIÓN, 3 CONTROLLING.']);
-          } else await api.say('Un fax beige de 1992. Pantallita: «SIN PAPEL». Y sin ganas.');
+          } else await api.say('Un fax de 1992: «SIN PAPEL». Pegatina: «Mantenimiento: Sistemas. Ticket 0.441».');
+          // E5 §2.3 (D20/C34): la pegatina de Paco se ve en el mismo Mirar; con papel, el flag se pone sin línea
+          if (!api.flag('vio_pegatina_fax')) api.setFlag('vio_pegatina_fax', true);
         },
         // paso 28 · golpe A
         'usar:copias_rechazadas': faxConPapel,
@@ -719,7 +730,7 @@ export default buildRoom({
       mirar: async (api) => { await api.say(['Jefes de cierre en blanco y negro. Todos con bigote.', 'El bigote también era de plantilla.']); },
       coger: 'No. Llevan cuarenta años colgadas. Debajo, la pared es de otro color.',
       hablar: 'Les digo que voy a firmar en papel. Ninguno se ríe. Es el bigote.',
-      usar: 'No tengo bigote que comparar. Ni contrato.',
+      usar: 'No tengo bigote que comparar.',
     } },
     { id: 'fax_enmarcado', name: 'fax enmarcado', handlers: {
       mirar: async (api) => {
@@ -739,7 +750,7 @@ export default buildRoom({
     { id: 'cartel_aurora', name: 'cartel', handlers: {
       mirar: '«NO HABLO ANTES DEL CAFÉ. NI DESPUÉS, PERO ANTES MENOS.»',
       coger: async (api) => {
-        if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc en los nudillos. El cartel no se toca. Ni se discute.'); return; }
+        if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc en los nudillos. El cartel no se toca.'); return; }
         await aurora(api, 'Deja el cartel. Lleva treinta años sin una errata.');
       },
       usar: 'Lo señalo. Aurora me señala a mí. Hemos llegado a un acuerdo.',
@@ -747,8 +758,8 @@ export default buildRoom({
     { id: 'libro_estilo', name: 'Libro de Estilo', handlers: {
       mirar: async (api) => { await api.say(['El Libro de Estilo. Más grueso que la plantilla fija.', 'Página 1: «No se dice a nivel de». Página 2: «A nivel de comas, ver pág. 3».']); },
       coger: async (api) => {
-        if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc en el lomo. El libro no se mueve. Y yo, tampoco.'); return; }
-        await aurora(api, 'Ese libro, ni tocarlo. Se consulta aquí, de pie. Con las manos limpias.');
+        if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc en el lomo. El libro no se mueve.'); return; }
+        await aurora(api, 'Ese libro, ni tocarlo; se consulta aquí, de pie y con las manos limpias.');
       },
       abrir: 'Lo abro por cualquier página: «Así no se dice». Tiene razón. Siempre.',
       usar: 'Consulto «becario senior». Remite a «contradicción».',
@@ -771,7 +782,7 @@ export default buildRoom({
           api.setFlag('boli_muerto_cogido', true);
           return;
         }
-        await aurora(api, 'Los demás están vivos. Y son míos.');
+        await aurora(api, 'Los demás están vivos; por eso no los presto.');
       },
       usar: 'Pruebo uno en la mano. Me corrige la línea de la vida.',
     } },
@@ -802,7 +813,7 @@ export default buildRoom({
         'dar:copias_rechazadas': async (api) => {
           intento(api);
           await api.anim(TEO, 'reach', 500);
-          await api.say('Teodoro señala el fax. Con mucha intención.');
+          await api.say('Teodoro no dice nada. Señala el fax.');
         },
         'dar:mensaje_fp': async (api) => { await fax(api, 'Las fuentes, a Aurora. Yo solo mido.'); },
         'dar:fotocopia_nota_direccion': async (api) => { await fax(api, 'Las fuentes, a Aurora. Yo solo mido.'); },
@@ -849,7 +860,8 @@ export default buildRoom({
   defaults: {},
   ambient: [
     // adenda 3.6: reacción de Aurora a los «!!» de Tadeo (con tadeo_rv_n ≥ 1 y acto_2_iniciado). Una sola vez.
-    { id: 'aurora_tadeo', if: ['acto_2_iniciado', (api) => (api.flag('tadeo_rv_n') || 0) >= 1], voces: { A: AUR },
+    // E5 §2.8 · N6: solo si Bruno ya ha leído algún «RV:» de Tadeo (content/lib/movil.js lo dispara al leerlo aquí)
+    { id: 'aurora_tadeo', if: ['acto_2_iniciado', rvLeido], voces: { A: AUR },
       discusiones: [[['A', 'Dos exclamaciones de cierre y ninguna de apertura.'], ['A', 'Eso no es entusiasmo, criatura. Es inglés.']]] },
   ],
 

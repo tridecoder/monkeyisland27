@@ -10,14 +10,22 @@ export const CELESTINO = 'celestino';
 // (pieza_recortada). Las retransmisiones del torno y de Rubén en el Vestíbulo (fase B (8)) son de la sala (P1).
 export const HITOS = [
   ['torno_abierto', '¡Vacante supera al torno! ¡Por la banda! ¡Con chicle! ¡Qué técnica!'],
-  ['chaqueta_en_lector', '¡El chaval viste al Lector Medio! ¡Cambio de camiseta en pleno partido!'],
+  ['chaqueta_en_lector', '¡Cambio de camiseta en pleno partido! ¡El Lector Medio sale con chaqueta!'],
   ['cafetera_viral', '¡Buenas noches a la cafetera! ¡Juego limpio! ¡Eso no se veía desde el 82!'],
   ['reunion_terminada', '¡Desbandada en la Sala Amazonas! ¡Mercados se retira al vestuario!'],
-  ['nota_gasto_presentada', '¡Tarjeta en Administración! ¡Por triplicado! ¡Y el chaval sigue jugando!'],
+  ['nota_gasto_presentada', '¡Tarjeta en Administración! ¡Por triplicado! ¡El nuevo sigue en el campo!'],
   ['casilla_firma', '¡Teodoro le da la firma! ¡Un fax de cabeza! ¡Golazo de papel!'],
   ['ruben_encontrado', '¡Sale un chaval del banquillo de Sistemas! ¡Cuatro meses calentando!'],
-  ['ruben_libre', '¡Y el chaval de Sistemas pide el cambio! ¡Sale a ver el sol!'],
+  ['ruben_libre', '¡Y el de Sistemas pide el cambio! ¡Sale a ver el sol!'],
 ];
+// ENMIENDA E5 §2.6 / §5.3: la megafonía tras el clímax (la Sala, PA, la lanza en `update` a los 10, 25 y 45 s de tiempo
+// QUIETO con `api.megafonia(CELESTINO, MEGAFONIA_TAMBALEO[i], { etiqueta: 'MEGAFONÍA' })`, una vez cada una).
+export const MEGAFONIA_TAMBALEO = [
+  '¡Balón suelto en la Sala Amazonas! ¡El cartón se tambalea y nadie lo toca!',      // 10 s quieto
+  'Ahí sigue. De pie, asintiendo, sin nadie que le lleve la contraria.',             // 25 s
+  '...Que alguien le dé un empujón, hombre. Que esto no se acaba solo.',             // 45 s
+];
+export const MEGAFONIA_TAMBALEO_S = [10, 25, 45];
 const narrado = (api, flag) => !!(api.game.state.once && api.game.state.once['once:hito_celestino:' + flag]);
 
 /** El hito más reciente conseguido y aún sin narrar: { flag, texto } o null. No marca nada. */

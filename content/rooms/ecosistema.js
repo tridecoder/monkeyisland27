@@ -7,6 +7,7 @@
 // EVENTOS tiene sala propia (`eventos`, puerta `ecosistema_a_eventos`).
 // Flags globales que pone y lee (flags.js, E2 §10.2): aro_borja_mirar_n, aro_borja_hablar_n, maripaz_empujon_n,
 // ecosistema_interstitial, pantalla_comercial_n.
+// ENMIENDA E5 (PE): §2.5.1 el rotulador de objetivos (Coger termometro_ventas → rotulador_rojo); textos C45, C47-C52.
 import { buildRoom } from '../lib/room.js';
 import art, { interstitialComercial, portadaComercial } from './art/ecosistema.art.js';
 import dialogos from './ecosistema.dialogos.js';
@@ -39,7 +40,7 @@ async function mirarPortatil(api) {
   const k = (n - 1) % PORTATIL.length;
   await api.say(PORTATIL[k]);
   if (k === 3 && api.flag('ruben_encontrado')) {
-    await api.say(['Contesta el Titulator: «Lo sé. Me lo ha contado ella. Se llama Rubén».',
+    await api.say(['Contesta el Titulator: «Lo sé. Me lo ha contado ella. Se llama Zacarías».',
       'Tadeo no lo ha leído. Yo sí.']);
     api.learnReply('rep_15');
   }
@@ -80,7 +81,7 @@ async function mirarAro(api) {
   if (api.flag('pagina_cerrada') && api.once('aro_borja_pagina')) {
     api.sfx('beep');
     await movil(api, 'Publicando: Exclusiva en la página 7, por [NOMBRE]. Emoji de fuego.');
-    await api.say('Mi primera firma en redes. Sin mi nombre. Con buena luz.');
+    await api.say('Mi primera firma en redes. Pone «[NOMBRE]».');                     // E5 C45
     return;
   }
   const n = api.inc('aro_borja_mirar_n');
@@ -117,7 +118,7 @@ const aroObjeto = {
         await movil(api, 'Publicando: Damos la bienvenida a [NOMBRE]. Emoji de aplausos.');
       } else await movil(api, 'Publicando: [NOMBRE], otra vez. Emoji de aplausos.');
     },
-    coger: 'No. Si lo cojo, publica que me lo llevo. Con buena luz.',
+    coger: 'No. Si lo cojo, publica que me lo llevo.',                                   // E5 C47
     empujar: async (api) => { api.sfx('step'); await movil(api, 'Publicando: Movimiento en la oficina. Emoji de cohete.'); },
     cerrar: async (api) => {
       await movil(api, 'Publicando: Nos vamos. Volvemos en cinco minutos. Emoji de fuego.');
@@ -195,6 +196,23 @@ async function anuncioAntesDeEntrar(api) {
   });
 }
 
+// ENMIENDA E5 §2.5.1 (PE) · el rotulador de objetivos: Coger el termómetro, desde `torno_abierto`, una vez (L
+// `ecosistema_rotulador_dado`). Con Maripaz en la planta (Actos I y III), lo regala; sin ella (Acto II antes de D1),
+// Bruno lo coge en silencio. Después, Coger termómetro → lo genérico. El rotulador no se gasta (lo usa PB en el kanban).
+async function cogerTermometro(api) {
+  if (!api.flag('torno_abierto') || api.flag('ecosistema_rotulador_dado') || api.has('rotulador_rojo')) {
+    await api.defaultResponse(); return;
+  }
+  api.setFlag('ecosistema_rotulador_dado', true);
+  if (maripazAqui(api)) {
+    api.faceActor(MARIPAZ, 'bruno');
+    await sayM(api, '¿Mi rotulador de objetivos? Llévatelo. Lo que pintes, lo cobro como espacio.');
+  }
+  await api.anim('bruno', 'reach', 350);
+  api.give('rotulador_rojo');
+  api.sfx('pickup');
+}
+
 // «Usar cualquier papel» con la impresora (§3.7)
 const PAPELES = ['fotocopia_nota_direccion', 'mensaje_fp', 'pieza_opa', 'ficha_pagina_7', 'ticket_n1', 'acta_reunion', 'album_eventos', 'correo_evaristo'];
 const impresoraPapel = Object.fromEntries(PAPELES.map(i => ['usar:' + i, '«ATASCO EN BANDEJA 2». Le da igual lo que le dé.']));
@@ -206,6 +224,7 @@ export default buildRoom({
   flags: {
     ecosistema_portatil_cerrado: 'bool · P4 · Cerrar portátil de Tadeo (Acto III) · P4 (Mirar portátil, impresora)',
     ecosistema_pufs_n: 'int · P4 · ecosistema · +1 por Usar pufs · P4',
+    ecosistema_rotulador_dado: 'bool · PE · E5 §2.5.1: Coger termometro_ventas da rotulador_rojo (una vez)',
   },
 
   objects: [
@@ -240,7 +259,7 @@ export default buildRoom({
       usar: 'Me meto en el embudo. Salgo por abajo convertido. En becario.',
       // E2 §3.3: lo que contestaba Borja lo publica ahora su móvil
       hablar: async (api) => { await api.say('¿Y qué hay al final del embudo?'); await movil(api, 'Publicando: ¿Qué hay al final del embudo? Emoji de embudo.'); },
-      coger: 'Si lo descuelgo, el móvil de Borja lo publica. Con música triste.',
+      coger: 'Si lo descuelgo, el móvil de Borja lo publica.',                          // E5 C48
       empujar: 'Lo enderezo. Debajo, un pósit de Borja: «Torcido convierte más».',
     } },
     // estados: 'desplegado' / 'enrollado' (Empujar lo enrolla; Tirar lo sube; al volver, Maripaz ya lo ha desplegado)
@@ -260,7 +279,8 @@ export default buildRoom({
     } },
     { id: 'termometro_ventas', name: 'termómetro de ventas', handlers: {
       mirar: async (api) => api.say(['Un termómetro pintado a rotulador: «OBJETIVO Q3». Rojo hasta el 97 %.', 'El 3 % que falta se lo lleva el gong de al lado.']),
-      usar: async (api) => { await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Así lo pinto yo los viernes. Pero con más pulso.', 'Rojo hasta el 98 %. Nadie lo nota. Ni las ventas.'); },
+      usar: async (api) => { await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Así lo pinto yo los viernes. Pero con más pulso.', 'Rojo hasta el 98 %. Nadie lo nota.'); },   // E5 C52
+      coger: cogerTermometro,                                                              // E5 §2.5.1
       empujar: 'Si lo empujo, sube la temperatura. No las ventas.',
       hablar: async (api) => { await api.say('¿Cuándo llegas al cien?'); await mp(api, 'Cuando la noticia ocupe una línea. Vamos por dos.', 'No contesta. Le falta el 3 %. A mí, el contrato.'); },
     } },
@@ -323,7 +343,7 @@ export default buildRoom({
       coger: 'Si lo cojo, me reenvía a mí.',
       usar: 'No me siento. Si me siento, reenvío.',
       empujar: 'Lo empujo un centímetro. Reenvía «RV: Me han movido». A todos.',
-      'usar:movil': 'Le hago una foto. Me la reenvía. Con resumen.',
+      'usar:movil': 'Le hago una foto. Me la reenvía.',                                  // E5 C49
       'dar:pieza_opa': 'Ni loco. La reenvía a todos, con resumen y sin leer.',
       'usar:pieza_opa': 'Ni loco. La reenvía a todos, con resumen y sin leer.',
       'dar:*': 'Si le doy algo, lo reenvía. Con «Por si os sirve!!».',
@@ -338,7 +358,7 @@ export default buildRoom({
       },
       coger: async (api) => { await mp(api, '¡Deja eso! Lleva un adhesivo de patrocinio. Por debajo.', 'Mejor la dejo. Alguien la ha puesto con mucha planificación.'); },
       empujar: 'La aparto con el pie. Aquí no se cae nadie: aquí la gente se jubila.',
-      usar: 'No. Yo quiero una plaza de bici. Y por las buenas.',
+      usar: 'No. Yo quiero una plaza de bici.',                                            // E5 C50
       hablar: 'Le pregunto a quién espera. El pósit lo dice todo.',
     } },
   ],
@@ -396,7 +416,7 @@ export default buildRoom({
     if (api.getState('pantalla_comercial') === 'video') api.setState('pantalla_comercial', 'normal');
     if (api.restoring) return;
     if (!api.flag('acto_2_iniciado') && api.once('ecosistema_entrada_1830')) {
-      await api.say('La planta 2 a las seis y media: moqueta, pufs y nadie. Y un gong, detrás.');
+      await api.say('La planta 2 a las seis y media: moqueta, pufs y nadie.');           // E5 C51
     }
     // §4.2.4: el anuncio antes de entrar, una vez, la primera vez que Maripaz está en la planta
     if (maripazAqui(api) && !api.flag('ecosistema_interstitial')) { await anuncioAntesDeEntrar(api); return; }

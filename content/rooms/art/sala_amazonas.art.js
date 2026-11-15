@@ -473,8 +473,13 @@ function drawTele(g, view, t) {
   rect(g, x - 1, y - 1, w + 2, h + 2, PAL.ink[0]); frameRect(g, x - 1, y - 1, w + 2, h + 2, PAL.metal[2]);
   hline(g, x - 1, y - 1, w + 2, PAL.metal[4]);
   const sx = x, sy = y, sw = w, sh = h;
-  if (String(view.objState('tele_amazonas') || view.state || '') === 'entrada_1') {
+  const est = String(view.objState('tele_amazonas') || view.state || '');
+  if (est === 'entrada_1') {
     teleEntrada1(g, sx, sy, sw, sh, t);
+  } else if (est === 'gertrudis') {
+    teleGertrudis(g, view, sx, sy, sw, sh, t);
+  } else if (est === 'buscando') {
+    teleBuscando(g, sx, sy, sw, sh, t);
   } else if (a3(view)) {
     gradV(g, sx, sy, sw, sh, [PAL.ink[2], PAL.ink[0]]);
     g.save(); g.globalAlpha = 0.1; poly(g, [[sx + 3, sy + sh], [sx + 9, sy + sh], [sx + 20, sy], [sx + 14, sy]], '#ffffff'); g.restore();
@@ -493,6 +498,10 @@ function drawTele(g, view, t) {
     ditherOverlay(g, sx, sy, sw, 2, '#ffffff', 0.15);
     glow(g, x + w / 2, y + h / 2, 22, 16, m === 1 || m === 5 ? '#f4ffe0' : '#8ec8ff', 0.12, 3);
     px(g, sx + sw - 2, sy + sh + 1, PAL.crt[5]);
+    // [PA] E5 §2.1 (pista visual): con la cafetera en redes y la reunión en marcha, un puntito verde parpadea cada 4 s
+    if (view.flag('cafetera_viral') && !view.flag('reunion_terminada') && ((t || 0) % 4000) < 450) {
+      rect(g, sx + sw - 4, sy + 1, 2, 2, '#39ff14'); px(g, sx + sw - 5, sy + 1, '#1a7a0a');
+    }
   }
   // pegatina legible bajo la pantalla: «PULSA 3. NO, LA 2»
   rect(g, x - 3, y + h + 3, w + 6, 13, POSTIT.y); hline(g, x - 3, y + h + 3, w + 6, '#fff48a'); hline(g, x - 3, y + h + 15, w + 6, '#c8a83a');
@@ -511,6 +520,50 @@ function drawCaja(g, view, t) {
   kit.micro(g, '14', bx + 16, by + 2, PAL.ink[2]);
   if (view.visible) kit.cantoVivo(g, bx, by - 2, 24, 10);
   void t;
+}
+
+// [PA] E5 §2.1.5 · `buscando`: nieve y «BUSCA / SEÑAL» (texto de pantalla)
+function teleBuscando(g, sx, sy, sw, sh, t) {
+  rect(g, sx, sy, sw, sh, PAL.ink[1]);
+  const k = Math.floor((t || 0) / 70);
+  for (let yy = 0; yy < sh; yy++) for (let xx = 0; xx < sw; xx++) {
+    const h = hash2(xx + k * 7, yy + k * 3, 31);
+    if (h < 0.42) px(g, sx + xx, sy + yy, h < 0.14 ? PAL.paper[7] : h < 0.28 ? PAL.metal[5] : PAL.metal[3]);
+  }
+  rect(g, sx + 2, sy + 3, sw - 4, 13, 'rgba(8,8,16,0.78)');
+  kit.micro(g, 'BUSCA', sx + (sw >> 1), sy + 4, PAL.paper[7], { align: 'center', registrar: false });
+  kit.micro(g, 'SEÑAL', sx + (sw >> 1), sy + 10, PAL.paper[7], { align: 'center', registrar: false });
+}
+// [PA] E5 §2.1.5 · `gertrudis`: el LCD verde de Gertrudis a pantalla completa (paleta de su LCD, office.art.js y actors.js),
+// su texto pasando en una tira, una taza en la esquina y, encima del marco, el rótulo rojo «EN DIRECTO» con su piloto.
+const LCD = { fondo: '#06140a', marco: '#0c2a12', verde: '#39ff14', tenue: '#1a7a0a' };
+function teleGertrudis(g, view, sx, sy, sw, sh, t) {
+  rect(g, sx, sy, sw, sh, LCD.fondo);
+  frameRect(g, sx, sy, sw, sh, LCD.marco);
+  // barra de «carácter» (como su LCD del sprite): rayitas que laten
+  const f = Math.floor((t || 0) / 200);
+  for (let i = 0; i < 12; i++) if ((i * 7 + f * 3) % 5 !== 0) rect(g, sx + 2 + i * 2, sy + 2, 1, 2, LCD.tenue);
+  // el texto, en tira: la pregunta y, con el atasco, la convocatoria
+  const txt = view.flag('sala_amazonas_atasco') ? 'CONVOCADA · TODA LA EMPRESA EN COPIA · 5 MINUTITOS · '
+    : 'PREGUNTA DEL PÚBLICO: Y LOS SIGUIENTES PASOS? · ';
+  const paso = kit.MICRO_PASO || 4;
+  const ancho = [...txt].length * paso;
+  const off = Math.floor((t || 0) / 90) % ancho;
+  g.save(); g.beginPath(); g.rect(sx + 1, sy + 6, sw - 2, 7); g.clip();
+  kit.micro(g, txt + txt, sx + 1 - off, sy + 7, LCD.verde, { registrar: false });
+  g.restore();
+  // la taza, abajo a la derecha (con su humo)
+  rect(g, sx + sw - 7, sy + sh - 5, 4, 3, PAL.paper[7]); px(g, sx + sw - 3, sy + sh - 4, PAL.paper[7]);
+  if (Math.floor((t || 0) / 300) % 2) px(g, sx + sw - 6, sy + sh - 7, PAL.metal[5]); else px(g, sx + sw - 5, sy + sh - 8, PAL.metal[5]);
+  hline(g, sx + 2, sy + sh - 3, 12, LCD.tenue);
+  ditherOverlay(g, sx, sy, sw, sh, '#9fff80', 0.06);
+  glow(g, sx + sw / 2, sy + sh / 2, 24, 18, '#39ff14', 0.14, 3);
+  // EN DIRECTO: rótulo rojo sobre el marco, con el piloto encendido/apagado
+  const on = Math.floor((t || 0) / 400) % 2 === 0;
+  const rw = 46, rx = Math.round(sx + sw / 2 - rw / 2), ry = sy - 9;
+  rect(g, rx, ry, rw, 7, '#08060e'); frameRect(g, rx, ry, rw, 7, '#601810');
+  rect(g, rx + 2, ry + 2, 2, 2, on ? '#ff3020' : '#601810');
+  kit.micro(g, 'EN DIRECTO', rx + 6, ry + 1, '#ff5040', { registrar: false });
 }
 
 // [P4] plan §4.7: estado `entrada_1` de la tele (clímax): Celestino en directo, la cabeza del sprite de la intro a escala
@@ -675,9 +728,17 @@ const layout = {
   inigo_sinergia: { at: [222, 122, 'left'], walkTo: [198, 124], face: 'right' },
   // [P4] Actos I-II: los tres de Mercados, sentados tras la mesa (la mesa les tapa de cintura abajo); en la estampida
   // saltan la mesa hacia la franja delantera y huyen por la puerta (sala_amazonas.js). Maripaz, en el extremo del fondo.
-  mercados_1: { at: [146, 98, 'down'], pose: 'tras_mesa', walkTo: [120, 122], face: 'right' },
-  mercados_2: { at: [172, 98, 'down'], pose: 'tras_mesa', walkTo: [146, 122], face: 'right' },
-  mercados_3: { at: [198, 98, 'down'], pose: 'tras_mesa', walkTo: [172, 122], face: 'right' },
+  // [PA] E5 §2.1.6: con el atasco abierto (`sala_amazonas_atasco`) están encajados en la puerta; Bruno se les acerca
+  // por la franja de la izquierda (la lógica elige la posición con `pos`)
+  mercados_1: { at: [146, 98, 'down'], pose: 'tras_mesa', walkTo: [120, 122], face: 'right',
+    positions: { mesa: { at: [146, 98, 'down'], pose: 'tras_mesa', walkTo: [120, 122], face: 'right' },
+      atasco: { at: [20, 112, 'left'], walkTo: [58, 118], face: 'left' } } },
+  mercados_2: { at: [172, 98, 'down'], pose: 'tras_mesa', walkTo: [146, 122], face: 'right',
+    positions: { mesa: { at: [172, 98, 'down'], pose: 'tras_mesa', walkTo: [146, 122], face: 'right' },
+      atasco: { at: [24, 113, 'left'], walkTo: [58, 118], face: 'left' } } },
+  mercados_3: { at: [198, 98, 'down'], pose: 'tras_mesa', walkTo: [172, 122], face: 'right',
+    positions: { mesa: { at: [198, 98, 'down'], pose: 'tras_mesa', walkTo: [172, 122], face: 'right' },
+      atasco: { at: [28, 112, 'left'], walkTo: [58, 118], face: 'left' } } },
   maripaz_remitido: { at: [MARIPAZ_AT[0], MARIPAZ_AT[1], 'down'], pose: 'tras_mesa', walkTo: [94, 124], face: 'right' },
 };
 

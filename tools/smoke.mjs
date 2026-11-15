@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Smoke test de FE DE ERRATAS: sirve el juego y lo recorre con Playwright (clics reales + window.__game):
-// título, intro, ratón, las 10 salas por sus salidas, inventario (los 19 objetos), combinación común, pistas,
+// título, intro, ratón, las 10 salas por sus salidas, inventario (los 20 objetos), combinación común, pistas,
 // un duelo de prueba completo (fallo, comodín, acierto, remate con objeto equivocado y correcto), derrota,
 // retirada, guardar/cargar, menú de pausa, créditos (api.credits / api.ending), depuración y táctil.
 // Capturas en tools/shots/. Falla si hay errores de consola. Uso: node tools/smoke.mjs
@@ -143,12 +143,19 @@ try {
   ok(!(await G(() => __game.log.some(l => l.who === 'inigo_sinergia' && /Optimal Brains/.test(l.text)))), 'la 7.2 no se repite en la segunda entrada');
   const seen = new Set(['vestibulo', 'pecera']);
   for (const [exit, room, floor] of ROUTE.slice(1)) {
+    const st0room = (await state()).room;
     await G(e => __game.doVerb('ir', e), exit);
     if (floor) {                                   // el ascensor abre su botonera: la planta actual sale en gris
       const opts = await G(() => __game.currentDialogOptions());
       ok(!!opts && opts.some(o => o.endsWith('(aquí)')) && opts.some(o => o.startsWith('Nada, me quedo')), `botonera del ${exit}: plantas, la actual en gris y «quedarse»`);
       await chooseText(floor);
       await G(() => __game.waitIdle());
+      // ENMIENDA E5 §2.7: si sale el submenú de atajos, la opción 0 es la sala de llegada (y la primera, por su nombre)
+      const sub = await G(() => __game.currentDialogOptions());
+      if (sub && (await state()).room === st0room) {
+        ok(sub[0] === await G((r) => __game.game.content.rooms[r] && ({ pecera: 'Redacción', ecosistema: 'Marketing y Comercial', vestibulo: 'Vestíbulo', cpd: 'Sistemas' })[r], room), `submenú de atajos del ${exit}: la primera opción es la sala de llegada («${sub[0]}»)`);
+        await G(() => __game.chooseDialog(0)); await G(() => __game.waitIdle());
+      }
     }
     const st = await state();
     ok(st.room === room, `${exit} → ${room}`);
@@ -227,9 +234,9 @@ try {
   await G(() => __game.newGame());          // partida limpia (modo rápido) para el resto de pruebas
 
   // ---------------------------------------------------------------- inventory
-  step('Inventario: los 19 objetos (plan de comedia: fuera planillo y pósit de baja; + taper_huerfano; E2: + correo_evaristo; give-all de depuración)');
+  step('Inventario: los 20 objetos (plan de comedia: fuera planillo y pósit de baja; + taper_huerfano; E2: + correo_evaristo; E5: + rotulador_rojo; give-all de depuración)');
   const inv = await G(() => __game.giveAll());
-  ok(inv.length === 19 && inv.includes('correo_evaristo') && !inv.includes('planillo') && !inv.includes('posit_baja_ruben'), `19 objetos en el inventario (${inv.length})`);
+  ok(inv.length === 20 && inv.includes('correo_evaristo') && inv.includes('rotulador_rojo') && !inv.includes('planillo') && !inv.includes('posit_baja_ruben'), `20 objetos en el inventario (${inv.length})`);
   await fast(false);
   await clickClient(await G(() => __game.verbPos('mirar')));
   await clickClient(await G(() => __game.invPos('tarjeta_becario')));
@@ -239,7 +246,7 @@ try {
   await page.mouse.move(ip.x, ip.y); await wait(150);
   await shot('05-inventario');
   await fast(true); await G(() => __game.waitIdle());
-  // contact sheet of all 19 icons (each item's icon at 1:1, shown ×4)
+  // contact sheet of all 20 icons (each item's icon at 1:1, shown ×4)
   await G(() => {
     const g0 = __game.game, items = g0.content.items, ids = Object.keys(items);
     const c = document.createElement('canvas'); c.id = 'iconsheet';
@@ -407,9 +414,9 @@ try {
   ok((await state()).flags.evaristo_llamadas === 2 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Veintitrés líneas. Ni una coma fuera de sitio. Era solo eso.')), 'L3 (pieza_recortada), sin la coma de 4,15 € (E2 §5.7)');
   await G(() => { __game.setFlag('acto_3_iniciado', true); __game.setFlag('ruben_encontrado', true); __game.clearLog(); });
   await G(() => __game.gotoRoom('office'));
-  ok((await state()).flags.evaristo_llamadas === 2, 'L4 se pierde si Rubén ya ha aparecido; L5 espera a ruben_libre');
+  ok((await state()).flags.evaristo_llamadas === 2, 'L4 se pierde si Zacarías ya ha aparecido; L5 espera a ruben_libre');
   await G(() => { __game.setFlag('ruben_libre', true); __game.clearLog(); });
-  await G(() => __game.gotoRoom('administracion'));      // (en la Redacción, con Rubén libre, la entrada lanza su escena)
+  await G(() => __game.gotoRoom('administracion'));      // (en la Redacción, con Zacarías libre, la entrada lanza su escena)
   ok((await state()).flags.evaristo_llamadas === 3 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Una cosita. Me dicen que va a la Sala. ¿Lleva mi correo?')), 'L5 (ruben_libre): «¿Lleva mi correo?»');
   await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'acto_2_iniciado', 'acto_3_iniciado', 'pieza_recortada', 'ruben_encontrado', 'ruben_libre']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); __game.setFlag('evaristo_convoco', false); });
 

@@ -3,7 +3,9 @@
 // AVISOS AUTOMÁTICOS (adenda §2: llamadas de Evaristo, que salen al entrar en una sala; E2: los «RV:» de Tadeo ya no son
 // aviso): `startDismisser` cierra su globo (como un clic) en cuanto `state().aviso` es true, y el test sigue.
 // E2 §7.2: las despedidas (`exit`) solo se oyen la primera vez; FAREWELLS elige por el TEXTO de la opción, no por lo
-// que se oye, así que no cambia. Un plano detalle con `bloqueo` (anuncios de Maripaz) se resuelve solo en modo rápido.
+// que se oye, así que no cambia. ENMIENDA E5 §2.7: el submenú de atajos del ascensor se resuelve con la opción 0 (`travel`).
+// En `esp.flags`, el valor '*' pide solo que el flag esté puesto (p. ej. `discover_ganador`, que guarda el titular ganador).
+// Un plano detalle con `bloqueo` (anuncios de Maripaz) se resuelve solo en modo rápido.
 export class StepFail extends Error {}
 export const fail = (msg) => { throw new StepFail(msg); };
 export const FAREWELLS = ['nada, me quedo en esta planta', 'nada, celestino', 'nada, aurora', 'nada. me iba', 'nada, ya me voy', 'nada, solo miraba', 'me voy', 'ahora vuelvo', 'lo pienso y vuelvo', 'luego vuelvo', 'gracias, begoña', 'prometo cuidarlo', 'nada'];   // E2: «Luego vuelvo.» (Maripaz en la Sala)
@@ -62,6 +64,10 @@ async function travel(to) {
         const k = opts.findIndex(o => o === label);
         if (k < 0) return { ok: false, msg: `el ascensor de ${r0} no ofrece «${label}» (${JSON.stringify(opts)})` };
         await __game.chooseDialog(k);
+        // ENMIENDA E5 §2.7: tras la planta, el ascensor puede abrir un submenú de atajos (las salas ya pisadas de esa
+        // planta; la opción 0 es la sala de llegada del ascensor, que es la arista que cuenta este BFS). Si sale, la 0.
+        // Sin submenú (motor anterior a E5, plantas −1 y 0, ninguna sala pisada) no hace nada.
+        for (let s = 0; s < 3 && g.state.room === r0 && __game.currentDialogOptions(); s++) await __game.chooseDialog(0);
       } else await __game.doVerb('ir', exit);
       if (__game.currentDialogOptions()) return { ok: true, dialog: true, path };
       if (g.state.room === r0) return { ok: false, msg: `la salida ${exit} de ${r0} no lleva a ninguna parte (¿bloqueada?)` };
@@ -153,7 +159,7 @@ async function check(esp) {
   const errs = [];
   if (esp.sala && st.room !== esp.sala) errs.push(`sala: ${st.room}, se esperaba ${esp.sala}`);
   const flags = Array.isArray(esp.flags) ? Object.fromEntries(esp.flags.map(f => [f, true])) : (esp.flags || {});
-  for (const [f, v] of Object.entries(flags)) if (v === false ? !!st.flags[f] : st.flags[f] !== v) errs.push(`flag ${f} = ${JSON.stringify(st.flags[f])}, se esperaba ${JSON.stringify(v)}`);
+  for (const [f, v] of Object.entries(flags)) if (v === false ? !!st.flags[f] : v === '*' ? !st.flags[f] : st.flags[f] !== v) errs.push(`flag ${f} = ${JSON.stringify(st.flags[f])}, se esperaba ${JSON.stringify(v)}`);
   for (const i of esp.tiene || []) if (!st.inventory.includes(i)) errs.push(`falta ${i} en el inventario`);
   for (const i of esp.notiene || []) if (st.inventory.includes(i)) errs.push(`${i} sigue en el inventario (debía gastarse)`);
   if (errs.length) fail(errs.join('; '));

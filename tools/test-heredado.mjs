@@ -5,7 +5,7 @@
 //   · Vestíbulo: torno y ascensor cerrados sin torno_abierto (sin camino físico al interior), tarjeta sin foto ni chicle.
 //   · Ascensor con botonera: los 12 trayectos (-1, 0, 1, 2), planta actual marcada, llegada por su puerta, onEnter,
 //     «quedarse» y las negativas sin torno_abierto.
-//   · Sistemas: el armario 27 sigue abierto (y Rubén dentro) tras guardar y cargar.
+//   · Sistemas: el armario 27 sigue abierto (y Zacarías dentro) tras guardar y cargar.
 //   · Planta 2: la puerta de Marketing lleva a Eventos (Sala Polivalente) con su música.
 //   · Partidas guardadas antiguas (plan §3.4): planillo y pósit de baja retirados, flags muertos fuera.
 //   node tools/test-heredado.mjs
@@ -117,8 +117,8 @@ try {
   await idle();
   must(await flag('ruben_encontrado'), 'Tirar papel_continuo no pone ruben_encontrado');
   await G(() => __game.save('t_armario')); await G(() => __game.load('t_armario')); await idle();
-  must((await G(() => __game.objects().find(o => o.id === 'armario_27').state)) === 'abierto' && (await roomOf('ruben')) === 'cpd', 'armario_27 abierto (y Rubén) tras guardar y cargar');
-  ok('Sistemas: el armario 27 sigue abierto, con Rubén, tras guardar y cargar');
+  must((await G(() => __game.objects().find(o => o.id === 'armario_27').state)) === 'abierto' && (await roomOf('ruben')) === 'cpd', 'armario_27 abierto (y Zacarías) tras guardar y cargar');
+  ok('Sistemas: el armario 27 sigue abierto, con Zacarías, tras guardar y cargar');
 
   // ------------------------------------------------------------ el Lector Medio en la Sala del clímax: nunca en la cabecera
   for (const f of ['sala_abierta', 'chaqueta_en_lector']) await setFlag(f);

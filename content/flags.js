@@ -36,6 +36,8 @@ export const ADENDA_FLAGS = [
   'ecosistema_interstitial', 'pantalla_comercial_n', 'bruno_con_banner',
   // ENMIENDA E4 §3bis.7 (Discover y el titulador): `str` empieza en '' y `int` en 0
   'discover_ganador', 'opa_posit',
+  // ENMIENDA E5 §2 (I1): booleanos a false y `columna_kanban` (str) a ''
+  'sala_becario_sin_turno', 'gertrudis_pregunta', 'vio_pegatina_fax', 'album_validado', 'columna_kanban',
 ];
 
 export default {
@@ -159,6 +161,12 @@ export default {
   opa_posit: 'int · P2 · pecera · titulador al salir con la pieza (1) → P3 · catacumba · Aurora lo corrige (2) · P2, P3, P0 items (icono de pieza_opa)',
   abuela_obj: 'str · P0 · game.js pistas (engine/objetivos.js) · objetivo de la última pista · la abuela',
   abuela_nivel: 'int · P0 · game.js pistas · nivel 1-3 de la última pista · la abuela',
+  // ---------------------------------------------------------------- ENMIENDA E5 §2 (altas de I1; G = globales)
+  sala_becario_sin_turno: 'bool · PA · sala_amazonas · Gervasio «Los becarios no tienen turno…» (GV_REUNION, §2.1.3) · PA (office: opción de Gertrudis; tele), pistas (reunion, turno)',
+  gertrudis_pregunta: 'bool · PA · office · Gertrudis «¿Y cuáles son los siguientes pasos?» (§2.1.4) · PA (sala_amazonas: tele → sala_tele_gertrudis), pistas (turno)',
+  vio_pegatina_fax: 'bool · PD · catacumba · Mirar fax (pegatina «Ticket 0.441», §2.3.1) · PC (cpd: opción fax441 de Paco), pistas (firma)',
+  album_validado: 'bool · PB · pecera · Dar álbum a Anselmo (AN_ALBUM_INTRO, §2.5.3) · PB (kanban, columnas, arte), pistas (baja, columna)',
+  columna_kanban: "str · PB · pecera · salida(api, via): 'salida' | 'descopeado' ('' sin columna, §2.5.5) · PB (arte del kanban, Mirar kanban)",
   // también prefijos reservados del motor: obj:<objetivo> (api.objetivo.marcar), obj:hora, ambient:<sala>.<id>
 
   // ---------------------------------------------------------------- réplicas del duelo (§6.3 + adenda 7.1)

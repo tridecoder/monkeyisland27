@@ -46,6 +46,8 @@ export const SFX_PRESETS = {
   laugh: [0, 0.12, 0.24, 0.36].map((at, i) => ({ wave: 'square', f: [520 - i * 30, 420 - i * 30], dur: 0.08, vol: 0.06, at, duty: 0.3 })),
   open: [{ wave: 'square', f: [200, 520], dur: 0.12, vol: 0.05, duty: 0.2 }, { wave: 'noise', dur: 0.06, vol: 0.12, at: 0.1, filter: { type: 'lowpass', freq: 1500 } }],
   close: [{ wave: 'square', f: [520, 200], dur: 0.1, vol: 0.05, duty: 0.2 }, { wave: 'noise', dur: 0.07, vol: 0.2, at: 0.08, filter: { type: 'lowpass', freq: 900 } }],
+  // E5 §6.9: el cartón del Lector Medio que cruje al tambalearse: ruido corto con paso bajo (120 ms), volumen de `paper`
+  crujido: [{ wave: 'noise', dur: 0.12, vol: 0.12, filter: { type: 'lowpass', freq: 700 } }, { wave: 'noise', dur: 0.05, vol: 0.08, at: 0.06, filter: { type: 'lowpass', freq: 1100 } }],
 };
 
 export class AudioSystem {

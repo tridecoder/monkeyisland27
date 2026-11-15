@@ -177,6 +177,18 @@ const icons = {
     ellipse(g, 18, 14, 3, 2, (xx, yy, d) => (d > 0.6 ? P.wood[4] : null));   // coffee ring
     px(g, 11, 9, P.red[4]); px(g, 15, 12, P.red[4]);   // two typos, Aurora would cry
   },
+  // ENMIENDA E5 §2.5.2 (I1): rotulador rojo de Comercial, en diagonal: capuchón, cuerpo rojo, etiqueta blanca «Q3»
+  rotulador_rojo(g) {
+    line(g, 4, 15, 19, 5, P.red[2], 5); line(g, 4, 14, 19, 4, P.red[4], 3); line(g, 5, 13, 18, 4, P.red[5]);   // cuerpo
+    line(g, 19, 5, 25, 1, P.red[1], 5); line(g, 19, 4, 25, 0, P.red[3], 3); line(g, 20, 4, 25, 1, P.red[5]);    // capuchón
+    line(g, 21, 6, 26, 3, P.metal[5]);                                                                         // clip
+    px(g, 2, 16, P.red[4]); px(g, 3, 16, P.red[3]); px(g, 2, 17, P.red[2]); px(g, 3, 15, P.ink[2]);            // punta
+    rect(g, 7, 6, 11, 8, P.paper[6]); hline(g, 7, 13, 11, P.paper[3]);                                          // etiqueta
+    const Q = [[1, 0], [2, 0], [0, 1], [3, 1], [0, 2], [3, 2], [1, 3], [2, 3], [3, 4]];                              // «Q3»
+    const T = [[0, 0], [1, 0], [2, 1], [1, 2], [2, 3], [0, 4], [1, 4]];
+    for (const [a, b] of Q) px(g, 8 + a, 7 + b, P.ink[1]);
+    for (const [a, b] of T) px(g, 13 + a, 7 + b, P.ink[1]);
+  },
 };
 
 // ------------------------------------------------------------------ helpers for handlers
@@ -234,7 +246,7 @@ export default {
       mirar: async (api) => {
         if (api.flag('foto_en_organigrama')) await api.say('Sin foto. Ya no la necesito: mi cara está en el organigrama.');
         else if (api.flag('tarjeta_con_chicle')) await api.say('Con chicle detrás. Es lo primero que se me pega en esta empresa.');
-        else await api.say(['Tarjeta de becario: «Bruno Pellizco». La foto es de cuando tenía 23 años.', 'Y esperanza.']);
+        else await api.say('Tarjeta de becario: «Bruno Pellizco». La foto es de cuando tenía 23 años.');   // E5 C68
       },
     },
     // P01b: lo implementa el inventario común (en cualquier sala)
@@ -262,7 +274,7 @@ export default {
       // adenda 2.2: con `tadeo_rv_n` ≥ 1 sustituye a la línea de la biblia
       mirar: async (api) => {
         const n = api.flag('tadeo_rv_n') || 0;
-        if (n >= 1) await api.say(['Mi móvil. Una llamada perdida de la abuela.', `Y ${n} correos de Tadeo. Todos «RV:». Ninguno leído. Ni por él.`]);
+        if (n >= 1) await api.say(['Mi móvil. Una llamada perdida de la abuela.', `Y ${n} correos de Tadeo. Todos «RV:». Ninguno leído.`]);
         else await api.say('Mi móvil. Una llamada perdida de la abuela. Siempre hay una.');
       },
       usar: async (api) => { await menuMovil(api); },                 // el menú del móvil: abuela (§5.6), correo, llamadas
@@ -285,7 +297,7 @@ export default {
       mirar: 'La chaqueta de Ramírez. Huele a 2019 y a sala de prensa.',
       // plan §4.3: Usar la chaqueta sin destino = ponérsela (el sprite de Bruno cambia: actors.js `con_chaqueta`)
       usar: async (api) => {
-        if (api.flag('bruno_con_chaqueta')) { api.setFlag('bruno_con_chaqueta', false); await api.say('Me la quito. Vuelvo a ser yo. Con mangas de camisa.'); return; }
+        if (api.flag('bruno_con_chaqueta')) { api.setFlag('bruno_con_chaqueta', false); await api.say('Me la quito. Vuelvo a ser yo.'); return; }
         await api.anim(api.player, 'reach', 400);
         api.setFlag('bruno_con_chaqueta', true);
         await api.say(['Me la pongo. Por probar. Huele a 2019 y a cruasán.', 'Me queda grande. De hombros y de cargo.']);   // E2 §7.2
@@ -340,11 +352,11 @@ export default {
   },
   album_eventos: {
     name: 'álbum de Eventos', icon: icons.album_eventos,
-    handlers: { mirar: say(['En todas las fotos, al fondo, Rubén. Cena de Navidad, presentación, photocall.', 'Siempre yendo al baño. Siempre con un táper.']) },
+    handlers: { mirar: say(['En todas las fotos, al fondo, Zacarías. Navidad, presentación, photocall.', 'Siempre yendo al baño. Siempre con un táper.']) },
   },
   ticket_n1: {
     name: 'ticket nº 1', icon: icons.ticket_n1,
-    handlers: { mirar: say(['Ticket nº 1: «Alta becario Rubén». Asignado a: Titulator 3000.', 'Estado: CERRADO. El primer ticket que cierra Paco en su vida.']) },
+    handlers: { mirar: say(['Ticket nº 1: «Alta becario Zacarías». Asignado a: Titulator 3000.', 'Estado: CERRADO. El primer ticket que cierra Eutimio en su vida.']) },
   },
   acta_reunion: {
     name: 'acta de la reunión', icon: icons.acta_reunion,
@@ -362,12 +374,12 @@ export default {
   correo_evaristo: {
     name: 'correo de Evaristo', icon: icons.correo_evaristo,
     handlers: {
-      mirar: say(['Asunto: «Una coma». Todos en copia. Envío: «en el momento oportuno».', 'La cláusula 12, subrayada dos veces. Con regla.']),
+      mirar: say(['Asunto: «Una coma». Todos en copia. Envío: «en el momento oportuno».', 'La cláusula 12, subrayada dos veces.']),
       'dar:begona_triplicado': dice('begona_triplicado', 'Una copia de un correo. Esto ya es casi un triplicado.'),
-      'dar:aurora_galerada': dice('aurora_galerada', 'Ya lo he leído, criatura. Está perfecto. Guárdalo.'),
+      'dar:aurora_galerada': dice('aurora_galerada', 'Ya lo he leído. Está perfecto. Guárdalo.'),
       'dar:inigo_sinergia': dice('inigo_sinergia', 'Eso, por escrito. Si no está en el hilo, no escala.'),
-      'dar:*': 'Lo guardo. Evaristo dijo «en el momento oportuno». Y no es este.',
-      'usar:*': 'Lo guardo. Evaristo dijo «en el momento oportuno». Y no es este.',
+      'dar:*': 'Lo guardo. Evaristo dijo «en el momento oportuno». Aún no ha llegado.',
+      'usar:*': 'Lo guardo. Evaristo dijo «en el momento oportuno». Aún no ha llegado.',
     },
   },
   // [P3] plan §4.4: el táper que suelta el de Mercados al huir del Vending; se da a `ruben` en Sistemas (P1, `taper_dado`)
@@ -382,5 +394,11 @@ export default {
       px(g, 8, 9, '#ffffff'); px(g, 9, 8, '#ffffff');
     },
     handlers: { mirar: 'Un táper sin nombre. Vacío. Huele a lentejas de ayer y a huida.' },
+  },
+  // ENMIENDA E5 §2.5.2 (I1): lo da Maripaz al Coger termometro_ventas (PE, ecosistema); se usa con el kanban (PB, pecera).
+  // No se gasta (anti-callejón): se queda en el inventario tras escribir la columna.
+  rotulador_rojo: {
+    name: 'rotulador de objetivos', icon: icons.rotulador_rojo,
+    handlers: { mirar: 'Rotulador rojo de Comercial. Solo ha pintado objetivos.' },
   },
 };

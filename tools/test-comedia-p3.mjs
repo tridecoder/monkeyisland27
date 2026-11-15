@@ -212,7 +212,7 @@ try {
   await clearLog();
   await R.run(['dar', 'cafe', 'aurora_galerada']); await R.run(['cerrar']); await idle();
   await R.check({ tiene: ['ficha_pagina_7'], flags: ['aurora_conto_pasos', 'aurora_hablo_fax', 'acto_2_iniciado'], notiene: ['cafe'] });
-  ok(await logHas('siguientes pasos') && await logHas('ACTO II: HUECO, FUENTE, FIRMA'), 'paso 16: ficha, aurora_hablo_fax (ahora en A_CAFE), Acto II');
+  ok(await logHas('el punto que nadie toca') && await logHas('ACTO II: HUECO, FUENTE, FIRMA'), 'paso 16: ficha, aurora_hablo_fax (ahora en A_CAFE), Acto II');
   ok(await logHas('Ahí lo tienes, por casillas.') && !(await logHas('la pausa era miedo')) && !(await logHas('desde marzo')), '§7.3: Aurora tras el café, recortada');
   await R.run(['verbo', 'hablar', 'aurora_galerada']); await R.run(['opcion', '¿Por qué no se hablan usted y Teodoro?']); await R.run(['cerrar']); await idle();
   ok(await flag('rep_02') === true && await flag('rumor_teodoro_n') === 1, 'paso 17: rep_02 (+ rumor C1)');
@@ -267,7 +267,7 @@ try {
     await page.waitForTimeout(1900); await page.screenshot({ path: path.join(here, 'shots', 'e2-p3-adhesivo-2.png') });
     await G(() => __game.skipText(true)); await pr; await idle();
   } else await verb('hablar', 'aurora_galerada');
-  ok(await logHas('Llevas un anuncio en la espalda, criatura. En esta planta, no.') && await flag('bruno_con_banner') === false, 'Aurora despega el adhesivo: bruno_con_banner = false');
+  ok(await logHas('Llevas un anuncio en la espalda. En esta planta, no.') && await flag('bruno_con_banner') === false, 'Aurora despega el adhesivo: bruno_con_banner = false');
   o = await opts();
   ok(o && o.includes('Don Evaristo pregunta si su coma está bien.'), 'con evaristo_escuchado y papel: la opción de la coma');
   await shotDuring('coma-fax', () => chooseNoWait('Don Evaristo pregunta si su coma está bien.'), [7000, 22000, 28500, 40000]);
@@ -366,11 +366,7 @@ try {
     && await logHas('Las copias, para su archivo.') && !(await logHas('insulto a la contabilidad')) && !(await logHas('Es una prueba')),
     '§7.4 paso 27 y fase B (7): recortes de Begoña, tres sellos en una línea');
   ok(await logHas('Y pase por Controlling. Don Evaristo le espera. Escúchele hasta el final.'), '§5.2: Begoña manda a Bruno a Controlling');
-  await clearLog();
-  await verb('hablar', 'begona_triplicado'); await choose('¿Usted ha sido feliz alguna vez?');
-  ok(await logHas('Hay uno de 1987.'), '[5·NO]: el F-1 de Felicidad');
-  await choose('Nada. Me iba.');
-  await clearLog();
+  await clearLog();   // (E5, decisión del dueño: fuera «¿Usted ha sido feliz alguna vez?» del árbol de Begoña)
   await verb('mirar', 'cartel_recorte');
   ok(await logHas('Firmado: Administración') && !(await logHas('Dirección')), 'el cartel del recorte lo firma Administración');
 
@@ -395,7 +391,7 @@ try {
   o = await opts();
   ok(o && o[0] === '¿Para qué me ha llamado?' && !o.some(t => /cotilleo|convoca|sigue aquí|Aurora dice/.test(t)), 'E0 de §5.2: «¿Para qué me ha llamado?» sin evaristo_convoco; fuera las opciones viejas');
   await choose('¿Por qué llama tanto?');
-  ok(await logHas('Y en persona, comas.') && !(await opts()).includes('¿Por qué llama tanto?'), '«¿Por qué llama tanto?» once');
+  ok(await logHas('En persona, comas. Por teléfono, nada.') && !(await opts()).includes('¿Por qué llama tanto?'), '«¿Por qué llama tanto?» once');
   // XE5: la prisa no rompe nada
   await choose('¿Para qué me ha llamado?'); await choose('¿Falta mucho?');
   ok(await logHas('Si tiene prisa, se lo pongo por escrito.') && await logHas('Le he mirado el reloj y se ha dado cuenta.') && !(await flag('evaristo_escuchado')) && !(await state()).dialog,

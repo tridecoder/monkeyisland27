@@ -18,10 +18,17 @@ const asArray = x => x == null ? [] : Array.isArray(x) ? x : [x];
 const rand = (a, b) => a + Math.random() * (b - a);
 
 export function reset(game) {
-  if (game.apagon && game.apagon.resolve) game.apagon.resolve();
-  game.apagon = null;
+  salaNueva(game);
   game.burst = null;
   if (game.card) { const r = game.card.resolve; game.card = null; if (r) r(); }
+}
+/** E5 §6.2/§6.4: al cambiar de sala (core.enterRoom) y al cargar (reset): fuera el apagón (con su interceptor y sus
+ *  nombres a oscuras) y los atascos abiertos de `estampida({ esperar: true })` se sueltan sin animación. */
+export function salaNueva(game) {
+  if (game.apagon && game.apagon.resolve) game.apagon.resolve();
+  game.apagon = null;
+  for (const ctl of (game.atascos || []).slice()) ctl.abortar();
+  game.atascos = [];
 }
 
 // ================================================================== AMBIENTE
@@ -118,20 +125,63 @@ export async function decir(api, lines, voces = {}) {
 
 // ================================================================== APAGÓN
 /** api.apagon(opts): la sala se queda a oscuras (sobre todo menos la interfaz). opts: { ms (0 = hasta api.apagon(false)),
- *  alpha 0.88, color '#020308', spots [[cx, cy, rx, ry]] (pantallas que siguen encendidas), actor 0.25 (cuánto se libran
- *  los actores, como en la penumbra), parpadeo true (titila al encenderse/apagarse) }. Devuelve una promesa que se
- *  resuelve al volver la luz (con ms) o enseguida (sin ms). */
+ *  alpha 0.88, color '#020308', spots (pantallas que siguen encendidas), actor 0.25 (cuánto se libran los actores, como
+ *  en la penumbra), parpadeo true (titila al encenderse/apagarse), nombres, interceptar }. Devuelve una promesa que se
+ *  resuelve al volver la luz (con ms) o enseguida (sin ms).
+ *
+ *  ENMIENDA E5 §6.2 (todo opcional; sin estas claves, el apagón de siempre):
+ *  · `spots`: cada foco es [cx, cy, rx, ry(, k)] (fijo, coordenadas de sala) o { actor: 'id', rx, ry, dy = -22, dx = 0 }:
+ *    un foco que SIGUE al actor cada fotograma (la linterna del móvil en la mano: `dy` −22 por defecto). Si el actor no
+ *    está en la sala o no es visible, ese foco no se pinta.
+ *  · `nombres: true`: la línea de acción (y «ver hotspots») no dice el nombre de lo que hay bajo el ratón: dice el
+ *    `nameDark` del objeto / de la colocación o definición del actor (texto o `(view) => texto`) o, si no tiene,
+ *    «algo» (objetos) / «alguien» (actores). El inventario y Bruno conservan su nombre.
+ *  · `interceptar: async (api, verbo, id, item) => boolean`: `core.executeInner` la llama ANTES de cualquier verbo del
+ *    jugador (antes incluso de andar hasta el objeto; salidas, ascensor y directorio incluidos) mientras dure el
+ *    apagón. Corre como guion bloqueante con su `api` (`api.verb`, `api.target`, `api.item` como en un handler). Si
+ *    devuelve `true`, el verbo no sigue; con `false`/nada, el verbo sigue como siempre. Andar por el suelo no pasa por
+ *    ella. Ejemplo (Redacción a oscuras):
+ *      api.apagon({ ms: 0, nombres: true, spots: [SPOT_YOLI[0], { actor: 'anselmo_monolito', rx: 10, ry: 8 }],
+ *        interceptar: async (api, verbo, id, item) => {
+ *          if (verbo === 'usar' && id === 'enchufe_pantalla' && !item) return false;   // el de verdad: cierra la ventana
+ *          if (verbo === 'hablar' && id === 'yoli_tendencias') { await api.sayAs(id, '¡Chsss! Estoy contando…'); return true; }
+ *          await api.say('No veo nada. Solo a Yoli, a la luz del monitor, contando.'); return true;
+ *        } });
+ *  Al cambiar de sala o cargar partida (`salaNueva`/`reset`) el apagón se quita entero (interceptor incluido). */
 export function apagon(game, opts = {}) {
   if (opts === false || opts === null) { if (game.apagon) { const r = game.apagon.resolve; game.apagon = null; if (r) r(); } return Promise.resolve(); }
   if (typeof opts === 'number') opts = { ms: opts };
   if (game.apagon && game.apagon.resolve) game.apagon.resolve();
   const ms = opts.ms ?? 3000;
   const A = { t0: game.time, until: ms > 0 ? game.time + ms : 0, alpha: opts.alpha ?? 0.88, color: opts.color || '#020308',
-    spots: opts.spots || [], actor: opts.actor ?? 0.25, parpadeo: opts.parpadeo !== false, resolve: null };
+    spots: opts.spots || [], actor: opts.actor ?? 0.25, parpadeo: opts.parpadeo !== false, resolve: null,
+    nombres: !!opts.nombres, interceptar: typeof opts.interceptar === 'function' ? opts.interceptar : null };
   game.apagon = A;
   game.audio.sfx(opts.sfx || 'click');
   if (!ms || game.instant) { if (game.instant && ms) game.apagon = null; return Promise.resolve(); }
   return new Promise(res => { A.resolve = res; game.sleep(ms).then(() => { if (game.apagon === A) game.apagon = null; res(); }); });
+}
+/** Focos del apagón en este fotograma: los fijos tal cual y los `{ actor }` en la posición actual del actor. */
+export function spotsDe(game, A) {
+  const rid = game.room && game.room.def.id;
+  const out = [];
+  for (const sp of A.spots || []) {
+    if (sp && !Array.isArray(sp) && sp.actor) {
+      const a = game.actors[sp.actor];
+      if (!a || a.room !== rid || !a.visible) continue;
+      out.push([Math.round(a.x + (sp.dx || 0)), Math.round(a.y + (sp.dy ?? -22)), sp.rx ?? 10, sp.ry ?? 8, sp.k ?? 1]);
+    } else out.push(sp);
+  }
+  return out;
+}
+/** Nombre a oscuras (E5 §6.2 `nombres`): null si no hay apagón con nombres (entonces, el de siempre). */
+export function nombreOscuro(game, def, kind) {
+  const A = game.apagon;
+  if (!A || !A.nombres || !def) return null;
+  if (kind === 'actor' && def.id === game.G.player) return null;
+  let n = def.nameDark;
+  try { if (typeof n === 'function') n = n(game.viewFor()); } catch (e) { n = null; }
+  return n ? String(n) : (kind === 'actor' ? 'alguien' : 'algo');
 }
 export function drawApagon(game, g, cam) {
   const A = game.apagon;
@@ -141,14 +191,28 @@ export function drawApagon(game, g, cam) {
   let k = Math.min(1, t / 90);
   if (A.parpadeo && t < 260) k = (Math.floor(t / 65) % 2) ? 0.35 : 1;               // titila al irse la luz
   if (A.until && A.parpadeo && A.until - game.time < 240) k = (Math.floor((A.until - game.time) / 60) % 2) ? 0.4 : 0.9;
-  game.drawShade(g, cam, { color: A.color, alpha: A.alpha * k, spots: A.spots, actor: A.actor, borde: 0.3 });
+  game.drawShade(g, cam, { color: A.color, alpha: A.alpha * k, spots: spotsDe(game, A), actor: A.actor, borde: 0.3 });
 }
 
 // ================================================================== ESTAMPIDA
 /** api.estampida(ids, opts): huida en grupo por una puerta con atasco. opts: { puerta: [x, y] (punto de la puerta),
  *  atascoMs 900 (encajados: ±3 px y temblor), gap 120 (salen de uno en uno), destino: null | id de sala (adónde van),
- *  enAtasco: async (api) => {} (líneas mientras están encajados), sfx: { atasco, plop } }. Corren ×1,8. */
+ *  enAtasco: async (api, ctl) => {} (líneas mientras están encajados), sfx: { atasco, plop }, esperar }. Corren ×1,8.
+ *
+ *  ENMIENDA E5 §6.4 · `esperar: true` (el atasco jugable): llegan a la puerta, se encajan (temblor sin límite mientras
+ *  dure), corre `enAtasco(api, ctl)` y la promesa RESUELVE con `ctl` dejándolos encajados (el guion puede terminar y
+ *  devolver el control). `ctl = { alFrente(id), soltar: async () => {…}, activo }`:
+ *    · `ctl.alFrente(id)`: el que habla se adelanta 4 px (no queda tapado);
+ *    · `await ctl.soltar()`: fin del atasco: ¡plop!, salen de uno en uno (a `destino` o fuera de la sala); idempotente;
+ *    · `ctl.activo`: true mientras siguen encajados.
+ *  Si se cambia de sala o se carga partida con el atasco abierto, se sueltan solos SIN animación (al cargar no se toca
+ *  la partida cargada: la sala lo resuelve en su onEnter). Sin `esperar`, todo como siempre.
+ *    const ctl = await api.estampida(['mercados_1', 'mercados_2', 'mercados_3'], { puerta: [96, 128], esperar: true,
+ *      enAtasco: async (api, c) => { c.alFrente('mercados_1'); await api.sayAs('mercados_1', '¡Usted primero!'); } });
+ *    … (el jugador juega; el atasco tiembla) …
+ *    await ctl.soltar(); */
 export async function estampida(game, api, ids, opts = {}) {
+  if (opts.esperar) return estampidaEsperar(game, api, ids, opts);
   const [px, py] = opts.puerta || [0, 0];
   const actors = ids.map(id => game.actors[id]).filter(Boolean);
   // todos a la puerta a la vez (con un pequeño abanico para que no se pisen del todo)
@@ -182,6 +246,61 @@ export async function estampida(game, api, ids, opts = {}) {
     await api.wait(opts.gap ?? 120);
   }
   game.syncState();
+}
+/** estampida({ esperar: true }) (E5 §6.4): ver la cabecera de `estampida`. */
+async function estampidaEsperar(game, api, ids, opts) {
+  const [px, py] = opts.puerta || [0, 0];
+  const actors = ids.map(id => game.actors[id]).filter(Boolean);
+  const gen = game.gen;
+  await Promise.all(actors.map((a, i) => { a.running = false; const p = game.walkActor(a.id, px + (i - (actors.length - 1) / 2) * 4, py + (i % 2)); a.speed0 = a.speed0 || a.speed; a.speed = a.speed0 * (opts.prisa ?? 1.8); return p; }));
+  actors.forEach(a => { a.speed = a.speed0 || a.speed; });
+  if (opts.sfx !== false) api.sfx((opts.sfx && opts.sfx.atasco) || 'hit');
+  game.shake(300, 1);
+  const base = actors.map(a => [a.x, a.y]);
+  const y0 = base.map(b => b[1]);
+  let jam = true, soltado = null;
+  // un temporizador propio (no game.sleep): el temblor sigue aunque el texto vaya en modo rápido o se salte una cinemática
+  const tick = (ms) => new Promise(res => game.timers.push({ at: game.time + ms, resolve: res }));
+  const temblor = (async () => {
+    for (let k = 0; jam; k++) {
+      if (game.gen !== gen) { jam = false; break; }
+      actors.forEach((a, i) => { a.x = base[i][0] + ((k + i) % 2 ? 3 : -3) * (i % 2 ? 1 : -1); a.y = base[i][1] + ((k + i) % 3) - 1; });
+      await tick(70);
+    }
+  })();
+  const fuera = () => { for (const a of actors) { a.room = opts.destino || null; a.path = []; } };
+  const quitar = () => { game.atascos = (game.atascos || []).filter(c => c !== ctl); };
+  const ctl = {
+    get activo() { return jam && !soltado; },
+    alFrente: (id) => actors.forEach((a, i) => { base[i][1] = y0[i] + (a.id === id ? 4 : 0); if (jam) a.y = base[i][1]; }),
+    soltar: () => {
+      if (soltado) return soltado;
+      soltado = (async () => {
+        quitar();
+        jam = false; await temblor;
+        if (game.gen !== gen) return;
+        actors.forEach((a, i) => { a.x = base[i][0]; a.y = y0[i]; });
+        for (const a of actors) {
+          if (opts.sfx !== false) api.sfx((opts.sfx && opts.sfx.plop) || 'door');
+          a.room = opts.destino || null; a.path = [];
+          await game.sleep(opts.gap ?? 120);
+        }
+        game.syncState();
+      })();
+      return soltado;
+    },
+    /** cambio de sala / carga: fuera sin animación (llamado por `salaNueva`). */
+    abortar: () => {
+      if (soltado) return;
+      quitar();
+      jam = false;
+      if (game.gen === gen) { actors.forEach((a, i) => { a.x = base[i][0]; a.y = y0[i]; }); fuera(); game.syncState(); }
+      soltado = Promise.resolve();
+    },
+  };
+  (game.atascos || (game.atascos = [])).push(ctl);
+  if (opts.enAtasco) await opts.enAtasco(api, ctl);
+  return ctl;
 }
 
 // ================================================================== VIRAL (ráfaga de notificaciones)

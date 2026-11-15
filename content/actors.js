@@ -143,14 +143,15 @@ const lectorCae = [22, 50, 76].map(deg => lectorInclinado(deg, false));
 const lectorCaeChaqueta = [22, 50, 76].map(deg => lectorInclinado(deg, true));
 // crítica 3 §9.9 · la señal del empujón: ganado D4 y antes de caer, el cartón se tambalea solo hacia donde caerá (4° y 2°
 // sobre la misma esquina de la base) un instante cada pocos segundos. Situación, no texto: pide un empujoncito.
-const lectorTambalea = [4, 2].map(deg => lectorInclinado(deg, false));
-const lectorTambaleaChaqueta = [4, 2].map(deg => lectorInclinado(deg, true));
-export const TAMBALEO = { cada: 3200, frames: [4, 0, 2, 0, 4, 0], ms: 160 };   // cada 3,2 s: seis fotogramas de 160 ms
+// ENMIENDA E5 §2.6: un tercer fotograma (8°, `tamb3`/`tamb3j`) que acompaña el `sfx('crujido')` de la Sala.
+const lectorTambalea = [4, 2, 8].map(deg => lectorInclinado(deg, false));
+const lectorTambaleaChaqueta = [4, 2, 8].map(deg => lectorInclinado(deg, true));
+export const TAMBALEO = { cada: 3200, frames: [4, 0, 8, 0, 4, 0, 2, 0], ms: 160 };   // cada 3,2 s: ocho fotogramas de 160 ms
 /** Fotograma del tambaleo en el instante `t` (null = de pie, quieto). */
 export function tambaleo(t) {
   const k = Math.floor(((Number(t) || 0) % TAMBALEO.cada) / TAMBALEO.ms);
   const deg = TAMBALEO.frames[k];
-  return deg === 4 ? 'tamb1' : deg === 2 ? 'tamb2' : null;
+  return deg === 4 ? 'tamb1' : deg === 2 ? 'tamb2' : deg === 8 ? 'tamb3' : null;
 }
 // Caído de cara en el suelo, a la derecha de donde estaba (la cabeza a la derecha; el actor queda en el CENTRO del
 // cartón: la escena lo recoloca al caer, `xCaido()` en content/escenas/climax.js): el reverso de cartón crudo, el
@@ -254,7 +255,7 @@ export default {
       shirt: '#4a5a80', emblem: '#FF78B8', pants: '#2a2a3a', shoes: '#f0f0f0', prop: 'eyedrops', build: 'slim', height: 0.97,
     },
     murmurs: ['Esto sube. Esto baja. Esto soy yo.',   // E2 §2.7 / L29: sin cifras entre rayas
-      'Ahí al lado imprimen lo que yo publiqué ayer. Con las faltas corregidas.',   // orden 2: la Redacción de papel, al lado
+      'Ahí al lado imprimen lo que yo publiqué ayer.',   // E5 C99   // orden 2: la Redacción de papel, al lado
       'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.'],
   },
   teodoro_cuerpodoce: {
@@ -283,7 +284,7 @@ export default {
       glassesChain: '#d0b060', shirt: '#e8e0d8', jacket: '#7a2234', skirt: '#4a3a40', shoes: '#2a1a20', height: 0.92, build: 'slim',
     },
     murmurs: ['«Detrás mío». Ha dicho «detrás mío». En esta planta.', 'Una tilde. Solo pido una tilde.',
-      'Por esa puerta entra la web. No se limpia los pies. Ni las tildes.'],
+      'Por esa puerta entra la web. No se limpia los pies.'],   // E5 C100
   },
   gervasio_acta: {
     name: 'Gervasio', color: '#AEC6E6', speed: 52,
@@ -325,7 +326,7 @@ export default {
       'Te pongo un «ofrecido por» tan pequeño que solo lo verá el supervisor.', '(lee la web) Incendio en un polígono. Y al lado, barbacoas. Lo cambio.'],
   },
   paco_ticket: {
-    name: 'Paco', color: '#92C0FF', speed: 50,
+    name: 'Eutimio', color: '#92C0FF', speed: 50,
     doll: {
       skin: '#ecdccc', hair: '#4a3a2a', hairStyle: 'short', beard: 'long', glasses: 'square', glassesColor: '#2a2a2a',
       glassesTape: '#f4f4f4', shirt: '#74767e', emblem: '#c8ccd8', keys: '#b8bcc4', pants: '#3a3a44', shoes: '#2a2a2a',
@@ -343,7 +344,7 @@ export default {
       '¿Y esto el Lector Medio lo entiende? Perfecto: asiente.'],
   },
   ruben: {
-    name: 'Rubén', color: '#B6FF4D', speed: 58,
+    name: 'Zacarías', color: '#B6FF4D', speed: 58,
     doll: {
       skin: '#d4dcb4', hair: '#5a4a3a', hairStyle: 'short', shirt: '#86888e', hood: '#86888e', neckphones: '#202024',
       eyebags: true, crumbs: '#e8c880', pants: '#3a3c48', shoes: '#5a5a60', build: 'slim', height: 0.98,
@@ -435,17 +436,20 @@ export default {
   // [P3] plan §4.4 / §10.2: los tres de Mercados (muñeco genérico recoloreado: camisas beige, gris y azul; uno con
   // barba). Estampida en la Sala Amazonas (P4); `mercados_1` se esconde después en la cola del microondas del Vending (P3).
   mercados_1: {
-    name: 'Mercados 1', color: '#7CF0C8', speed: 64,
+    name: 'Fermín Plazofijo',   // E5 X01 (§5.2: miedo a que algo se mueva)
+    color: '#7CF0C8', speed: 64,
     doll: { skin: '#e4b08c', hair: '#4a3626', hairStyle: 'parted', beard: 'full', shirt: '#d8c49a', tie: '#5a4a3a',
       pants: '#5a5650', shoes: '#2a2420', height: 1.0, build: 'normal' },
   },
   mercados_2: {
-    name: 'Mercados 2', color: '#6EA0FF', speed: 64,
+    name: 'Rogelio Diferido',   // E5 X02 (siempre con retraso)
+    color: '#6EA0FF', speed: 64,
     doll: { skin: '#f0c4a0', hair: '#2a2420', hairStyle: 'short', shirt: '#a8acb4', tie: '#2a3a5a',
       pants: '#3a3c44', shoes: '#1a1a1e', height: 0.96, build: 'slim' },
   },
   mercados_3: {
-    name: 'Mercados 3', color: '#FF7EC0', speed: 64,
+    name: 'Jacinto Dividendo',   // E5 X03 (quiere cobrar dos veces)
+    color: '#FF7EC0', speed: 64,
     doll: { skin: '#d8a07a', hair: '#8a8a90', hairStyle: 'balding', glasses: 'square', glassesColor: '#2a2a2a',
       shirt: '#7a9ac8', pants: '#3a3a42', shoes: '#2a1a14', height: 1.04, build: 'heavy', belly: true },
   },
@@ -473,15 +477,15 @@ export default {
     // Variantes automáticas: con la chaqueta de Ramírez (chaqueta_en_lector) y caído (lector_derribado).
     name: 'Lector Medio', color: '#E8C8A8', defaultVerb: 'mirar', speed: 1,
     sprite: lectorBase,
-    // su grabación, como murmullo (calla en cuanto lo derriban)
-    murmurs: (v) => (v.flag('lector_derribado') ? null : ['A mí lo que me interesa es la economía. Y ahorrar.']),
+    // E5 M22 / §5.4: antes del clímax no habla ni lleva globo (asiente en silencio); su frase se guarda para el clímax
+    murmurs: [],
     variants: {
       chaqueta: { sprite: lectorChaqueta },
       caido: { sprite: lectorCaido },
       cae1: { sprite: lectorCae[0] }, cae2: { sprite: lectorCae[1] }, cae3: { sprite: lectorCae[2] },
       cae1j: { sprite: lectorCaeChaqueta[0] }, cae2j: { sprite: lectorCaeChaqueta[1] }, cae3j: { sprite: lectorCaeChaqueta[2] },
-      tamb1: { sprite: lectorTambalea[0] }, tamb2: { sprite: lectorTambalea[1] },
-      tamb1j: { sprite: lectorTambaleaChaqueta[0] }, tamb2j: { sprite: lectorTambaleaChaqueta[1] },
+      tamb1: { sprite: lectorTambalea[0] }, tamb2: { sprite: lectorTambalea[1] }, tamb3: { sprite: lectorTambalea[2] },
+      tamb1j: { sprite: lectorTambaleaChaqueta[0] }, tamb2j: { sprite: lectorTambaleaChaqueta[1] }, tamb3j: { sprite: lectorTambaleaChaqueta[2] },
     },
     variant: (v) => {
       if (v.flag('lector_derribado')) return 'caido';

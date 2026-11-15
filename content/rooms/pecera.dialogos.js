@@ -1,5 +1,7 @@
 // SALA `pecera` (Redacción) — ÁRBOLES DE DIÁLOGO. Paquete P2 (docs/guion2/ENMIENDA_E2.md §2.5 Leoncio y Anselmo, §2.6
-// fusión Nemesio → Anselmo con AN_ALBUM_INTRO / AN_ALBUM / salida en valor, §2.7 Yoli, §7.6 coro). Importado desde
+// fusión Nemesio → Anselmo, §2.7 Yoli, §7.6 coro) y ENMIENDA E5 §2.5 (PB): el álbum se valida en AN_ALBUM_INTRO («Las
+// fotos me valen. Pero yo no escribo columnas nuevas.»; fuera AN_ALBUM) y la columna la escribe Bruno con el rotulador
+// de Comercial (`columnas`, `salida`; los llama el tablero, pecera.js). Importado desde
 // ./pecera.js. Opciones con el texto LITERAL del guion (el walkthrough las busca por texto). Valentín no tiene árbol
 // (cameo mudo, ver pecera.js). Herminia no tiene árbol: es el portátil `herminia_portatil` y solo escribe en su
 // pantalla ('H' → api.pantalla, «HERMINIA (IA) › …»). Nemesio ya no existe (E2 §2.6): Desarrollo es Anselmo y el coro.
@@ -106,7 +108,7 @@ export default {
               await api.anim(L, 'reach', 900);              // L14: (vuelve a girar el portátil hacia sí, despacio)
             } },
           { text: '¿Y esos gráficos de Anselmo en tu sección?', once: true, if: 'acto_2_iniciado',
-            reply: ['Me los pone desde su pantalla. Sin preguntar.', 'Un quesito que suma 130 %. Yo los hacía de 100. Vieja escuela.',
+            reply: ['Me los pone desde su pantalla.', 'Un quesito que suma 130 %. Yo los hacía de 100. Vieja escuela.',
               'Herminia lo arreglaría en una décima. Pero está encintada.'] },
           { text: '¿Y si Herminia te sustituye a ti también?', once: true,
             reply: ['Ya lo ha hecho. En septiembre. No se lo he dicho a nadie.', 'Ni a ella. Es muy sensible a los datos.'] },
@@ -135,13 +137,14 @@ export default {
         options: [
           { text: '¿Por qué bloqueas a Herminia?', once: true,
             do: async (api) => talk(api, [[A, '¿De dónde viene? De Infografía. Hecha con IA. Fuera de mis sistemas.'], ['B', '¿Y si funciona?'],
-              [A, 'Peor. Si funciona, la gente se acostumbra.'], [A, 'Y si se rompe a las tres, ¿quién baja? Paco abre ticket. Bajo yo.']]) },
+              [A, 'Peor. Si funciona, la gente se acostumbra.'], [A, 'Y si se rompe a las tres, ¿quién baja? Eutimio abre ticket. Bajo yo.']]) },
           { text: '¿Y tú no usas IA?', once: true,
             do: async (api) => {
               await talk(api, [[A, 'Mucha. Para los demás departamentos.'], [A, 'Un corrector para Aurora. Notas de gasto generativas para Begoña.'],
                 ['B', '¿Y esa IA no es de fuera?']]);
-              if (api.flag('herminia_midio')) await api.sayAs(A, 'Ya te lo he dicho. El prompt es de dentro. Lo escribí yo. En mayúsculas.');
-              else await api.sayAs(A, ['El modelo es de fuera. El prompt es de dentro.', 'Eso lo hace nuestro.']);
+              // E5 §2.8 (M20, D19): la frase entera se oye UNA vez, en pecera_herminia_mide; aquí, el eco o la pregunta
+              if (api.flag('herminia_midio')) await api.sayAs(A, 'Ya te lo he dicho. Lo escribí yo. En mayúsculas.');
+              else await api.sayAs(A, '¿Tú de qué departamento vienes?');
             } },
           { text: '¿Qué tal con Yoli?', once: true,                 // paso 24 (heredado de Nemesio): cita la réplica de R09
             reply: ['Me dijo que mi dato de tráfico estaba «sacado de contexto».', '¿El contexto? ¿De dónde viene? De la web. No entra.',
@@ -155,8 +158,8 @@ export default {
               await talk(api, [[A, '¿Desde dónde?'], ['B', arriba ? 'Desde aquí. Un enchufe con número.' : 'Desde Sistemas. Una regleta.'],
                 [A, 'Solución de terceros. Funciona, pero no es mía. Próxima versión.']]);
             } },
-          { text: 'Necesito la baja de Rubén.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!posit_descopeado'],
-            reply: ['¿Rubén? «Baja becario Rubén». En POR HACER. Con letra de julio.', 'De mi tablero se sale de dos formas: hecho o muerto.',
+          { text: 'Necesito la baja de Zacarías.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!album_validado', '!posit_descopeado'],
+            reply: ['¿Zacarías? «Baja becario Zacarías». En POR HACER. Letra de julio.', 'De mi tablero se sale de dos formas: hecho o muerto.',
               'Para darlo por hecho, pruebas de que existió. Fotos. Actas. Algo.', 'Y que no venga de fuera.'] },
           { text: 'Mira este álbum.', if: 'has:album_eventos', goto: 'AN_ALBUM_INTRO' },
           { text: 'El Titulator era un becario.', once: true, if: ['ruben_encontrado', '!ruben_libre'],
@@ -165,7 +168,7 @@ export default {
           { text: 'Me voy.', exit: true, reply: 'Cierra la frontera al salir. No tiene puerta. Ciérrala igual.' },
         ],
       },
-      // E2 §2.6.3 (también al Dar album_eventos): las líneas de entrada van en un nodo puente para no repetirlas
+      // E2 §2.6.3 (también al Dar album_eventos) + E5 §2.5.3: las fotos valen; la columna, que la escriba otro.
       AN_ALBUM_INTRO: {
         onEnter: async (api) => {
           await api.sayAs(A, '¿De dónde vienen estas fotos? De Eventos. De fuera.');
@@ -173,17 +176,14 @@ export default {
           await api.sayAs(A, ['Cena de Navidad. Al fondo, un chico pálido con un táper.',
             'Photocall. Al fondo, el mismo. Yendo al baño. Es de la casa: sale en todas.',
             'Pero darle de baja es despedir. Y despedir no es una columna de mi tablero.']);
-          return 'AN_ALBUM';
+          // (Se queda el álbum. Grapa una foto al pósit de Rubén: el tablero la pinta con album_validado.)
+          api.take('album_eventos');
+          api.setFlag('album_validado', true);
+          api.sfx('paper');
+          api.repaint();
+          await api.sayAs(A, 'Las fotos me valen. Pero yo no escribo columnas nuevas.');
+          return 'exit';
         },
-      },
-      AN_ALBUM: {
-        options: [
-          { text: '¿Y si lo damos por hecho?', do: async (api) => albumNo(api, 'Hecho sería que alguien le hubiera dado de baja. Nadie lo ha hecho.') },
-          { text: '¿Y si le hacemos un funeral? Con flores. Y diapositivas.', do: async (api) => albumNo(api, 'No me tientes. Ya tengo la plantilla.') },
-          { text: 'No es un despido: es una salida en valor.', if: 'rep_13', do: async (api) => salida(api, 3) },
-          { text: '¿Y si... lo descopeamos?', if: 'oyo_descopear', do: async (api) => salida(api, 4) },
-          { text: 'Lo pienso y vuelvo.', exit: true, reply: 'Eso dijo Rubén en julio.' },
-        ],
       },
     },
   },
@@ -214,86 +214,153 @@ export default {
   },
 };
 
-// ------------------------------------------------------------------ AN_ALBUM: «ni hecho ni muerto»
-async function albumNo(api, linea) {
-  await api.sayAs(A, linea);
-  if (api.inc('pecera_album_n') === 2 && !api.flag('rep_13') && !api.flag('oyo_descopear')) {
-    await api.sayAs(A, 'Tráeme algo que no sea ni hecho ni muerto. Eso no existe.');
-  }
-}
-
-// ------------------------------------------------------------------ E2 §2.6.4 AN_SALIDA · paso 40: la salida en valor
+// ------------------------------------------------------------------ E5 §2.5.4 · el menú de columnas (Usar rotulador con kanban)
 // Cámara: tablero → ventana (Rubén) → Infografía (el portátil) → Bruno. Infografía y Diseño y Producto nunca en el mismo
 // plano: con la cámara en la ventana (Valentín a la vista) no habla nadie de Infografía; en Infografía (≤ 1000) no se ve
 // a Valentín (1240).
 const TABLERO_X = 530 + D, TABLERO_Y = 124;              // kanban.walkTo
+/** Columnas equivocadas: lo que dice Anselmo al borrarlas con la manga (§3.5). */
+const MAL = ['Eso es «muerto» con corbata.', '«De verdad» no es un estado.', 'Eso es tuyo. Mi tablero no es tu diario.'];
+/** El menú (texto de pantalla). Bruno ya está delante del tablero. */
+export async function columnas(api) {
+  const ops = [['DESPEDIDOS', 0], ['HECHO (DE VERDAD)', 1], ['FIRMAR EN PAPEL', 2]];
+  if (api.flag('rep_13')) ops.push(['SALIDA EN VALOR', 3]);
+  if (api.flag('oyo_descopear')) ops.push(['DESCOPEADO', 4]);
+  ops.push(['Mejor no.', -1]);
+  api.face('up');
+  const i = await api.choose(ops.map(o => o[0]), { escape: ops.length - 1 });
+  const via = i >= 0 && ops[i] ? ops[i][1] : -1;
+  if (via < 0) return;
+  if (via >= 3) { await salida(api, via); return; }
+  await columnaMal(api, via);
+}
+/** Anselmo vuelve a su mesa sin bloquear (el jugador ya puede probar otra columna). */
+function anselmoVuelve(api) {
+  const at = (art.layout[A] && art.layout[A].at) || [1082, 118, 'left'];
+  api.background(async (api) => { await api.walkActor(A, at[0], at[1]); api.faceActor(A, at[2] || 'left'); });
+}
+/** Bruno se aparta del tablero (a la izquierda, mirándolo) para que se lea la columna. */
+async function apartarse(api) {
+  await api.walkTo(TABLERO_X - 44, TABLERO_Y + 4);
+  api.face('right');
+}
+/** Una columna equivocada: Bruno escribe; Anselmo cruza y la borra con la manga. */
+async function columnaMal(api, via) {
+  try {
+    await api.cutscene(async (api) => {
+      await api.anim(api.player, 'reach', 600);
+      api.sfx('paper');
+      api.setState('kanban', 'mal_' + via);            // (la columna, a rotulador, con mala letra)
+      api.repaint();                                   // (el tablero es un `prop`: se pinta en caché)
+      await apartarse(api);                            // (Bruno da un paso atrás: que se lea)
+      await api.wait(500);
+      api.cameraTo(TABLERO_X + 60);
+      await api.walkActor(A, TABLERO_X + 40, TABLERO_Y);
+      api.faceActor(A, 'up');
+      await api.anim(A, 'reach', 600);                 // (la borra con la manga)
+      api.sfx('paper');
+      api.setState('kanban', null);
+      api.repaint();
+      api.faceActor(A, api.player);
+      await api.sayAs(A, MAL[via]);
+      if (api.inc('pecera_columna_mal_n') === 3 && !api.flag('rep_13') && !api.flag('oyo_descopear')) {
+        await api.sayAs(A, 'Tráeme algo que no sea ni hecho ni muerto. Eso no existe.');
+      }
+    });
+  } finally {
+    if (api.getState('kanban')) { api.setState('kanban', null); api.repaint(); }
+    api.cameraFollow();
+  }
+  anselmoVuelve(api);
+}
+
+// ------------------------------------------------------------------ E2 §2.6.4 + E5 §2.5.5 · paso 46: la salida en valor
 async function salida(api, via) {
-  await api.cutscene(async (api) => {
-    // (Anselmo, quieto. Tres segundos. Las tres espaldas del coro se giran por primera vez.)
-    await api.wait(1500);
-    if (via === 3) await api.sayAs(A, ['...Ni hecho ni muerto. Consultoría.', 'Despedir, no. Salida en valor. ...Eso sí lo sé hacer yo.']);
-    else await api.sayAs(A, 'Descopear. Quitar sin que se note. Eso es infraestructura.');
-    // (Anda al tablero. Rotulador. Una columna nueva: SALIDA EN VALOR. El pósit, dentro.)
-    api.cameraTo(TABLERO_X + 40);
-    await api.walkActor(A, TABLERO_X + 16, TABLERO_Y);
-    api.faceActor(A, 'up');
-    await api.anim(A, 'reach', 700);
-    api.sfx('paper');
-    api.take('album_eventos');
+  try {
+    await api.cutscene(async (api) => {
+      // (Bruno escribe la columna nueva a rotulador; coge el pósit de Rubén y lo cambia de columna.)
+      api.face('up');
+      await api.anim(api.player, 'reach', 700);
+      api.sfx('paper');
+      api.setFlag('columna_kanban', via === 3 ? 'salida' : 'descopeado');
+      api.repaint();
+      await api.wait(250);
+      await api.anim(api.player, 'reach', 700);
+      api.sfx('paper');
+      api.setFlag('posit_descopeado', true);
+      api.repaint();
+      await apartarse(api);
+      // (Las tres espaldas del coro se giran. 1,5 s. Anselmo se acerca, mira la columna, mira el rotulador.)
+      api.setState('coro_desarrollo', 'girados');
+      await api.wait(1500);
+      api.cameraTo(TABLERO_X + 60);
+      await api.walkActor(A, TABLERO_X + 40, TABLERO_Y);
+      api.faceActor(A, 'up');
+      await api.wait(600);
+      api.faceActor(A, api.player);
+      await api.wait(400);
+      await api.sayAs(A, '¿Con qué has escrito eso? ...Rotulador de Comercial. De fuera.');
+      if (via === 3) {
+        await api.sayAs(A, ['Salida en valor. Ni hecho ni muerto, pero sale.',
+          'La frase la escribió Zacarías. Zacarías tenía alta. ...Entonces es de la casa.']);
+      } else await api.sayAs(A, 'Descopear. Quitar sin que se note. Eso es infraestructura.');
+      api.setState('coro_desarrollo', null);
+      await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Eutimio.',
+        'Y en nuestros corazones, Zacarías está en HECHO.']);
+      // (Tin. El ascensor se abre. Vacío. En el suelo, un papel.)
+      api.sfx('beep');
+      await api.wait(400);
+      api.give('ticket_n1');
+      api.sfx('pickup');
+      await api.say(['«Ticket nº 1: Alta becario Zacarías. CERRADO.»', '«No subo. Nunca subo. Eutimio.»']);
+      // (Tin. Sale Rubén del ascensor. Va derecho a la ventana; con el táper en la mano si se lo dieron, §2.5.5.)
+      api.sfx('beep');
+      api.setFlag('ruben_libre', true);
+      api.cameraTo(1110);
+      api.placeActor(R, 'pecera', 1000, 124, 'right');
+      api.show(R);
+      if (api.flag('taper_dado')) api.sostener(R, 'taper_huerfano');
+      await api.walkActor(R, 1258, 114);
+      api.faceActor(R, 'up');
+      await talk(api, [[R, 'Eutimio ha mandado primero el papeleo. Es el procedimiento.'],
+        [R, 'Estoy esperando a que salga el sol. Me han dicho que existe.']]);
+      // (La pantalla de Anselmo cambia sola: «ACCESO REVOCADO: TITULATOR 3000».) En plano: tablero, pantalla e Infografía.
+      api.cameraTo(960);
+      api.sfx('bad');
+      api.repaint();
+      await api.wait(500);
+      api.faceActor(A, 'right');
+      await talk(api, [[A, 'Revocado. Fecha: hoy. Efectos: julio.'],
+        [L, 'Integró una IA que era un becario. Y rechaza una IA que es una IA.']]);
+      // (Anselmo mira el portátil envuelto. Da un paso hacia Infografía.)
+      api.cameraTo(840);
+      await api.walkActor(A, TABLERO_X - 20, TABLERO_Y - 2);
+      api.faceActor(A, 'left');
+      await api.sayAs(A, 'Nos hemos quedado sin IA de la casa.');
+      // (Leoncio pone las dos manos encima del paquete. No dice nada.)
+      api.faceActor(L, 'up');
+      await api.anim(L, 'reach', 1500);
+      await talk(api, [['H', 'alta de usuario: no · propietaria: Infografía']]);
+      await api.sayAs(A, '...Lo miro en la próxima versión.');
+      // (Anselmo vuelve a su sitio.)
+      api.faceActor(L, 'down');
+      api.cameraFollow();
+      await api.walkActor(A, 672 + D, 118);
+      api.faceActor(A, 'left');
+      await talk(api, [['B', 'La frase con la que Íñigo despide a la gente acaba de liberar a Zacarías.']]);
+      await api.sayAs(R, 'Y la escribí yo. SEGUIREMOS INFORMANDO. Perdón.');
+    });
+  } finally {
+    // por si se salta la escena: el estado final no depende de la cinemática
+    if (!api.flag('columna_kanban')) api.setFlag('columna_kanban', via === 3 ? 'salida' : 'descopeado');
     api.setFlag('posit_descopeado', true);
-    api.repaint();
-    api.faceActor(A, api.player);
-    await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Paco.',
-      'Y en nuestros corazones, Rubén está en HECHO.']);
-    // (Tin. El ascensor se abre. Vacío. En el suelo, un papel.)
-    api.sfx('beep');
-    await api.wait(400);
-    api.give('ticket_n1');
-    api.sfx('pickup');
-    await api.say(['«Ticket nº 1: Alta becario Rubén. CERRADO.»', '«No subo. Nunca subo. Paco.»']);
-    // (Tin. Sale Rubén del ascensor. Va derecho a la ventana.)
-    api.sfx('beep');
+    if (api.getState('coro_desarrollo')) api.setState('coro_desarrollo', null);
+    if (api.has('album_eventos')) api.take('album_eventos');
+    if (!api.has('ticket_n1')) api.give('ticket_n1');
     api.setFlag('ruben_libre', true);
-    api.cameraTo(1110);
-    api.placeActor(R, 'pecera', 1000, 124, 'right');
-    api.show(R);
-    await api.walkActor(R, 1258, 114);
-    api.faceActor(R, 'up');
-    await talk(api, [[R, 'Paco ha mandado primero el papeleo. Es el procedimiento.'],
-      [R, 'Estoy esperando a que salga el sol. Me han dicho que existe.']]);
-    // (La pantalla de Anselmo cambia sola: «ACCESO REVOCADO: TITULATOR 3000».) En plano: tablero, pantalla e Infografía.
-    api.cameraTo(960);
-    api.sfx('bad');
-    api.repaint();
-    await api.wait(500);
-    api.faceActor(A, 'right');
-    await talk(api, [[A, 'Revocado. Con fecha de hoy. Y de julio.'],
-      [L, 'Integró una IA que era un becario. Y rechaza una IA que es una IA.']]);
-    // (Anselmo mira el portátil envuelto. Da un paso hacia Infografía.)
-    api.cameraTo(840);
-    await api.walkActor(A, TABLERO_X - 20, TABLERO_Y - 2);
-    api.faceActor(A, 'left');
-    await api.sayAs(A, 'Nos hemos quedado sin IA de la casa.');
-    // (Leoncio pone las dos manos encima del paquete. No dice nada.)
-    api.faceActor(L, 'up');
-    await api.anim(L, 'reach', 1500);
-    await talk(api, [['H', 'alta de usuario: no · propietaria: Infografía']]);
-    await api.sayAs(A, '...Lo miro en la próxima versión.');
-    // (Anselmo vuelve a su sitio.)
+    anselmoEnSuSitio(api);
     api.faceActor(L, 'down');
     api.cameraFollow();
-    await api.walkActor(A, 672 + D, 118);
-    api.faceActor(A, 'left');
-    await talk(api, [['B', 'La frase con la que Íñigo despide a la gente acaba de liberar a Rubén.']]);
-    await api.sayAs(R, 'Y la escribí yo. SEGUIREMOS INFORMANDO. Perdón.');
-  });
-  // por si se salta la escena: el estado final no depende de la cinemática
-  if (!api.flag('posit_descopeado')) { api.take('album_eventos'); api.setFlag('posit_descopeado', true); }
-  if (api.has('album_eventos')) api.take('album_eventos');
-  if (!api.has('ticket_n1')) api.give('ticket_n1');
-  api.setFlag('ruben_libre', true);
-  anselmoEnSuSitio(api);
-  api.faceActor(L, 'down');
-  api.refreshActors();
-  return 'exit';
+    api.refreshActors();
+  }
 }

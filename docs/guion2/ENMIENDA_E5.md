@@ -1,5 +1,11 @@
 # FE DE ERRATAS — ENMIENDA E5 (definitiva, implementable sin preguntar)
 
+> **Nota de la integración (I2), decisión del dueño posterior a esta enmienda:** desde esta versión **Paco** (Sistemas)
+> se llama **Eutimio** y **Rubén** (el becario del armario 27) se llama **Zacarías**. Este documento conserva los
+> nombres antiguos (es historia); en el juego cambian el nombre visible y hablado, no los ids (`paco_ticket`, `ruben`,
+> `ruben_libre`, `ruben_encontrado`…). Detalle: `docs/guion2-impl/GUIA_AUTORES.md` §E5.0. También por decisión del dueño,
+> la opción de Begoña «¿Usted ha sido feliz alguna vez?» ya no existe.
+
 > Tercer autor, a la contra. Casa `E5_DISENO.md` (puzles) y `E5_GUION.md` (texto) contra la crítica 4
 > (`docs/informes/critica4/CRITICA_JUEGO_4.md`, objetivo 7,5 → 8,5), el brief de salas, `GUIA_AUTORES.md` y el código
 > de hoy (con E4 ya hecha: ráfaga S1, borrasca S2, `pecera_opa_ab` S4, `pecera_opa_ganadora` S5, epílogo S6).

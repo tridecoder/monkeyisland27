@@ -2,7 +2,8 @@
 // globales: api.scene('<nombre>').
 //   presentacion_villano   escena 7.2 (E2 §2.3.1: Íñigo, el Titulator y la IA de Leoncio; sin Valentín ni coro)
 //   pecera_cms_vivo        camino antiguo del enchufe con el ticket nº 3 leído (§4.2)
-//   pecera_apagon          Tirar enchufe_pantalla sin vio_ticket_3: la escalada de tres apagones (§4.2 + E1.7)
+//   pecera_apagon          Tirar enchufe_pantalla sin vio_ticket_3: la escalada de tres apagones (§4.2 + E1.7); el
+//                          primero, JUGABLE a oscuras (ENMIENDA E5 §2.2, §3.2: interceptor, ventana de 12 s, `apagonCierre`)
 //   pecera_herminia_mide   paso 34, «Herminia mide la pieza» (E2 §2.3.2: «El modelo es de fuera. El prompt es de dentro.»)
 //   pecera_dos_ias         momento 8, «Dos IAs» (E2 §2.3.3)
 //   pecera_banner          E2 §4.2.3: Yoli ve el adhesivo «SU ANUNCIO AQUÍ» en la espalda de Bruno (una vez)
@@ -57,19 +58,33 @@ export async function encuadre(api, x) {
   const t = Math.max(0, Math.min(g.room.width - 320, x - 160));
   for (let i = 0; i < 60 && !g.instant && Math.abs(g.camX - t) > 2; i++) await api.wait(50);
 }
-/** Lleva a Bruno a (x, y): andando si está cerca; con un fundido si está lejos (la Redacción mide 1270 px). */
-export async function junto(api, x, y = 124, cam = x + 40) {
-  const p = api.actorPos(api.player);
-  if (!p || Math.abs(p.x - x) > 150) {
-    await api.fadeOut(220);
-    api.placeActor(api.player, 'pecera', x, y, 'right');
-    api.cameraTo(cam);
-    api.game.snapCamera();
-    await api.fadeIn(220);
-  } else {
+/** Lleva a Bruno a (x, y). Cerca (≤ 150 px), andando. Lejos (la Redacción mide 1270 px), ENMIENDA E5 §2.8 F4: sin
+ *  fundido ni teletransporte: la cámara se va ≤ 700 ms a `quien` le llama (gesto y PLIN/pitido), vuelve a seguir a Bruno
+ *  y Bruno va CORRIENDO. Con `game.instant` (modo rápido), como siempre: aparece allí. */
+export async function junto(api, x, y = 124, cam = x + 40, quien = null) {
+  const g = api.game, p = api.actorPos(api.player);
+  if (p && Math.abs(p.x - x) <= 150) {
     await api.walkTo(x, y);
     await encuadre(api, cam);
+    return;
   }
+  if (g.instant) {
+    api.placeActor(api.player, 'pecera', x, y, 'right');
+    api.cameraTo(cam);
+    g.snapCamera();
+    return;
+  }
+  const q = quien && api.actorPos(quien);
+  if (q && q.room === 'pecera') {
+    api.cameraTo(q.x);                                  // (la cámara busca a quien llama)
+    api.anim(quien, 'reach', 500);                      // (gesto: «¡ven!»)
+    api.sfx(quien === Y ? PLIN : 'beep');
+    const t = Math.max(0, Math.min(g.room.width - 320, q.x - 160));
+    for (let ms = 0; ms < 700 && Math.abs(g.camX - t) > 2; ms += 50) await api.wait(50);
+  }
+  api.cameraFollow();
+  await api.walkTo(x, y, { run: true });
+  await encuadre(api, cam);
 }
 
 // ================================================================== 7.2 · presentación del villano (E2 §2.3.1)
@@ -108,7 +123,6 @@ async function presentacionVillano(api) {
     api.face(I);
     await talk(api, [
       [I, 'Buenas noches. Íñigo Sinergia, Optimal Brains. No vengo a despedir a nadie.'],
-      [I, 'Vengo a reimaginar el perímetro.'],
       [I, 'Os presento al Titulator 3000. Inteligencia artificial de titulares.'],
     ]);
     await api.anim(I, 'reach', 500);
@@ -137,7 +151,7 @@ async function presentacionVillano(api) {
     await encuadre(api, 232 + D);
     api.faceActor(L, 'down');
     api.faceActor(I, 'down');
-    await talk(api, [[I, 'A las nueve, la Reunión de Dirección aprueba el Plan Cero Papel. Sin rotativa.'],
+    await talk(api, [[I, 'A las nueve, la Reunión de Dirección aprueba el Plan Cero Papel.'],
       ['B', '¿Sin papel? Pero si mañana firmo yo en papel.']]);
     api.faceActor(I, api.player);
     await api.wait(500);
@@ -187,8 +201,145 @@ async function luzVuelve(api) {
   api.setState('pantalla_metricas', null);
 }
 
+// ------------------------------------------------------------------ ENMIENDA E5 §2.2 · el primer apagón, JUGABLE
+// Tirar el enchufe (apagon_n = 1): cutscene corta (Yoli y el PLIN, dentro, para que nadie se los pierda) y luego una
+// VENTANA a oscuras de ≤ 12 s (L `pecera_oscuras`, sin guardar): dos focos (el monitor de Yoli y la linterna de Anselmo,
+// que le sigue), nombres a oscuras (`nameDark`) y los verbos por el interceptor del motor (`aOscuras`). Anselmo cruza de
+// su mesa al enchufe sin prisa (guion no bloqueante, `sinCongelar`); cada 2 s, PLIN y el monitor parpadea en PUBLICADO.
+// Se cierra con lo primero de: Anselmo llega · Bruno Usa el enchufe · 12 s (en modo rápido, 0) → `apagonCierre`.
+const VENTANA_MS = 12000, PLIN_MS = 2000;
+const ANSELMO_SIN_PRISA = 40;                 // px/s (54 de serie): de su mesa al enchufe, ≈ 11 s
+/** Estado de la ventana (de módulo: no se guarda; al cargar, `limpiarOscuras` desde el onEnter de la sala). */
+const V = { abierta: false, llego: false, v0: null, gen: -1 };
+const focos = () => [SPOT_YOLI[0], { actor: A, rx: 10, ry: 8 }];
+
+/** Verbos a oscuras (§2.2.2): todos pasan por aquí antes de andar; `true` = no sigue (Bruno no sale de la sala). */
+async function aOscuras(api, verbo, id, item) {
+  if (!V.abierta) return false;
+  if (verbo === 'usar' && id === 'enchufe_pantalla' && !item) { await apagonCierre(api, 'bruno'); return true; }
+  if (verbo === 'hablar' && id === Y) { await api.sayAs(Y, '¡Chsss! Estoy contando. Diecisiete. Dieciocho.'); return true; }
+  if ((verbo === 'hablar' || verbo === 'empujar') && id === A) { await api.sayAs(A, 'No me tapes la linterna. Voy a mi enchufe.'); return true; }
+  if (verbo === 'coger' && id === 'taza_no') { await talk(api, [['D3', 'No.']]); return true; }
+  await api.say('No veo nada. Solo a Yoli, a la luz del monitor, contando.');
+  return true;
+}
+
+/** Deja la Redacción con luz y sin ventana (cierre, cambio de sala o partida cargada con `pecera_oscuras`). */
+export function limpiarOscuras(api) {
+  V.abierta = false;
+  const a = api.game.actors[A];
+  if (a && V.v0 != null) { a.speed = V.v0; V.v0 = null; }
+  api.sinCongelar(A, false);
+  api.sinGuardar(false);
+  if (api.flag('pecera_oscuras')) api.setFlag('pecera_oscuras', false);
+  if (api.game.apagon) api.apagon(false);
+  if (api.getState('pantalla_metricas') === 'negra') api.setState('pantalla_metricas', null);
+}
+
+async function apagonJugable(api) {
+  let dentro = false;
+  try {
+    await api.cutscene(async (api) => {
+      await api.walkTo(ENCHUFE[0] - 16, ENCHUFE[1] + 4);
+      api.face('up');
+      api.cameraTo(ENCHUFE[0] + 40);
+      await api.anim(api.player, 'reach', 500);
+      anselmoEnSuSitio(api);                           // (Anselmo, en su mesa: de ahí sale la linterna)
+      api.setState('pantalla_metricas', 'negra');
+      api.apagon({ ms: 0, nombres: true, spots: focos(), interceptar: aOscuras });
+      await api.wait(600);
+      await api.sayAs(Y, '¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?');
+      api.sfx(PLIN); api.setState('monitor_yoli', 'publicado');
+      await api.sayAs(Y, '...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!');
+      // (Anselmo se levanta con la linterna del móvil y echa a andar hacia el enchufe, sin prisa.)
+      api.faceActor(A, 'left');
+    });
+    dentro = true;
+  } finally {
+    if (!dentro) { limpiarOscuras(api); api.setState('monitor_yoli', null); }
+  }
+  api.setFlag('pecera_oscuras', true);
+  api.sinGuardar(true);
+  V.abierta = true; V.llego = false; V.gen = api.game.gen;
+  api.cameraFollow();
+  if (api.game.instant) { await apagonCierre(api, 'tiempo'); return; }   // modo rápido: ventana de 0 ms
+  api.background(ventana);
+}
+
+/** Espera de la ventana que siempre cede el paso (en modo rápido `api.wait` resuelve al momento y el bucle no soltaría
+ *  el hilo). */
+const pausa = (api, ms) => (api.game.instant ? new Promise(r => setTimeout(r, ms)) : api.wait(ms));
+/** La ventana (guion NO bloqueante): Anselmo cruza; PLIN cada 2 s; a los 12 s o al llegar él, `apagonCierre`. */
+async function ventana(api) {
+  const g = api.game, gen = g.gen, t0 = g.time, a = g.actors[A];
+  if (a && V.v0 == null) { V.v0 = a.speed; a.speed = ANSELMO_SIN_PRISA; }
+  api.sinCongelar(A);
+  api.walkActor(A, ENCHUFE[0] + 16, ENCHUFE[1]).then((ok) => { if (ok !== false) V.llego = true; });
+  let plin = t0 + PLIN_MS;
+  const sigue = () => V.abierta && g.gen === gen && g.room && g.room.def.id === 'pecera';
+  while (sigue() && !V.llego && g.time - t0 < VENTANA_MS) {
+    if (g.time >= plin) {
+      plin += PLIN_MS;
+      api.sfx(PLIN);                                   // (y el monitor parpadea en PUBLICADO)
+      api.setState('monitor_yoli', 'guardando');
+      pausa(api, 140).then(() => { if (sigue()) api.setState('monitor_yoli', 'publicado'); });
+    }
+    await pausa(api, 80);
+  }
+  if (!sigue()) return;
+  while (g.busy && sigue()) await pausa(api, 50);        // si Bruno está hablando a oscuras, que acabe la frase
+  if (!sigue()) return;
+  g.runScript((api2) => apagonCierre(api2, V.llego ? 'anselmo' : 'tiempo'), { label: 'pecera:apagonCierre' });
+}
+
+/** Cierre de la ventana (§3.2): enchufa Anselmo (o ya enchufó Bruno); luz; «…Que te la apague Paco.». */
+async function apagonCierre(api, via) {
+  V.abierta = false;
+  const an = api.game.actors[A];
+  if (an && V.v0 != null) { an.speed = V.v0; V.v0 = null; }         // con luz, Anselmo vuelve a su paso de siempre
+  try {
+    await api.cutscene(async (api) => {
+      if (via === 'bruno') {
+        await api.walkTo(ENCHUFE[0] - 16, ENCHUFE[1] + 4);
+        api.face('up');
+        await api.anim(api.player, 'reach', 500);     // (Bruno enchufa)
+        await luzVuelve(api);
+        api.setState('monitor_yoli', 'guardando');
+        const p = api.actorPos(A);
+        const cam = Math.round(api.game.camX);
+        if (p && p.x > cam + 330) api.placeActor(A, 'pecera', cam + 330, 122, 'left');
+        await api.walkActor(A, ENCHUFE[0] + 16, ENCHUFE[1], { run: true });
+        api.faceActor(A, 'up');
+      } else {
+        const p = api.actorPos(A);
+        const lejos = !p || Math.abs(p.x - (ENCHUFE[0] + 16)) > 60;     // (a los 12 s aún no ha llegado: aprieta el paso)
+        if (!p || Math.abs(p.x - (ENCHUFE[0] + 16)) > 3) await api.walkActor(A, ENCHUFE[0] + 16, ENCHUFE[1], { run: lejos });
+        api.faceActor(A, 'up');
+        await api.anim(A, 'reach', 500);              // (Anselmo enchufa)
+        await luzVuelve(api);
+        api.setState('monitor_yoli', 'guardando');
+      }
+      api.cameraTo(ENCHUFE[0] + 40);
+      api.faceActor(A, api.player);
+      await talk(api, [[A, 'Ese enchufe está en mis sistemas. Desenchufar es un cambio sin revisar.'],
+        [Y, '...Ya no va.'], ['B', 'Iba mientras estaba apagada.'],
+        [A, '¿La quieres apagada? Ese cable baja a Sistemas. Que te la apague Eutimio.']]);
+      limpiarOscuras(api);
+      await deVuelta(api, A);
+    });
+  } finally {
+    limpiarOscuras(api);
+    api.setState('monitor_yoli', null);
+    api.setState('pantalla_metricas', null);
+    anselmoEnSuSitio(api);
+    api.cameraFollow();
+    api.refreshActors();
+  }
+}
+
 async function apagonEscena(api) {
   const n = api.inc('apagon_n');
+  if (n === 1) { await apagonJugable(api); return; }
   try {
     await api.cutscene(async (api) => {
       await api.walkTo(ENCHUFE[0] - 16, ENCHUFE[1] + 4);
@@ -198,19 +349,7 @@ async function apagonEscena(api) {
       api.setState('pantalla_metricas', 'negra');
       api.apagon({ ms: 0, spots: SPOT_YOLI });
       await api.wait(600);
-      if (n === 1) {
-        await api.sayAs(Y, '¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?');
-        api.sfx(PLIN); api.setState('monitor_yoli', 'publicado');
-        await api.sayAs(Y, '...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!');
-        // (Anselmo se levanta sin prisa, cruza su cinta, lee la del enchufe y enchufa.)
-        await alEnchufe(api, A);
-        await luzVuelve(api);
-        api.setState('monitor_yoli', 'guardando');
-        await talk(api, [[A, 'Ese enchufe está en mis sistemas. Desenchufar es un cambio sin revisar.'],
-          [Y, '...Ya no va.'], ['B', 'Iba mientras estaba apagada.'],
-          [A, '¿Y si va sin pantalla? Peor. Si funciona, la gente se acostumbra.']]);
-        await deVuelta(api, A);
-      } else if (n === 2) {
+      if (n === 2) {
         api.sfx(PLIN); api.setState('monitor_yoli', 'publicado');
         await api.sayAs(Y, '¡Otra! ¡Ha entrado otra!');
         // (Le tiembla el párpado. Se levanta y enchufa ella.)
@@ -224,10 +363,9 @@ async function apagonEscena(api) {
         // (Anselmo cruza su cinta, enchufa sin mirar y vuelve.)
         await alEnchufe(api, A);
         await luzVuelve(api);
-        await talk(api, [[A, 'Tercera vez. Te paso a BLOQUEADO.'], [A, 'Si quieres que se quede apagada, tráeme un motivo. Con número.'],
-          [A, 'Y mira la brida. Ese cable no acaba aquí.']]);
+        await talk(api, [[A, 'Tercera vez. Te paso a BLOQUEADO.'], [A, 'Si quieres que se quede apagada, tráeme un motivo. ¿Tiene número?']]);
         await deVuelta(api, A);
-        await api.say('Un motivo con número y un cable que baja. Eso huele a Paco.');
+        await api.say('Un motivo con número y un cable que baja. Eso huele a Eutimio.');
       } else {
         await api.wait(500);
         await luzVuelve(api);
@@ -312,7 +450,7 @@ async function herminiaMide(api) {
 // ================================================================== E2 §2.3.3 · momento 8: Dos IAs
 async function dosIAs(api) {
   await api.cutscene(async (api) => {
-    await junto(api, 790, 124, 840);
+    await junto(api, 790, 124, 840, L);
     api.placeActor(A, 'pecera', MESA_INFOGRAFIA[0], MESA_INFOGRAFIA[1], 'left');
     // (Anselmo, en Infografía, da la última vuelta de cinta. Rasss. Estado paquete.)
     await api.anim(A, 'reach', 700);
@@ -342,7 +480,7 @@ async function dosIAs(api) {
 // ================================================================== E1.5 · la anexión (MP1, opcional)
 async function anexion(api) {
   await api.cutscene(async (api) => {
-    await junto(api, 790, 124, 840);
+    await junto(api, 790, 124, 840, L);
     api.placeActor(A, 'pecera', 975, 122, 'left');
     // (La pantalla de Anselmo pita. La lee. Se levanta despacio.)
     api.sfx('beep');
@@ -379,7 +517,7 @@ async function anexion(api) {
 // ================================================================== §4.1 · primera entrada con cafetera_viral
 async function viral(api) {
   await api.cutscene(async (api) => {
-    await junto(api, 690, 124, 700);
+    await junto(api, 690, 124, 700, Y);
     api.face('right');
     // (La pantalla de métricas salta: 3.418, 7.950, 11.302. Aparece la taza.)
     if (!api.flag('cms_vivo')) api.setState('pantalla_metricas', 'viral');
@@ -399,7 +537,7 @@ async function viral(api) {
 // ================================================================== §4.2 · primera entrada con cms_vivo
 async function cmsEntrada(api) {
   await api.cutscene(async (api) => {
-    await junto(api, 690, 124, 700);
+    await junto(api, 690, 124, 700, Y);
     api.face('right');
     // E4 S1: el CMS escupe la cola de la tarde en el monitor de Yoli (cinco avisos, solo se ven; la pantalla, negra)
     api.setState('monitor_yoli', 'publicado');
@@ -419,7 +557,7 @@ async function chaqueta(api) {
   if (!api.once('pecera_chaqueta_vista')) return;
   await api.cutscene(async (api) => {
     const p = api.actorPos(api.player);
-    if (!p || Math.abs(p.x - YOLI_EN[0]) > 200) await junto(api, 690, 124, 700);
+    if (!p || Math.abs(p.x - YOLI_EN[0]) > 200) await junto(api, 690, 124, 700, Y);
     await talk(api, [[Y, '¿Ramírez? ¡Ramírez ha vuelto! ...Ah. No. Eres tú.'],
       [Y, 'Por un segundo te he respetado. Ha sido raro. Bonito, pero raro.'],
       ['D1', '¡Ramírez!'], ['D2', '¿Viene a por el yogur?'], ['D3', 'No.']]);
@@ -496,7 +634,7 @@ function wrapTit(t, maxW) {
 async function opaGanadora(api) {
   const k = ganadorK(api);
   await api.cutscene(async (api) => {
-    await junto(api, 690, 124, 700);
+    await junto(api, 690, 124, 700, Y);
     api.face('right');
     // (Yoli se levanta de un salto. Tres plins.)
     api.anim(Y, 'reach', 600);
