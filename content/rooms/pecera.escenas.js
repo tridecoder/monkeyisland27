@@ -208,7 +208,7 @@ async function luzVuelve(api) {
 // su mesa al enchufe sin prisa (guion no bloqueante, `sinCongelar`); cada 2 s, PLIN y el monitor parpadea en PUBLICADO.
 // Se cierra con lo primero de: Anselmo llega · Bruno Usa el enchufe · 12 s (en modo rápido, 0) → `apagonCierre`.
 const VENTANA_MS = 12000, PLIN_MS = 2000;
-const ANSELMO_SIN_PRISA = 40;                 // px/s (64 de serie): de su mesa al enchufe, ≈ 11 s
+const ANSELMO_SIN_PRISA = 40;                 // px/s (54 de serie): de su mesa al enchufe, ≈ 11 s
 /** Estado de la ventana (de módulo: no se guarda; al cargar, `limpiarOscuras` desde el onEnter de la sala). */
 const V = { abierta: false, llego: false, v0: null, gen: -1 };
 const focos = () => [SPOT_YOLI[0], { actor: A, rx: 10, ry: 8 }];

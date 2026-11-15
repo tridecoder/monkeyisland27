@@ -230,9 +230,12 @@ try {
   await raton('usar', 'kanban', 'rotulador_rojo', false);
   await until(() => !!__game.currentDialogOptions());
   ok((await opciones()).includes('SALIDA EN VALOR') && (await opciones()).includes('DESCOPEADO'), 'con rep_13 y oyo_descopear, salen SALIDA EN VALOR y DESCOPEADO');
-  await G(() => { window.__taper = false; window.__tq = setInterval(() => { const r = __game.game.actors.ruben; if (r && r.hold && r.hold.item === 'taper_huerfano' && r.room === 'pecera') window.__taper = true; }, 4); });
+  // (en modo rápido la escena pasa entera en un instante: se espía la mano de Rubén con un setter)
+  await G(() => { window.__taper = false; const r = __game.game.actors.ruben; let h = r.hold;
+    Object.defineProperty(r, 'hold', { configurable: true, get: () => h, set: (v) => { h = v; if (v && v.item === 'taper_huerfano' && r.room === 'pecera') window.__taper = true; } }); });
   await clicOpcion('SALIDA EN VALOR');
-  ok(await until(() => window.__taper || !__game.state().busy, null, 20000) && await G(() => { clearInterval(window.__tq); return window.__taper; }), 'con taper_dado, Rubén va a la ventana con el táper en la mano');
+  await idle();
+  ok(await G(() => window.__taper), 'con taper_dado, Rubén va a la ventana con el táper en la mano');
   await idle(); await seguir();
   const s1 = await G(() => ({ pd: __game.getFlag('posit_descopeado'), rl: __game.getFlag('ruben_libre'), col: __game.getFlag('columna_kanban'), inv: __game.state().inventory }));
   ok(s1.pd && s1.rl && s1.col === 'salida' && s1.inv.includes('ticket_n1') && s1.inv.includes('rotulador_rojo'), `SALIDA EN VALOR → posit_descopeado, ruben_libre, ticket_n1, columna 'salida', el rotulador se queda (${JSON.stringify(s1)})`);
