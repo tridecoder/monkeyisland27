@@ -10,7 +10,7 @@
 // la tabla de PNJ (visibilidad de cabeza+torso sola / con Bruno hablándole) y los errores y avisos. Sale con 1 si hay
 // errores (en una sala con `rediseno: true` en su arte, las reglas del rediseño también son errores).
 // Puntos de control: a0 inicio (torno cerrado) · a1 Acto I tras la escena 7.2 · a1b inicio del Acto II · a2 Acto II
-// tras el duelo D1 · a3 inicio del Acto III · a3r Zacarías en el armario · a3b Zacarías libre.
+// tras el duelo D1 · a3 inicio del Acto III · a3r Brais en el armario · a3b Brais libre.
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -28,7 +28,7 @@ const room = argv.find(a => !a.startsWith('--'));
 const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'eventos', 'administracion', 'cpd'];
 if (!room || !ROOMS.includes(room)) { console.log('uso: node tools/sala.mjs <sala> [--actos=a0,a1,...] [--escala=2] [--out=dir] [--estricto]\nsalas: ' + ROOMS.join(', ')); process.exit(2); }
 const CPS = [['a0', 0, 'inicio (torno cerrado)'], ['a1', 8, 'Acto I, tras 7.2'], ['a1b', 16, 'Acto II, inicio'], ['a2', 30, 'Acto II, tras D1'],
-  ['a3', 40, 'Acto III, inicio'], ['a3r', 41, 'Acto III, Zacarías en el armario'], ['a3b', 46, 'Acto III, Zacarías libre']];   // pasos de E5 §7.2
+  ['a3', 40, 'Acto III, inicio'], ['a3r', 41, 'Acto III, Brais en el armario'], ['a3b', 46, 'Acto III, Brais libre']];   // pasos de E5 §7.2
 const want = args.actos ? String(args.actos).split(',') : CPS.map(c => c[0]);
 const scale = Number(args.escala || 2);
 const outDir = path.resolve(args.out || path.join(here, 'shots', 'sala', room));

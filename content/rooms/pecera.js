@@ -52,7 +52,7 @@ async function leerCorreoRamirez(api) {
   await api.say(['Con silla, el correo se ve. Ramírez: «Quedo a la espera de tus comentarios».',
     'Respuesta: «Espera sentado. Si encuentras silla».']);
   api.learnReply('rep_11');
-  await api.say(['Y una autorrespuesta de Zacarías: «Estoy fuera de la oficina desde julio».', '«Bueno, fuera no. Dentro. Muy dentro».']);
+  await api.say(['Y una autorrespuesta de Brais: «Estoy fuera de la oficina desde julio».', '«Bueno, fuera no. Dentro. Muy dentro».']);
 }
 
 // crítica 3 · N11: el coro (D1-D3) solo habla con Bruno cerca de su zona (umbral en x desde el centro de su mesa; la
@@ -321,7 +321,7 @@ export default buildRoom({
         if (!api.flag('rep_11')) {                                          // paso 13 (E2 §7.4)
           await leerCorreoRamirez(api);
         } else {
-          await api.say(['Bandeja de entrada. Ramírez sigue a la espera de mis comentarios.', 'Y Zacarías sigue fuera de la oficina. Bueno, dentro. Muy dentro.']);
+          await api.say(['Bandeja de entrada. Ramírez sigue a la espera de mis comentarios.', 'Y Brais sigue fuera de la oficina. Bueno, dentro. Muy dentro.']);
         }
       },
       usar: async (api) => {
@@ -455,9 +455,9 @@ export default buildRoom({
       mirar: async (api) => {
         const lines = ['Columnas: POR HACER, EN CURSO, BLOQUEADO, HECHO y HECHO (PERO NO).'];
         if (api.flag('posit_descopeado')) {
-          lines.push(api.flag('columna_kanban') === 'descopeado' ? 'Y una nueva, a rotulador: DESCOPEADO. Dentro, el pósit de Zacarías.'
-            : 'Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Zacarías.');
-        } else if (api.flag('acto_3_iniciado')) lines.push('En POR HACER, amarillo de puro viejo: "Baja becario Zacarías".');
+          lines.push(api.flag('columna_kanban') === 'descopeado' ? 'Y una nueva, a rotulador: DESCOPEADO. Dentro, el pósit de Brais.'
+            : 'Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Brais.');
+        } else if (api.flag('acto_3_iniciado')) lines.push('En POR HACER, amarillo de puro viejo: "Baja becario Brais".');
         await api.say(lines);
       },
       coger: async (api) => api.sayAs(A, 'Ni se te ocurra. De mi tablero se sale hecho o muerto.'),
@@ -526,7 +526,7 @@ export default buildRoom({
         '«Los expertos coinciden»... Ya buscaré expertos. Primero, que coincidan.'] },   // L29 + E4 O21
     // (E2 §2.6: Nemesio, `nerea_backlog`, ya no está: su mesa es el hotspot `mesa_guardia` y lo suyo lo hace Anselmo.)
     { id: R, when: ['ruben_libre', '!lector_derribado'], handlers: {
-      mirar: 'Zacarías mira por la ventana. Espera al sol como quien espera una nómina.',
+      mirar: 'Brais mira por la ventana. Espera al sol como quien espera una nómina.',
       hablar: async (api) => {
         // E1.5 (si ya lo oyó desde el armario, cpd.js `cpd_ruben_oyo_alta`, no lo pregunta otra vez)
         if (api.flag('herminia_de_alta') && !api.flag('cpd_ruben_oyo_alta') && api.once('pecera_ruben_herminia')) {

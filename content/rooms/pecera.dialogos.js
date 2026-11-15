@@ -158,8 +158,8 @@ export default {
               await talk(api, [[A, '¿Desde dónde?'], ['B', arriba ? 'Desde aquí. Un enchufe con número.' : 'Desde Sistemas. Una regleta.'],
                 [A, 'Solución de terceros. Funciona, pero no es mía. Próxima versión.']]);
             } },
-          { text: 'Necesito la baja de Zacarías.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!album_validado', '!posit_descopeado'],
-            reply: ['¿Zacarías? «Baja becario Zacarías». En POR HACER. Letra de julio.', 'De mi tablero se sale de dos formas: hecho o muerto.',
+          { text: 'Necesito la baja de Brais.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!album_validado', '!posit_descopeado'],
+            reply: ['¿Brais? «Baja becario Brais». En POR HACER. Letra de julio.', 'De mi tablero se sale de dos formas: hecho o muerto.',
               'Para darlo por hecho, pruebas de que existió. Fotos. Actas. Algo.', 'Y que no venga de fuera.'] },
           { text: 'Mira este álbum.', if: 'has:album_eventos', goto: 'AN_ALBUM_INTRO' },
           { text: 'El Titulator era un becario.', once: true, if: ['ruben_encontrado', '!ruben_libre'],
@@ -302,17 +302,17 @@ async function salida(api, via) {
       await api.sayAs(A, '¿Con qué has escrito eso? ...Rotulador de Comercial. De fuera.');
       if (via === 3) {
         await api.sayAs(A, ['Salida en valor. Ni hecho ni muerto, pero sale.',
-          'La frase la escribió Zacarías. Zacarías tenía alta. ...Entonces es de la casa.']);
+          'La frase la escribió Brais. Brais tenía alta. ...Entonces es de la casa.']);
       } else await api.sayAs(A, 'Descopear. Quitar sin que se note. Eso es infraestructura.');
       api.setState('coro_desarrollo', null);
       await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Eutimio.',
-        'Y en nuestros corazones, Zacarías está en HECHO.']);
+        'Y en nuestros corazones, Brais está en HECHO.']);
       // (Tin. El ascensor se abre. Vacío. En el suelo, un papel.)
       api.sfx('beep');
       await api.wait(400);
       api.give('ticket_n1');
       api.sfx('pickup');
-      await api.say(['«Ticket nº 1: Alta becario Zacarías. CERRADO.»', '«No subo. Nunca subo. Eutimio.»']);
+      await api.say(['«Ticket nº 1: Alta becario Brais. CERRADO.»', '«No subo. Nunca subo. Eutimio.»']);
       // (Tin. Sale Rubén del ascensor. Va derecho a la ventana; con el táper en la mano si se lo dieron, §2.5.5.)
       api.sfx('beep');
       api.setFlag('ruben_libre', true);
@@ -347,7 +347,7 @@ async function salida(api, via) {
       api.cameraFollow();
       await api.walkActor(A, 672 + D, 118);
       api.faceActor(A, 'left');
-      await talk(api, [['B', 'La frase con la que Íñigo despide a la gente acaba de liberar a Zacarías.']]);
+      await talk(api, [['B', 'La frase con la que Íñigo despide a la gente acaba de liberar a Brais.']]);
       await api.sayAs(R, 'Y la escribí yo. SEGUIREMOS INFORMANDO. Perdón.');
     });
   } finally {

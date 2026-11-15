@@ -249,7 +249,7 @@ async function final(api) {
 export const FE_DE_ERRATAS = [
   'En la edición de ayer, donde decía',
   '«inteligencia artificial»',
-  'debía decir «Zacarías».',
+  'debía decir «Brais».',
   '',
   'Donde decía «Por Bruno Pellejo»',
   'debía decir «Por Bruno Pellejo».',

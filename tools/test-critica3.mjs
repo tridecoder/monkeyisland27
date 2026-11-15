@@ -371,7 +371,7 @@ try {
   [, L2, L3] = await tresLlamadas('pajarera');   // (en la Sala, sala_abierta lanza el clímax)
   const d15 = await DONDE('rep_15'), d16 = await DONDE('rep_16');
   must(L2.includes('A: ' + d16[0]) && L3.includes('B: ' + d16[1]) && L3.includes('B: ' + d15[1]), `N1: D4 sin R15 ni R16: ${JSON.stringify(L3)}`);
-  ok('N1: D4 (Íñigo): faltan R16 y R15 → Evaristo y Zacarías, con sitio y objeto');
+  ok('N1: D4 (Íñigo): faltan R16 y R15 → Evaristo y Brais, con sitio y objeto');
 
   // ------------------------------------------------------------ N5 salida de los Despachos
   const nombre = await G(() => (__game.game.content.rooms.pajarera.objects || []).find(o => o.id === 'pajarera_a_pecera').name);

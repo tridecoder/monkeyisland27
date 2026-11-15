@@ -1,7 +1,7 @@
 # FE DE ERRATAS — ENMIENDA E5 (definitiva, implementable sin preguntar)
 
 > **Nota de la integración (I2), decisión del dueño posterior a esta enmienda:** desde esta versión **Paco** (Sistemas)
-> se llama **Eutimio** y **Rubén** (el becario del armario 27) se llama **Zacarías**. Este documento conserva los
+> se llama **Eutimio** y **Rubén** (el becario del armario 27) se llama **Brais** (antes, brevemente, Zacarías). Este documento conserva los
 > nombres antiguos (es historia); en el juego cambian el nombre visible y hablado, no los ids (`paco_ticket`, `ruben`,
 > `ruben_libre`, `ruben_encontrado`…). Detalle: `docs/guion2-impl/GUIA_AUTORES.md` §E5.0. También por decisión del dueño,
 > la opción de Begoña «¿Usted ha sido feliz alguna vez?» ya no existe.

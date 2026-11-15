@@ -328,7 +328,7 @@ try {
     const { page, G } = T;
     await rapido(G, false);
     await G(() => { const g = __game.game; g.__sfx = []; const o = g.audio.sfx.bind(g.audio); g.audio.sfx = (n, ...r) => { g.__sfx.push([n, Math.round(g.time)]); return o(n, ...r); }; });
-    // Zacarías en la sala, como tras el remate A; luego el onWin de Íñigo (su línea + las caras)
+    // Brais en la sala, como tras el remate A; luego el onWin de Íñigo (su línea + las caras)
     await G(() => __game.game.runScript(async api => {
       api.placeActor('ruben', 'sala_amazonas', 276, 130, 'left');
       api.faceActor('inigo_sinergia', 'right'); api.faceActor('gervasio_acta', 'right');
@@ -337,7 +337,7 @@ try {
     await saltando(G, "!__game.state().busy");
     await G(() => { __game.skipSpeech(); __game.game.speeches.length = 0; __game.clearLog(); });
     const caras = await G(() => { const g = __game.game, L = g.actors.lector_medio; return ['inigo_sinergia', 'gervasio_acta', 'ruben'].map(id => { const a = g.actors[id]; return [id, a.dir, Math.sign(L.x - a.x)]; }); });
-    ok(caras.every(([, d, s]) => d === (s < 0 ? 'left' : 'right')), `onWin: Íñigo, Gervasio y Zacarías miran al cartón ${JSON.stringify(caras)}`);
+    ok(caras.every(([, d, s]) => d === (s < 0 ? 'left' : 'right')), `onWin: Íñigo, Gervasio y Brais miran al cartón ${JSON.stringify(caras)}`);
     await page.mouse.move(400, 250);
     // con un menú abierto (12 s) no suena nada: el tiempo no cuenta
     await G(() => { __game.game.__pc = __game.game.choose(['Uno', 'Dos'], { escape: 1 }); });

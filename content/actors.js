@@ -344,7 +344,7 @@ export default {
       '¿Y esto el Lector Medio lo entiende? Perfecto: asiente.'],
   },
   ruben: {
-    name: 'Zacarías', color: '#B6FF4D', speed: 58,
+    name: 'Brais', color: '#B6FF4D', speed: 58,
     doll: {
       skin: '#d4dcb4', hair: '#5a4a3a', hairStyle: 'short', shirt: '#86888e', hood: '#86888e', neckphones: '#202024',
       eyebags: true, crumbs: '#e8c880', pants: '#3a3c48', shoes: '#5a5a60', build: 'slim', height: 0.98,

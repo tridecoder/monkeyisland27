@@ -333,7 +333,7 @@ async function principal() {
   await T.verb('mirar', 'herminia_portatil');
   must(await T.logHas('Envuelta entera. «PENDIENTE DE INTEGRAR». Por un hueco, la pantalla trabaja.'), 'portátil en paquete');
   await T.verb('mirar', 'kanban');
-  must(await T.logHas('En POR HACER, amarillo de puro viejo: "Baja becario Zacarías".'), '§8 kanban');
+  must(await T.logHas('En POR HACER, amarillo de puro viejo: "Baja becario Brais".'), '§8 kanban');
   await T.hablar('yoli_tendencias');
   await T.opcion('Íñigo va a cerrar el papel.');
   await T.opcion('Me voy.');
@@ -412,15 +412,15 @@ async function principal() {
   await T.expectFlags({ posit_descopeado: true, ruben_libre: true, columna_kanban: 'salida' }, 'paso 46');
   await T.expectInv(['ticket_n1', 'rotulador_rojo'], ['album_eventos'], 'paso 46');
   await T.musts(['¿Con qué has escrito eso? ...Rotulador de Comercial. De fuera.', 'Salida en valor. Ni hecho ni muerto, pero sale.',
-    'La frase la escribió Zacarías. Zacarías tenía alta. ...Entonces es de la casa.',
-    'Columna nueva. La primera que no dice que no.', 'Y en nuestros corazones, Zacarías está en HECHO.',
+    'La frase la escribió Brais. Brais tenía alta. ...Entonces es de la casa.',
+    'Columna nueva. La primera que no dice que no.', 'Y en nuestros corazones, Brais está en HECHO.',
     'No subo. Nunca subo. Eutimio.', 'Estoy esperando a que salga el sol.', 'Revocado. Fecha: hoy. Efectos: julio.',
     'Integró una IA que era un becario.', 'Nos hemos quedado sin IA de la casa.', HERMINIA + 'alta de usuario: no · propietaria: Infografía',
     '...Lo miro en la próxima versión.', 'SEGUIREMOS INFORMANDO. Perdón.'], 'columna (E5 §3.5, C94)');
   must(!(await T.logHas('Consultoría.')) && !(await T.logHas('Eso sí lo sé hacer yo.')), 'E5 D17: fuera «Consultoría.» y «…Eso sí lo sé hacer yo.»');
   lg = await T.log();
   must(!lg.some(l => ['coro_desarrollo'].includes(l.who) || /Diseño/.test(l.text)), 'paso 40: coro o Diseño');
-  must((await T.roomOf('ruben')) === 'pecera', 'paso 46: Zacarías no está en la Redacción');
+  must((await T.roomOf('ruben')) === 'pecera', 'paso 46: Brais no está en la Redacción');
   must(Math.abs((await T.actor('anselmo_monolito')).x - 1082) < 3, 'paso 40: Anselmo no vuelve a su sitio');
   await sinNemesio('paso 40');
   ok('E5 §2.5 pasos 45-46: álbum → album_validado; rotulador + kanban → SALIDA EN VALOR → ticket_n1, posit_descopeado, ruben_libre; Leoncio tapa a Herminia');

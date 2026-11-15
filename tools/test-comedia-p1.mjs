@@ -197,7 +197,7 @@ try {
   await clearLog();
   await verb('mirar', 'registro_tickets');
   await expectFlags({ vio_ticket_3: true }, 'registro');
-  await expectLog(['«Alta becario Zacarías». Estado: pendiente.', '«Alta portátil de Infografía». Denegado.', 'Firmado: Anselmo.',
+  await expectLog(['«Alta becario Brais». Estado: pendiente.', '«Alta portátil de Infografía». Denegado.', 'Firmado: Anselmo.',
     '«El CMS se cuelga con la pantalla de la Redacción».', '«Va a la regleta R-3 de Sistemas. Apagarla».'], 'registro §4.2 [E1]');
   const atun0 = await flag('rumor_atun_n');
   await hablar('paco_ticket');
@@ -278,7 +278,7 @@ try {
   await expectLog([`Ticket ${miles(nAlta + 1)}: «Alta becaria Herminia». ¿Persona o herramienta?`, 'Detrás del nº 1, que es de julio.', 'Total, uno más.'], 'P_ALTA (E2 B10)');
   ok('MP1: P_ALTA con «Persona.» (vuelve) y «Mejor no.» (sale sin alta)');
 
-  // ------------------------------------------------------------ revelación de Zacarías (4.6, paso 35)
+  // ------------------------------------------------------------ revelación de Brais (4.6, paso 35)
   await setFlag('vio_borde_perforado');
   await setFlag('evaristo_escuchado');                                        // E2 §5.4 (lo pone P3 en el paso 28)
   await clearLog();
@@ -299,9 +299,9 @@ try {
   const probe = await G(() => { const g = __game.game; g.speak = g.__speakOrig; delete g.__speakOrig; return window.__probe; });
   const grito = probe.find(p => p.text === '¡EH! ¡QUE ES MI BORRADOR!'), primera = probe.find(p => p.text.startsWith('BECARIO DETECTADO'));
   must(grito && grito.armario === 'cerrado' && !grito.ruben, `4.6: al gritar, armario cerrado (${JSON.stringify(grito)})`);
-  must(primera && primera.armario === 'abierto' && primera.ruben && primera.ruben[1] < 100 && primera.style === 'titular', `4.6: 1.ª línea de Zacarías, titular y dentro (${JSON.stringify(primera)})`);
+  must(primera && primera.armario === 'abierto' && primera.ruben && primera.ruben[1] < 100 && primera.style === 'titular', `4.6: 1.ª línea de Brais, titular y dentro (${JSON.stringify(primera)})`);
   const tras = probe.slice(probe.indexOf(primera) + 1);
-  must(tras.length > 10 && tras.every(p => p.armario === 'abierto' && p.ruben && p.ruben[1] >= 104), '4.6: el resto, armario abierto y Zacarías fuera');
+  must(tras.length > 10 && tras.every(p => p.armario === 'abierto' && p.ruben && p.ruben[1] >= 104), '4.6: el resto, armario abierto y Brais fuera');
   must(probe.filter(p => p.style === 'titular' && p.who === 'bruno').length === 2, '4.6: Bruno no dice sus dos titulares');
   await expectFlags({ ruben_encontrado: true }, '4.6');
   await expectLog(['Plano detalle: ARMARIO 27', '«EL TITULATOR ERA UN CHAVAL»: LA VERDAD QUE NADIE TE CUENTA.', 'Del verano pasado.',
@@ -313,12 +313,12 @@ try {
     '¿Lo has hecho tú?', '¿Cuál es el 4?'], 'E2 armario (§7.2, §7.4 paso 37, fase B (10))');
   await clearLog(); await verb('tirar', 'ruben');
   await expectLog(['Y el pósit es de Anselmo.'], 'E2 §2.6.5 (cpd.js:477)');
-  must((await roomOf('ruben')) === 'cpd' && (await objState('armario_27')) === 'abierto', '4.6: Zacarías en Sistemas con el armario abierto');
+  must((await roomOf('ruben')) === 'cpd' && (await objState('armario_27')) === 'abierto', '4.6: Brais en Sistemas con el armario abierto');
   await goto('vestibulo', 'cpd'); await goto('cpd', 'vestibulo');
-  must(!(await logHas('¡Sale un chaval del banquillo')), 'E2 fase B (8): Celestino retransmite el hallazgo de Zacarías');
+  must(!(await logHas('¡Sale un chaval del banquillo')), 'E2 fase B (8): Celestino retransmite el hallazgo de Brais');
   ok('4.6 + E2: grito → armario → primer plano → titulares; los 48.000 y la coma (§5.4), tablero de Anselmo; sin retransmisión');
 
-  // ------------------------------------------------------------ árbol de Zacarías §5.12 + táper (4.4) + MP1 con Zacarías
+  // ------------------------------------------------------------ árbol de Brais §5.12 + táper (4.4) + MP1 con Brais
   await clearLog();
   await hablar('ruben');
   await opcion('¿Escribiste tú los discursos de Íñigo?');
@@ -326,9 +326,9 @@ try {
   await opcion('¿Qué es lo primero que vas a hacer fuera?');
   await opcion('¿Y el táper?');
   await opcion('Ahora vuelvo.');
-  await expectFlags({ rep_13: true, rep_15: true, taper_dado: false }, 'Zacarías R0');
-  await expectLog(['«NO ES UN DESPIDO: ES UNA SALIDA EN VALOR».', 'newsletter personalizada', 'La IA era yo.', 'Me lo ha contado ella. Se llama Zacarías.',
-    'Comer algo que no sea atún.', '¿TRAES TÁPER?', 'BECARIO PROMETE VOLVER.'], 'Zacarías §5.12');
+  await expectFlags({ rep_13: true, rep_15: true, taper_dado: false }, 'Brais R0');
+  await expectLog(['«NO ES UN DESPIDO: ES UNA SALIDA EN VALOR».', 'newsletter personalizada', 'La IA era yo.', 'Me lo ha contado ella. Se llama Brais.',
+    'Comer algo que no sea atún.', '¿TRAES TÁPER?', 'BECARIO PROMETE VOLVER.'], 'Brais §5.12');
   await give('taper_huerfano');
   await clearLog();
   await capturar(() => { __game.doVerb('dar', 'ruben', 'taper_huerfano'); }, [['TÁPER DETECTADO', 'taper']]);
@@ -347,12 +347,12 @@ try {
   await expectNoLog(['Sin pegatina.'], 'E5 C73');
   must((await logWho('Esta casa da de alta antes')) === 'paco_ticket', 'E2 L16: la línea no la dice Eutimio');
   await expectNoLog(['Lo apunto en «injusticias».', 'Me lo apunto.'], 'E2 §7.2 / L16');
-  ok('Zacarías §5.12: rep_13, rep_15 (R15 nueva), táper → taper_dado; MP1 «Herramienta.» → herminia_de_alta con Zacarías');
+  ok('Brais §5.12: rep_13, rep_15 (R15 nueva), táper → taper_dado; MP1 «Herramienta.» → herminia_de_alta con Brais');
 
   // ------------------------------------------------------------ ruben_libre (lo pone P2) → Eutimio y armario vacío
   await setFlag('ruben_libre');
   await goto('vestibulo', 'cpd'); await goto('cpd', 'vestibulo');
-  must((await objState('armario_27')) === 'vacio' && (await roomOf('ruben')) !== 'cpd', 'ruben_libre: armario vacío y sin Zacarías');
+  must((await objState('armario_27')) === 'vacio' && (await roomOf('ruben')) !== 'cpd', 'ruben_libre: armario vacío y sin Brais');
   await clearLog(); await hablar('paco_ticket'); await closeDialog();
   await expectLog(['Ticket nº 1. Estado: cerrado. No he tenido que subir.', 'Es lo mejor que me ha pasado en la vida.'], 'Eutimio: ticket nº 1 (E5 C75)');
   await clearLog(); await hablar('paco_ticket'); await closeDialog();
@@ -380,7 +380,7 @@ try {
     'De la Redacción de papel. Para ti.', 'QUE NADIE ME DESEE NADA.', 'Ni bici.',
     'La portada dura nueve.', 'Una. Pero se lo lee TODO. La he puesto de objetivo de empresa.', 'gracias por sacarme',
     '¿Has comido?', 'Te pongo un corazoncito.', 'Y te pongo «abrígate». Que nunca contestas.', 'Bruno Pellejo ha respondido: «Abrígate tú.»',
-    '¡Me ha contestado el periódico!', 'FE DE ERRATAS / En la edición de ayer, donde decía / «inteligencia artificial» / debía decir «Zacarías».'];
+    '¡Me ha contestado el periódico!', 'FE DE ERRATAS / En la edición de ayer, donde decía / «inteligencia artificial» / debía decir «Brais».'];
   const pos = await G(o => { const L = __game.log.map(l => l.text); return o.map(s => L.findIndex(t => t.includes(s))); }, orden);
   pos.forEach((p, i) => must(p >= 0, `final: falta «${orden[i]}»`));
   pos.forEach((p, i) => must(i === 0 || p > pos[i - 1], `final: «${orden[i]}» fuera de orden`));

@@ -71,11 +71,11 @@ const X = [
   { n: 'XM5', tras: 38, sala: 'catacumba', txt: 'Usar pieza_opa con fax → «1: GOYITA», de nuevo → «3: CONTROLLING»', acc: [['ir', 'catacumba'], ['usar', 'pieza_opa', 'fax'], O('1: GOYITA'), SALIR, ['usar', 'pieza_opa', 'fax'], O('3: CONTROLLING'), SALIR], esp: { flags: { fax_tecla_n: 2, pieza_recortada: false } } },
   { n: 'X23', tras: 40, sala: 'pecera', txt: 'Dar boli_muerto a custodia_precinto → «Para apuntar lo que me digan. Sin grabadora.»', acc: [['ir', 'pecera'], ['dar', 'boli_muerto', 'custodia_precinto'], O('Para apuntar lo que me digan. Sin grabadora.'), SALIR], esp: { flags: ['custodia_ablandada', 'dos_ias_vista'], notiene: ['boli_muerto'] } },
   { n: 'X24', tras: 40, sala: 'pecera', txt: 'Custodia → «¿Dónde está...?» → «¿Dónde está Ramírez?» → «Ya está.»', acc: [V('hablar', 'custodia_precinto'), O('¿Dónde está...?'), O('¿Dónde está Ramírez?'), O('Ya está.'), SALIR], esp: { log: ['Desayunando.'] } },
-  { n: 'XM4b', tras: 41, sala: 'cpd', txt: 'El táper huérfano, a Zacarías (se entrega en la escena del armario si Bruno lo lleva)', acc: [], esp: { flags: ['taper_dado'], notiene: ['taper_huerfano'] } },
+  { n: 'XM4b', tras: 41, sala: 'cpd', txt: 'El táper huérfano, a Brais (se entrega en la escena del armario si Bruno lo lleva)', acc: [], esp: { flags: ['taper_dado'], notiene: ['taper_huerfano'] } },
   // E1.5 / E1.9 · MP1 «Alta en cuarenta segundos» y la anexión
   { n: 'XE3', tras: 42, sala: 'cpd', txt: 'Eutimio → «¿Me das de alta a una becaria? Se llama Herminia.» → «Herramienta.»', acc: [V('hablar', 'paco_ticket'), O('¿Me das de alta a una becaria? Se llama Herminia.'), O('Herramienta.'), SALIR], esp: { flags: ['herminia_de_alta'] } },
   { n: 'XE4', tras: 'XE3', sala: 'pecera', txt: '(entrar en la Redacción) → anexión', acc: [['ir', 'pecera']], esp: { flags: ['infografia_integrada'] } },
-  { n: 'X16', tras: 44, sala: 'ecosistema', txt: 'Mirar portatil_tadeo ×4 (con Zacarías encontrado: la réplica R15)', acc: [['ir', 'ecosistema'], V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo')], esp: { flags: { portatil_tadeo_n: 4, rep_15: true } } },
+  { n: 'X16', tras: 44, sala: 'ecosistema', txt: 'Mirar portatil_tadeo ×4 (con Brais encontrado: la réplica R15)', acc: [['ir', 'ecosistema'], V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo'), V('mirar', 'portatil_tadeo')], esp: { flags: { portatil_tadeo_n: 4, rep_15: true } } },
   // ------------------------------------------------------------------ ENMIENDA E5 §7.4 (XE5-1…11)
   // XE5-11 · a oscuras (ventana real; los verbos con el texto rápido): Yoli, Anselmo, la taza «NO» y la salida al Vending
   // (no sale). Se vuelve a la partida guardada antes del apagón para que el paso 20 lo haga como siempre.
@@ -86,7 +86,7 @@ const X = [
   // XE5-8 · Eutimio sin pegatina, dos veces (se quita la pegatina vista para probarlo y se vuelve a la partida)
   { n: 'XE5-8', tras: 21, sala: 'cpd', txt: '[E5] Eutimio sin pegatina ×2: dos negativas y sin manual', acc: [['guardar', 'xe5_21'], ['flag', 'vio_pegatina_fax', false], V('hablar', 'paco_ticket'), O('¿Sabes algo del fax'), SALIR, V('hablar', 'paco_ticket'), O('¿Sabes algo del fax'), SALIR], esp: { notiene: ['manual_fax'], flags: { paco_dio_manual: false }, log: ['¿Qué fax? Sin número de ticket, para mí no hay fax.', 'Todo lo que mantengo lleva mi pegatina. Ese fax también.'] } },
   { n: 'XE5-8b', tras: 'XE5-8', sala: 'cpd', txt: '[E5] (cargar)', acc: [['cargar', 'xe5_21']], esp: { flags: ['vio_pegatina_fax', 'cms_vivo'] } },
-  // XE5-9 · el papel del 27 en el Acto II, dos tirones (sin Zacarías)
+  // XE5-9 · el papel del 27 en el Acto II, dos tirones (sin Brais)
   { n: 'XE5-9', tras: 23, sala: 'cpd', txt: '[E5] Tirar papel_continuo ×2 en el Acto II', acc: [V('tirar', 'papel_continuo'), V('tirar', 'papel_continuo')], esp: { flags: { ruben_encontrado: false, cpd_papel_tirones: 2 }, log: ['Tiro un poco. Desde dentro, alguien tira más fuerte.', 'Desde dentro no sueltan. El de ahí no está distraído.'] } },
   // XE5-7 · ascensor con atajo: Sistemas → planta 1 → «Redacción de papel» (llega por la Redacción)
   { n: 'XE5-7', tras: 23, sala: 'catacumba', txt: '[E5] Ascensor con atajo: Sistemas → Planta 1 → «Redacción de papel»', acc: [['ascensor', 'Planta 1', 'Redacción de papel']], esp: { sala: 'catacumba' } },
@@ -102,7 +102,7 @@ const X = [
   // XE5-6 · sin rep_13 ni oyo_descopear: las tres columnas equivocadas y «Tráeme algo…» a la tercera
   { n: 'XE5-6', tras: 45, sala: 'pecera', txt: '[E5] Columnas equivocadas ×3 sin rep_13 ni oyo_descopear', acc: [['guardar', 'xe5_45'], ['flag', 'rep_13', false], ['flag', 'oyo_descopear', false], ['usar', 'rotulador_rojo', 'kanban'], O('DESPEDIDOS'), ['usar', 'rotulador_rojo', 'kanban'], O('HECHO (DE VERDAD)'), ['usar', 'rotulador_rojo', 'kanban'], O('FIRMAR EN PAPEL')], esp: { flags: { posit_descopeado: false, pecera_columna_mal_n: 3 }, log: ['Eso es «muerto» con corbata.', '«De verdad» no es un estado.', 'Eso es tuyo. Mi tablero no es tu diario.', 'Tráeme algo que no sea ni hecho ni muerto.'] } },
   { n: 'XE5-6b', tras: 'XE5-6', sala: 'pecera', txt: '[E5] (cargar)', acc: [['cargar', 'xe5_45']], esp: { flags: ['album_validado', 'rep_13', 'oyo_descopear'] } },
-  // E2 §5.7: L1 y L3 han sonado; la L4 se pierde (Zacarías aparece antes de otra entrada sin escena); la L5 espera a la
+  // E2 §5.7: L1 y L3 han sonado; la L4 se pierde (Brais aparece antes de otra entrada sin escena); la L5 espera a la
   // siguiente entrada con ruben_libre. Los tres RV de Tadeo, ya en el correo (sin aviso).
   { n: '—46', tras: 46, sala: 'pecera', txt: 'Control: L1 y L3 ya han sonado (L4 perdida, L5 pendiente); los tres RV, en el correo', acc: [], esp: { flags: { evaristo_llamadas: 2, tadeo_rv_n: 3 } } },
 ];

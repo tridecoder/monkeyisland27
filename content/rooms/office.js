@@ -295,9 +295,9 @@ export default buildRoom({
       usar: 'Pincho mi nombre en el corcho. Se cae. Ni la chincheta me reconoce.',
     } },
     { id: 'hoja_firmas', name: 'hoja de firmas', handlers: {
-      mirar: async (api) => { await api.say(['Curso obligatorio de prevención de riesgos. No lo ha hecho nadie.', 'Hay una sola firma: «Zacarías (todavía aquí)».']); },
+      mirar: async (api) => { await api.say(['Curso obligatorio de prevención de riesgos. No lo ha hecho nadie.', 'Hay una sola firma: «Brais (todavía aquí)».']); },
       usar: 'Mi primera firma en papel no va a ser en una hoja de riesgos. Me niego.',
-      coger: 'Si me la llevo, Zacarías pierde su firma. Y todavía no sé quién es.',
+      coger: 'Si me la llevo, Brais pierde su firma. Y todavía no sé quién es.',
     } },
     { id: 'cartel_cortado', name: 'cartel del cortado', handlers: {
       mirar: '«El cortado sube a 1,20 €». Escrito a mano. La noticia más leída del edificio.',

@@ -414,9 +414,9 @@ try {
   ok((await state()).flags.evaristo_llamadas === 2 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Veintitrés líneas. Ni una coma fuera de sitio. Era solo eso.')), 'L3 (pieza_recortada), sin la coma de 4,15 € (E2 §5.7)');
   await G(() => { __game.setFlag('acto_3_iniciado', true); __game.setFlag('ruben_encontrado', true); __game.clearLog(); });
   await G(() => __game.gotoRoom('office'));
-  ok((await state()).flags.evaristo_llamadas === 2, 'L4 se pierde si Zacarías ya ha aparecido; L5 espera a ruben_libre');
+  ok((await state()).flags.evaristo_llamadas === 2, 'L4 se pierde si Brais ya ha aparecido; L5 espera a ruben_libre');
   await G(() => { __game.setFlag('ruben_libre', true); __game.clearLog(); });
-  await G(() => __game.gotoRoom('administracion'));      // (en la Redacción, con Zacarías libre, la entrada lanza su escena)
+  await G(() => __game.gotoRoom('administracion'));      // (en la Redacción, con Brais libre, la entrada lanza su escena)
   ok((await state()).flags.evaristo_llamadas === 3 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Una cosita. Me dicen que va a la Sala. ¿Lleva mi correo?')), 'L5 (ruben_libre): «¿Lleva mi correo?»');
   await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'acto_2_iniciado', 'acto_3_iniciado', 'pieza_recortada', 'ruben_encontrado', 'ruben_libre']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); __game.setFlag('evaristo_convoco', false); });
 

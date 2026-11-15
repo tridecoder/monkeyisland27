@@ -24,14 +24,14 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   cierre: 'Lo tengo todo. Solo falta que Teodoro diga «cabe».',
   acto3: 'A las nueve apagan la rotativa. Y alguien teclea en el armario 27.',
   // [integrador] con Rubén ya fuera del armario, la línea del armario 27 se queda vieja (álbum y baja)
-  baja: 'A las nueve apagan la rotativa. Y Zacarías sigue de alta en un armario.',
+  baja: 'A las nueve apagan la rotativa. Y Brais sigue de alta en un armario.',
   acta: 'Para entrar en la Sala hace falta un acta. Gervasio no ha escrito una nunca.',
   climax: 'Respondo a todos. Por fin algo que sé hacer.',
   empujon: 'El Lector Medio se tambalea. Un empujoncito y deja de asentir.',   // crítica 3 §9.9: la señal del empujón
   // E2 §10.3: la coma de Evaristo (pasos 28 y 32)
   // ENMIENDA E5 §2.1 y §2.5: la estampida por la tele y la columna nueva del kanban
   turno: 'En esa reunión solo pregunta quien sale en la tele. Yo no salgo en nada.',
-  columna: 'Anselmo ya cree que Zacarías existe. Lo que no hay es columna para que se vaya.',
+  columna: 'Anselmo ya cree que Brais existe. Lo que no hay es columna para que se vaya.',
   coma: 'Evaristo me llama y Begoña me manda a verle. Algo le quita el sueño.',   // integración: en el paso 28 solo ha sonado la L1
   bendicion: 'Evaristo duda de su propia coma. Necesita a alguien que sepa de comas.',
 };
@@ -129,7 +129,7 @@ export const OBJETIVOS = [
     activo: 'ruben_encontrado', salas: ['eventos', 'cpd'], meta: M.baja, niveles: [
     'Para que dejen irse a alguien, hay que demostrar que estuvo.',
     'Las fotos de las fiestas las guarda la que las organiza.',
-    ['Pídele las fotos a la de las fiestas.', 'El álbum de Pilar. Zacarías sale al fondo.']] },
+    ['Pídele las fotos a la de las fiestas.', 'El álbum de Pilar. Brais sale al fondo.']] },
   // ENMIENDA E5 §2.5: `baja` = enseñar el álbum (album_validado); `columna` = escribir la columna con el rotulador
   { id: 'baja', acto: 3, hecho: 'album_validado', activo: (api) => api.has('album_eventos'), salas: ['pecera'], meta: M.baja, niveles: [
     'Las fotos, enséñaselas al que lleva la lista. Que vea que el chico existe.',
@@ -177,9 +177,9 @@ export const DONDE = {
   rep_10: ['A esa cafetera salúdala otra vez, hijo. Le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
   rep_11: ['Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar.', 'Redacción: mi ordenador, sentado. Ramírez espera mis comentarios.'],
   rep_12: ['El de los cables sabe cosas del señor del traje. Pregúntale.', 'Sistemas, con el CMS vivo: a Eutimio, «¿Algún cotilleo del consultor?».'],
-  rep_13: ['El chico del armario escribía los discursos. Pregúntale.', 'Sistemas: a Zacarías, «¿Escribiste tú los discursos de Íñigo?».'],
+  rep_13: ['El chico del armario escribía los discursos. Pregúntale.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».'],
   rep_14: ['A esa cafetera salúdala otra vez, hijo. Le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
-  rep_15: ['Pregúntale al chico del armario por los correos de ese Tadeo.', 'Sistemas: a Zacarías, «¿Te llegaban correos de Tadeo?».'],
+  rep_15: ['Pregúntale al chico del armario por los correos de ese Tadeo.', 'Sistemas: a Brais, «¿Te llegaban correos de Tadeo?».'],
   rep_16: ['Al señor de las comas, escúchale hasta el final.', 'Administración: escuchar entero a Evaristo. «¿De qué trata?» y «Siga».'],
 };
 /** Bruno, al colgar en el nivel 3, antes de los sitios de las réplicas que faltan. */

@@ -6,7 +6,7 @@
 //      y a los 12 s; cargar una partida guardada a mitad de la ventana → luz y Anselmo en su mesa; escalada n = 2.
 //   2. Columna del kanban (§2.5): rotulador antes del álbum (negativa), boli muerto, álbum a Anselmo (album_validado),
 //      Usar el tablero sin rotulador, tres columnas equivocadas (y «Tráeme algo…» a la tercera), SALIDA EN VALOR (con el
-//      táper en la mano de Zacarías) y DESCOPEADO; el otro orden (álbum antes que rotulador); guardar/cargar a mitad y al final.
+//      táper en la mano de Brais) y DESCOPEADO; el otro orden (álbum antes que rotulador); guardar/cargar a mitad y al final.
 //   3. Coro por acto (K01-K04), solo con Bruno cerca. 4. F4 `junto()` sin fundido (Bruno corre). 5. F9 Custodia.
 //   6. La frase de Anselmo («El modelo es de fuera. El prompt es de dentro.» / «Eso lo hace nuestro.») se oye una vez.
 //   node tools/test-e5-pb.mjs              (capturas en tools/shots/e5-pb-*.png)
@@ -231,12 +231,12 @@ try {
   await raton('usar', 'kanban', 'rotulador_rojo', false);
   await until(() => !!__game.currentDialogOptions());
   ok((await opciones()).includes('SALIDA EN VALOR') && (await opciones()).includes('DESCOPEADO'), 'con rep_13 y oyo_descopear, salen SALIDA EN VALOR y DESCOPEADO');
-  // (en modo rápido la escena pasa entera en un instante: se espía la mano de Zacarías con un setter)
+  // (en modo rápido la escena pasa entera en un instante: se espía la mano de Brais con un setter)
   await G(() => { window.__taper = false; const r = __game.game.actors.ruben; let h = r.hold;
     Object.defineProperty(r, 'hold', { configurable: true, get: () => h, set: (v) => { h = v; if (v && v.item === 'taper_huerfano' && r.room === 'pecera') window.__taper = true; } }); });
   await clicOpcion('SALIDA EN VALOR');
   await idle();
-  ok(await G(() => window.__taper), 'con taper_dado, Zacarías va a la ventana con el táper en la mano');
+  ok(await G(() => window.__taper), 'con taper_dado, Brais va a la ventana con el táper en la mano');
   await idle(); await seguir();
   const s1 = await G(() => ({ pd: __game.getFlag('posit_descopeado'), rl: __game.getFlag('ruben_libre'), col: __game.getFlag('columna_kanban'), inv: __game.state().inventory }));
   ok(s1.pd && s1.rl && s1.col === 'salida' && s1.inv.includes('ticket_n1') && s1.inv.includes('rotulador_rojo'), `SALIDA EN VALOR → posit_descopeado, ruben_libre, ticket_n1, columna 'salida', el rotulador se queda (${JSON.stringify(s1)})`);
@@ -244,7 +244,7 @@ try {
     && await logCount('Entonces es de la casa.') === 1 && await logHas('Revocado. Fecha: hoy. Efectos: julio.') && !(await logHas('Consultoría')), 'las tres líneas del arranque (§3.5), C94, sin «Consultoría»');
   await G(() => __game.clearLog());
   await raton('mirar', 'kanban');
-  ok(await logHas('Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Zacarías.'), 'Mirar el tablero → «…SALIDA EN VALOR…»');
+  ok(await logHas('Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Brais.'), 'Mirar el tablero → «…SALIDA EN VALOR…»');
   await raton('usar', 'kanban', 'rotulador_rojo');
   ok(await logHas('Una columna nueva por noche. La siguiente, en la próxima versión.') && !(await opciones()), 'el rotulador, otra vez: ya no hay menú');
   await G(() => { const p = __game.game.player; p.x = 896; p.y = 128; p.path = []; p.dir = 'right'; }); await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-salida');
