@@ -251,6 +251,7 @@ async function columnaMal(api, via) {
       await api.anim(api.player, 'reach', 600);
       api.sfx('paper');
       api.setState('kanban', 'mal_' + via);            // (la columna, a rotulador, con mala letra)
+      api.repaint();                                   // (el tablero es un `prop`: se pinta en caché)
       await apartarse(api);                            // (Bruno da un paso atrás: que se lea)
       await api.wait(500);
       api.cameraTo(TABLERO_X + 60);
@@ -259,6 +260,7 @@ async function columnaMal(api, via) {
       await api.anim(A, 'reach', 600);                 // (la borra con la manga)
       api.sfx('paper');
       api.setState('kanban', null);
+      api.repaint();
       api.faceActor(A, api.player);
       await api.sayAs(A, MAL[via]);
       if (api.inc('pecera_columna_mal_n') === 3 && !api.flag('rep_13') && !api.flag('oyo_descopear')) {
@@ -266,7 +268,7 @@ async function columnaMal(api, via) {
       }
     });
   } finally {
-    if (api.getState('kanban')) api.setState('kanban', null);
+    if (api.getState('kanban')) { api.setState('kanban', null); api.repaint(); }
     api.cameraFollow();
   }
   anselmoVuelve(api);

@@ -188,7 +188,7 @@ try {
   await G(() => { __game.game.noSave = false; __game.save(2); __game.game.noSave = true; });   // una partida guardada «a oscuras» (versión vieja)
   await G(() => __game.load(2));
   await sleep(400); await idle();
-  const ld = await G(() => { const g = __game.game, a = g.actors.anselmo_monolito; return { ap: !!g.apagon, osc: !!__game.getFlag('pecera_oscuras'), n: __game.getFlag('apagon_n'), x: Math.round(a.x), sp: a.speed, nf: !!a.noFreeze, noSave: !!g.noSave, mon: __game.state().objects['pecera:monitor_yoli'] }; });
+  const ld = await G(() => { const g = __game.game, a = g.actors.anselmo_monolito; return { ap: !!g.apagon, osc: !!__game.getFlag('pecera_oscuras'), n: __game.getFlag('apagon_n'), x: Math.round(a.x), sp: a.speed, nf: !!a.noFreeze, noSave: !!g.noSave, mon: __game.state().objects['pecera.monitor_yoli'] }; });
   ok(!ld.ap && !ld.osc && ld.n === 1 && ld.x > 1060 && ld.sp === 54 && !ld.nf && !ld.noSave, `cargar a mitad de la ventana → luz, Anselmo en su mesa, apagon_n se queda (${JSON.stringify(ld)})`);
   await sleep(2500);
   ok(!(await G(() => !!__game.game.apagon)) && await G(() => Math.round(__game.game.actors.anselmo_monolito.x)) > 1060, 'tras cargar, la ventana vieja no vuelve (ni PLIN ni cierre colgados)');
@@ -217,9 +217,9 @@ try {
     const o = await (async () => { await until(() => !!__game.currentDialogOptions()); return opciones(); })();
     if (col === 'DESPEDIDOS') ok(JSON.stringify(o) === JSON.stringify(['DESPEDIDOS', 'HECHO (DE VERDAD)', 'FIRMAR EN PAPEL', 'Mejor no.']), `sin rep_13 ni oyo_descopear, tres columnas y «Mejor no.»: ${JSON.stringify(o)}`);
     await clicOpcion(col);
-    if (col === 'DESPEDIDOS') { await until(() => { const k = __game.state().objects['pecera:kanban']; return k && k.state === 'mal_0' && !__game.game.player.path.length; }, null, 8000); await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-mal'); await G(() => __game.skipText(true)); }
+    if (col === 'DESPEDIDOS') { await until(() => { const k = __game.state().objects['pecera.kanban']; return k && k.state === 'mal_0' && !__game.game.player.path.length; }, null, 8000); await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-mal'); await G(() => __game.skipText(true)); }
     await idle(); await seguir();
-    ok(await logHas(linea) && !(await flag('posit_descopeado')) && !(await G(() => (__game.state().objects['pecera:kanban'] || {}).state)), `clic en ${col} → Anselmo la borra con la manga: «${linea}»`);
+    ok(await logHas(linea) && !(await flag('posit_descopeado')) && !(await G(() => (__game.state().objects['pecera.kanban'] || {}).state)), `clic en ${col} → Anselmo la borra con la manga: «${linea}»`);
   }
   ok(await logCount('Tráeme algo que no sea ni hecho ni muerto. Eso no existe.') === 1 && await flag('pecera_columna_mal_n') === 3, '«Tráeme algo…» a la tercera, una vez');
   await raton('usar', 'kanban', 'rotulador_rojo', false);
@@ -247,7 +247,7 @@ try {
   ok(await logHas('Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Rubén.'), 'Mirar el tablero → «…SALIDA EN VALOR…»');
   await raton('usar', 'kanban', 'rotulador_rojo');
   ok(await logHas('Una columna nueva por noche. La siguiente, en la próxima versión.') && !(await opciones()), 'el rotulador, otra vez: ya no hay menú');
-  await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-salida');
+  await G(() => { const p = __game.game.player; p.x = 896; p.y = 128; p.path = []; p.dir = 'right'; }); await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-salida');
   await G(() => __game.save(4)); await G(() => __game.load(4)); await sleep(200); await idle();
   ok(await flag('columna_kanban') === 'salida' && await flag('posit_descopeado') && await flag('ruben_libre'), 'guardar/cargar con la columna escrita: se conserva');
   // la otra vía, desde la partida guardada a mitad, y el otro orden (álbum antes que rotulador)
@@ -266,7 +266,7 @@ try {
   await G(() => __game.clearLog());
   await raton('mirar', 'kanban');
   ok(await logHas('Y una nueva, a rotulador: DESCOPEADO.'), 'Mirar el tablero → «…DESCOPEADO…»');
-  await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-descopeado');
+  await G(() => { const p = __game.game.player; p.x = 896; p.y = 128; p.path = []; p.dir = 'right'; }); await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-descopeado');
 
   // ====================================================================== 3. coro por acto, solo de cerca
   console.log('\n§5.1 el coro por acto (K01-K04), solo con Bruno cerca');

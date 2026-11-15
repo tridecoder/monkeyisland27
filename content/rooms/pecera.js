@@ -609,7 +609,7 @@ export default buildRoom({
       anselmoEnSuSitio(api);
       api.setState('monitor_yoli', null);
     }
-    if (api.getState('kanban')) api.setState('kanban', null);
+    if (api.getState('kanban')) { api.setState('kanban', null); api.repaint(); }
     if (api.getState('coro_desarrollo')) api.setState('coro_desarrollo', null);
     // epílogo (lector_derribado): la escena final coloca a la gente ella misma; aquí no se hace nada
     if (api.flag('lector_derribado') || api.flag('juego_terminado') || api.restoring) return;
