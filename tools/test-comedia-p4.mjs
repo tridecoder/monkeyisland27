@@ -237,10 +237,10 @@ try {
   await G(() => __game.clearLog());
   for (let i = 0; i < 6; i++) await verb('mirar', 'portatil_tadeo');
   ok(await logHas('Ferretería Hermanos Tornillo') === 1 && await logHas('Propongo aplicarlo a las reuniones') === 1 && await logHas('Lo ha escrito una máquina.') === 1, 'reenvíos 5 y 6');
-  ok(!(await flag('rep_15')), 'sin R15 antes de Zacarías');
+  ok(!(await flag('rep_15')), 'sin R15 antes de Brais');
   await setFlags({ ruben_encontrado: true });
   for (let i = 0; i < 4; i++) await verb('mirar', 'portatil_tadeo');
-  ok((await flag('rep_15')) === true && await logHas('Tadeo no lo ha leído. Yo sí.') === 1 && await logHas('Me la apunto') === 0, 'R15 con Zacarías; sin «Me la apunto»');
+  ok((await flag('rep_15')) === true && await logHas('Tadeo no lo ha leído. Yo sí.') === 1 && await logHas('Me la apunto') === 0, 'R15 con Brais; sin «Me la apunto»');
   await setFlags({ ruben_encontrado: false });
   await shot('marketing');
 
@@ -527,7 +527,7 @@ try {
   const cel = probe.filter(p => p.who === 'celestino' && p.tag === 'ENTRADA 1');   // (luego, el epílogo: otra escena)
   ok(cel.length === 2 && cel.every(p => p.tele === 'entrada_1' && p.lector.caido && p.lector.visible), 'el empujón se ve: Lector caído a la vista, Celestino por la tele');
   ok(await logHas('Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.') === 1 && await logHas('treinta y cinco euros con cincuenta y dos') === 1, 'Begoña: la factura, con coma (§5.6)');
-  ok(await logHas('Es lo que me como en atún.') === 1 && await logHas('Con ticket.') === 1, 'Zacarías y Begoña: «¿Con táper?» «Con ticket.»');
+  ok(await logHas('Es lo que me como en atún.') === 1 && await logHas('Con ticket.') === 1, 'Brais y Begoña: «¿Con táper?» «Con ticket.»');
   ok(await logHas('Algo importante se nos acaba de escapar') === 0 && await logHas('Quedan ciento cincuenta y dos') === 0, 'fuera la frase críptica y la coletilla');
   ok((await flag('lector_derribado')) === true && (await flag('juego_terminado')) === true, 'empujón → final');
 

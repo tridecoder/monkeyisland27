@@ -855,12 +855,11 @@ function drawKanban(g, view) {
     if (desc && !MAL[view.state]) micro(g, 'patrocina: Comercial', x + 2, ly + 10, '#9a8a90');
   }
   // «BAJA / RUBÉN» desde julio, en POR HACER; con posit_descopeado, en la columna nueva (y su hueco, vacío)
-  // [I2] el becario se llama ahora Zacarías (id `ruben`): el nombre, partido en dos renglones («ZACA-» / «RÍAS»)
+  // [I2] el becario se llama ahora Brais (id `ruben`): «BAJA» y el nombre entero («BRAIS») en un renglón cada uno
   const [rx, ry] = desc ? [x + 82, ly - 1] : [x + 1, y + 15];
   rect(g, rx, ry, 19, 19, '#f49ab8'); hline(g, rx, ry, 19, '#ffffff'); hline(g, rx, ry + 18, 19, '#c0607e');
-  micro(g, 'BAJA', rx + 2, ry + 1, INK);
-  micro(g, 'ZACA-', rx, ry + 7, PAL.red[2]);
-  micro(g, 'RÍAS', rx + 2, ry + 13, PAL.red[2]);
+  micro(g, 'BAJA', rx + 2, ry + 4, INK);
+  micro(g, 'BRAIS', rx, ry + 10, PAL.red[2]);
   if (view.flag('album_validado')) {                                             // la foto del álbum, grapada (§2.5.3)
     rect(g, rx + 13, ry - 3, 7, 6, '#ffffff'); rect(g, rx + 14, ry - 2, 5, 4, '#4a5a78');
     px(g, rx + 16, ry - 1, PAL.skin[4]); px(g, rx + 16, ry, '#dfe4ee');          // el chico pálido, al fondo

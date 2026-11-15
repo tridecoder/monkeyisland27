@@ -390,13 +390,13 @@ try {
   if (!args.solo || args.solo === 'conexiones') {
     // CONEXIONES: cada salida de cada sala (y cada parada del ascensor) con un clic real; se llega a la sala que dice la
     // salida, en su entrada (la que se llama como la sala de origen), y esa entrada está junto a la salida de vuelta
-    console.log('\nConexiones (clic real en cada salida, Acto III con Zacarías libre)\n');
+    console.log('\nConexiones (clic real en cada salida, Acto III con Brais libre)\n');
     await page.goto(base);
     await page.waitForFunction(() => !!window.__game);
     await G(() => __game.skipText(true));
     await R.startDismisser();
     await G(() => __game.newGame());
-    for (const s of STEPS.filter(s => s.n > 1 && s.n <= 46)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }   // 46: Zacarías libre
+    for (const s of STEPS.filter(s => s.n > 1 && s.n <= 46)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }   // 46: Brais libre
     await G(() => { clearInterval(window.__dismisser); window.__dismisser = null; });
     const exits = await G(() => { const out = []; for (const [rid, r] of Object.entries(__game.game.content.rooms)) for (const o of r.objects || []) { if (o.exit) out.push({ room: rid, id: o.id, to: o.exit.room, entry: o.exit.entry || rid }); if (o.ascensor) out.push({ room: rid, id: o.id, lift: true }); } return out; });
     const lifts = exits.filter(e => e.lift);
@@ -447,7 +447,7 @@ try {
     await G(() => __game.skipText(true));
     await R.startDismisser();
     await G(() => __game.newGame());
-    const cps = [[8, 'ACTO I (tras 7.2)'], [16, 'ACTO II (inicio)'], [30, 'ACTO II (tras D1)'], [40, 'ACTO III (inicio)'], [42, 'ACTO III (Zacarías encontrado)'], [46, 'ACTO III (Zacarías libre)']];
+    const cps = [[8, 'ACTO I (tras 7.2)'], [16, 'ACTO II (inicio)'], [30, 'ACTO II (tras D1)'], [40, 'ACTO III (inicio)'], [42, 'ACTO III (Brais encontrado)'], [46, 'ACTO III (Brais libre)']];
     let done = 1;
     for (const [n, tag] of cps) {
       for (const s of STEPS.filter(s => s.n > done && s.n <= n)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }

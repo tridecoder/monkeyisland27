@@ -135,7 +135,7 @@ try {
   for (let i = 0; i < 3; i++) { await until(G, () => __game.state().dialog); await G(() => __game.chooseDialog(__game.state().duel.correctIndex)); }
   await G(() => __game.waitIdle());
   ok(await G(() => __game.state().lastDuel.result === 'won'), 'el duelo de la demo se gana con tres aciertos');
-  ok(await G(() => { const L = __game.log; const i = L.findIndex(l => l.who === 'paco_ticket' && l.text === 'Eso lo escribió alguien brillante.'); return i >= 0 && L[i + 1] && L[i + 1].who === 'celestino' && L[i + 1].text === 'Yo. Perdón.'; }), 'hurtByPair con otro actor: Eutimio encaja y Celestino remata (§7.6, Zacarías en D4)');
+  ok(await G(() => { const L = __game.log; const i = L.findIndex(l => l.who === 'paco_ticket' && l.text === 'Eso lo escribió alguien brillante.'); return i >= 0 && L[i + 1] && L[i + 1].who === 'celestino' && L[i + 1].text === 'Yo. Perdón.'; }), 'hurtByPair con otro actor: Eutimio encaja y Celestino remata (§7.6, Brais en D4)');
 
   // ================================================================ ficha, meta, pistas, hora
   console.log('\nObjetivo, pistas y hora (plan §8)');

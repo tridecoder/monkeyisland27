@@ -116,7 +116,7 @@ sala, se pide; los locales, con el prefijo de vuestra sala en `flags` de la lóg
 | Sala / archivo | Qué | Paquete |
 |---|---|---|
 | `cpd.js` (Eutimio, P3) | Cita la réplica vieja de R12 («…no pasa la ITV»): ahora es «Puestas. Ahora se ve perfectamente que no hay carretera.» | P1 |
-| `ecosistema.js` (portátil de Tadeo) | Cita la vieja R15 («Normal. Se lo has preguntado tú»): ahora es «Lo sé. Me lo ha contado ella. Se llama Zacarías.» (y se aprende con Zacarías, §7.3) | P4 / P1 |
+| `ecosistema.js` (portátil de Tadeo) | Cita la vieja R15 («Normal. Se lo has preguntado tú»): ahora es «Lo sé. Me lo ha contado ella. Se llama Brais.» (y se aprende con Brais, §7.3) | P4 / P1 |
 | `office.js` | Chismes de Gertrudis que enseñan R03, R04, R10, R14: deben citar las réplicas nuevas; segundo café inútil (crítica §9.5) | P3 |
 | `pecera.js` | Coro cada 14-24 s con `setInterval`/`every` (ya lo limita el motor; reducir a las 4 discusiones); el ascensor nombra a Valentín antes de conocerle (crítica §5); «Pecera» a la vista | P2 |
 | `pecera.dialogos.js` | «Es lo más bonito…» ×2 (crítica §10.1.11); árbol de Valentín | P2 |
@@ -154,7 +154,7 @@ murmullos y el ambiente que estuvieran en pantalla (nada habla por debajo del an
 ### E2.2 Datos comunes ya cambiados (no los dupliquéis en la sala)
 
 - **Llamadas de Evaristo** (`content/game.js`, §5.7): L1 recortada (7 líneas, §7.4 paso 10), L3 nueva (sin la coma de
-  4,15 €), L4 con `!ruben_encontrado` (se pierde si Zacarías aparece antes), L5 nueva con `ruben_libre` y
+  4,15 €), L4 con `!ruben_encontrado` (se pierde si Brais aparece antes), L5 nueva con `ruben_libre` y
   `!climax_entrada`. **Fuera la L2 y la LC** (`evaristo_lc`). Una llamada por entrada, como siempre.
 - **RV de Tadeo** (§7.4, paso 13): ya **no son aviso**; llegan solos al correo del móvil (`tadeo_rv_n` cuenta los
   llegados). RV1 y RV2 sin comentario de Bruno (§7.2). El portátil de Tadeo (P4) sigue igual.
@@ -286,7 +286,7 @@ Se hereda.»): una línea ASCII también cuenta para los topes, los «Como X.» 
   pisadas** (nombre visible oficial y planta) y lleva a Bruno a la entrada de siempre de la elegida
   (`content/lib/directorio.js`: `DESTINOS`, `destinoAbierto`, `usarDirectorio`). Bloqueos: ni la sala actual ni una sin
   pisar; todo menos el Vestíbulo pide `torno_abierto`; la Sala Amazonas solo antes del Acto III (en el III se entra por su
-  puerta: acta, Zacarías y clímax); tras el empujón, nada. La sala de destino corre su `onEnter` y los avisos como siempre: si
+  puerta: acta, Brais y clímax); tras el empujón, nada. La sala de destino corre su `onEnter` y los avisos como siempre: si
   vuestra sala tiene una escena de entrada, también salta por el atajo. Salas pisadas: `api.visitada(room)` /
   `api.visitadas()` (las marca el motor; se guardan con la partida). Línea nueva (una, la primera vez): «Toco un nombre y
   el tótem me lleva. Ni ticket, ni cita previa.». El doble clic / doble toque en una salida ya existía (`engine/mover.js`).
@@ -370,17 +370,17 @@ Un fichero de datos nuevo con textos de pantalla se declara en `SOLO_PANTALLA` (
 > I2 (recorridos, pruebas, documentación). Prueba: `node tools/test-e5.mjs` (en `test-all`); capturas en
 > `tools/shots/e5-*.png`. APIs nuevas del motor, con su tabla: `docs/CONTENT_SCHEMA.md` §7, «ENMIENDA E5».
 
-### E5.0 Nombres: Eutimio y Zacarías (ids históricos `paco` y `ruben`)
+### E5.0 Nombres: Eutimio y Brais (ids históricos `paco` y `ruben`)
 
 Por decisión del dueño, posterior a la enmienda, **Paco** (Sistemas) se llama **Eutimio** y **Rubén** (el becario del
-armario 27, el Titulator) se llama **Zacarías**. Solo cambia lo que se ve y se oye: el `name` de los actores, las
+armario 27, el Titulator) se llama **Brais** (pasó antes por **Zacarías**). Solo cambia lo que se ve y se oye: el `name` de los actores, las
 líneas, las pantallas, las pistas de la abuela, la tarjeta FE DE ERRATAS y el arte con el nombre dibujado (la etiqueta
-de la brida y el pósit del regletero, «…EUTIMIO»; el pósit del kanban, «BAJA / ZACARÍAS»). **Los ids NO cambian**:
+de la brida y el pósit del regletero, «…EUTIMIO»; el pósit del kanban, «BAJA / BRAIS»). **Los ids NO cambian**:
 el actor sigue siendo `paco_ticket` y `ruben`; los flags, `ruben_libre`, `ruben_encontrado`, `paco_dio_manual`,
 `paco_tickets`, `cpd_paco_fax_n`…; la escena `revelacion_ruben`; las funciones (`revelacionRuben`, `nidoRuben`,
 `drawPacoDesk`) y las descripciones de flags. Escribid el nombre nuevo en todo texto nuevo y el id viejo en el código.
 Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_BIBLIA.md`) siguen con los nombres viejos.
-`text-audit` vigila las tildes («Zacarias» sin tilde es un fallo de nombre).
+`text-audit` vigila las tildes de los nombres y avisa de «Zacarías», «Zacarias», «Rubén» o «Paco» sobrantes.
 
 ### E5.1 Dónde vive cada cosa
 
@@ -432,7 +432,7 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
   `api.restoring`); si no, guardar tras la pregunta de Gertrudis y cargar no dejaba el estado idéntico (fuzz, paso 28).
 - Sistemas: el hotspot `armarios` llega ahora hasta el regletero (`rect` 66 × 46): el regletero ampliado de E5 lo
   solapaba un 91 % (regla R2 de la auditoría de geometría, máx. 30 %). El pósit del regletero mide 2 px más para «…EUTIMIO»
-  y el pósit de la baja del kanban, tres renglones («BAJA / ZACA- / RÍAS»).
+  y el pósit de la baja del kanban, «BAJA / BRAIS» (dos renglones; con «ZACARÍAS» eran tres: «ZACA- / RÍAS»).
 - `play-mouse`: el clic de Empujar a Fermín en el atasco se repite si cae en el marco (los tres tiemblan encajados).
 - `plan-rules`: «ticket» seguido de número («Ticket 0.441», la opción del fax de E5 §3.4) no cuenta para el tope de
   «ticket» de Bruno, como ya no contaban «Ticket nº 1» ni el apellido de Eutimio.

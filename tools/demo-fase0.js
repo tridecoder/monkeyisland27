@@ -151,7 +151,7 @@ export const logic = {
     },
     demo_tarjeta: async (api) => {
       await api.tarjeta({ titulo: 'FE DE ERRATAS', minMs: 6000, lineas: ['En la edición de ayer, donde decía «inteligencia artificial»',
-        'debía decir «Zacarías».', 'Donde decía «Por Bruno Pellejo»', 'debía decir «Por Bruno Pellejo».', '', 'Lamentamos el acierto.'] });
+        'debía decir «Brais».', 'Donde decía «Por Bruno Pellejo»', 'debía decir «Por Bruno Pellejo».', '', 'Lamentamos el acierto.'] });
     },
   },
 };

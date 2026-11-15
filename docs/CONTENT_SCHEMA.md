@@ -255,7 +255,7 @@ with the rooms **already entered** in this game (`api.visitada`), with their off
 says `PRIMER_VIAJE` («Toco un nombre y el tótem me lleva. Ni ticket, ni cita previa.», `api.once('directorio_primer_viaje')`).
 **Locks** (`destinoAbierto(api, room)`): never the current room nor a room not yet entered; everything but the Vestíbulo
 needs `torno_abierto` (`plantaPermitida` of the lift); the Sala Amazonas only before `acto_3_iniciado` (in Act III it is
-entered through its door in the Despachos, `entrarSala`: acta + Zacarías, and the climax starts there); after
+entered through its door in the Despachos, `entrarSala`: acta + Brais, and the climax starts there); after
 `lector_derribado` / `juego_terminado` the directory offers nothing. It is optional: the 44-step walkthrough never uses it.
 The engine already had the other half of the shortcut: **double click / double tap on an exit** = leave at once
 (`engine/mover.js`, §7 «Movement»). Both are in the pause menu «Cómo se juega». Tests: `tools/test-critica3.mjs` (§9.8:
@@ -345,7 +345,7 @@ What the shared `content/game.js` provides (you use it, you don't edit it):
 ### Avisos (addendum §2): incoming calls and «RV:» notices — common, nobody has to call them
 After the `onEnter` of **every** room the engine runs `game.afterEnter`, which plays the scene `avisos`
 (`content/game.js`): **at most one notice per room entry**. **ENMIENDA E2 §5.7:** only Evaristo's calls L1
-(`torno_abierto`), L3 (`pieza_recortada`), L4 (`acto_3_iniciado` and `!ruben_encontrado`; lost if Zacarías is found first)
+(`torno_abierto`), L3 (`pieza_recortada`), L4 (`acto_3_iniciado` and `!ruben_encontrado`; lost if Brais is found first)
 and L5 (`ruben_libre` and `!climax_entrada`); L2 and the LC are gone (counter `evaristo_llamadas` = calls heard; each
 call also leaves `once:evaristo_L<n>`). Tadeo's «RV:» mails are **no longer notices** (E2 §7.4): they arrive silently in
 the phone's mailbox when their condition holds (`tadeo_rv_n` = arrived). Calls come in order and wait for their
@@ -805,7 +805,7 @@ D3 in `office`, `inigo` D4 in `sala_amazonas`).
   round. Nothing is learned in a duel. On touch screens the duel menu uses 5 rows of 11 px (no scroll).
 - Correct reply: +1, the attack leaves the deck, «+1» line in the thread, `onHit(api, duel, pairId)`, then the rival
   takes it with `hurtByPair[pair]` (rival or `duelo.js hurtByPair[<duel id>][<pair>]`; a string, a list of strings or
-  a list of `[actor, line]` — another actor, e.g. Zacarías in D4, speaks only if he is in the room) or its `hurt` rotation.
+  a list of `[actor, line]` — another actor, e.g. Brais in D4, speaks only if he is in the room) or its `hurt` rotation.
 - Miss: one more `RE:`, somebody more in copy (`cc1` / `ccSteps[0]` = the rival's own CC, then «Toda la planta», then
   «Dirección»), the attack goes to the end of the deck, and the rival **always** answers (wrong learned reply → `taunt`;
   weak reply → `opp.weakAnswers[text]` → `answers[<duel id>]` → `answerFax` → `answer`) **before** the defeat is decided.
@@ -859,7 +859,7 @@ duels: {
     finishers: [
       { atScore: 2, text: 'El Titulator es una inversión de 48.000 € al mes. Perfectamente auditada.', object: 'ticket_n1',
         wrongObject: { acta_reunion: 'Un acta. Muy analógico. Luego la leemos.' },
-        script: async (api, duel) => { /* Zacarías enters... */ } },          // duel continues (not the last)
+        script: async (api, duel) => { /* Brais enters... */ } },          // duel continues (not the last)
       { atScore: 4, text: 'Esto ya lo ha decidido la Reunión de Dirección.', object: 'acta_reunion',
         wrongObject: { ticket_n1: 'Eso ya me lo has enseñado. No escala dos veces.' },
         script: async (api, duel) => { /* ... */ } },                       // last one: Bruno wins
@@ -960,7 +960,7 @@ game by itself; `api.ending(opts)` ends the game (a click fast-forwards; at the 
 | `node tools/shot.mjs <room> [entry] [--debug] [--x=<roomX>] [--y=<roomY>] [--flags=a,b=1] [--verb=hablar:id] [--scale=3]` | screenshot of a room → `tools/shots/room-<room>[-debug].png`; prints content errors and **buildRoom warnings** (exit 1 if any) |
 | `node tools/check.mjs` | static check: imports, logic/art ids, files, exits/entries, undeclared flags, unknown items/actors/replies, duel decks; warnings for lines > 80 chars. **Must pass before you hand over** |
 | `node tools/test-all.mjs [--rapido] [--sala=<id>] [--solo=a,b] [--jobs=3]` | **every test** in parallel (each tool uses its own free port) with a summary table; logs in `tools/shots/test-all/`. `--rapido` samples the slow parts (≈ 2-3 min); `--sala` runs what concerns that room |
-| `node tools/sala.mjs <id> [--actos=a0,a1,…] [--escala=2] [--estricto]` | the artists' preview: the room in every act state (a0 start … a3b Zacarías free) clean / debug / «ver hotspots», panorama of wide rooms, contact sheet and the NPC visibility + talk-spot report → `tools/shots/sala/<id>/` |
+| `node tools/sala.mjs <id> [--actos=a0,a1,…] [--escala=2] [--estricto]` | the artists' preview: the room in every act state (a0 start … a3b Brais free) clean / debug / «ver hotspots», panorama of wide rooms, contact sheet and the NPC visibility + talk-spot report → `tools/shots/sala/<id>/` |
 | `node tools/test-motor.mjs` | redesign engine + kit test on the throwaway demo room `tools/demo-rediseno.js` (poses, U walkbox, per-area scale, penumbra, detalle, ver hotspots, hit-slop, 14 px touch rows, held object, kit registry) and, in the real game, «ver hotspots» in the 10 rooms and Gervasio seated |
 | `node tools/smoke.mjs [--rapido]` | full UI smoke test (title, 10 rooms, inventory, sample duel, save/load, menu, credits, debug, touch); `--rapido` skips the real-time phone part and the device viewports |
 | `node tools/test-movil.mjs` | Bruno's phone (`solo` item) with a real mouse and finger: Usar+icon, icon alone, «Usar móvil con Bruno», right-click, double tap on iPhone landscape; the mail (reading only touches `movil_leidos`), the grandmother call, Esc / tap outside, load with the menu open |
@@ -1005,7 +1005,7 @@ hover, camX, music, menu, speaking, aviso, finished }` · `newGame()` · `gotoRo
 - Teodoro never speaks aloud (only on the red phone): his lines come out of the fax — `api.sayAs('teodoro_cuerpodoce', ...)`
   or `api.sayFrom('fax', 'TEODORO (fax): ...', { color: '#D9CFA6' })`, pick one and be consistent. Gertrudis' LCD is
   `api.sayAs('gertrudis', 'MAYÚSCULAS')`.
-- Write only lines of your package's characters (bible §9.3.4); shared characters (Gervasio, Íñigo, Lector Medio, Zacarías)
+- Write only lines of your package's characters (bible §9.3.4); shared characters (Gervasio, Íñigo, Lector Medio, Brais)
   use the same id/colour everywhere.
 - Every visible thing needs at least a Mirar (bible lines, otherwise the §8.2 defaults answer).
 

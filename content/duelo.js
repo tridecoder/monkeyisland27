@@ -23,7 +23,7 @@ export default {
     { id: 'R13', flag: 'rep_13', attack: 'No es un despido: es una salida en valor.', reply: 'Claro. Y la carta de despido es una newsletter personalizada.' },
     { id: 'R14', flag: 'rep_14', attack: 'Esto lo podemos ver en una reunión rápida.', reply: 'Perfecto. ¿Te va en marzo? Es cuando acaban las rápidas.' },
     // adenda 7.1: solo las usa D4 (Íñigo), al final del mazo
-    { id: 'R15', flag: 'rep_15', attack: 'Lo he consultado con la IA y está de acuerdo conmigo.', reply: 'Lo sé. Me lo ha contado ella. Se llama Zacarías.' },
+    { id: 'R15', flag: 'rep_15', attack: 'Lo he consultado con la IA y está de acuerdo conmigo.', reply: 'Lo sé. Me lo ha contado ella. Se llama Brais.' },
     // E2 §5.2: se aprende al escuchar a Evaristo hasta el final (E_REVELA, paso 28); en D4 va QUINTA (mazo de P4)
     { id: 'R16', flag: 'rep_16', attack: 'Eso es un detalle sin importancia.', reply: 'Una coma también lo era. Hasta que alguien la firmó.' },
   ],
@@ -58,7 +58,7 @@ export default {
       R10: 'Interesante. Lo pongo en azul.',
       R12: '...Eso es una visión muy pesimista de la carretera.',
       R13: [['inigo_sinergia', 'Eso lo escribió alguien brillante.'], ['ruben', 'Yo. Perdón.']],
-      R15: [['inigo_sinergia', '...Zacarías, ¿tú le has contado algo?'], ['ruben', 'TODO. Perdón. Se me escapa.']],
+      R15: [['inigo_sinergia', '...Brais, ¿tú le has contado algo?'], ['ruben', 'TODO. Perdón. Se me escapa.']],
       R16: 'Esa coma no estaba en mi framework.',
     },
   },
