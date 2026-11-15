@@ -246,6 +246,11 @@ function choiceLayout(game) {
   });
   ch.layout = lines;
   ch.maxScroll = Math.max(0, lines.length - optGeom(game).n);      // (compact menus get 5 rows once laid out)
+  if (ch.inicio != null && !ch.inicioHecho) {                       // E4: abrir el menú enseñando la opción `inicio`
+    ch.inicioHecho = true;
+    const li = lines.findIndex(l => l.opt === ch.inicio), n = optGeom(game).n;
+    if (li >= n) ch.scroll = Math.min(ch.maxScroll, li - n + 2);
+  }
   void L;
   return lines;
 }

@@ -10,13 +10,20 @@
 //   pecera_viral           primera entrada con cafetera_viral (§4.1)
 //   pecera_cms_entrada     primera entrada con cms_vivo (§4.2)
 //   pecera_chaqueta        Bruno con la chaqueta de Ramírez en la Redacción (§4.3; también desde items.js al ponérsela)
+//   pecera_opa_ab          ENMIENDA E4 S4, paso 34: Yoli prueba la opa en su titulador (demo muda) y se lo presta
+//   pecera_opa_ganadora    ENMIENDA E4 S5, paso 40: ya hay ganador; la opa, «en la dirección web. Donde no molesta.»
+// Y la hoja impresa «LO MÁS LEÍDO» (E4 S3: `mirarHoja`, `hojaTop`), con sus versiones por acto (./pecera.titulares.datos.js).
 // Las acotaciones del plan (entre paréntesis) son acciones, nunca texto. Infografía y Diseño y Producto no coinciden en
 // plano: las escenas de Leoncio, Anselmo y el portátil encuadran entre 640 y 1000 (Valentín está en 1240).
 import { talk } from './pecera.voces.js';
 import { anselmoALaMesa, anselmoASuMesa, anselmoEnSuSitio, MESA_INFOGRAFIA } from './pecera.dialogos.js';
 import { PECERA_DESPLAZ as D } from '../lib/edificio.js';
 import art from './art/pecera.art.js';
-import { PAL, rect, hline, frameRect, gradV, label, glow } from '../../engine/draw.js';
+import { PAL, rect, hline, vline, frameRect, gradV, label, glow } from '../../engine/draw.js';
+import { drawText, measure } from '../../engine/font.js';
+import { micro, miles } from '../lib/kit.js';
+import { titulador, P as PIEZAS, combinacion, ganadorK, asuntoDe, versionesDefecto, urlBruno, BRUNO, usuariosK } from './pecera.titulador.js';
+import { FIJOS, RAFAGA, HOJA, FILA_CAFETERA, FILA_IBEX } from './pecera.titulares.datos.js';
 
 const Y = 'yoli_tendencias', I = 'inigo_sinergia', L = 'leoncio_quesitos', A = 'anselmo_monolito';
 const TITULATOR = '#B6FF4D';
@@ -44,7 +51,7 @@ function portatilTitulator(g, r, t) {
 }
 
 /** Mueve la cámara a `x` y espera a que llegue. */
-async function encuadre(api, x) {
+export async function encuadre(api, x) {
   const g = api.game;
   api.cameraTo(x);
   const t = Math.max(0, Math.min(g.room.width - 320, x - 160));
@@ -394,6 +401,10 @@ async function cmsEntrada(api) {
   await api.cutscene(async (api) => {
     await junto(api, 690, 124, 700);
     api.face('right');
+    // E4 S1: el CMS escupe la cola de la tarde en el monitor de Yoli (cinco avisos, solo se ven; la pantalla, negra)
+    api.setState('monitor_yoli', 'publicado');
+    await api.viral({ avisos: RAFAGA, color: '#7aff7a', cada: 420, ms: 3600, sfx: PLIN });
+    api.setState('monitor_yoli', null);
     // (La pantalla de métricas, negra. Yoli se echa colirio. Se pone la mano en el pecho.)
     await api.anim(Y, 'reach', 900);
     await api.wait(400);
@@ -426,7 +437,145 @@ async function banner(api) {
   api.cameraFollow();
 }
 
+
+// ================================================================== ENMIENDA E4 · S4 · paso 34: la prueba A/B
+async function opaAB(api) {
+  if (!api.once('pecera_opa_ab')) return;
+  await api.cutscene(async (api) => {
+    await encuadre(api, 720);
+    api.faceActor(Y, api.player);
+    await api.sayAs(Y, 'No me has avisado. Te la he leído por encima del hombro.');
+    await titulador(api, { demo: PIEZAS.demo_paso_34 });            // muda: el titular de Bruno y la versión de Yoli
+    await api.sayAs(Y, ['Tu titular: tres. Uno era yo, comprobando.', 'Te dejo mi titulador. Cuando quieras, pruebas tú.']);
+  });
+  api.cameraFollow();
+}
+
+// ================================================================== ENMIENDA E4 · S5 · paso 40: el ganador
+/** Plano del resultado: versiones tachadas arriba, la de Bruno con candado y, grande, el ganador con su corona. */
+function resultado(gan, versiones, bruno, url) {
+  return (g, r, t) => {
+    const { x, y, w, h } = r;
+    rect(g, x, y, w, h, PAL.blue[0]);
+    versiones.forEach((v, i) => {
+      const yy = y + 4 + i * 8;
+      const tt = v.t.length > 58 ? v.t.slice(0, 57) + '...' : v.t;
+      const ww = micro(g, tt, x + 6, yy, '#9fb0d8');
+      micro(g, miles(v.u), x + w - 6, yy, '#9fb0d8', { align: 'right' });
+      hline(g, x + 5, yy + 2, ww + 2, '#ff5a4a');                       // tachada en rojo
+    });
+    const by = y + 4 + versiones.length * 8;
+    rect(g, x + 6, by, 3, 3, PAL.metal[5]); frameRect(g, x + 5, by - 2, 5, 3, PAL.metal[4]);   // candado
+    micro(g, `${bruno.t.replace(/\.$/, '')} · ${bruno.u}`, x + 13, by, '#7a7a88');
+    // el ganador, en grande (tarjeta de papel) con la coronita
+    const cy = by + 10, ch = h - (cy - y) - 14;
+    rect(g, x + 6, cy, w - 12, ch, '#f4efe2');
+    const vis = t > 300;
+    if (vis) {
+      const lines = wrapTit(gan.t, w - 60);
+      lines.slice(0, 3).forEach((l, i) => drawText(g, l, x + 12, cy + 4 + i * 11, '#141220', { outline: null, bold: i === 0 && lines.length === 1 }));
+      const cx = x + w - 30, cyy = cy + 6;
+      for (const [dx, dh] of [[0, 4], [4, 6], [8, 4]]) rect(g, cx + dx, cyy + 6 - dh, 3, dh, PAL.gold[4]);
+      rect(g, cx, cyy + 6, 11, 3, PAL.gold[3]); rect(g, cx + 5, cyy - 1, 1, 1, PAL.red[4]);
+      drawText(g, miles(gan.u), x + w - 12, cy + ch - 13, '#1a7a2a', { align: 'right', bold: true, outline: null });
+    }
+    // la URL, en gris, con «opa» en rojo
+    const uy = y + h - 9;
+    const partes = url.split(/(\bopa\b)/);
+    let ux = x + 8;
+    for (const p of partes) ux += micro(g, p, ux, uy, p === 'opa' ? '#ff5a4a' : '#8a96b8') + 1;
+  };
+}
+function wrapTit(t, maxW) {
+  const out = []; let cur = '';
+  for (const wd of t.split(' ')) { const n = cur ? cur + ' ' + wd : wd; if (measure(n) <= maxW || !cur) cur = n; else { out.push(cur); cur = wd; } }
+  if (cur) out.push(cur);
+  return out;
+}
+
+async function opaGanadora(api) {
+  const k = ganadorK(api);
+  await api.cutscene(async (api) => {
+    await junto(api, 690, 124, 700);
+    api.face('right');
+    // (Yoli se levanta de un salto. Tres plins.)
+    api.anim(Y, 'reach', 600);
+    for (let i = 0; i < 3; i++) { api.sfx(PLIN); await api.wait(160); }
+    await api.sayAs(Y, '¡Bruno! Ya hay ganador. A las 00:01 le meto tu opa dentro.');
+    const hist = (api.flag('pecera_disc_hist') || []).slice(-4).map(([a, s, g]) => combinacion([a, s, g])).filter(c => c.k !== k);
+    const versiones = (hist.length ? hist : versionesDefecto()).slice(-4);
+    await api.detalle({ titulo: 'PRUEBA · RESULTADO', w: 296, h: 110, x: 12, y: 4, color: '#FF78B8',
+      draw: resultado(combinacion(k), versiones, combinacion(BRUNO), urlBruno()) }, async (api) => {
+      await api.wait(1500);
+      await api.say('¿Y dónde se ve la opa?');
+      await api.sayAs(Y, 'En la dirección web. Donde no molesta.');
+    });
+  });
+  api.setFlag('pecera_disc_ganador_k', k);
+  api.setFlag('discover_ganador', asuntoDe(k).id);
+  api.cameraFollow();
+}
+
+// ================================================================== ENMIENDA E4 · S3 · la hoja «LO MÁS LEÍDO»
+const corta = (t) => (t.length > 34 ? t.slice(0, 34).trimEnd() + '...' : t.endsWith('...') ? t : t.slice(0, 34) + '...');
+/** Filas de la hoja de la versión `version` ([n, titular, lecturas]), con la cafetera y el ganador. */
+export function filasHoja(api, version) {
+  const H = HOJA[version];
+  const filas = H.filas.map(([f, n], i) => [i + 1, FIJOS[f].t, miles(n)]);
+  if (version === 'II' && api.flag('cafetera_viral')) filas[2] = [3, FILA_CAFETERA[0], miles(FILA_CAFETERA[1])];
+  if (version === 'III' && api.flag('discover_ganador')) filas[4] = [5, combinacion(ganadorK(api)).t, '00:01'];
+  return { kw: H.kw, filas, extra: H.extra ? [H.extra[0], FIJOS[H.extra[1]].t, miles(H.extra[2])] : null };
+}
+/** Dibujo de la hoja impresa: folio blanco, filete rosa, chinchetas; cada titular cortado a 34 caracteres + «...». */
+export function hojaTop(datos, ibex, hora) {
+  return (g, r) => {
+    const { x, y, w, h } = r;
+    rect(g, x, y, w, h, '#3a2a30');
+    rect(g, x + 3, y + 2, w - 6, h - 4, PAL.paper[7]);
+    frameRect(g, x + 3, y + 2, w - 6, h - 4, '#FF78B8');
+    rect(g, x + 5, y + 3, 3, 3, PAL.red[4]); rect(g, x + w - 8, y + 3, 3, 3, PAL.blue[5]);   // chinchetas
+    micro(g, `LO MÁS LEÍDO · ${hora} · KW: ${datos.kw}`, x + (w >> 1), y + 6, '#c83a6a', { align: 'center' });
+    hline(g, x + 8, y + 13, w - 16, '#FF78B8');
+    const fila = (yy, n, t, l, col = '#141220') => {
+      drawText(g, String(n), x + 22, yy, col, { outline: null, align: 'right' });
+      drawText(g, corta(t), x + 27, yy, col, { outline: null });
+      drawText(g, l, x + w - 9, yy, col, { outline: null, align: 'right' });
+    };
+    datos.filas.forEach(([n, t, l], i) => fila(y + 16 + i * 11, n, t, l));
+    let yy = y + 16 + datos.filas.length * 11;
+    drawText(g, '···', x + 22, yy - 3, '#8a8070', { outline: null });
+    yy += 6;
+    if (datos.extra) { fila(yy, ...datos.extra, '#5a5248'); yy += 11; }
+    fila(yy, FILA_IBEX, FIJOS.F5.t, String(ibex), '#9a9488');
+  };
+}
+/** Mirar la hoja (lista_mas_leidas, S3): la 2.ª vez y siguientes Yoli arranca la hoja y clava otra. */
+export async function mirarHoja(api) {
+  const n = api.inc('pecera_top_n');
+  if (n >= 2) {
+    if (n === 2) await api.sayAs(Y, 'Esa ya está vieja. Te imprimo otra.');
+    api.anim(Y, 'reach', 500); api.sfx('paper');
+  }
+  const III = api.flag('acto_3_iniciado');
+  const version = III ? 'III' : api.flag('cms_vivo') ? 'II' : 'I';
+  const ibex = III ? (api.flag('discover_ganador') ? 0 : 1) : Math.max(1, 4 - n);
+  let lines;
+  if (n === 1) lines = [['player', 'Lo más leído de la web. Impreso. Con chinchetas.']];
+  else if (III && api.once('pecera_top_borrasca')) lines = [['player', 'Por fin salgo el primero. Soy una borrasca.']];
+  else if (III && api.flag('discover_ganador') && api.once('pecera_top_ibex0')) {
+    const C = (asuntoDe(ganadorK(api)) || {}).C || 'Discover';
+    lines = [['player', `El Ibex, a cero. El que lo escribe se ha ido a ${C}.`.replace(/\ba el\b/g, 'al')]];
+  }
+  const datos = filasHoja(api, version);
+  const filas = datos.filas.length + (datos.extra ? 1 : 0) + 1;
+  await api.detalle({ titulo: 'LO MÁS LEÍDO', w: 300, h: Math.min(118, 26 + filas * 11 + 4), x: 10, y: 4, color: '#FF78B8',
+    draw: hojaTop(datos, ibex, api.hora()), ...(lines ? { lines } : { ms: 2400 }) });
+}
+void usuariosK; void vline;
+
 export default {
+  pecera_opa_ab: opaAB,
+  pecera_opa_ganadora: opaGanadora,
   pecera_banner: banner,
   presentacion_villano: presentacionVillano,
   pecera_cms_vivo: cmsVivo,

@@ -1015,7 +1015,9 @@ export class Game {
       // `escape`: la opción que eligen Esc y un toque en la sala (fuera del panel y del móvil); `t0`: los toques de los
       // primeros 250 ms no cuentan (el segundo toque de un doble toque no elige una opción por accidente)
       const escape = Number.isInteger(opts.escape) ? opts.escape : null;
-      this.choice = { options: texts, disabled, escape, compact: !!opts.duel, t0: this.realTime, resolve: i => { this.choice = null; res(i); this.checkIdle(); }, scroll: 0, hover: -1 };
+      // `inicio`: la opción que se enseña al abrir (el menú se desplaza hasta ella; E4: la pieza elegida del titulador)
+      const inicio = Number.isInteger(opts.inicio) ? opts.inicio : null;
+      this.choice = { options: texts, disabled, escape, compact: !!opts.duel, inicio, t0: this.realTime, resolve: i => { this.choice = null; res(i); this.checkIdle(); }, scroll: 0, hover: -1 };
       this.checkIdle();
     });
   }
@@ -1535,6 +1537,7 @@ export class Game {
     if (this.mode === 'title') { Screens.titleClick(this, x, y); return; }
     if (this.mode === 'ending') { Screens.endingClick(this, x, y); return; }
     if (this.mode !== 'play' || !this.room) return;
+    if (this.detalle && this.detalle.click && Detalle.clic(this, x, y)) return;      // plano que se toca (E4: el titulador)
     if (this.choice) {
       const ch = this.choice;
       if (ch.escape != null && this.realTime - ch.t0 < 250) return;                 // segundo toque de un doble toque

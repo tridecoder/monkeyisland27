@@ -23,6 +23,8 @@ import { ascensorObjeto } from '../lib/ascensor.js';
 import { usarDirectorio, DIRECTORIO_COLOR } from '../lib/directorio.js';   // crítica 3 §9.8: atajo de desplazamiento
 import { dialogoCustodia, objetosSecretaria, flagsSecretaria } from './pecera.secretaria.js';
 import { darTaper } from './cpd.js';                      // [integrador] el táper también vale con Rubén en la Redacción
+import { titulador } from './pecera.titulador.js';          // ENMIENDA E4 §3bis: el titulador de Yoli
+import { mirarHoja } from './pecera.escenas.js';            // ENMIENDA E4 S3: la hoja «lo más leído»
 
 const Y = 'yoli_tendencias', L = 'leoncio_quesitos', A = 'anselmo_monolito', R = 'ruben', V = 'valentin_reticula';
 const ley = (...lines) => async (api) => { await api.sayAs(L, lines); };
@@ -118,6 +120,14 @@ export default buildRoom({
     pecera_bandeja_abierta: 'bool · integrador · Abrir bandeja_diseno · arte (la bandeja de arriba, sacada)',
     pecera_murmullo_n: 'int · P2 · rotación de los murmullos de Leoncio y Anselmo',
     pecera_album_n: 'int · P2 · Anselmo AN_ALBUM (E2 §2.6.3): «hecho» y «funeral» probados',
+    // ENMIENDA E4 §3bis.7 · el titulador y la hoja «lo más leído» (pecera.titulador.js, pecera.escenas.js)
+    pecera_top_n: 'int · P2 · +1 por Mirar lista_mas_leidas (2.ª: Yoli reimprime)',
+    pecera_disc_record: 'int · P2 · titulador: récord de usuarios de la partida',
+    pecera_disc_record_k: 'str · P2 · titulador: combinación a|s|g del récord',
+    pecera_disc_hist: 'lista · P2 · titulador: las 4 últimas publicaciones [a, s, g, u]',
+    pecera_disc_dichas: 'lista · P2 · titulador: líneas de Yoli ya dichas (ids)',
+    pecera_disc_partidas: 'int · P2 · titulador: sesiones jugadas',
+    pecera_disc_ganador_k: 'str · P2 · paso 40: combinación ganadora (hoja III)',
     ...flagsSecretaria,
   },
 
@@ -216,9 +226,14 @@ export default buildRoom({
         if (api.flag('cms_vivo')) await api.say('El monitor de Yoli: «PUBLICADO». Y otra. Y otra. Ella no se fía.');
         else await api.say('El monitor de Yoli. El CMS dice «GUARDANDO BORRADOR» desde las cuatro.');
       },
-      usar: async (api) => api.sayAs(Y, '¡Quieto! Si lo tocas, igual se guarda. Y entonces qué hago.'),
+      usar: async (api) => {                                                // E4 §3bis.2: con la pieza, el titulador
+        if (api.flag('pieza_escrita')) { await titulador(api); return; }
+        await api.sayAs(Y, '¡Quieto! Si lo tocas, igual se guarda. Y entonces qué hago.');
+      },
       coger: 'Es el monitor de Yoli. Separarla de él sería un despido.',
     } },
+    // ENMIENDA E4 S3: la hoja impresa «LO MÁS LEÍDO» (el fondo ya la pinta; solo Mirar, el resto al genérico)
+    { id: 'lista_mas_leidas', name: 'lo más leído', handlers: { mirar: mirarHoja } },
     { id: 'enchufe_pantalla', name: 'enchufe', handlers: {
       mirar: async (api) => {
         await api.say(['Cinta: «NO DESENCHUFAR». Y una brida que baja por la pared.', 'Etiqueta de la brida: «R-3, SISTEMAS. PACO».']);
@@ -308,6 +323,7 @@ export default buildRoom({
         api.setFlag('pieza_escrita', true);
         await api.say(['Lo escribo fuera del CMS: ahí dentro vive el Titulator.', 'Treinta y una líneas. Sin adjetivos. Bueno, con uno.']);
         if (!api.flag('herminia_midio')) await api.scene('pecera_herminia_mide');           // E1.4.1
+        await api.scene('pecera_opa_ab');                                                     // E4 S4 (una vez)
       },
       'usar:cafe': async (api) => api.say(['Tentador. Pero el teclado de al lado ya lo probó en 2017.', 'Sigue escribiendo en negrita.']),
       'usar:pieza_opa': 'Ya está escrita. Ahora le faltan hueco, fuente y firma. Y papel.',
@@ -472,10 +488,14 @@ export default buildRoom({
       },
       'dar:cafe': async (api) => api.sayAs(Y, '¿Café? Llevo cuatro. El quinto lo mido.'),
       'dar:ficha_pagina_7': seq([[Y, '¿Una ficha de papel? ¿Tiene palabra clave?'], ['B', 'Tiene casillas.'], [Y, 'Qué vintage.']]),
-      'dar:pieza_opa': async (api) => api.sayAs(Y, '¿Sin número en el titular? ¿Sin "lo que nadie te cuenta"? Valiente.'),
+      'dar:pieza_opa': async (api) => {                                     // E4 §3bis.2: la 1.ª vez, «Valiente.»; luego, el titulador
+        if (api.once('pecera_yoli_valiente')) await api.sayAs(Y, '¿Sin número en el titular? ¿Sin "lo que nadie te cuenta"? Valiente.');
+        await titulador(api);
+      },
       'dar:album_eventos': async (api) => api.sayAs(Y, ['¿Fotos de eventos? Eso no lo ve nadie.', 'Bueno. Uno. El del fondo.']),
     },
-      murmurs: ['Esto sube. Esto baja. Esto soy yo.', 'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.'] },   // L29
+      murmurs: ['Esto sube. Esto baja. Esto soy yo.', 'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.',
+        '«Los expertos coinciden»... Ya buscaré expertos. Primero, que coincidan.'] },   // L29 + E4 O21
     // (E2 §2.6: Nemesio, `nerea_backlog`, ya no está: su mesa es el hotspot `mesa_guardia` y lo suyo lo hace Anselmo.)
     { id: R, when: ['ruben_libre', '!lector_derribado'], handlers: {
       mirar: 'Rubén mira por la ventana. Espera al sol como quien espera una nómina.',
@@ -559,6 +579,8 @@ export default buildRoom({
     if (api.flag('torno_abierto') && !api.flag('inigo_presentado')) { await api.scene('presentacion_villano'); return; }
     if (api.flag('acto_3_iniciado') && !api.flag('dos_ias_vista')) { await api.scene('pecera_dos_ias'); return; }
     if (api.flag('herminia_de_alta') && !api.flag('infografia_integrada')) { await api.scene('pecera_anexion'); return; }
+    // E4 S5 · paso 40: el ganador de Discover (después de la anexión, para no romper XE4; §8.1)
+    if (api.flag('acto_3_iniciado') && api.flag('pieza_escrita') && !api.flag('discover_ganador')) { await api.scene('pecera_opa_ganadora'); return; }
     if (api.flag('cms_vivo') && api.once('pecera_cms_entrada')) { await api.scene('pecera_cms_entrada'); return; }
     if (api.flag('cafetera_viral') && api.once('pecera_viral')) { await api.scene('pecera_viral'); return; }
     if (api.flag('bruno_con_chaqueta')) { await api.scene('pecera_chaqueta'); return; }

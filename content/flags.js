@@ -34,6 +34,8 @@ export const ADENDA_FLAGS = [
   // ENMIENDA E2 §10.2 (altas): contadores a 0 y booleanos a false desde el principio
   'office_error_n', 'aro_borja_hablar_n', 'aro_borja_mirar_n', 'maripaz_empujon_n', 'maripaz_popup_n',
   'ecosistema_interstitial', 'pantalla_comercial_n', 'bruno_con_banner',
+  // ENMIENDA E4 §3bis.7 (Discover y el titulador): `str` empieza en '' y `int` en 0
+  'discover_ganador', 'opa_posit',
 ];
 
 export default {
@@ -152,6 +154,9 @@ export default {
   pantalla_comercial_n: 'int · P4 · ecosistema · +1 por Mirar pantalla_comercial (§4.4) · P4',
   bruno_con_banner: 'bool · P4 · sala_amazonas · gana D1 (adhesivo «SU ANUNCIO AQUÍ», §4.2.3) → false: P3 (Aurora lo despega, §4.2.6) · P0 (actors.js: variante con_banner de Bruno), P2 (Yoli, Gervasio), P3 (Aurora)',
   climax_entrada: 'bool · P4 · climax · entrada en el clímax (opcional: la hora del móvil pasa a 20:59) · P0 (hora)',
+  // ---------------------------------------------------------------- ENMIENDA E4 §3bis.7 (Audiencias, Discover y el titulador)
+  discover_ganador: 'str · P2 · pecera · paso 40, pecera_opa_ganadora (id del asunto ganador; \'\' sin escena) · P1 final.js (epílogo), P2 hoja «lo más leído»',
+  opa_posit: 'int · P2 · pecera · titulador al salir con la pieza (1) → P3 · catacumba · Aurora lo corrige (2) · P2, P3, P0 items (icono de pieza_opa)',
   abuela_obj: 'str · P0 · game.js pistas (engine/objetivos.js) · objetivo de la última pista · la abuela',
   abuela_nivel: 'int · P0 · game.js pistas · nivel 1-3 de la última pista · la abuela',
   // también prefijos reservados del motor: obj:<objetivo> (api.objetivo.marcar), obj:hora, ambient:<sala>.<id>

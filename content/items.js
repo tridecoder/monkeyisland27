@@ -134,11 +134,17 @@ const icons = {
     px(g, 8, 11, P.paper[6]); px(g, 14, 9, P.paper[6]);                                           // brillo del plástico
   },
   pieza_opa(g, x, y, v, k) {
-    const h = k === 'recortada' ? 13 : 18;
+    k = String(k || '');
+    const h = k.startsWith('recortada') ? 13 : 18;
     sheet(g, 6, 0, 16, h);
     rect(g, 8, 2, 12, 2, P.ink[2]);
-    textLines(g, 8, 6, 12, k === 'recortada' ? 4 : 6, P.paper[2], 2, 1);
-    if (k === 'recortada') { for (let xx = 4; xx < 25; xx += 2) px(g, xx, 15, P.red[4]); line(g, 21, 13, 25, 17, P.metal[5]); line(g, 25, 13, 21, 17, P.metal[5]); }
+    textLines(g, 8, 6, 12, k.startsWith('recortada') ? 4 : 6, P.paper[2], 2, 1);
+    if (k.startsWith('recortada')) { for (let xx = 4; xx < 25; xx += 2) px(g, xx, 15, P.red[4]); line(g, 21, 13, 25, 17, P.metal[5]); line(g, 25, 13, 21, 17, P.metal[5]); }
+    // ENMIENDA E4 S8: el pósit rosa de Yoli en la esquina (opa_posit 1) y, corregido por Aurora, con dos rayas rojas (2)
+    if (k.includes('posit')) {
+      rect(g, 16, 0, 7, 6, '#FF78B8'); hline(g, 16, 5, 7, '#c8508a');
+      if (k.includes('tachado')) { hline(g, 17, 2, 5, P.red[3]); hline(g, 17, 4, 5, P.red[3]); }
+    }
   },
   album_eventos(g) {
     rect(g, 3, 2, 22, 15, '#1e5adc'); hline(g, 3, 2, 22, '#4a80f0'); vline(g, 24, 3, 14, '#123a90'); hline(g, 4, 16, 21, '#123a90');
@@ -324,7 +330,7 @@ export default {
   },
   pieza_opa: {
     name: 'mi exclusiva', icon: icons.pieza_opa,
-    iconKey: (v) => (v.flag('pieza_recortada') ? 'recortada' : ''),
+    iconKey: (v) => (v.flag('pieza_recortada') ? 'recortada' : '') + (v.flag('opa_posit') === 2 ? '_posit_tachado' : v.flag('opa_posit') === 1 ? '_posit' : ''),
     handlers: {
       mirar: async (api) => {
         if (api.flag('pieza_recortada')) await api.say(['Veintitrés líneas exactas. Begoña ha quitado la conclusión.', 'Y una coma que le caía mal.']);

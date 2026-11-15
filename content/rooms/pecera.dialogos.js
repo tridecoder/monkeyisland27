@@ -6,6 +6,7 @@
 import { talk } from './pecera.voces.js';
 import art from './art/pecera.art.js';
 import { PECERA_DESPLAZ as D } from '../lib/edificio.js';
+import { titulador } from './pecera.titulador.js';
 
 const Y = 'yoli_tendencias', L = 'leoncio_quesitos', A = 'anselmo_monolito', R = 'ruben';
 
@@ -35,8 +36,15 @@ export default {
   // ---------------------------------------------------------------- E2 §2.7 Yoli (solo con cms_vivo; sin él, pecera.js)
   yoli: {
     actor: Y, start: 'Y0',
+    // E4 S2 · paso 23: la 1.ª vez, la siembra de la borrasca (le habla al monitor)
     onStart: async (api) => {
-      await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario elContable, cuánto cobra un becario.', 'Perdona, me sale solo.']);
+      if (api.once('pecera_yoli_borrasca')) {
+        api.faceActor(Y, 'up');
+        await api.sayAs(Y, 'Ponle nombre. Venga. Ponle nombre a la borrasca.');
+        api.faceActor(Y, api.player);
+        await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario elContable, cuánto cobra un becario.',
+          'Perdona. Sin nombre no la pincha nadie. La borrasca, digo.']);
+      } else await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario elContable, cuánto cobra un becario.', 'Perdona, me sale solo.']);
     },
     nodes: {
       Y0: {
@@ -55,9 +63,15 @@ export default {
             } },
           { text: '¿Cuántos me leen a mí?', once: true,
             reply: ['Tu última pieza: once segundos de media.', 'Menos una lectora: cuarenta y siete minutos. Comenta «abrígate». En todo.'] },
+          // E4 §4.2 (O17-O20): Yoli se cree lo que publica
+          { text: '¿Tú te crees esos titulares?', once: true,
+            do: async (api) => talk(api, [[Y, 'Bajo las persianas todas las tardes. Lo leí en un sitio fiable.'], ['B', '¿Cuál?'], [Y, 'El nuestro.']]) },
+          // E4 §3bis.2 (O5): el titulador, repetible (tiene `if`, §7.6)
+          { text: '¿Me dejas tu titulador?', if: 'pieza_escrita', do: async (api) => { await titulador(api); return 'Y0'; } },
           { text: 'Íñigo va a cerrar el papel.', once: true, if: 'acto_3_iniciado',
             reply: 'Si cierra el papel, ¿quién me va a odiar con criterio?' },
-          { text: 'Me voy.', exit: true, reply: 'Vuelve con un titular con número. El siete convierte.' },
+          // E4 M3: la despedida (se oye una vez, la del paso 23) siembra la opa menguante
+          { text: 'Me voy.', exit: true, reply: 'Y cuando escribas algo, avísame. Te lo coloco en Discover. Con expertos.' },
         ],
       },
     },

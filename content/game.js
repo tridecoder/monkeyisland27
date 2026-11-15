@@ -226,7 +226,7 @@ function migrarPartida(st) {
 }
 
 // flags de la adenda: contadores a 0, booleanos a false (adenda 11.2)
-const startFlags = Object.fromEntries(ADENDA_FLAGS.map(k => [k, String(flags[k]).startsWith('int') ? 0 : false]));
+const startFlags = Object.fromEntries(ADENDA_FLAGS.map(k => [k, String(flags[k]).startsWith('int') ? 0 : String(flags[k]).startsWith('str') ? '' : false]));
 
 // ------------------------------------------------------------------ title screen: a front page at night
 function frontPage(g, t, { x0 = 34, y0 = 4, w = 252, h = 136, credits = false } = {}) {
