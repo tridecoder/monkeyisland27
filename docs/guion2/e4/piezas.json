@@ -1,5 +1,5 @@
 {
- "version": "titulador-vuelta2",
+ "version": "titulador-vuelta2-r7",
  "componer": "Clave a|s|g. 1) Si está en especiales, ese texto. 2) Si no, autoridad.tObj[gancho] si el asunto es de casa y existe; si no, autoridad.t[gancho]. Cada plantilla es un molde real de Discover con UN hueco. 3) Marcas: {S} asunto con artículo, {C} forma corta, {P} lo/la/los/las, {E} o/a/os/as, {N} '' o 'n', {s} '' o 's' (adjetivo en plural). 4) «a el» → «al», «de el» → «del», mayúscula inicial.",
  "formula": {
   "usuarios": "B(asunto) × k(autoridad) × k(gancho) × afinidades × castigo_opa",
@@ -9,18 +9,18 @@
  "autoridades": [
   {
    "id": "hidro",
-   "menu": "Hidrovoltia",
+   "menu": "Hidrovoltia lanza una opa",
    "k": 0.02,
-   "mania": "la eléctrica que lo compra todo",
+   "mania": "la noticia de verdad: dice algo y hunde",
    "t": {
-    "corte": "Llamada de Hidrovoltia: cuidado si te ofrecen {S} y te piden...",
-    "obvio": "Hidrovoltia confirma que {S} seguirá{N} llegando con normalidad",
+    "corte": "Opa de Hidrovoltia: qué pasa con {S} si no...",
+    "obvio": "Hidrovoltia lanza una opa sobre {S}: esto es lo que debes saber",
     "punto": "Hidrovoltia lanza una opa sobre {S}.",
-    "senales": "Cómo saber si Hidrovoltia te ha cambiado {S} sin avisar",
-    "probe": "Me di de baja de {S} en Hidrovoltia y esto es lo que pasó",
-    "prisa": "Hidrovoltia avisa: corte de {S} el martes de 9 a 14 horas",
-    "curioso": "Hidrovoltia regala {S} a sus clientes: así puedes conseguir{P}",
-    "truco": "El truco de Hidrovoltia para pagar menos por {S}"
+    "senales": "Si tienes {S}, esto es lo que te ofrece Hidrovoltia en su opa",
+    "probe": "Tengo {S} y Hidrovoltia lanza una opa: qué hago",
+    "prisa": "Opa de Hidrovoltia sobre {S}: tienes hasta el viernes para vender",
+    "curioso": "Qué es una opa y por qué Hidrovoltia quiere {S}",
+    "truco": "Cómo saber si la opa de Hidrovoltia sobre {S} te afecta"
    }
   },
   {
@@ -109,7 +109,7 @@
    "k": 1.5,
    "mania": "allí todo es como antes",
    "t": {
-    "corte": "El pueblo de España donde nadie cierra {S} con...",
+    "corte": "El pueblo de España donde {S} se hereda{N} de padres a...",
     "obvio": "El pueblo de España donde {S} se sigue{N} haciendo a mano",
     "punto": "El pueblo de España que vive sin {S} desde la Edad Media.",
     "senales": "Los 5 pueblos de España donde todavía no ha{N} llegado {S}",
@@ -160,7 +160,7 @@
     "corte": "Ni lejía ni vinagre: el truco para limpiar {S} es...",
     "obvio": "Ni lejía ni vinagre: así se limpia{N} {S}",
     "punto": "Ni lejía ni vinagre: {S} se blanquea{N} con bicarbonato.",
-    "senales": "Las 5 señales de que hay que cambiar {S}",
+    "senales": "Las 5 señales de que hay que tirar {S}",
     "probe": "Metí {S} en el congelador y esto es lo que pasó",
     "prisa": "Cada cuánto hay que lavar {S}, según los expertos",
     "curioso": "El error que todos cometemos al tender {S}",
@@ -168,19 +168,19 @@
    }
   },
   {
-   "id": "atencion",
-   "menu": "Atención si tienes",
+   "id": "meteorologos",
+   "menu": "Los meteorólogos avisan",
    "k": 1.9,
-   "mania": "todo vale una fortuna",
+   "mania": "el parte del tiempo",
    "t": {
-    "corte": "Atención si tienes {S} en el cajón: puede{N} valer...",
-    "obvio": "Si tienes {S} en casa, estás de suerte",
-    "punto": "La moneda de 2 euros con {S} vale 2 euros.",
-    "senales": "Cuánto vale{N} {S} de 1998: la tabla de los coleccionistas",
-    "probe": "Encuentra {S} en un cajón y descubre que vale{N} una fortuna",
-    "prisa": "Atención si tienes {S} en casa: el Banco de España {P} cambia hasta diciembre",
-    "curioso": "La moneda de 2 euros con {S} que vale una fortuna",
-    "truco": "Cómo saber si {S} vale{N} dinero: el truco de los coleccionistas"
+    "corte": "Los meteorólogos ponen fecha a la llegada de {S}: será el...",
+    "obvio": "Los meteorólogos avisan: {S} entra{N} por Galicia este fin de semana",
+    "punto": "{S} dejará{N} hasta 40 litros por metro cuadrado.",
+    "senales": "{S} llega{N} con fuerza: estas son las zonas afectadas",
+    "probe": "Las imágenes de {S} a su paso por Cuenca",
+    "prisa": "Alerta naranja por {S} en media España",
+    "curioso": "Llega el veranillo de {S}: hasta cuándo durará",
+    "truco": "Adiós a {S}: los meteorólogos confirman el cambio a partir del jueves"
    }
   },
   {
@@ -189,14 +189,14 @@
    "k": 1.6,
    "mania": "todo se multa",
    "t": {
-    "corte": "Tráfico avisa: multa de 200 euros si llevas {S} en el...",
-    "obvio": "Tráfico recuerda cómo hay que llevar {S} en el coche",
+    "corte": "Los radares de Tráfico ya detectan {S} y la multa es de...",
+    "obvio": "Tráfico aclara si {S} puede{N} viajar en la baca del coche",
     "punto": "Tráfico confirma: {S} puede{N} ir en el asiento de delante.",
     "senales": "Tráfico avisa: si ves {S} en la carretera, reduce la velocidad",
     "probe": "Me multaron por llevar {S} sin cinturón: así lo recurrí",
     "prisa": "Tráfico avisa: a partir de enero, {S} tendrá{N} que pasar la ITV",
     "curioso": "La pegatina de {S} que Tráfico te exigirá en el parabrisas",
-    "truco": "El truco de los conductores para que {S} no se empañe{N}"
+    "truco": "Cómo saber si Tráfico te ha multado por {S}: el truco"
    }
   }
  ],
@@ -463,6 +463,8 @@
   }
  ],
  "especiales": {
+  "hogar|persianas|prisa": "Cada cuánto hay que lavar las persianas, según los analistas",
+  "confirmado|mejillones|probe": "Confirmado: los mejillones de lata cotizan en el contenedor amarillo",
   "nutricionista|mejillones|truco": "Los mejillones de lata, el nuevo valor refugio, según una nutricionista",
   "nutricionista|mejillones|corte": "Una nutricionista avisa: los mejillones de lata cotizan más que...",
   "nutricionista|mejillones|obvio": "Qué le pasa a tu hipoteca si comes mejillones de lata todos los días",
@@ -665,7 +667,7 @@
    "punto"
   ],
   [
-   "atencion",
+   "meteorologos",
    "robledal",
    "corte"
   ]

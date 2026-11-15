@@ -130,14 +130,14 @@ async function opaAB(api) {
     await encuadre(api, 720);
     api.faceActor(Y, api.player);
     await api.sayAs(Y, M4);                                   // «No me has avisado…»
-    await titulador(api, { demo: [['hidro', 'robledal', 'punto'], ['atencion', 'robledal', 'corte']] });   // mudo
+    await titulador(api, { demo: [['hidro', 'robledal', 'punto'], ['meteorologos', 'robledal', 'corte']] });   // mudo
     await api.sayAs(Y, [M5, M6]);                             // «Tu titular: tres…» · «Te dejo mi titulador…»
   });
   api.cameraFollow();
 }
 ```
 La demo abre el titulador (§3bis) con el titular de Bruno (3 usuarios). Espera 1.200 ms. El cursor cambia las tres
-casillas de una en una (400 ms cada una, `sfx('click')`) hasta dejar «Atención si tienes Banco Robledal en el cajón: puede valer...» (`atencion·robledal·corte`),
+casillas de una en una (400 ms cada una, `sfx('click')`) hasta dejar «Los meteorólogos ponen fecha a la llegada de Banco Robledal: será el...» (`meteorologos·robledal·corte`),
 publica y el contador sube de 3 a 9.500. El plano se cierra a los 1.500 ms. La demo no guarda récord ni pone flags.
 Coste: +3 líneas.
 
@@ -298,7 +298,7 @@ export async function titulador(api, { demo } = {}) {
 **Criterio del dueño (manda sobre todo lo demás):** cada plantilla es un **titular de Discover real y reconocible,
 calcado, con un solo hueco**. El término económico entra en el sitio del objeto habitual y se dice con total seriedad,
 sin chiste añadido. Por eso las autoridades son secciones de Discover (psicología, pareja, cocina, nutrición, hogar,
-pueblos, monedas, Tráfico…) y no personajes. Los moldes de economía de verdad no sirven: con un asunto económico se
+pueblos, el tiempo, Tráfico…) y no personajes. Los moldes de economía de verdad no sirven: con un asunto económico se
 quedan en noticia real. Fuera: fuentes entre paréntesis, «tu madre», horóscopo, grupo de la familia, carta de lectora y
 escenas con parientes.
 
@@ -317,7 +317,7 @@ si no, a la centena. En pantalla, con punto de miles (`miles()` de `lib/kit.js`)
 
 | id | Menú | k | Sección (de dónde sale el molde) |
 |---|---|---|---|
-| hidro | Hidrovoltia | 0,02 | la eléctrica que lo compra todo |
+| hidro | Hidrovoltia lanza una opa | 0,02 | la noticia de verdad: dice algo y hunde |
 | expertos | Los expertos coinciden | 2 | esta tarde hay que bajarlo todo |
 | psicologia | Según la psicología | 1,7 | todo dice algo de ti |
 | pareja | Amor y pareja | 1,8 | todo es una relación |
@@ -327,23 +327,23 @@ si no, a la centena. En pantalla, con punto de miles (`miles()` de `lib/kit.js`)
 | analistas | Los analistas recomiendan | 0,7 | todo es inversión |
 | nutricionista | Una nutricionista avisa | 1,5 | todo se come |
 | hogar | Ni lejía ni vinagre | 1,5 | todo se limpia |
-| atencion | Atención si tienes | 1,9 | todo vale una fortuna |
+| meteorologos | Los meteorólogos avisan | 1,9 | el parte del tiempo |
 | trafico | Tráfico avisa | 1,6 | todo se multa |
 
 **Plantillas por autoridad × gancho** (96, literales; cada una, un molde con UN hueco `{S}`):
 
-**hidro** · «Hidrovoltia»
+**hidro** · «Hidrovoltia lanza una opa»
 
 | gancho | plantilla |
 |---|---|
-| corte | Llamada de Hidrovoltia: cuidado si te ofrecen {S} y te piden... |
-| obvio | Hidrovoltia confirma que {S} seguirá{N} llegando con normalidad |
+| corte | Opa de Hidrovoltia: qué pasa con {S} si no... |
+| obvio | Hidrovoltia lanza una opa sobre {S}: esto es lo que debes saber |
 | punto | Hidrovoltia lanza una opa sobre {S}. |
-| senales | Cómo saber si Hidrovoltia te ha cambiado {S} sin avisar |
-| probe | Me di de baja de {S} en Hidrovoltia y esto es lo que pasó |
-| prisa | Hidrovoltia avisa: corte de {S} el martes de 9 a 14 horas |
-| curioso | Hidrovoltia regala {S} a sus clientes: así puedes conseguir{P} |
-| truco | El truco de Hidrovoltia para pagar menos por {S} |
+| senales | Si tienes {S}, esto es lo que te ofrece Hidrovoltia en su opa |
+| probe | Tengo {S} y Hidrovoltia lanza una opa: qué hago |
+| prisa | Opa de Hidrovoltia sobre {S}: tienes hasta el viernes para vender |
+| curioso | Qué es una opa y por qué Hidrovoltia quiere {S} |
+| truco | Cómo saber si la opa de Hidrovoltia sobre {S} te afecta |
 
 **expertos** · «Los expertos coinciden»
 
@@ -414,7 +414,7 @@ si no, a la centena. En pantalla, con punto de miles (`miles()` de `lib/kit.js`)
 
 | gancho | plantilla |
 |---|---|
-| corte | El pueblo de España donde nadie cierra {S} con... |
+| corte | El pueblo de España donde {S} se hereda{N} de padres a... |
 | obvio | El pueblo de España donde {S} se sigue{N} haciendo a mano |
 | punto | El pueblo de España que vive sin {S} desde la Edad Media. |
 | senales | Los 5 pueblos de España donde todavía no ha{N} llegado {S} |
@@ -456,39 +456,39 @@ si no, a la centena. En pantalla, con punto de miles (`miles()` de `lib/kit.js`)
 | corte | Ni lejía ni vinagre: el truco para limpiar {S} es... |
 | obvio | Ni lejía ni vinagre: así se limpia{N} {S} |
 | punto | Ni lejía ni vinagre: {S} se blanquea{N} con bicarbonato. |
-| senales | Las 5 señales de que hay que cambiar {S} |
+| senales | Las 5 señales de que hay que tirar {S} |
 | probe | Metí {S} en el congelador y esto es lo que pasó |
 | prisa | Cada cuánto hay que lavar {S}, según los expertos |
 | curioso | El error que todos cometemos al tender {S} |
 | truco | El truco de la bola de papel de aluminio para {S} |
 
-**atencion** · «Atención si tienes»
+**meteorologos** · «Los meteorólogos avisan»
 
 | gancho | plantilla |
 |---|---|
-| corte | Atención si tienes {S} en el cajón: puede{N} valer... |
-| obvio | Si tienes {S} en casa, estás de suerte |
-| punto | La moneda de 2 euros con {S} vale 2 euros. |
-| senales | Cuánto vale{N} {S} de 1998: la tabla de los coleccionistas |
-| probe | Encuentra {S} en un cajón y descubre que vale{N} una fortuna |
-| prisa | Atención si tienes {S} en casa: el Banco de España {P} cambia hasta diciembre |
-| curioso | La moneda de 2 euros con {S} que vale una fortuna |
-| truco | Cómo saber si {S} vale{N} dinero: el truco de los coleccionistas |
+| corte | Los meteorólogos ponen fecha a la llegada de {S}: será el... |
+| obvio | Los meteorólogos avisan: {S} entra{N} por Galicia este fin de semana |
+| punto | {S} dejará{N} hasta 40 litros por metro cuadrado. |
+| senales | {S} llega{N} con fuerza: estas son las zonas afectadas |
+| probe | Las imágenes de {S} a su paso por Cuenca |
+| prisa | Alerta naranja por {S} en media España |
+| curioso | Llega el veranillo de {S}: hasta cuándo durará |
+| truco | Adiós a {S}: los meteorólogos confirman el cambio a partir del jueves |
 
 **trafico** · «Tráfico avisa»
 
 | gancho | plantilla |
 |---|---|
-| corte | Tráfico avisa: multa de 200 euros si llevas {S} en el... |
-| obvio | Tráfico recuerda cómo hay que llevar {S} en el coche |
+| corte | Los radares de Tráfico ya detectan {S} y la multa es de... |
+| obvio | Tráfico aclara si {S} puede{N} viajar en la baca del coche |
 | punto | Tráfico confirma: {S} puede{N} ir en el asiento de delante. |
 | senales | Tráfico avisa: si ves {S} en la carretera, reduce la velocidad |
 | probe | Me multaron por llevar {S} sin cinturón: así lo recurrí |
 | prisa | Tráfico avisa: a partir de enero, {S} tendrá{N} que pasar la ITV |
 | curioso | La pegatina de {S} que Tráfico te exigirá en el parabrisas |
-| truco | El truco de los conductores para que {S} no se empañe{N} |
+| truco | Cómo saber si Tráfico te ha multado por {S}: el truco |
 
-**ASUNTO** (14). Hay 2 objetos de casa, que son los del dueño, y 12 términos de economía, cinco de ellos de la economía de casa (hipoteca, nómina, Hacienda, plazo fijo y Euríbor). La cata enseñó que los objetos de casa en un molde de casa se quedan en consejo de verdad. Por eso salen la moneda, el lunes, la borrasca, la cuesta de enero y el cambio de hora (la moneda y el lunes pasan a la hoja). Los ids que ya existían no cambian.
+**ASUNTO** (14: 2 de casa y 12 de economía, la doméstica incluida).
 
 | id | Menú = {S} | {C} | {P} {E} {N} {s} | dominio | B | Epílogo |
 |---|---|---|---|---|---|---|
@@ -523,6 +523,8 @@ si no, a la centena. En pantalla, con punto de miles (`miles()` de `lib/kit.js`)
 **AFINIDADES** (se multiplican): cocineros + mejillones ×1,5 · expertos + persianas ×1,3 · confirmado + euribor + obvio ×20 · psicologia + euribor ×1,3 · nutricionista + mejillones ×1,3.
 
 **ESPECIALES** (texto propio):
+- `hogar|persianas|prisa` → «Cada cuánto hay que lavar las persianas, según los analistas»
+- `confirmado|mejillones|probe` → «Confirmado: los mejillones de lata cotizan en el contenedor amarillo»
 - `nutricionista|mejillones|truco` → «Los mejillones de lata, el nuevo valor refugio, según una nutricionista»
 - `nutricionista|mejillones|corte` → «Una nutricionista avisa: los mejillones de lata cotizan más que...»
 - `nutricionista|mejillones|obvio` → «Qué le pasa a tu hipoteca si comes mejillones de lata todos los días»
@@ -541,16 +543,17 @@ si no, a la centena. En pantalla, con punto de miles (`miles()` de `lib/kit.js`)
 - `hidro|opa|punto` → «Hidrovoltia lanza una opa sobre su propia opa.»
 
 **Muletillas medidas en las 1.344** (tope: un 15 %): corte 12,5 % · «expertos» 9,4 % · «señal(es)» 8,3 % · «esto es lo
-que / esto pasó» 8,3 % · «el truco» 7,3 % · «Hacienda» 7,1 % (es un asunto) · «psicolog» 4,2 % · «en el cajón / en casa» 4,2 % ·
-«las ocho» 2,1 % · «tu madre», «tu banco» y «(fuente:» 0 %. **Lo sentimental** (Según la psicología y Amor y pareja) es
-el 16,7 % de las combinaciones. Sale al menos una vez en el 60 % de las partidas de cinco, y el gancho «las señales» (test de
-revista) aparece en todas las autoridades.
+que / esto pasó» 8,3 % · «Hacienda» 7,1 % (es un asunto) · «el truco» 5,2 % · «psicolog» 4,2 % · «las ocho» 2,1 % · «en el
+cajón», «tu madre», «tu banco» y «(fuente:» 0 %. **Lo sentimental** (Según la psicología y Amor y pareja) es el 16,7 % de
+las combinaciones. Sale al menos una vez en el 60 % de las partidas de cinco, y el gancho «las señales» (test de revista)
+aparece en todas las autoridades. **Hidrovoltia** solo hace su papel: todas sus plantillas dicen «opa», así que todas
+dicen algo y se hunden.
 
 **Hitos de la escala** (calculados): titular de Bruno `hidro·robledal·punto` = **3** · lo máximo con «opa» = 180 · demo
-del paso 34 `atencion·robledal·corte` = **9.500** · mejillones del dueño = **243.000** (el ganador por defecto) ·
+del paso 34 `meteorologos·robledal·corte` = **9.500** · mejillones del dueño = **243.000** (el ganador por defecto) ·
 persianas del dueño = 312.000 · «Le conté a mi psicóloga lo del Euríbor…» = 35.400 · **RÉCORD = 576.000** («Confirmado:
-el Euríbor sube, baja o se queda igual»). Reparto de las 1.344: 50 por debajo de 10 usuarios, 123 entre 10 y 99, 235
-entre 100 y 999, 438 entre 1.000 y 9.999, 378 entre 10.000 y 99.999, y 120 de 100.000 en adelante.
+el Euríbor sube, baja o se queda igual»). Reparto de las 1.344: 92 por debajo de 10 usuarios, 128 entre 10 y 99, 202
+entre 100 y 999, 424 entre 1.000 y 9.999, 378 entre 10.000 y 99.999, y 120 de 100.000 en adelante.
 
 **Las nueve frases del dueño salen literales:** persianas y prima de riesgo (`expertos·…·obvio`), mejillones
 (`cocineros·mejillones·corte`), «Le conté a mi psicóloga lo del Euríbor y se quedó callada» (`psicologia·euribor·probe`),
@@ -560,8 +563,8 @@ pierde valor» (`confirmado·ibex·prisa`), «El pueblo de España que todavía 
 (`pueblo·euribor·curioso`) y «Los analistas recomiendan comprar la prima de riesgo y dejarla en remojo»
 (`analistas·prima·truco`). Todas son secreto.
 
-**Comprobación** (Anexo A): cata a ciegas de 180 (V1, V2 y el juego anterior) y seis tiradas de 100 con semilla nueva. La
-última, con las piezas en su versión final (semilla 95561), dio **61 % de treses y 1 % de unos**.
+**Comprobación** (Anexo A): cata a ciegas de 180 (V1, V2 y el juego anterior) y diez tiradas de 100 con semilla nueva. La
+última, con las piezas en su versión final (semilla 81953), dio **65 % de treses y 2 % de unos**.
 
 ### 3bis.4 · Resultado: etiqueta en pantalla (solo se ve) y reacción de Yoli (se dice una vez por partida)
 La categoría se elige por este orden y vale la primera que se cumpla. La **etiqueta** siempre se ve y no cuenta como
@@ -648,7 +651,7 @@ se queda solo en la trama (M2). Código: `categoria()` y `voz()` de `titulador/g
 | confirmado·ibex·prisa | 120 | Confirmado: el Ibex 35 se tiende antes de las ocho o pierde valor | TENDIDO ANTES DE LAS OCHO · C7 |
 | analistas·prima·truco | 1.430 | Los analistas recomiendan comprar la prima de riesgo y dejarla en remojo | EN REMOJO DESDE ANOCHE · C7 |
 | psicologia·prima·prisa | 3.260 | Según la psicología, si la prima de riesgo te escribe pasadas las ocho, no es amor | NO ES AMOR · X8 |
-| atencion·robledal·corte | 9.500 | Atención si tienes Banco Robledal en el cajón: puede valer... | SECCIÓN DE ECONOMÍA · C5 |
+| meteorologos·robledal·corte | 9.500 | Los meteorólogos ponen fecha a la llegada de Banco Robledal: será el... | SECCIÓN DE ECONOMÍA · C5 |
 | expertos·prima·obvio | 7.200 | Los expertos coinciden: esta tarde hay que cerrar las puertas y bajar la prima de riesgo | PUERTAS CERRADAS, PRIMA BAJADA · C7 |
 | pueblo·euribor·curioso | 21.600 | El pueblo de España que todavía paga el Euríbor en pesetas | EN PESETAS · X9 |
 | psicologia·euribor·probe | 35.400 | Le conté a mi psicóloga lo del Euríbor y se quedó callada | SE QUEDÓ CALLADA · X7 |
@@ -758,7 +761,7 @@ joven da las buenas noches a una cafetera». La hoja III, con ganador, pone en l
 | F14 | La borrasca ya tiene nombre: Bruno llega con fuerza y los expertos piden bajar las... | G3 | «La borrasca ya tiene nombre: X llega con fuerza» (tiempo) | hoja III, fila 1 (paga de la borrasca, con O3) |
 | F15 | Los expertos avisan: el Euríbor subirá, bajará o se quedará igual | G3 | «Los expertos avisan: lo que pasará con X» (economía de casa) | hoja III, fila 2 |
 | F16 | Qué es una opa y por qué no te afecta | G1 (rescate) | «Qué es X y por qué te afecta» (explicador) | hoja III, fila 3 |
-| F17 | Los meteorólogos avisan: el Euríbor entra por Galicia este fin de semana | juez (meteorólogos, rehecho) | «Los meteorólogos avisan: la borrasca entra por Galicia» (tiempo) | hoja III, fila 4 |
+| F17 | La moneda de 2 euros con el Euríbor que vale una fortuna | juez («Atención si tienes», que sale del titulador) | «La moneda de 2 euros con X que vale una fortuna» (monedas) | hoja III, fila 4 |
 | F18 | Tráfico avisa: esta noche cortan la A-6 para que pase el Euríbor | M1/juez (Tráfico) | «Tráfico avisa: esta noche cortan la A-6» (DGT) | hoja III, fila 5 (sin ganador; con ganador, el ganador) |
 | F19 | Si te despiertas a las 3:33, el Euríbor te está diciendo esto | G2 (rehecho) | «Si te despiertas a las 3:33, tu cuerpo te está diciendo esto» (bienestar) | reserva |
 | F20 | Las personas que miran el Ibex antes de desayunar tienen esto en común | G1 (rehecho) | «Las personas que… tienen esto en común» (psicología) | reserva |
@@ -852,3 +855,10 @@ Detalle completo en `scratchpad/audiencias/titulador/VEREDICTO.md`.
 | 4 | 73019 | 54 % | 4 % | Salen los tipos de interés (0 treses de 9) y entra el plazo fijo; se rehacen cinco plantillas de 2 |
 | 5 | 86117 | 55 % | 5 % | Los cinco unos eran persianas o mejillones en su molde natural: entran nueve especiales para esas parejas |
 | **6** | **95561** | **61 %** | **1 %** | **Final, con las piezas en su versión final** |
+| 7 | 39187 | 61 % | 3 % | Retoque del dueño. Hidrovoltia vuelve a ser solo «la que dice algo y hunde» (fuera el corte, el regalo y la estafa de eléctrica). Entran los meteorólogos en lugar de «Atención si tienes», con k 1,9 para que la demo siga en 9.500. Después se arreglan tres unos (lavar las persianas, el contenedor amarillo de los mejillones y «cambiar el IPC»), así que esta tirada no cuenta |
+| 8 | 52463 | 55 % | 3 % | Hidrovoltia saca 0 de 6 y Tráfico 1 de 9: se rehacen el corte y el truco de Tráfico y el testimonio de los meteorólogos |
+| 9 | 67741 | 57 % | 3 % | Hidrovoltia saca 2 de 13 y el pueblo 1 de 6: se rehacen las señales y el corte de Hidrovoltia, el corte del pueblo y el obvio de Tráfico |
+| **10** | **81953** | **65 %** | **2 %** | **Final, con las piezas en su versión final** |
+
+Las tres tiradas posteriores al retoque, con semillas distintas, dieron 55 %, 57 % y 65 %: con 100 titulares la cifra oscila
+unos ±5 puntos. El objetivo se cumple en la última, pero la media de las tres está en torno al 59 %.

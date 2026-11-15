@@ -96,7 +96,7 @@ if (isMain && process.argv.includes('--todas')) {
     'tu madre': /tu madre/i, 'tu banco': /tu banco/i, 'Hacienda': /Hacienda/, '(fuente:': /\(fuente/, 'sentimental (psicología + pareja)': r => P.sentimentales.includes(r.a.id) };
   for (const [k, re] of Object.entries(M)) console.log(`  ${k.padEnd(34)} ${pct(r => typeof re === 'function' ? re(r) : re.test(r.t))}`);
   const ps = P.sentimentales.length / A.length; console.log(`  P(al menos una sentimental en 5) = ${(100 * (1 - (1 - ps) ** 5)).toFixed(0)} %`);
-  for (const id of ['hidro|robledal|punto', 'atencion|robledal|corte', 'cocineros|mejillones|corte', 'expertos|persianas|obvio', 'confirmado|euribor|obvio', 'psicologia|euribor|probe', 'psicologia|prima|prisa', 'psicologia|euribor|senales', 'confirmado|ibex|prisa', 'expertos|prima|obvio', 'pueblo|euribor|curioso', 'analistas|prima|truco'])
+  for (const id of ['hidro|robledal|punto', P.demo_paso_34[1].join('|'), 'cocineros|mejillones|corte', 'expertos|persianas|obvio', 'confirmado|euribor|obvio', 'psicologia|euribor|probe', 'psicologia|prima|prisa', 'psicologia|euribor|senales', 'confirmado|ibex|prisa', 'expertos|prima|obvio', 'pueblo|euribor|curioso', 'analistas|prima|truco'])
     console.log('  hito', id, rows.find(r => `${r.a.id}|${r.s.id}|${r.g.id}` === id).u, '·', rows.find(r => `${r.a.id}|${r.s.id}|${r.g.id}` === id).t);
   const top = [...rows].sort((x, y) => y.u - x.u);
   console.log('  máximo:', top[0].u, top[0].t, '· segundo:', top[1].u, top[1].t);

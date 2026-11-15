@@ -10,6 +10,188 @@ Ficheros:
   `destapar.mjs`).
 - El juego anterior está guardado en `titulador/anterior_v1/`.
 
+## RETOQUE FINAL (tras el «en general están mejor» del dueño)
+**Qué cambia** (el formato de `piezas.json` y la interfaz de `gen.mjs` son los mismos):
+- **Sale la autoridad `atencion`** («Atención si tienes», la más floja de la cata, 1 de 10). **Entra `meteorologos`**
+  («Los meteorólogos avisan», k 1,9), con moldes reales del parte del tiempo y una sola sustitución:
+  - corte: «Los meteorólogos ponen fecha a la llegada de X: será el...»
+  - obvio: «…X entra por Galicia este fin de semana»
+  - punto: «X dejará hasta 40 litros por metro cuadrado.»
+  - senales: «X llega con fuerza: estas son las zonas afectadas»
+  - probe: «Las imágenes de X a su paso por Cuenca»
+  - prisa: «Alerta naranja por X en media España»
+  - curioso: «Llega el veranillo de X: hasta cuándo durará»
+  - truco: «Adiós a X: los meteorólogos confirman el cambio a partir del jueves»
+- **`demo_paso_34`** pasa de `['atencion','robledal','corte']` a **`['meteorologos','robledal','corte']`**. Texto: «Los
+  meteorólogos ponen fecha a la llegada de Banco Robledal: será el...». Sigue valiendo **9.500**.
+- **`hidro`**:
+  - el menú vuelve a «Hidrovoltia lanza una opa»;
+  - salen todos los moldes de eléctrica (el corte de luz de 9 a 14 horas, «regala X a sus clientes», el aviso de estafa,
+    «te ha cambiado sin avisar», «pagar menos por», «darse de baja», «seguirá llegando con normalidad»);
+  - las ocho plantillas dicen ahora «opa», así que todas dicen algo y se hunden. Entre ellas, «Tengo X y Hidrovoltia lanza
+    una opa: qué hago» y «Si tienes X, esto es lo que te ofrece Hidrovoltia en su opa».
+- Plantillas reescritas en otras autoridades:
+  - Tráfico: corte → «Los radares de Tráfico ya detectan X y la multa es de...»; obvio → «Tráfico aclara si X puede viajar en
+    la baca del coche»; truco → «Cómo saber si Tráfico te ha multado por X: el truco».
+  - El pueblo: corte → «…donde X se hereda de padres a...».
+  - Hogar: señales → «…hay que tirar X».
+- Especiales nuevos: `hogar|persianas|prisa` y `confirmado|mejillones|probe`.
+- `version` = `titulador-vuelta2-r7`.
+- `gen.mjs` saca el hito de la demo de `demo_paso_34` en lugar de un id escrito a mano. Su interfaz no cambia.
+- Ningún asunto, gancho, secreto, línea de Yoli ni categoría cambia.
+- Hoja: F17 pasa a ser «La moneda de 2 euros con el Euríbor que vale una fortuna». La frase de Galicia ahora sale como
+  combinación.
+
+**Tiradas tras el retoque** (100 al azar, semilla nueva cada una y criterio del dueño):
+
+| Tirada | Semilla | 3 | 1 | Qué se cambió después |
+|---|---|---|---|---|
+| 7 | 39187 | 61 % | 3 % | Arreglados tres unos (esta tirada no cuenta) |
+| 8 | 52463 | 55 % | 3 % | Corte y truco de Tráfico y testimonio de los meteorólogos |
+| 9 | 67741 | 57 % | 3 % | Señales y corte de Hidrovoltia, corte del pueblo y obvio de Tráfico |
+| **10** | **81953** | **65 %** | **2 %** | **Final, con las piezas en su versión final** |
+
+Con 100 titulares la cifra oscila unos ±5 puntos según la semilla. El objetivo se cumple en la final, pero la media de
+las tres tiradas tras el retoque está en torno al 59 %.
+- Por autoridad, en la final: Tráfico 9 de 9, expertos 11 de 13, hogar 7 de 8, pareja 6 de 8, Confirmado 7 de 10,
+  cocineros 7 de 11, nutricionista 5 de 7, analistas 4 de 6, meteorólogos 4 de 8, psicología 2 de 4, Hidrovoltia 2 de 8
+  (es la que se hunde) y el pueblo 1 de 8 (lo más flojo que queda).
+- Siguen intactas las nueve literales del dueño, Bruno = 3, opa ≤ 180, mejillones = 243.000 como ganador por defecto,
+  persianas = 312.000 y el récord de 576.000. `--todas` da 0 fallos.
+
+### Tirada final (semilla 81953), con mi nota
+
+| # | combinación | usuarios | titular | etiqueta | Yoli | nota |
+|---|---|---|---|---|---|---|
+| 1 | nutricionista·nomina·obvio | 38.300 | Qué le pasa a tu cuerpo si comes la nómina todos los días | VERDAD COMO UN TEMPLO | **3** |
+| 2 | cocineros·opa·obvio | 160 | Los cocineros coinciden: la opa de Hidrovoltia se hace mejor a fuego lento | SOLO LOS DE HIDROVOLTIA | **2** |
+| 3 | nutricionista·ipc·truco | 1.020 | Una nutricionista revela cómo comer el IPC sin engordar | SECCIÓN DE ECONOMÍA | **3** |
+| 4 | trafico·hacienda·obvio | 48.000 | Tráfico aclara si Hacienda puede viajar en la baca del coche | VERDAD COMO UN TEMPLO | **3** |
+| 5 | expertos·robledal·probe | 8.000 | Purgué Banco Robledal como dicen los expertos y esto es lo que pasó | SECCIÓN DE ECONOMÍA | **3** |
+| 6 | expertos·deuda·prisa | 2.240 | Los expertos piden purgar la deuda pública antes de encender la calefacción | SECCIÓN DE ECONOMÍA | **3** |
+| 7 | analistas·mejillones·obvio | 75.600 | Los analistas recomiendan guardar los mejillones de lata en un lugar fresco y seco | VERDAD COMO UN TEMPLO | **1** |
+| 8 | nutricionista·opa·punto | 3 | Una nutricionista desaconseja comer la opa de Hidrovoltia. | SOLO LOS DE HIDROVOLTIA | **2** |
+| 9 | meteorologos·opa·curioso | 100 | Llega el veranillo de la opa de Hidrovoltia: hasta cuándo durará | SOLO LOS DE HIDROVOLTIA | **2** |
+| 10 | trafico·ibex·senales | 210 | Tráfico avisa: si ves el Ibex 35 en la carretera, reduce la velocidad | SECCIÓN DE ECONOMÍA | **3** |
+| 11 | cocineros·deuda·curioso | 2.270 | Los cocineros nunca piden la deuda pública en un restaurante: este es el motivo | SECCIÓN DE ECONOMÍA | **3** |
+| 12 | confirmado·pib·corte | 1.500 | Confirmado: el PIB se puede meter en el microondas si... | SECCIÓN DE ECONOMÍA | **3** |
+| 13 | hidro·opa·truco | 3 | Cómo saber si la opa de Hidrovoltia sobre la opa de Hidrovoltia te afecta | SOLO LOS DE HIDROVOLTIA | **2** |
+| 14 | hidro·prima·prisa | 3 | Opa de Hidrovoltia sobre la prima de riesgo: tienes hasta el viernes para vender | SOLO LOS DE HIDROVOLTIA | **2** |
+| 15 | expertos·pib·senales | 2.200 | Las 5 señales de que el PIB tiene humedad, según los expertos | SECCIÓN DE ECONOMÍA | **3** |
+| 16 | expertos·nomina·punto | 850 | Los expertos recomiendan ventilar la nómina diez minutos al día. | DICHO. NADIE ENTRA | **3** |
+| 17 | pueblo·opa·obvio | 140 | El pueblo de España donde la opa de Hidrovoltia se sigue haciendo a mano | SOLO LOS DE HIDROVOLTIA | **2** |
+| 18 | cocineros·opa·curioso | 97 | Los cocineros nunca piden la opa de Hidrovoltia en un restaurante: este es el motivo | SOLO LOS DE HIDROVOLTIA | **2** |
+| 19 | pueblo·persianas·probe | 120.000 | Dejé la ciudad por un pueblo sin las persianas y esto es lo que pasó | LE PASÓ A ALGUIEN | **2** |
+| 20 | expertos·robledal·punto | 200 | Los expertos recomiendan ventilar Banco Robledal diez minutos al día. | DICHO. NADIE ENTRA | **3** |
+| 21 | psicologia·plazofijo·punto | 260 | La psicología lo confirma: tu relación con el plazo fijo es dependencia emocional. | DICHO. NADIE ENTRA | **2** |
+| 22 | meteorologos·prima·probe | 4.560 | Las imágenes de la prima de riesgo a su paso por Cuenca | SECCIÓN DE ECONOMÍA | **3** |
+| 23 | pareja·nomina·obvio | 45.900 | Si la nómina hace esto, no te quiere | ECONOMÍA, SECCIÓN CORAZÓN | **3** |
+| 24 | pueblo·deuda·punto | 53 | El pueblo de España que vive sin la deuda pública desde la Edad Media. | DICHO. NADIE ENTRA | **2** |
+| 25 | hogar·nomina·probe | 25.500 | Metí la nómina en el congelador y esto es lo que pasó | LE PASÓ A ALGUIEN | **3** |
+| 26 | psicologia·opa·corte | 130 | Qué significa soñar con la opa de Hidrovoltia, según la psicología: es señal de... | SOLO LOS DE HIDROVOLTIA | **2** |
+| 27 | confirmado·prima·corte | 3.600 | Confirmado: la prima de riesgo se puede meter en el microondas si... | SECCIÓN DE ECONOMÍA | **3** |
+| 28 | trafico·ipc·curioso | 1.150 | La pegatina del IPC que Tráfico te exigirá en el parabrisas | SECCIÓN DE ECONOMÍA | **3** |
+| 29 | cocineros·plazofijo·truco | 9.180 | El truco de los cocineros para que el plazo fijo quede jugoso | SECCIÓN DE ECONOMÍA | **2** |
+| 30 | cocineros·opa·probe | 110 | Los cocineros coinciden: la opa de Hidrovoltia nunca se lava antes de cocinarla | SOLO LOS DE HIDROVOLTIA | **2** |
+| 31 | expertos·robledal·probe | 8.000 | Purgué Banco Robledal como dicen los expertos y esto es lo que pasó | SECCIÓN DE ECONOMÍA | **3** |
+| 32 | expertos·hipoteca·truco | 30.600 | El truco de los expertos para secar la hipoteca sin secadora | TRUCO DE TODA LA VIDA | **3** |
+| 33 | pareja·mejillones·truco | 110.200 | Cómo olvidar a los mejillones de lata en 21 días | TRUCO DE TODA LA VIDA | **2** |
+| 34 | pueblo·persianas·probe | 120.000 | Dejé la ciudad por un pueblo sin las persianas y esto es lo que pasó | LE PASÓ A ALGUIEN | **2** |
+| 35 | confirmado·prima·prisa | 2.300 | Confirmado: la prima de riesgo se tiende antes de las ocho o pierde valor | SECCIÓN DE ECONOMÍA | **3** |
+| 36 | hidro·nomina·probe | 17 | Tengo la nómina y Hidrovoltia lanza una opa: qué hago | SOLO LOS DE HIDROVOLTIA | **3** |
+| 37 | expertos·hipoteca·prisa | 28.800 | Los expertos piden purgar la hipoteca antes de encender la calefacción | ANTES DE LAS OCHO (SON LAS 20:59) | **3** |
+| 38 | pueblo·persianas·punto | 3.000 | El pueblo de España que vive sin las persianas desde la Edad Media. | DICHO. NADIE ENTRA | **2** |
+| 39 | analistas·euribor·obvio | 16.800 | Los analistas recomiendan guardar el Euríbor en un lugar fresco y seco | SECCIÓN DE ECONOMÍA | **3** |
+| 40 | confirmado·prima·senales | 3.170 | Confirmado: la prima de riesgo encoge si la lavas con agua caliente | SECCIÓN DE ECONOMÍA | **3** |
+| 41 | confirmado·persianas·senales | 105.600 | Confirmado: las persianas encogen si las lavas con agua caliente | SEÑALES INEQUÍVOCAS | **2** |
+| 42 | pueblo·opa·obvio | 140 | El pueblo de España donde la opa de Hidrovoltia se sigue haciendo a mano | SOLO LOS DE HIDROVOLTIA | **2** |
+| 43 | nutricionista·persianas·punto | 3.000 | Una nutricionista desaconseja comer las persianas. | DICHO. NADIE ENTRA | **2** |
+| 44 | meteorologos·robledal·truco | 6.460 | Adiós a Banco Robledal: los meteorólogos confirman el cambio a partir del jueves | SECCIÓN DE ECONOMÍA | **3** |
+| 45 | psicologia·ipc·curioso | 1.220 | Las personas que hablan con el IPC tienen esto en común, según la psicología | ECONOMÍA, SECCIÓN CORAZÓN | **3** |
+| 46 | pueblo·ipc·obvio | 1.800 | El pueblo de España donde el IPC se sigue haciendo a mano | SECCIÓN DE ECONOMÍA | **2** |
+| 47 | confirmado·euribor·obvio | 576.000 | Confirmado: el Euríbor sube, baja o se queda igual | RÉCORD DE LA CASA | **3** |
+| 48 | pareja·ipc·obvio | 2.160 | Si el IPC hace esto, no te quiere | ECONOMÍA, SECCIÓN CORAZÓN | **3** |
+| 49 | cocineros·hacienda·corte | 45.000 | Los cocineros coinciden: Hacienda está mejor si la preparas con... | LOS PUNTOS TRABAJAN | **3** |
+| 50 | confirmado·deuda·punto | 42 | Confirmado: la deuda pública caduca el 14 de marzo. | DICHO. NADIE ENTRA | **2** |
+| 51 | hogar·pib·obvio | 2.250 | Ni lejía ni vinagre: así se limpia el PIB | SECCIÓN DE ECONOMÍA | **3** |
+| 52 | expertos·persianas·truco | 176.800 | El truco de los expertos para secar las persianas sin secadora | TRUCO DE TODA LA VIDA | **2** |
+| 53 | hidro·deuda·senales | 3 | Si tienes la deuda pública, esto es lo que te ofrece Hidrovoltia en su opa | SOLO LOS DE HIDROVOLTIA | **2** |
+| 54 | cocineros·ibex·senales | 240 | Las 5 señales de que el Ibex 35 se ha puesto malo | SECCIÓN DE ECONOMÍA | **3** |
+| 55 | expertos·hacienda·truco | 34.000 | El truco de los expertos para secar Hacienda sin secadora | TRUCO DE TODA LA VIDA | **3** |
+| 56 | expertos·persianas·curioso | 187.200 | Por qué los expertos recomiendan dormir con las persianas abiertas | NADIE LO SABÍA | **1** |
+| 57 | pareja·pib·punto | 45 | Los españoles piensan en el PIB una media de 14 veces al día. | DICHO. NADIE ENTRA | **3** |
+| 58 | meteorologos·ibex·obvio | 340 | Los meteorólogos avisan: el Ibex 35 entra por Galicia este fin de semana | SECCIÓN DE ECONOMÍA | **3** |
+| 59 | nutricionista·hacienda·senales | 33.000 | Las 5 señales de que tu cuerpo necesita Hacienda | SEÑALES INEQUÍVOCAS | **3** |
+| 60 | trafico·prima·obvio | 5.760 | Tráfico aclara si la prima de riesgo puede viajar en la baca del coche | SECCIÓN DE ECONOMÍA | **3** |
+| 61 | pareja·opa·curioso | 97 | Por qué la opa de Hidrovoltia te deja en visto, según la ciencia | SOLO LOS DE HIDROVOLTIA | **2** |
+| 62 | meteorologos·opa·prisa | 91 | Alerta naranja por la opa de Hidrovoltia en media España | SOLO LOS DE HIDROVOLTIA | **2** |
+| 63 | hidro·persianas·obvio | 120 | Hidrovoltia lanza una opa sobre las persianas: esto es lo que debes saber | SOLO LOS DE HIDROVOLTIA | **2** |
+| 64 | trafico·deuda·probe | 2.240 | Me multaron por llevar la deuda pública sin cinturón: así lo recurrí | SECCIÓN DE ECONOMÍA | **3** |
+| 65 | cocineros·pib·prisa | 1.440 | Los cocineros coinciden: descongela el PIB la noche antes | SECCIÓN DE ECONOMÍA | **3** |
+| 66 | meteorologos·mejillones·truco | 116.300 | Adiós a los mejillones de lata: los meteorólogos confirman el cambio a partir del jueves | TRUCO DE TODA LA VIDA | **2** |
+| 67 | psicologia·ipc·probe | 1.360 | Le conté a mi psicóloga lo del IPC y se quedó callada | ECONOMÍA, SECCIÓN CORAZÓN | **3** |
+| 68 | meteorologos·ibex·senales | 250 | El Ibex 35 llega con fuerza: estas son las zonas afectadas | SECCIÓN DE ECONOMÍA | **3** |
+| 69 | analistas·prima·truco | 1.430 | Los analistas recomiendan comprar la prima de riesgo y dejarla en remojo | EN REMOJO DESDE ANOCHE | **3** |
+| 70 | hogar·euribor·corte | 30.000 | Ni lejía ni vinagre: el truco para limpiar el Euríbor es... | LOS PUNTOS TRABAJAN | **3** |
+| 71 | hogar·nomina·probe | 25.500 | Metí la nómina en el congelador y esto es lo que pasó | LE PASÓ A ALGUIEN | **3** |
+| 72 | cocineros·prima·truco | 3.670 | El truco de los cocineros para que la prima de riesgo quede jugosa | SECCIÓN DE ECONOMÍA | **3** |
+| 73 | trafico·euribor·punto | 640 | Tráfico confirma: el Euríbor puede ir en el asiento de delante. | DICHO. NADIE ENTRA | **3** |
+| 74 | trafico·deuda·probe | 2.240 | Me multaron por llevar la deuda pública sin cinturón: así lo recurrí | SECCIÓN DE ECONOMÍA | **3** |
+| 75 | trafico·plazofijo·punto | 240 | Tráfico confirma: el plazo fijo puede ir en el asiento de delante. | DICHO. NADIE ENTRA | **3** |
+| 76 | meteorologos·mejillones·prisa | 109.400 | Alerta naranja por los mejillones de lata en media España | ANTES DE LAS OCHO (SON LAS 20:59) | **2** |
+| 77 | confirmado·deuda·prisa | 1.340 | Confirmado: la deuda pública se tiende antes de las ocho o pierde valor | SECCIÓN DE ECONOMÍA | **3** |
+| 78 | hidro·mejillones·prisa | 58 | Opa de Hidrovoltia sobre los mejillones de lata: tienes hasta el viernes para vender | SOLO LOS DE HIDROVOLTIA | **2** |
+| 79 | pareja·ipc·curioso | 1.300 | Por qué el IPC te deja en visto, según la ciencia | ECONOMÍA, SECCIÓN CORAZÓN | **3** |
+| 80 | nutricionista·nomina·senales | 28.100 | Las 5 señales de que tu cuerpo necesita la nómina | SEÑALES INEQUÍVOCAS | **3** |
+| 81 | pareja·hipoteca·curioso | 29.200 | Por qué la hipoteca te deja en visto, según la ciencia | ECONOMÍA, SECCIÓN CORAZÓN | **3** |
+| 82 | analistas·opa·probe | 42 | Llevo un año comprando la opa de Hidrovoltia a granel y esto es lo que he ahorrado | SOLO LOS DE HIDROVOLTIA | **2** |
+| 83 | hidro·hacienda·probe | 20 | Tengo Hacienda y Hidrovoltia lanza una opa: qué hago | SOLO LOS DE HIDROVOLTIA | **3** |
+| 84 | cocineros·ipc·obvio | 2.160 | Los cocineros coinciden: el IPC se hace mejor a fuego lento | SECCIÓN DE ECONOMÍA | **3** |
+| 85 | nutricionista·deuda·truco | 1.790 | Una nutricionista revela cómo comer la deuda pública sin engordar | SECCIÓN DE ECONOMÍA | **3** |
+| 86 | hogar·hacienda·punto | 750 | Ni lejía ni vinagre: Hacienda se blanquea con bicarbonato. | DICHO. NADIE ENTRA | **3** |
+| 87 | cocineros·pib·corte | 2.250 | Los cocineros coinciden: el PIB está mejor si lo preparas con... | SECCIÓN DE ECONOMÍA | **3** |
+| 88 | hogar·hacienda·prisa | 24.000 | Cada cuánto hay que lavar Hacienda, según los expertos | ANTES DE LAS OCHO (SON LAS 20:59) | **3** |
+| 89 | expertos·nomina·punto | 850 | Los expertos recomiendan ventilar la nómina diez minutos al día. | DICHO. NADIE ENTRA | **3** |
+| 90 | analistas·plazofijo·curioso | 3.780 | Por qué los analistas guardan el plazo fijo en la nevera | SECCIÓN DE ECONOMÍA | **3** |
+| 91 | analistas·prima·corte | 2.100 | Los analistas recomiendan sacar la prima de riesgo del horno antes de que... | SECCIÓN DE ECONOMÍA | **3** |
+| 92 | hidro·plazofijo·obvio | 9 | Hidrovoltia lanza una opa sobre el plazo fijo: esto es lo que debes saber | SOLO LOS DE HIDROVOLTIA | **2** |
+| 93 | hogar·mejillones·probe | 108.000 | Metí los mejillones de lata en el congelador y esto es lo que pasó | LE PASÓ A ALGUIEN | **2** |
+| 94 | pueblo·hipoteca·truco | 23.000 | El pueblo de España donde la gente vive cien años gracias a la hipoteca | TRUCO DE TODA LA VIDA | **3** |
+| 95 | trafico·prima·curioso | 3.460 | La pegatina de la prima de riesgo que Tráfico te exigirá en el parabrisas | SECCIÓN DE ECONOMÍA | **3** |
+| 96 | pareja·ipc·corte | 1.800 | El IPC te ha dejado: los 5 pasos para... | ECONOMÍA, SECCIÓN CORAZÓN | **3** |
+| 97 | confirmado·nomina·senales | 22.400 | Confirmado: la nómina encoge si la lavas con agua caliente | SEÑALES INEQUÍVOCAS | **3** |
+| 98 | confirmado·persianas·corte | 120.000 | Confirmado: las persianas se pueden meter en el microondas si... | LOS PUNTOS TRABAJAN | **2** |
+| 99 | hogar·nomina·curioso | 23.000 | El error que todos cometemos al tender la nómina | NADIE LO SABÍA | **3** |
+| 100 | expertos·ipc·prisa | 1.280 | Los expertos piden purgar el IPC antes de encender la calefacción | SECCIÓN DE ECONOMÍA | **3** |
+
+### Las 20 mejores con las piezas finales (sin las nueve literales del dueño)
+
+| # | combinación | usuarios | titular | etiqueta |
+|---|---|---|---|---|
+| 1 | confirmado·euribor·truco | 16.300 | Confirmado: el Euríbor se lava a 30 grados | SECCIÓN DE ECONOMÍA |
+| 2 | pareja·prima·senales | 4.750 | Cómo saber si la prima de riesgo te quiere: 5 señales | ECONOMÍA, SECCIÓN CORAZÓN |
+| 3 | pareja·nomina·obvio | 45.900 | Si la nómina hace esto, no te quiere | ECONOMÍA, SECCIÓN CORAZÓN |
+| 4 | psicologia·ipc·truco | 1.160 | La técnica japonesa para dejar de pensar en el IPC | ECONOMÍA, SECCIÓN CORAZÓN |
+| 5 | nutricionista·euribor·punto | 600 | Una nutricionista desaconseja comer el Euríbor. | DICHO. NADIE ENTRA |
+| 6 | analistas·robledal·obvio | 4.200 | Los analistas recomiendan guardar Banco Robledal en un lugar fresco y seco | SECCIÓN DE ECONOMÍA |
+| 7 | meteorologos·euribor·prisa | 24.300 | Alerta naranja por el Euríbor en media España | ANTES DE LAS OCHO (SON LAS 20:59) |
+| 8 | analistas·euribor·curioso | 10.100 | Por qué los analistas guardan el Euríbor en la nevera | SECCIÓN DE ECONOMÍA |
+| 9 | meteorologos·euribor·curioso | 27.400 | Llega el veranillo del Euríbor: hasta cuándo durará | NADIE LO SABÍA |
+| 10 | expertos·hipoteca·prisa | 28.800 | Los expertos piden purgar la hipoteca antes de encender la calefacción | ANTES DE LAS OCHO (SON LAS 20:59) |
+| 11 | trafico·euribor·prisa | 20.500 | Tráfico avisa: a partir de enero, el Euríbor tendrá que pasar la ITV | ANTES DE LAS OCHO (SON LAS 20:59) |
+| 12 | hidro·hacienda·probe | 20 | Tengo Hacienda y Hidrovoltia lanza una opa: qué hago | SOLO LOS DE HIDROVOLTIA |
+| 13 | pueblo·euribor·truco | 20.400 | El pueblo de España donde la gente vive cien años gracias al Euríbor | TRUCO DE TODA LA VIDA |
+| 14 | hogar·nomina·punto | 640 | Ni lejía ni vinagre: la nómina se blanquea con bicarbonato. | DICHO. NADIE ENTRA |
+| 15 | nutricionista·hipoteca·obvio | 40.500 | Qué le pasa a tu cuerpo si comes la hipoteca todos los días | VERDAD COMO UN TEMPLO |
+| 16 | pareja·hacienda·truco | 30.600 | Cómo olvidar a Hacienda en 21 días | ECONOMÍA, SECCIÓN CORAZÓN |
+| 17 | cocineros·ipc·probe | 1.440 | Los cocineros coinciden: el IPC nunca se lava antes de cocinarlo | SECCIÓN DE ECONOMÍA |
+| 18 | meteorologos·ipc·punto | 38 | El IPC dejará hasta 40 litros por metro cuadrado. | DICHO. NADIE ENTRA |
+| 19 | confirmado·hipoteca·senales | 23.800 | Confirmado: la hipoteca encoge si la lavas con agua caliente | SEÑALES INEQUÍVOCAS |
+| 20 | trafico·hacienda·obvio | 48.000 | Tráfico aclara si Hacienda puede viajar en la baca del coche | VERDAD COMO UN TEMPLO |
+
+*(Lo que sigue es la segunda vuelta antes del retoque. Las secciones 4 y 5 se refieren a la tirada 6, cuando aún existía
+`atencion`.)*
+
 ## 0 · El criterio (lo fijó el dueño a mitad de la vuelta)
 Las favoritas del dueño son **un titular de Discover real y reconocible, calcado, con una sola sustitución**: el término
 económico entra en el sitio del objeto habitual y se dice con total seriedad, sin chiste añadido. Rechazó las favoritas
