@@ -4,6 +4,8 @@
 // define `pajarera.js` (Despachos, paquete P2). Se conserva la porra del garaje (adenda 8bis).
 // ENMIENDA E2 (P3): §6 L17 (E-47…E-50 con `office_error_n`), L18, L26, L27; §2.6.5 y §4.5 (chismes de Anselmo y
 // Maripaz); §7.2 (fuera las coletillas de Bruno); §7.5 fase B (1) (fuera el rumor A) y (9) (fuera «CORTADO…» y «Me lo...»).
+// [PA] ENMIENDA E5: opción «¿Y cuáles son los siguientes pasos?» de Gertrudis (§2.1.4, `gertrudis_pregunta`); textos C58-C60,
+// M26 (fuera), M27, M33, X09.
 // Solo tiene una puerta, el arco a la Redacción. El arte y la geometría están en ./art/office.art.js.
 //
 // Gertrudis es un ACTOR (su LCD sale encima, en #39FF14, en MAYÚSCULAS): api.sayAs('gertrudis', ...). El piloto
@@ -151,6 +153,17 @@ const dialogoGertrudis = {
         { text: 'Buenas noches otra vez.', if: ['gertrudis_saludada', (api) => (api.flag('chisme_indice') || 0) < CHISMES.length],
           do: torrente },
         { text: '¿Me da un café sin saludar?', if: '!gertrudis_saludada', do: cafeSinSaludar },
+        // [PA] E5 §2.1.4: la pregunta que Gervasio no deja hacer al becario, la reenvía la cafetera (es una pregunta,
+        // no un saludo: va por delante de `office_agotada` y de E-53)
+        { text: '¿Y cuáles son los siguientes pasos?', if: ['sala_becario_sin_turno', '!gertrudis_pregunta', '!reunion_terminada'],
+          do: async (api) => {
+            api.sfx('beep');
+            await parpadeo(api);
+            await lcd(api, 'PREGUNTA SIN RESPUESTA. LA MANDO A LA PRÓXIMA PANTALLA QUE ME SINTONICE.');
+            emision(api, 1);                                  // piloto «EN DIRECTO» hasta que se sale del Vending
+            api.setFlag('gertrudis_pregunta', true);
+            return 'exit';
+          } },
         // plan §5.2 [4], con «Nada.» delante: así la reconoce la despedida de walk-lib
         { text: 'Nada. Gracias, Gertrudis.', exit: true, reply: 'E-00: DE NADA. ESO TAMBIÉN SE DICE.' },
       ],
@@ -263,9 +276,9 @@ export default buildRoom({
       },
       usar: 'Hay cola. Colarse aquí es despido procedente.',
       abrir: 'Dentro gira un plato vacío. Nadie se atreve a pararlo.',
-      'usar:cafe': 'Recalentar un café de Gertrudis delante de ella. Ni loco.',
+      'usar:cafe': 'Recalentar un café de Gertrudis delante de ella. No.',
       'usar:taper_huerfano': 'Está vacío. Calentar la nada en la cola de otros: eso sí es despido.',
-      'usar:ficha_pagina_7': 'Si caliento la ficha, se borran las casillas. Y la ilusión.',
+      'usar:ficha_pagina_7': 'Si caliento la ficha, se borran las casillas.',
       hablar: 'Le pregunto qué le pasa con Gertrudis. Pita. Un minuto entero.',
       coger: 'Si me llevo el microondas, nueve tuppers me denuncian.',
     } },
@@ -344,7 +357,7 @@ export default buildRoom({
         'dar:*': async (api) => { await lcd(api, 'E-46: ESO NO ES UN CAFÉ.'); },
         empujar: 'Ni la rozo. En la pantalla ya pone: «ANOTADO».',
         tirar: 'Ni la rozo. En la pantalla ya pone: «ANOTADO».',
-        coger: 'Pesa lo que un convenio colectivo. Con sus anexos.',
+        coger: 'Pesa lo que un convenio colectivo.',
         abrir: 'La abro. Dentro, un pósit: «Si lees esto, salúdala. — C.»',
         cerrar: 'Ya está cerrada. Abierta, solo con buenas palabras.',
         usar: 'Pulso el botón del café. Me mira. Así no. Habrá que hablarle.',
@@ -353,7 +366,7 @@ export default buildRoom({
     { id: MER, when: ['reunion_terminada', '!mercados_huido'], defaultVerb: 'hablar',
       murmurs: ['Punto tres. Punto tres...', 'Aquí nadie convoca nada. Qué paz.'],
       handlers: {
-        mirar: 'Uno de Mercados, en la cola del microondas. Detrás de un táper.',
+        mirar: 'Fermín Plazofijo, de Mercados, en la cola del microondas. No se mueve.',
         hablar: async (api) => { await api.dialog('mercados_office', 'M0'); },
         'dar:cafe': async (api) => { await mer(api, 'No, gracias. El café es de reunión. Y yo ya no voy a reuniones.'); },
         'dar:*': async (api) => { await mer(api, '¿Eso es un orden del día? Guárdatelo. Aquí no.'); },
@@ -363,14 +376,14 @@ export default buildRoom({
       } },
     // Gervasio aquí SOLO tras D3 (plan §5.10): se va a ver si la máquina le saluda
     { id: GV, when: ['sala_abierta', '!climax_entrada', '!juego_terminado'], defaultVerb: 'hablar',   // en el clímax, escondido en la Sala
-      murmurs: ['Diecinueve años. Ni un marrón. Ni uno.', 'Hoy me han preguntado tres veces por mi salud. Debo de estar fatal.'],
+      murmurs: ['Sin el acta se está... Se está muy ligero.'],     // [PA] E5 M26 fuera, M27
       handlers: {
         mirar: 'Gervasio, delante de Gertrudis. Ella no le sirve. Él no la saluda. Del todo.',
         hablar: hablarGervasio,
         'dar:cafe': async (api) => { await gv(api, '¿Café? Se agradece. Pero se espera a que la máquina lo ofrezca.'); },
         'dar:acta_reunion': async (api) => { await gv(api, 'Eso ya no es mío. Se ha delegado. En ti.'); },
         'dar:ticket_n1': async (api) => { await gv(api, 'Un ticket. Eso es de Sistemas. Se les reenvía.'); },
-        'dar:*': async (api) => { await gv(api, 'Eso lo coges tú, que tienes la agenda más limpia.'); },
+        'dar:*': async (api) => { await gv(api, 'Eso se deja... Se deja ahí. Ya se verá de quién es.'); },   // [PA] E5 M33
         empujar: 'Diecinueve años sin moverse de su sitio. No voy a ser yo quien empiece.',
         tirar: 'Si le tiro de la manga, me la delega.',
         coger: 'Gervasio espera algo. No sabe qué. Por si soy yo, me aparto.',

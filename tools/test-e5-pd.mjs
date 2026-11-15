@@ -112,9 +112,10 @@ try {
   await clickVerb('mirar');
   const pv = await G(([x, y]) => __game.virtualToClient(x, y), pFax);
   await page.mouse.move(pv.x, pv.y); await sleep(150);
-  ok(await G(() => (__game.game.hover && __game.game.hover.id) || (__game.game.ui && __game.game.ui.hover && __game.game.ui.hover.id) || 'fax') === 'fax', 'el ratón sobre el fax lo apunta');
+  ok(await G(() => __game.state().hover) === 'fax', 'el ratón sobre el fax lo apunta (verbo Mirar elegido con clic)');
   await vclick(...pFax);
-  await sleep(200);
+  await page.waitForFunction(() => __game.game.speeches.some(s => String(s.text).includes('0.441')), null, { timeout: 15000 });
+  await sleep(300);
   await shot('fax-mirar');                     // con el globo de la pegatina
   await settle();
   ok(await logHas('Un fax de 1992: «SIN PAPEL». Pegatina: «Mantenimiento: Sistemas. Ticket 0.441».'), 'D20/C34: «Un fax de 1992: «SIN PAPEL». Pegatina: «Mantenimiento: Sistemas. Ticket 0.441».»');
@@ -287,29 +288,27 @@ try {
   const defs = await G(() => { const r = __game.game.content.rooms.pajarera; const a = (id) => r.actors.find(x => x.id === id); return { lm: a('lector_medio').murmurs, gv: a('gervasio_acta').murmurs, glob: __game.game.content.actors.lector_medio.murmurs }; });
   ok(Array.isArray(defs.lm) && defs.lm.length === 0 && defs.glob.length === 0, 'M23: el Lector Medio sin murmullo (Despachos y global)');
   ok(defs.gv.includes('Ese correo se contesta... Se contestará.') && !defs.gv.some(l => l.includes('Diecinueve años. Ni un marrón')), 'M28: murmullo de Gervasio');
-  // M25: asentir sin globo
-  await G(() => __game.skipText(false));
-  G(() => __game.doVerb('hablar', 'gervasio_acta'));
-  await page.waitForFunction(() => !!__game.game.choice || __game.game.speeches.length);
-  await G(() => __game.skipText(true)); await page.waitForFunction(() => !!__game.game.choice); await G(() => __game.skipText(false));
-  await clearLog();
-  await G(() => { window.__var = []; window.__lmSp = 0; const g = __game.game; window.__iv = setInterval(() => { const a = g.actors.lector_medio; if (a && a.variante) window.__var.push(a.variante); if (g.speeches.some(s => s.actor === 'lector_medio')) window.__lmSp++; }, 20); });
-  G(() => __game.chooseText('¿Quién decide lo del Plan Cero Papel?'));
-  await page.waitForFunction(() => __game.log.some(l => String(l.text).includes('Lo que diga el Lector Medio.')));
-  await settle();
-  await page.waitForFunction(() => window.__var.length > 0 || __game.log.some(l => String(l.text).includes('ya está decidido')), null, { timeout: 15000 });
-  await shot('asentir');
-  await settle();
-  const as = await G(() => { clearInterval(window.__iv); return { v: [...new Set(window.__var)], sp: window.__lmSp, fin: __game.game.actors.lector_medio.variante || null }; });
+  // M25: asentir sin globo (sin chaqueta y con ella), por el árbol real de Gervasio
+  async function asentirGervasio(tag) {
+    G(() => __game.doVerb('hablar', 'gervasio_acta'));
+    await G(() => __game.skipText(true)); await page.waitForFunction(() => !!__game.game.choice); await G(() => __game.skipText(false));
+    await clearLog();
+    await G(() => { window.__var = []; window.__lmSp = 0; const g = __game.game; window.__iv = setInterval(() => { const a = g.actors.lector_medio; if (a && a.variante) window.__var.push(a.variante); if (g.speeches.some(s => s.actor === 'lector_medio')) window.__lmSp++; }, 15); });
+    G(() => __game.chooseText('¿Quién decide lo del Plan Cero Papel?'));
+    await page.waitForFunction(() => window.__var.length > 0 || __game.log.some(l => String(l.text).includes('ya está decidido')), null, { timeout: 20000 });
+    await shot('asentir' + tag);
+    await settle();
+    const as = await G(() => { clearInterval(window.__iv); return { v: [...new Set(window.__var)], sp: window.__lmSp, fin: __game.game.actors.lector_medio.variante || null }; });
+    await G(() => __game.chooseText('Me voy.')); await idle();
+    return as;
+  }
+  let as = await asentirGervasio('');
   ok(await logHas('Lo que diga el Lector Medio.') && await logHas('...Pues ya está decidido.'), 'M25: Gervasio dice sus dos líneas');
   ok(as.v.includes('tamb2') && as.sp === 0 && !(await logHas('A mí lo que me interesa')), `M25 / §5.4: el Lector Medio asiente (fotograma ${as.v.join(', ')}) sin globo ni línea`);
   ok(as.fin === null, 'tras asentir vuelve a su sprite de siempre');
-  await G(() => __game.chooseText('Me voy.')); await idle();
-  // con la chaqueta: tamb2j
-  await G(() => __game.setFlag('chaqueta_en_lector', true));
-  const vj = await G(async () => { const g = __game.game, seen = []; const iv = setInterval(() => { const a = g.actors.lector_medio; if (a.variante) seen.push(a.variante); }, 15);
-    const src = g.content.rooms.pajarera; void src; await g.runScript(async api => { api.vestir('lector_medio', 'tamb2j'); await api.wait(1); api.vestir('lector_medio', null); }); clearInterval(iv); return seen; });
-  ok(vj.includes('tamb2j'), 'con la chaqueta existe y se pinta el fotograma tamb2j');
+  await partida('pajarera', { acto_2_iniciado: true, reunion_terminada: true, chaqueta_en_lector: true, silla_libre: true });
+  as = await asentirGervasio('-chaqueta');
+  ok(as.v.includes('tamb2j') && as.sp === 0, `con la chaqueta asiente con tamb2j (${as.v.join(', ')}), sin globo`);
   // Hablar con el Lector: su frase entera se queda (siembra)
   await clearLog(); await verb('hablar', 'lector_medio');
   ok(await logHas('A mí lo que me interesa es la economía. Y ahorrar.'), 'Hablar con el Lector Medio: su frase sigue (siembra)');

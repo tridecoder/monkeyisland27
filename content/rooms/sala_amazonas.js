@@ -254,8 +254,8 @@ export default buildRoom({
     sala_amazonas_estampida: 'bool · P4 · §4.4: Mercados ha huido por la puerta · P4 (presencia)',
     sala_amazonas_gervasio_agachado: 'bool · P4 · D4, floja «siguientes pasos»: Gervasio agachado · arte',
     sala_amazonas_fondo_abierto: 'bool · P4 · nunca se pone: walkbox `fondo` (api.setWalkbox) · arte',
-    sala_amazonas_orden_visto: 'bool · PA · E5 §2.1.2: Mirar orden_del_dia (sin reunion_terminada) · opción de Gervasio',
-    sala_amazonas_atasco: 'bool · PA · E5 §2.1.6: Mercados encajados en la puerta, control devuelto · vías, arte, onEnter',
+    sala_amazonas_orden_visto: 'bool · PA · E5 §2.1.2 · Mirar orden_del_dia · opción de Gervasio',
+    sala_amazonas_atasco: 'bool · PA · E5 §2.1.6 · Mercados encajados en la puerta · vías',
   },
 
   objects: [
@@ -609,71 +609,141 @@ export default buildRoom({
   },
 }, art);
 
-// §4.4 · «¿y cuáles son los siguientes pasos?»: la pregunta prohibida, el atasco en la puerta y la sala vacía
-async function reunionTerminada(api) {
-  await api.wait(1200);                                // silencio; las tres cabezas de Mercados se levantan a la vez
-  api.shake(200, 1);                                   // tiembla un botellín
-  await sayG(api, 'Los... siguientes...');
-  api.pose('mercados_1', 'de_pie');
-  await sayMe(api, 1, 'El siguiente paso sería...');
-  await sayMe(api, 2, '¡No lo digas!');
-  await sayG(api, 'Eso se podría ver en una reunión. De siguientes pasos.');
-  await sayMe(api, 3, '¿Y quién la convoca?');
-  for (const id of MERC) api.faceActor(id, GERV);
-  await api.wait(700);
-  api.faceActor(GERV, 'bruno');
-  await sayG(api, 'Pues el que ha preguntado, que tiene la agenda...');
-  // ¡estampida! sillas atrás, el dominó de botellines; salen por detrás de la mesa y se encajan en la puerta
-  for (const id of MERC) api.pose(id, 'de_pie');
-  api.sfx(SFX.sillas); api.shake(500, 2);
-  api.setState('botellines', 'volando'); api.sfx(SFX.botellines);
-  api.setWalkbox('fondo', true);
+// ---------------------------------------------------------------- [PA] E5 §2.1 · «Pregunta del público» y el atasco
+// Estado de módulo (no se guarda: con el atasco abierto no se puede guardar, y `onEnter` lo pone a cero).
+const S = { quieto: 0, tamb: null };                       // §2.6: segundos de tiempo quieto tras D4; último fotograma
+const A = { ctl: null, resolviendo: false, quieto: 0 };    // §2.1.6: el atasco (ctl de api.estampida), reloj de 10 s
+const ATASCO_ANUNCIO_S = 10;
+const atascoAbierto = (api) => !!api.flag('sala_amazonas_atasco') && !A.resolviendo;
+
+/** §5.4 · el Lector Medio asiente (gesto, sin globo). */
+async function asentir(api, id = LECTOR) {
+  const j = api.flag('chaqueta_en_lector') ? 'j' : '';
+  api.vestir(id, 'tamb2' + j); api.sfx('paper'); await api.wait(350); api.vestir(id, null);
+}
+
+/** §3.1 · Usar la tele con `gertrudis_pregunta`: Gertrudis pregunta en directo, estampida y atasco en la puerta. Al acabar
+ *  la cinemática el control vuelve al jugador con `sala_amazonas_atasco` puesto (en modo rápido, vía `anuncio` aquí). */
+async function teleGertrudis(api) {
+  await api.cutscene(async () => {
+    api.setState('tele_amazonas', 'buscando'); api.sfx('click');
+    await api.wait(600);
+    api.setState('tele_amazonas', 'gertrudis'); api.sfx('beep');
+    for (const id of [...MERC, GERV]) if (aqui(api, id)) api.faceActor(id, 'tele_amazonas');
+    if (aqui(api, 'mercados_2')) await sayMe(api, 2, '¡Se ve! ¡Por fin se ve la pantalla!');
+    await api.sayFrom('tele_amazonas', 'PREGUNTA DEL PÚBLICO: ¿Y CUÁLES SON LOS SIGUIENTES PASOS?', GERTRUDIS_TV);
+    await api.wait(1200);                              // silencio; tiembla un botellín
+    api.shake(200, 1);
+    await sayG(api, 'Pregunta de un conectado. Consta. Los... siguientes...');
+    api.pose('mercados_1', 'de_pie');
+    await sayMe(api, 1, 'El siguiente paso sería...');
+    await sayMe(api, 2, '¡No lo digas!');
+    await sayG(api, 'Eso se podría ver en una reunión. De siguientes pasos.');
+    await sayMe(api, 3, '¿Y quién la convoca?');
+    for (const id of [...MERC, GERV]) if (aqui(api, id)) api.faceActor(id, 'tele_amazonas');   // todos miran a la tele
+    await api.wait(700);
+    await api.sayFrom('tele_amazonas', CONVOCADA, GERTRUDIS_TV);
+    // ¡estampida! sillas atrás, el dominó de botellines; salen por detrás de la mesa y se encajan en la puerta
+    for (const id of MERC) api.pose(id, 'de_pie');
+    api.sfx(SFX.sillas); api.shake(500, 2);
+    api.setState('botellines', 'volando'); api.sfx(SFX.botellines);
+    api.setWalkbox('fondo', true);
+    let ctl = null;
+    try {
+      ctl = await api.estampida(MERC, { puerta: PUERTA, esperar: true, enAtasco: async (api, c) => {
+        for (let i = 0; i < MERC.length; i++) { c.alFrente(MERC[i]); await sayMe(api, i + 1, MERCADOS_ATASCO[i]); }
+      } });
+    } finally { api.setWalkbox('fondo', false); }
+    api.setState('botellines', 'tumbados');
+    A.ctl = ctl; A.quieto = 0; A.resolviendo = false;
+    api.setFlag('sala_amazonas_atasco', true);
+    api.sinGuardar(true);                              // §2.1.6: nada de guardar con el atasco abierto
+  });
+  if (api.game.fast) await resolverAtasco(api, 'anuncio');     // modo rápido (recorridos): sin soltar el control
+}
+
+/** §2.1.6 · fin del atasco por una vía ('empujar' | 'cruasan' | 'hablar' | 'anuncio'): una sola línea de vía, el plop, la
+ *  sala vacía, «Se levanta la sesión», `reunion_terminada` y Maripaz. `desdeUpdate`: lo lanza el reloj de 10 s. */
+async function resolverAtasco(api, via, desdeUpdate = false) {
+  if (!api.flag('sala_amazonas_atasco')) { A.resolviendo = false; return; }
+  if (A.resolviendo && !desdeUpdate) return;
+  A.resolviendo = true;
+  const ctl = A.ctl;
+  if (via === 'anuncio' && !aqui(api, MARIPAZ)) via = 'empujar';            // (sin Maripaz no hay anuncio)
+  api.game.salaAtasco = { via, regreso: false };                             // solo para las pruebas
   try {
-    await api.estampida(MERC, { puerta: PUERTA, atascoMs: 900, enAtasco: async (api, atasco) => {
-      atasco.alFrente('mercados_1'); await sayMe(api, 1, '¡Usted primero!');
-      atasco.alFrente('mercados_2'); await sayMe(api, 2, '¡No, usted, que es de Bolsa!');
-      atasco.alFrente('mercados_3'); await sayMe(api, 3, '¡Yo soy de Bolsa y de Mercados! ¡Tengo doble prioridad!');
-      // E2 §4.3: Maripaz, de pie, con la tableta en alto: el anuncio antes de salir (nadie la mira)
-      if (aqui(api, MARIPAZ)) {
+    await api.cutscene(async () => {
+      if (via === 'empujar') {
+        const b = api.actorPos(api.player);
+        if (!b || b.x > 70) await api.walkTo(56, 116);
+        api.face('left');
+        await api.anim(api.player, 'reach', 400);
+        api.sfx('hit');
+        await api.say('Les doy un empujoncito. Salen los tres de golpe.');
+      } else if (via === 'cruasan') {
+        await api.anim(api.player, 'reach', 350);                            // Bruno coge el medio cruasán…
+        if (ctl) ctl.alFrente('mercados_3');
+        await sayMe(api, 3, '¡Ese medio cruasán es mío! ¡Lo he cobrado dos veces!');
+        await api.anim(api.player, 'reach', 300);                            // …y lo devuelve a la bandeja
+        await api.walkTo(236, 126);                                          // se aparta: Jacinto viene a por él
+        api.face('left');
+      } else if (via === 'hablar') {
+        await api.say('¿Y la próxima reunión, cuándo es?');
+        api.shake(250, 2);                                                   // desbandada
+      } else {
+        // la de hoy: Maripaz, de pie, con la tableta en alto (nadie la mira)
         api.pose(MARIPAZ, 'de_pie'); api.faceActor(MARIPAZ, 'left'); api.sostener(MARIPAZ, tabletaEnAlto);
-        await sayM(api, '¡Un momento! ¡Antes de salir, un anuncio de cinco segundos!');
+        try { await sayM(api, '¡Un momento! ¡Antes de salir, un anuncio de cinco segundos!'); }
+        finally { api.sostener(MARIPAZ, null); api.pose(MARIPAZ, null); api.faceActor(MARIPAZ, 'down'); }
       }
-    } });
+      // plop, plop, plop
+      if (ctl && ctl.activo) await ctl.soltar();
+      for (const id of MERC) if (aqui(api, id)) api.placeActor(id, null);
+      api.setFlag('sala_amazonas_atasco', false);
+      api.setFlag('sala_amazonas_estampida', true);
+      api.setState('botellines', 'tumbados');
+      api.setState('tele_amazonas', 'normal');
+      // Jacinto vuelve a por el medio cruasán: mudo y por la puerta (las otras vías) o ya sin pasar por ella (cruasán:
+      // es el último en salir, con su cruasán)
+      if (via !== 'cruasan') { await api.wait(400); api.sfx('door'); api.game.salaAtasco.regreso = true; }
+      const v = api.game && api.game.actors && api.game.actors.mercados_3;
+      const v0 = v && v.speed;
+      try {
+        if (v) v.speed = v0 * 2.4;
+        api.placeActor('mercados_3', 'sala_amazonas', PUERTA[0], PUERTA[1], 'right');
+        api.pose('mercados_3', 'de_pie');
+        await api.walkActor('mercados_3', 204, 120);
+        api.faceActor('mercados_3', 'up');
+        await api.anim('mercados_3', 'reach', 300);
+        await api.walkActor('mercados_3', PUERTA[0], PUERTA[1]);
+      } finally {
+        if (v) v.speed = v0;
+        api.placeActor('mercados_3', null);
+      }
+      api.sfx('door');
+      // Gervasio levanta la sesión ante una sala vacía (salvo Maripaz) y sale el último
+      if (aqui(api, GERV)) {
+        api.sostener(GERV, 'movil');
+        api.pose(GERV, 'de_pie');
+        await sayG(api, 'Se levanta la sesión. Lo hablamos.');
+        await api.walkActor(GERV, PUERTA[0], PUERTA[1]);
+        api.sostener(GERV, null);
+        api.sfx('door'); api.shake(250, 1);                                  // portazo
+      }
+      api.setFlag('reunion_terminada', true);                                // Gervasio sale de la sala (su `when`)
+      api.pose(GERV, null);
+      await api.wait(500);
+      if (!aqui(api, MARIPAZ)) return;
+      api.face(MARIPAZ);
+      await api.say('¿Usted no huye?');
+      await sayM(api, ['¿Huir? Esta sala la tengo pagada hasta las nueve, cariño. La amortizo.',
+        'Y estoy sentada en el planillo. La página 7 no se mueve sin mí.']);
+    });
   } finally {
-    api.setWalkbox('fondo', false);
-    if (aqui(api, MARIPAZ)) { api.sostener(MARIPAZ, null); api.pose(MARIPAZ, null); api.faceActor(MARIPAZ, 'down'); }
+    if (!api.flag('reunion_terminada')) {                                    // (una cinemática cortada a medias)
+      api.setFlag('sala_amazonas_atasco', false); api.setFlag('sala_amazonas_estampida', true); api.setFlag('reunion_terminada', true);
+    }
+    api.sinGuardar(false);
+    A.ctl = null; A.resolviendo = false; A.quieto = 0;
   }
-  api.setState('botellines', 'tumbados');
-  api.setFlag('sala_amazonas_estampida', true);
-  // ¡plop! Uno vuelve, coge medio cruasán y sale
-  const v = api.game && api.game.actors && api.game.actors.mercados_3;
-  const v0 = v && v.speed;
-  try {
-    if (v) v.speed = v0 * 2.4;
-    api.placeActor('mercados_3', 'sala_amazonas', PUERTA[0], PUERTA[1], 'right');
-    api.pose('mercados_3', 'de_pie');
-    await api.walkActor('mercados_3', 204, 120);
-    api.faceActor('mercados_3', 'up');
-    await api.anim('mercados_3', 'reach', 300);
-    await api.walkActor('mercados_3', PUERTA[0], PUERTA[1]);
-  } finally {
-    if (v) v.speed = v0;
-    api.placeActor('mercados_3', null);
-  }
-  api.sfx('door');
-  // Gervasio levanta la sesión ante una sala vacía (salvo Maripaz) y sale el último
-  api.sostener(GERV, 'movil');
-  api.pose(GERV, 'de_pie');
-  await sayG(api, 'Se levanta la sesión. Lo hablamos.');
-  await api.walkActor(GERV, PUERTA[0], PUERTA[1]);
-  api.sostener(GERV, null);
-  api.sfx('door'); api.shake(250, 1);                  // portazo
-  api.setFlag('reunion_terminada', true);              // Gervasio sale de la sala (su `when`)
-  api.pose(GERV, null);
-  await api.wait(500);
-  if (!aqui(api, MARIPAZ)) return;
-  api.face(MARIPAZ);
-  await api.say('¿Usted no huye?');
-  await sayM(api, ['¿Huir? Esta sala la tengo pagada hasta las nueve, cariño. La amortizo.',
-    'Y estoy sentada en el planillo. La página 7 no se mueve sin mí.']);
 }

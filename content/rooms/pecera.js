@@ -16,7 +16,7 @@
 //  - kanban: columna SALIDA EN VALOR con `posit_descopeado`. silla_ramirez / ordenador_bruno: `silla_libre`.
 import { buildRoom } from '../lib/room.js';
 import art from './art/pecera.art.js';
-import dialogos, { anselmoCtx } from './pecera.dialogos.js';
+import dialogos, { anselmoCtx, anselmoEnSuSitio, columnas } from './pecera.dialogos.js';
 import escenas from './pecera.escenas.js';
 import { talk, seq, PREFIX } from './pecera.voces.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
@@ -24,7 +24,7 @@ import { usarDirectorio, DIRECTORIO_COLOR } from '../lib/directorio.js';   // cr
 import { dialogoCustodia, objetosSecretaria, flagsSecretaria } from './pecera.secretaria.js';
 import { darTaper } from './cpd.js';                      // [integrador] el táper también vale con Rubén en la Redacción
 import { titulador } from './pecera.titulador.js';          // ENMIENDA E4 §3bis: el titulador de Yoli
-import { mirarHoja } from './pecera.escenas.js';            // ENMIENDA E4 S3: la hoja «lo más leído»
+import { mirarHoja, limpiarOscuras } from './pecera.escenas.js';   // E4 S3: la hoja «lo más leído» · E5 §2.2: carga a oscuras
 
 const Y = 'yoli_tendencias', L = 'leoncio_quesitos', A = 'anselmo_monolito', R = 'ruben', V = 'valentin_reticula';
 const ley = (...lines) => async (api) => { await api.sayAs(L, lines); };
@@ -34,13 +34,18 @@ const ans = (...lines) => async (api) => { await api.sayAs(A, lines); };
 
 // ------------------------------------------------------------------ §5.14: el coro, las cuatro discusiones (una sobre Diseño)
 const VOCES_CORO = Object.fromEntries(Object.entries(PREFIX).map(([k, p]) => [k, { from: 'coro_desarrollo', prefijo: p }]));
+// E5 §5.1 (K01-K04) · el coro con arco «a quién culpan»: Acto I a los de fuera (DISCUSIONES, ahora dos; fuera la lluvia
+// e Internet), Acto II unos a otros (CORO_ACTO_2, con el CMS vivo), Acto III a sí mismos (CORO_ACTO_3, con Rubén libre).
+// Van ANTES en `ambient` para que, cuando toquen, sean las siguientes; las tres, solo con Bruno cerca (`cercaDelCoro`).
 const DISCUSIONES = [
   (api) => (api.flag('cms_vivo') ? [] : [['D1', '¡Se ha caído el CMS!'], ['D2', '¡Hay que levantarlo!'], ['D1', '¿Cómo?'],
     ['D2', '...Gritando más alto.'], ['D3', 'No.']]),
-  [['D1', 'Ha llovido y ha bajado el tráfico.'], ['D2', '¡Abrid una incidencia a la lluvia!'], ['D1', 'La lluvia no es nuestra.'], ['D3', 'No.']],
   [['D1', '¿Quién ha puesto este margen de ocho píxeles?'], ['D2', 'Diseño.'], ['D1', '...Queda bien.'], ['D2', 'No se lo digas.']],
-  [['D1', 'Internet está mal hecho.'], ['D2', 'Desde el principio.'], ['D3', '...Sí.']],
 ];
+const CORO_ACTO_2 = [[['D1', 'El CMS se colgaba por una pantalla. ¿Quién la enchufó?'], ['D2', 'Tú.'],
+  ['D1', 'Yo no. Él.'], ['D3', 'No.']]];
+const CORO_ACTO_3 = [[['D2', '¿Lo del Titulator ha sido Diseño?'], ['D3', 'No.'], ['wait', 1500],
+  ['D3', 'Hemos sido nosotros.'], ['D1', 'No lo repitas.']]];
 // paso 13 (E2 §7.4): sentado, el correo se ve; la réplica R11 (contra Maripaz). Con Mirar o con Usar el ordenador
 // (crítica 3 · N1); una sola vez: con `rep_11` ya sabida, cada verbo dice lo suyo.
 async function leerCorreoRamirez(api) {
@@ -76,6 +81,14 @@ async function murmullo(api) {
   murmuradoEstaVisita = true;
   const [who, text] = MURMULLOS[(api.inc('pecera_murmullo_n') - 1) % MURMULLOS.length];
   await api.sayAs(who, text);
+}
+
+// ------------------------------------------------------------------ E5 §2.5.4: rotulador con el tablero (o el pósit)
+async function rotuladorEnTablero(api) {
+  if (api.flag('posit_descopeado')) { await api.sayAs(A, 'Una columna nueva por noche. La siguiente, en la próxima versión.'); return; }
+  if (!api.flag('album_validado')) { await api.sayAs(A, 'Ni se te ocurra. De mi tablero se sale hecho o muerto.'); return; }
+  await api.walkTo('kanban');
+  await columnas(api);
 }
 
 // ------------------------------------------------------------------ monitores de la guardia web (Mirar figurantes_web)
@@ -119,7 +132,8 @@ export default buildRoom({
     pecera_valentin_n: 'int · P2 · +1 por Hablar con Valentín (1.ª: el casco)',
     pecera_bandeja_abierta: 'bool · integrador · Abrir bandeja_diseno · arte (la bandeja de arriba, sacada)',
     pecera_murmullo_n: 'int · P2 · rotación de los murmullos de Leoncio y Anselmo',
-    pecera_album_n: 'int · P2 · Anselmo AN_ALBUM (E2 §2.6.3): «hecho» y «funeral» probados',
+    pecera_columna_mal_n: 'int · PB · +1 por columna equivocada (E5 §2.5.4)',
+    pecera_oscuras: 'bool · PB · ventana a oscuras del 1.er apagón (E5 §2.2)',
     // ENMIENDA E4 §3bis.7 · el titulador y la hoja «lo más leído» (pecera.titulador.js, pecera.escenas.js)
     pecera_top_n: 'int · P2 · +1 por Mirar lista_mas_leidas (2.ª: Yoli reimprime)',
     pecera_disc_record: 'int · P2 · titulador: récord de usuarios de la partida',
@@ -151,9 +165,9 @@ export default buildRoom({
       abrir: async (api) => api.goto('office', 'pecera'), usar: async (api) => api.goto('office', 'pecera'),
       hablar: '¡Buenas noches, Gertrudis! No contesta. Habrá que decírselo a la cara.',
     } },
-    { id: 'pecera_a_catacumba', name: 'Redacción de papel', exit: { room: 'catacumba', tipo: 'puerta_doble' }, handlers: {
+    { id: 'pecera_a_catacumba', name: 'Redacción de papel', parada: true, exit: { room: 'catacumba', tipo: 'puerta_doble' }, handlers: {
       mirar: async (api) => { await api.say(['La Redacción de papel. Misma planta, otro siglo.', 'El umbral de latón es la frontera. Nadie lo pisa sin motivo.']); },
-      abrir: 'Está abierta de par en par. Nadie se atreve a cerrarla. Ni a cruzarla.',
+      abrir: 'Está abierta de par en par. Nadie se atreve a cerrarla.',
       cerrar: 'Si cierro esa puerta, Teodoro lo publica en la página 7.',
       usar: async (api) => api.goto('catacumba', 'pecera'),
       hablar: '"¿Hola?" Me contesta un fax. Dentro de un rato.',
@@ -162,7 +176,7 @@ export default buildRoom({
     ...objetosSecretaria,
     // crítica 3 §9.8: el directorio con atajos (content/lib/directorio.js): Ir a / Usar / Mirar abren la lista de las salas
     // ya pisadas; la 1.ª vez, Mirar dice antes lo de siempre
-    { id: 'directorio_planta', name: 'directorio con atajos', defaultVerb: 'usar', color: DIRECTORIO_COLOR, handlers: {
+    { id: 'directorio_planta', name: 'directorio con atajos', parada: true, defaultVerb: 'usar', color: DIRECTORIO_COLOR, handlers: {
       ir: usarDirectorio, usar: usarDirectorio,
       mirar: async (api) => {
         if (api.once('pecera_directorio_mirado')) await seq([['B', 'Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.'], ['B', 'Un punto rojo: «ESTÁ AQUÍ». Gracias. Me hacía falta.']])(api);
@@ -214,14 +228,14 @@ export default buildRoom({
       mirar: async (api) => api.say(api.flag('cms_vivo')
         ? 'Apagada. Y la web publica. Nadie se atreve a decirlo en voz alta.'
         : 'Lectores concurrentes: 3.418. Se refresca cada segundo. Igual que Yoli.'),
-      usar: 'No sé usarla. Ni ella a mí.',
+      usar: 'No sé usarla. Ella a mí tampoco.',
       hablar: async (api) => api.say(api.flag('cms_vivo')
         ? 'Le hablo. Está apagada. No me da ni una cifra.'
         : '"¿Me lees?" Baja a 3.417. Creo que se ha ido el que me leía.'),
       tirar: 'Está atornillada a la pared. Y Yoli, a la pantalla.',
       empujar: 'Ni la toco. Se refresca cada segundo: me vería venir.',
     } },
-    { id: 'monitor_yoli', name: 'monitor de Yoli', handlers: {
+    { id: 'monitor_yoli', name: 'monitor de Yoli', parada: true, handlers: {
       mirar: async (api) => {
         if (api.flag('cms_vivo')) await api.say('El monitor de Yoli: «PUBLICADO». Y otra. Y otra. Ella no se fía.');
         else await api.say('El monitor de Yoli. El CMS dice «GUARDANDO BORRADOR» desde las cuatro.');
@@ -237,7 +251,7 @@ export default buildRoom({
     { id: 'enchufe_pantalla', name: 'enchufe', handlers: {
       mirar: async (api) => {
         await api.say(['Cinta: «NO DESENCHUFAR». Y una brida que baja por la pared.', 'Etiqueta de la brida: «R-3, SISTEMAS. PACO».']);
-        if (api.getState('enchufe_pantalla') === 'con_ticket') await api.say('Debajo, a rotulador, la excepción de Anselmo. Con número.');
+        if (api.getState('enchufe_pantalla') === 'con_ticket') await api.say('Debajo, a rotulador, la excepción de Anselmo: «SALVO TICKET Nº 3».');
       },
       tirar: async (api) => {
         if (api.flag('cms_vivo')) { await api.say('Ya está fuera. Y el CMS, dentro. Que siga así.'); return; }
@@ -247,7 +261,7 @@ export default buildRoom({
       empujar: async (api) => api.say(api.flag('cms_vivo')
         ? 'Ni hablar. Nueve años esperando a que alguien la desenchufara.'
         : 'Ya está enchufado. Lo dicen la cinta, el cable y Anselmo con la mirada.'),
-      usar: 'Enchufar algo más aquí sería pedirle demasiado a esa pantalla. Y a la regleta.',
+      usar: 'Enchufar algo más aquí sería pedirle demasiado a esa pantalla.',
       coger: 'La cinta dice NO DESENCHUFAR. No dice NO COGER. Pero se sobreentiende.',
     } },
     { id: 'taza_abandonada', name: 'taza abandonada', handlers: {
@@ -264,7 +278,7 @@ export default buildRoom({
       usar: 'Dibujo un quesito. El portátil de al lado lo corrige en una décima.',
       empujar: 'Está inclinada. Si la enderezo, Leoncio tendría que volver a dibujar.',
     } },
-    { id: 'herminia_portatil', name: 'Herminia, la IA de Infografía', color: '#FF8C3C', handlers: {
+    { id: 'herminia_portatil', name: 'Herminia, la IA de Infografía', parada: true, color: '#FF8C3C', handlers: {
       mirar: async (api) => {
         const st = estadoPortatil(api);
         if (st === 'anexionada' || st === 'desenvuelta') await api.say('Sin cinta. Pegatina nueva: «DESARROLLO». Los gráficos, idénticos.');
@@ -301,7 +315,7 @@ export default buildRoom({
     } },
 
     // ---------------------------------------------------------------- ECONOMÍA: mesas de Bruno y Ramírez
-    { id: 'ordenador_bruno', name: 'mi ordenador', handlers: {
+    { id: 'ordenador_bruno', name: 'mi ordenador', parada: true, handlers: {
       mirar: async (api) => {
         if (!api.flag('silla_libre')) { await api.say('Mi ordenador. De pie llego al teclado. A la pantalla, no.'); return; }
         if (!api.flag('rep_11')) {                                          // paso 13 (E2 §7.4)
@@ -314,7 +328,7 @@ export default buildRoom({
         if (!api.flag('silla_libre')) { await api.say('Sin silla no hay ordenador. Lo dice la ergonomía y lo dice Begoña.'); return; }
         if (!api.flag('rep_11')) { await leerCorreoRamirez(api); return; }   // crítica 3 · N1: Usar también lee el correo
         if (api.flag('pieza_escrita')) { await api.say('Ya está escrita. Si la toco más, le salen adjetivos.'); return; }
-        if (!api.flag('casilla_fuente')) { await api.say('Abro un documento en blanco. Me mira. Sin fuentes no escribo.'); return; }
+        if (!api.flag('casilla_fuente')) { await api.say('Abro un documento en blanco. Me mira. Lo cierro: sin fuentes no hay pieza.'); return; }
         // paso 32
         await api.anim(api.player, 'reach', 400);
         api.sfx('typewriter');
@@ -326,7 +340,7 @@ export default buildRoom({
         await api.scene('pecera_opa_ab');                                                     // E4 S4 (una vez)
       },
       'usar:cafe': async (api) => api.say(['Tentador. Pero el teclado de al lado ya lo probó en 2017.', 'Sigue escribiendo en negrita.']),
-      'usar:pieza_opa': 'Ya está escrita. Ahora le faltan hueco, fuente y firma. Y papel.',
+      'usar:pieza_opa': 'Ya está escrita. Ahora le faltan hueco, fuente y firma.',
       hablar: 'Le susurro "papel". Se le acelera el ventilador. Le ha dado miedo.',
       coger: 'Es del Contable. Lo pone una pegatina. Con mi nombre mal escrito.',
       cerrar: 'Lo cierro. Cuatro mil ciento doce piezas me miran desde el escritorio.',
@@ -338,14 +352,14 @@ export default buildRoom({
       },
       usar: async (api) => {
         if (!api.flag('chaqueta_cogida')) await api.say('No. Chaqueta en silla es propiedad privada. Lo sabe todo el mundo.');
-        else if (api.flag('bruno_con_chaqueta')) await api.say('Si me siento con su chaqueta, la silla sigue siendo suya. Y yo, encima.');
+        else if (api.flag('bruno_con_chaqueta')) await api.say('Si me siento con su chaqueta, la silla sigue siendo suya.');
         else if (!api.flag('silla_libre')) await api.say('Si me siento con su chaqueta en la mano, Ramírez vuelve. Es tradición.');
         else if (api.once('pecera_silla_arrimada')) { api.sfx('step'); await api.say('La arrimo a mi mesa. Primera silla en seis años. Huele a 2019.'); }
         else await api.say('Me siento. Me levanto. Me vuelvo a sentar. Es que puedo.');
       },
-      coger: 'Las sillas no se cogen. Se heredan. Y Ramírez sigue desayunando.',
+      coger: 'Las sillas no se cogen. Se heredan.',
       empujar: 'Tiene ruedas. Se mueve dos centímetros y vuelve. Echa de menos a Ramírez.',
-      'usar:chaqueta_ramirez': 'Si la vuelvo a colgar, la silla vuelve a ser de Ramírez. Y yo, de pie.',
+      'usar:chaqueta_ramirez': 'Si la vuelvo a colgar, la silla vuelve a ser de Ramírez.',
     } },
     { id: 'chaqueta_ramirez_hotspot', name: 'chaqueta beige', when: '!chaqueta_cogida', handlers: {
       mirar: 'Chaqueta beige de entretiempo. Del bolsillo asoma un sobre de azúcar.',
@@ -376,7 +390,7 @@ export default buildRoom({
       },
       coger: 'Si me llevo un trozo, Anselmo me reclama soberanía.',
       'usar:chicle': 'No. Un chicle en una frontera es un tratado.',
-      'usar:chaqueta_ramirez': 'Si la dejo en la frontera, Anselmo la envuelve. Y Ramírez no vuelve.',
+      'usar:chaqueta_ramirez': 'Si la dejo en la frontera, Anselmo la envuelve.',
       empujar: 'La piso. Anselmo me mira el zapato como a un paquete sin declarar.',
     } },
     { id: 'cartel_frontera', name: 'cartel de la frontera', handlers: {
@@ -388,7 +402,7 @@ export default buildRoom({
       mirar: async (api) => {
         const n = api.inc('pecera_pantalla_anselmo_n');
         if (api.flag('infografia_integrada')) await api.say('"ACCESO CONCEDIDO: HERMINIA (DESARROLLO)". Lo de Infografía, tachado.');
-        else if (api.flag('ruben_libre')) await api.say('"ACCESO REVOCADO: TITULATOR 3000". Con fecha de hoy. Y de julio.');
+        else if (api.flag('ruben_libre')) await api.say('"ACCESO REVOCADO: TITULATOR 3000". La fecha está corregida a mano.');
         else if (api.flag('acto_2_iniciado') && n >= 2) {
           await api.say(n % 2 === 0 ? 'Un gráfico de Desarrollo en la sección de Infografía: un quesito que suma 130 %.' : '"Lectores por continente". Gana la Antártida, con un 40 %.');
         } else await api.say(['"ACCESO DENEGADO: HERMINIA (INFOGRAFÍA)".', 'Debajo: "ACCESO CONCEDIDO: TITULATOR 3000 (USUARIO INTERNO)".']);
@@ -396,7 +410,7 @@ export default buildRoom({
       usar: ans('Esa sesión es mía. Hasta el salvapantallas pasó revisión.'),
       hablar: 'Le pregunto por Herminia. Me pide credenciales. Las de Anselmo.',
     } },
-    { id: 'coro_desarrollo', name: 'coro de Desarrollo', color: '#7FFFD4', defaultVerb: 'hablar', handlers: {
+    { id: 'coro_desarrollo', name: 'coro de Desarrollo', nameDark: 'tres sombras enfadadas', color: '#7FFFD4', defaultVerb: 'hablar', handlers: {
       mirar: seq([['B', 'Tres espaldas de Desarrollo. Se les ven las manos.'], ['B', 'Las manos están enfadadas.']]),
       hablar: async (api) => api.dialog('coro'),
       'dar:cafe': seq([['CORO', '¿De quién es?'], ['B', 'De Gertrudis.'], ['D1', 'Café de fuera.'], ['D3', 'No.']]),
@@ -419,7 +433,7 @@ export default buildRoom({
       },
       coger: 'Si me lo llevo, Desarrollo deja de hacer ruido oficialmente. No sería verdad.',
     } },
-    { id: 'taza_no', name: 'taza «NO»', handlers: {
+    { id: 'taza_no', name: 'taza «NO»', nameDark: 'algo que dice que no', handlers: {
       mirar: 'Una taza que pone "NO". Es de la tercera espalda. La define.',
       coger: seq([['D3', 'No.']]),
       usar: seq([['D3', 'No.']]),
@@ -436,22 +450,36 @@ export default buildRoom({
       cerrar: 'Ya está cerrada. Es una bandeja: lo suyo es que alguien la abra.',
       'usar:pieza_opa': 'No. Si la dejo aquí, la leen en 2033. Con sello de LEÍDO (PERO NO).',
     } },
-    { id: 'kanban', name: 'tablero kanban', handlers: {
+    // E5 §2.5.4: la columna nueva la escribe Bruno con el rotulador de Comercial, con el álbum ya validado
+    { id: 'kanban', name: 'tablero kanban', nameDark: 'algo con pósits', parada: true, handlers: {   // estados de escena: mal_0..2 (columna equivocada)
       mirar: async (api) => {
         const lines = ['Columnas: POR HACER, EN CURSO, BLOQUEADO, HECHO y HECHO (PERO NO).'];
-        if (api.flag('posit_descopeado')) lines.push('Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Rubén.');
-        else if (api.flag('acto_3_iniciado')) lines.push('En POR HACER, amarillo de puro viejo: "Baja becario Rubén".');
+        if (api.flag('posit_descopeado')) {
+          lines.push(api.flag('columna_kanban') === 'descopeado' ? 'Y una nueva, a rotulador: DESCOPEADO. Dentro, el pósit de Rubén.'
+            : 'Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Rubén.');
+        } else if (api.flag('acto_3_iniciado')) lines.push('En POR HACER, amarillo de puro viejo: "Baja becario Rubén".');
         await api.say(lines);
       },
       coger: async (api) => api.sayAs(A, 'Ni se te ocurra. De mi tablero se sale hecho o muerto.'),
       empujar: 'Tiene ruedas. Lo empujo un palmo y Anselmo lo devuelve con la mirada.',
       tirar: 'Si tiro, se caen los pósits. Y Anselmo me pone en BLOQUEADO.',
-      usar: 'Me escribo un pósit: "Firmar en papel". Lo pego en POR HACER. Desde hoy.',
+      usar: async (api) => {
+        if (api.flag('album_validado') && !api.flag('posit_descopeado')) {
+          if (api.has('rotulador_rojo')) { await columnas(api); return; }
+          await api.say('Una columna nueva pide rotulador. El de Anselmo no sale de Desarrollo.');
+          return;
+        }
+        await api.say('Me escribo un pósit: "Firmar en papel". Lo pego en POR HACER. Desde hoy.');
+      },
+      'usar:rotulador_rojo': rotuladorEnTablero,
+      'usar:boli_muerto': 'Un boli no pinta en pizarra. Este, ni en papel.',
     } },
     { id: 'posit_1998', name: 'pósit amarillísimo', handlers: {
       mirar: seq([['B', 'Un pósit amarillísimo: "Contratar al becario de marzo – 1998".'], ['B', 'Está en HECHO (PERO NO). Nadie lo hizo.']]),
       coger: async (api) => api.sayAs(A, 'Ni se te ocurra. De mi tablero se sale hecho o muerto.'),
       usar: 'No lo muevo. En HECHO (PERO NO) se está calentito.',
+      'usar:rotulador_rojo': rotuladorEnTablero,
+      'usar:boli_muerto': 'Un boli no pinta en pizarra. Este, ni en papel.',
     } },
     { id: 'calendario_ferreteria', name: 'calendario de ferretería', handlers: {
       mirar: seq([['B', 'Calendario de Ferretería Hermanos Tornillo. Anselmo solo se fía de este.'], ['B', 'Trae santoral, fases de la luna y una oferta de tacos del 8.']]),
@@ -465,7 +493,7 @@ export default buildRoom({
       usar: 'No me siento. Es de Desarrollo. Hasta el polvo pasa por sus sistemas.',
       coger: 'Si me llevo un pósit, Anselmo me abre expediente. Mental.',
     } },
-    { id: 'ventana', name: 'ventana', handlers: {
+    { id: 'ventana', name: 'ventana', parada: true, handlers: {
       mirar: 'Ahí fuera hay un mundo real. Sin contador de lectores. Qué descanso.',
       abrir: 'No se abre. El aire acondicionado lo consideraría una amenaza.',
       cerrar: 'Las ventanas de oficina se abren una vez: para la foto de inauguración.',
@@ -475,7 +503,7 @@ export default buildRoom({
 
   // ---------------------------------------------------------------- PNJ
   actors: [
-    { id: Y, handlers: {
+    { id: Y, nameDark: 'alguien que cuenta', handlers: {
       mirar: 'Yoli, audiencias. Le tiembla el párpado al ritmo de la gráfica.',
       hablar: async (api) => {
         if (!api.flag('cms_vivo')) {                                        // E2 §9 B4
@@ -513,7 +541,7 @@ export default buildRoom({
       murmurs: ['AMANECER DETECTADO. LO QUE PASÓ DESPUÉS... Perdón. Aún no ha salido.', '¿El sol también va con ticket?'] },
     // §5.14: Valentín Retícula, cameo MUDO junto a la bandeja (fuera de 7.2, epílogo y créditos)
     { id: V, when: '!lector_derribado', handlers: {
-      mirar: async (api) => api.say('Valentín Retícula, de Diseño y Producto. Cascos puestos. Sin música.'),
+      mirar: async (api) => api.say('Valentín Retícula, de Diseño y Producto. El cable de los cascos no va a nada.'),
       hablar: async (api) => {
         if (api.inc('pecera_valentin_n') === 1) {
           await api.say('¿No le molesta que le culpen de todo?');
@@ -524,7 +552,7 @@ export default buildRoom({
         } else await api.sayAs(V, 'Está en la bandeja.');
       },
       'dar:*': 'Se lo dejo en la mesa. Lo alinea con el borde sin mirarlo.',
-      empujar: 'No. Está trabajando. Si le empujo, se le mueve un píxel. Y lo nota.',
+      empujar: 'No. Está trabajando. Si le empujo, se le mueve un píxel.',
       tirar: 'No le tiro de la americana. Es de buen corte. Hasta yo lo noto.',
     },
       murmurs: null },
@@ -547,7 +575,7 @@ export default buildRoom({
       murmurs: null },
     // E2 §2.5-2.6 · Anselmo Monolito, director de Desarrollo y dueño del tablero (hereda a Nemesio), con árbol
     { id: A, when: '!lector_derribado', handlers: {
-      mirar: 'Anselmo, director de Desarrollo. Cinta en el cinto. Y su tablero detrás.',
+      mirar: 'Anselmo, director de Desarrollo. Cinta en el cinto.',
       hablar: async (api) => api.dialog('anselmo'),
       'dar:album_eventos': async (api) => { anselmoCtx.sinSaludo = true; await api.dialog('anselmo', 'AN_ALBUM_INTRO'); },
       'dar:correo_evaristo': ans('¿Un correo impreso? De Controlling. De fuera. Pero con buena puntuación.'),
@@ -565,7 +593,9 @@ export default buildRoom({
   // §5.14: el motor decide cuándo (60-120 s, máx. 3 por visita, nunca encima de otro texto); aquí, solo las líneas.
   ambientRules: { max: 3, every: [60000, 120000] },
   ambient: [
-    { id: 'coro', if: ['!lector_derribado', cercaDelCoro], voces: VOCES_CORO, discusiones: DISCUSIONES },
+    { id: 'coro_a3', if: ['ruben_libre', '!lector_derribado', cercaDelCoro], voces: VOCES_CORO, discusiones: CORO_ACTO_3 },
+    { id: 'coro_a2', if: ['cms_vivo', '!acto_3_iniciado', cercaDelCoro], voces: VOCES_CORO, discusiones: CORO_ACTO_2 },
+    { id: 'coro', if: ['!lector_derribado', '!acto_3_iniciado', cercaDelCoro], voces: VOCES_CORO, discusiones: DISCUSIONES },
     { id: 'murmullos', if: '!lector_derribado', run: murmullo },
     { id: 'fondo', if: ['!lector_derribado', cercaDelCoro], voces: VOCES_CORO, discusiones: FONDO_YOLI },
   ],
@@ -573,6 +603,14 @@ export default buildRoom({
   async onEnter(api) {
     murmuradoEstaVisita = false;
     if (api.getState('semaforo_ruido') !== 'rojo') api.setState('semaforo_ruido', 'rojo');   // E3 P8: el verde dura un segundo, nunca una partida
+    // E5 §2.2.3: partida cargada a oscuras (o vieja): luz, Anselmo en su mesa y sin ventana; apagon_n se queda
+    if (api.flag('pecera_oscuras')) {
+      limpiarOscuras(api);
+      anselmoEnSuSitio(api);
+      api.setState('monitor_yoli', null);
+    }
+    if (api.getState('kanban')) api.setState('kanban', null);
+    if (api.getState('coro_desarrollo')) api.setState('coro_desarrollo', null);
     // epílogo (lector_derribado): la escena final coloca a la gente ella misma; aquí no se hace nada
     if (api.flag('lector_derribado') || api.flag('juego_terminado') || api.restoring) return;
     // como mucho una escena de entrada por visita, por este orden

@@ -797,6 +797,17 @@ function drawFrontera(g, view) {
   void a2; void a3;
 }
 
+/** Letra de rotulador rojo, peor que la de Anselmo: micro de 3×5 con las letras bailando un píxel y trazo doble. */
+function rotulador(g, text, x, y) {
+  let cx = x;
+  [...String(text)].forEach((ch, i) => {
+    const dy = (i * 7 + 3) % 5 === 0 ? 1 : (i % 4 === 2 ? -1 : 0);
+    micro(g, ch, cx + 1, y + dy, '#f0a0a0');
+    micro(g, ch, cx, y + dy, '#d8202a');
+    cx += kit.microW(ch) + (ch === ' ' ? 2 : 1);
+  });
+}
+
 /** KANBAN con ruedas, EXENTO en el plano medio (pies y 106), con las cabeceras legibles, el pósit «BAJA / RUBÉN» en
  *  POR HACER (con posit_descopeado: «AQUÍ / RUBÉN» verde) y el pósit amarillísimo de 1998 en HECHO (PERO NO) */
 function drawKanban(g, view) {
@@ -807,7 +818,7 @@ function drawKanban(g, view) {
     rect(g, lx - 5, 102, 12, 2, PAL.metal[2]); hline(g, lx - 5, 102, 12, PAL.metal[4]);
     ellipse(g, lx - 4, 105, 1.5, 1.5, PAL.ink[0]); ellipse(g, lx + 6, 105, 1.5, 1.5, PAL.ink[0]);
   }
-  rect(g, x + 6, 96, w - 12, 2, PAL.metal[3]);                                  // travesaño
+  rect(g, x + 6, 101, w - 12, 2, PAL.metal[3]);                                 // travesaño (bajo la tira de la columna nueva)
   rect(g, x - 2, y - 2, w + 4, h + 4, PAL.metal[4]); frameRect(g, x - 2, y - 2, w + 4, h + 4, PAL.metal[2]); hline(g, x - 1, y - 1, w + 2, PAL.metal[6]);
   rect(g, x, y, w, h, '#f4f6f8');
   const cols = [['POR', 'HACER', PAL.blue[5]], ['EN', 'CURSO', PAL.gold[5]], ['BLOQ.', '', PAL.red[5]], ['HECHO', '', PAL.leaf[6]], ['HECHO', 'NO', PAL.purple[5]]];
@@ -830,12 +841,29 @@ function drawKanban(g, view) {
     const px0 = x + i * 20 + 3 + Math.floor(r() * 3), py0 = y + 15 + k * 10 + Math.floor(r() * 2);
     postit(g, px0, py0, colores[(i + k) % 5], { w: 13, h: 8 });
   }
-  // «BAJA / RUBÉN» desde julio (Acto III: tras P14, «AQUÍ / RUBÉN», verde)
+  // ENMIENDA E5 §2.5.6: la columna nueva, a rotulador rojo y con peor letra que la de Anselmo, en una tira de pizarra
+  // añadida debajo del tablero («SALIDA EN VALOR» o «DESCOPEADO» según `columna_kanban`; en micro, «patrocina:
+  // Comercial»), con el pósit de Rubén dentro. Estados de escena `mal_0..2`: la columna equivocada, antes de la manga.
   const desc = !!view.flag('posit_descopeado');
-  rect(g, x + 1, y + 15, 19, 13, desc ? '#a6f08c' : '#f49ab8'); hline(g, x + 1, y + 15, 19, '#ffffff'); hline(g, x + 1, y + 27, 19, desc ? '#5aa048' : '#c0607e');
-  micro(g, desc ? 'AQUÍ' : 'BAJA', x + 3, y + 17, INK);
-  micro(g, 'RUBÉN', x + 1, y + 22, desc ? INK : PAL.red[2]);
-  if (desc) { px(g, x + 18, y + 16, PAL.red[4]); px(g, x + 17, y + 17, PAL.red[4]); }
+  const MAL = { mal_0: 'DESPEDIDOS', mal_1: 'HECHO (DE VERDAD)', mal_2: 'FIRMAR EN PAPEL' };
+  const nueva = MAL[view.state] || (desc ? (view.flag('columna_kanban') === 'descopeado' ? 'DESCOPEADO' : 'SALIDA EN VALOR') : null);
+  const ly = y + h + 2, lh = 17;                                                 // la tira: y 84-100
+  if (nueva) {
+    rect(g, x - 2, ly - 1, w + 4, lh + 2, PAL.metal[4]); frameRect(g, x - 2, ly - 1, w + 4, lh + 2, PAL.metal[2]);
+    rect(g, x, ly, w, lh, '#f4f6f8');
+    rotulador(g, nueva, x + 3, ly + 2);
+    if (desc && !MAL[view.state]) micro(g, 'patrocina: Comercial', x + 2, ly + 10, '#9a8a90');
+  }
+  // «BAJA / RUBÉN» desde julio, en POR HACER; con posit_descopeado, en la columna nueva (y su hueco, vacío)
+  const [rx, ry] = desc ? [x + 82, ly + 2] : [x + 1, y + 15];
+  rect(g, rx, ry, 19, 13, '#f49ab8'); hline(g, rx, ry, 19, '#ffffff'); hline(g, rx, ry + 12, 19, '#c0607e');
+  micro(g, 'BAJA', rx + 2, ry + 2, INK);
+  micro(g, 'RUBÉN', rx, ry + 7, PAL.red[2]);
+  if (view.flag('album_validado')) {                                             // la foto del álbum, grapada (§2.5.3)
+    rect(g, rx + 13, ry - 3, 7, 6, '#ffffff'); rect(g, rx + 14, ry - 2, 5, 4, '#4a5a78');
+    px(g, rx + 16, ry - 1, PAL.skin[4]); px(g, rx + 16, ry, '#dfe4ee');          // el chico pálido, al fondo
+    hline(g, rx + 14, ry - 3, 3, PAL.metal[2]);                                  // la grapa
+  }
   // el pósit de 1998, en HECHO (PERO NO): amarillísimo, viejo, con «1998» legible
   const qx = x + 82, qy = y + 15;
   rect(g, qx, qy, 18, 13, '#ffe830'); hline(g, qx, qy, 18, '#fffaa0'); hline(g, qx, qy + 12, 18, '#b8a010');
@@ -863,9 +891,11 @@ function drawCalendario(g) {
 function drawCoro(g, view, t) {
   const spec = [{ cx: 626, hair: PAL.wood[2], hood: JACKETS.navy }, { cx: 644, hair: PAL.ink[2], hood: JACKETS.burdeos }, { cx: 662, hair: PAL.wood[1], hood: JACKETS.black }];
   spec.forEach((s, i) => {
-    chairBack(g, s.cx, 104, { jacket: null, col: [PAL.purple[0], PAL.purple[1], PAL.purple[2], PAL.purple[3], PAL.purple[4]], turn: i === 1 ? 1 : 0 });
+    // E5 §2.5.5: con el estado `girados` (Bruno escribe la columna buena) las tres sillas se giran y las manos se paran
+    const gir = view.state === 'girados';
+    chairBack(g, s.cx, 104, { jacket: null, col: [PAL.purple[0], PAL.purple[1], PAL.purple[2], PAL.purple[3], PAL.purple[4]], turn: gir ? -2 : i === 1 ? 1 : 0 });
     personBack(g, s.cx, 62, { hair: s.hair, shirt: s.hood, hw: 5, cans: true });
-    const ph = t / 160 + i * 1.7;
+    const ph = (gir ? 0 : t / 160) + i * 1.7;
     for (const side of [-1, 1]) {
       const sw = Math.sin(ph + (side > 0 ? 1.4 : 0));
       const bx = s.cx + side * 8, by = 76;

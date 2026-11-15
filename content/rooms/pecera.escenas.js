@@ -292,6 +292,8 @@ async function ventana(api) {
 /** Cierre de la ventana (§3.2): enchufa Anselmo (o ya enchufó Bruno); luz; «…Que te la apague Paco.». */
 async function apagonCierre(api, via) {
   V.abierta = false;
+  const an = api.game.actors[A];
+  if (an && V.v0 != null) { an.speed = V.v0; V.v0 = null; }         // con luz, Anselmo vuelve a su paso de siempre
   try {
     await api.cutscene(async (api) => {
       if (via === 'bruno') {
@@ -307,7 +309,8 @@ async function apagonCierre(api, via) {
         api.faceActor(A, 'up');
       } else {
         const p = api.actorPos(A);
-        if (!p || Math.abs(p.x - (ENCHUFE[0] + 16)) > 3) await api.walkActor(A, ENCHUFE[0] + 16, ENCHUFE[1]);
+        const lejos = !p || Math.abs(p.x - (ENCHUFE[0] + 16)) > 60;     // (a los 12 s aún no ha llegado: aprieta el paso)
+        if (!p || Math.abs(p.x - (ENCHUFE[0] + 16)) > 3) await api.walkActor(A, ENCHUFE[0] + 16, ENCHUFE[1], { run: lejos });
         api.faceActor(A, 'up');
         await api.anim(A, 'reach', 500);              // (Anselmo enchufa)
         await luzVuelve(api);

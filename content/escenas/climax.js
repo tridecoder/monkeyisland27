@@ -108,6 +108,8 @@ export const duelInigo = {
   onWin: async (api) => {
     api.setFlag('duelo_inigo_ganado', true);
     await sayI(api, 'Ni un gesto en contra. Ni una pregunta. El mejor lector que he tenido.');   // E2 fase B (14)
+    // [PA] E5 §2.6.1: las caras, al cartón (0 líneas). El tambaleo y la megafonía, en sala_amazonas.js `update`.
+    for (const id of [INIGO, GERV, 'maripaz_remitido', RUBEN]) if (enSala(api, id)) api.faceActor(id, LECTOR);
   },
   onLose: async (api) => {
     // «el duelo vuelve a empezar: Íñigo regresa a la diapositiva 247» (se reintenta Hablando con él, regla 6.2.6)
@@ -247,7 +249,7 @@ export async function climaxEmpujon(api) {
     if (!enSala(api, RUBEN)) { api.placeActor(RUBEN, 'sala_amazonas', SITIO_RUBEN[0], SITIO_RUBEN[1], 'up'); api.show(RUBEN); }
     api.faceActor(RUBEN, BEGONA);
     await sayR(api, 'Cuarenta y ocho euros al mes... Es lo que me como en atún.');
-    await sayBe(api, 'Con lo que nos deben hay para un contrato. Con coma.');
+    await sayBe(api, 'Con lo que nos deben hay para un contrato.');
     await sayR(api, '¿Con táper?');
     await sayBe(api, 'Con ticket.');
     // «Goyita. Tira.» (por los altavoces, la voz de Teodoro por el teléfono rojo): un inserto en la esquina enseña

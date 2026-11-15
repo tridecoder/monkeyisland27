@@ -46,6 +46,8 @@ const G = (fn, a) => page.evaluate(fn, a);
 const wait = (ms) => page.waitForTimeout(ms);
 const st = () => G(() => __game.state());
 const flag = (k) => G(k => __game.getFlag(k), k);
+/** Estado de un objeto de la sala (getObjState del motor; la clave del guardado lleva la sala delante). */
+const ost = (id) => G(id => __game.game.getObjState(id).state, id);
 const norm = s => String(s).toLowerCase().replace(/[«»"“”'’]/g, '').replace(/\s+/g, ' ').trim();
 const shot = (name) => page.screenshot({ path: path.join(shots, `e5-pc-${name}.png`) });
 const logTexts = () => G(() => __game.log.map(l => l.text));
@@ -170,7 +172,7 @@ try {
       `${r}: «${linea.slice(0, 40)}…», sin cms_vivo, cpd_regleta_mal_n = ${s.flags.cpd_regleta_mal_n}${r !== 'R-5' ? ` (se apagó la ${apagada} un segundo)` : ''}`);
     if (r === 'R-5') ok(apagada == null, 'R-5: no se tira');
     else ok(apagada === Number(r.slice(2)), `${r}: su piloto se apaga y se vuelve a enchufar`);
-    ok(s.objects.regleta_r3 ? s.objects.regleta_r3.state === 'encendida' : true, `${r}: la R-3 sigue encendida`);
+    ok((await ost('regleta_r3')) === 'encendida', `${r}: la R-3 sigue encendida`);
   }
   await verbOn('tirar', 'regleta_r3');
   await chooseOption('Mejor no.');
@@ -183,7 +185,7 @@ try {
   await G(() => __game.clearLog());
   await chooseOption('R-3');
   let s = await st();
-  ok(s.flags.cms_vivo && s.objects.regleta_r3.state === 'apagada', 'R-3 → cms_vivo y la regleta apagada');
+  ok(s.flags.cms_vivo && (await ost('regleta_r3')) === 'apagada', 'R-3 → cms_vivo y la regleta apagada');
   ok(await logHas('CORO: ¡Ha sido Diseño!') && await logHas('Trescientos dieciocho tickets nuevos') && await logHas('Tengo un hueco. Uno.'), 'R-3: el coro por la rejilla, los +318 y Paco que se gira');
   ok(!(await logHas('ESTAMOS CIEGOS')) && !(await logHas('Ya me han abierto otro ticket')) && !(await logHas('No sé qué apaga esto')), 'R-3: sin la megafonía de Yoli, sin «Ya me han abierto…» ni «No sé qué apaga esto…» (D10-D12)');
   await G(() => __game.clearLog());
@@ -195,7 +197,7 @@ try {
   ok(!(await st()).dialog && await logHas('Ya está apagada.'), 'Tirar otra vez: sin menú, la de hoy');
   await G(() => __game.load('e5pc'));
   s = await st();
-  ok(!s.flags.cms_vivo && s.flags.cpd_regleta_mal_n === 3 && (!s.objects.regleta_r3 || s.objects.regleta_r3.state === 'encendida'), 'cargar: sin cms_vivo, tres fallos y la R-3 encendida');
+  ok(!s.flags.cms_vivo && s.flags.cpd_regleta_mal_n === 3 && (await ost('regleta_r3')) === 'encendida', 'cargar: sin cms_vivo, tres fallos y la R-3 encendida');
   await G(() => __game.clearLog());
   await verbOn('cerrar', 'regleta_r3');
   ok(await logHas('Ya está cerrado. Cinco bridas lo dicen.'), 'Cerrar (C43)');
@@ -242,7 +244,7 @@ try {
   await verbOn('tirar', 'papel_continuo');
   ok(await logHas('Desde dentro no sueltan. El de ahí no está distraído.'), 'Acto II, 2.º tirón');
   s = await st();
-  ok(!s.flags.ruben_encontrado && s.flags.cpd_papel_tirones === 2 && s.objects.papel_continuo.state === 'asoma', 'sin ruben_encontrado; el papel vuelve a asomar');
+  ok(!s.flags.ruben_encontrado && s.flags.cpd_papel_tirones === 2 && (await ost('papel_continuo')) === 'asoma', 'sin ruben_encontrado; el papel vuelve a asomar');
   await verbOn('tirar', 'armario_27');
   ok(await logHas('La puerta no cede. El papel de abajo es otra cosa.'), 'Tirar armario (D15)');
   await verbOn('mirar', 'papel_continuo');
@@ -254,7 +256,8 @@ try {
   await G(async () => { __game.game.runScript(api => api.goto('cpd', 'ascensor'), { label: 'test' }); });
   await settle();
   s = await st();
-  ok(s.room === 'cpd' && s.objects.papel_continuo.state === 'corre', `Acto III: al entrar, papel en estado «${s.objects.papel_continuo.state}»`);
+  const est3 = await ost('papel_continuo');
+  ok(s.room === 'cpd' && est3 === 'corre', `Acto III: al entrar, papel en estado «${est3}»`);
   ok(await logCount('El papel del 27 sale a chorro. El de dentro está muy ocupado.') === 1, 'Bruno lo dice al entrar');
   await wait(1500);
   await shot('armario-chorro');
@@ -276,24 +279,22 @@ try {
   await G(() => __game.clearLog());
   await G(() => __game.load('e5pc3'));
   s = await st();
-  ok(s.objects.papel_continuo.state === 'corre' && !(await logHas('sale a chorro')), 'cargar en el III: el papel sigue corriendo y la línea no se repite');
+  ok((await ost('papel_continuo')) === 'corre' && !(await logHas('sale a chorro')), 'cargar en el III: el papel sigue corriendo y la línea no se repite');
   // otra entrada: sin línea
   await G(() => __game.skipText(true));
-  await G(() => __game.gotoRoom('pecera', 'cpd'));
+  await G(() => __game.gotoRoom('pecera', 'ascensor'));
   await G(() => { __game.skipSpeech(); return __game.waitIdle(); });
   await G(() => { __game.skipText(false); __game.clearLog(); });
   await G(async () => { __game.game.runScript(api => api.goto('cpd', 'ascensor'), { label: 'test' }); });
   await settle();
-  ok((await st()).objects.papel_continuo.state === 'corre' && !(await logHas('sale a chorro')), 'otra entrada en el III: corre, sin repetir la línea');
+  ok((await ost('papel_continuo')) === 'corre' && !(await logHas('sale a chorro')), 'otra entrada en el III: corre, sin repetir la línea');
   await G(() => __game.skipText(true));
   await verbOn('tirar', 'papel_continuo');
   await G(() => { __game.skipSpeech(); return __game.waitIdle(); });
   await G(() => __game.skipText(false));
   s = await st();
-  ok(s.flags.ruben_encontrado && s.objects.papel_continuo.state === 'recogida' && s.objects.armario_27.state === 'abierto' && await logHas('¡EH! ¡QUE ES MI BORRADOR!'), 'Tirar papel en el III → revelacion_ruben (papel recogido, armario abierto)');
+  ok(s.flags.ruben_encontrado && (await ost('papel_continuo')) === 'recogida' && (await ost('armario_27')) === 'abierto' && await logHas('¡EH! ¡QUE ES MI BORRADOR!'), 'Tirar papel en el III → revelacion_ruben (papel recogido, armario abierto)');
   await G(() => __game.clearLog());
-  await verbOn('dar', 'ruben').catch(() => {});
-  await G(() => { __game.game.ui.verb = null; __game.game.ui.item = null; });
   await G(async () => { await __game.doVerb('hablar', 'ruben'); });
   await G(() => __game.chooseText('Ahora vuelvo'));
   await G(() => __game.waitIdle());

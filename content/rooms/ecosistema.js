@@ -224,7 +224,7 @@ export default buildRoom({
   flags: {
     ecosistema_portatil_cerrado: 'bool · P4 · Cerrar portátil de Tadeo (Acto III) · P4 (Mirar portátil, impresora)',
     ecosistema_pufs_n: 'int · P4 · ecosistema · +1 por Usar pufs · P4',
-    ecosistema_rotulador_dado: 'bool · PE (E5 §2.5.1) · Coger termometro_ventas (da rotulador_rojo, una vez) · PE',
+    ecosistema_rotulador_dado: 'bool · PE · E5 §2.5.1: Coger termometro_ventas da rotulador_rojo (una vez)',
   },
 
   objects: [

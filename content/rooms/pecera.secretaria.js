@@ -4,6 +4,7 @@
 // (`pecera`), en la bisagra con la Redacción de papel (antes, en el Office, hoy Vending). Ids, flags (`office_*`, se
 // conservan para no romper partidas) y líneas, sin cambios. El arte está en ./art/lib-secretaria.js (dibujo) y
 // ./art/pecera.art.js (dónde va).
+// ENMIENDA E5 §2.8 F9 (PB): las respuestas vuelven al menú (`goto: 'CU0'`) en vez de cerrar, salvo «Nada, perdone.» y CU_DA.
 // Custodia es una PRESENCIA sin sprite: habla el objeto `custodia_precinto` (la persiana): api.sayFrom(...).
 const cu = (api, lines) => api.sayFrom('custodia_precinto', lines);
 
@@ -32,7 +33,7 @@ export const dialogoCustodia = {
     CU0: {
       options: [
         { text: '¿Me deja un boli?', goto: 'CU_PARAQUE' },
-        { text: '¿Me da una libreta?', once: true, exit: true,
+        { text: '¿Me da una libreta?', once: true, goto: 'CU0',
           do: async (api) => {
             await cu(api, 'Ya tiene una.');
             await api.say('Está a medias.');
@@ -45,7 +46,7 @@ export const dialogoCustodia = {
         { text: 'Begoña dice que hay que rellenar algo.', once: true,
           do: async (api) => { await cu(api, 'Begoña tiene formularios. Yo tengo memoria.'); } },
         { text: '¿Por qué no se le ve la cara?', once: true, do: async (api) => { await cu(api, 'Porque la cara no es material. Siguiente.'); } },
-        { text: '¿Usted sabe dónde está todo?', if: '!custodia_ablandada', exit: true,
+        { text: '¿Usted sabe dónde está todo?', if: '!custodia_ablandada', goto: 'CU0',
           do: async (api) => { await cu(api, 'Todo. Siguiente.'); } },
         { text: '¿Dónde está...?', if: 'custodia_ablandada', goto: 'CU_DONDE' },
         { text: 'Le traigo un muerto.', if: 'has:boli_muerto', goto: 'CU_CADAVER' },
@@ -55,21 +56,21 @@ export const dialogoCustodia = {
     CU_PARAQUE: {
       onEnter: async (api) => { await cu(api, '¿Para qué.'); },
       options: [
-        { text: 'Para escribir.', exit: true,
+        { text: 'Para escribir.', goto: 'CU0',
           do: async (api) => {
             await cu(api, ['Escribir se escribe con la cabeza. El boli es para firmar.', '¿Va a firmar algo.']);
             await api.say('Algún día.');
             await cu(api, 'Pues vuelva ese día.');
           } },
-        { text: 'Para firmar en papel. En la página 7.', exit: true,
+        { text: 'Para firmar en papel. En la página 7.', goto: 'CU0',
           do: async (api) => {
             await cu(api, 'Ja.');
             await api.wait(500);              // (No se ríe. Lo dice. Es una sílaba.)
             await cu(api, 'Seis años en la web y viene a pedirme un boli para el papel.');
           } },
-        { text: 'Para tenerlo. Por si acaso.', exit: true,
+        { text: 'Para tenerlo. Por si acaso.', goto: 'CU0',
           do: async (api) => { await cu(api, '"Por si acaso" es como desaparecen ochenta y tres bolis al año.'); } },
-        { text: '¿Y cómo se consigue un boli aquí?', exit: true,
+        { text: '¿Y cómo se consigue un boli aquí?', goto: 'CU0',
           do: async (api) => {
             api.sfx('open');                  // (Por primera vez, la persiana sube un centímetro.)
             await api.wait(400);
@@ -80,7 +81,7 @@ export const dialogoCustodia = {
     },
     CU_CADAVER: {
       onEnter: async (api) => {
-        if (!api.flag('custodia_regla')) { await cu(api, 'Un muerto sin que se lo pida. Qué raro.'); return 'exit'; }
+        if (!api.flag('custodia_regla')) { await cu(api, 'Un muerto sin que se lo pida. Qué raro.'); return 'CU0'; }
         cadaver.activo = true; cadaver.dado = false; cadaver.fallos = new Set();
         api.sfx('pickup');                    // (la mano coge el boli y lo levanta a contraluz, despacio)
         await api.wait(500);
@@ -122,7 +123,7 @@ export const dialogoCustodia = {
           do: async (api) => { await cu(api, ['En su casa. Desde las seis y media. Donde tiene que estar.', 'Lo raro es usted.']); } },
         { text: '¿Dónde está mi nombre bien escrito?', once: true,
           do: async (api) => { await cu(api, ['En ningún sitio. Todavía.', 'Pero el todavía, en esta casa, ya es mucho.']); } },
-        { text: 'Ya está.', exit: true, do: async (api) => { await cu(api, 'Siguiente.'); } },
+        { text: 'Ya está.', goto: 'CU0', do: async (api) => { await cu(api, 'Siguiente.'); } },
       ],
     },
   },
@@ -141,10 +142,10 @@ export async function hablarCustodia(api) {
 export const objetosSecretaria = [
     // ADENDA §3.5 · Secretaría de Redacción (Custodia Precinto, presencia sin sprite)
     { id: 'custodia_precinto', name: 'Secretaría de Redacción', color: '#A0A0FF', defaultVerb: 'hablar',
-      murmurs: ['Ochenta y tres bolis. Los tengo contados. Los que faltan.', 'Las paredes no oyen. Oigo yo.', '...Buenas noches.'],
+      murmurs: ['Ochenta y tres bolis. Los tengo contados. Los que faltan.', '¿Quién anda ahí.', '...Buenas noches.'],
       murmurColor: '#A0A0FF',
       handlers: {
-        mirar: async (api) => { await api.say(['La Secretaría de Redacción. Bajo la persiana, dos manos. Y una llave.', 'Nadie le ha visto la cara. Se le oye la mirada.']); },
+        mirar: async (api) => { await api.say(['La Secretaría de Redacción. Bajo la persiana, dos manos.', 'Nadie le ha visto la cara. Se le oye la mirada.']); },
         hablar: hablarCustodia,
         'dar:boli_muerto': async (api) => { await api.dialog('custodia', 'CU_CADAVER'); },
         'dar:cafe': async (api) => { await cu(api, ['¿Me soborna con un café de Gertrudis.', 'Gertrudis me debe catorce. No cuenta.']); },
@@ -173,7 +174,7 @@ export const objetosSecretaria = [
           await api.say('Ya. Perdón.');
         } else await cu(api, 'Tóquelo otra vez y le apunto en el libro.');
       },
-      coger: 'Si me llevo el timbre, Custodia me apunta en el libro. Con tinta azul.',
+      coger: 'Si me llevo el timbre, Custodia me apunta en el libro.',
       empujar: 'Lo empujo sin tocarlo. Es la versión cobarde de llamar.',
     } },
 ];
