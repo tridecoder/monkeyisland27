@@ -108,12 +108,13 @@ try {
 
   // larga, 1.ª vez (clic real) → «NO CABE…», sin fallo; el cuerpo enseña el corte
   const sub0 = I.subject, cc0 = I.cc;
-  await G(() => __game.clearLog());
+  await G(() => { __game.clearLog(); __game.skipText(false); });   // con texto normal, para ver los 1,2 s del corte
   await clickOpt(iL);
   const cortado = (prep.reply.toUpperCase()).slice(0, 38) + '—';
-  ok(await until(G, (c) => { const d = __game.game.duelInfo; return d && d.body === c; }, cortado, 6000), `el cuerpo enseña lo que cabe: «${cortado}»`);
-  await sleep(200);
+  ok(await until(G, (c) => { const d = __game.game.duelInfo; return d && d.body === c && d.phase === 'larga'; }, cortado, 15000), `el cuerpo enseña lo que cabe: «${cortado}»`);
+  await sleep(300);
   await shot(page, 'larga');
+  await G(() => __game.skipText(true));
   ok(await menu(), 'tras la larga, el mismo ataque vuelve con su menú');
   I = await info();
   let log = await G(() => __game.log.map(l => l.text));
@@ -163,7 +164,7 @@ try {
     const fin = await until(G, () => !__game.game.duelInfo || (__game.game.choice && __game.game.duelInfo.phase === 'reply'));
     if (!fin || !(await G(() => !!__game.game.duelInfo))) break;
   }
-  await G(() => window.__duelo);
+  await until(G, () => !__game.game.duelInfo && !__game.game.duelActive, null, 15000); await G(() => __game.waitIdle());
   const res = await G(() => __game.game.lastDuel);
   ok(res && res.result === 'won' && res.misses === 1, `el duelo de demostración se gana (${JSON.stringify(res)})`);
 
@@ -179,7 +180,7 @@ try {
     const fin = await until(G, () => !__game.game.duelInfo || (__game.game.choice && __game.game.duelInfo.phase === 'reply'));
     if (!fin || !(await G(() => !!__game.game.duelInfo))) break;
   }
-  await G(() => window.__duelo);
+  await until(G, () => !__game.game.duelInfo && !__game.game.duelActive, null, 15000); await G(() => __game.waitIdle());
   ok(await G(() => __game.game.lastDuel && __game.game.lastDuel.result === 'lost'), 'y se puede perder como siempre');
   await G(() => { delete __game.game.content.duels.opponents.demo_cabe; });
 
