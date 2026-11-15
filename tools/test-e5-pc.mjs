@@ -187,7 +187,9 @@ try {
   let s = await st();
   ok(s.flags.cms_vivo && (await ost('regleta_r3')) === 'apagada', 'R-3 → cms_vivo y la regleta apagada');
   ok(await logHas('CORO: ¡Ha sido Diseño!') && await logHas('Trescientos dieciocho tickets nuevos') && await logHas('Tengo un hueco. Uno.'), 'R-3: el coro por la rejilla, los +318 y Eutimio que se gira');
-  ok(!(await logHas('ESTAMOS CIEGOS')) && !(await logHas('Ya me han abierto otro ticket')) && !(await logHas('No sé qué apaga esto')), 'R-3: sin la megafonía de Yoli, sin «Ya me han abierto…» ni «No sé qué apaga esto…» (D10-D12)');
+  // [E6 §2.1] a propósito: sin apagón previo (apagon_n = 0), la R-3 enseña el corte «MIENTRAS, EN LA REDACCIÓN» con las
+  // dos líneas de Yoli (antes: «sin la megafonía de Yoli»). Lo de D10-D12 sigue fuera. El corte en sí: test-e6-pc.mjs.
+  ok(await logCount('¡Estamos ciegos!') === 1 && !(await logHas('Ya me han abierto otro ticket')) && !(await logHas('No sé qué apaga esto')), 'R-3 sin apagón previo: Yoli una vez (corte E6), sin «Ya me han abierto…» ni «No sé qué apaga esto…» (D10-D12)');
   await G(() => __game.clearLog());
   await verbOn('mirar', 'regleta_r3');
   ok(await logHas('El regletero. La del pósit, apagada.') && await logHas('Arriba, la Redacción trabaja a ciegas.'), 'Mirar con la R-3 apagada (D09, C42)');

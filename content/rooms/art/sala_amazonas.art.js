@@ -544,7 +544,9 @@ function teleGertrudis(g, view, sx, sy, sw, sh, t) {
   const f = Math.floor((t || 0) / 200);
   for (let i = 0; i < 12; i++) if ((i * 7 + f * 3) % 5 !== 0) rect(g, sx + 2 + i * 2, sy + 2, 1, 2, LCD.tenue);
   // el texto, en tira: la pregunta y, con el atasco, la convocatoria
+  // ([PA] E6 §2.3: sintonizada desde la Sala y aún sin la pregunta, el saludo)
   const txt = view.flag('sala_amazonas_atasco') ? 'CONVOCADA · TODA LA EMPRESA EN COPIA · 5 MINUTITOS · '
+    : !view.flag('gertrudis_pregunta') ? 'BUENAS NOCHES · SALA AMAZONAS · '
     : 'PREGUNTA DEL PÚBLICO: Y LOS SIGUIENTES PASOS? · ';
   const paso = kit.MICRO_PASO || 4;
   const ancho = [...txt].length * paso;

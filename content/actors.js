@@ -196,6 +196,22 @@ export function cableRizado(g, x0, y0, x1, y1) {
   }
 }
 
+/** plan §8.2: «Mirar a Bruno» dice la meta actual en su voz (objetivo de la sala, content/pistas.js). E6 §6.4: también
+ *  «Hablar con Bruno». Sin meta, la de reserva (no es un murmullo: se queda, E6 §4.3). */
+const metaBruno = async (api) => { await api.say(api.objetivo.meta() || 'Respondo a todos. Por fin algo que sé hacer.'); };
+/** E6 §6.5 (N8): Valentín con un casco quitado (variante `casco_fuera`, api.vestir): el auricular izquierdo, en la mano,
+ *  a la altura del pecho; la diadema le queda torcida sobre la oreja derecha. Gesto, no palabra. */
+const CASCO = '#d4d8e2', CASCO_LUZ = '#ffffff';   // cascos blancos: se distinguen del pelo oscuro
+function cascoEnLaMano(g, a, t, c) {
+  if (a.variante !== 'casco_fuera' || !c || !c.box) return;
+  const b = c.box, s = c.s || 1, izq = a.dir === 'left';
+  const hx = Math.round(izq ? b.x + b.w * 0.18 : b.x + b.w * 0.72), hy = Math.round(b.y + b.h * 0.42);
+  const w = Math.max(2, Math.round(2 * s)), h = Math.max(3, Math.round(3 * s));
+  g.fillStyle = CASCO; g.fillRect(hx, hy, w, h);
+  g.fillStyle = CASCO_LUZ; g.fillRect(hx, hy, 1, 1);
+  g.fillStyle = CASCO; g.fillRect(hx + (izq ? w : -1), hy - Math.max(1, Math.round(s)), 1, Math.max(1, Math.round(s)));   // el cable
+}
+
 export default {
   // ---------------------------------------------------------------- protagonista
   bruno: {
@@ -220,8 +236,10 @@ export default {
       return chaqueta ? (banner ? 'con_chaqueta_banner' : 'con_chaqueta') : (banner ? 'con_banner' : null);
     },
     // plan §8.2: «Mirar a Bruno» dice la meta actual en su voz (objetivo de la sala, content/pistas.js)
+    // E6 §6.4: «Hablar con Bruno» = «Mirar a Bruno» (la meta): nunca calla
     handlers: {
-      mirar: async (api) => { await api.say(api.objetivo.meta() || 'Respondo a todos. Por fin algo que sé hacer.'); },
+      mirar: metaBruno,
+      hablar: metaBruno,
       'usar:tarjeta_becario': 'Me identifico. Me reconozco. Es más de lo que hace el torno.',
     },
   },
@@ -235,8 +253,8 @@ export default {
       pocketItem: '#303034', pocketKind: 'radio', pants: '#5a5e68', shoes: '#1a1a1e', height: 0.96, build: 'normal', belly: true,
     },
     variants: { sin_bufanda: { doll: { scarf: null, scarfStripe: null } } },   // epílogo: se la ha dado a Bruno
-    murmurs: ['Treinta años en este mostrador. El mostrador, cuarenta.', 'Si me preguntan por el Ibex, digo que va.',
-      'Chof, chof... Menta.'],
+    // E6 §4.3: fuera las copias que la sala ya declara en su `placement` (el motor usa la de la sala)
+    murmurs: ['Treinta años en este mostrador. El mostrador, cuarenta.', 'Chof, chof... Menta.'],
     // mastica chicle de menta sin parar: de vez en cuando, una pompa rosa (solo de frente)
     drawExtra(g, a, t, c) {
       if (a.dir !== 'down' || !c) return;
@@ -254,9 +272,7 @@ export default {
       skin: '#f0c4a0', hair: '#3a2018', hairStyle: 'highponytail', hairStreak: '#FF78B8', glasses: 'thick', glassesColor: '#1a1418',
       shirt: '#4a5a80', emblem: '#FF78B8', pants: '#2a2a3a', shoes: '#f0f0f0', prop: 'eyedrops', build: 'slim', height: 0.97,
     },
-    murmurs: ['Esto sube. Esto baja. Esto soy yo.',   // E2 §2.7 / L29: sin cifras entre rayas
-      'Ahí al lado imprimen lo que yo publiqué ayer.',   // E5 C99   // orden 2: la Redacción de papel, al lado
-      'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.'],
+    murmurs: ['Ahí al lado imprimen lo que yo publiqué ayer.'],   // E5 C99 · E6 §4.3: las otras dos viven en pecera.js
   },
   teodoro_cuerpodoce: {
     // No habla: sus líneas salen del fax (prefijo «TEODORO (fax):», §3.4). Solo habla en voz alta al teléfono rojo.
@@ -266,8 +282,7 @@ export default {
       hat: 'visor', hatColor: '#2a8a4a', pocketItem: '#c0a060', pocketKind: 'ruler', pants: '#3a3a42', shoes: '#8a5a4a',
       height: 0.94, build: 'normal',
     },
-    murmurs: ['CUERPO 9. INTERLINEADO 10. CORAZÓN 12.', 'GOYITA, ¿ME OYES? TÚ AGUANTA.',
-      'AL OTRO LADO DEL LATÓN PUBLICAN SIN CERRAR. YO CIERRO SIN PUBLICAR.'],
+    murmurs: ['AL OTRO LADO DEL LATÓN PUBLICAN SIN CERRAR. YO CIERRO SIN PUBLICAR.'],   // E6 §4.3: las del fax viven en catacumba.js
     // escena 7.3a: con el teléfono rojo descolgado (la escena pone `auricular` en el actor), el auricular en la oreja
     // y el cable rizado que baja hasta el teléfono de su mesa (catacumba, x≈141 y≈80)
     drawExtra(g, a, t, c) {
@@ -293,7 +308,7 @@ export default {
       pocketItem: '#202028', pocketKind: 'phones', prop: 'folder', propColor: '#c8a868',
       pants: '#4a4c56', shoes: '#1a1a1e', build: 'heavy', belly: true, height: 1.0,
     },
-    murmurs: ['Eso, en todo caso, lo hablamos.', 'Diecinueve años. Ni un marrón. Ni uno.', 'Hoy me han preguntado tres veces por mi salud. Debo de estar fatal.'],
+    murmurs: [],   // E6 §4.3: los suyos viven en cada sala (Vending, Despachos, Sala); «Diecinueve años. Ni un marrón…», fuera
   },
   begona_triplicado: {
     name: 'Begoña', color: '#C0A2F6', speed: 46,
@@ -301,7 +316,7 @@ export default {
       skin: '#eab894', hair: '#8a3a22', hairStyle: 'bouffant', glasses: 'thick', glassesColor: '#c82020', shirt: '#cdb8e0',
       armbands: '#34343e', prop: 'stamps', skirt: '#3a3448', shoes: '#2a1a24', lipstick: '#b03040', earrings: '#e0c050', height: 0.95,
     },
-    murmurs: ['Original. Duplicado. Triplicado. Original. Duplicado...', 'Las 19:07. Qué rápido pasa la tarde. No pasa.'],
+    murmurs: [],   // E6 §4.3: viven en administracion.js
   },
   // EVENTOS (problema 8): Pilar Escaleta. Negro de equipo técnico, cascos con micro, walkie al cinto, la escaleta en
   // una carpeta, seis acreditaciones al cuello y cinta americana en la muñeca. Todo está «a cinco minutos de empezar».
@@ -312,7 +327,7 @@ export default {
       badge: '#ffcc00', badges: 6, prop: 'folder', propColor: '#d8d8d0', pocketItem: '#2a2a30', pocketKind: 'radio',
       armbands: '#a8a8b4', pants: '#1c1c22', shoes: '#3a3a44', build: 'athletic', height: 0.98,
     },
-    murmurs: ['Cinco minutos. Siempre cinco minutos. Es mi zona horaria.'],
+    murmurs: [],   // E6 §4.3: vive en eventos.js
   },
   maripaz_remitido: {
     name: 'Maripaz', color: '#FF8A60', speed: 56,
@@ -332,7 +347,7 @@ export default {
       glassesTape: '#f4f4f4', shirt: '#74767e', emblem: '#c8ccd8', keys: '#b8bcc4', pants: '#3a3a44', shoes: '#2a2a2a',
       build: 'heavy', height: 1.0,
     },
-    murmurs: ['48.213... 48.214... Esto no para.', 'No, mamá, el wifi no se ha caído. Has dejado de merecerlo.'],
+    murmurs: [],   // E6 §4.3: viven en cpd.js
   },
   inigo_sinergia: {
     name: 'Íñigo', color: '#FFD23F', speed: 64,
@@ -340,8 +355,7 @@ export default {
       skin: '#e8b890', hair: '#1a1410', hairStyle: 'parted', shirt: '#f4f6fa', jacket: '#1c2a52', pants: '#1c2a52',
       shoes: '#ffffff', prop: 'postits', build: 'slim', height: 1.05,
     },
-    murmurs: ['Esto en verde. Esto en rosa. Esto en azul, que es excusa.', 'Diapositiva 248: «El viaje continúa».',
-      '¿Y esto el Lector Medio lo entiende? Perfecto: asiente.'],
+    murmurs: [],   // E6 §4.3: viven en pajarera.js (y la Sala declara los suyos)
   },
   ruben: {
     name: 'Brais', color: '#B6FF4D', speed: 58,
@@ -350,7 +364,7 @@ export default {
       eyebags: true, crumbs: '#e8c880', pants: '#3a3c48', shoes: '#5a5a60', build: 'slim', height: 0.98,
     },
     // solo murmura mientras sigue en el armario 27
-    murmurs: (v) => (!v.flag('ruben_libre') ? ['UN BECARIO ENCUENTRA UN ARMARIO. EL ARMARIO, OCUPADO.', '¿Hay alguien? ¿Traéis táper?'] : null),
+    murmurs: (v) => (!v.flag('ruben_libre') ? ['UN BECARIO ENCUENTRA UN ARMARIO. EL ARMARIO, OCUPADO.', '¿Hay alguien? ¿Me traéis algo de comer?'] : null),
   },
   abuela_remedios: {
     // SOLO TELÉFONO: nunca se coloca en una sala. Habla por el primer plano del móvil (api.phone.open / api.phone.say):
@@ -382,7 +396,7 @@ export default {
       emblem: '#3CE0C6', pocketItem: '#c8ccd4', pocketKind: 'ruler', prop: 'folder', propColor: '#e8d49a',
       sleeves: 'short', pants: '#4e5a48', shoes: '#3a2e26', height: 0.99,
     },
-    murmurs: ['Esto, en barras. Esto, en tarta. Esto, en tarta pero triste.', 'Cuatro décimas. Yo tardaba una semana. Qué semanas aquellas.'],   // E2 §2.5
+    murmurs: [],   // E2 §2.5 · E6 §4.3: viven en pecera.js
   },
   anselmo_monolito: {
     // E2 §2.6: único personaje de Desarrollo (con el coro): director y dueño del tablero (hereda lo de Nemesio).
@@ -393,8 +407,7 @@ export default {
       skin: '#dcae88', hair: '#2e2830', hairStyle: 'short', shirt: '#b4503c', vest: '#8c9098', keys: '#e8d8a0',
       prop: 'folder', propColor: '#2f4f86', pants: '#5c5c46', shoes: '#34281c', height: 1.02, build: 'normal',
     },
-    murmurs: ['Esto no ha pasado por mí. Esto tampoco. Esto, de refilón.', '(al termo) Tú sí eres de la casa.',
-      'Mañana es sábado. Lo dice la ferretería. Es de fuera, pero acierta.'],   // E2 §2.5 (el tercero, heredado de Nemesio)
+    murmurs: [],   // E2 §2.5 · E6 §4.3: viven en pecera.js
   },
   evaristo_salvedad: {
     // Director de Controlling y Financiero (administracion; epílogo, vestibulo). Chaqueta de punto gris perla abrochada,
@@ -416,8 +429,12 @@ export default {
     doll: {
       skin: '#eac4a2', hair: '#2c2422', hairStyle: 'short', glasses: 'round', glassesColor: '#0a0a10',
       shirt: '#f8f8fa', jacket: '#2f7058', pants: '#202028', shoes: '#f6f6f6', bracelets: '#c4c8d0',
+      headphones: CASCO,     // E6 §6.5: los cascos de los que habla su Mirar («El cable de los cascos no va a nada.»)
       height: 1.13, build: 'athletic',
     },
+    // E6 §6.5 (N8): `api.vestir(V, 'casco_fuera')` mientras espera la pregunta de Bruno; `api.vestir(V, null)` al volver
+    variants: { casco_fuera: { doll: { headphones: null, earpiece: CASCO } } },
+    drawExtra: cascoEnLaMano,
     murmurs: [],   // cameo MUDO (orden del dueño): solo «Está en la bandeja.» en su escena (pecera.js)
   },
 

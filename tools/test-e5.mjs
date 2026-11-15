@@ -9,7 +9,7 @@
 //   pd     tools/test-e5-pd.mjs     §11.2.4 la pegatina del fax, §11.2.10 N6, §5.4 el Lector asiente (Despachos)
 //   pe     tools/test-e5-pe.mjs     §2.5.1 el rotulador de objetivos; Begoña sin «¿Usted ha sido feliz…?»
 //   propias (aquí):
-//     §11.2.9  el recorrido de 50 pasos en modo rápido: «El modelo es de fuera. El prompt es de dentro.» UNA vez (paso 38)
+//     §11.2.9  el recorrido vigente (E6: 49 pasos) en modo rápido: «El modelo es de fuera. El prompt es de dentro.» UNA vez (paso 37)
 //              y «…Entonces es de la casa.» UNA vez (paso 46); y la MEDIDA del camino principal (§9.1: líneas, caracteres,
 //              minutos de lectura con `speechDuration`, Bruno) frente a la referencia de E4 (561 líneas · 33,0 min; tope 576)
 //     §11.2.8  ascensor: desde Sistemas, Planta 1 → «Redacción de papel» → `catacumba` por su entrada `pecera`; en el
@@ -79,8 +79,9 @@ if (quiere('propias')) {
   const R = createRunner(page);
   const G = R.G;
   try {
-    // §11.2.9 + §9.1: el recorrido de 50 pasos (modo rápido) y su medida
-    console.log('\n§11.2.9 y §9.1 · el recorrido de 50 pasos: la frase de Anselmo y la medida del camino principal\n');
+    // §11.2.9 + §9.1: el recorrido (hoy el de E6, 49 pasos; modo rápido) y su medida. La medida contra el saldo de E6
+    // (§9.1: 568 ± 2) la hace tools/test-e6.mjs; aquí, el tope de E5 (≤ 576) sigue valiendo.
+    console.log('\n§11.2.9 y §9.1 · el recorrido vigente (E6, 49 pasos): la frase de Anselmo y la medida del camino principal\n');
     await page.goto(base);
     await page.evaluate(() => { try { localStorage.clear(); } catch (e) { /* ignore */ } });
     await page.reload();
@@ -96,22 +97,23 @@ if (quiere('propias')) {
       await R.check(s.esp);
       porPaso[s.n] = await G((k) => __game.log.slice(k).map(l => ({ who: l.who, text: String(l.text) })), k0);
       if (s.n === 23) await G(() => __game.save('e5_asc_23'));    // (Sistemas, Acto II: para §11.2.8)
-      if (s.n === 41) await G(() => __game.save('e5_asc_41'));    // (Sistemas, Acto III)
+      if (s.n === 40) await G(() => __game.save('e5_asc_41'));    // (Sistemas, Acto III; E6: paso 40)
     }
     const todo = Object.values(porPaso).flat();
     const en = (t) => Object.entries(porPaso).filter(([, L]) => L.some(l => l.text.includes(t))).map(([n, L]) => [Number(n), L.filter(l => l.text.includes(t)).length]);
     const f1 = en('El modelo es de fuera. El prompt es de dentro.'), f2 = en('Entonces es de la casa.');
-    ok(f1.length === 1 && f1[0][0] === 38 && f1[0][1] === 1, `«El modelo es de fuera. El prompt es de dentro.»: una vez, en el paso 38 (${JSON.stringify(f1)})`);
-    ok(f2.length === 1 && f2[0][0] === 46 && f2[0][1] === 1, `«…Entonces es de la casa.»: una vez, en el paso 46 (${JSON.stringify(f2)})`);
+    ok(f1.length === 1 && f1[0][0] === 37 && f1[0][1] === 1, `«El modelo es de fuera. El prompt es de dentro.»: una vez, en el paso 37 de E6 (${JSON.stringify(f1)})`);
+    ok(f2.length === 1 && f2[0][0] === 45 && f2[0][1] === 1, `«…Entonces es de la casa.»: una vez, en el paso 45 de E6 (${JSON.stringify(f2)})`);
     // medida: cadenas dichas (opciones elegidas incluidas), sin avisos ni tarjeta; minutos = Σ speechDuration (texto ×1)
     const dichas = todo.filter(l => l.who !== 'aviso' && l.who !== 'tarjeta');
     const ms = (t) => Math.max(1100, 900 + t.length * 55);
     const lineas = dichas.length, chars = dichas.reduce((a, l) => a + l.text.length, 0), min = dichas.reduce((a, l) => a + ms(l.text), 0) / 60000;
     const bruno = dichas.filter(l => l.who === 'bruno').length;
-    const largas = dichas.filter(l => l.text.length > 80);
-    console.log(`    camino principal (50 pasos, modo rápido): ${lineas} líneas · ${chars.toLocaleString('es-ES')} caracteres · ${min.toFixed(1).replace('.', ',')} min de lectura · Bruno ${bruno}`);
+    // (E6: el prefijo de quien habla por fax, «TEODORO (fax): », es una etiqueta, no texto de la línea)
+    const largas = dichas.filter(l => l.text.replace(/^[A-ZÁÉÍÓÚÑ ]+ \((?:fax|correo)\): /, '').length > 80);
+    console.log(`    camino principal (49 pasos de E6, modo rápido): ${lineas} líneas · ${chars.toLocaleString('es-ES')} caracteres · ${min.toFixed(1).replace('.', ',')} min de lectura · Bruno ${bruno}`);
     console.log(`    frente a E4 (561 líneas · 33,0 min): ${lineas - 561 >= 0 ? '+' : ''}${lineas - 561} líneas · ${(min - 33).toFixed(1).replace('.', ',')} min (§9.1 prevé +7 → 568; la megafonía de los 10 s no sale en modo rápido)`);
-    const tramos = [[1, 18], [19, 23], [24, 30], [31, 40], [41, 46], [47, 50]].map(([a, b]) => `${a}-${b}: ${Object.entries(porPaso).filter(([n]) => n >= a && n <= b).reduce((x, [, L]) => x + L.filter(l => l.who !== 'aviso' && l.who !== 'tarjeta').length, 0)}`);
+    const tramos = [[1, 18], [19, 23], [24, 29], [30, 39], [40, 45], [46, 49]].map(([a, b]) => `${a}-${b}: ${Object.entries(porPaso).filter(([n]) => n >= a && n <= b).reduce((x, [, L]) => x + L.filter(l => l.who !== 'aviso' && l.who !== 'tarjeta').length, 0)}`);
     console.log(`    por tramos de pasos: ${tramos.join(' · ')}`);
     fs.writeFileSync(path.join(logDir, 'camino-principal.tsv'), Object.entries(porPaso).flatMap(([n, L]) => L.filter(l => l.who !== 'aviso' && l.who !== 'tarjeta').map(l => `${n}\t${l.who}\t${l.text}`)).join('\n') + '\n');
     ok(lineas <= 576, `camino principal ≤ 576 líneas (tope de §9.1): ${lineas}`);

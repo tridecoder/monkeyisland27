@@ -18,6 +18,11 @@
 //  - retiring = no consequence; the thread says «RV: Bruno ha abandonado el hilo.» and Bruno says `retireLine`.
 //  - nothing is learned in a duel; points always restart from 0. No autosave while a duel is open; a save made during
 //    a duel restarts that duel when it is loaded (core.js `load`).
+//  - E6 §6.1 `cabe: { <pairId>: { max, corta, noCabe } }` (rival): with that pair learned, its attack offers the reply
+//    twice, the long one (`pair.reply`, optionPairs 'larga') and the short one (`corta`, the winning one, correctIndex).
+//    The long one NEVER counts as a miss: the body shows it cut at `max` chars + «—» for 1.2 s, the rival answers
+//    (`noCabe` the 1st time, its `taunt` rotation afterwards) and the same attack comes again.
+//  - E6 §6.2: the comodín carries the menu tag «COMODÍN» (`choose` option `{ text, tag }`).
 //  - HUD = mail window (63 px): De / Para / CC · Asunto (RE: RE: ...) · Cuerpo · Asignado a · «ACIERTOS 2/3 · FALLOS 1/3».
 import { drawText, measure, wrap, citar } from './font.js';
 import { rect, hline, frameRect } from './draw.js';
@@ -25,6 +30,8 @@ import { rect, hline, frameRect } from './draw.js';
 const asArray = x => x == null ? [] : Array.isArray(x) ? x : [x];
 export const MAX_REPLY_OPTIONS = 4;          // correct + 3 decoys; + 1 weak = 5 lines
 export const OPTION_W = 288;                 // width of a menu line (engine/ui.js choiceLayout)
+export const COMODIN_TAG = 'COMODÍN';        // E6 §6.2: etiqueta del comodín en el menú (micro, gris, a la derecha)
+export const LARGA_MS = 1200;                // E6 §6.1: lo que se ve cortado en el cuerpo tras elegir la réplica larga
 
 /** Lines a duel datum may hold: 'line' (rival) · ['line', 'line'] (rival) · [who, line] · [[who, line], ...].
  *  `who` = 'player' | 'narrator' | 'rival' | 'obj:<object>' | an actor id. */
@@ -130,14 +137,30 @@ export async function runDuel(game, api, idOrDef) {
       await say('rival', attack);
       const opts = buildMenu(pid);
       info.options = opts.map(o => o.text);
-      info.optionPairs = opts.map(o => o.pair || (o.kind === 'weak' ? 'floja' : o.kind));
-      info.correctIndex = opts.findIndex(o => o.pair === pid);
+      // E6 §6.1 (b): con `cabe`, la larga dice 'larga' y `correctIndex` apunta a la corta (la que gana)
+      info.optionPairs = opts.map(o => o.kind === 'larga' ? 'larga' : (o.pair || (o.kind === 'weak' ? 'floja' : o.kind)));
+      info.correctIndex = opts.findIndex(o => o.pair === pid && o.kind === 'reply');
       info.weakIndex = opts.findIndex(o => o.kind === 'weak' || o.kind === 'comodin');
-      const i = await game.choose(opts.map(o => o.text), { duel: true });
+      // E6 §6.2: el comodín lleva la etiqueta «COMODÍN» en el menú (solo se pinta; lo que se dice es `text`)
+      const i = await game.choose(opts.map(o => o.kind === 'comodin' ? { text: o.text, tag: COMODIN_TAG } : o.text), { duel: true });
       const ch = opts[Math.max(0, i)];
       info.options = null; info.optionPairs = null; info.correctIndex = -1; info.weakIndex = -1;
       S.round++;
       await say('player', ch.text);
+      if (ch.kind === 'larga') {
+        // E6 §6.1 (c): la réplica larga no cabe. Nunca suma fallo: ni `misses`, ni RE:, ni CC, ni se mueve el mazo.
+        // El fax (o el correo) enseña 1,2 s lo que cabe, cortado a `max` caracteres; el rival contesta y repite el ataque.
+        const cb = ch.cabe;
+        api.sfx('paper');
+        const cut = (fax ? ch.text.toUpperCase() : ch.text).slice(0, cb.max) + '—';
+        S.body = cut; info.body = cut; info.phase = 'larga';
+        await api.wait(LARGA_MS);
+        S.body = attack; info.body = attack; info.phase = 'reply';
+        S.largaN = (S.largaN || 0) + 1;
+        info.largaN = S.largaN;
+        await say('rival', S.largaN === 1 && cb.noCabe ? cb.noCabe : next('taunt'));
+        continue;
+      }
       if (ch.kind === 'reply' && ch.pair === pid) {
         S.hits++; deck.shift(); api.sfx('good');
         if (T.plusOne) ctl.thread(T.plusOne.from, T.plusOne.text);
@@ -225,7 +248,15 @@ export async function runDuel(game, api, idOrDef) {
     const decoys = L.filter(x => x !== pid).sort((a, b) => rank(a) - rank(b)).slice(0, MAX_REPLY_OPTIONS - correct.length);
     let reps = correct.concat(decoys).sort((a, b) => rank(a) - rank(b));
     if (reps.length > 1) { const k = S.round % reps.length; reps = reps.slice(k).concat(reps.slice(0, k)); }   // the correct one moves
-    const opts = reps.map(p => ({ text: pairs.get(p).reply, pair: p, kind: 'reply' }));
+    let opts = reps.map(p => ({ text: pairs.get(p).reply, pair: p, kind: 'reply' }));
+    // E6 §6.1 (a): `opp.cabe[pid]` = { max, corta, noCabe }. Si la correcta está aprendida, sale dos veces: la larga
+    // (`pair.reply`, kind 'larga') y la corta (`corta`, kind 'reply', la que gana). Larga primero en rondas pares.
+    const cb = opp.cabe && opp.cabe[pid];
+    if (cb && correct.length) {
+      const larga = { text: pairs.get(pid).reply, pair: pid, kind: 'larga', cabe: cb };
+      const corta = { text: cb.corta, pair: pid, kind: 'reply' };
+      opts = opts.flatMap(o => o.pair === pid ? (S.round % 2 === 0 ? [larga, corta] : [corta, larga]) : [o]);
+    }
     const pool = asArray(D.weakReplies).filter(w => !w.only || asArray(w.only).includes(id)).map(w => ({ text: w.text, kind: 'weak', w }));
     if (D.comodin && !(S.comodinUsed && pool.length)) pool.push({ text: D.comodin.text, kind: 'comodin' });
     if (pool.length) {
@@ -237,7 +268,7 @@ export async function runDuel(game, api, idOrDef) {
     // ≤ 5 LINES without scroll (a long reply wraps to two): decoys go first, never the correct one or the weak one
     const lines = () => opts.reduce((n, o) => n + wrap(o.text, OPTION_W).length, 0);
     while (lines() > 5) {
-      const j = opts.map((o, i) => (o.kind === 'reply' && o.pair !== pid ? i : -1)).filter(i => i >= 0).pop();
+      const j = opts.map((o, i) => (o.kind === 'reply' && o.pair !== pid ? i : -1)).filter(i => i >= 0).pop();   // never the larga
       if (j == null) break;
       opts.splice(j, 1);
     }

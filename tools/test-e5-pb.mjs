@@ -154,7 +154,7 @@ try {
   // escalada n = 2, como hoy
   await G(() => __game.clearLog());
   await G(() => __game.doVerb('tirar', 'enchufe_pantalla'));
-  ok(await flag('apagon_n') === 2 && await logHas('¡Otra! ¡Ha entrado otra!') && !(await G(() => !!__game.game.apagon)) && !(await flag('pecera_oscuras')), 'segundo tirón: la escalada n = 2 de siempre (cutscene, sin ventana)');
+  ok(await flag('apagon_n') === 2 && await logHas('¡Ha entrado otra!') && !(await logHas('¡Otra! ¡Ha entrado otra!')) && !(await G(() => !!__game.game.apagon)) && !(await flag('pecera_oscuras')), 'segundo tirón: la escalada n = 2 de siempre (cutscene, sin ventana)');
 
   // --- Usar el enchufe a los 2 s
   await partida();
@@ -208,7 +208,7 @@ try {
     'álbum a Anselmo → album_validado, el álbum se lo queda él, «Las fotos me valen…»');
   await G(() => __game.takeItem('rotulador_rojo'));
   await raton('usar', 'kanban');
-  ok(await logHas('Una columna nueva pide rotulador. El de Anselmo no sale de Desarrollo.'), 'Usar el tablero sin rotulador → «…pide rotulador…»');
+  ok(await logHas('Mi rotulador no sale de Desarrollo. Que te lo preste alguien de fuera.'), 'Usar el tablero sin rotulador → Anselmo «Mi rotulador no sale…» (E6 N11)');
   await G(() => __game.giveItem('rotulador_rojo'));
   const MAL = [['DESPEDIDOS', 'Eso es «muerto» con corbata.'], ['HECHO (DE VERDAD)', '«De verdad» no es un estado.'], ['FIRMAR EN PAPEL', 'Eso es tuyo. Mi tablero no es tu diario.']];
   for (const [col, linea] of MAL) {
@@ -255,7 +255,7 @@ try {
   await G(() => { __game.takeItem('rotulador_rojo'); __game.setFlag('oyo_descopear', true); __game.clearLog(); });
   ok(await flag('album_validado') === true && !(await flag('posit_descopeado')) && !(await flag('columna_kanban')), 'cargar a mitad: álbum validado, sin columna');
   await raton('usar', 'kanban');
-  ok(await logHas('pide rotulador'), 'álbum antes que rotulador: Usar el tablero → pide rotulador');
+  ok(await logHas('Mi rotulador no sale de Desarrollo.'), 'álbum antes que rotulador: Usar el tablero → Anselmo «Mi rotulador no sale…» (E6 N11)');
   await G(() => __game.giveItem('rotulador_rojo'));                            // (el rotulador, de Comercial)
   await raton('usar', 'posit_1998', 'rotulador_rojo', false);
   await until(() => !!__game.currentDialogOptions());

@@ -83,7 +83,7 @@ export default {
               await api.say('RECHAZADO, en la frente. Mi primer documento oficial.');   // E5 C57
             } },
           { text: 'Representación. Me represento a mí mismo.', once: true,
-            reply: 'Eso es autoestima. Y no desgrava.' },
+            reply: 'Eso es autoestima, y no desgrava.' },
         ],
       },
       B_IMPORTE: {
@@ -107,7 +107,7 @@ export default {
       B_INSULTO: {
         onEnter: async (api) => {
           if (api.once('administracion_b_insulto')) {
-            await sayBe(api, 'Un sobre de azúcar. Caducado en 2021. Del bolsillo de Ramírez, por el olor.');   // E5 R2
+            await sayBe(api, 'Un sobre de azúcar caducado, del bolsillo de Ramírez, por el olor.');   // E5 R2
           } else await sayBe(api, 'Esto... esto sigue siendo un insulto a la contabilidad.');
         },
         options: [
@@ -159,9 +159,9 @@ export default {
   evaristo: {
     actor: EV, start: 'E0',
     onStart: async (api) => {
-      if (api.once('administracion_evaristo_saludo')) await sayEv(api, 'Pellejo, con jota. Pase un segundo. Una cosita. Muy pequeña.');
+      if (api.once('administracion_evaristo_saludo')) await sayEv(api, 'Pellejo, con jota. Pase un segundo, que es una cosita muy pequeña.');
       else await sayEv(api, 'Disculpe. ¿Tiene un segundo? Son tres.');
-      await frente(api, EV, 'Lleva «RECHAZADO» en la frente. Bien centrado. Begoña tiene pulso.');
+      await frente(api, EV, 'Lleva «RECHAZADO» en la frente. Bien centrado.');
     },
     nodes: {
       E0: {
@@ -187,10 +187,10 @@ export default {
           { text: '¿Y no me lo puede decir ahora?', once: true, reply: 'Ahora no. Lo verbal no lleva comas.' },
           { text: '¿Falta mucho?', exit: true,
             do: async (api) => {
+              await api.anim(api.player, 'reach', 400);    // E6 B9: Bruno mira el reloj; el gesto no se explica
               await sayEv(api, 'Si tiene prisa, se lo pongo por escrito.');
               api.sfx('typewriter');                       // (Teclea. Vuelve a su mesa.)
               await api.wait(700);
-              await api.say('Le he mirado el reloj y se ha dado cuenta.');
             } },
           { text: '¿De qué trata?', goto: 'E_DET' },
         ],
@@ -216,7 +216,7 @@ export default {
           api.setFlag('evaristo_escuchado', true);
           await sayEv(api, ['Pero ahora dudo de mi propia coma. Me falta una segunda opinión.',
             'De alguien que sepa de comas de verdad.',
-            'Gracias por escucharme hasta el final. Nadie lo hacía desde 2009.']);
+            'Gracias por escucharme hasta el final. La gente suele colgar en la coma.']);
           return 'exit';
         },
       },

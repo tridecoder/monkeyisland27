@@ -2,13 +2,14 @@
 // TODAS LAS PRUEBAS con una tabla de resumen. Cada herramienta levanta su propio servidor en un puerto libre, así que
 // varios agentes pueden lanzarlas a la vez (y este script las lanza en paralelo: --jobs).
 //
-//   node tools/test-all.mjs                      todo (20 pruebas; ≈ 20 min con 3 en paralelo: test-e5 sola pasa de 12)
+//   node tools/test-all.mjs                      todo (21 pruebas; ≈ 25 min con 3 en paralelo: test-e5 y test-e6 pasan de 12)
 //   node tools/test-all.mjs --rapido             muestra: smoke sin dispositivos ni llamadas en tiempo real, play-mouse
 //                                                solo geometría, fuzz --rapido (≈ 2 min)
 //   node tools/test-all.mjs --sala=pecera        lo que toca a esa sala: check, motor, vista previa (tools/sala.mjs),
 //                                                geometría de esa sala, fuzz de objetos en esa sala, walkthroughs, el test
 //                                                de comedia del paquete que la cubre (tools/test-comedia-p1..p4.mjs),
-//                                                text-audit (con las reglas del plan, de E2 y de E5 como fallo) y contraste
+//                                                text-audit (con las reglas del plan, de E2, de E5 y de E6 como fallo),
+//                                                contraste y las pruebas de E6 de los paquetes de esas salas (test-e6 --sala)
 //   node tools/test-all.mjs --solo=smoke,fuzz    solo esas
 //   --jobs=3 (en paralelo) · --log=<dir> (registros; por defecto tools/shots/test-all/) · --lista (enseña el plan)
 // Sale con 1 si algo falla. Los registros completos de cada prueba quedan en <log>/<nombre>.log.
@@ -42,8 +43,9 @@ if (salas) {
   add('fuzz (objetos)', 'fuzz.mjs', ['--solo=objetos', '--sala=' + salas.join(','), ...(rapido ? ['--rapido'] : [])]);
   for (const p of [...new Set(salas.map(s => PAQ[s]).filter(Boolean))]) add('comedia-' + p, `test-comedia-${p}.mjs`);
   if (salas.some(s => ['pecera', 'catacumba'].includes(s))) add('e4', 'test-e4.mjs', ['--sin-capturas'], 1500);   // ENMIENDA E4
-  add('text-audit', 'text-audit.mjs', ['--plan', '--e2', '--e5']);
+  add('text-audit', 'text-audit.mjs', ['--plan', '--e2', '--e5', '--e6']);
   add('contrast', 'contrast.mjs');
+  add('e6', 'test-e6.mjs', ['--sala=' + salas.join(',')], 2700);   // ENMIENDA E6 §10 I2 (4)
 } else {
   add('check', 'check.mjs');
   add('motor', 'test-motor.mjs');
@@ -55,18 +57,19 @@ if (salas) {
   add('extras', 'extras.mjs');
   add('play-mouse', 'play-mouse.mjs', rapido ? ['--solo=geometria'] : [], 2400);   // la partida entera con ratón + conexiones + geometría
   add('fuzz', 'fuzz.mjs', rapido ? ['--rapido'] : [], 2400);
-  add('text-audit', 'text-audit.mjs', ['--plan', '--e2', '--e5']);   // reglas del plan de comedia (§6.1, §12.2, topes §2.4), de E2 (§12.4, §7.6) y de E5 (§8) como FALLO
+  add('text-audit', 'text-audit.mjs', ['--plan', '--e2', '--e5', '--e6']);   // reglas del plan de comedia (§6.1, §12.2, topes §2.4), de E2 (§12.4, §7.6), de E5 (§8) y de E6 (§8) como FALLO
   add('contrast', 'contrast.mjs');
   for (const p of ['p1', 'p2', 'p3', 'p4']) add('comedia-' + p, `test-comedia-${p}.mjs`);
   add('heredado', 'test-heredado.mjs');               // lo que comprobaban los test-paquete-a/b/c/d retirados y sigue valiendo
   add('critica3', 'test-critica3.mjs');               // arreglos de la crítica 3 (N1-N11, revanchas de Maripaz sin pop-up)
   add('e4', 'test-e4.mjs', [], 1500);                 // ENMIENDA E4: titulador contra el generador de referencia, ratón, móvil, secretos, pasos 34/40, epílogo, hoja, ráfaga
-  add('e5', 'test-e5.mjs', [], 2700);                 // ENMIENDA E5 §11.2: test-e5-motor y test-e5-pa…pe, frase de Anselmo y medida del camino (50 pasos), ascensor, topes
+  add('e5', 'test-e5.mjs', [], 2700);                 // ENMIENDA E5 §11.2: test-e5-motor y test-e5-pa…pe, frase de Anselmo y medida del camino, ascensor, topes
+  add('e6', 'test-e6.mjs', [], 2700);                 // ENMIENDA E6 §11.2: test-e6-motor, -i1 y -pa…pf; armario, columna, tele, duelos, COMODÍN, medida (49 pasos), topes E6
 }
 const solo = args.solo ? String(args.solo).split(',') : null;
 const plan = solo ? T.filter(t => solo.some(s => t.name.startsWith(s) || t.file.startsWith(s))) : T;
 // las largas primero (mejor reparto en paralelo)
-const WEIGHT = { e5: 6, fuzz: 5, 'play-mouse': 4, smoke: 4, e4: 3, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
+const WEIGHT = { e6: 7, e5: 6, fuzz: 5, 'play-mouse': 4, smoke: 4, e4: 3, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
 plan.sort((a, b) => (WEIGHT[b.name.split(' ')[0]] || 1) - (WEIGHT[a.name.split(' ')[0]] || 1));
 if (args.lista) { for (const t of plan) console.log(`${t.name.padEnd(22)} node tools/${t.file} ${t.args.join(' ')}`); process.exit(0); }
 

@@ -18,7 +18,6 @@ export default {
       // rumor C (Aurora lo deja en 1; Maripaz lo sube a 2; Teodoro lo desmiente con >= 2)
       if ((api.flag('rumor_teodoro_n') || 0) === 1) {
         api.inc('rumor_teodoro_n');
-        await sayM(api, 'Teodoro es el dueño del edificio. Lo compró en el 97. Por fax.');
       }
       if (api.once('ecosistema_maripaz_saludo')) await sayM(api, '¿Esa cara? Te la patrocino. «Agobio, con Tilas Calmín».');
       else if (api.flag('duelo_maripaz_ganado') && api.once('ecosistema_maripaz_comision')) await sayM(api, 'Mi becario favorito. Te debo una comisión. No te la voy a pagar.');
@@ -63,7 +62,7 @@ export default {
           { text: '¿Qué tal con Siestatón?', if: 'duelo_maripaz_ganado', once: true,
             reply: 'Encantados. En la web caben en todas partes. Hasta en la X de cerrar.' },
           { text: 'Me voy.', exit: true,
-            do: async (api) => { gong(api); await sayM(api, '¿Seguro que quieres salir? Era una pregunta. Y un anuncio.'); } },
+            do: async (api) => { gong(api); await sayM(api, '¿Seguro que quieres salir? Era una pregunta patrocinada.'); } },
         ],
       },
     },

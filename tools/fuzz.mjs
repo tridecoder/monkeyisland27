@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// AUDITORÍA DE CALLEJONES Y ROBUSTEZ (QA). Tres partidas en modo rápido sobre el recorrido de la ENMIENDA E5 §7.2 (walk-data.mjs, 50 pasos):
+// AUDITORÍA DE CALLEJONES Y ROBUSTEZ (QA). Tres partidas en modo rápido sobre el recorrido de la ENMIENDA E6 §7.2 (walk-data.mjs, 49 pasos):
 //  1. GUARDAR / CARGAR en mitad de cada acto: en varios puntos guarda, empieza una partida nueva, carga, comprueba que el
 //     estado es idéntico (inventario sin duplicados, flags, sala), que cargar NO relanza escenas de una vez (ni una línea
 //     nueva en el registro) y sigue hasta el final (juego_terminado).
@@ -87,7 +87,7 @@ const snap = () => G(() => { const s = __game.state(); return { room: s.room, in
 async function saveLoad() {
   console.log('\n1. Guardar / cargar en mitad de cada acto y seguir hasta el final\n');
   await fresh();
-  const CP = args.rapido ? [13, 30, 46] : [5, 9, 13, 16, 19, 20, 21, 22, 23, 26, 27, 28, 29, 30, 31, 32, 35, 36, 37, 40, 41, 43, 44, 45, 46, 47];   // recorrido de E5 §7.2 (27-28: «sin turno» y la pregunta de Gertrudis, sin reunion_terminada)
+  const CP = args.rapido ? [13, 29, 45] : [5, 9, 13, 16, 19, 20, 21, 22, 23, 26, 27, 28, 29, 30, 31, 34, 35, 36, 39, 40, 42, 43, 44, 45, 46];   // recorrido de E6 §7.2 (27: «sin turno», sin reunion_terminada; 28: la tele, la pregunta y la estampida)
   for (const s of STEPS) {
     if (s.n === 1) continue;
     await step(s.n);
@@ -129,23 +129,24 @@ async function duels() {
   await fresh();
   for (const s of STEPS) {
     if (s.n === 1) continue;
-    if (s.n === 30) { await R.travel('sala_amazonas'); await R.run(['verbo', 'hablar', 'maripaz_remitido']); await R.run(['opcion', 'Siestatón no ha confirmado la página 7.']); await loseDuel('D1 Maripaz'); }
-    if (s.n === 37) { await R.travel('catacumba'); await R.run(['verbo', 'hablar', 'teodoro_cuerpodoce']); await R.run(['opcion', 'Quiero firmar en tu página 7.']); await loseDuel('D2 Teodoro'); }
-    if (s.n === 47) { await R.travel('pajarera'); await R.run(['verbo', 'hablar', 'gervasio_acta']); await R.run(['opcion', 'Necesito el acta de la última reunión.']); await loseDuel('D3 Gervasio'); }
-    if (s.n === 49) {
+    if (s.n === 29) { await R.travel('sala_amazonas'); await R.run(['verbo', 'hablar', 'maripaz_remitido']); await R.run(['opcion', 'Siestatón no ha confirmado la página 7.']); await loseDuel('D1 Maripaz'); }
+    if (s.n === 36) { await R.travel('catacumba'); await R.run(['verbo', 'hablar', 'teodoro_cuerpodoce']); await R.run(['opcion', 'Quiero firmar en tu página 7.']); await loseDuel('D2 Teodoro'); }
+    if (s.n === 46) { await R.travel('pajarera'); await R.run(['verbo', 'hablar', 'gervasio_acta']); await R.run(['opcion', 'Necesito el acta de la última reunión.']); await loseDuel('D3 Gervasio'); }
+    if (s.n === 48) {
       await loseDuel('D4 Íñigo');
       await R.run(['verbo', 'hablar', 'inigo_sinergia']);
       ok(!!(await state()).duel, 'D4: Hablar con Íñigo reabre el duelo');
     }
     await step(s.n);
-    if ([30, 37, 47, 49].includes(s.n)) ok(true, `paso ${s.n}: el duelo se gana al segundo intento`);
+    if ([29, 36, 46, 48].includes(s.n)) ok(true, `paso ${s.n}: el duelo se gana al segundo intento`);
   }
   const st = await state();
   ok(st.mode === 'title' && st.finished && st.finished.flags.juego_terminado, 'con los cuatro duelos perdidos una vez, la partida llega al final');
 }
 
 // ================================================================== 3. todos los objetos con todo
-const SUELTOS = [['sala_amazonas', 'usar', 'tele_amazonas', null], ['sala_amazonas', 'hablar', 'tele_amazonas', null], ['pecera', 'usar', 'kanban', 'rotulador_rojo'], ['pecera', 'usar', 'kanban', null]];
+const SUELTOS = [['sala_amazonas', 'usar', 'tele_amazonas', null], ['sala_amazonas', 'hablar', 'tele_amazonas', null], ['pecera', 'usar', 'kanban', 'rotulador_rojo'], ['pecera', 'usar', 'kanban', null],
+  ['ecosistema', 'coger', 'rotulador_cordel', null], ['ecosistema', 'usar', 'rotulador_cordel', null], ['ecosistema', 'mirar', 'rotulador_cordel', null]];
 const ROOMS = ['vestibulo', 'pecera', 'office', 'catacumba', 'pajarera', 'sala_amazonas', 'ecosistema', 'eventos', 'administracion', 'cpd'];
 async function everyItem(tag) {
   await G(() => __game.save('fz'));
@@ -176,7 +177,8 @@ async function everyItem(tag) {
       }
     }
   }
-  // E5 §7.4: verbos sueltos nuevos (sin objeto o con el suyo), en su sala: Usar la tele, Usar el rotulador con el kanban
+  // E5 §7.4 y E6 §11.1: verbos sueltos nuevos (sin objeto o con el suyo), en su sala: Usar y Hablar la tele, Usar el
+  // rotulador con el kanban, Coger/Usar el rotulador colgado del cordel
   for (const [room, verb, id, item] of SUELTOS) {
     if (args.sala && !String(args.sala).split(',').includes(room)) continue;
     await reset(room);
@@ -196,12 +198,12 @@ async function everyItem(tag) {
 async function objects() {
   console.log('\n3. Dar / Usar cada objeto con cada PNJ y hotspot\n');
   await fresh();
-  const at = args.rapido ? { 30: 'ACTO II' } : { 13: 'ACTO I', 28: 'ACTO II (pregunta en el aire)', 30: 'ACTO II', 46: 'ACTO III' };
+  const at = args.rapido ? { 29: 'ACTO II' } : { 13: 'ACTO I', 27: 'ACTO II (sin turno: la tele aún sin preguntar)', 29: 'ACTO II', 45: 'ACTO III' };
   for (const s of STEPS) {
     if (s.n === 1) continue;
     await step(s.n);
     if (at[s.n]) await everyItem(at[s.n]);
-    if (s.n === (args.rapido ? 30 : 46)) break;
+    if (s.n === (args.rapido ? 29 : 45)) break;
   }
 }
 

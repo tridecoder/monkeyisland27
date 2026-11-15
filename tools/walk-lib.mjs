@@ -91,17 +91,24 @@ async function playDuel(seq0) {
     if (want === undefined) fail(`el duelo sigue tras las ${seq.length} jugadas previstas (fase ${st.duel.phase})`);
     if (st.duel.phase === 'reply') {
       if (typeof want !== 'string') fail(`se esperaba un remate (objeto ${want.objeto}) y el rival ataca con ${st.duel.attack}`);
-      if (st.duel.attack !== want) {
+      // E6 §6.7: con `cabe` (D2, R09) el menú trae la réplica dos veces: la corta (`optionPairs[i] === id`) y la larga
+      // (`'larga'`). Un id elige siempre la corta; `'R09:larga'` elige la larga (solo pruebas: no castiga, el ataque se repite)
+      const [wid, wmodo] = want.split(':');
+      const sabe = (id) => (st.duel.optionPairs ? st.duel.optionPairs.includes(id) : st.dialog.includes(pairs[id]));
+      if (st.duel.attack !== wid) {
         // plan §7.1.9: la REVANCHA empieza por el ataque que ganó (flag duel:<id>:empieza); el orden de las parejas puede
         // girar, pero las parejas que tocan antes del siguiente remate son las mismas
         // girado: se contesta el ataque que llega (un acierto es un acierto; los remates llegan por puntos)
         const revancha = st.flags && st.flags['duel:' + st.duel.id + ':perdido_n'] > 0;
-        if (!revancha) fail(`el rival ataca con ${st.duel.attack}; según la biblia tocaba ${want} (orden del mazo, §6.4)`);
-        if (!st.dialog.includes(pairs[st.duel.attack])) { await G(k => __game.chooseDialog(k), st.duel.weakIndex); continue; }   // no la sabe: un fallo (va al final)
-        seq = seq.slice(); seq[i] = st.duel.attack;
+        if (!revancha) fail(`el rival ataca con ${st.duel.attack}; según la biblia tocaba ${wid} (orden del mazo, §6.4)`);
+        if (!sabe(st.duel.attack)) { await G(k => __game.chooseDialog(k), st.duel.weakIndex); continue; }   // no la sabe: un fallo (va al final)
+        seq = seq.slice(); seq[i] = st.duel.attack + (wmodo ? ':' + wmodo : '');
       }
-      const k = st.dialog.findIndex(o => o === pairs[seq[i]]);
-      if (k < 0) fail(`la réplica de ${want} no está en el menú (¿no se aprendió? flag rep_${want.slice(1)}). Menú: ${JSON.stringify(st.dialog)}`);
+      const id = seq[i].split(':')[0], larga = wmodo === 'larga';
+      const OP = st.duel.optionPairs;
+      let k = OP ? OP.findIndex(p => p === (larga ? 'larga' : id)) : -1;
+      if (k < 0 && !larga) k = st.dialog.findIndex(o => o === pairs[id]);
+      if (k < 0) fail(`la réplica de ${want} no está en el menú (¿no se aprendió? flag rep_${id.slice(1)}). Menú: ${JSON.stringify(st.dialog)}`);
       await G(k => __game.chooseDialog(k), k);
       i++;
     } else if (st.duel.phase === 'finisher') {

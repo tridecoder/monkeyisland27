@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Walkthrough automático del PLAN DE COMEDIA §3.2 (42 pasos, ENMIENDA E1.4.4), con datos: cada paso = acciones + resultado
+// Walkthrough automático del recorrido vigente (ENMIENDA E6 §7: 49 pasos; walk-data.mjs), con datos: cada paso = acciones + resultado
 // esperado, hasta la tarjeta FE DE ERRATAS y los créditos (juego_terminado).
 //   node tools/walkthrough.mjs              orden de la tabla
-//   node tools/walkthrough.mjs --alt        orden alternativo (§3.1): Begoña antes de la Sala, FIRMA antes de FUENTE, el acta
+//   node tools/walkthrough.mjs --alt        orden alternativo (E6 §7.3): Begoña antes de la Sala, FIRMA antes de FUENTE, el acta
 //                                           de Gervasio antes del álbum (walk-data.mjs `ALT`)
 //   node tools/walkthrough.mjs --hasta=20   se para (con éxito) tras el paso 20
 //   node tools/walkthrough.mjs --lento      sin modo rápido (ver el texto) y con capturas de cada sala

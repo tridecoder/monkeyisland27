@@ -10,7 +10,8 @@
 // 'recogida'; `regleta_r3`: 'encendida' | 'apagada' (piloto verde). Flag que lee: paco_tickets (cifra del contador LED).
 // Cruces (§11.1): pone `cms_vivo` (regleta), `ruben_encontrado`, `taper_dado`, `herminia_de_alta`; lee `ruben_libre` y
 // `ticket_n1` (los pone P2, `AN_SALIDA`), `anselmo_dijo_regla` (P2, momento 8), `taper_huerfano` (P3, Vending) y
-// `evaristo_escuchado` (P3, paso 28: Bruno reconoce la coma en el armario, E2 §5.4).
+// `apagon_n` (PB, el apagón jugable de la Redacción: si ya se vio, no hay corte, E6 §2.1).
+// (E6 B8: Bruno ya no reconoce la coma de Evaristo en el armario; ya no se lee `evaristo_escuchado`.)
 // ENMIENDA E2 (P1): §5.4 (armario: los 48.000 y el tablero de Anselmo), L16, L37/B10 (números del contador con `miles`),
 // §7.2 (coletillas de Bruno fuera), §7.4 pasos 20-22 y 37 (armario), fase B (8) (Celestino no retransmite a Rubén),
 // (10) (fuera «¿Tú eres el nuevo?» del armario), (13) (despedida de Paco), §8 (sus «desde»).
@@ -20,8 +21,11 @@
 // `fax441` de Paco). §2.4 armario 27: dos tirones en I-II, estado `corre` del papel y línea de entrada en el III.
 // Texto §4: C40, C41, C43, C44, C72-C80, M16, D08-D16. Flags locales nuevos: cpd_regleta_mal_n, cpd_paco_fax_n,
 // cpd_papel_tirones.
+// ENMIENDA E6 (PC · docs/guion2/ENMIENDA_E6.md): §2.1 corte «MIENTRAS, EN LA REDACCIÓN» al apagar la R-3 sin apagón
+// previo (`corteRedaccion`, arte `planoRedaccionOscuras`; flag local cpd_corte_visto); §2.6 B8 (fuera la coma de Bruno
+// en el armario); §4.1 E247-E276, X2, X3, X11.
 import { buildRoom } from '../lib/room.js';
-import art, { primerPlanoRuben, planoRegletero, REGLETERO } from './art/cpd.art.js';
+import art, { primerPlanoRuben, planoRegletero, planoRedaccionOscuras, REGLETERO } from './art/cpd.art.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
 import { HITOS, hitoPendiente } from '../lib/celestino.js';
 import { miles } from '../lib/kit.js';
@@ -38,6 +42,9 @@ const REJILLA_VOZ = { blocking: true, etiqueta: 'POR LA REJILLA', sfx: false };
 // E5 §2.4: la matricial del 27, suave (el `typewriter` del motor a un tercio de volumen)
 const TECLEO = [0, 0.09, 0.15, 0.27, 0.33, 0.4].map(at => ({ wave: 'noise', dur: 0.025, vol: 0.08, at, filter: { type: 'bandpass', freq: 2600 } }));
 const S = { teclea: 0 };                                                         // estado de módulo (no se guarda)
+// E6 §2.1: el PLIN de la Redacción (copia de la receta de pecera.escenas.js, que es de otro paquete: no se exporta)
+const PLIN = { notes: ['E6', 'B6'], step: 0.07, wave: 'triangle', vol: 0.1 };
+const Y = 'yoli_tendencias';
 
 // ------------------------------------------------------------------ §4.6 Dos titulares en un armario (paso 35)
 async function revelacionRuben(api) {
@@ -84,12 +91,12 @@ async function revelacionRuben(api) {
     await api.sayAs(R, 'Te he titulado toda la noche. Perdona. Eras lo único que pasaba.');
     await api.say('¿Y a ti cuánto te paga?');                                   // E2 §5.4: Rubén une el Titulator con los 48.000
     await api.sayAs(R, 'A mí, en bocadillos de atún. A Íñigo le pagan por mí 48.000 al mes.');
-    if (api.flag('evaristo_escuchado')) await api.say('Cuarenta y ocho mil. Con coma. Esa coma la conozco.');
+    await api.wait(700);                                                         // E6 B8 (E276): la coma la une quien oyó a Evaristo
     await api.say('¿Y el fax de F.P.?');
     await api.sayAs(R, 'Fuentes Próximas. Muy próximas: la impresora de Íñigo sale aquí.');
     // (E2 fase B (10): fuera «¿Tú eres el nuevo?» / «Llevo seis años.» / «Ah. Yo, cuatro meses…» / «Qué ilusión…»)
     await api.say('Sal de ahí. Vámonos.');
-    await api.sayAs(R, ['Mi baja es un pósit en el tablero de Anselmo. En POR HACER.',
+    await api.sayAs(R, ['Mi baja está en un pósit del tablero de Anselmo, en POR HACER.',
       'Y Anselmo no mueve un pósit sin pruebas de que existo.',
       'Nadie me ha hecho nunca una foto. Bueno, una. En Eventos. Al fondo.']);
     await api.wait(600);
@@ -153,8 +160,9 @@ async function falloRegleta(api, k) {
   });
 }
 
-/** R-3: la del pósit. Apaga la pantalla de métricas de la Redacción y el CMS vuelve (E5: sin la duda de Bruno, sin la
- *  megafonía de Yoli, que ya se oyó en el apagón, y sin «Ya me han abierto otro ticket…»). */
+/** R-3: la del pósit. Apaga la pantalla de métricas de la Redacción y el CMS vuelve (E5: sin la duda de Bruno y sin
+ *  «Ya me han abierto otro ticket…»). E6 §2.1: si el apagón jugable no se vio (`apagon_n` = 0), el corte de la Redacción
+ *  a oscuras, con las dos líneas de Yoli, antes de la rejilla. */
 async function tirarRegleta(api) {
   await api.cutscene(async () => {
     await api.walkTo('regleta_r3');
@@ -162,6 +170,8 @@ async function tirarRegleta(api) {
     api.sfx('click');
     api.setState('regleta_r3', 'apagada');                                       // el piloto verde se apaga
     await api.wait(1100);                                                        // un segundo de nada
+    // E6 §2.1: quien llega aquí sin haber visto el apagón jugable ve la Redacción a oscuras (una vez; el flag, al empezar)
+    if (!(api.flag('apagon_n') > 0) && !api.flag('cpd_corte_visto')) { api.setFlag('cpd_corte_visto', true); await corteRedaccion(api); }
     await api.megafonia('coro_desarrollo', 'CORO: ¡Ha sido Diseño!', REJILLA_VOZ);   // por la rejilla, de muy lejos
     api.face('down');
     await api.say('(a la rejilla) He sido yo. Pero gracias.');
@@ -176,6 +186,20 @@ async function tirarRegleta(api) {
     await api.sayAs(P, 'Tengo un hueco. Uno. ¿Qué querías?');
   });
   api.setFlag('cpd_paco_cms_dicho', true);
+}
+
+/** E6 §2.1 · «MIENTRAS, EN LA REDACCIÓN» (≈ 7-9 s: lo que tardan en leerse las dos líneas): plano detalle a oscuras con el monitor de Yoli y la linterna de
+ *  Anselmo; las dos líneas de Yoli son las del apagón de la Redacción (0 cadenas nuevas). Va dentro de la cinemática de
+ *  `tirarRegleta`: Esc lo salta entero (el estado ya está puesto: la R-3 apagada y, después, `cms_vivo`). */
+async function corteRedaccion(api) {
+  const C = { pub: false };
+  await api.detalle({ titulo: 'MIENTRAS, EN LA REDACCIÓN', w: 244, h: 98, y: 4, color: '#8ec4ff', oscurecer: 0.85,
+    draw: (g, r, t) => planoRedaccionOscuras(g, r, t, C) }, async (api) => {
+    const voz = { blocking: true, etiqueta: '', sfx: false, y: 70 };
+    await api.megafonia(Y, '¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?', voz);
+    api.sfx(PLIN); C.pub = true;                                                 // el monitor pasa a PUBLICADO
+    await api.megafonia(Y, '...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!', voz);
+  });
 }
 
 /** Mirar el regletero: el plano detalle con las cinco etiquetas, y las dos líneas de Bruno. */
@@ -229,11 +253,11 @@ const pacoDialog = {
           reply: (api) => `${miles(api.flag('paco_tickets'))}. Es tu número. Tiene más identidad que tú.` },
         { id: 'armario', text: '¿Qué hay en el armario 27?', goto: 'P_27' },
         { id: 'sol', text: '¿Cuándo fue la última vez que viste el sol?', once: true,
-          reply: ['Ticket 2.003: «luz natural». Estado: no prioritario. Me lo abrí yo.', 'En 2011. Sigo en cola.'] },
+          reply: ['Ticket 2.003: «luz natural». Estado: no prioritario. Me lo abrí yo.'] },   // E6 E247: fuera «En 2011…»
         { id: 'existir', text: '¿Me abres un ticket a mí? Para existir.', once: true,
           reply: ['Ya tienes uno. El 31.207: «Becario sin alta definitiva».', 'Asignado a: nadie. Es el más estable que tengo.'] },
         { id: 'rejilla', text: '¿Escuchas por la rejilla?',                                  // (se queda)
-          reply: ['No escucho. Oigo. Escuchar sería abrir un ticket.', 'Me entero de todo. No arreglo nada. Es el equilibrio.'] },
+          reply: ['No escucho. Oigo. Escuchar sería abrir un ticket.', 'Me entero de todo. No arreglo nada.'] },
         { id: 'adios', text: 'Me voy.', exit: true, reply: 'Cierra al salir. La puerta, no el servidor.' },   // E2 fase B (13)
       ],
     },
@@ -259,9 +283,9 @@ const pacoDialog = {
           reply: (api) => `Ticket ${miles((api.flag('paco_tickets') || 0) + 1)}: «Alta becaria Herminia». ¿Persona o herramienta?`,
           do: async (api) => { api.inc('paco_tickets'); }, goto: 'P_ALTA' },
         { id: 'tadeo', text: '¿Te escribe mucho Tadeo?', once: true,
-          reply: ['Cada reenvío suyo es un ticket. Carpeta: «La IA dice (sin leer)».', 'Le contesta mi respuesta automática. Hacen buena pareja.'] },
+          reply: ['Cada reenvío suyo es un ticket. Carpeta: «La IA dice (sin leer)».', 'Le contesta mi respuesta automática.'] },
         { id: 'rejilla', text: '¿Escuchas por la rejilla?',                                  // (se queda)
-          reply: ['No escucho. Oigo. Escuchar sería abrir un ticket.', 'Me entero de todo. No arreglo nada. Es el equilibrio.'] },
+          reply: ['No escucho. Oigo. Escuchar sería abrir un ticket.', 'Me entero de todo. No arreglo nada.'] },
         { id: 'wifi', text: '¿Se ha caído el wifi?', reply: 'No, el wifi no se ha caído. Has dejado de merecerlo.' },   // (se queda)
         { id: 'adios', text: 'Me voy.', exit: true, reply: 'Cierra al salir. La puerta, no el servidor.' },   // E2 fase B (13)
       ],
@@ -278,7 +302,7 @@ const pacoDialog = {
         { id: 'persona', text: 'Persona.', reply: 'Cola de personas. Detrás del nº 1, que es de julio. Estado: espera.' },
         { id: 'herramienta', text: 'Herramienta.',
           do: async (api) => {
-            await api.sayAs(P, 'Herramientas, por el otro circuito. El rápido.');
+            await api.sayAs(P, 'Herramientas, por el otro circuito, el rápido.');
             api.sfx('typewriter');
             await api.wait(900);                                                   // el contador LED cuenta cuarenta segundos
             api.sfx('beep');
@@ -306,7 +330,7 @@ const rubenDialog = {
         { id: 'discursos', text: '¿Escribiste tú los discursos de Íñigo?', once: true,
           do: async (api) => {
             await api.titular('TODOS. «NO ES UN DESPIDO: ES UNA SALIDA EN VALOR».', { who: R });
-            await api.sayAs(R, ['...Esa es mía. Perdón.', 'Le escribí también la respuesta. Por si un día alguien se la decía.']);
+            await api.sayAs(R, ['...Esa es mía.', 'Le escribí también la respuesta. Por si un día alguien se la decía.']);
             await api.say('¿Y cuál era?');
             await api.sayAs(R, '«Claro. Y la carta de despido es una newsletter personalizada».');
             api.learnReply('rep_13');
@@ -329,7 +353,7 @@ const rubenDialog = {
         { id: 'adios', text: 'Ahora vuelvo.', exit: true,
           do: async (api) => {
             await api.titular('BECARIO PROMETE VOLVER.', { who: R });
-            await api.sayAs(R, '...Perdón. Te espero. No me muevo. No puedo.');
+            await api.sayAs(R, '...Te espero. No me muevo. No puedo.');
           } },
       ],
     },
@@ -379,11 +403,12 @@ export default buildRoom({
     cpd_regleta_mal_n: 'int · PC · E5 §2.2: regletas equivocadas (R-1, R-2, R-4) desenchufadas',
     cpd_paco_fax_n: 'int · PC · E5 §2.3: veces que se pregunta a Paco por el fax sin la pegatina',
     cpd_papel_tirones: 'int · PC · E5 §2.4: tirones al papel del 27 en los Actos I-II',
+    cpd_corte_visto: 'bool · PC · E6 §2.1 · ya se vio el corte de la Redacción a oscuras',
   },
 
   objects: [
     ascensorObjeto('ascensor_cpd', {
-      mirar: 'El ascensor. En el sótano, el «tin» suena más bajito. Por respeto.',
+      mirar: 'El ascensor. En el sótano, el «tin» suena más bajito, por respeto.',
       cerrar: 'Se cierra solo. Lo programó Eutimio. Tiene número de incidencia.',
       empujar: 'No. Si lo empujo, Eutimio lo apunta como «impulso no autorizado».',
       hablar: '«Subo». No contesta. Pero sube. Ya es más que la mayoría.',
@@ -392,9 +417,9 @@ export default buildRoom({
       mirar: 'Cuarenta armarios iguales. Zumban en mi bemol.',
       abrir: 'Cerrados. Treinta y nueve zumban. El 27 mastica.',
       hablar: 'Les hablo. Me contestan en mi bemol. Es más de lo que hace mucha gente.',
-      empujar: 'Empujo uno. Eutimio carraspea. Paro. Eutimio para. Nos entendemos.',
-      coger: 'Pesan como un servidor. Porque son servidores.',
-      tirar: 'Tiro de un cable. Eutimio carraspea a seis metros. Lo suelto.',
+      empujar: 'Empujo uno. Eutimio carraspea. Paro, y Eutimio para.',
+      coger: 'Pesan como un servidor, porque son servidores.',
+      tirar: 'Tiro de un cable. Eutimio carraspea a seis metros y lo suelto.',
     } },
     { id: 'armario_27', name: 'armario 27', state: 'cerrado', states: ['cerrado', 'entreabierto', 'abierto', 'vacio'], handlers: {
       mirar: async (api) => {
@@ -421,7 +446,7 @@ export default buildRoom({
         else if (acto3(api)) await api.say('¿Hola? ...Alguien deja de teclear. Y vuelve a teclear más bajito.');
         else await api.say('Le hablo al armario. Me contesta «ñiiic». Es más de lo que hace Teodoro.');
       },
-      'dar:taper_huerfano': async (api) => { if (rubenAqui(api)) await darTaper(api); else await api.say('Al armario no. El táper es para alguien que coma.'); },
+      'dar:taper_huerfano': async (api) => { if (rubenAqui(api)) await darTaper(api); else await api.say('Al armario no. Esto es para alguien que coma.'); },
     } },
     // estados del arte (cpd.art.js): 'asoma' (la tira serpentea por el suelo) · 'tensa' (al tirar) · 'recogida' (tras la
     // revelación) · E5 'corre' (Acto III sin Rubén: sale a chorro y se amontona)
@@ -433,7 +458,7 @@ export default buildRoom({
       tirar: async (api) => {
         if (!acto3(api)) { await tirarPapelPronto(api); return; }
         if (!api.flag('ruben_encontrado')) { await api.scene('revelacion_ruben'); return; }
-        if (api.flag('ruben_libre')) await api.say('Brais ya no está. La matricial sigue imprimiendo. Por respeto.');
+        if (api.flag('ruben_libre')) await api.say('Brais ya no está, y la matricial sigue imprimiendo.');
         else await api.say('Ya no hace falta. Ahora Brais me abre él.');
       },
       coger: 'No lo arranco. El papel continuo, si se corta, deja de ser continuo.',
@@ -446,7 +471,7 @@ export default buildRoom({
       mirar: mirarRegletero,
       tirar: usarRegletero,
       usar: usarRegletero,
-      empujar: 'La empujo con el pie. El piloto ni parpadea. Tiene brida.',
+      empujar: 'La empujo con el pie. El piloto ni parpadea: tiene brida.',
       coger: 'Tiene brida. No me la llevo. Pero el enchufe no tiene brida.',
       abrir: 'No se abre. Dentro solo hay corriente. Y no es la mía.',
       cerrar: async (api) => { await api.say(api.getState('regleta_r3') === 'apagada' ? '¿Volver a encenderla? Arriba ya se han acostumbrado.' : 'Ya está cerrado. Cinco bridas lo dicen.'); },
@@ -461,35 +486,35 @@ export default buildRoom({
           '«(Nota del autor: tengo sueño).» La vuelvo a poner. El ventilador la necesita.']);
         api.setFlag('profecia_leida', true);
       },
-      usar: 'Ya está encendido. Nadie sabe dónde está el botón. Eutimio no pregunta.',
+      usar: 'Ya está encendido. Nadie sabe dónde está el botón.',
       empujar: 'La cuña es una hoja doblada: «Libro de Estilo». Pesa más que el ventilador.',
       hablar: 'Le hablo. Me contesta con prosa. Ventilada.',
     } },
     { id: 'libro_visitas', name: 'libro de visitas', handlers: {
       mirar: async (api) => {
-        if (api.flag('ruben_libre')) await api.say(['Libro de visitas de Sistemas: «Brais. Entrada: julio. Salida: hoy».', 'La salida, con letra de Eutimio. Apretando mucho.']);
+        if (api.flag('ruben_libre')) await api.say(['Libro de visitas de Sistemas: «Brais. Entrada: julio. Salida: hoy».', 'La salida, con letra de Eutimio, apretando mucho.']);
         else await api.say('Libro de visitas de Sistemas: «Brais. Entrada: julio. Salida: —».');
       },
-      usar: 'Firmo: «Bruno. Entrada: 2020. Salida: —». Quedo igual que Brais.',
+      usar: 'Firmo: «Bruno. Entrada: 2020. Salida: —».',
       coger: 'Si me lo llevo, Eutimio no sabe quién ha venido. Que es nadie, pero apuntado.',
       abrir: 'Ya está abierto. Por la misma página.',
-      cerrar: 'Si lo cierro, Brais no sale ni en el libro. Lo dejo abierto.',
+      cerrar: 'Si lo cierro, Brais no sale ni en el libro.',
     } },
     { id: 'contador_tickets', name: 'contador de tickets', handlers: {
       mirar: async (api) => { await api.say(`TICKETS ABIERTOS: ${miles(api.flag('paco_tickets'))}. Sube cada vez que respiro. Lo he comprobado.`); },
-      usar: 'No tiene botones. Sube uno cada vez que entro. Soy una incidencia.',
+      usar: 'No tiene botones. Sube uno cada vez que entro: soy una incidencia.',
       empujar: async (api) => { api.inc('paco_tickets'); api.sfx('beep'); await api.say('Lo empujo. Sube uno. Me lo apunta a mí.'); },
       hablar: 'Le pido que baje. Sube. Es su forma de decir que no.',
       coger: 'Ocho tornillos para un contador. A mí me sujetan con un convenio.',
     } },
     { id: 'registro_tickets', name: 'registro de tickets', handlers: {
       mirar: async (api) => {
-        await api.say([api.flag('ruben_libre') ? 'Ticket nº 1, julio: «Alta becario Brais». Estado: cerrado. Por fin.'
+        await api.say([api.flag('ruben_libre') ? 'Ticket nº 1, julio: «Alta becario Brais». Estado: cerrado.'
           : 'Ticket nº 1, julio: «Alta becario Brais». Estado: pendiente.',
         'Nº 2, hoy: «Alta portátil de Infografía». Denegado.', 'Motivo: «No ha pasado por Desarrollo». Firmado: Anselmo.',
-        'Nº 3, 2017: «El CMS se cuelga con la pantalla de la Redacción».', '«Va a la regleta R-3 de Sistemas. Apagarla». Estado: no prioritario.']);
+        'Nº 3: «El CMS se cuelga con la pantalla de la Redacción».', '«Va a la regleta R-3 de Sistemas. Apagarla». Estado: no prioritario.']);
         api.setFlag('vio_ticket_3', true);
-        if (api.flag('herminia_de_alta')) await api.say('Y al final, de hoy: «Alta becaria Herminia». Cuarenta segundos. De la casa.');
+        if (api.flag('herminia_de_alta')) await api.say('Y al final, de hoy: «Alta becaria Herminia», en cuarenta segundos.');
       },
       abrir: async (api) => { await api.say('Lo abro por donde siempre: por el principio. Nadie llega al final.'); },
       coger: 'Pesa más que la paciencia de Eutimio. No me lo llevo.',
@@ -498,7 +523,7 @@ export default buildRoom({
     { id: 'cementerio_ratones', name: 'caja de ratones', handlers: {
       mirar: 'Caja de ratones de bola. Eutimio no los tira. Dice que aún ruedan por dentro.',
       coger: 'Si me llevo uno, Eutimio lo apunta. Y lo tacha cuando ruede.',
-      usar: 'Muevo una bola. Rueda por dentro. Eutimio tenía razón.',
+      usar: 'Muevo una bola y rueda por dentro, como decía Eutimio.',
       hablar: 'Les doy el pésame. Uno rueda. Lo tomo como un sí.',
       empujar: 'La caja no se mueve. Pesa como treinta jefes de Sistemas.',
     } },
@@ -506,7 +531,7 @@ export default buildRoom({
     { id: 'rejilla_cpd', name: 'rejilla', handlers: {
       mirar: say('Una rejilla del falso suelo. Por aquí suben las voces del edificio.', 'Eutimio lo sabe todo. No es intuición: es fontanería.'),
       usar: usarRejilla,
-      abrir: paco('Ahí abajo hay cables de 1997. Y un bocadillo de 2003.'),
+      abrir: paco('Ahí abajo hay cables viejos. Y un bocadillo de 2003.'),
       hablar: 'Hablo por la rejilla: «¿Hola?». Arriba alguien contesta: «Se toma nota».',
       coger: 'Está atornillada. Si me la llevo, el edificio se queda sin oídos.',
       empujar: 'La piso. Suena a planta 2. Me aparto, por si me oyen.',
@@ -517,7 +542,7 @@ export default buildRoom({
     { id: P,
       murmurs: ['48.213... 48.214... Esto no para.', 'No, mamá, el wifi no se ha caído. Has dejado de merecerlo.',
         'A las seis y media se va la gente. Los tickets se quedan. Y yo...',              // §8.7 · E5 C76
-        'Me abrió un ticket con márgenes. Lo tengo enmarcado.'],                          // adenda 4.6b
+        'Me abrió un ticket con márgenes, y lo tengo enmarcado.'],                          // adenda 4.6b
       handlers: {
         mirar: 'Eutimio Ticket. No le da la luz natural desde que había fax en cada mesa.',
         hablar: async (api) => { await api.dialog('paco'); },
@@ -526,7 +551,7 @@ export default buildRoom({
         'dar:ticket_n1': paco('Quédatelo. Yo ya tengo el recuerdo.'),
         'dar:tarjeta_becario': paco('«Pellizco». Te abro un ticket: «Nombre mal escrito». Ponte a la cola.'),
         'dar:album_eventos': paco('Fotos de eventos. Yo no salgo en ninguna. Lo tengo por ticket.'),
-        'dar:taper_huerfano': paco('Un táper sin nombre. Ticket abierto: «Táper huérfano». Estado: tuyo.'),
+        'dar:taper_huerfano': paco('Ticket abierto: «objeto huérfano». Estado: tuyo.'),
         'dar:*': paco('¿Viene con número de ticket? Pues no lo veo.'),
         empujar: 'Eutimio ni se gira. Escribe algo. Creo que ya consto.',
         tirar: 'Le tiro del forro polar. Me mira como a una impresora sin driver.',
@@ -537,8 +562,8 @@ export default buildRoom({
       hablar: async (api) => { await api.dialog('ruben'); },
       'dar:taper_huerfano': darTaper,
       'dar:cafe': rub('¿Café? Gracias. Pero lo que necesito es un táper.'),
-      'dar:album_eventos': rub('Ahí salgo. Al fondo. Siempre al fondo. Es mi encuadre.'),
-      'dar:*': async (api) => { await api.titular('¿ES UN TÁPER?', { who: R }); await api.sayAs(R, '...No. Pues gracias igual.'); },
+      'dar:album_eventos': rub('Ahí salgo. Al fondo. Siempre al fondo.'),
+      'dar:*': async (api) => { await api.titular('¿ES COMIDA?', { who: R }); await api.sayAs(R, '...No. Pues gracias igual.'); },
       empujar: 'No. Bastante empujado está. Lleva cuatro meses en un armario.',
       tirar: 'No puedo sacarlo a tirones. Su baja es un pósit. Y el pósit es de Anselmo.',
     } },

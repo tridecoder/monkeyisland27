@@ -441,3 +441,92 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
 - Pruebas antiguas al día con los textos de §4 (C17, C22, C44, C63, C72-C75, C94, D06-D17, M04, M09, M13, M20, K02,
   R4, C83, C45, C102-C103) y con los puzles nuevos (regletero con menú, ticket 0.441, columna, estampida por la tele,
   N6 con `rvLeido`, submenú del ascensor con Escape → rellano, `tamb3`).
+
+## E6. ENMIENDA E6 — remate seco, duelos con cuerpo, apagón y atasco que se ven
+
+> Guion: `docs/guion2/ENMIENDA_E6.md` (revisión 2, la contra). Paquetes P0 (motor) ∥ I1 (comunes) → PA ∥ PB ∥ PC ∥ PD ∥
+> PE ∥ PF (salas y titulador) → I2 (recorridos, pruebas, documentación). Tablas de trabajo en `docs/guion2/e6/`
+> (`tabla.mjs`: lo que SÍ se aplica; `tumbadas.md`: lo que NO; `nuevos.mjs`; `verifica.mjs`). Prueba: `node
+> tools/test-e6.mjs` (en `test-all`); capturas en `tools/shots/e6-*.png`. APIs: `docs/CONTENT_SCHEMA.md` §7
+> «ENMIENDA E6» y §10 (`cabe`).
+
+### E6.1 Dónde vive cada cosa
+
+| Qué (E6) | Fichero |
+|---|---|
+| `cabe` del duelo (la réplica que tiene que caber; la larga nunca es fallo), etiqueta `tag` en `choose` (el «COMODÍN»), N4 (Mirar a Bruno gana al hotspot de debajo), N5 (Hablar con el actor tapado por Bruno), N11 (táctil a DPR 1) | `engine/duel.js`, `engine/core.js`, `engine/ui.js` (P0); prueba `tools/test-e6-motor.mjs` |
+| L4 tras abrir el armario («Se llama Brais.»), «Hablar con Bruno» = su meta, Valentín `casco_fuera`, «...CABE.» en la R09, pistas `turno` y `columna`, `SIN_DESTINO`, bajas de murmullos de `actors.js` (§4.3), topes de §8 y `--e6`, `walk-lib` con `'R09:larga'` | `content/game.js`, `actors.js`, `duelo.js`, `pistas.js`, `lib/directorio.js`, `tools/plan-rules.mjs`, `tools/text-audit.mjs`, `tools/walk-lib.mjs` (I1) |
+| La tele de la Sala sintoniza a Gertrudis (árbol `tele_sala`, `hablarTele`, `teleGertrudis(api, { sintonizada })`), el atasco anunciado (plano de la puerta, los tres se giran, «¿Necesitan ayuda?», anuncio a los 20 s; Mirar = N2) | `content/rooms/sala_amazonas.js` (PA) |
+| El corte de Sistemas «MIENTRAS, EN LA REDACCIÓN» (R-3 sin apagón previo; `cpd_corte_visto`; `planoRedaccionOscuras`; `PLIN` copiado), B8 | `content/rooms/cpd.js`, `art/cpd.art.js` (PC) |
+| Camino del registro con las dos de Yoli (`cmsVivo`), «Dos IAs» sin Bruno, N11 de Anselmo y el gesto del rotulador, Valentín con globo «…», coro «D3: No.» a 6 | `content/rooms/pecera*.js` (PB) |
+| D2 de tres asaltos con `cabe` (R09 corta «Tráeme el contexto.»), D3 con la R03 segunda («El acta se necesitaba para... para...») | `content/rooms/catacumba.js`, `pajarera.js` (PD) |
+| El rotulador colgado del cordel (hotspot `rotulador_cordel`, 3×9 px tras la integración), B9 | `content/rooms/ecosistema.js`, `art/ecosistema.art.js`, `administracion.dialogos.js` (PE) |
+| La 5.ª publicación espera («Dejarlo»); la casa del titulador `CASA = 225000`: pie «LA CASA: 225.000» y, al batirla, «LA CASA: 225.000 · TÚ: n» en oro con fogonazo, temblor y `sfx('good')` una sola vez (`once:pecera_casa_batida`) | `content/rooms/pecera.titulador.js` (PF; piezas y fórmula intactas) |
+
+### E6.2 Reglas de texto nuevas (`--e6`; `test-all` pasa `--plan --e2 --e5 --e6`, también con `--sala`)
+
+- **Remate seco** (`esRemateSeco` de `tools/plan-rules.mjs`): cadena de ≥ 2 frases cuya última frase tiene 1-3 palabras
+  y acaba en «.» o «!» (no cuentan preguntas, frases cortadas ni cadenas de una frase; sin `music.js`). Tope: ≤ 16,5 %
+  de las cadenas del juego. Aviso (no fallo): un fichero de sala por encima del 22 % (sin Eventos ni los datos del
+  titulador).
+- Topes en cadenas: «táper» ≤ 17, año 19xx/20xx ≤ 35, «Huele a 2019» ≤ 1, «Diecinueve años» ≤ 4, «Lo que diga el Lector
+  Medio» ≤ 5, «Era solo eso» ≤ 5; en el código de la Redacción, «D3: No.» (`['D3', 'No.']` y `['D3', '...No.']`) ≤ 6.
+- Aviso: **duplicados audibles** (cadena > 25 caracteres en dos salas distintas, sin las de `DUP_PERMITIDAS`). Si una
+  frase tiene que vivir en dos salas, decídelo y apúntala allí con el motivo.
+- Una sola golpe por línea: cortar = quitar el remate apilado y dejar la frase; nada de coletilla tras el remate. Las
+  reescrituras van por la tabla; no se reescribe para ganar décimas.
+- Comprobar: `node tools/text-audit.mjs --estatico --plan --e2 --e5 --e6 --recuento` (con `--sala=<id>` para una sala).
+  Al cerrar E6: remate seco 514 de 3.558 = 14,4 %; táper 17; años 33; «Huele a 2019» 1; «Diecinueve años» 4; «Lo que
+  diga el Lector Medio» 5; «Era solo eso» 5; «D3: No.» 6; ninguna sala > 22 % (la peor, `ecosistema.js`, 21,7 %); 0
+  duplicados audibles.
+
+### E6.3 El recorrido de 49 pasos y las pruebas
+
+- `tools/walk-data.mjs` = §7.2 (49 pasos) y `ALT` = §7.3. El 28 funde los 28-29 de E5: Hablar tele → «Buenas noches,
+  Gertrudis.» → «¿Y cuáles son los siguientes pasos?» (en modo rápido el atasco se resuelve por la vía del anuncio). 36:
+  D2 `['R06', 'R02', 'R09', {objeto: 'manual_fax'}]` (la R09 la corta). 46: D3 `['R07', 'R03', …]`. La L4 suena al
+  entrar en Marketing y Comercial (42). El corte de Sistemas no sale en el camino (el apagón del 20 va antes).
+- `extras.mjs` (107 pasos): X renumerados; las cuatro vías del atasco desde el paso 27 (el atasco llega por la tele;
+  anuncio a los 20 s); XE6-1 el corte (R-3 sin apagón), XE6-2 el camino del registro con Yoli, XE6-3 la vía del Vending
+  entera, XE6-4 D2 con la larga dos veces (0 fallos) y XE6-5 «Nada. Gracias, Gertrudis.» en la tele.
+- `play-mouse.mjs`: la tele con clics, el atasco anunciado y Empujar a Fermín (esperando a que Bruno llegue andando),
+  D2 con la larga y la corta, D3, el rotulador cogido del cordel; capturas `tools/shots/e6-raton-*.png` tomadas antes de
+  pasar cada globo. `--hasta=N` para depurar.
+- `fuzz.mjs`: puntos de guardado del recorrido de 49; Hablar tele, Coger/Usar/Mirar el rotulador del cordel sueltos.
+- `test-e6.mjs`: las ocho de paquete y las propias (§11.2.6-7, el 28 sin Vending, duelos, COMODÍN en D1, medida y topes).
+
+### E6.4 Decisiones de la integración (I2)
+
+- §4.3: fuera de los genéricos del Titulator de Despachos «EL IBEX ABRE PLANO…» (vive en la escena 7.2) y de sus
+  hazañas «BECARIO LLAMA A UN COLCHÓN…» (vive en la Sala, titular de la derrota de D1). La razón repetida («Son nueve
+  razones…») se busca por el titular, no por el índice.
+- `DUP_PERMITIDAS` añade «Lo que diga el Lector Medio.»: M25 (opción de la puerta de Despachos) y M24 (Hablar con el
+  Lector en la Sala con Gervasio delante) se quedan las dos por la tabla de tics de §2.8.
+- El rotulador colgado pasa de 2×7 a 3×9 px (capucha con brillo y etiqueta blanca): a tamaño de juego el de 2×7 se leía
+  como otra raya del termómetro. El hotspot no cambia.
+- Medida del camino principal (49 pasos, modo rápido, mismo método que E5): 553 líneas · 26.316 caracteres · 32,4 min
+  (E5: 552 · 26.533 · 32,6). §9.1 preveía −2: no contaba que en el recorrido de E5 la L4 se perdía (ahora suena: +4) ni
+  que la grabación de Gervasio no salía en modo rápido, y contaba E-53 como una línea (eran tres, más el titular del
+  viaje al Vending). Se cumple el tope de §1 (+6). Remate seco en el camino: 97 de 553 (17,5 %).
+- Atasco anunciado (§2.2): tras girarse los tres, **Bruno da hasta 44 px hacia la puerta** y la mira antes de «¿Necesitan
+  ayuda?» (sin texto nuevo). La Sala mide 320 px y no hay travelling: sin ese paso, la pregunta salía en la otra punta
+  de la sala y no se veía a quién iba dirigida.
+- `play-mouse`: en el atasco el clic de Empujar va al centro del grupo (cualquiera de los tres resuelve la vía); a Fermín
+  solo se le podía pinchar en el borde de su caja y, con el temblor, el clic caía en la puerta de detrás. Y espera a que
+  Bruno llegue andando (cruzar la Sala no pone el juego «ocupado»; otro clic en el panel cancelaba el paseo).
+- `text-audit`: si el recorrido falla, dice el paso y sale con 1 (antes moría con una excepción sin capturar: era el
+  «crash» del text-audit de `test-all` a media ronda, con el walk-data de E5 contra el D2 de tres asaltos). `--progreso`
+  enseña por dónde va. El prefijo de quien habla por fax («TEODORO (fax): ») no cuenta para las 80 columnas (N7 tiene 68
+  caracteres; con el prefijo, 83). Lo mismo en la medida del camino de `test-e5`/`test-e6`.
+- Herramientas con números de paso fijos, al recorrido de 49: `text-audit` (los 9 verbos en 13, 29 y 45), `sala.mjs` y
+  `contactos.mjs` (a2 = 29, a3 = 39, a3r = 40, a3b = 45), `play-mouse` (geometría y conexiones), `fuzz`. Con los de E5
+  (…46) `text-audit` y `sala.mjs sala_amazonas` se **colgaban**: el paso 46 de E6 ya es D3 ganada y entrar en la Sala
+  arranca el clímax, cuyo menú de D4 espera para siempre (test-all lo mataba a los 900 s).
+- `test-e4`: `clicOpcion` espera a que la opción esté en pantalla y a que el menú lleve más de 320 ms abierto (el motor
+  ignora a propósito los toques de sus primeros 250 ms) en vez de una espera fija: era el fallo intermitente del submenú
+  del titulador con siete pruebas a la vez. No es una carrera del juego.
+- En las capturas con ratón, «¡P=licar!» es la cruz del cursor del juego encima del texto (comprobado con el cursor
+  fuera: `tools/shots/e6-i2-publicar-*.png`); no es un fallo del menú.
+- Pruebas antiguas al día con §4.1 y §11.1 (`test-comedia-p1…p4`, `smoke` L3/L4/L5, `test-fase0` E346, `test-e5` con el
+  recorrido de 49); `test-comedia-p2` ya no pregunta por `nerea_backlog`: comprueba que en la Redacción, de Desarrollo,
+  solo están Anselmo y el coro.

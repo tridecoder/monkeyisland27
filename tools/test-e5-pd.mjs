@@ -340,7 +340,7 @@ try {
   ok(await logHas('A mí lo que me interesa es la economía. Y ahorrar.'), 'la escena de la chaqueta conserva la frase del Lector (siembra)');
   // C27: Acto III, Coger pósits
   await G(() => { __game.setFlag('acto_3_iniciado', true); });
-  await T('coger', 'postits', null, 'No. Íñigo los tiene contados. Por colores.', 'Y por horas.', 'C27');
+  await T('coger', 'postits', null, 'No. Íñigo los tiene contados por colores.', 'Y por horas.', 'C27 (E6 §4.1 E156: fundida)');
   await shot('despachos');
 } catch (e) {
   failures++;

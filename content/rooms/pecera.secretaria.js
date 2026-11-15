@@ -19,7 +19,7 @@ const CAD_OPCIONES = [
 const opcionesCadaver = () => [
   ...CAD_OPCIONES.map(o => ({ text: o.text, if: () => !cadaver.fallos.has(o.k), silent: false,
     do: async (api) => { cadaver.fallos.add(o.k); await cu(api, o.r); return 'CU_CADAVER_2'; } })),
-  { text: 'Para apuntar lo que me digan. Sin grabadora.', goto: 'CU_DA' },
+  { text: 'Para apuntar lo que me digan.', goto: 'CU_DA' },
 ];
 
 export const dialogoCustodia = {
@@ -68,7 +68,7 @@ export const dialogoCustodia = {
             await api.wait(500);              // (No se ríe. Lo dice. Es una sílaba.)
             await cu(api, 'Seis años en la web y viene a pedirme un boli para el papel.');
           } },
-        { text: 'Para tenerlo. Por si acaso.', goto: 'CU0',
+        { text: 'Para tenerlo, por si acaso.', goto: 'CU0',
           do: async (api) => { await cu(api, '"Por si acaso" es como desaparecen ochenta y tres bolis al año.'); } },
         { text: '¿Y cómo se consigue un boli aquí?', goto: 'CU0',
           do: async (api) => {
@@ -81,7 +81,7 @@ export const dialogoCustodia = {
     },
     CU_CADAVER: {
       onEnter: async (api) => {
-        if (!api.flag('custodia_regla')) { await cu(api, 'Un muerto sin que se lo pida. Qué raro.'); return 'CU0'; }
+        if (!api.flag('custodia_regla')) { await cu(api, 'Un muerto sin que se lo pida. No me había pasado nunca.'); return 'CU0'; }
         cadaver.activo = true; cadaver.dado = false; cadaver.fallos = new Set();
         api.sfx('pickup');                    // (la mano coge el boli y lo levanta a contraluz, despacio)
         await api.wait(500);
@@ -116,7 +116,7 @@ export const dialogoCustodia = {
       onEnter: async (api) => { await cu(api, 'Diga.'); },
       options: [
         { text: '¿Dónde está Ramírez?', once: true,
-          do: async (api) => { await cu(api, 'Desayunando.'); await api.say('¿Todavía?'); await cu(api, 'Él desayuna despacio. Yo apunto rápido.'); } },
+          do: async (api) => { await cu(api, 'Desayunando.'); await api.say('¿Todavía?'); await cu(api, 'Él desayuna despacio y yo apunto rápido.'); } },
         { text: '¿Dónde está la bandeja 2 de la impresora de la tercera?', once: true,
           do: async (api) => { await cu(api, 'No existe. Y tiene lista de espera.'); } },
         { text: '¿Dónde está la gente? La redacción está vacía.', once: true,
@@ -152,7 +152,7 @@ export const objetosSecretaria = [
         'dar:tarjeta_becario': async (api) => { await cu(api, ['"Pellizco". Seis años y nunca me ha pedido un boli.', 'O es respeto o es miedo. Las dos me valen.']); },
         'dar:ticket_n1': async (api) => { await cu(api, 'Brais. Por fin alguien lo apunta. Me debe dos bolis.'); },
         'dar:*': async (api) => { await cu(api, 'Eso no es material.'); },
-        abrir: async (api) => { await cu(api, 'Abierta dos dedos. Lo que cabe un boli. Siguiente.'); },
+        abrir: async (api) => { await cu(api, 'Abierta dos dedos, lo que cabe un boli.'); },
         empujar: async (api) => { await cu(api, 'Empuje algo suyo.'); },
         tirar: async (api) => { await cu(api, 'Empuje algo suyo.'); },
         coger: async (api) => { await cu(api, '¿Qué ha merecido usted hoy.'); },
@@ -161,7 +161,7 @@ export const objetosSecretaria = [
     { id: 'cartel_material', name: 'cartel del material', handlers: {
       mirar: '"EL MATERIAL NO SE PIDE. SE MERECE".',
       coger: async (api) => { await cu(api, 'El cartel tampoco se pide.'); },
-      usar: 'Lo leo dos veces. Sigo sin merecer nada. Coherente.',
+      usar: 'Lo leo dos veces y sigo sin merecer nada.',
     } },
     { id: 'timbre_secretaria', name: 'timbre', handlers: {
       mirar: 'Un timbre de mostrador. Pegatina: "NO".',
