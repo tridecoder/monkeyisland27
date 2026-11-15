@@ -141,6 +141,19 @@ try {
   await M.page.touchscreen.tap(p0.x, p0.y);
   ok(await waitFor(M.G, () => !__game.state().phone && !__game.state().dialog), '   «Guardar el móvil» con el dedo');
   await M.ctx.close();
+
+  // ENMIENDA E6 §6.6 (N11): en táctil a DPR 1 el lienzo usa la escala fraccionaria (≥ 97 % del alto en 844 × 390)
+  console.log('Táctil a DPR 1 (E6 N11)');
+  const D1 = await open({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true, deviceScaleFactor: 1 });
+  await wait(400);
+  const r = await D1.G(() => { const d = document.getElementById('screen') || document.querySelector('canvas'); const b = d.getBoundingClientRect();
+    const cs = getComputedStyle(d.parentElement);
+    const H = innerHeight - (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0);
+    const W = innerWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+    return { bh: b.height, bw: b.width, H, W }; });
+  const llena = Math.max(r.bh / r.H, r.bw / r.W);
+  ok(llena >= 0.97, `844 × 390 a DPR 1: el lienzo llena el ${(llena * 100).toFixed(1)} % (${Math.round(r.bw)}×${Math.round(r.bh)})`);
+  await D1.ctx.close();
 } catch (e) {
   fails++;
   console.log('  ✗ excepción: ' + (e && e.stack || e));

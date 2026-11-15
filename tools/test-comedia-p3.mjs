@@ -138,7 +138,7 @@ try {
   ok(await logHas('E-00: DE NADA') && !(await state()).dialog, '«Nada. Gracias, Gertrudis.» cierra con E-00');
   await clearLog();
   await verb('hablar', 'gertrudis'); await choose('Buenas noches, Gertrudis.');
-  ok(await logHas('ESTOY AGOTADA') && await logHas('CELESTINO. EXTENSIÓN 0.'), '3.er saludo: «agotada», representante Celestino');
+  ok(await logHas('ESTOY AGOTADA') && await logHas('CELESTINO, EXTENSIÓN 0.'), '3.er saludo: «agotada», representante Celestino');
   await choose('Buenas noches, Gertrudis.');
   ok(await logHas('CHISME: EL MICROONDAS'), 'después: chismes de relleno');
   await choose('Gracias, Gertrudis.');
@@ -183,7 +183,7 @@ try {
   ok(await visible('gervasio_acta') === 'office' && await logHas('E-54: ¿Y TÚ QUIÉN ERES?') && await logHas('Y no consto'), 'tras D3: Gervasio ante Gertrudis, «¿Y TÚ QUIÉN ERES?»');
   await clearLog();
   await verb('hablar', 'gervasio_acta');
-  ok(await logHas('Diecinueve años esperando cosas') && !(await state()).duel, 'hablar con Gervasio: línea, sin duelo');
+  ok(await logHas('Esperar cosas se me da bien.') && !(await state()).duel, 'hablar con Gervasio: línea, sin duelo');
 
   // ================================================================ REDACCIÓN DE PAPEL
   step('Redacción de papel · Aurora sin café (§5.3), Teodoro sin papel (teodoro_intentos_n)');
@@ -295,9 +295,9 @@ try {
   ok(await logHas('¿EL DE LA WEB? ¿EN MI PÁGINA? CONTESTA.'), 'entrada nueva de D2');
   await clearLog();
   await R.run(['verbo', 'hablar', 'teodoro_cuerpodoce']); await R.run(['opcion', 'Quiero firmar en tu página 7.']);
-  await R.run(['duelo', ['R06', 'R02', { objeto: 'manual_fax' }]]); await R.run(['cerrar']); await idle();
+  await R.run(['duelo', ['R06', 'R02', 'R09', { objeto: 'manual_fax' }]]);   // E6 §5.1: tres asaltos (la R09 corta) await R.run(['cerrar']); await idle();
   await R.check({ flags: ['duelo_teodoro_ganado', 'casilla_firma'] });
-  ok(await logHas('ESTOY FUERA DE LA OFICINA') && !(await logHas('ANTEAYER, EN PLOMO')), 'paso 33: D2 ganado con dos aciertos y el manual (sin R03), casilla_firma');
+  ok(await logHas('ESTOY FUERA DE LA OFICINA') && !(await logHas('ANTEAYER, EN PLOMO')), 'paso 36 (E6): D2 ganado con tres aciertos (R09 corta) y el manual (sin R03), casilla_firma');
 
   step('Paso 35 · golpe B: la pieza viaja por fax (teclas 1, 3 y 2), la factura y el faldón de Comercial (§4.2.6)');
   await setFlags({ casilla_hueco: true, pieza_escrita: true });
@@ -387,14 +387,14 @@ try {
   await setFlags({ bruno_sellado_frente: true });   // integración: evaristo_convoco ya no existe
   await clearLog();
   await verb('hablar', 'evaristo_salvedad');
-  ok(await logHas('Pellejo, con jota. Pase un segundo. Una cosita. Muy pequeña.') && await logHas('Bien centrado. Begoña tiene pulso.'), 'saludo de §5.2 y la frente sellada');
+  ok(await logHas('Pellejo, con jota. Pase un segundo, que es una cosita muy pequeña.') && await logHas('Lleva «RECHAZADO» en la frente. Bien centrado.'), 'saludo de §5.2 y la frente sellada');
   o = await opts();
   ok(o && o[0] === '¿Para qué me ha llamado?' && !o.some(t => /cotilleo|convoca|sigue aquí|Aurora dice/.test(t)), 'E0 de §5.2: «¿Para qué me ha llamado?» sin evaristo_convoco; fuera las opciones viejas');
   await choose('¿Por qué llama tanto?');
   ok(await logHas('En persona, comas. Por teléfono, nada.') && !(await opts()).includes('¿Por qué llama tanto?'), '«¿Por qué llama tanto?» once');
   // XE5: la prisa no rompe nada
   await choose('¿Para qué me ha llamado?'); await choose('¿Falta mucho?');
-  ok(await logHas('Si tiene prisa, se lo pongo por escrito.') && await logHas('Le he mirado el reloj y se ha dado cuenta.') && !(await flag('evaristo_escuchado')) && !(await state()).dialog,
+  ok(await logHas('Si tiene prisa, se lo pongo por escrito.') && !(await logHas('Le he mirado el reloj')) && !(await flag('evaristo_escuchado')) && !(await state()).dialog,
     'XE5: «¿Falta mucho?» le devuelve a su mesa, sin evaristo_escuchado');
   await verb('hablar', 'evaristo_salvedad'); await choose('¿Para qué me ha llamado?'); await choose('¿De qué trata?'); await choose('¿Una coma? ¿Solo?');
   ok(await logHas('Usted también es solo un becario. Y mire.') && !(await flag('evaristo_escuchado')), '«¿Una coma? ¿Solo?»: otro día');
@@ -404,7 +404,7 @@ try {
   await R.run(['cerrar']); await idle();
   await R.check({ flags: ['evaristo_escuchado', 'rep_16'] });
   ok(await logHas('Cláusula 4: «48,000 euros al mes».') && await logHas('Y yo: «Una coma también lo era. Hasta que alguien la firmó».')
-    && await logHas('Gracias por escucharme hasta el final. Nadie lo hacía desde 2009.') && !(await logHas('Desde julio')), 'paso 28: E_REVELA de §5.2, rep_16');
+    && await logHas('Gracias por escucharme hasta el final. La gente suele colgar en la coma.') && !(await logHas('Desde julio')), 'paso 28: E_REVELA de §5.2, rep_16');
   await clearLog();
   await verb('hablar', 'evaristo_salvedad');
   ok(await logHas('Disculpe. ¿Tiene un segundo? Son tres.') && !(await opts()).includes('¿Para qué me ha llamado?') && !(await opts()).includes('¿Ha enviado ya el correo?'), 'tras escucharle: sin «¿Para qué…?»');

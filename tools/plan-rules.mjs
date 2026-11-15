@@ -330,7 +330,10 @@ export const DUP_PERMITIDAS = ['Bruno Pellejo. Trece con espacios. Cabe.', '¿Y 
   // las del propio E6 (§2.1: las dos de Yoli en el corte de Sistemas y en el camino del registro, dos ramas que no se oyen
   // en la misma partida; §2.3: la despedida de Gertrudis en el Vending y en la tele) y §4.3 (`once` compartido)
   '¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?', '...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!',
-  'E-00: DE NADA. ESO TAMBIÉN SE DICE.', 'Ese anuncio en la espalda... se agradece. Pero lo hablamos.'];
+  'E-00: DE NADA. ESO TAMBIÉN SE DICE.', 'Ese anuncio en la espalda... se agradece. Pero lo hablamos.',
+  // §2.8 (tope «Lo que diga el Lector Medio» ≤ 5): se quedan M25 (opción de la puerta de Despachos) y M24 (Hablar con el
+  // Lector en la Sala, con Gervasio delante): dos gestos distintos del mismo personaje, decididos en la tabla de tics
+  'Lo que diga el Lector Medio.'];
 
 const filtroCadenas = (rel) => !(/[\\/]art[\\/]/.test(rel) || /flags\.js$/.test(rel) || /_plantilla/.test(rel));
 /** Cadenas de content/ con su fichero (el corpus de los topes «en todo el juego»). */

@@ -733,6 +733,11 @@ async function teleGertrudis(api, opts = {}) {
     api.cameraTo(PUERTA[0] + 30); api.shake(200, 1);  // plano de la puerta, 1 s: los tres tiemblan encajados
     await api.wait(700);
     for (const id of MERC) if (aqui(api, id)) api.faceActor(id, api.player);   // se giran hacia Bruno, sin soltarse
+    // [I2] Bruno da un par de pasos hacia la puerta antes de preguntar (la Sala mide 320 px: no hay travelling que
+    // diga «mira ahí»; el paso de Bruno une la pregunta con los tres encajados). Sin texto nuevo.
+    const p = api.game.player, hacia = Math.max(PUERTA[0] + 100, Math.round(p.x) - 44);
+    if (p.x - hacia > 8) await api.walkTo(hacia, p.y);
+    api.faceActor(api.player, MERC[0]);
     await api.say('¿Necesitan ayuda?');                // nadie contesta
     await api.wait(600);
     api.cameraFollow();

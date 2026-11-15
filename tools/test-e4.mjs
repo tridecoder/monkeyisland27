@@ -162,7 +162,11 @@ const dejar = async () => { await G(() => __game.chooseText('Dejarlo')); await i
 const clicV = async (x, y, pg = page) => { await pg.waitForTimeout(330); const p = await pg.evaluate(([x, y]) => __game.virtualToClient(x, y), [x, y]); await pg.mouse.click(p.x, p.y); };
 const tapV = async (x, y, pg) => { await pg.waitForTimeout(330); const p = await pg.evaluate(([x, y]) => __game.virtualToClient(x, y), [x, y]); await pg.touchscreen.tap(p.x, p.y); };
 const clicOpcion = async (texto, pg = page) => {
-  await pg.waitForTimeout(330);                          // el motor ignora los toques de los primeros 250 ms de un menú
+  // [I2, E6] bajo carga (siete pruebas a la vez) el submenú puede tardar más que una espera fija en abrirse: se espera a
+  // que la opción esté en pantalla Y a que el menú lleve abierto más de 320 ms de reloj del juego (el motor ignora, a
+  // propósito, los toques de sus primeros 250 ms: protección del doble toque). Si no llega en 15 s, falla como antes.
+  await until((t) => { const g = __game.game, d = __game.currentDialogOptions();
+    return !!(d && g.choice && g.realTime - g.choice.t0 > 320 && d.some(x => x.replace(/^› /, '') === t || x.startsWith(t))); }, texto, 15000, pg);
   const o = await pg.evaluate(() => __game.currentDialogOptions());
   const i = o.findIndex(x => sinMarca(x) === texto || x.startsWith(texto));
   must(i >= 0, `no está la opción «${texto}» en ${JSON.stringify(o)}`);

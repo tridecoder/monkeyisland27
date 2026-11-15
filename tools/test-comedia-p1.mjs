@@ -99,7 +99,7 @@ try {
   must(!(await G(() => __game.log.some(l => l.who === 'bruno' && l.text === '...'))), 'E2 §7.4 paso 1: Bruno dice «...» en la intro');
   await clearLog();
   await verb('ir', 'ascensor_vestibulo');
-  await expectLog(['Le saludo desde aquí. Por si acaso.'], 'ascensor bloqueado (§6.3)');
+  await expectLog(['El ascensor está al otro lado del torno. Le saludo desde aquí.'], 'ascensor bloqueado (§6.3, E6 E014)');
   await verb('hablar', 'torno'); await verb('abrir', 'torno'); await verb('hablar', 'logo_pared'); await verb('empujar', 'puerta_calle');
   await expectLog(['A los veinte, pita.', 'La mía dice «Pellizco».', 'Lo tomo como un sí.', 'mi abuela se entera antes que yo'], '§6.3 vestíbulo');
   ok('Intro, ascensor bloqueado y líneas nuevas de §6.3 (torno, logo, puerta)');
@@ -208,16 +208,16 @@ try {
   for (const o of ['¿Y por qué no va?', '¿Tú eres el de Sistemas?', '¿Cuándo fue la última vez que viste el sol?', '¿Me abres un ticket a mí? Para existir.',
     '¿Qué hay en el armario 27?', '¿Escuchas por la rejilla?']) await opcion(o);
   await opcion('Me voy.');
-  await expectLog(['Nadie lo lee.', `${miles(nTk)}. Es tu número. Tiene más identidad que tú.`, 'En 2011. Sigo en cola.',
+  await expectLog(['Nadie lo lee.', `${miles(nTk)}. Es tu número. Tiene más identidad que tú.`, 
     'Ya tienes uno. El 31.207: «Becario sin alta definitiva».', 'Es el más estable que tengo.',
     'Ticket 48.100: «Armario 27, mastica».', 'Escuchar sería abrir un ticket.', 'Cierra al salir. La puerta, no el servidor.'], 'Eutimio P0 §5.7 + E2 B10, §8, fase B (13)');
-  await expectNoLog(['Ticket propio', 'Esa es un servidor.'], 'E2 Eutimio P0');
+  await expectNoLog(['Ticket propio', 'Esa es un servidor.', 'En 2011. Sigo en cola.'], 'E2 Eutimio P0 (E6 E247: fuera)');
   await clearLog(); await hablar('paco_ticket'); await opcion('Me voy.');
   await expectNoLog(['Cierra al salir.', 'Estado: atendiendo', 'Otra vez tú.'], 'E2 §7.2 / pasos 21-22: despedida una vez, sin saludo de relleno');
   await verb('mirar', 'regleta_r3'); await verb('abrir', 'armarios'); await verb('empujar', 'ventilador'); await verb('mirar', 'libro_visitas');
   await verb('usar', 'ventilador'); await verb('abrir', 'libro_visitas');
   await expectLog(['Cinco regletas: NÓMINAS, ASCENSOR, un pósit, GERTRUDIS y NO TOCAR NUNCA.', 'El pósit, con letra de Eutimio', 'El 27 mastica.', 'Pesa más que el ventilador.', 'Libro de visitas de Sistemas',
-    'Nadie sabe dónde está el botón. Eutimio no pregunta.', 'Ya está abierto. Por la misma página.'], '§6.3 Sistemas + E2 §8 + E5 D08, C44');
+    'Ya está encendido. Nadie sabe dónde está el botón.', 'Ya está abierto. Por la misma página.'], '§6.3 Sistemas + E2 §8 + E5 D08, C44');
   ok('Sistemas: registro (nº 2 de Anselmo) → vio_ticket_3; Eutimio P0 con la cifra del contador (B10), despedida nueva; §8');
 
   // ------------------------------------------------------------ la regleta (paso 20)
@@ -247,7 +247,7 @@ try {
   await opcion('Me voy.');
   await expectFlags({ paco_dio_manual: true, rep_12: true }, 'Eutimio P1');
   await expectInv(['manual_fax'], [], 'Eutimio P1');
-  await expectLog(['0.441. De 1999. Estado: lo respetamos.', 'Toma el manual. Página 9: la respuesta automática. Mi mejor empleada.', 'Ahora se ve perfectamente que no hay carretera.', 'Hacen buena pareja.',
+  await expectLog(['0.441. De 1999. Estado: lo respetamos.', 'Toma el manual. Página 9: la respuesta automática. Mi mejor empleada.', 'Ahora se ve perfectamente que no hay carretera.', 'Le contesta mi respuesta automática.',
     'Has dejado de merecerlo.'], 'Eutimio P1');
   await expectNoLog(['Menú 9.', 'Estado: atendiendo'], 'E2 paso 21');
   ok('Paso 20: Tirar regleta_r3 → cms_vivo, rejilla (Yoli, coro), +318, Eutimio se gira; P1 con manual y R12 nueva');
@@ -295,7 +295,7 @@ try {
   });
   await capturar(() => { __game.doVerb('tirar', 'papel_continuo'); },
     [['Plano detalle: ARMARIO 27', 'ruben-primer-plano', 1400], ['BECARIO DETECTADO.', 'ruben-titular'], ['FACTURA COMO UN BANCO', 'bruno-titular'],
-      ['...Ya hablo como tú.', 'bruno-contagiado'], ['Esa coma la conozco.', 'armario-coma'], ['tablero de Anselmo', 'armario-anselmo']]);
+      ['...Ya hablo como tú.', 'bruno-contagiado'], ['tablero de Anselmo', 'armario-anselmo']]);   // E6 B8: fuera «Esa coma la conozco.»
   const probe = await G(() => { const g = __game.game; g.speak = g.__speakOrig; delete g.__speakOrig; return window.__probe; });
   const grito = probe.find(p => p.text === '¡EH! ¡QUE ES MI BORRADOR!'), primera = probe.find(p => p.text.startsWith('BECARIO DETECTADO'));
   must(grito && grito.armario === 'cerrado' && !grito.ruben, `4.6: al gritar, armario cerrado (${JSON.stringify(grito)})`);
@@ -306,10 +306,10 @@ try {
   await expectFlags({ ruben_encontrado: true }, '4.6');
   await expectLog(['Plano detalle: ARMARIO 27', '«EL TITULATOR ERA UN CHAVAL»: LA VERDAD QUE NADIE TE CUENTA.', 'Del verano pasado.',
     'Yo pensé que era un contrato.', 'EL 4 TE SORPRENDERÁ', '...Ya hablo como tú.', 'Eras lo único que pasaba.',
-    'A mí, en bocadillos de atún. A Íñigo le pagan por mí 48.000 al mes.', 'Cuarenta y ocho mil. Con coma. Esa coma la conozco.',
-    'la impresora de Íñigo sale aquí.', 'Mi baja es un pósit en el tablero de Anselmo. En POR HACER.',
+    'A mí, en bocadillos de atún. A Íñigo le pagan por mí 48.000 al mes.',
+    'la impresora de Íñigo sale aquí.', 'Mi baja está en un pósit del tablero de Anselmo, en POR HACER.',
     'Y Anselmo no mueve un pósit sin pruebas de que existo.', 'Bueno, una. En Eventos. Al fondo.', '¿Me traes un táper, ya que vas?'], '4.6 + E2 §5.4');
-  await expectNoLog(['Nemesio', 'Seis años en la web. Se pega.', 'Entonces el nuevo soy yo.', 'Qué ilusión.', '¿Tú eres el nuevo?', 'Bocadillos de máquina',
+  await expectNoLog(['Nemesio', 'Cuarenta y ocho mil.', 'Seis años en la web. Se pega.', 'Entonces el nuevo soy yo.', 'Qué ilusión.', '¿Tú eres el nuevo?', 'Bocadillos de máquina',
     '¿Lo has hecho tú?', '¿Cuál es el 4?'], 'E2 armario (§7.2, §7.4 paso 37, fase B (10))');
   await clearLog(); await verb('tirar', 'ruben');
   await expectLog(['Y el pósit es de Anselmo.'], 'E2 §2.6.5 (cpd.js:477)');
@@ -342,7 +342,7 @@ try {
   await capturar(() => { __game.chooseText('Herramienta.'); }, [['Esta casa da de alta antes', 'alta-paco'], ['¿CUARENTA SEGUNDOS?', 'alta-herminia']]);
   await closeDialog();
   await expectFlags({ herminia_de_alta: true, cpd_ruben_oyo_alta: true }, 'MP1');
-  await expectLog(['Herramientas, por el otro circuito. El rápido.', '«Herminia. Becaria de Desarrollo. Herramienta.» Estado: de la casa.',
+  await expectLog(['Herramientas, por el otro circuito, el rápido.', '«Herminia. Becaria de Desarrollo. Herramienta.» Estado: de la casa.',
     'Esta casa da de alta antes a un portátil que a un chaval.', 'Yo también soy herramienta.'], 'MP1 E1.5 + E2 L16 + E5 C73');
   await expectNoLog(['Sin pegatina.'], 'E5 C73');
   must((await logWho('Esta casa da de alta antes')) === 'paco_ticket', 'E2 L16: la línea no la dice Eutimio');

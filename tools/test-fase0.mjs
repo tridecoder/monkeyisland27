@@ -149,7 +149,7 @@ try {
   ok(L1.includes('A: En el pueblo, el que no sale en la foto no existe. Ponte en la foto.'), 'llamada 1: nivel 1 (metáfora)');
   ok(L2.includes('A: Si el torno no te conoce, preséntate en ese cuadro de caras.'), 'llamada 2: nivel 2 (concreta)');
   ok(L3.includes('A: Pega tu cara donde salen los jefes. ¿Tienes algo que pegue?') && L3[L3.length - 1] === 'B: Chicle en la tarjeta, tarjeta en el organigrama, y al torno.', 'llamada 3: nivel 3 y Bruno dice la acción AL COLGAR (E5 C102, C103)');
-  ok(L3.includes('A: El del mostrador siempre está mascando algo. Pídeselo.'), 'nivel 3: la línea extra (sin chicle)');
+  ok(L3.includes('A: El del mostrador siempre está mascando algo: pídeselo.'), 'nivel 3: la línea extra (sin chicle)');
   ok(L4.includes('A: Te lo digo otra vez, hijo, que no comes.'), 'llamada 4: nivel 3 repetido con «Te lo digo otra vez»');
   const quita = (L) => L.filter(x => !/^A: (¿Bruno\?|Hijo, ¿ya|Te llamo porque)/.test(x)).join('|');
   ok(quita(L1) !== quita(L2) && quita(L2) !== quita(L3) && quita(L3) !== quita(L4), 'nunca dos llamadas seguidas idénticas');

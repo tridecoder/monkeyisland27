@@ -48,7 +48,7 @@ const layout = {
   rollup_comercial: { rect: [244, 32, 20, 64], walkTo: [254, 112], face: 'up', cache: true,
     sprites: { desplegado: (g) => drawRollup(g, false), enrollado: (g) => drawRollup(g, true), default: (g) => drawRollup(g, false) } },
   termometro_ventas: { rect: [267, 30, 22, 34], walkTo: [270, 112], face: 'up' },
-  // E6 §2.9.1: el rotulador colgado del cordel (2×7 px en x 284-285, y 70-76, a la derecha del tubo; Bruno, parado a su izquierda (walkTo 270), no lo tapa), pinchado en la parte baja del papelógrafo; rect = dibujo
+  // E6 §2.9.1: el rotulador colgado del cordel (I2: 3×9 px en x 283-285, y 70-78, a la derecha del tubo; Bruno, parado a su izquierda (walkTo 270), no lo tapa), pinchado en la parte baja del papelógrafo; rect = dibujo
   // crecido para el mínimo de la auditoría (12×10) y pegado bajo el rect del termómetro (que se acorta) para no solaparse
   rotulador_cordel: { rect: [277, 64, 12, 16], walkTo: [270, 112], face: 'up', priority: 1, draw: drawRotuladorCordel },
   lema_enmarcado: { rect: [290, 18, 62, 33], walkTo: [318, 114], face: 'up' },
@@ -413,12 +413,14 @@ function drawTermometro(g) {
   for (let i = 0; i <= 3; i++) hline(g, tx + 6, ty + i * 9, 2, PAL.ink[3]);
 }
 /** E6 §2.9.1 · el rotulador rojo de Comercial, colgado de un cordel de 1 px pinchado en el papelógrafo del termómetro. */
+// [I2] 3×9 (antes 2×7): a tamaño de juego, el de 2×7 sobre el papel blanco se leía como otra raya del termómetro
 function drawRotuladorCordel(g) {
   const x = 284;
   px(g, x, 63, PAL.metal[5]); px(g, x + 1, 63, PAL.metal[3]);                 // la chincheta
   vline(g, x, 64, 6, PAL.wood[5]);                                            // el cordel (1 px)
-  rect(g, x, 70, 2, 2, PAL.ink[1]);                                           // la capucha
-  rect(g, x, 72, 2, 5, '#e03022'); vline(g, x, 72, 5, '#ff7a5a');            // el cuerpo, rojo (2×7 en total)
+  rect(g, x - 1, 70, 3, 2, PAL.ink[1]); px(g, x + 1, 70, PAL.ink[3]);         // la capucha (con su brillo)
+  rect(g, x - 1, 72, 3, 7, '#e03022'); vline(g, x - 1, 72, 7, '#ff7a5a');    // el cuerpo, rojo (3×9 en total)
+  hline(g, x - 1, 75, 3, '#fff4e0');                                          // la etiqueta blanca del cuerpo
 }
 /** El lema enmarcado de Comercial, ENTERO en 4 líneas 3×5 (antes «TODO ES…»). */
 function drawLema(g) {

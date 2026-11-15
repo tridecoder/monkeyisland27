@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// AUDITORÍA DE TEXTOS (QA): juega el recorrido de la ENMIENDA E5 (50 pasos) en modo rápido y, en tres momentos (Actos I, II y III), prueba los
+// AUDITORÍA DE TEXTOS (QA): juega el recorrido de la ENMIENDA E6 (49 pasos) en modo rápido y, en tres momentos (Actos I, II y III), prueba los
 // 9 verbos con TODO lo visible de las 10 salas (saliendo de diálogos con su despedida); recoge cada línea dicha
 // (`__game.log`) y comprueba:
 //   · ninguna intervención de más de 80 caracteres (biblia §0);
@@ -33,7 +33,7 @@
 //     «Diecinueve años» ≤ 4, «Lo que diga el Lector Medio» ≤ 5, «Era solo eso» ≤ 5 (cadenas) y «D3: No.» ≤ 6 (código de
 //     la Redacción). Avisos; con --e6, fallo. Siempre avisos (también con --e6, E6 §8): remate seco por fichero de sala
 //     > 22 % y duplicados audibles entre salas.
-//   node tools/text-audit.mjs [--plan] [--e2] [--e5] [--e6] · node tools/text-audit.mjs --estatico [--plan] [--e2] [--e5] [--e6] [--sala=pecera] [--recuento] (solo el repaso estático; --recuento:
+//   node tools/text-audit.mjs [--plan] [--e2] [--e5] [--e6] [--progreso] · node tools/text-audit.mjs --estatico [--plan] [--e2] [--e5] [--e6] [--sala=pecera] [--recuento] (solo el repaso estático; --recuento:
 //     cuántas lleva cada tope «en todo el juego», también los que no se pasan, E2 y E3)
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -165,7 +165,9 @@ async function everything() {
     await G(() => __game.load('ta'));
     await G(async (room) => { const g = __game.game; g.state.room = room; await g.runScript(async () => { await g.enterRoom(room, null, { restore: true }); }); }, room);
     const targets = await G(() => __game.objects().filter(o => o.visible !== false && !/^.*_a_|ascensor|torno|puerta/.test(o.id)).map(o => o.id));
+    if (ARGS.progreso) console.error(`  [text-audit] ${new Date().toISOString().slice(11, 19)} ${room}: ${targets.length} objetivos`);
     for (const id of targets) for (const v of VERBS) {
+      if (ARGS.progreso) console.error(`    · ${v} ${id}`);
       if (await G(() => __game.state().room) !== room) { await G(() => __game.load('ta')); await G(async (room) => { const g = __game.game; g.state.room = room; await g.runScript(async () => { await g.enterRoom(room, null, { restore: true }); }); }, room); }
       await G(([v, t]) => __game.doVerb(v, t), [v, id]);
       await escape();
@@ -208,10 +210,19 @@ await G(() => {
 });
 await G(() => __game.newGame());
 await collect();
+// [I2] E6: si el recorrido se rompe (p. ej. un walk-data viejo contra un duelo nuevo), se dice qué paso y por qué y se sale
+// con 1, en vez de morir con la traza de una excepción sin capturar (el «crash» del text-audit de test-all a media ronda)
 for (const s of STEPS) {
-  if (s.n > 1) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); }
+  if (ARGS.progreso) console.error(`  [text-audit] ${new Date().toISOString().slice(11, 19)} paso ${s.n}`);
+  try {
+    if (s.n > 1) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); }
+  } catch (e) {
+    console.log(`\n✗ TEXT-AUDIT: el recorrido falla en el paso ${s.n} [${s.sala}] ${s.txt}\n    motivo: ${e && e.message || e}`);
+    await browser.close().catch(() => {}); server.close();
+    process.exit(1);
+  }
   await collect();
-  if ([13, 30, 46].includes(s.n)) await everything();     // Actos I, II (tras D1) y III (Brais libre, paso 46 de E5)
+  if ([13, 29, 45].includes(s.n)) await everything();     // Actos I, II (tras D1) y III (Brais libre, paso 45 de E6)
 }
 await collect();
 
@@ -224,7 +235,9 @@ const NAME_RULES = [[/\bInigo\b/, 'Íñigo'], [/\bÍnigo\b/, 'Íñigo'], [/\bBeg
 texts.forEach((t, i) => {
   const who = lines.get(t).who;
   if (who === 'tarjeta') return;     // la tarjeta FE DE ERRATAS (plan §9) es una pantalla fija, no un globo
-  if (t.length > 80) long.push(`[${t.length}] ${who}: ${t}`);
+  // (el prefijo de quien habla por fax, «TEODORO (fax): » / «BEGOÑA (fax): », es una etiqueta: no cuenta; E6 N7 = 68 + 15)
+  const tl = t.replace(/^[A-ZÁÉÍÓÚÑ ]+ \((?:fax|correo)\): /, '').length;
+  if (tl > 80) long.push(`[${tl}] ${who}: ${t}`);
   if (widths[i] > 3) tall.push(`[${widths[i]} renglones] ${who}: ${t}`);
   // signos de apertura, frase a frase (los rótulos del narrador y las pantallas en MAYÚSCULAS también cuentan)
   for (const sent of t.split(/(?<=[?!»]|[^.]\.)\s+/)) {

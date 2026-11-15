@@ -89,18 +89,23 @@ async function principal() {
   console.log('Paquete P2 (E2) · Redacción + Despachos\n');
   const sinNemesio = async (ctx) => {
     const lg = await T.log();
-    must(!lg.some(l => l.who === 'nerea_backlog' || /Nemesio|PORTÁTIL:/.test(l.text)), `${ctx}: aparece Nemesio o «PORTÁTIL:»`);
+    must(!lg.some(l => /Nemesio|PORTÁTIL:/.test(l.text)), `${ctx}: aparece Nemesio o «PORTÁTIL:»`);
     must(lg.filter(l => l.text.startsWith(HERMINIA)).every(l => l.who === 'herminia_portatil' && l.text.length <= 80), `${ctx}: línea de Herminia mal`);
   };
 
   // ------------------------------------------------------------ 7.2 (E2 §2.3.1): Íñigo, el Titulator y la IA de Leoncio
   for (const f of BASE_FLAGS) await T.setFlag(f);
-  must((await T.roomOf('nerea_backlog')) !== 'pecera', 'Nemesio sigue en la Redacción');
+  // E2 §2 (E6 §10 I2, limpieza): Nemesio se fundió en Anselmo: en la Redacción, de Desarrollo solo están Anselmo y el coro
+  // (los que la sala coloca son Yoli, Brais, Valentín, Íñigo, Leoncio y Anselmo; el coro habla sin cuerpo)
+  const desa = await G(() => ({ def: Object.keys(__game.game.content.actors).filter(id => /nerea|nemesio|backlog/i.test(id)),
+    sala: (__game.game.content.rooms.pecera.actors || []).map(a => a.id) }));
+  must(!desa.def.length && desa.sala.includes('anselmo_monolito') && !desa.sala.some(id => !['yoli_tendencias', 'ruben', 'valentin_reticula', 'inigo_sinergia', 'leoncio_quesitos', 'anselmo_monolito'].includes(id)),
+    `E2: en la Redacción, de Desarrollo, solo Anselmo y el coro (${JSON.stringify(desa)})`);
   await T.clearLog();
   await T.goto('pecera', 'vestibulo');
   await T.expectFlags({ inigo_presentado: true }, '7.2');
   await T.musts(['¡No entra nada! El CMS, el programa de publicar, lleva dos horas colgado.',
-    'Trescientos titulares esta tarde. Sin CMS. Sin silla. Sin convenio.', 'Aquí ya tenemos una IA. Herminia. Hace sola las infografías.',
+    'Trescientos titulares esta tarde, sin CMS, sin silla y sin convenio.', 'Aquí ya tenemos una IA. Herminia. Hace sola las infografías.',
     '¿Cuánto factura?', 'Entonces no es una IA. Es un hobby.', 'Y no ha pasado por mis sistemas.',
     HERMINIA + 'cinta de Desarrollo · tiras: 1 · motivo: no consta', 'Coste cero, disponibilidad total. Te tengo en la matriz, Vacante.'], '7.2');
   must(!(await T.logHas('Vengo a reimaginar el perímetro.')), '7.2: E5 R4 fuera «Vengo a reimaginar el perímetro.»');
@@ -129,7 +134,8 @@ async function principal() {
   ok('L10-L12 (silla, chaqueta, sobre) y 4.3 Redacción');
   await T.clearLog();
   await R.travel('pajarera'); await T.idle();
-  await T.musts(['Ramírez. Bolsa. «Prescindible». Siéntese donde no se vea.', 'Confunde a la matriz.', 'Aquí manda el que asiente.'], '4.3 Despachos');
+  await T.musts(['Ramírez. Bolsa. «Prescindible». Siéntese donde no se vea.', 'Confunde a la matriz.'], '4.3 Despachos');
+  must(!(await T.logHas('Aquí manda el que asiente.')), 'E6 §2.6 B4: Bruno ya no explica (se quita la chaqueta sin línea)');
   await T.expectFlags({ bruno_con_chaqueta: false }, '4.3 Despachos (se la quita)');
   lg = await T.log();
   must(lg.some(l => l.who === 'pantalla_titulator' && l.text.includes('ORGANIGRAMA')), '§8.3: el Titulator no anuncia la hazaña al entrar');
@@ -165,14 +171,17 @@ async function principal() {
   await T.verb('mirar', 'valentin_reticula'); await T.hablar('valentin_reticula'); await T.hablar('valentin_reticula');
   await T.musts(['El cable de los cascos no va a nada.', '...Nada. Perdone.', 'Está en la bandeja.'], 'Valentín');
   lg = await T.log();
-  must(lg.filter(l => l.who === 'valentin_reticula').length === 1, 'Valentín habla más de una línea');
+  // E6 §6.5 (N8): además de «Está en la bandeja.», un globo «…» sin palabras (gesto, no línea)
+  const vl = lg.filter(l => l.who === 'valentin_reticula').map(l => l.text);
+  must(vl.filter(t => !/^[.…\s]+$/.test(t)).length === 1 && vl.some(t => /^[.…]+$/.test(t)), `Valentín habla más de una línea (${JSON.stringify(vl)})`);
   ok('§5.14 Valentín: cameo mudo');
   await T.clearLog();
   must((await G(() => __game.objects().find(o => o.id === 'herminia_portatil').name)) === 'Herminia, la IA de Infografía', 'E2 §2.2: nombre del portátil');
   await T.verb('mirar', 'herminia_portatil'); await T.verb('usar', 'herminia_portatil'); await T.verb('hablar', 'herminia_portatil');
-  await T.musts(['Herminia, la IA de Leoncio: un portátil que hace solo las infografías.', 'Mirándola. Encima, una tira de cinta.',
+  await T.musts(['Herminia, la IA de Leoncio: un portátil que hace solo las infografías.', 'mirándola. Encima, una tira de cinta.',
     HERMINIA + 'quesito de Desarrollo · suma: 130 % · corregir: bloqueado', 'Ella lo arreglaría en una décima.',
-    HERMINIA + 'saludo recibido · hola: 100 %', 'Me ha entendido a la primera. Aquí eso no pasa.'], 'portátil');
+    HERMINIA + 'saludo recibido · hola: 100 %'], 'portátil');
+  must(!(await T.logHas('Me ha entendido a la primera.')), 'E6 §2.6 B6: Bruno ya no comenta la pantalla de Herminia');
   lg = await T.log();
   must(!lg.some(l => l.who === 'herminia'), 'Herminia habla como personaje');
   await sinNemesio('portátil');
@@ -186,7 +195,7 @@ async function principal() {
   must(!(await T.opciones()).some(o => o.includes('gráficos de Anselmo')), 'Leoncio: la opción del Acto II sale en el Acto I');
   await T.opcion('Me voy.');
   await T.musts(['Vacante. En tarta, eres un quesito muy fino.', 'Mi IA. La hice yo, en tres fines de semana.', 'Me duele, pero me incluyo.',
-    'Dejaron las chaquetas en las sillas, mirándola. Por respeto.', 'Le he mandado cuarenta y un pósits.', 'En su tipografía, que es fea.',
+    'Dejaron las chaquetas en las sillas, mirándola, por respeto.', 'Le he mandado cuarenta y un pósits.', 'En su tipografía, que es fea.',
     HERMINIA + 'Bruno · aportación a la planta: 0,3 % · tendencia: plana', 'Cuidado con la cinta. Se ha movido desde que has llegado.'], 'Leoncio');
   must(!(await T.logHas('Al currículum.')), 'L14: sigue la línea de Bruno');
   await T.clearLog();
@@ -246,7 +255,7 @@ async function principal() {
   await T.clearLog();
   await T.verb('tirar', 'enchufe_pantalla');
   await T.expectFlags({ cms_vivo: true }, '4.2 camino antiguo');
-  await T.musts(['¿Tiene número?', '...Entonces existe. A HECHO (PERO NO). Con número.'], 'camino antiguo');
+  await T.musts(['¿Tiene número?', '...Entonces existe. A HECHO (PERO NO).'], 'camino antiguo');
   await T.verb('mirar', 'enchufe_pantalla'); await T.verb('mirar', 'pantalla_metricas');
   await T.musts(['la excepción de Anselmo: «SALVO TICKET Nº 3».', 'Apagada. Y la web publica. Nadie se atreve a decirlo en voz alta.'], 'enchufe / L8');
   ok('B4 (Yoli con silla), sin rumores; camino antiguo con Anselmo; L8');
@@ -264,7 +273,7 @@ async function principal() {
   await T.opcion('Me voy.');
   await T.expectFlags({ rep_08: true }, 'paso 23');
   await T.musts(['Le contesté: «Y yo te leo desde el más absoluto modo avión».', 'Me ha puesto en copia a mi madre.',
-    '...bien. Bajando, pero bien.', 'Menos una lectora: cuarenta y siete minutos. Comenta «abrígate». En todo.',
+    '...bien. Bajando, pero bien.', 'Menos una lectora: cuarenta y siete minutos, y comenta «abrígate» en todo.',
     'Te lo coloco en Discover. Con expertos.'], 'Yoli E2 §2.7 (E4 M3: la despedida con CMS)');
   lg = await T.log();
   must(!lg.some(l => l.who === 'yoli_tendencias' && /— ?\d/.test(l.text)), 'Yoli: cifras entre rayas');
@@ -291,10 +300,10 @@ async function principal() {
   await T.verb('usar', 'ordenador_bruno');
   await T.expectFlags({ pieza_escrita: true, herminia_midio: true }, 'paso 34');
   await T.expectInv(['pieza_opa'], [], 'paso 34');
-  await T.musts([HERMINIA + 'tu pieza · 31 líneas · hueco de la página 7: 23 · sobra: 26 %', 'Ya te la ha leído. Yo no, ¿eh? Yo ya no leo. Superviso.',
+  await T.musts([HERMINIA + 'tu pieza · 31 líneas · hueco de la página 7: 23 · sobra: 26 %', 'Ya te la ha leído. Yo no, ¿eh? Yo ya solo superviso.',
     '¿Y quién quita un 26 %?', 'Ella no. Ella mide. Quitar siempre es de otro departamento.',
     HERMINIA + 'infografía de la opa · hecha en 0,4 s · publicar: bloqueado', 'Cuatro décimas. Yo tardaba una semana. Bien hecha, eso sí.',
-    'Hecha con una IA de fuera. No entra en ninguna pieza.', 'Encintar, no. Aislar el componente.', '¿Y vosotros no usáis IA de fuera?',
+    'Hecha con una IA de fuera. No entra en ninguna pieza.', 'Encintar, no: aislar el componente.', '¿Y vosotros no usáis IA de fuera?',
     'El modelo es de fuera. El prompt es de dentro.', 'Eso lo hace nuestro.', 'El prompt de Herminia lo escribí yo. En esta mesa.',
     'A un metro de mi cinta. Fuera.', 'Uno era yo, comprobando.'], 'paso 34 (E4 S4: la prueba A/B de Yoli)');
   lg = await T.log();
@@ -313,7 +322,7 @@ async function principal() {
   await T.opcion('Me voy.');
   await T.musts(['Dos tiras de cinta de Desarrollo. Por debajo, la IA sigue haciendo gráficos.', HERMINIA + 'pieza_opa · ya medida · sobra: 26 %',
     'Notas de gasto generativas para Begoña.', 'Ya te lo he dicho. Lo escribí yo. En mayúsculas.',
-    'Invadir, no. Desplegar capacidad.', 'Un quesito que suma 130 %. Yo los hacía de 100. Vieja escuela.'], 'tras el paso 34');
+    'Invadir, no. Desplegar capacidad.', 'Un quesito que suma 130 %. Yo los hacía de 100.'], 'tras el paso 34');
   await sinNemesio('paso 34');
   ok('E2 §2.3.2 paso 34 → herminia_midio (cinta_2), «El modelo es de fuera. El prompt es de dentro.»; árboles [2], [4], [5]');
 
@@ -323,10 +332,10 @@ async function principal() {
   await R.travel('catacumba'); await T.clearLog(); await R.travel('pecera'); await T.idle();
   await T.expectFlags({ dos_ias_vista: true, anselmo_dijo_regla: true }, 'momento 8');
   await T.musts(['Última vuelta. Integración: en la próxima versión.', 'Envuelta. Parece un regalo. De nadie.',
-    'Antes de que la envolviera le pedí un gráfico del Titulator. Por curiosidad.',
+    'Antes de que la envolviera le pedí un gráfico del Titulator, por curiosidad.',
     HERMINIA + 'titulares por hora · picos: 14:00 y 14:30 · pausas de 5 min: 11', HERMINIA + 'origen: Sistemas, armario 27 · consumo: atún',
-    'Una IA que come a las dos y va once veces al baño.', 'Tiene alta de usuario interno. Lo que tiene alta es de la casa.',
-    'Eso no es un modelo. Eso es un compañero.'], 'momento 8');
+    'Una IA que come a las dos y va once veces al baño.', 'Tiene alta de usuario interno. Lo que tiene alta es de la casa.'], 'momento 8');
+  must(!(await T.logHas('Eso es un compañero.')), 'E6 §2.5 B2: fuera «Eso no es un modelo. Eso es un compañero.»');
   lg = await T.log();
   must(lg.length <= 10, `momento 8: ${lg.length} líneas (guion: 9)`);
   must(!lg.some(l => /Diseño/.test(l.text) || ['valentin_reticula', 'coro_desarrollo'].includes(l.who)), 'momento 8: Diseño o el coro');
@@ -371,13 +380,13 @@ async function principal() {
   await T.clearLog();
   await T.hablar('gervasio_acta');
   await T.opcion('Necesito el acta de la última reunión.');
-  await R.playDuel(['R07', 'R01', { objeto: 'fotocopia_nota_direccion' }]);
+  await R.playDuel(['R07', 'R03', { objeto: 'fotocopia_nota_direccion' }]);   // E6 §5.2: la R03 segunda (la frase a medias)
   await T.idle();
   await T.expectFlags({ duelo_gervasio_ganado: true, sala_abierta: true }, 'paso 41');
   await T.expectInv(['acta_reunion'], ['fotocopia_nota_direccion'], 'paso 41');
   await T.musts(['Yo con Hidrovoltia no he comido en mi vida.', 'uno, pedir más café. Dos, ninguno más.'], 'D3 victoria');
   must(!(await T.log()).some(l => /reunión rápida/.test(l.text)), 'D3: sigue R14');
-  ok('paso 41: D3 sin R14 (R07, R01 + remate a los dos aciertos) → acta_reunion, sala_abierta');
+  ok('paso 46 (E6): D3 sin R14 (R07, R03 —la frase a medias— + remate a los dos aciertos) → acta_reunion, sala_abierta');
 
   // ------------------------------------------------------------ §4.2.3 Yoli y el adhesivo, una vez al entrar
   // ENMIENDA E4 S5 (paso 40): la primera entrada en el Acto III con la pieza escrita es la del ganador de Discover
@@ -385,7 +394,7 @@ async function principal() {
   await R.travel('pecera'); await T.idle();
   must(await T.logHas('En la dirección web. Donde no molesta.') && !!(await T.flag('discover_ganador')), 'E4 paso 40: el ganador de Discover');
   await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
-  must(await T.logHas('¿Llevas un banner en la espalda? ...Pues convierte. Me han mirado.'), '§4.2.3 Yoli');
+  must(await T.logHas('¿Llevas un banner en la espalda? ...Pues convierte.'), '§4.2.3 Yoli');
   await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
   must(!(await T.logHas('¿Llevas un banner')), '§4.2.3 Yoli se repite');
   await T.setFlag('bruno_con_banner', false);
@@ -416,7 +425,8 @@ async function principal() {
     'Columna nueva. La primera que no dice que no.', 'Y en nuestros corazones, Brais está en HECHO.',
     'No subo. Nunca subo. Eutimio.', 'Estoy esperando a que salga el sol.', 'Revocado. Fecha: hoy. Efectos: julio.',
     'Integró una IA que era un becario.', 'Nos hemos quedado sin IA de la casa.', HERMINIA + 'alta de usuario: no · propietaria: Infografía',
-    '...Lo miro en la próxima versión.', 'SEGUIREMOS INFORMANDO. Perdón.'], 'columna (E5 §3.5, C94)');
+    '...Lo miro en la próxima versión.', 'SEGUIREMOS INFORMANDO.'], 'columna (E5 §3.5, C94; E6 B1)');
+  must(!(await T.logHas('La frase con la que Íñigo')) && !(await T.logHas('Y la escribí yo.')), 'E6 §2.6 B1: fuera la explicación de Bruno y «Y la escribí yo.»');
   must(!(await T.logHas('Consultoría.')) && !(await T.logHas('Eso sí lo sé hacer yo.')), 'E5 D17: fuera «Consultoría.» y «…Eso sí lo sé hacer yo.»');
   lg = await T.log();
   must(!lg.some(l => ['coro_desarrollo'].includes(l.who) || /Diseño/.test(l.text)), 'paso 40: coro o Diseño');
@@ -429,7 +439,7 @@ async function principal() {
   await T.setFlag('herminia_de_alta');
   await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
   await T.expectFlags({ infografia_integrada: true }, 'anexión');
-  await T.musts(['Entonces es estupenda.', 'Quitar, no. Absorber en plataforma.', HERMINIA + 'propietario: Desarrollo', 'Todo esto es Desarrollo.'], 'anexión');
+  await T.musts(['Entonces es estupenda.', 'Quitar, no: absorber en plataforma.', HERMINIA + 'propietario: Desarrollo', 'Todo esto es Desarrollo.'], 'anexión');
   lg = await T.log();
   must(!lg.some(l => /Diseño/.test(l.text) || l.who === 'valentin_reticula'), 'anexión: Diseño en una escena de Infografía');
   await T.verb('mirar', 'herminia_portatil');
@@ -515,7 +525,7 @@ async function sacarCapturas() {
   await shotWhen(T, 'Estoy esperando a que salga el sol.', 'salida-ruben');
   await shotWhen(T, 'Integró una IA que era un becario.', 'salida-revocado');
   await shotWhen(T, 'alta de usuario: no', 'salida-manos', 300);
-  await shotWhen(T, 'La frase con la que Íñigo', 'salida-bruno');
+  await shotWhen(T, 'SEGUIREMOS INFORMANDO.', 'salida-brais');   // E6 B1: la columna acaba en Brais
   await fin(T);
   // 3. el adhesivo: Yoli y Gervasio
   T = await prep(['silla_libre', 'chaqueta_cogida', 'chaqueta_en_lector', 'acto_2_iniciado', 'reunion_terminada', 'bruno_con_banner']);

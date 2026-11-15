@@ -32,7 +32,7 @@ const HAZANAS = [
   ['cms_vivo', 'cms_vivo', 'UN BECARIO APAGA LA REDACCIÓN DESDE EL SÓTANO. ARRIBA, NI SE ENTERAN'],
   ['reunion_terminada', 'reunion_terminada', 'UN BECARIO PREGUNTA POR LOS SIGUIENTES PASOS. HAY HERIDOS'],
   ['mercados_huido', 'mercados_huido', 'UN REDACTOR DE MERCADOS HUYE DEL VENDING. DEJA UN TÁPER Y UN VACÍO'],
-  ['maripaz_perdido', (api) => num(api, 'duel:maripaz:perdido_n') >= 1, 'BECARIO LLAMA A UN COLCHÓN UN VIERNES. EL COLCHÓN NO LO COGE'],
+  // E6 §4.3: «BECARIO LLAMA A UN COLCHÓN…» se queda solo en la Sala (titular de la derrota de D1)
   ['casilla_hueco', 'casilla_hueco', 'UNA COMERCIAL SE QUEDA SOLA EN UNA REUNIÓN. Y LA AMORTIZA'],
   ['nota_gasto_presentada', 'nota_gasto_presentada', 'ADMINISTRACIÓN, EN ALERTA: UN BECARIO JUSTIFICA CON AZÚCAR'],
   ['casilla_firma', 'casilla_firma', 'UN HOMBRE QUE SOLO HABLA POR FAX SE CONTESTA A SÍ MISMO. LLORA'],
@@ -48,8 +48,8 @@ function hazanaNueva(api) {
   if (nueva) api.setFlag('pajarera_titulares_vistos', [...vistos, nueva[0]]);
   return nueva;
 }
+// E6 §4.3: «EL IBEX ABRE PLANO…» se queda solo en la escena 7.2 (Redacción); fuera de los genéricos de Despachos
 const GENERICOS = [
-  'EL IBEX ABRE PLANO. PLANO. ¿POR QUÉ NADIE HABLA DE ESTO?',
   'UN EMPRESARIO SE HACE RICO CON ESTE SENCILLO TRUCO: HEREDAR',
   'LA PRIMA DE RIESGO SUBE TRES PUNTOS: ASÍ AFECTA A TU PERRO',
   'LOS 7 ERRORES CON TU PLAN DE PENSIONES. EL 4 ES TENER PLAN',
@@ -131,7 +131,7 @@ async function mirarTitulator(api) {
   const g = num(api, 'pajarera_generico_n');
   api.setFlag('pajarera_generico_n', g + 1);
   await talk(api, [['T', GENERICOS[g % GENERICOS.length]]]);
-  if (g % GENERICOS.length === 6 && api.once('pajarera_razones_repetidas')) {
+  if (GENERICOS[g % GENERICOS.length].startsWith('10 RAZONES') && api.once('pajarera_razones_repetidas')) {
     await api.say('Son nueve razones. La séptima está repetida. Escribe como un becario.');
   }
 }

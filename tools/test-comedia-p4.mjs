@@ -195,7 +195,7 @@ try {
   ok(await logHas('Se abre otro vídeo.') === 1, 'Cerrar: la X de un píxel');
   await setFlags({ rumor_teodoro_n: 1 });
   await verb('hablar', 'maripaz_remitido');
-  ok(await logHas('Lo compró en el 97. Por fax.') === 1 && (await flag('rumor_teodoro_n')) === 2, 'rumor C: Maripaz lo sube de 1 a 2');
+  ok((await flag('rumor_teodoro_n')) === 2, 'rumor C: Maripaz lo sube de 1 a 2 (E6 E307: sin «Lo compró en el 97. Por fax.»)');
   ok(await logHas('«Agobio, con Tilas Calmín».') === 1, 'saludo (1.ª vez)');
   ok(JSON.stringify(await opts()) === JSON.stringify(['¿Qué vende Comercial?', '¿Me vende algo a mí?', 'La web va muy lenta.',
     'Mi abuela dice que no encuentra las noticias.', '¿Por qué tiene un gong?', '¿Usted se lee el periódico?', 'Me voy.']), 'árbol M0 (§4.4; E3 B19)');
@@ -214,7 +214,7 @@ try {
   ok(await logHas('Ya lo has consumido. Son doce euros.') === 1, 'el paquete Gong');
   ok(!(await opts()).includes('La web va muy lenta.'), 'las opciones son `once`');
   await choose('Me voy.');
-  ok(await logHas('Era una pregunta. Y un anuncio.') === 1, 'despedida');
+  ok(await logHas('Era una pregunta patrocinada.') === 1, 'despedida');
   await verb('hablar', 'maripaz_remitido');
   ok(await logHas('En la web eso se llama fidelización.') === 1, 'saludo (siguientes)');
   await R.closeDialog();
@@ -240,7 +240,7 @@ try {
   ok(!(await flag('rep_15')), 'sin R15 antes de Brais');
   await setFlags({ ruben_encontrado: true });
   for (let i = 0; i < 4; i++) await verb('mirar', 'portatil_tadeo');
-  ok((await flag('rep_15')) === true && await logHas('Tadeo no lo ha leído. Yo sí.') === 1 && await logHas('Me la apunto') === 0, 'R15 con Brais; sin «Me la apunto»');
+  ok((await flag('rep_15')) === true && await logHas('Tadeo no lo ha leído; yo, sí.') === 1 && await logHas('Me la apunto') === 0, 'R15 con Brais; sin «Me la apunto»');
   await setFlags({ ruben_encontrado: false });
   await shot('marketing');
 
@@ -271,7 +271,7 @@ try {
   await verb('mirar', 'orden_del_dia');
   await verb('mirar', 'gervasio_acta');
   ok(await logHas('Cuando empezó la reunión, era lampiño.') === 1 && await logHas('No se cogen. Cotizan.') === 1 && !(await logHas('Y a la baja.')), 'L22 y «No se cogen. Cotizan.» (E5 C63)');
-  ok(await logHas('Dicen que muerde.') === 1 && await logHas('que ya lo tutea') === 1, 'orden del día y L23');
+  ok(await logHas('Nadie lo toca: dicen que muerde.') === 1 && await logHas('que ya lo tutea') === 1, 'orden del día y L23');
   ok(await G(() => !__game.log.some(l => /desde (marzo|2019)/i.test(l.text))), 'sin «desde marzo/2019»');
 
   // ================================================================ Acto II: reunión, Maripaz, estampida
@@ -289,7 +289,7 @@ try {
   await verb('empujar', 'maripaz_remitido');
   ok(await logHas('Si me mueves a mí, se mueve la página 7.') === 1, 'Empujar (mazo)');
   await verb('dar', 'maripaz_remitido', 'ficha_pagina_7');
-  ok(await logHas('Debajo. Con banners.') === 1, 'Dar la ficha');
+  ok(await logHas('El hueco lo tengo yo, aquí debajo.') === 1, 'Dar la ficha');
   await verb('coger', 'planillo_bajo_maripaz');
   ok(await logHas('Es mío hasta que alguien llame a Siestatón.') === 1, 'Coger el planillo');
   await shot('sala-reunion');
@@ -303,12 +303,12 @@ try {
   await G(() => __game.waitIdle());
   ok((await flag('sala_becario_sin_turno')) === true && !(await flag('reunion_terminada')) && await logHas('Los becarios no tienen turno. Pregunta la mesa... y los conectados.') === 1 && !(await state()).dialog,
     'E5: Gervasio «…y los conectados» (sala_becario_sin_turno, sin reunion_terminada, diálogo cerrado)');
-  await setFlags({ gertrudis_pregunta: true });
-  const estampida = async () => { await verb('usar', 'tele_amazonas'); };
+  // E6 §2.3: la pregunta llega por la tele de la Sala (Hablar tele → «Buenas noches, Gertrudis.» → la pregunta)
+  const estampida = async () => { await verb('hablar', 'tele_amazonas'); await choose('Buenas noches, Gertrudis.'); await choose('¿Y cuáles son los siguientes pasos?'); };
   if (args.shots) await shotDuring('estampida-anuncio', estampida, '¡Antes de salir, un anuncio de cinco segundos!', 700);
   else await estampida();
   await G(() => __game.waitIdle());
-  ok((await flag('reunion_terminada')) === true, 'paso 29 (Usar la tele, vía del anuncio en modo rápido) → reunion_terminada');
+  ok((await flag('reunion_terminada')) === true, 'paso 28 (E6: Hablar tele → la pregunta, vía del anuncio en modo rápido) → reunion_terminada');
   ok(await logHas('¡Tengo doble prioridad!') === 1 && await logHas('¡Un momento! ¡Antes de salir, un anuncio de cinco segundos!') === 1, 'el anuncio de la estampida');
   ok(await G(() => { const a = __game.game.actors.maripaz_remitido; return !a.hold; }), 'Maripaz baja la tableta');
   for (const m of ['mercados_1', 'mercados_2', 'mercados_3']) ok((await inRoom(m)) !== 'sala_amazonas', `${m} ha huido`);
@@ -329,7 +329,7 @@ try {
     const { d } = await duranteDetalle(() => choose('¿Qué hace usted con el planillo?'), { titulo: 'PÁGINA 7 · PROPUESTA DE COMERCIAL', texto: '¿La noticia?', esperaMs: 400, shotName: 'pagina7' });
     ok(!!d, 'plano detalle: PÁGINA 7 · PROPUESTA DE COMERCIAL');
   }
-  ok(await logHas('Se ve demasiado. Estoy en ello.') === 1, '«Se ve demasiado. Estoy en ello.»');
+  ok(await logHas('Se ve demasiado; estoy en ello.') === 1, '«Se ve demasiado; estoy en ello.»');
   await choose('¿Y si la gente no quiere anuncios?');
   ok(await logHas('No la encuentran.') === 1, '«No la encuentran.»');
   await choose('Luego vuelvo.');
@@ -365,7 +365,7 @@ try {
       ok(st.duel.attack === 'R08' && await logHas('Es un exnovio.') === 1 && await logHas('Te lo pongo por escrito. Con banner.') === 0, 'entrada desde el árbol (sin intro del duelo)');
       ok(st.duel.subject.includes('(contiene publicidad)'), 'asunto: «(contiene publicidad)»');
       await shot('duelo-d1');
-    } else ok(await logHas('Te lo pongo por escrito. Con banner.') === 1, `revancha (${n}): «Te lo pongo por escrito. Con banner.»`);
+    } else ok(await logHas('¿Llamar yo a Siestatón un viernes? Te lo pongo por escrito.') === 1 && !(await logHas('Con banner.')), `revancha (${n}): «…Te lo pongo por escrito.» (E6 X7: sin «Con banner.»)`);
     for (let i = 0; i < 3; i++) await pickWeak();
     await G(() => __game.waitIdle());
     ok((await flag('duel:maripaz:perdido_n')) === n, `perdido_n = ${n}`);
@@ -383,7 +383,7 @@ try {
   let st = await state();
   ok(st.flags.duelo_maripaz_ganado && st.flags.casilla_hueco && st.flags.bruno_con_banner, 'paso 26: duelo_maripaz_ganado, casilla_hueco, bruno_con_banner');
   ok(await logHas('¿Y quién me firma que esa página es noticia y no un hueco para anuncios?') === 1 && await logHas('Sellada por Aurora. Impar.') === 1, 'remate con la ficha');
-  ok(await logHas('Siestatón, a la web. Allí caben en todas partes.') === 1 && await logHas('Y sin un banner. Me duele.') === 1, 'victoria (§4.3)');
+  ok(await logHas('Siestatón, a la web. Allí caben en todas partes.') === 1 && await logHas('Impar, y sin un banner.') === 1, 'victoria (§4.3)');
   ok(await logHas('Tenías la espalda desaprovechada.') === 1 && await logHas('Y quitad el ronquido de la espera.') === 1, 'el adhesivo y el ronquido');
   ok(await G(() => { const g = __game.game; return g.spriteOf(g.player) === g.player.variants.con_banner; }), 'Bruno lleva el adhesivo (variante con_banner)');
   ok((await inRoom('maripaz_remitido')) !== 'sala_amazonas', 'Maripaz se va de la Sala');
@@ -404,7 +404,7 @@ try {
   await choose('¿Qué tal con Siestatón?');
   ok(await logHas('Hasta en la X de cerrar.') === 1, '«¿Qué tal con Siestatón?»');
   await R.closeDialog();
-  ok(await logHas('Era una pregunta. Y un anuncio.') === 0, 'despedida oída solo la primera vez (E2 §7.2)');
+  ok(await logHas('Era una pregunta patrocinada.') === 0, 'despedida oída solo la primera vez (E2 §7.2)');
 
   step('ENMIENDA E3 §4.4.1 · M1 «La lectora del inventario»: Dar la pieza a Maripaz (entera, otra vez, recortada)');
   await G(() => __game.clearLog());
