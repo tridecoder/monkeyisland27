@@ -41,6 +41,7 @@ if (salas) {
   add('extras', 'extras.mjs');
   add('fuzz (objetos)', 'fuzz.mjs', ['--solo=objetos', '--sala=' + salas.join(','), ...(rapido ? ['--rapido'] : [])]);
   for (const p of [...new Set(salas.map(s => PAQ[s]).filter(Boolean))]) add('comedia-' + p, `test-comedia-${p}.mjs`);
+  if (salas.some(s => ['pecera', 'catacumba'].includes(s))) add('e4', 'test-e4.mjs', ['--sin-capturas'], 1500);   // ENMIENDA E4
   add('text-audit', 'text-audit.mjs', ['--plan', '--e2']);
   add('contrast', 'contrast.mjs');
 } else {
@@ -59,11 +60,12 @@ if (salas) {
   for (const p of ['p1', 'p2', 'p3', 'p4']) add('comedia-' + p, `test-comedia-${p}.mjs`);
   add('heredado', 'test-heredado.mjs');               // lo que comprobaban los test-paquete-a/b/c/d retirados y sigue valiendo
   add('critica3', 'test-critica3.mjs');               // arreglos de la crítica 3 (N1-N11, revanchas de Maripaz sin pop-up)
+  add('e4', 'test-e4.mjs', [], 1500);                 // ENMIENDA E4: titulador contra el generador de referencia, ratón, móvil, secretos, pasos 34/40, epílogo, hoja, ráfaga
 }
 const solo = args.solo ? String(args.solo).split(',') : null;
 const plan = solo ? T.filter(t => solo.some(s => t.name.startsWith(s) || t.file.startsWith(s))) : T;
 // las largas primero (mejor reparto en paralelo)
-const WEIGHT = { fuzz: 5, 'play-mouse': 4, smoke: 4, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
+const WEIGHT = { fuzz: 5, 'play-mouse': 4, smoke: 4, e4: 3, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
 plan.sort((a, b) => (WEIGHT[b.name.split(' ')[0]] || 1) - (WEIGHT[a.name.split(' ')[0]] || 1));
 if (args.lista) { for (const t of plan) console.log(`${t.name.padEnd(22)} node tools/${t.file} ${t.args.join(' ')}`); process.exit(0); }
 

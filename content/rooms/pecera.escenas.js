@@ -473,7 +473,7 @@ function resultado(gan, versiones, bruno, url) {
     const vis = t > 300;
     if (vis) {
       const lines = wrapTit(gan.t, w - 60);
-      lines.slice(0, 3).forEach((l, i) => drawText(g, l, x + 12, cy + 4 + i * 11, '#141220', { outline: null, bold: i === 0 && lines.length === 1 }));
+      lines.slice(0, 3).forEach((l, i) => drawText(g, l, x + 12, cy + 4 + i * 11, '#141220', { outline: null, bold: true }));
       const cx = x + w - 30, cyy = cy + 6;
       for (const [dx, dh] of [[0, 4], [4, 6], [8, 4]]) rect(g, cx + dx, cyy + 6 - dh, 3, dh, PAL.gold[4]);
       rect(g, cx, cyy + 6, 11, 3, PAL.gold[3]); rect(g, cx + 5, cyy - 1, 1, 1, PAL.red[4]);
@@ -488,7 +488,7 @@ function resultado(gan, versiones, bruno, url) {
 }
 function wrapTit(t, maxW) {
   const out = []; let cur = '';
-  for (const wd of t.split(' ')) { const n = cur ? cur + ' ' + wd : wd; if (measure(n) <= maxW || !cur) cur = n; else { out.push(cur); cur = wd; } }
+  for (const wd of t.split(' ')) { const n = cur ? cur + ' ' + wd : wd; if (measure(n, { bold: true }) <= maxW || !cur) cur = n; else { out.push(cur); cur = wd; } }
   if (cur) out.push(cur);
   return out;
 }
@@ -536,17 +536,17 @@ export function hojaTop(datos, ibex, hora) {
     rect(g, x + 5, y + 3, 3, 3, PAL.red[4]); rect(g, x + w - 8, y + 3, 3, 3, PAL.blue[5]);   // chinchetas
     micro(g, `LO MÁS LEÍDO · ${hora} · KW: ${datos.kw}`, x + (w >> 1), y + 6, '#c83a6a', { align: 'center' });
     hline(g, x + 8, y + 13, w - 16, '#FF78B8');
-    const fila = (yy, n, t, l, col = '#141220') => {
+    const fila = (yy, n, t, l, col = '#141220', cortar = true) => {
       drawText(g, String(n), x + 22, yy, col, { outline: null, align: 'right' });
-      drawText(g, corta(t), x + 27, yy, col, { outline: null });
+      drawText(g, cortar ? corta(t) : t, x + 27, yy, col, { outline: null });
       drawText(g, l, x + w - 9, yy, col, { outline: null, align: 'right' });
     };
-    datos.filas.forEach(([n, t, l], i) => fila(y + 16 + i * 11, n, t, l));
-    let yy = y + 16 + datos.filas.length * 11;
-    drawText(g, '···', x + 22, yy - 3, '#8a8070', { outline: null });
-    yy += 6;
-    if (datos.extra) { fila(yy, ...datos.extra, '#5a5248'); yy += 11; }
-    fila(yy, FILA_IBEX, FIJOS.F5.t, String(ibex), '#9a9488');
+    datos.filas.forEach(([n, t, l], i) => fila(y + 15 + i * 10, n, t, l));
+    let yy = y + 15 + datos.filas.length * 10;
+    drawText(g, '···', x + 22, yy - 4, '#8a8070', { outline: null });
+    yy += 5;
+    if (datos.extra) { fila(yy, ...datos.extra, '#5a5248'); yy += 10; }
+    fila(yy, FILA_IBEX, FIJOS.F5.t, String(ibex), '#9a9488', false);
   };
 }
 /** Mirar la hoja (lista_mas_leidas, S3): la 2.ª vez y siguientes Yoli arranca la hoja y clava otra. */
@@ -568,7 +568,7 @@ export async function mirarHoja(api) {
   }
   const datos = filasHoja(api, version);
   const filas = datos.filas.length + (datos.extra ? 1 : 0) + 1;
-  await api.detalle({ titulo: 'LO MÁS LEÍDO', w: 300, h: Math.min(118, 26 + filas * 11 + 4), x: 10, y: 4, color: '#FF78B8',
+  await api.detalle({ titulo: 'LO MÁS LEÍDO', w: 300, h: 18 + filas * 10 + 8, x: 10, y: 2, color: '#FF78B8',
     draw: hojaTop(datos, ibex, api.hora()), ...(lines ? { lines } : { ms: 2400 }) });
 }
 void usuariosK; void vline;

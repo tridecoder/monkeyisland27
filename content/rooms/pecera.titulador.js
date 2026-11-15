@@ -55,16 +55,19 @@ export function usuarios(a, s, g) {
   if (/\bopa\b/i.test(titular(a, s, g))) u *= P.formula.castigo_opa;
   return redondeo(u);
 }
+/** Categorías de gancho (las que en piezas.json dicen `si: "gancho <id>"`; en gen.mjs, `G2` y el «dato» del gancho que
+ *  lo dice todo): gancho → categoría. */
+const POR_GANCHO = Object.fromEntries(P.categorias.map(c => [(String(c.si || '').match(/^gancho (\S+)$/) || [])[1], c.id]).filter(([g]) => g));
 const linea = (id) => (P.categorias.find(x => x.id === id) || {}).linea || null;
 export function categoria(a, s, g, u, uPrev) {
   const k = `${a.id}|${s.id}|${g.id}`;
   const sec = P.secretos.find(x => x.combo === k);
   if (sec) return { id: 'secreto:' + k, etiqueta: sec.etiqueta, linea: sec.linea };
   const t = titular(a, s, g);
-  const G2 = { corte: 'corte', obvio: 'obvio', senales: 'senales', probe: 'probe', prisa: 'prisa', curioso: 'curioso', truco: 'truco' };
+  const G2 = POR_GANCHO;
   const id = k === BRUNO ? 'honesto'
     : /\bopa\b/i.test(t) ? 'opa'
-    : g.id === 'punto' ? 'dato'
+    : G2[g.id] === 'dato' ? 'dato'
     : u >= 200000 ? 'pico'
     : P.sentimentales.includes(a.id) && s.dom === 'eco' ? 'corazon'
     : s.dom === 'eco' && u < 20000 ? 'economia'
@@ -130,8 +133,10 @@ export async function titulador(api, { demo } = {}) {
   st.record = api.flag('pecera_disc_record') || 0;
   let D = null;
   const vivo = () => game.gen === gen && !!D && game.detalle === D;
+  game.titulador = st;                                  // para las pruebas (tools/test-e4.mjs): combo, u, etiqueta, pubs
+  try {
   await api.detalle({
-    titulo: demo ? 'TITULADOR · PRUEBA' : 'TITULADOR · DISCOVER', x: 4, y: 4, w: 312, h: 104, color: ROSA, oscurecer: 0.6,
+    titulo: demo ? 'TITULADOR · PRUEBA' : 'TITULADOR · DISCOVER', x: 8, y: 2, w: 304, h: 102, color: ROSA, oscurecer: 0.6,
     draw: (g, r, t) => drawTitulador(g, r, t, st),
     click: demo ? null : (x, y) => clicTitulador(game, st, x, y),
   }, async (api) => {
@@ -166,6 +171,7 @@ export async function titulador(api, { demo } = {}) {
     }
     if (st.pubs >= PUBLICACIONES && vivo()) await api.wait(1200);
   });
+  } finally { if (game.titulador === st) game.titulador = null; }
   if (demo || game.gen !== gen) return;                // la demo no guarda nada; una partida cargada a mitad, tampoco
   await alSalir(api, st);
 }
@@ -185,6 +191,7 @@ async function publicar(api, st) {
   const u = usuarios(a, s, g), prev = st.u;
   const cat = categoria(a, s, g, u, prev);
   st.anim = { de: prev, a: u, t0: null, sube: u > prev };
+  st.etiqueta = '';                                     // la etiqueta nueva sale cuando el contador llega
   api.sfx(u > prev ? PLIN : 'bad');
   if (!game.instant) await api.wait(ANIM_MS);
   st.u = u; st.serie.push(u); st.dirs.push(Math.sign(u - prev)); st.pubs++; st.etiqueta = cat.etiqueta;
@@ -244,7 +251,7 @@ async function alSalir(api, st) {
 // ======================================================================== dibujo (ventana de 312 × 104)
 const easeOutCubic = (k) => 1 - Math.pow(1 - k, 3);
 /** Geometría de las tres casillas (relativa a la ventana). */
-const CHIP = { y: 57, h: 13, x: [4, 107, 210], w: 100 };
+const CHIP = { y: 57, h: 14, x: [4, 104, 204], w: 96 };
 function casillaEn(x, y) {
   if (y < CHIP.y || y >= CHIP.y + CHIP.h) return null;
   for (let i = 0; i < 3; i++) if (x >= CHIP.x[i] && x < CHIP.x[i] + CHIP.w) return i;
@@ -276,10 +283,9 @@ export function drawTitulador(g, r, t, st) {
   if (st.flash && st.flash.t0 == null) st.flash.t0 = t;
   const flashT = st.flash ? t - st.flash.t0 : 9999;
   wrap(titularK(st.combo), 190).slice(0, 3).forEach((l, i) => drawText(g, l, cx + 31, cy + 2 + i * 11, flashT < 260 ? '#8a2a5a' : '#141220', { outline: null }));
-  micro(g, 'DISCOVER', cx + 4, cy + chh - 7, ROSA);
   micro(g, 'ELCONTABLE.ES · HACE 1 MIN', cx + 31, cy + chh - 7, '#8a8070');
   // ---------------------------------------------------------------- contador (el protagonista)
-  const kx = x + 230, kw = 78, kc = kx + (kw >> 1);
+  const kx = x + 228, kw = w - 230, kc = kx + (kw >> 1);
   micro(g, 'USUARIOS', kc, y + 3, '#9fb0d8', { align: 'center' });
   micro(g, 'CONCURRENTES', kc, y + 10, '#9fb0d8', { align: 'center' });
   const c = valorContador(st, t);
@@ -288,15 +294,15 @@ export function drawTitulador(g, r, t, st) {
   let dx = 0, dy = 0;
   if (c.sube === false && c.dt < 300) dx = (Math.floor(c.dt / 40) & 1) ? 1 : -1;      // baja: tiembla 1 px
   if (c.sube === true && !c.fin) dy = (Math.floor(t / 50) & 1);                      // sube: los dígitos «ruedan»
-  const ny = y + 18;
+  const ny = y + 16;
   if (measure(txt) * 2 <= 70) drawText(g, txt, kc + dx, ny + dy, color, { align: 'center', scale: 2 });
   else drawText(g, txt, kc + dx, ny + 6 + dy, color, { align: 'center', bold: true });
   if (st.recordFlash) {
     if (st.recordFlash.t0 == null) st.recordFlash.t0 = t;
     const e = t - st.recordFlash.t0;
-    if (e < 2000 && (Math.floor(e / 200) & 1) === 0) frameRect(g, kx, ny - 3, kw, 30, ORO);
+    if (e < 2000 && (Math.floor(e / 200) & 1) === 0) frameRect(g, kx + 1, ny + 4, kw - 2, 18, ORO);
   }
-  if (st.etiqueta) microLineas(st.etiqueta, kw).slice(0, 2).forEach((l, i) => micro(g, l, kc, y + 44 + i * 7, ROSA, { align: 'center' }));
+  if (st.etiqueta) microLineas(st.etiqueta, kw).slice(0, 2).forEach((l, i) => micro(g, l, kc, y + 40 + i * 6, ROSA, { align: 'center' }));
   // ---------------------------------------------------------------- las tres casillas (un toque abre su menú)
   const NOMBRES = ['AUTORIDAD', 'ASUNTO', 'GANCHO'];
   for (let i = 0; i < 3; i++) {
@@ -305,16 +311,17 @@ export function drawTitulador(g, r, t, st) {
     const fl = st.flash && st.flash.i === i && flashT < 400;
     rect(g, bx, by, CHIP.w, CHIP.h, fl ? '#5a2a48' : on ? '#2a2050' : '#141a3a');
     frameRect(g, bx, by, CHIP.w, CHIP.h, on || fl ? ROSA : '#3a4680');
-    micro(g, NOMBRES[i], bx + 3, by + 2, '#7a88c0');
+    micro(g, NOMBRES[i], bx + 1, by - 6, on || fl ? ROSA : '#7a88c0');
     const m = String(byId(TABLAS[i], st.combo[i]).menu).replace(/[«»]/g, '"').toUpperCase();
-    micro(g, m.length > 23 ? m.slice(0, 22) + '.' : m, bx + CHIP.w - 3, by + 7, '#f0f2fa', { align: 'right' });
+    const ls = microLineas(m, CHIP.w - 4).slice(0, 2);
+    ls.forEach((l, j) => micro(g, l, bx + (CHIP.w >> 1), by + (ls.length === 1 ? 5 : 2 + j * 6), '#f0f2fa', { align: 'center' }));
   }
   if (st.cursor) {                                                              // el cursor de la demo (paso 34)
     const i = st.cursor.i;
-    cursorFlecha(g, i < 3 ? x + CHIP.x[i] + CHIP.w - 14 : kc + 10, i < 3 ? y + CHIP.y + 6 : ny + 16);
+    cursorFlecha(g, i < 3 ? x + CHIP.x[i] + CHIP.w - 14 : kc + 10, i < 3 ? y + CHIP.y + 7 : ny + 16);
   }
   // ---------------------------------------------------------------- gráfica (eje logarítmico) de la sesión
-  const gx = x + 4, gy = y + 73, gw = 304, gh = 19;
+  const gx = x + 4, gy = y + 73, gw = w - 8, gh = 17;
   rect(g, gx, gy, gw, gh, '#0a1028');
   hline(g, gx, gy + gh, gw, '#3a4680');
   const py0 = (u) => gy + gh - 2 - Math.round(altura(u) * (gh - 4));
@@ -340,7 +347,7 @@ export function drawTitulador(g, r, t, st) {
   micro(g, 'ELIGE. PUBLICA. DISCOVER DECIDE.', x + 4, fy, '#8a96c8');
   if (!st.demo) {
     const fl = st.recordFlash && st.recordFlash.t0 != null && t - st.recordFlash.t0 < 2000 && (Math.floor((t - st.recordFlash.t0) / 200) & 1);
-    micro(g, `RÉCORD: ${miles(st.record || 0)}`, x + 196, fy, fl ? '#ffffff' : ORO, { align: 'center' });
+    micro(g, `RÉCORD: ${miles(st.record || 0)}`, x + 190, fy, fl ? '#ffffff' : ORO, { align: 'center' });
   }
   for (let i = 0; i < PUBLICACIONES; i++) {
     const bx = x + w - 9 - (PUBLICACIONES - 1 - i) * 7;
@@ -361,17 +368,17 @@ function cursorFlecha(g, x, y) {
 function miniatura(g, x, y, id) {
   rect(g, x, y, 24, 24, '#dcd4c0'); frameRect(g, x, y, 24, 24, '#8a8070');
   const ink = '#2a2638', r = PAL.red[4], b = PAL.blue[4], gr = PAL.green[4], go = PAL.gold[4];
-  const pct = (px, py, c) => { rect(g, px, py, 2, 2, c); rect(g, px + 5, py + 6, 2, 2, c); for (let i = 0; i < 7; i++) rect(g, px + 6 - i, py + i, 1, 1, c); };
+  const pct = (px, py, c, n = 8) => { rect(g, px, py, 3, 3, c); rect(g, px + n - 2, py + n - 2, 3, 3, c); for (let i = 0; i <= n; i++) rect(g, px + n - i, py + i, 2, 1, c); };
   switch (id) {
     case 'persianas': for (let i = 0; i < 6; i++) { rect(g, x + 4, y + 4 + i * 3, 16, 2, PAL.paper[7]); hline(g, x + 4, y + 5 + i * 3, 16, PAL.paper[2]); } vline(g, x + 20, y + 3, 18, ink); break;
     case 'mejillones': rect(g, x + 3, y + 8, 18, 10, PAL.metal[5]); rect(g, x + 3, y + 8, 18, 3, PAL.metal[6]); rect(g, x + 5, y + 12, 14, 4, r); rect(g, x + 7, y + 13, 6, 2, '#2a2040'); break;
-    case 'hipoteca': rect(g, x + 6, y + 11, 12, 9, PAL.paper[6]); for (let i = 0; i < 7; i++) hline(g, x + 12 - i, y + 4 + i, 1 + i * 2, r); pct(x + 9, y + 12, ink); break;
+    case 'hipoteca': rect(g, x + 6, y + 11, 12, 9, PAL.paper[6]); for (let i = 0; i < 7; i++) hline(g, x + 12 - i, y + 4 + i, 1 + i * 2, r); pct(x + 9, y + 12, ink, 5); break;
     case 'nomina': rect(g, x + 3, y + 7, 18, 12, PAL.paper[7]); frameRect(g, x + 3, y + 7, 18, 12, ink); for (let i = 0; i < 6; i++) { rect(g, x + 4 + i, y + 8 + i, 1, 1, ink); rect(g, x + 19 - i, y + 8 + i, 1, 1, ink); } break;
-    case 'euribor': pct(x + 8, y + 7, b); pct(x + 9, y + 8, b); break;
+    case 'euribor': pct(x + 6, y + 6, b, 11); break;
     case 'plazofijo': rect(g, x + 5, y + 9, 14, 9, '#e890b0'); rect(g, x + 18, y + 11, 3, 3, '#e890b0'); rect(g, x + 8, y + 18, 2, 3, '#c06890'); rect(g, x + 15, y + 18, 2, 3, '#c06890'); rect(g, x + 10, y + 9, 4, 1, ink); break;
     case 'hacienda': rect(g, x + 5, y + 5, 14, 14, r); frameRect(g, x + 6, y + 6, 12, 12, '#ffd0c0'); micro(g, 'AEAT', x + 12, y + 10, '#ffffff', { align: 'center' }); break;
     case 'robledal': for (let i = 0; i < 4; i++) rect(g, x + 5 + i * 4, y + 9, 2, 9, PAL.paper[2]); rect(g, x + 3, y + 18, 18, 2, PAL.paper[1]); for (let i = 0; i < 5; i++) hline(g, x + 12 - i * 2, y + 4 + i, 1 + i * 4, PAL.paper[1]); break;
-    case 'prima': pct(x + 5, y + 9, r); vline(g, x + 17, y + 5, 14, gr); for (let i = 0; i < 3; i++) hline(g, x + 17 - i, y + 5 + i, 1 + i * 2, gr); break;
+    case 'prima': pct(x + 4, y + 8, r, 7); vline(g, x + 17, y + 5, 14, gr); for (let i = 0; i < 3; i++) hline(g, x + 17 - i, y + 5 + i, 1 + i * 2, gr); break;
     case 'deuda': rect(g, x + 3, y + 7, 18, 11, PAL.paper[7]); frameRect(g, x + 3, y + 7, 18, 11, go); micro(g, 'PAGARÉ', x + 12, y + 10, ink, { align: 'center' }); break;
     case 'pib': [6, 10, 14].forEach((hh, i) => rect(g, x + 5 + i * 5, y + 20 - hh, 4, hh, [b, gr, go][i])); hline(g, x + 3, y + 20, 18, ink); break;
     case 'ipc': rect(g, x + 4, y + 11, 16, 8, PAL.wood[5]); for (let i = 0; i < 4; i++) vline(g, x + 6 + i * 4, y + 11, 8, PAL.wood[3]); rect(g, x + 7, y + 7, 2, 4, r); rect(g, x + 12, y + 6, 3, 5, gr); break;

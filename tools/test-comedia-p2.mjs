@@ -263,7 +263,7 @@ async function principal() {
   await T.expectFlags({ rep_08: true }, 'paso 23');
   await T.musts(['Le contesté: «Y yo te leo desde el más absoluto modo avión».', 'Me ha puesto en copia a mi madre.',
     '...bien. Bajando, pero bien.', 'Menos una lectora: cuarenta y siete minutos. Comenta «abrígate». En todo.',
-    'Vuelve con un titular con número. El siete convierte.'], 'Yoli E2 §2.7');
+    'Te lo coloco en Discover. Con expertos.'], 'Yoli E2 §2.7 (E4 M3: la despedida con CMS)');
   lg = await T.log();
   must(!lg.some(l => l.who === 'yoli_tendencias' && /— ?\d/.test(l.text)), 'Yoli: cifras entre rayas');
   must(lg.filter(l => l.text.includes('modo avión')).length === 1, 'B5: línea duplicada');
