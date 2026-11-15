@@ -239,6 +239,11 @@ function anselmoVuelve(api) {
   const at = (art.layout[A] && art.layout[A].at) || [1082, 118, 'left'];
   api.background(async (api) => { await api.walkActor(A, at[0], at[1]); api.faceActor(A, at[2] || 'left'); });
 }
+/** Bruno se aparta del tablero (a la izquierda, mirándolo) para que se lea la columna. */
+async function apartarse(api) {
+  await api.walkTo(TABLERO_X - 44, TABLERO_Y + 4);
+  api.face('right');
+}
 /** Una columna equivocada: Bruno escribe; Anselmo cruza y la borra con la manga. */
 async function columnaMal(api, via) {
   try {
@@ -246,6 +251,7 @@ async function columnaMal(api, via) {
       await api.anim(api.player, 'reach', 600);
       api.sfx('paper');
       api.setState('kanban', 'mal_' + via);            // (la columna, a rotulador, con mala letra)
+      await apartarse(api);                            // (Bruno da un paso atrás: que se lea)
       await api.wait(500);
       api.cameraTo(TABLERO_X + 60);
       await api.walkActor(A, TABLERO_X + 40, TABLERO_Y);
@@ -281,6 +287,7 @@ async function salida(api, via) {
       api.sfx('paper');
       api.setFlag('posit_descopeado', true);
       api.repaint();
+      await apartarse(api);
       // (Las tres espaldas del coro se giran. 1,5 s. Anselmo se acerca, mira la columna, mira el rotulador.)
       api.setState('coro_desarrollo', 'girados');
       await api.wait(1500);

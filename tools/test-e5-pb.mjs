@@ -212,11 +212,12 @@ try {
   await G(() => __game.giveItem('rotulador_rojo'));
   const MAL = [['DESPEDIDOS', 'Eso es «muerto» con corbata.'], ['HECHO (DE VERDAD)', '«De verdad» no es un estado.'], ['FIRMAR EN PAPEL', 'Eso es tuyo. Mi tablero no es tu diario.']];
   for (const [col, linea] of MAL) {
+    if (col === 'DESPEDIDOS') await G(() => __game.skipText(false));            // a velocidad real, para la captura
     await raton('usar', 'kanban', 'rotulador_rojo', false);
     const o = await (async () => { await until(() => !!__game.currentDialogOptions()); return opciones(); })();
     if (col === 'DESPEDIDOS') ok(JSON.stringify(o) === JSON.stringify(['DESPEDIDOS', 'HECHO (DE VERDAD)', 'FIRMAR EN PAPEL', 'Mejor no.']), `sin rep_13 ni oyo_descopear, tres columnas y «Mejor no.»: ${JSON.stringify(o)}`);
     await clicOpcion(col);
-    if (col === 'DESPEDIDOS') { await until(() => __game.state().objects['pecera:kanban'] && __game.state().objects['pecera:kanban'].state === 'mal_0', null, 3000); await verA('kanban'); await sleep(80); await shot('kanban-mal'); }
+    if (col === 'DESPEDIDOS') { await until(() => { const k = __game.state().objects['pecera:kanban']; return k && k.state === 'mal_0' && !__game.game.player.path.length; }, null, 8000); await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-mal'); await G(() => __game.skipText(true)); }
     await idle(); await seguir();
     ok(await logHas(linea) && !(await flag('posit_descopeado')) && !(await G(() => (__game.state().objects['pecera:kanban'] || {}).state)), `clic en ${col} → Anselmo la borra con la manga: «${linea}»`);
   }

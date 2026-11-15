@@ -574,8 +574,11 @@ export default buildRoom({
     const tb = tambaleo(api.game.time);
     if (tb === 'tamb3' && S.tamb !== 'tamb3' && aqui(api, LECTOR)) api.sfx('crujido');
     S.tamb = tb;
-    if (!api.quieto()) return;                                 // el ratón no cuenta: solo escenas, globos, menús…
+    // el reloj cuenta el tiempo SIN ACTUAR (el ratón no cuenta): no se para con los globos que no son del jugador
+    // (murmullos, ambiente, la propia megafonía), que si no retrasan la tercera hasta pasado el minuto
+    if (!sinActuar(api)) return;
     S.quieto += dt;
+    if (!api.quieto()) return;                                 // …pero la megafonía no pisa un globo: espera a que acabe
     for (let i = 0; i < MEGAFONIA_TAMBALEO_S.length; i++) {
       if (S.quieto >= MEGAFONIA_TAMBALEO_S[i] && api.once('sala_lector_meg_' + i)) {
         api.megafonia('celestino', MEGAFONIA_TAMBALEO[i], { etiqueta: 'MEGAFONÍA' });
@@ -615,6 +618,17 @@ export default buildRoom({
 const S = { quieto: 0, tamb: null };                       // §2.6: segundos de tiempo quieto tras D4; último fotograma
 const A = { ctl: null, resolviendo: false, quieto: 0 };    // §2.1.6: el atasco (ctl de api.estampida), reloj de 10 s
 const ATASCO_ANUNCIO_S = 10;
+/** §2.6 · ¿el jugador está sin actuar? Como `api.quieto()` (engine/efectos.js `quiet`), pero los globos que no
+ *  bloquean (murmullos, ambiente, megafonía) no cuentan como actividad. */
+function sinActuar(api) {
+  if (api.quieto()) return true;
+  const g = api.game;
+  if (g.mode !== 'play' || !g.room) return false;
+  if (g.busy || g.acting || g.choice || g.itemPick || g.menu || g.phone || g.detalle || g.hud || g.card || g.apagon || g.burst) return false;
+  if (g.cutscene > 0 || g.inDialog > 0 || g.duelInfo) return false;
+  if (g.notices.some(n => g.realTime < n.until)) return false;
+  return g.speeches.every(s => !s.blocking);
+}
 const atascoAbierto = (api) => !!api.flag('sala_amazonas_atasco') && !A.resolviendo;
 
 /** §5.4 · el Lector Medio asiente (gesto, sin globo). */

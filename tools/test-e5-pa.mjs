@@ -269,6 +269,27 @@ try {
     await T.ctx.close();
   }
 
+  console.log('\n§2.1 saltar la escena de la tele con Esc no resuelve el atasco');
+  {
+    const T = await open();
+    const { page, G } = T;
+    await G(() => { __game.setFlag('sala_amazonas_orden_visto', true); __game.setFlag('sala_becario_sin_turno', true); __game.setFlag('gertrudis_pregunta', true); });
+    await rapido(G, false);
+    await G(() => { __game.game.runScript(api => api.scene('sala_tele_gertrudis'), { label: 'test tele (Esc)' }); });
+    await until(G, () => __game.game.cutscene > 0, null, 5000);
+    await sleep(400);
+    await page.keyboard.press('Escape');
+    await until(G, () => !__game.state().busy, null, 30000);
+    const s = await G(() => ({ at: __game.getFlag('sala_amazonas_atasco'), rt: __game.getFlag('reunion_terminada'), ns: __game.game.noSave,
+      merc: ['mercados_1', 'mercados_2', 'mercados_3'].filter(id => __game.game.actors[id].room === 'sala_amazonas').length }));
+    ok(s.at && !s.rt && s.ns && s.merc === 3, `Esc en la escena: atasco abierto, control devuelto, sin guardar ${JSON.stringify(s)}`);
+    await G(() => __game.clearLog());
+    await rapido(G, true);
+    await G(() => __game.doVerb('empujar', 'mercados_3'));
+    await comprobarVia(T, 'empujar');
+    await T.ctx.close();
+  }
+
   console.log('\n§2.1 (h) cargar una partida con el atasco forzado → resuelto en silencio');
   {
     const T = await open();
@@ -347,7 +368,7 @@ try {
     ok(await logHas(G, 'Lo que diga el Lector Medio. Que se está... Se está moviendo.'), 'Gervasio tras D4: M34');
     await G(() => { __game.skipSpeech(); __game.game.speeches.length = 0; });
     ok(await until(G, () => __game.log.some(l => String(l.text).startsWith('Ahí sigue. De pie')), null, 22000), '25 s: «Ahí sigue…»');
-    ok(await until(G, () => __game.log.some(l => String(l.text).includes('Que alguien le dé un empujón')), null, 26000), '45 s: «…Que alguien le dé un empujón…»');
+    ok(await until(G, () => __game.log.some(l => String(l.text).includes('Que alguien le dé un empujón')), null, 30000), '45 s: «…Que alguien le dé un empujón…»');
     ok(await logCount(G, 'Balón suelto') === 1, 'cada megafonía, una sola vez');
     // el Lector asiente sin globo
     await G(() => __game.clearLog());
