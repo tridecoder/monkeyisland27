@@ -10,6 +10,8 @@
 // menos), §7.6 (opciones `once`), §8 (sus «desde»).
 // ENMIENDA E5 (PD): D01 (Aurora: «el punto que nadie toca»), §2.3 la pegatina del fax (`vio_pegatina_fax`), §2.8 N6
 // (`aurora_tadeo` con `rvLeido`), C32-C39, C85-C88 y M02-M08 (sin coletillas, sin «criatura» ni «chaval» en ellas).
+// ENMIENDA E6 (PD): §5.1 D2 a tres asaltos (`cabe` de la R09: la larga no cabe en el fax y nunca es fallo), §4.1
+// (E214-E242, X1).
 // El arte y la geometría están en ./art/catacumba.art.js.
 //
 // Regla de Teodoro: NUNCA habla. Sus líneas salen del fax, EN MAYÚSCULAS (telegrama), con su color y el prefijo
@@ -353,7 +355,7 @@ const dialogoAurora = {
           do: async (api) => {
             // (Aurora le quita el boli de la oreja y le tacha media frase en el aire.)
             await api.anim(AUR, 'reach', 500); api.sfx('click'); await api.anim(AUR, 'reach', 300);
-            await api.say('Me ha corregido sin hablar. Es buenísima.');
+            await api.say('Me ha corregido sin hablar.');
           } },
         { text: 'Ya vuelvo con café.', exit: true,   // E5 C39
           do: async (api) => { await golpecito(api); await api.say('Un toc. Uno solo. Suena a «eso espero».'); } },
@@ -498,9 +500,9 @@ const dialogoTeodoro = {
         { text: '¿Con quién habla por el teléfono rojo?', once: true,
           do: async (api) => { await fax(api, ['Con la Goyita. La rotativa. Vive en el polígono.', 'No me pide likes. Solo papel, tinta y que no la llame impresora.']); } },
         { text: '¿Qué le pasa con la web?', once: true,
-          do: async (api) => { await fax(api, ['En internet una errata se corrige, chaval. En papel se enmarca.', 'Si firma uno de la web, el papel se acaba. Lo sé. Lo noto.']); } },
+          do: async (api) => { await fax(api, ['En internet una errata se corrige, chaval. En papel se enmarca.', 'Si firma uno de la web, el papel se acaba.']); } },
         { text: 'He encontrado una página perdida del Libro de Estilo.', if: 'profecia_leida', once: true,
-          do: async (api) => { await fax(api, ['¿«Nota del autor: tengo sueño»? La escribí yo. En 1998.', 'No se lo digas a Aurora.']); } },
+          do: async (api) => { await fax(api, ['¿«Nota del autor: tengo sueño»? La escribí yo, una noche de cierre.', 'No se lo digas a Aurora.']); } },
         // [E1.8] se queda: casa con el paso 32 («Teodoro le manda faxes»)
         { text: '¿Conoce a Herminia, la de Infografía?', once: true,
           do: async (api) => { await fax(api, ['La máquina de Leoncio respeta el cuerpo 9. Lo he medido. Nueve.', 'Le mando faxes. Me contesta con un quesito. Nos entendemos.']); } },
@@ -521,7 +523,7 @@ async function hablarTeodoro(api) {
     api.sfx('beep');
     await api.wait(300);
     if (api.flag('acto_2_iniciado')) {
-      if (api.once('catacumba_aurora_sinpapel')) await aurora(api, 'Sin papel no habla. Qué paz.');
+      if (api.once('catacumba_aurora_sinpapel')) await aurora(api, 'Sin papel no habla. Es su mejor época.');
       else await api.say('Teclea. Pita. Ni una línea. Me lo guarda todo para cuando haya papel.');
     } else {
       // Aurora no habla antes del café: señala su cartel en vez de explicarlo.
@@ -582,7 +584,7 @@ const dueloTeodoro = {
   subject: 'Firma de la web en papel. Asignado a: quien se atreva',
   assigned: 'EL DE LA WEB',
   assignedWin: 'Teodoro Cuerpodoce',
-  deck: ['R06', 'R02', 'R09'],                        // E2 fase B (6): un ataque menos (sin R03)
+  deck: ['R06', 'R02', 'R09'],                        // E2 fase B (6): un ataque menos (sin R03); E6 §5.1: los tres
   maxMisses: 3,
   style: 'fax',
   say: async (api, line) => { await api.sayFrom('fax', PREFIJO + MAY(line)); },
@@ -590,15 +592,18 @@ const dueloTeodoro = {
   attackText: {
     R06: '¿CONTRASTADO? FUENTES. NÚMERO.',
     R02: 'CON TODO EL RESPETO QUE ME MERECE LA WEB. QUE ES POCO.',
-    R09: 'DATO SIN CONTEXTO. Y DE LA WEB, QUE ES PEOR.',
+    R09: 'DATO SIN CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.',   // E6 §5.1 (N7)
   },
+  // E6 §5.1 · el tercer asalto, que quepa: el menú trae la R09 entera (el fax la corta y Teodoro la devuelve; nunca es
+  // fallo) y la versión corta de Bruno, que cabe en una línea de fax (N8). 1.ª larga: N9; 2.ª y siguientes: el taunt.
+  cabe: { R09: { max: 38, corta: 'Tráeme el contexto.', noCabe: 'NO CABE. REPITA EN TREINTA Y OCHO.' } },
   intro: ['¿Tú? ¿El de la web? ¿En mi página? Contesta.'],
   hurt: ['Hum. Cabe.', 'Eso, en mis tiempos, era una portada.'],
   taunt: ['Treinta y ocho caracteres de nada.', 'Respuesta a otro fax. Devuelto.'],
   finishers: [
-    { atScore: 2, text: 'Esto está cerrado. Y lo que está cerrado no tiene respuesta.', object: 'manual_fax',
+    { atScore: 3, text: 'Esto está cerrado. Y lo que está cerrado no tiene respuesta.', object: 'manual_fax',
       wrongObject: {
-        ficha_pagina_7: 'La ficha, después. Primero, contéstame. Si puedes.',
+        ficha_pagina_7: 'La ficha, después. Primero contéstame, si puedes.',
         pieza_opa: 'Eso es texto. Yo te he pedido una respuesta.',
         cafe: 'Café de la web. Sabe a clic.',
       },
@@ -642,16 +647,16 @@ export default buildRoom({
       mirar: 'Vuelta a la Redacción web. Al otro lado del latón, el siglo XXI.',
       abrir: 'Está abierta de par en par. Aquí lo que se cierra son páginas.',
       usar: async (api) => api.goto('pecera', 'catacumba'),
-      cerrar: 'Ya lo intentó Teodoro en 2009. La web entró igual. Por el fax.',
+      cerrar: 'Ya lo intentó Teodoro. La web entró igual. Por el fax.',
       hablar: 'Le digo adiós a 1994. 1994 no contesta: está maquetando.',
-      coger: 'Esta puerta separa 1994 del clic. No se toca.',
+      coger: 'No la cojo: esta puerta separa el papel del clic.',
     } },
     // mueble de plano medio (tapa las rodillas de Teodoro, sentado tras él); solo Mirar
-    { id: 'mesa_teodoro', name: 'mesa de Teodoro', poly: [[98, 100], [170, 100], [170, 111], [98, 111]], handlers: { mirar: 'La mesa de Teodoro. Muy ordenada.' } },
+    { id: 'mesa_teodoro', name: 'mesa de Teodoro', poly: [[98, 100], [170, 100], [170, 111], [98, 111]], handlers: { mirar: 'La mesa de Teodoro, ordenada al milímetro.' } },
     { id: 'galeradas', name: 'galeradas', handlers: {
       mirar: async (api) => {
         const n = api.inc('catacumba_galeradas_n');
-        if (n !== 2) { await api.say('Galeradas colgadas como jamones. Curadas en tinta.'); return; }
+        if (n !== 2) { await api.say('Galeradas colgadas como jamones.'); return; }
         await api.say(['«El supervisor abre expediente sancionador al sector de los áridos»', '«en el marco normativo».', 'Ochenta y siete caracteres con espacios.']);
         if (api.flag('fax_con_papel')) await fax(api, 'Has contado. Sin que te lo pida. Hijo mío.');
         else await api.say('Teodoro asiente. Sin papel, es lo más parecido a un abrazo.');
@@ -663,10 +668,10 @@ export default buildRoom({
     { id: 'camastro', name: 'camastro', handlers: {
       mirar: 'Detrás de la cortina, un camastro. Y un despertador puesto a las 20:59.',
       usar: 'No. Si me tumbo aquí, mañana soy de papel.',
-      coger: 'La manta de cuadros es de Teodoro. Los cuadros, de 1997.',
+      coger: 'La manta de cuadros de Teodoro, doblada en cuatro como un pliego.',
       empujar: 'No lo muevo. Está orientado al fax. Teodoro duerme mirando la bandeja.',
       abrir: 'La cortina ya está entreabierta. Aquí solo se cierran páginas.',
-      cerrar: 'Corro la cortina. Teodoro la vuelve a abrir sin mirar. Vigila el fax.',
+      cerrar: 'Corro la cortina. Teodoro la vuelve a abrir sin dejar de mirar el fax.',
     } },
     { id: 'fax', name: 'fax', color: '#D9CFA6', state: 'sin_papel', states: ['sin_papel', 'con_papel', 'imprimiendo', 'faldon', 'tragando'],
       // el fax «escupe solo» (murmullos de Teodoro) — solo si tiene papel
@@ -691,7 +696,7 @@ export default buildRoom({
         'usar:mensaje_fp': 'Devolverle a un fax su propio fax es de mala educación.',
         'usar:fotocopia_nota_direccion': '¿Faxear una fuente? Mañana sale en otro periódico.',
         'usar:boli_muerto': 'Un boli muerto en un fax. Ni con eso se queja.',
-        'usar:taper_huerfano': 'Un táper no se faxea. Aunque esté vacío. Sobre todo si está vacío.',
+        'usar:taper_huerfano': 'Eso no se faxea, y vacío todavía menos.',
         usar: async (api) => {
           if (api.flag('fax_con_papel')) await api.say('Tres teclas. Sin nada que enviar, cualquiera de ellas es una grosería.');
           else { api.sfx('beep'); await api.say('Pulso un botón. Me contesta «SIN PAPEL» con más énfasis.'); }
@@ -700,7 +705,7 @@ export default buildRoom({
           if (api.flag('fax_con_papel')) await api.say('Dentro, mi nota de gasto rechazada. Por fin sirve para algo.');
           else await api.say('Abro la bandeja. Vacía. Queda la marca de un papel que estuvo.');
         },
-        coger: 'Es un fax de 1992. Pesa lo que pesa una década.',
+        coger: 'Pesa lo que pesa una década.',
         hablar: async (api) => { intento(api); await api.say('Le hablo al fax. Teodoro lo considera una grosería.'); },
       } },
     { id: 'telefono_rojo', name: 'teléfono rojo', state: 'colgado', states: ['colgado', 'descolgado'], handlers: {
@@ -711,7 +716,7 @@ export default buildRoom({
       tirar: 'Tirar del cable del teléfono rojo es cortarle la línea a una pareja.',
     } },
     { id: 'tipometro', name: 'tipómetro', handlers: {
-      mirar: 'Un tipómetro: la regla de medir texto. Teodoro lo lleva encima. Duerme con él.',
+      mirar: 'Un tipómetro, la regla de medir texto. Teodoro no se lo quita ni para dormir.',
       coger: async (api) => { if (api.flag('fax_con_papel')) await fax(api, 'Toca eso y te mido. Un metro setenta. No cabes.'); else await palmada(api); },
       usar: 'No sé medir en cíceros. En la web medimos en clics y en disgustos.',
       empujar: 'Lo empujo un centímetro. Teodoro lo devuelve a su sitio. Exacto.',
@@ -727,19 +732,19 @@ export default buildRoom({
       tirar: 'No. Las agujas están así por convenio.',
     } },
     { id: 'fotos_jefes_cierre', name: 'fotos de jefes de cierre', handlers: {
-      mirar: async (api) => { await api.say(['Jefes de cierre en blanco y negro. Todos con bigote.', 'El bigote también era de plantilla.']); },
+      mirar: async (api) => { await api.say(['Jefes de cierre en blanco y negro, todos con bigote.', 'El bigote también era de plantilla.']); },
       coger: 'No. Llevan cuarenta años colgadas. Debajo, la pared es de otro color.',
       hablar: 'Les digo que voy a firmar en papel. Ninguno se ríe. Es el bigote.',
       usar: 'No tengo bigote que comparar.',
     } },
     { id: 'fax_enmarcado', name: 'fax enmarcado', handlers: {
       mirar: async (api) => {
-        await api.say(['Un fax enmarcado de 2003: «¿Esto lo has contrastado?».', 'Debajo, a mano: «Con dos fuentes y media.', 'La media dijo "yo no te he dicho nada"».']);
+        await api.say(['Un fax enmarcado: «¿Esto lo has contrastado?».', 'Debajo, a mano: «Con dos fuentes y media.', 'La media dijo "yo no te he dicho nada"».']);
         api.learnReply('rep_06');
       },
       coger: 'No hace falta. La réplica ya me la sé. El marco, que se quede.',
       abrir: 'Si abro el marco, se escapa la réplica.',
-      usar: 'Ya lo he contrastado: está enmarcado. Más contraste, imposible.',
+      usar: 'Ya lo he contrastado: está enmarcado.',
     } },
     // plan §4.5: la factura del envío, grapada en la pared de Teodoro (golpe B)
     { id: 'factura_fax', name: 'factura del fax', when: 'catacumba_factura', handlers: {
@@ -761,7 +766,7 @@ export default buildRoom({
         if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc en el lomo. El libro no se mueve.'); return; }
         await aurora(api, 'Ese libro, ni tocarlo; se consulta aquí, de pie y con las manos limpias.');
       },
-      abrir: 'Lo abro por cualquier página: «Así no se dice». Tiene razón. Siempre.',
+      abrir: 'Lo abro por cualquier página y pone «Así no se dice».',
       usar: 'Consulto «becario senior». Remite a «contradicción».',
       empujar: 'Si lo empujo, se cae la mesa. Y con ella, la ortografía de la casa.',
     } },
@@ -817,9 +822,9 @@ export default buildRoom({
         },
         'dar:mensaje_fp': async (api) => { await fax(api, 'Las fuentes, a Aurora. Yo solo mido.'); },
         'dar:fotocopia_nota_direccion': async (api) => { await fax(api, 'Las fuentes, a Aurora. Yo solo mido.'); },
-        'dar:acta_reunion': async (api) => { await fax(api, 'Dos líneas. Cabe en un faldón. Y sobra.'); },
+        'dar:acta_reunion': async (api) => { await fax(api, 'Dos líneas. Cabe en un faldón.'); },
         'dar:tarjeta_becario': async (api) => { await fax(api, '«Pellizco». Once con espacios. Mal medido y peor escrito.'); },
-        'dar:taper_huerfano': async (api) => { await fax(api, 'Un táper. Vacío. Cabe todo. No lo quiero.'); },
+        'dar:taper_huerfano': async (api) => { await fax(api, 'Vacío. Cabe todo. No lo quiero.'); },
         'dar:correo_evaristo': async (api) => { await fax(api, 'De Controlling. Ni lo mido. Lo respeto.'); },
         'dar:*': async (api) => { await fax(api, 'Eso no se faxea. No cabe. Lo he medido de lejos.'); },
         empujar: '¿Empujar al jefe de cierre antes del cierre? ¿Y quién cierra?',
@@ -828,7 +833,7 @@ export default buildRoom({
       } },
     { id: AUR, defaultVerb: 'hablar',
       handlers: {
-        mirar: 'Aurora, correctora. Tiene un boli rojo clavado en el moño. Por si acaso.',
+        mirar: 'Aurora, correctora. Tiene un boli rojo clavado en el moño.',
         hablar: hablarAurora,
         // paso 16 · el café de Aurora
         'dar:cafe': async (api) => {

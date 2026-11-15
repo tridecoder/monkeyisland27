@@ -554,7 +554,8 @@ export default buildRoom({
           await api.anim(V, 'reach', 300);
           api.vestir(V, 'casco_fuera');
           await api.sayAs(V, '…', { ms: 1400 });
-          await api.say('...Nada. Perdone.');
+          const b = api.actorPos('bruno');                 // globo a los pies: encima de la cabeza le taparía el gesto
+          await api.say('...Nada. Perdone.', b ? { at: [b.x, 141] } : undefined);
           api.vestir(V, null);
           api.sfx('click');
           await api.anim(V, 'reach', 300);
