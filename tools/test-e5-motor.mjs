@@ -416,7 +416,7 @@ try {
       const out = [];
       for (const [dx, dy] of [[6, 0], [-6, 0], [0, 6], [0, -6], [6, 6], [-6, 6], [6, -6], [-6, -6]]) {
         const sx = Math.round(cx + dx - cam), sy = Math.round(cy + dy);
-        g.mouse.touch = false; const m = g.pickAt(sx, sy);
+        const co = g.coarse; g.coarse = false; g.mouse.touch = false; const m = g.pickAt(sx, sy); g.coarse = co;
         g.mouse.touch = true; const t = g.pickAt(sx, sy);
         // ¿la caja crecida (20×16) del pequeño contiene el toque?
         const enCaja = Math.abs(sx + cam - cx) <= Math.max(b.w, 20) / 2 && Math.abs(sy - cy) <= Math.max(b.h, 16) / 2;
@@ -439,14 +439,15 @@ try {
     const fondo = { id: 'fondo_prueba_e5', name: 'fondo de prueba', x: b.x - 40, y: b.y - 30, w: 120, h: 70, handlers: {} };
     R.objects.unshift(fondo);
     g.camFollow = null; g.camTarget = null; g.camX = Math.max(0, Math.min(g.room.width - 320, b.x - 160));
-    const cam = Math.round(g.camX), sx = Math.round(b.x + b.w / 2 + 6 + 3 - cam), sy = Math.round(b.y + b.h / 2);   // 9,5 px: fuera de la taza
-    g.mouse.touch = false; const m = g.pickAt(sx, sy);
-    g.mouse.touch = true; const d = g.pickAt(sx, sy);
-    const lejos = g.pickAt(Math.round(b.x - 30 - cam), sy);
+    const cam = Math.round(g.camX), sy = Math.round(b.y + b.h / 2);
+    const pick = (sx, tacto) => { const co = g.coarse; if (!tacto) g.coarse = false; g.mouse.touch = tacto; const r = g.pickAt(sx, sy); g.coarse = co; g.mouse.touch = true; return r && r.id; };
+    const izq = Math.round(b.x + b.w / 2 - 9 - cam), der = Math.round(b.x + b.w / 2 + 9 - cam);   // a 9 px del centro: fuera de la taza
+    const r = { izqRaton: pick(izq, false), izqDedo: pick(izq, true), derRaton: pick(der, false), derDedo: pick(der, true), lejos: pick(Math.round(b.x - 30 - cam), true) };
     R.objects.shift(); g.camFollow = g.G.player;
-    return { raton: m && m.id, dedo: d && d.id, lejos: lejos && lejos.id };
+    return r;
   });
-  ok(big.raton === 'fondo_prueba_e5' && big.dedo === 'taza_no' && big.lejos === 'fondo_prueba_e5', `objeto grande detrás: ratón → ${big.raton}; dedo junto a la taza → ${big.dedo}; dedo lejos → ${big.lejos}`);
+  ok(big.izqRaton === 'fondo_prueba_e5' && big.izqDedo === 'taza_no' && big.lejos === 'fondo_prueba_e5', `objeto grande de prueba detrás: ratón → ${big.izqRaton}; dedo junto a la taza → ${big.izqDedo}; dedo lejos → ${big.lejos}`);
+  ok(big.derRaton === 'coro_desarrollo' && big.derDedo === 'taza_no', `la taza «NO» contra el coro (grande, al lado): ratón → ${big.derRaton}; dedo → ${big.derDedo}`);
   // ascensor con el dedo
   await T.G(() => { const v = __game.game.state.visitadas; for (const r of ['pecera', 'catacumba', 'pajarera', 'sala_amazonas', 'office', 'cpd']) if (!v.includes(r)) v.push(r); });
   await goto(T.G, 'cpd', 'ascensor');
