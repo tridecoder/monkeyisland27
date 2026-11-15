@@ -47,7 +47,10 @@ const layout = {
   // Comercial
   rollup_comercial: { rect: [244, 32, 20, 64], walkTo: [254, 112], face: 'up', cache: true,
     sprites: { desplegado: (g) => drawRollup(g, false), enrollado: (g) => drawRollup(g, true), default: (g) => drawRollup(g, false) } },
-  termometro_ventas: { rect: [267, 30, 22, 52], walkTo: [278, 112], face: 'up' },
+  termometro_ventas: { rect: [267, 30, 22, 34], walkTo: [278, 112], face: 'up' },
+  // E6 §2.9.1: el rotulador colgado del cordel (2×7 px en x 283-284, y 70-76), pinchado en la parte baja del papelógrafo; rect = dibujo
+  // crecido para el mínimo de la auditoría (12×10) y pegado bajo el rect del termómetro (que se acorta) para no solaparse
+  rotulador_cordel: { rect: [277, 64, 12, 16], walkTo: [278, 112], face: 'up', priority: 1, draw: drawRotuladorCordel },
   lema_enmarcado: { rect: [290, 18, 62, 33], walkTo: [318, 114], face: 'up' },
   // la piel de plátano, en el suelo JUSTO delante de la bandeja de la impresora (donde se para quien recoge un folio);
   // Bruno la mira desde su izquierda, sin tapar a Maripaz ni la impresora
@@ -408,6 +411,14 @@ function drawTermometro(g) {
   rect(g, tx + 1, ty + th - fill, 3, fill, '#d83c2a'); vline(g, tx + 1, ty + th - fill, fill, '#ff7a5a');
   ellipse(g, tx + 2, ty + th + 3, 4, 3, PAL.ink[3]); ellipse(g, tx + 2, ty + th + 3, 3, 2, '#d83c2a');
   for (let i = 0; i <= 3; i++) hline(g, tx + 6, ty + i * 9, 2, PAL.ink[3]);
+}
+/** E6 §2.9.1 · el rotulador rojo de Comercial, colgado de un cordel de 1 px pinchado en el papelógrafo del termómetro. */
+function drawRotuladorCordel(g) {
+  const x = 283;
+  px(g, x, 63, PAL.metal[5]); px(g, x + 1, 63, PAL.metal[3]);                 // la chincheta
+  vline(g, x, 64, 6, PAL.wood[5]);                                            // el cordel (1 px)
+  rect(g, x, 70, 2, 2, PAL.ink[1]);                                           // la capucha
+  rect(g, x, 72, 2, 5, '#e03022'); vline(g, x, 72, 5, '#ff7a5a');            // el cuerpo, rojo (2×7 en total)
 }
 /** El lema enmarcado de Comercial, ENTERO en 4 líneas 3×5 (antes «TODO ES…»). */
 function drawLema(g) {

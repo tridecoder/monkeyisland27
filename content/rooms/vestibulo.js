@@ -44,7 +44,7 @@ const ibexLine = (api, n) => { const l = IBEX[acto(api)]; return l[(Math.max(1, 
 
 // adenda 8bis.1: el cuadro de llaves rota 1…5 (la 5, solo en el Acto III) y después entre la 2 y la última
 const PLAZAS = [
-  ['El cuadro de llaves del garaje. Doce plazas. Ciento doce aspirantes.', 'Debajo, a lápiz, la línea de sucesión. Hay más tachones que nombres.'],
+  ['El cuadro de llaves del garaje: doce plazas y ciento doce aspirantes.', 'Debajo, a lápiz, la línea de sucesión. Hay más tachones que nombres.'],
   ['«Plaza 3: Ramírez. Libre. Ocupada por su ausencia».', 'Es la más codiciada. Nadie la usa y todos la quieren.'],    // E2 §8
   ['«Sucesión plaza 3: Maripaz, Yoli, el ficus y el móvil de Borja».', 'Me busco. Debajo del todo: «Vacante (bici)». Tachado.'],   // E2 §3.3
   ['«Plaza 1: Teodoro C., 1997». No ha salido del edificio desde entonces.', 'Nadie se atreve a pedírsela. Ni a desearle nada.'],
@@ -121,7 +121,7 @@ async function subirRedaccion(api) {
 // el ascensor está detrás de los tornos: sin torno_abierto, Bruno se queda en la línea y no hay botonera
 const ascensorBloqueado = async (api) => {
   if (api.flag('torno_abierto')) return false;
-  await api.say('El ascensor está al otro lado del torno. Le saludo desde aquí. Por si acaso.');
+  await api.say('El ascensor está al otro lado del torno. Le saludo desde aquí.');
   return true;
 };
 
@@ -200,7 +200,7 @@ const celestinoDialog = {
         { id: 'jubilan', text: 'Si ponen el narrador automático, ¿le jubilan?', if: 'acto_2_iniciado', once: true,
           do: async (api) => {
             await api.wait(900);                                                   // deja de mascar
-            await api.sayAs(C, ['...', 'Ese aparato no sabe lo que es una prórroga.', 'Tú pregúntame por el Ibex de vez en cuando. Por si acaso.']);
+            await api.sayAs(C, ['...', 'Ese aparato no sabe lo que es una prórroga.', 'Tú pregúntame por el Ibex de vez en cuando.']);
             await api.say('Perdone. Lo he dicho en voz alta. Era para dentro.');
           } },
         { id: 'plaza', text: '¿Cómo se consigue una plaza de garaje?', once: true,            // adenda 8bis.1 · E2 §7.6: once
@@ -302,7 +302,7 @@ export default buildRoom({
         if (!api.flag('foto_en_organigrama')) {
           api.sfx('error');
           await api.sayFrom('torno', 'USUARIO NO CONSTA EN ORGANIGRAMA.', { color: LED });
-          await api.say('Consto en la web. 4.112 veces.');
+          api.face('torno'); await api.wait(700);              // E6 E028: Bruno mira el torno en silencio
           return;
         }
         api.sfx('beep');
@@ -342,7 +342,7 @@ export default buildRoom({
         await api.say('Dentro hay una sola sugerencia: «Más sugerencias». Firmado: el buzón.');
         api.setFlag('vestibulo_buzon_abierto', true);
       },
-      usar: 'Escribo «Más becarios con contrato». La ranura la escupe. Polvo y principios.',
+      usar: 'Escribo «Más becarios con contrato». La ranura la escupe.',
       'dar:*': 'Es un buzón de sugerencias. Pruebas, no se aceptan.',
       cerrar: 'Lleva cerrado desde que se inventó el correo electrónico.',
       coger: 'Está atornillado. A él sí lo hicieron fijo.',
@@ -396,13 +396,13 @@ export default buildRoom({
         const n = api.inc('planta_empujada_n');
         api.sfx('whoosh');
         if (n === 1) {
-          await api.say(['La giro. Debajo de una hoja, un micrófono de 1994.', 'Etiqueta: «SEGURIDAD — NO RETIRAR». Sigue encendido.']);
+          await api.say(['La giro. Debajo de una hoja, un micrófono de 1994.', 'Etiqueta: «SEGURIDAD — NO RETIRAR». El piloto sigue encendido.']);
           await api.sayAs(C, 'Esa planta lo oye todo. Por eso es la que más dura.');
         } else if (n === 2) await api.sayAs(C, 'De ahí saco los cotilleos de ascensor.');
         else await api.say('La dejo como estaba. No quiero que me oiga empujar.');
       },
       tirar: 'Si le tiro de una hoja, me la deja en la mano. Es de plástico, pero digna.',
-      usar: 'La riego con la mirada. No necesita más. Es de plástico.',
+      usar: 'La riego con la mirada. Es de plástico: no necesita más.',
     } },
     // ADENDA 3.1: el narrador automático del Ibex (de Desarrollo), amordazado
     { id: 'altavoz_ibex', name: 'altavoz', color: '#CCCCCC', handlers: {
@@ -420,7 +420,7 @@ export default buildRoom({
     // la rama de abajo del organigrama (la única mención del departamento en esta sala, plan §5.14)
     { id: 'rama_diseno', name: 'rama del organigrama', handlers: {
       mirar: async (api) => {
-        if (api.flag('foto_en_organigrama')) await api.say(['DISEÑO Y PRODUCTO. De la rama cuelga mi foto.', 'Pidieron a alguien en 2021. Llego tarde, pero llego.']);
+        if (api.flag('foto_en_organigrama')) await api.say(['DISEÑO Y PRODUCTO. De la rama cuelga mi foto.', 'Pidieron a alguien hace años. Llego tarde, pero llego.']);
         else await api.say(['La rama de abajo: DISEÑO Y PRODUCTO.', 'De ella cuelga la casilla VACANTE. «Plaza pedida en 2021».']);
       },
       coger: 'La rama es suya. Yo solo cuelgo.',
@@ -440,20 +440,20 @@ export default buildRoom({
       'usar:tarjeta_becario': 'La tarjeta no abre el garaje. Seis años y no tengo ni plaza de bici.',
       abrir: 'Aquí una plaza se abre cuando alguien se jubila. Nadie se jubila.',
       tirar: 'Si tiro de una llave, la línea de sucesión se reordena. Y me echan a mí.',
-      hablar: 'Le pregunto qué hay que hacer para tener plaza. El cuadro calla. Sabe cosas.',
+      hablar: 'Le pregunto qué hay que hacer para tener plaza. El cuadro calla.',
     } },
   ],
 
   actors: [
     { id: 'celestino',
       murmurs: (v) => [
-        'Treinta años en este mostrador. El mostrador, cuarenta. Tiene peor rodilla.', 'Si me preguntan por el Ibex, digo que va.',
+        'Treinta años en este mostrador, y el mostrador tiene peor rodilla que yo.', 'Si me preguntan por el Ibex, digo que va.',
         'A las seis y media sale todo el mundo. A las seis y treinta y uno, silencio.',          // §8.7
         'A estas horas quedan los de guardia, los que viven aquí y los que no se van.',          // §8.7
-        ...(v.flag('acto_2_iniciado') ? ['Hoy tres me han preguntado por mi salud. Con mucho interés. Estoy de miedo.'] : []),   // 8bis.1
+        ...(v.flag('acto_2_iniciado') ? ['Hoy tres me han preguntado por mi salud, con mucho interés.'] : []),   // 8bis.1
       ],
       handlers: {
-        mirar: say('Celestino, el conserje. Bufanda del Ibex.',
+        mirar: say('Celestino, el conserje, con la bufanda del Ibex.',
           'Un chicle que no descansa desde el 82. Y un paquete abierto en el mostrador.'),
         hablar: async (api) => { await api.dialog('celestino'); },
         'dar:tarjeta_becario': async (api) => {
@@ -465,10 +465,10 @@ export default buildRoom({
         'dar:chicle': cel('Ese chicle ya es tuyo. Aquí no se aceptan devoluciones.'),
         'dar:ficha_pagina_7': cel('¿Una ficha de la página 7? Eso, a la Redacción de papel. Yo solo veo pasar.'),
         'dar:ticket_n1': cel('¿Un ticket cerrado? Eso no lo había visto nunca. Y llevo aquí treinta años.'),
-        'dar:taper_huerfano': cel('¡Táper rechazado! ¡Ese táper busca a alguien con hambre de verdad!'),
+        'dar:taper_huerfano': cel('¡Despeje del mostrador! ¡Eso busca a alguien con hambre de verdad!'),
         'dar:*': cel('Eso, a objetos perdidos. Ahí guardo desde paraguas hasta becarios.'),
         empujar: 'A Celestino no se le empuja. Lleva galones.',
-        tirar: 'Le tiro de la bufanda. Grita «¡fuera de juego!». Lo dejo.',
+        tirar: 'Le tiro de la bufanda y grita «¡fuera de juego!».',
         coger: '¿Coger a Celestino? ¿Y quién narra el vestíbulo? No tengo bufanda.',
       } },
     // solo en el epílogo: lo coloca ../escenas/final.js con art.layout.evaristo_salvedad.at

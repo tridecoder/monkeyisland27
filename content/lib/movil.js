@@ -107,8 +107,8 @@ async function llamadas(api) {
   const rows = [{ text: 'Abuela', sub: 'perdida · siempre', icon: '#d83a2a' }];
   for (let i = ev; i >= 1; i--) rows.push({ text: 'Evaristo', sub: i === ev ? 'contestada · hoy' : 'contestada', icon: '#F0F0A8' });
   await api.phone.app({ title: 'Llamadas', rows });
-  await api.say(ev ? ['Una perdida de la abuela. Siempre hay una.', ev === 1 ? 'Y una de Evaristo. Era solo eso.' : `Y ${ev} de Evaristo. Todas eran solo eso.`]
-    : 'Una perdida de la abuela. Siempre hay una.');
+  await api.say(ev ? ['Una perdida de la abuela.', ev === 1 ? 'Y una de Evaristo. Era solo eso.' : `Y ${ev} de Evaristo. Todas eran solo eso.`]
+    : 'Una perdida de la abuela.');
   const i = await api.choose(['Devolver la llamada a la abuela', 'Volver'], { escape: 1 });
   return i === 0;
 }

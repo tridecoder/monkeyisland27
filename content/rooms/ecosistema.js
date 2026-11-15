@@ -25,7 +25,7 @@ const acto = (api) => (api.flag('acto_3_iniciado') ? 3 : api.flag('acto_2_inicia
 // encontrado, contesta el Titulator con la réplica nueva (§7.3 del plan).
 const PORTATIL = [
   ['En pantalla: «La IA dice que lo más pesado de la web es el logo».'],
-  ['Debajo: «Propongo quitar el logo. Por si os sirve!!». Enviado a todos.'],
+  ['Debajo: «Propongo quitar el logo. Por si os sirve!!», enviado a todos.'],
   ['«La IA dice que la gente no lee. RV: a todos. Para que lo lean».'],
   ['«La IA está de acuerdo conmigo. Adjunto pantallazo de la IA de acuerdo».'],
   ['«RV: La IA dice que nuestra web se mueve mucho al cargar».', '«Propongo atornillarla».',
@@ -41,16 +41,16 @@ async function mirarPortatil(api) {
   await api.say(PORTATIL[k]);
   if (k === 3 && api.flag('ruben_encontrado')) {
     await api.say(['Contesta el Titulator: «Lo sé. Me lo ha contado ella. Se llama Brais».',
-      'Tadeo no lo ha leído. Yo sí.']);
+      'Tadeo no lo ha leído; yo, sí.']);
     api.learnReply('rep_15');
   }
 }
 
 async function cerrarPortatil(api) {
-  if (api.flag('ecosistema_portatil_cerrado')) { await api.say('Ya está cerrado. Por fin descansa. La impresora, no.'); return; }
+  if (api.flag('ecosistema_portatil_cerrado')) { await api.say('Ya está cerrado. Por fin descansa.'); return; }
   const a = acto(api);
   if (a === 1) {
-    await api.say('Lo cierro. Se abre solo.');
+    await api.say('Lo cierro y se abre solo.');
     await tadeo(api, '«He detectado que querías cerrarme. ¿Te ayudo a cerrarme?».');
   } else if (a === 2) {
     api.sfx(SFX.plin);
@@ -213,6 +213,8 @@ async function cogerTermometro(api) {
   api.sfx('pickup');
 }
 
+const LINEA_CORDEL = 'El rotulador cuelga al lado, de un cordel, como el boli de un banco.';
+
 // «Usar cualquier papel» con la impresora (§3.7)
 const PAPELES = ['fotocopia_nota_direccion', 'mensaje_fp', 'pieza_opa', 'ficha_pagina_7', 'ticket_n1', 'acta_reunion', 'album_eventos', 'correo_evaristo'];
 const impresoraPapel = Object.fromEntries(PAPELES.map(i => ['usar:' + i, '«ATASCO EN BANDEJA 2». Le da igual lo que le dé.']));
@@ -274,19 +276,27 @@ export default buildRoom({
         api.setState('rollup_comercial', 'enrollado'); api.sfx('whoosh');
         await mp(api, 'Eso es una baja de campaña, cariño. Con tres días de preaviso.', 'Se enrolla solo. Sin testigos. Lo disfruto.');
       },
-      coger: async (api) => { await mp(api, 'El roll-up no se toca. Está contratado hasta 2030.', 'Contratado hasta 2030. Lo pone abajo, en pequeño.'); },
+      coger: async (api) => { await mp(api, 'El roll-up no se toca: está contratado.', 'Contratado hasta 2030. Lo pone abajo, en pequeño.'); },
       tirar: async (api) => { api.setState('rollup_comercial', 'desplegado'); await api.say('Tiro de la lona. Sube como una persiana con objetivos.'); },
     } },
     { id: 'termometro_ventas', name: 'termómetro de ventas', handlers: {
-      mirar: async (api) => api.say(['Un termómetro pintado a rotulador: «OBJETIVO Q3». Rojo hasta el 97 %.', 'El 3 % que falta se lo lleva el gong de al lado.']),
+      // E6 §2.9.1: antes de coger el rotulador, la segunda línea lo señala (cuelga a la vista, con su propio punto de clic)
+      mirar: async (api) => api.say(['Un termómetro pintado a rotulador: «OBJETIVO Q3». Rojo hasta el 97 %.',
+        api.flag('ecosistema_rotulador_dado') ? 'El 3 % que falta se lo lleva el gong de al lado.' : LINEA_CORDEL]),
       usar: async (api) => { await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Así lo pinto yo los viernes. Pero con más pulso.', 'Rojo hasta el 98 %. Nadie lo nota.'); },   // E5 C52
       coger: cogerTermometro,                                                              // E5 §2.5.1
       empujar: 'Si lo empujo, sube la temperatura. No las ventas.',
       hablar: async (api) => { await api.say('¿Cuándo llegas al cien?'); await mp(api, 'Cuando la noticia ocupe una línea. Vamos por dos.', 'No contesta. Le falta el 3 %. A mí, el contrato.'); },
     } },
+    // E6 §2.9.1 (rev. 2): el rotulador colgado del cordel, con su propio punto de clic; desaparece al cogerlo
+    { id: 'rotulador_cordel', name: 'rotulador', when: '!ecosistema_rotulador_dado', handlers: {
+      mirar: LINEA_CORDEL,
+      coger: cogerTermometro,
+      usar: cogerTermometro,
+    } },
     { id: 'pizarra_sinergia', name: 'pizarra', handlers: {
       mirar: 'Pone SINERGIA en tres colores. Si la miras fijamente, aparece un velero.',
-      usar: 'Debajo escribo «¿Y qué es?». Se borra solo. Por vergüenza.',
+      usar: 'Debajo escribo «¿Y qué es?». Se borra solo.',
       coger: 'No me llevo la pizarra. Si la muevo, se escapa el velero.',
       empujar: 'La empujo. Se ve otro velero. Hay más sinergia de la que parece.',
       hablar: 'Le pregunto qué es sinergia. Me contesta un velero.',
@@ -303,11 +313,11 @@ export default buildRoom({
     } },
     { id: 'lema_enmarcado', name: 'lema enmarcado', handlers: {
       mirar: '«TODO ES UNA OPORTUNIDAD SI TIENE UN MÓDULO AL LADO.»',
-      coger: 'Si lo descuelgo, detrás habrá un módulo. Mejor no mirar.',
-      usar: 'Me pongo al lado. Soy una oportunidad. Nadie me compra.',
+      coger: 'Si lo descuelgo, detrás habrá un módulo.',
+      usar: 'Me pongo al lado. Soy una oportunidad.',
       hablar: async (api) => {
         if (maripazAqui(api)) await api.say('Le leo el lema en voz alta. Maripaz asiente y le busca hueco a un banner.');
-        else await api.say('Le leo el lema en voz alta. Suena a anuncio.');
+        else await api.say('Le leo el lema en voz alta y suena a anuncio.');
       },
     } },
     pantallaObjeto,
@@ -316,11 +326,11 @@ export default buildRoom({
         if (api.flag('ecosistema_portatil_cerrado')) await api.say(['Pantalla: «ATASCO EN BANDEJA DE SALIDA».', 'Ahora reenvía ella. Con más criterio que Tadeo.']);
         else await api.say(['Pantalla: «ATASCO EN BANDEJA 2». No tiene bandeja 2.', 'Empiezo a dudar de la bandeja 1.']);
       },
-      abrir: 'Dentro hay un folio de 2016 que pone «PRUEBA». Superada.',
+      abrir: 'Dentro hay un folio que pone «PRUEBA». Superada.',
       cerrar: 'La cierro. «ATASCO EN BANDEJA 2». Cerrada, pero con dudas.',
       usar: 'Pulso imprimir. «ATASCO EN BANDEJA 2». Por lo menos es coherente.',
       empujar: 'No. Una impresora a la que empujas siempre se acuerda.',
-      hablar: 'Le pregunto por la bandeja 2. Se calla. Lleva años callándoselo.',
+      hablar: 'Le pregunto por la bandeja 2. Se calla.',
       ...impresoraPapel,
       'usar:copias_rechazadas': 'Le doy papel. Dice «ATASCO EN BANDEJA 2». Le da igual: es de principios.',
       'usar:manual_fax': 'El manual es del fax. La impresora no se deja ayudar por un fax.',
@@ -356,7 +366,7 @@ export default buildRoom({
         if (n === 0) await api.say(['Una piel de plátano junto a la impresora. Pósit: «Para Gervasio (plaza 7)».', 'Gervasio no imprime nunca. El plan tiene un fallo.']);
         else await api.say('Sigue ahí. Nadie la pisa. Aquí todo el mundo mira dónde pone el pie.');
       },
-      coger: async (api) => { await mp(api, '¡Deja eso! Lleva un adhesivo de patrocinio. Por debajo.', 'Mejor la dejo. Alguien la ha puesto con mucha planificación.'); },
+      coger: async (api) => { await mp(api, '¡Deja eso! Lleva un adhesivo de patrocinio por debajo.', 'Mejor la dejo. Alguien la ha puesto con mucha planificación.'); },
       empujar: 'La aparto con el pie. Aquí no se cae nadie: aquí la gente se jubila.',
       usar: 'No. Yo quiero una plaza de bici.',                                            // E5 C50
       hablar: 'Le pregunto a quién espera. El pósit lo dice todo.',
@@ -371,7 +381,7 @@ export default buildRoom({
         mirar: async (api) => { await api.say(['Maripaz, Comercial. Lleva el mazo del gong como otros el bolso.', 'La funda del móvil lleva anuncio.']); },
         hablar: async (api) => api.dialog('maripaz'),
         usar: async (api) => { await api.say('Le toco el hombro.'); await sayM(api, 'Has hecho clic en un anuncio. Ahora te sigo toda la noche.'); },
-        coger: async (api) => { await sayM(api, '¿Cogerme? Rellena antes el formulario. Catorce campos. Ocho obligatorios.'); },
+        coger: async (api) => { await sayM(api, '¿Cogerme? Rellena antes el formulario: catorce campos, ocho obligatorios.'); },
         empujar: async (api) => {
           if (api.inc('maripaz_empujon_n') === 1) { gong(api); await sayM(api, 'Uy. Eso en la web se llama «interacción». Te la facturo.'); }
           else await sayM(api, 'Segunda interacción: tarifa plana. Ya puedes empujar lo que quieras.');

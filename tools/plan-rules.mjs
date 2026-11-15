@@ -289,3 +289,127 @@ export function coletillaPorPersonaje(lines) {
   }
   return out;
 }
+
+// ======================================================================================== ENMIENDA E6 §8 (I1)
+// Topes nuevos. text-audit los enseña siempre como AVISO; con `--e6` cuentan como fallo (se activan cuando los paquetes
+// de sala hayan aplicado la tabla de E6 §4; hasta entonces el texto de hoy no los pasa: es lo esperado). Mismas cadenas
+// que los de E5, y sin `content/music.js` (sus «cadenas» son notas: «A4 C5 F5 - -»).
+// ENMIENDA E6 §8 · REMATE SECO: cadena de ≥ 2 frases cuya última frase tiene 1-3 palabras y acaba en «.» o «!».
+// Frase = tras [.!?…] (+ cierre »"”') y espacio, empezando por mayúscula, ¡, «, " o cifra. No cuentan las preguntas, las
+// frases cortadas («...», «…») ni las cadenas de una frase. Hoy 727 de 3.591 (20,2 %); tras E6 (rev. 2), 513 de 3.561
+// (14,4 %). El tope deja dos puntos de margen sobre lo que queda (16,5 %); el objetivo del director era ≤ 15 %.
+export const REMATE_SECO_RE = /[.!?…][»"”')]*\s+(?=[¡«"(]*[\p{Lu}\p{N}])[¡«"(]*(?:[\p{L}\p{N}][\p{L}\p{N}'’,%.\-]*\s*){1,3}(?:\.|!+)[»"”')]*\s*$/u;
+const frasesE6 = (t) => t.trim().split(/(?<=[.!?…][»"”')]*)\s+(?=[¡¿«"(]*[\p{Lu}\p{N}])/u).filter(Boolean);
+export const esRemateSeco = (t) => frasesE6(t).length >= 2 && !/(?:\.\.\.|…)[»"”')]*\s*$/.test(t) && !/\?[»"”')]*\s*$/.test(t)
+  && REMATE_SECO_RE.test(t.trim());
+const FUERA_MUSICA = /[\\/]music\.js$/;
+
+/** TOPES_E6_JUEGO (mismas cadenas que TOPES_E5_JUEGO, + `fuera` de music.js). `test`: función en lugar de `re`;
+ *  `pct`: tope sobre el total de cadenas del mismo filtro (`base`). */
+export const TOPES_E6_JUEGO = [
+  { test: esRemateSeco, pct: 0.165, fuera: FUERA_MUSICA, txt: 'remate seco (E6 §8): ≤ 16,5 % de las cadenas' },      // 20,2 % → 14,4 %
+  { re: /t[áa]per/i, porCadena: true, max: 17, txt: '«táper» (E6 §8)' },                                             // 32 → 17
+  { re: /\b(?:19|20)\d\d\b/, porCadena: true, max: 35, fuera: FUERA_MUSICA, txt: 'año 19xx/20xx (E6 §8)' },         // 64 → 33
+  { re: /Huele a 2019/, porCadena: true, max: 1, txt: '«Huele a 2019» (E6 §8)' },                                    // 3 → 1
+  { re: /Diecinueve años/, porCadena: true, max: 4, txt: '«Diecinueve años» (E6 §8)' },                              // 9 → 4
+  { re: /Lo que diga el Lector Medio/, porCadena: true, max: 5, txt: '«Lo que diga el Lector Medio» (E6 §8)' },      // 7 → 5
+  { re: /Era solo eso/, porCadena: true, max: 5, txt: '«Era solo eso» (E6 §8)' },                                    // 7 → 5
+];
+/** Aviso (no fallo, E6 §8): remate seco por fichero de sala > 22 % (salvo Eventos y los datos del titulador). Rev. 2: la
+ *  peor queda en 21,9 % (ecosistema.js); el aviso salta si una sala vuelve a pasar del 22 %. */
+export const REMATE_SALA_AVISO = { pct: 0.22, fuera: /eventos|titulador\.datos/ };
+/** Sobre el CÓDIGO (sin comentarios), no sobre cadenas: «D3: No.» ≤ 6 (cuenta ['D3', 'No.'] y ['D3', '...No.']). */
+export const TOPES_E6_FUENTE = [
+  { re: /\[\s*'D3'\s*,\s*'(?:\.\.\.)?No\.'\s*\]/g, max: 6, ficheros: /content[\\/]rooms[\\/]pecera/, txt: '«D3: No.» (E6 §8)' },   // 12 → 6
+];
+/** Duplicados audibles (aviso): cadena > 25 caracteres en dos SALAS distintas (ficheros de content/rooms/, agrupados por
+ *  sala: `pecera.js` y `pecera.dialogos.js` son la misma), sin las de DUP_PERMITIDAS. actors.js, pistas.js, duelo.js y
+ *  escenas/ no son salas: no cuentan. */
+export const DUP_PERMITIDAS = ['Bruno Pellejo. Trece con espacios. Cabe.', '¿Y cuáles son los siguientes pasos?', 'Buenas noches, Gertrudis.',
+  'Nada. Gracias, Gertrudis.',
+  // las del propio E6 (§2.1: las dos de Yoli en el corte de Sistemas y en el camino del registro, dos ramas que no se oyen
+  // en la misma partida; §2.3: la despedida de Gertrudis en el Vending y en la tele) y §4.3 (`once` compartido)
+  '¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?', '...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!',
+  'E-00: DE NADA. ESO TAMBIÉN SE DICE.', 'Ese anuncio en la espalda... se agradece. Pero lo hablamos.'];
+
+const filtroCadenas = (rel) => !(/[\\/]art[\\/]/.test(rel) || /flags\.js$/.test(rel) || /_plantilla/.test(rel));
+/** Cadenas de content/ con su fichero (el corpus de los topes «en todo el juego»). */
+function corpus(root) {
+  const out = [];
+  for (const f of walk(path.join(root, 'content'))) {
+    const rel = path.relative(root, f);
+    if (!filtroCadenas(rel)) continue;
+    for (const t of literales(sinSoloPantalla(rel, fs.readFileSync(f, 'utf8')))) if (esTexto(t)) out.push({ rel, t });
+  }
+  return out;
+}
+function cuentaE6(root) {
+  const C = corpus(root);
+  return TOPES_E6_JUEGO.map(T => {
+    const base = C.filter(c => !(T.fuera && T.fuera.test(c.rel)));
+    const hits = base.filter(c => (T.test ? T.test(c.t) : T.porCadena ? T.re.test(c.t) : false)).map(c => `${c.rel}: ${c.t}`);
+    const pasa = T.pct != null ? hits.length / Math.max(1, base.length) > T.pct : hits.length > T.max;
+    return { ...T, hits, base: base.length, pasa };
+  });
+}
+const pctTxt = (n, b) => (100 * n / Math.max(1, b)).toFixed(1).replace('.', ',') + ' %';
+/** El código de un fichero sin comentarios (las cadenas se conservan). */
+function sinComentarios(src) {
+  let out = '', i = 0;
+  while (i < src.length) {
+    const c = src[i], n = src[i + 1];
+    if (c === '/' && n === '/') { const j = src.indexOf('\n', i); i = j < 0 ? src.length : j; continue; }
+    if (c === '/' && n === '*') { const j = src.indexOf('*/', i + 2); i = j < 0 ? src.length : j + 2; continue; }
+    if (c === "'" || c === '"' || c === '`') {
+      let j = i + 1;
+      while (j < src.length && src[j] !== c) j += src[j] === '\\' ? 2 : 1;
+      out += src.slice(i, j + 1); i = j + 1; continue;
+    }
+    out += c; i++;
+  }
+  return out;
+}
+function cuentaE6Fuente(root) {
+  return TOPES_E6_FUENTE.map(T => {
+    const hits = [];
+    for (const f of walk(path.join(root, 'content'))) {
+      const rel = path.relative(root, f);
+      if (!T.ficheros.test(rel)) continue;
+      for (const m of sinComentarios(fs.readFileSync(f, 'utf8')).matchAll(T.re)) hits.push(`${rel}: ${m[0]}`);
+    }
+    return { ...T, hits, pasa: hits.length > T.max };
+  });
+}
+/** Topes de E6 que se pasan (globales y de código). `salas`: con filtro de sala, solo los de código de esas salas. */
+export function topesE6Juego(root, salas = null) {
+  const fmt = (T) => `${T.txt}: ${T.hits.length}${T.pct != null ? ` de ${T.base} = ${pctTxt(T.hits.length, T.base)} (tope ${pctTxt(T.pct * 100, 100)})` : ` (tope ${T.max})`}:\n      ${[...new Set(T.hits)].slice(0, 80).join('\n      ')}${T.hits.length > 80 ? '\n      …' : ''}`;
+  const fuente = cuentaE6Fuente(root).filter(T => !salas || salas.some(s => T.ficheros.test(`content/rooms/${s}.js`)));
+  return [...(salas ? [] : cuentaE6(root)), ...fuente].filter(T => T.pasa).map(fmt);
+}
+/** Recuento de cada tope de E6, pase o no (text-audit --estatico --recuento). */
+export const recuentoE6Juego = (root) => [...cuentaE6(root), ...cuentaE6Fuente(root)].map(T => ({
+  txt: T.txt, n: T.hits.length, max: T.pct != null ? `${pctTxt(T.pct * 100, 100)} (${T.hits.length} de ${T.base} = ${pctTxt(T.hits.length, T.base)})` : T.max }));
+/** Aviso: remate seco por fichero de sala (content/rooms/, sin art/) por encima del 22 %. Devuelve también la tabla entera
+ *  para el recuento: [{ rel, n, rem, pct, pasa }]. `salas`: solo los ficheros de esas salas. */
+export function rematePorSala(root, salas = null) {
+  const por = new Map();
+  for (const c of corpus(root)) {
+    if (!/^content[\\/]rooms[\\/]/.test(c.rel) || REMATE_SALA_AVISO.fuera.test(c.rel)) continue;
+    if (salas && !salas.some(s => path.basename(c.rel).startsWith(s))) continue;
+    const p = por.get(c.rel) || { rel: c.rel, n: 0, rem: 0 };
+    p.n++; if (esRemateSeco(c.t)) p.rem++;
+    por.set(c.rel, p);
+  }
+  return [...por.values()].map(p => ({ ...p, pct: p.rem / Math.max(1, p.n), pasa: p.rem / Math.max(1, p.n) > REMATE_SALA_AVISO.pct }))
+    .sort((a, b) => b.pct - a.pct);
+}
+/** Aviso: duplicados audibles entre salas distintas (> 25 caracteres, fuera de DUP_PERMITIDAS). */
+export function duplicadosAudibles(root) {
+  const ok = new Set(DUP_PERMITIDAS), donde = new Map();
+  for (const c of corpus(root)) {
+    if (!/^content[\\/]rooms[\\/]/.test(c.rel) || c.t.length <= 25 || ok.has(c.t)) continue;
+    const sala = path.basename(c.rel).split('.')[0];
+    (donde.get(c.t) || donde.set(c.t, new Map()).get(c.t)).set(sala, c.rel);
+  }
+  return [...donde].filter(([, m]) => m.size > 1).map(([t, m]) => `${t}  ←  ${[...m.values()].join(', ')}`);
+}

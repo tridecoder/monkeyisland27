@@ -238,6 +238,9 @@ export function fichaViva(api) {
   return out;
 }
 
+// E6 §4.3: dos verbos del mismo objeto (correo de Evaristo), una constante
+const GUARDO_CORREO = 'Lo guardo. Evaristo dijo «en el momento oportuno». Aún no ha llegado.';
+
 export default {
   tarjeta_becario: {
     name: 'tarjeta de becario', icon: icons.tarjeta_becario,
@@ -289,7 +292,7 @@ export default {
     name: 'café', icon: icons.cafe,
     handlers: { mirar: 'Un café de Gertrudis. Pone «cortado». No especifica de qué.' },
     // §8.1 (común A)
-    combine: { sobre_azucar: 'Echarle azúcar al café de Gertrudis es corregirla. No me atrevo.' },
+    combine: { sobre_azucar: 'Echarle azúcar al café de Gertrudis es corregirla.' },
   },
   chaqueta_ramirez: {
     name: 'chaqueta de Ramírez', icon: icons.chaqueta_ramirez,
@@ -300,7 +303,7 @@ export default {
         if (api.flag('bruno_con_chaqueta')) { api.setFlag('bruno_con_chaqueta', false); await api.say('Me la quito. Vuelvo a ser yo.'); return; }
         await api.anim(api.player, 'reach', 400);
         api.setFlag('bruno_con_chaqueta', true);
-        await api.say(['Me la pongo. Por probar. Huele a 2019 y a cruasán.', 'Me queda grande. De hombros y de cargo.']);   // E2 §7.2
+        await api.say(['Me la pongo por probar. Huele a cruasán de máquina.', 'Me queda grande. De hombros y de cargo.']);   // E2 §7.2
         if (api.room === 'pecera') await api.scene('pecera_chaqueta');   // [P2] §4.3: Yoli y el coro, si se la pone allí
         else if (api.room === 'pajarera') await api.scene('pajarera_chaqueta');   // [P2] §4.3: Íñigo le confunde
       },
@@ -308,7 +311,7 @@ export default {
   },
   sobre_azucar: {
     name: 'sobre de azúcar', icon: icons.sobre_azucar,
-    handlers: { mirar: 'Sobre de azúcar caducado en 2021. Pone «Cafetería». Es casi un ticket.' },
+    handlers: { mirar: 'Sobre de azúcar caducado. Pone «Cafetería». Es casi un ticket.' },
   },
   ficha_pagina_7: {
     // plan §8.1: la ficha es una LISTA VIVA. Mirar dice el título, las tres casillas en su estado (la hecha, corta; la
@@ -320,7 +323,7 @@ export default {
   },
   copias_rechazadas: {
     name: 'duplicado y triplicado', icon: icons.copias_rechazadas,
-    handlers: { mirar: 'Duplicado y triplicado de mi nota de gasto. Sello: RECHAZADA. Dos veces.' },
+    handlers: { mirar: 'Duplicado y triplicado de mi nota de gasto, con dos sellos de RECHAZADA.' },
   },
   fotocopia_nota_direccion: {
     name: 'fotocopia de la nota de Gervasio', icon: icons.fotocopia_nota_direccion,
@@ -352,7 +355,7 @@ export default {
   },
   album_eventos: {
     name: 'álbum de Eventos', icon: icons.album_eventos,
-    handlers: { mirar: say(['En todas las fotos, al fondo, Brais. Cena de Navidad, presentación, photocall.', 'Siempre yendo al baño. Siempre con un táper.']) },
+    handlers: { mirar: say(['En todas las fotos, al fondo, Brais. Cena de Navidad, presentación, photocall.', 'Siempre yendo al baño, siempre en una esquina de la foto.']) },
   },
   ticket_n1: {
     name: 'ticket nº 1', icon: icons.ticket_n1,
@@ -360,7 +363,7 @@ export default {
   },
   acta_reunion: {
     name: 'acta de la reunión', icon: icons.acta_reunion,
-    handlers: { mirar: say(['Acta de la última Reunión de Dirección: «1. Pedir más café. 2. Ninguno más».', 'La primera acta en diecinueve años. Tiene dos faltas. Aurora lloraría.']) },
+    handlers: { mirar: say(['Acta de la última Reunión de Dirección: «1. Pedir más café. 2. Ninguno más».', 'La primera acta en diecinueve años. Tiene dos faltas.']) },
   },
   boli_muerto: {
     // adenda 6.1 (#19): se consigue en la Catacumba (Coger bolis_aurora, MP3) y se gasta al Dar a custodia_precinto.
@@ -378,8 +381,8 @@ export default {
       'dar:begona_triplicado': dice('begona_triplicado', 'Una copia de un correo. Esto ya es casi un triplicado.'),
       'dar:aurora_galerada': dice('aurora_galerada', 'Ya lo he leído. Está perfecto. Guárdalo.'),
       'dar:inigo_sinergia': dice('inigo_sinergia', 'Eso, por escrito. Si no está en el hilo, no escala.'),
-      'dar:*': 'Lo guardo. Evaristo dijo «en el momento oportuno». Aún no ha llegado.',
-      'usar:*': 'Lo guardo. Evaristo dijo «en el momento oportuno». Aún no ha llegado.',
+      'dar:*': GUARDO_CORREO,
+      'usar:*': GUARDO_CORREO,
     },
   },
   // [P3] plan §4.4: el táper que suelta el de Mercados al huir del Vending; se da a `ruben` en Sistemas (P1, `taper_dado`)

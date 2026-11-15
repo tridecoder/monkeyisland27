@@ -795,6 +795,24 @@ export class Game {
     const acts = Object.values(this.actors).filter(a => a.room === this.room.def.id && a.visible && a.id !== this.G.player && a.def.hotspot !== false)
       .sort((a, b) => b.y - a.y);
     for (const a of acts) { const b = this.actorBox(a), m = a.path.length ? 4 : 0; if (x >= b.x - m && x < b.x + b.w + m && y >= b.y - m && y < b.y + b.h + m) return this.actorTarget(a); }
+    // E6 §6.3-6.4: sobre la caja de Bruno (sin los 4 px de los pies), según el verbo
+    const p = this.player;
+    if (p && p.visible && !this.ui.item && this.G.playerHotspot !== false) {
+      const b = this.actorBox(p);
+      if (x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h - 4) {
+        // N5: Hablar con un actor tapado por Bruno: gana el de detrás si su caja crecida 6 px contiene el punto
+        if (this.ui.verb === 'hablar') {
+          const G6 = 6;
+          const det = acts.filter(a => { const c = this.actorBox(a); return x >= c.x - G6 && x < c.x + c.w + G6 && y >= c.y - G6 && y < c.y + c.h + G6; });
+          if (det.length) {
+            const d = (a) => { const c = this.actorBox(a); return Math.hypot(x - (c.x + c.w / 2), y - (c.y + c.h / 2)); };
+            return this.actorTarget(det.sort((a, c) => d(a) - d(c))[0]);
+          }
+        }
+        // N4: con Mirar, Bruno gana a cualquier objeto o salida de debajo («Mirar a Bruno»: la meta)
+        if (this.ui.verb === 'mirar' && p.def.handlers) return this.actorTarget(p);
+      }
+    }
     const objs = this.roomObjects();
     let hits = objs.filter(o => this.hitObject(o, x, y));
     if (!hits.length) hits = this.slopHits(objs, x, y);
@@ -875,6 +893,7 @@ export class Game {
       return `${this.verbLabel(v)} ${it ? this.nameOf(it) : this.ui.item} ${prep}${h && h.id !== this.ui.item ? ' ' + h.name : ''}`;
     }
     if (!v && h && h.kind === 'inv') return `${this.verbLabel('usar')} ${h.name}`;
+    if (v === 'mirar' && h && h.kind === 'actor' && h.actor === this.player) return `${this.verbLabel(v)} a ${h.name}`;   // E6 §6.3
     return `${this.verbPhrase(v)}${h ? ' ' + h.name : ''}`;
   }
   /** El mismo objetivo con el nombre de ahora (a oscuras o con luz). `oscuro` marca que se nombró a oscuras. */
@@ -1041,18 +1060,20 @@ export class Game {
     }
     return api;
   }
-  /** Show options in the panel. Each option is a string or { text, disabled } (disabled = grey, not selectable). */
+  /** Show options in the panel. Each option is a string or { text, disabled, tag } (disabled = grey, not selectable;
+   *  E6 §6.2 `tag` = etiqueta en microfuente a la derecha de la primera línea, p. ej. 'COMODÍN': solo se pinta, no se dice). */
   choose(options, opts = {}) {
     if (this.choice) { this.choice.resolve(-1); }
     return new Promise(res => {
       const texts = options.map(o => (o && typeof o === 'object') ? String(o.text) : String(o));
       const disabled = new Set(options.map((o, i) => (o && typeof o === 'object' && o.disabled) ? i : -1).filter(i => i >= 0));
+      const tags = options.map(o => (o && typeof o === 'object' && o.tag) ? String(o.tag) : null);
       // `escape`: la opción que eligen Esc y un toque en la sala (fuera del panel y del móvil); `t0`: los toques de los
       // primeros 250 ms no cuentan (el segundo toque de un doble toque no elige una opción por accidente)
       const escape = Number.isInteger(opts.escape) ? opts.escape : null;
       // `inicio`: la opción que se enseña al abrir (el menú se desplaza hasta ella; E4: la pieza elegida del titulador)
       const inicio = Number.isInteger(opts.inicio) ? opts.inicio : null;
-      this.choice = { options: texts, disabled, escape, compact: !!opts.duel, inicio, t0: this.realTime, resolve: i => { this.choice = null; res(i); this.checkIdle(); }, scroll: 0, hover: -1 };
+      this.choice = { options: texts, disabled, tags, escape, compact: !!opts.duel, inicio, t0: this.realTime, resolve: i => { this.choice = null; res(i); this.checkIdle(); }, scroll: 0, hover: -1 };
       this.checkIdle();
     });
   }
@@ -1444,7 +1465,8 @@ export class Game {
     const coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
     let s = Math.floor(fit);
     let cw, ch;
-    if (s >= 1 && !(coarse && dpr >= 2 && s / fit < 0.97)) { cw = SCREEN_W * s; ch = SCREEN_H * s; }
+    // E6 §6.6 (N11): al tacto, la fraccionaria también con DPR 1 (móviles baratos) si la entera deja > 3 % de hueco
+    if (s >= 1 && !(coarse && s / fit < 0.97)) { cw = SCREEN_W * s; ch = SCREEN_H * s; }
     else { cw = Math.floor(SCREEN_W * fit); ch = Math.floor(SCREEN_H * fit); }
     if (this.display.width !== cw || this.display.height !== ch) { this.display.width = cw; this.display.height = ch; }
     this.display.style.width = (cw / dpr) + 'px';

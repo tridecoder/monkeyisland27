@@ -25,6 +25,33 @@ export const COL = {
   cell: '#15122a', cellLine: '#252040', cellHover: '#2a2448',
 };
 
+// E6 §6.2: microfuente 3×5 (la de content/lib/kit.js, solo letras y cifras) para las etiquetas de opción («COMODÍN»)
+export const TAG_COLOR = '#8a8a9a';
+const MICRO = {
+  A: '.#.#.#####.##.#', B: '##.#.###.#.###.', C: '.###..#..#...##', D: '##.#.##.##.###.', E: '####..##.#..###',
+  F: '####..##.#..#..', G: '.###..#.##.#.##', H: '#.##.#####.##.#', I: '###.#..#..#.###', J: '..#..#..##.#.#.',
+  K: '#.###.#..##.#.#', L: '#..#..#..#..###', M: '#.########.##.#', N: '####.##.##.##.#', O: '.#.#.##.##.#.#.',
+  P: '##.#.###.#..#..', Q: '.#.#.##.###..##', R: '##.#.###.#.##.#', S: '.###...#...###.', T: '###.#..#..#..#.',
+  U: '#.##.##.##.####', V: '#.##.##.##.#.#.', W: '#.##.########.#', X: '#.##.#.#.#.##.#', Y: '#.##.#.#..#..#.',
+  Z: '###..#.#.#..###', 0: '####.##.##.####', 1: '.#.##..#..#.###', 2: '##...#.#.#..###', 3: '##...#.#...###.',
+  4: '#.##.####..#..#', 5: '####..##...###.', 6: '.###..####.####', 7: '###..#.#..#..#.', 8: '####.#####.####',
+  9: '####.####..###.', '.': '.............#.', '-': '......###......', ' ': '...............'
+};
+const MICRO_ACENTO = { 'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ü': 'U', 'Ñ': 'N' };
+export const microW = (t) => Math.max(0, [...String(t)].length * 4 - 1);
+/** Texto 3×5 alineado a la derecha en `xr` (borde derecho), arriba en `y` (+1 px encima para tildes). */
+function drawMicro(g, text, xr, y, c) {
+  const s = String(text).toUpperCase();
+  let x = xr - microW(s);
+  for (const ch of s) {
+    const gl = MICRO[MICRO_ACENTO[ch] || ch];
+    if (gl) for (let i = 0; i < 15; i++) if (gl[i] === '#') rect(g, x + (i % 3), y + ((i / 3) | 0), 1, 1, c);
+    if (ch === 'Ñ' || ch === 'Ü') { rect(g, x, y - 1, 1, 1, c); rect(g, x + 2, y - 1, 1, 1, c); }
+    else if (MICRO_ACENTO[ch]) rect(g, x + 1, y - 1, 1, 1, c);
+    x += 4;
+  }
+}
+
 const iconCache = new Map();
 function itemIcon(game, id) {
   const it = game.content.items[id];
@@ -242,7 +269,13 @@ function choiceLayout(game) {
   const L = { ...LAYOUT, optLines: G.n };
   const lines = [];
   ch.options.forEach((o, i) => {
-    wrap(o, 288).forEach((l, k) => lines.push({ opt: i, text: (k ? '  ' : '') + l }));   // 288: never under the scroll arrows (x ≥ 304)
+    const tag = ch.tags && ch.tags[i];
+    wrap(o, 288).forEach((l, k) => {                                // 288: never under the scroll arrows (x ≥ 304)
+      let text = (k ? '  ' : '') + l;
+      // E6 §6.2: la etiqueta va a la derecha de la PRIMERA línea; si no cabe, esa línea (solo lo pintado) se acorta con «…»
+      if (tag && !k) { const room = 288 - microW(tag) - 4; if (measure(text) > room) { while (text.length > 1 && measure(text + '…') > room) text = text.slice(0, -1); text = text.trimEnd() + '…'; } }
+      lines.push({ opt: i, text, tag: tag && !k ? tag : null });
+    });
   });
   ch.layout = lines;
   ch.maxScroll = Math.max(0, lines.length - optGeom(game).n);      // (compact menus get 5 rows once laid out)
@@ -265,6 +298,7 @@ function drawChoice(game, g) {
     const col = ch.disabled && ch.disabled.has(ln.opt) ? COL.optDisabled : ln.opt === ch.hover ? COL.optHover : COL.opt;
     if (G.big && ln.opt === ch.hover) rect(g, 2, G.y + i * G.h + 1, 298, G.h - 1, '#1c1834');
     drawText(g, ln.text, L.optX, G.y + i * G.h + G.dy, col);
+    if (ln.tag) drawMicro(g, ln.tag, L.optX + 288, G.y + i * G.h + G.dy + Math.max(3, (G.h >> 1) - 2), TAG_COLOR);
   }
   if (ch.maxScroll > 0) {
     arrow(g, 304, 146, 13, 24, true, ch.scroll > 0, false);

@@ -2,7 +2,7 @@
 // PRUEBA DEL PAQUETE PA DE LA ENMIENDA E5 (Sala Amazonas y Vending; docs/guion2/ENMIENDA_E5.md §2.1, §2.6, §5.2, §5.4),
 // con RATÓN REAL en los pasos clave. Capturas en tools/shots/e5-pa-*.png. Cubre:
 //   §2.1 la «pregunta del público»: orden del día → Gervasio («…y los conectados») → Gertrudis → Usar la tele →
-//   estampida y ATASCO JUGABLE; las cuatro vías (empujar, cruasán, hablar, anuncio a los 10 s quietos), cada una en
+//   estampida y ATASCO JUGABLE; las cuatro vías (empujar, cruasán, hablar, anuncio a los 20 s quietos: E6), cada una en
 //   partida limpia; intentos fuera de orden; «Guardar» en gris con el atasco; cargar una partida con el atasco forzado;
 //   el Acto III (ni opción de Gertrudis ni tele especial); pistas de la tele («wifi y rencor», móvil «once mil»).
 //   §2.6 la señal tras D4: caras al cartón, crujido con `tamb3`, megafonía a los 10, 25 y 45 s de tiempo QUIETO (el ratón
@@ -243,13 +243,13 @@ try {
     if (via === 'cruasan') await clic(T, 'coger', 'minicruasanes');
     else if (via === 'hablar') await clic(T, 'hablar', 'mercados_2');
     else {
-      // 10 s de tiempo quieto, con el ratón moviéndose sin parar (no cuenta)
+      // E6 §2.2.1 (cambio a propósito): 20 s de tiempo quieto (antes 10), con el ratón moviéndose sin parar (no cuenta)
       const t0 = Date.now();
       let k = 0;
-      while (!(await flag(G, 'reunion_terminada')) && Date.now() - t0 < 9000) { await page.mouse.move(300 + (k++ % 20) * 10, 420); await sleep(100); }
-      ok(!(await logHas(G, viaLines.anuncio)), 'antes de 10 s quietos, Maripaz no anuncia');
+      while (!(await flag(G, 'reunion_terminada')) && Date.now() - t0 < 19000) { await page.mouse.move(300 + (k++ % 20) * 10, 420); await sleep(100); }
+      ok(!(await logHas(G, viaLines.anuncio)), 'antes de 20 s quietos, Maripaz no anuncia');
       await until(G, () => __game.log.some(l => String(l.text).includes('anuncio de cinco segundos')), null, 8000);
-      ok((Date.now() - t0) >= 9500, `anuncio a los ~10 s (${Date.now() - t0} ms)`);
+      ok((Date.now() - t0) >= 19500, `anuncio a los ~20 s (${Date.now() - t0} ms)`);
     }
     await comprobarVia(T, via);
     if (via === 'cruasan') await shot(page, 'via-cruasan');

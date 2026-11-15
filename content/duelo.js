@@ -1,9 +1,13 @@
 // DATOS COMUNES del duelo «RESPONDER A TODOS» (biblia §6; plan de comedia §7; ENMIENDA E2 §4.3, §5.5, §7.5).
 // E2 — lo que va en las SALAS (no aquí): mazos de D1 (igual), D2 sin R03 (['R06', 'R02', 'R09'], remate en atScore 2,
-// P3), D3 sin R14 (['R07', 'R01', 'R03', 'R05'], remate en atScore 2, P2) y D4 (['R10', 'R12', 'R13', 'R05', 'R16',
+// P3; E6 §5.1: atScore 3 y `cabe` de la R09), D3 sin R14 (['R07', 'R01', 'R03', 'R05'], remate en atScore 2, P2; E6 §5.2:
+// mazo ['R07', 'R03', 'R01', 'R05']) y D4 (['R10', 'R12', 'R13', 'R05', 'R16',
 // 'R01', 'R07', 'R15'], PUNTOS_D4 = 5, remate C con `correo_evaristo` en atScore 5, P4). ARCHIVO COMPARTIDO: no lo edita ningún autor de sala.
 // Cada rival (mazo, asunto, líneas, remates) lo define el autor de SU sala en `duels: { <id>: {...} }`
 // de su archivo de lógica — ver docs/CONTENT_SCHEMA.md §10. Ids de duelo: maripaz, teodoro, gervasio, inigo.
+
+// E6 §4.3: dos ramas de la misma floja (la de por defecto y la de Maripaz): una constante
+const SALUD = 'Estupendamente. La plaza no se hereda.';
 
 export default {
   // §6.3 — las 14 parejas (+ R15/R16 de la adenda 7.1). `flag` = cómo se aprende (api.learnReply('rep_XX')). El menú las muestra en este orden.
@@ -40,8 +44,8 @@ export default {
       answers: { maripaz: 'Por escrito es más caro. Lleva anuncio.', teodoro: 'ES UN FAX, CHAVAL. MÁS ESCRITO, IMPOSIBLE.', gervasio: '¿Por escrito? ¿Con mi nombre? No, no, no.', inigo: 'Ya está por escrito. En la diapositiva 247.' } },
     { text: 'Eso lo ha hecho la IA.', answer: 'Pues que conteste ella.',
       answers: { maripaz: '¿La IA? ¿Y quién la patrocina?', teodoro: 'LA IA NO MIDE. NO CABE.', gervasio: 'Pues se le delega a la IA. ¿Tiene agenda?', inigo: 'La IA no se equivoca, Vacante. Se optimiza.' } },
-    { text: '¿Y usted cómo se encuentra? De salud, digo.', answer: 'Estupendamente. La plaza no se hereda.',
-      answers: { maripaz: 'Estupendamente. La plaza no se hereda.', teodoro: 'MÁS SANO QUE LA GOYITA. Y LA GOYITA TIRA.', gervasio: 'Hoy me lo han preguntado tres veces. ¿Estoy mal?', inigo: 'Yo no tengo plaza. Tengo chófer. Es escalable.' } },
+    { text: '¿Y usted cómo se encuentra? De salud, digo.', answer: SALUD,
+      answers: { maripaz: SALUD, teodoro: 'MÁS SANO QUE LA GOYITA. Y LA GOYITA TIRA.', gervasio: 'Hoy me lo han preguntado tres veces. ¿Estoy mal?', inigo: 'Yo no tengo plaza. Tengo chófer. Es escalable.' } },
     { text: '¿Y cuáles son los siguientes pasos?', only: ['inigo'], answer: 'Me alegra que lo preguntes. Diapositiva 312.',
       answers: { inigo: ['Me alegra que lo preguntes. Diapositiva 312.', '«Siguientes pasos de los siguientes pasos».'] } },
   ],
@@ -51,14 +55,15 @@ export default {
   hurtByPair: {
     // E2 §4.3 (y C9: «Me lo apunto» es de Bruno, no de Maripaz)
     maripaz: { R08: '¿Modo avión? Sin cobertura no me cargan los anuncios. Eso duele.', R11: '¿Sentado? Sentado se ven mejor los banners.' },
-    teodoro: { R02: ['ESO ME LO DIJO ELLA. EN 1996.', '...CABE.'], R06: 'LA MEDIA FUENTE ERA YO. NO LO REPITAS.' },
+    // E6 §5.1: D2 a tres asaltos; el «...CABE.» pasa de la R02 a la R09 (la versión corta que cabe en 38: `cabe` de la sala)
+    teodoro: { R02: 'ESO ME LO DIJO ELLA. EN 1996.', R06: 'LA MEDIA FUENTE ERA YO. NO LO REPITAS.', R09: '...CABE.' },
     // E2 fase B (15): D3 pierde R14 (mazo ['R07', 'R01', 'R03', 'R05'], P2); la línea de R14 se queda sin uso hasta entonces
     gervasio: { R07: 'Me consta que... Bueno. Se constaba.', R14: '¿Marzo? Marzo está muy bien. Se agradece. Pero no.' },
     inigo: {
       R10: 'Interesante. Lo pongo en azul.',
       R12: '...Eso es una visión muy pesimista de la carretera.',
       R13: [['inigo_sinergia', 'Eso lo escribió alguien brillante.'], ['ruben', 'Yo. Perdón.']],
-      R15: [['inigo_sinergia', '...Brais, ¿tú le has contado algo?'], ['ruben', 'TODO. Perdón. Se me escapa.']],
+      R15: [['inigo_sinergia', '...Brais, ¿tú le has contado algo?'], ['ruben', 'TODO. Se me escapa todo.']],
       R16: 'Esa coma no estaba en mi framework.',
     },
   },

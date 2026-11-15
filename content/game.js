@@ -15,12 +15,12 @@ import { OBJETIVOS, SALUDOS, OTRA_VEZ, ABUELA_VIRAL, DESPEDIDA, horaMovil, actoA
 const DEFAULTS = {
   mirar: ['Es exactamente lo que parece. En esta casa, eso ya es noticia.', 'Lo miro con intensidad de periodista sin cenar. No descubro nada.', 'Nada que contrastar.', 'Si lo miro más, Yoli me lo cuenta como tiempo de permanencia.', 'Visto. Ni una errata. Sospechoso.'],
   coger: ['Está inventariado. Aquí todo está inventariado menos yo.', 'Si lo cojo, alguien me pedirá una nota de gasto por tocarlo.', 'No es mío. Aquí nada es mío. Ni la silla, hasta hace poco.', 'Mejor no. Luego desaparece algo y el becario es el primero en la lista.', 'No me cabe. Mi mochila ya va llena de chapas de eventos.'],
-  usar: ['No veo cómo. El manual lo tiene alguien que se jubiló en 2011.', 'Usarlo así sería innovación. Y la innovación la cobra la consultora.', 'No funciona. Lo añado a mis competencias: «equipos averiados».', 'No se me ocurre para qué. Y eso que he hecho un máster.', 'Mejor no lo toco. Si se rompe, sale en el parte con mi nombre mal escrito.'],
+  usar: ['No veo cómo. El manual se lo llevó alguien al jubilarse.', 'Usarlo así sería innovación. Y la innovación la cobra la consultora.', 'No funciona. Lo añado a mis competencias: «equipos averiados».', 'No se me ocurre para qué. Y eso que he hecho un máster.', 'Mejor no lo toco. Si se rompe, sale en el parte con mi nombre mal escrito.'],
   dar: ['No creo que lo quiera. Y si lo acepta, luego hay que declararlo.', 'Aquí si das algo sin acta, te lo devuelven con tareas.', 'Lo rechazaría. Tiene cara de quien ya tiene uno.', 'Regalar cosas en una redacción se considera soborno o despedida.', 'No. Aquí los regalos vuelven con acuse de recibo.'],
-  hablar: ['No contesta. O es un objeto o está en una videollamada.', 'Le hablo. No me contesta. Es lo más parecido a una fuente oficial.', 'Hablarle a eso sería como responder a todos: posible, pero imperdonable.', 'Silencio. Al menos no me ha dicho «lo hablamos».', 'No me contesta. Bueno, no me ha llamado Pellizco. Algo es algo.'],
+  hablar: ['No contesta. O es un objeto o está en una videollamada.', 'Le hablo. No me contesta. Es lo más parecido a una fuente oficial.', 'Hablarle a eso sería como responder a todos: posible, pero imperdonable.', 'Silencio. Al menos no me ha dicho «lo hablamos».', 'No me contesta. Por lo menos no me ha llamado Pellizco.'],
   abrir: ['No se abre. Lo apunto como «acceso restringido». Suena a ascenso.', 'Cerrado. Hay una pegatina: «No forzar». Me ha convencido.', 'No tiene por dónde. Lo ha montado alguien que no quería visitas.', 'Si lo abro, me hacen responsable de lo que salga.', 'No se abre. Lo dejo así: está en su derecho.'],
   cerrar: ['Ya está cerrado. Hasta en eso llego tarde.', 'Cerrarlo no cierra nada. Bueno, cerraría el tema, que aquí es lo difícil.', 'No hay nada que cerrar. Lo apunto en «tareas completadas».', 'Lo cierro. No pasa nada. Igual que en las reuniones.', '¿Cerrar algo yo? ¿Con qué cargo?'],
-  empujar: ['Empujo con las dos manos. Nada. Sigo un poco, por si alguien mira.', 'No pienso empujar eso. Saldría en el próximo comité. En diapositiva.', 'Ni se inmuta. Tiene más estabilidad laboral que yo.', 'Empujo. Nada. Es como empujar la prima de riesgo con la mirada.', 'No, que luego se cae y el becario es el último que lo tocó.'],
+  empujar: ['Empujo con las dos manos. Nada. Sigo un poco, por si alguien mira.', 'No pienso empujar eso. Saldría en una diapositiva del próximo comité.', 'Ni se inmuta. Tiene más estabilidad laboral que yo.', 'Empujo. Nada. Es como empujar la prima de riesgo con la mirada.', 'No, que luego se cae y el becario es el último que lo tocó.'],
   tirar: ['Tiro. Nada. Tiene más resistencia que el papel.', 'Aquí el que tira de algo se convierte en el responsable.', 'No pienso tirar de eso. En esta empresa ya tira siempre el becario.', 'Tiro. No sale. Le pido perdón. Me parece lo correcto.', 'Mejor no. Todo lo que tiene cable acaba en Sistemas.'],
 };
 // §8.6: «Combinar 10 cosas seguidas sin éxito»
@@ -93,7 +93,7 @@ async function pistas(api) {
 // que hacer nada. No salta si la entrada ya ha lanzado una escena / diálogo / duelo / cinemática, ni al cargar partida,
 // ni en `sala_amazonas` con `acto_3_iniciado`, ni tras el final. Como mucho UN aviso por entrada (también si alguien
 // invoca `api.scene('avisos')` a mano). Las llamadas salen en orden y esperan a su condición; una llamada cuya
-// condición ya no se puede cumplir (`salta`) se da por perdida (L4 si Rubén ya ha aparecido; L5 dentro del clímax).
+// condición ya no se puede cumplir (`salta`) se da por perdida (L4 si Brais ya está libre; L5 dentro del clímax).
 // E2 §7.4 (paso 13): los «RV:» de Tadeo YA NO SON AVISOS: llegan solos al correo del móvil (content/lib/movil.js) al
 // entrar en una sala con su condición (`tadeo_rv_n` cuenta los llegados), sin globo ni «¡ding!».
 const EV = 'evaristo_salvedad';
@@ -126,13 +126,14 @@ export const LLAMADAS = [
   // (L2 eliminada, fase B (4): a Evaristo le manda Begoña al cerrar el paso 27)
   llamada('L3', 'pieza_recortada', [
     ['E', 'Una cosita. Begoña me manda el triplicado de su recorte.'],
-    ['E', 'Ella recorta sin leer. Yo leo sin recortar. Somos un sistema.'],
-    ['E', 'Veintitrés líneas. Ni una coma fuera de sitio. Era solo eso.']]),
-  llamada('L4', ['acto_3_iniciado', '!ruben_encontrado'], [
+    ['E', 'Ella recorta sin leer. Yo leo sin recortar.'],
+    ['E', 'Veintitrés líneas. Ni una coma fuera de sitio.']]),
+  // E6 §2.5: la L4 suena DESPUÉS de abrir el armario (antes de liberar a Brais); Bruno ya no explica (§2.6 B3)
+  llamada('L4', ['ruben_encontrado', '!ruben_libre'], [
     ['E', 'Una cosita. La máquina de la planta -1 vende veinticuatro atunes al mes.'],
     ['E', 'En Sistemas no come atún nadie. Lo he cruzado con las nóminas.'],
-    ['E', 'Alguien come ahí abajo y no cobra. Era solo eso.'],
-    ['B', 'Alguien que come y no cobra. Eso es un becario.']], 'ruben_encontrado'),
+    ['E', 'Alguien come ahí abajo y no cobra.'],
+    ['B', 'Se llama Brais.']], 'ruben_libre'),
   llamada('L5', ['ruben_libre', '!climax_entrada'], [
     ['E', 'Una cosita. Me dicen que va a la Sala. ¿Lleva mi correo?'], ['B', 'En el bolsillo.'],
     ['E', 'Envíelo en el momento oportuno. Usted lo notará. Era solo eso.']], 'climax_entrada'),

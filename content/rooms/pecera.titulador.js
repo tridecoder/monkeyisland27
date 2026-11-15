@@ -25,6 +25,11 @@ const Y = 'yoli_tendencias';
 const PLIN = { notes: ['E6', 'B6'], step: 0.07, wave: 'triangle', vol: 0.1 };
 const ROSA = '#FF78B8', VERDE = '#7aff7a', ROJO = '#ff5a4a', ORO = '#f6dc7a';
 const PUBLICACIONES = 5, ANIM_MS = 1400;
+// LA CASA (ENMIENDA E6 §2.7): la meta del pie. Alcanzable sin secreto: con docs/guion2/e4/gen.mjs la superan siete
+// combinaciones (tres secretas: 576.000, 312.000 y 243.000) y cuatro normales: 291.600
+// cocineros·mejillones·obvio, 260.000 expertos·persianas·corte, 228.800 expertos·persianas·señales y 228.000
+// meteorólogos·persianas·obvio. Si alguien toca las piezas o la fórmula, la meta se revisa (lo vigila tools/test-e4.mjs).
+export const CASA = 225000;
 
 // ======================================================================== fórmula (copia de docs/guion2/e4/gen.mjs)
 export const A = P.autoridades, S = P.asuntos, G = P.ganchos;
@@ -169,7 +174,8 @@ export async function titulador(api, { demo } = {}) {
       }
       await publicar(api, st);
     }
-    if (st.pubs >= PUBLICACIONES && vivo()) await api.wait(1200);
+    // la quinta publicación se queda en pantalla, como las demás, hasta que el jugador la cierra (Esc, clic fuera o «Dejarlo»)
+    if (st.pubs >= PUBLICACIONES && vivo()) await api.choose(['Dejarlo'], { escape: 0, duel: true });
   });
   } finally { if (game.titulador === st) game.titulador = null; }
   if (demo || game.gen !== gen) return;                // la demo no guarda nada; una partida cargada a mitad, tampoco
@@ -205,9 +211,16 @@ async function publicar(api, st) {
     st.record = u;
     st.recordFlash = { t0: null };
   }
+  // la casa batida (E6 §2.7): la primera vez, fogonazo de 2 s, temblor y sonido; sin línea nueva de Yoli
+  const casa = u > CASA && api.once('pecera_casa_batida');
+  if (casa) {
+    st.recordFlash = { t0: null };
+    api.shake(150, 1);
+    api.sfx('good');
+  }
   // la Redacción reacciona sin texto
   if (u >= 200000) {
-    api.shake(150, 1);
+    if (!casa) api.shake(150, 1);
     for (let n = 0; n < 3; n++) { api.sfx(PLIN); if (!game.instant) await api.wait(140); }
     api.anim(Y, 'reach', 400);
   } else if (u <= 40) api.sfx('bad');
@@ -344,11 +357,11 @@ export function drawTitulador(g, r, t, st) {
   pts.forEach(([px, py, d]) => rect(g, px - 1, py - 1, 3, 3, d > 0 ? VERDE : d < 0 ? ROJO : '#ffffff'));
   // ---------------------------------------------------------------- pie: instrucciones, récord y publicaciones
   const fy = y + h - 7;
-  micro(g, 'ELIGE. PUBLICA. DISCOVER DECIDE.', x + 4, fy, '#8a96c8');
-  if (!st.demo) {
-    const fl = st.recordFlash && st.recordFlash.t0 != null && t - st.recordFlash.t0 < 2000 && (Math.floor((t - st.recordFlash.t0) / 200) & 1);
-    micro(g, `RÉCORD: ${miles(st.record || 0)}`, x + 190, fy, fl ? '#ffffff' : ORO, { align: 'center' });
-  }
+  const fl = st.recordFlash && st.recordFlash.t0 != null && t - st.recordFlash.t0 < 2000 && (Math.floor((t - st.recordFlash.t0) / 200) & 1);
+  if (st.demo || st.pubs === 0) micro(g, 'ELIGE. PUBLICA. DISCOVER DECIDE.', x + 4, fy, '#8a96c8');
+  else if (!(st.record > CASA)) micro(g, `LA CASA: ${miles(CASA)}`, x + 4, fy, '#8a96c8');
+  else micro(g, `LA CASA: ${miles(CASA)} · TÚ: ${miles(st.record)}`, x + 4, fy, fl ? '#ffffff' : ORO);
+  if (!st.demo && !(st.pubs > 0 && st.record > CASA)) micro(g, `RÉCORD: ${miles(st.record || 0)}`, x + 190, fy, fl ? '#ffffff' : ORO, { align: 'center' });
   for (let i = 0; i < PUBLICACIONES; i++) {
     const bx = x + w - 9 - (PUBLICACIONES - 1 - i) * 7;
     if (i < st.pubs) rect(g, bx, fy, 5, 5, ROSA);

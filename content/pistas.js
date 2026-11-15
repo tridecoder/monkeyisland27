@@ -20,7 +20,7 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   correo: 'Tengo silla. Ya puedo mirar mi ordenador como un adulto.',
   cafe: 'La correctora no habla antes del café. Necesito un café que no sea para mí.',
   cms: 'Arriba no me atiende nadie mientras el CMS no vaya.',   // E5 C71
-  hff: 'Hueco, fuente y firma. Lo pone la ficha. La ficha manda.',
+  hff: 'Hueco, fuente y firma. Lo pone la ficha.',
   cierre: 'Lo tengo todo. Solo falta que Teodoro diga «cabe».',
   acto3: 'A las nueve apagan la rotativa. Y alguien teclea en el armario 27.',
   // [integrador] con Rubén ya fuera del armario, la línea del armario 27 se queda vieja (álbum y baja)
@@ -41,7 +41,7 @@ export const OBJETIVOS = [
     'En el pueblo, el que no sale en la foto no existe. Ponte en la foto.',
     'Si el torno no te conoce, preséntate en ese cuadro de caras.',
     ['Pega tu cara donde salen los jefes. ¿Tienes algo que pegue?', 'Chicle en la tarjeta, tarjeta en el organigrama, y al torno.']],
-    extra: { si: ['!has:chicle', '!tarjeta_con_chicle'], abuela: 'El del mostrador siempre está mascando algo. Pídeselo.' } },
+    extra: { si: ['!has:chicle', '!tarjeta_con_chicle'], abuela: 'El del mostrador siempre está mascando algo: pídeselo.' } },
   { id: 'silla', acto: 1, hecho: 'silla_libre', activo: 'torno_abierto',      // [integrador] desde el torno (antes, entre el torno y la 7.2 Bruno decía la meta final)
     salas: ['pecera', 'pajarera'], meta: M.silla, niveles: [
     '¿Estás de pie? Siéntate, hijo. La silla es del que llega.',
@@ -51,11 +51,11 @@ export const OBJETIVOS = [
     activo: 'silla_libre', salas: ['pecera'], meta: M.correo, niveles: [
     'Ahora que estás sentado, mira lo tuyo. Que nunca lo miras.',
     'En el ordenador tendrás cartas sin abrir. Tu tío tiene el buzón igual.',
-    ['Mira tu ordenador, hijo. Con silla ya se ve.', 'Mirar mi ordenador. Sentado.']] },
+    ['Mira tu ordenador, hijo. Con silla ya se ve.', 'Mirar mi ordenador, sentado.']] },
   { id: 'cafe', acto: 1, hecho: 'gertrudis_saludada', activo: 'inigo_presentado', salas: ['office', 'pecera'], meta: M.cafe, niveles: [
     '¿Has saludado a todo el mundo? A las máquinas también.',
     'La cafetera esa no da café por botones. Lo da por educación.',
-    ['Dale las buenas noches a la cafetera. En alto.', 'Vending: «Buenas noches, Gertrudis», y darle lo que pida.']] },
+    ['Dale las buenas noches a la cafetera, en alto.', 'Vending: «Buenas noches, Gertrudis», y darle lo que pida.']] },
   { id: 'aurora', acto: 1, hecho: 'acto_2_iniciado', activo: 'has:cafe', salas: ['catacumba'], meta: M.cafe, niveles: [
     'Los que corrigen siempre están cansados. Tu abuelo corregía la quiniela.',
     'A la señora del cartel no le hables: dale. Primero el café.',
@@ -73,7 +73,7 @@ export const OBJETIVOS = [
   { id: 'turno', acto: 2, hecho: 'reunion_terminada', activo: 'sala_becario_sin_turno', salas: ['sala_amazonas', 'office', 'pecera'], meta: M.turno, niveles: [
     'Si a ti no te dejan preguntar, que pregunte alguien que salga en la tele.',
     'Esa cafetera tan educada sale en todas las pantallas, hijo. Hasta en la mía.',
-    ['Pregúntale a la cafetera lo de los pasos, y luego enciende esa tele.', 'Gertrudis: «¿Y los siguientes pasos?». Luego, Usar la tele de la Sala.']],
+    ['A esa tele dale las buenas noches, como a la cafetera, y pregúntale.', 'Hablar con la tele: «Buenas noches, Gertrudis». Y lo de los pasos.']],
     previa: { si: 'gertrudis_pregunta', nivel: 1, abuela: 'La cafetera ya lo ha mandado. Ahora alguien tiene que sintonizarla.' } },
   { id: 'hueco', acto: 2, hecho: 'casilla_hueco', activo: 'reunion_terminada', salas: ['sala_amazonas'], meta: M.hff, niveles: [
     'La que se queda sentada es que quiere que le hables.',
@@ -95,7 +95,7 @@ export const OBJETIVOS = [
     ['Lo que no te sirve a ti le sirve a una máquina.', 'Las copias rechazadas, al fax de Teodoro.']] },
   { id: 'fuente', acto: 2, hecho: 'casilla_fuente', activo: 'fax_con_papel', salas: ['catacumba'], meta: M.hff, niveles: [
     'Lo que me cuenta una vecina no me lo creo hasta que me lo cuenta otra.',
-    'Tienes un papel del fax y otro de la ventanilla. Dos vecinas.',
+    'Tienes un papel del fax y otro de la ventanilla: dos vecinas.',
     ['Llévale las dos vecinas a la que corrige.', 'El fax de F.P. y la nota, a Aurora.']] },
   // E2 §10.3 · paso 32: Aurora bendice la coma y la manda por el fax (Redacción de papel)
   { id: 'bendicion', acto: [2, 3], hecho: 'coma_bendecida', activo: ['evaristo_escuchado', 'fax_con_papel'], salas: ['catacumba'], meta: M.bendicion, niveles: [
@@ -110,7 +110,7 @@ export const OBJETIVOS = [
   { id: 'pieza', acto: 2, hecho: 'pieza_escrita', activo: 'casilla_fuente', salas: ['pecera'], meta: M.hff, niveles: [
     '¿Y has escrito ya? Siéntate en tu silla y escribe.',
     'Lo de escribir, en tu mesa. Que te ha costado la silla.',
-    ['Escribe en tu máquina, hijo, que lo entienda tu abuela.', 'Mi ordenador. A escribir.']] },
+    ['Escribe en tu máquina, hijo, que lo entienda tu abuela.', 'Mi ordenador, a escribir.']] },
   { id: 'recorte', acto: 2, hecho: 'pieza_recortada', activo: 'pieza_escrita', salas: ['catacumba', 'administracion'], meta: M.hff, niveles: [
     'Si te sobra, dáselo a quien corta. La que me hace los bajos no pregunta.',
     'La de la ventanilla no lee: corta. Y el fax llega a todas partes.',
@@ -120,7 +120,7 @@ export const OBJETIVOS = [
   { id: 'cierre', acto: 2, hecho: 'pagina_cerrada', activo: ['casilla_hueco', 'casilla_fuente', 'casilla_firma', 'pieza_recortada'], salas: ['*'], meta: M.cierre, niveles: [
     '¿Y a qué esperas para darle los papeles a ese señor del fax?',
     'Tienes las tres cosas, hijo. Llévalas a quien manda en el papel.',
-    ['Al señor del fax llévale los papeles. De mi parte.', 'La ficha, a Teodoro.']] },
+    ['Al señor del fax llévale los papeles de mi parte.', 'La ficha, a Teodoro.']] },
   { id: 'armario', acto: 3, hecho: 'ruben_encontrado', activo: 'acto_3_iniciado', salas: ['cpd', 'pecera'], meta: M.acto3, niveles: [
     'Si de un armario sale papel, es que alguien escribe dentro, hijo.',
     'Antes tiraban desde dentro. Ahora el de dentro está muy liado escribiendo.',                 // E5 §2.4
@@ -136,8 +136,8 @@ export const OBJETIVOS = [
     'El del tablero no se cree nada sin pruebas. Ya tienes pruebas.',
     ['Enséñale las fotos al del tablero.', 'El álbum, a Anselmo.']] },
   { id: 'columna', acto: 3, hecho: 'ruben_libre', activo: 'album_validado', salas: ['pecera', 'ecosistema'], meta: M.columna, niveles: [
-    'Si en un tablero no hay sitio para lo que quieres, hijo, haz tú el sitio.',
-    'Una columna nueva se escribe con rotulador. La de los anuncios tiene uno.',
+    'En esa pizarra se escribe con rotulador, hijo, y no con el de ese señor.',
+    'La de los anuncios pinta sus objetivos a rotulador: pídeselo.',
     ['Escribe en el tablero la frase fina del chico, y mueve tú el papelito.', 'Rotulador de Maripaz y tablero de Anselmo: «SALIDA EN VALOR».']],
     extra: { si: ['!rep_13', '!oyo_descopear'], abuela: 'Pero antes pregúntale al chico por los discursos de ese señor.' } },
   { id: 'acta', acto: 3, hecho: 'sala_abierta', activo: 'acto_3_iniciado', salas: ['pajarera'], meta: M.acta, niveles: [
@@ -150,7 +150,7 @@ export const OBJETIVOS = [
     ['Primero lo del chico; luego la reunión; luego la coma.', 'Remates: el ticket nº 1, el acta y el correo de Evaristo.']], duelo: 'inigo',
     extra: { si: '!has:correo_evaristo', abuela: 'Y el papel del señor de las comas, que lo vas a necesitar.' } },
   { id: 'empujon', acto: 3, hecho: 'lector_derribado', activo: 'duelo_inigo_ganado', salas: ['sala_amazonas'], meta: M.empujon, niveles: [
-    'A los que nunca dicen nada, hijo, un empujoncito. Con educación.',
+    'A los que nunca dicen nada, hijo, un empujoncito con educación.',
     'Ese de cartón lleva semanas diciendo que sí. Que diga otra cosa.',
     ['Empújalo, que es de cartón y no se hace daño.', 'Empujar al Lector Medio.']] },
 ];
@@ -166,19 +166,19 @@ export function actoActual(api) {
  *  Si cambia dónde se aprende una réplica (content/flags.js, descripción de `rep_XX`), se cambia aquí. */
 export const DONDE = {
   rep_01: ['En el cuarto del café hay un corcho con cartas. Léelo, que es gratis.', 'Vending: Mirar el tablón. El hilo del yogur.'],
-  rep_02: ['La del boli rojo y el del fax no se hablan. Pregúntale por qué.', 'Redacción de papel: a Aurora, por qué no se habla con Teodoro.'],
-  rep_03: ['La cafetera esa cuenta chismes si la saludas, hijo.', 'Vending: «Buenas noches, Gertrudis». El primer chisme.'],
-  rep_04: ['A esa cafetera salúdala otra vez, hijo. Le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
+  rep_02: ['La del boli rojo y el del fax no se hablan; pregúntale por qué.', 'Redacción de papel: a Aurora, por qué no se habla con Teodoro.'],
+  rep_03: ['La cafetera esa cuenta chismes si la saludas, hijo.', 'Vending: «Buenas noches, Gertrudis», el primer chisme.'],
+  rep_04: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
   rep_05: ['El del mostrador de abajo sabe lo que se dice en el ascensor.', 'Vestíbulo: a Celestino, «¿Algún cotilleo?».'],
-  rep_06: ['Encima de la mesa del fax hay un papel con marco. Léelo.', 'Redacción de papel: Mirar el fax enmarcado, sobre la mesa de Teodoro.'],
-  rep_07: ['Al que manda en los Despachos, mírale el ordenador.', 'Despachos: Mirar el ordenador de Gervasio. Los enviados.'],
+  rep_06: ['Encima de la mesa del fax hay un papel con marco: léelo.', 'Redacción de papel: Mirar el fax enmarcado, sobre la mesa de Teodoro.'],
+  rep_07: ['Al que manda en los Despachos, mírale el ordenador.', 'Despachos: Mirar el ordenador de Gervasio, los enviados.'],
   rep_08: ['La chica de los números tiene hilos buenos. Cuando le vaya el ordenador.', 'Redacción, con el CMS vivo: a Yoli, «¿Algún hilo bueno esta noche?».'],
   rep_09: ['Pregúntale al del tablero cómo se lleva con la chica de los números.', 'Redacción: a Anselmo, «¿Qué tal con Yoli?».'],
-  rep_10: ['A esa cafetera salúdala otra vez, hijo. Le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
+  rep_10: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
   rep_11: ['Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar.', 'Redacción: mi ordenador, sentado. Ramírez espera mis comentarios.'],
-  rep_12: ['El de los cables sabe cosas del señor del traje. Pregúntale.', 'Sistemas, con el CMS vivo: a Eutimio, «¿Algún cotilleo del consultor?».'],
-  rep_13: ['El chico del armario escribía los discursos. Pregúntale.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».'],
-  rep_14: ['A esa cafetera salúdala otra vez, hijo. Le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
+  rep_12: ['El de los cables sabe cosas del señor del traje; pregúntale.', 'Sistemas, con el CMS vivo: a Eutimio, «¿Algún cotilleo del consultor?».'],
+  rep_13: ['El chico del armario escribía los discursos; pregúntale.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».'],
+  rep_14: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
   rep_15: ['Pregúntale al chico del armario por los correos de ese Tadeo.', 'Sistemas: a Brais, «¿Te llegaban correos de Tadeo?».'],
   rep_16: ['Al señor de las comas, escúchale hasta el final.', 'Administración: escuchar entero a Evaristo. «¿De qué trata?» y «Siga».'],
 };

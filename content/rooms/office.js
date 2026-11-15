@@ -5,7 +5,8 @@
 // ENMIENDA E2 (P3): §6 L17 (E-47…E-50 con `office_error_n`), L18, L26, L27; §2.6.5 y §4.5 (chismes de Anselmo y
 // Maripaz); §7.2 (fuera las coletillas de Bruno); §7.5 fase B (1) (fuera el rumor A) y (9) (fuera «CORTADO…» y «Me lo...»).
 // [PA] ENMIENDA E5: opción «¿Y cuáles son los siguientes pasos?» de Gertrudis (§2.1.4, `gertrudis_pregunta`); textos C58-C60,
-// M26 (fuera), M27, M33, X09.
+// M26 (fuera), M27, M33, X09. [PA] E6: §4.1 (E030-E068, X12, X13) y constantes de Gertrudis (E057, E058); la opción de la
+// pregunta sigue entera (§2.3.4: la tele de la Sala ya la puede hacer también, sala_amazonas.js `tele_sala`).
 // Solo tiene una puerta, el arco a la Redacción. El arte y la geometría están en ./art/office.art.js.
 //
 // Gertrudis es un ACTOR (su LCD sale encima, en #39FF14, en MAYÚSCULAS): api.sayAs('gertrudis', ...). El piloto
@@ -19,6 +20,12 @@ const MER = 'mercados_1';
 const lcd = (api, lines) => api.sayAs(GER, lines);
 const gv = (api, lines) => api.sayAs(GV, lines);
 const mer = (api, lines) => api.sayAs(MER, lines);
+// [PA] E6 §4.1 (E057, E058) y §4.3: una constante por cadena que se oye en dos claves del mismo objeto
+const LCD_DEVOLUCION = 'NO SE ADMITEN DEVOLUCIONES.';
+const LCD_TARJETA = 'NO ACEPTO TARJETAS. SOLO MODALES.';
+const LCD_TAPER = 'NO SIRVO PARA LLEVAR. TENGO UN NOMBRE QUE MANTENER.';
+const NI_LA_ROZO = 'Ni la rozo. En la pantalla ya pone: «ANOTADO».';
+const SITIO_COLA = 'Si le empujo, pierde el sitio en la cola. Sería lo más cruel que he hecho.';
 
 // ------------------------------------------------------------------ Gertrudis (plan §4.1, §5.2)
 // los cuatro chismes con réplica (citan las réplicas NUEVAS de content/duelo.js: R03, R04, R14 reescritas; R10 igual)
@@ -116,7 +123,7 @@ async function saludoDeRelleno(api) {
     api.setFlag('office_agotada', true);
     await lcd(api, 'ESTOY AGOTADA. HABLE CON MI REPRESENTANTE.');
     await api.say('¿Quién es su representante?');
-    await lcd(api, 'CELESTINO. EXTENSIÓN 0.');
+    await lcd(api, 'CELESTINO, EXTENSIÓN 0.');
   } else {
     const n = api.inc('office_relleno_n') - 1;
     await lcd(api, RELLENO[n % RELLENO.length]);
@@ -173,7 +180,7 @@ const dialogoGertrudis = {
 
 // ------------------------------------------------------------------ Gervasio en el Vending (solo tras D3, §5.10)
 async function hablarGervasio(api) {
-  await gv(api, ['Se está esperando a que la máquina salude.', 'Diecinueve años esperando cosas. Se me da bien.']);
+  await gv(api, ['Se está esperando a que la máquina salude.', 'Esperar cosas se me da bien.']);
 }
 async function gagGervasio(api) {
   // (Gervasio, ante Gertrudis, con el acta ya delegada)
@@ -195,12 +202,12 @@ async function huidaMercados(api) {
   api.sfx('door');
   api.placeActor(MER, null);
   await api.face('right');
-  await api.say('Un táper sin nombre. Lo adopto. Es lo primero que tengo a mi cargo.');
+  await api.say('Lo adopto. Es lo primero que tengo a mi cargo.');
   return 'exit';
 }
 const dialogoMercados = {
   actor: MER, start: 'M0',
-  onStart: async (api) => { await mer(api, 'Chsss. Aquí la cola tiene orden. Me siento seguro.'); },
+  onStart: async (api) => { await mer(api, 'Chsss. Aquí la cola tiene orden.'); },
   nodes: {
     M0: {
       options: [
@@ -234,36 +241,36 @@ export default buildRoom({
       mirar: 'La Redacción, por el arco. Se oye teclear «pensiones».',
       usar: async (api) => { await api.goto('pecera'); },
       abrir: 'Más abierto no puede estar. Es un arco.',
-      cerrar: 'Para cerrar un arco hace falta una puerta y un presupuesto. No hay ninguno.',
+      cerrar: 'Para cerrar un arco hace falta una puerta y un presupuesto.',
       empujar: 'Empujo el aire del arco. Cede.',
       hablar: 'Le digo a la Redacción que ahora vuelvo. Nadie levanta la vista.',
       coger: 'El arco se queda. Yo, de momento, también.',
     } },
     { id: 'nevera', name: 'nevera', handlers: {
-      mirar: 'Nevera con imanes y un cartel: «ETIQUETAD VUESTROS TUPPERS». Nadie lo hace.',
+      mirar: 'Nevera con imanes y un cartel: «ETIQUETAD VUESTROS TUPPERS».',
       abrir: async (api) => {
         api.sfx('open');
-        await api.say('Un yogur de 2019 con nombre: «RAMÍREZ». Lo respetan más que a la chaqueta.');
+        await api.say('Un yogur con nombre: «RAMÍREZ». Lo respetan más que a la chaqueta.');
       },
       cerrar: async (api) => {
         api.sfx('close');
         await api.say('La cierro con la delicadeza de un jefe de cierre.');
       },
-      coger: 'El yogur de Ramírez. Caducó en 2019. Dijo que volvía antes.',
+      coger: 'El yogur de Ramírez. Dijo que volvía antes de que caducara.',
       usar: async (api) => {
-        if (api.has('taper_huerfano')) await api.say('Mi táper se queda conmigo. En el currículum: «Personal a cargo: 1».');
-        else await api.say('Meto mi táper. Ah, no: no tengo táper. Tengo nervios, y no se enfrían.');
+        if (api.has('taper_huerfano')) await api.say('Se queda conmigo. En el currículum: «Personal a cargo: 1».');
+        else await api.say('No tengo nada que calentar. Solo nervios, y esos no se enfrían.');
       },
       'usar:taper_huerfano': 'Si lo meto ahí, mañana es de Ramírez. Aquí todo acaba siendo suyo.',
       'usar:cafe': 'Café frío de Gertrudis. Lo tomaría como una ofensa.',
-      empujar: 'No. Dentro duerme un yogur de 2019. Respeto.',
+      empujar: 'No. Dentro duerme el yogur de Ramírez. Respeto.',
     } },
     // la máquina de vending (la que da nombre a la sala)
     { id: 'maquina_vending', name: 'máquina de vending', handlers: {
-      mirar: 'Le queda una bolsa de pipas. Caducada en 2019. Sigue ahí. La admiro.',
-      usar: 'Pulso la B4. Las pipas se asoman y se quedan colgando. Las animo. Nada.',
+      mirar: 'Le queda una bolsa de pipas caducada. Lleva años a punto de caer.',
+      usar: 'Pulso la B4. Las pipas se asoman y se quedan colgando.',
       'usar:tarjeta_becario': 'No acepta tarjetas. Ni de becario. Solo monedas, y no tengo.',
-      'usar:cafe': 'Darle café a la máquina de enfrente de Gertrudis. Sería una provocación.',
+      'usar:cafe': 'Darle café a la máquina de enfrente de Gertrudis sería una provocación.',
       coger: 'Pegatina: «NO ZARANDEAR». Debajo, a boli: «lo digo por experiencia. R.»',
       empujar: 'La empujo un poco. La bolsa se asoma. Se lo piensa. Se queda.',
       hablar: 'Le pregunto si tiene algo para los nervios. Me ofrece pipas. Es un sí.',
@@ -276,7 +283,7 @@ export default buildRoom({
       },
       usar: 'Hay cola. Colarse aquí es despido procedente.',
       abrir: 'Dentro gira un plato vacío. Nadie se atreve a pararlo.',
-      'usar:cafe': 'Recalentar un café de Gertrudis delante de ella. No.',
+      'usar:cafe': 'No pienso recalentar un café de Gertrudis delante de ella.',
       'usar:taper_huerfano': 'Está vacío. Calentar la nada en la cola de otros: eso sí es despido.',
       'usar:ficha_pagina_7': 'Si caliento la ficha, se borran las casillas.',
       hablar: 'Le pregunto qué le pasa con Gertrudis. Pita. Un minuto entero.',
@@ -285,7 +292,7 @@ export default buildRoom({
     { id: 'tablon', name: 'tablón', handlers: {
       mirar: async (api) => {
         await api.say([
-          'Un hilo impreso: «RE: RE: RE: ¿De quién es el yogur?». 214 respuestas.',
+          'Un hilo impreso, «RE: RE: RE: ¿De quién es el yogur?», con 214 respuestas.',
           'Uno: «Como ya comenté en mi anterior correo, que parece que nadie ha leído...»',
           'Respuesta: «Lo leímos todos. Por eso no contestó nadie».',
         ]);
@@ -296,7 +303,7 @@ export default buildRoom({
     } },
     { id: 'hoja_firmas', name: 'hoja de firmas', handlers: {
       mirar: async (api) => { await api.say(['Curso obligatorio de prevención de riesgos. No lo ha hecho nadie.', 'Hay una sola firma: «Brais (todavía aquí)».']); },
-      usar: 'Mi primera firma en papel no va a ser en una hoja de riesgos. Me niego.',
+      usar: 'Mi primera firma en papel no va a ser en una hoja de riesgos.',
       coger: 'Si me la llevo, Brais pierde su firma. Y todavía no sé quién es.',
     } },
     { id: 'cartel_cortado', name: 'cartel del cortado', handlers: {
@@ -305,10 +312,10 @@ export default buildRoom({
       usar: 'Lo releo. 1,20 €. Cuando entré de becario, valía uno.',
     } },
     { id: 'fregadero', name: 'fregadero', handlers: {
-      mirar: 'Tazas de eventos. La del «Foro de Innovación 2017» tiene moho innovador.',
+      mirar: 'Tazas de eventos. La del «Foro de Innovación» tiene moho innovador.',
       usar: 'Si friego una taza, mañana me toca fregar todas. Así empezó Celestino.',
-      coger: 'La taza del Foro de Innovación no se mueve. Ha echado raíces. Disruptivas.',
-      'usar:cafe': 'Tirar un café de Gertrudis por el fregadero. Me oiría. Lo sé.',
+      coger: 'La taza del Foro de Innovación ha echado raíces en el escurridor.',
+      'usar:cafe': 'Tirar un café de Gertrudis por el fregadero. Me oiría.',
       'usar:taper_huerfano': 'Ya está limpio. Lo vuelvo a fregar. Por tener algo hecho.',
       abrir: 'Abro el grifo. Tose dos veces y suelta un hilo. Lo cierro antes de que opine.',
       cerrar: 'Cierro el grifo. Gotea igual. Es su manera de opinar.',
@@ -320,14 +327,14 @@ export default buildRoom({
       mirar: async (api) => {
         if (api.flag('office_porra_vista')) { await api.say('Abajo, a boli: «Prohibido apostar por la salud. Solo por la jubilación».'); return; }
         api.setFlag('office_porra_vista', true);
-        await api.say(['Una hoja: «PORRA: ¿QUIÉN DEJA ANTES SU PLAZA?». Cinco euros.', 'Gervasio, a tres contra uno. Teodoro, a cuatrocientos. Ramírez: «no computa».']);
+        await api.say(['Una hoja: «PORRA: ¿QUIÉN DEJA ANTES SU PLAZA? CINCO EUROS».', 'Gervasio, a tres contra uno. Teodoro, a cuatrocientos. Ramírez: «no computa».']);
       },
       coger: 'Si la quito, me apuestan a mí. Y ni siquiera tengo plaza.',
-      usar: 'Apuesto por mí. Cuota: «no consta». Doblo la apuesta. Sigue sin constar.',
+      usar: 'Apuesto cinco euros por mí. En la cuota pone «no consta».',
     } },
     // plan §4.4: el táper que suelta el de Mercados al huir (rueda hasta Bruno)
     { id: 'taper_suelo', name: 'táper', when: ['mercados_huido', '!office_taper_cogido'], handlers: {
-      mirar: 'Un táper sin nombre, en el suelo. Vacío. Su dueño ha elegido la libertad.',
+      mirar: 'En el suelo, vacío y sin nombre. Su dueño ha elegido la libertad.',
       coger: async (api) => {
         api.sfx('pickup');
         api.setFlag('office_taper_cogido', true);
@@ -342,49 +349,49 @@ export default buildRoom({
   actors: [
     { id: GER, defaultVerb: 'hablar',
       handlers: {
-        mirar: async (api) => { await api.say(['Gertrudis. Cafetera de 2009. Tiene pantalla y carácter. Lo segundo, más.', 'Un pósit: «Servicio técnico: CELESTINO, ext. 0».']); },
+        mirar: async (api) => { await api.say(['Gertrudis, la cafetera. Tiene pantalla y carácter.', 'Un pósit: «Servicio técnico: CELESTINO, ext. 0».']); },
         hablar: async (api) => { await api.dialog('gertrudis', 'G0'); },
-        'usar:cafe': async (api) => { await lcd(api, 'NO SE ADMITEN DEVOLUCIONES. NI SENTIMIENTOS.'); },
-        'dar:cafe': async (api) => { await lcd(api, 'NO SE ADMITEN DEVOLUCIONES. NI SENTIMIENTOS.'); },
+        'usar:cafe': async (api) => { await lcd(api, LCD_DEVOLUCION); },
+        'dar:cafe': async (api) => { await lcd(api, LCD_DEVOLUCION); },
         'usar:libreta_replicas': async (api) => { await lcd(api, 'NO ACEPTO RÉPLICAS. SOLO SALUDOS.'); },
-        'usar:tarjeta_becario': async (api) => { await lcd(api, 'NO ACEPTO TARJETAS. NI SOBORNOS. SOLO MODALES.'); },
-        'dar:tarjeta_becario': async (api) => { await lcd(api, 'NO ACEPTO TARJETAS. NI SOBORNOS. SOLO MODALES.'); },
+        'usar:tarjeta_becario': async (api) => { await lcd(api, LCD_TARJETA); },
+        'dar:tarjeta_becario': async (api) => { await lcd(api, LCD_TARJETA); },
         'usar:sobre_azucar': async (api) => { await lcd(api, 'EL AZÚCAR LO PONGO YO. CUANDO TE LO MERECES.'); },
-        'usar:boli_muerto': async (api) => { await lcd(api, 'NO RECOJO CADÁVERES. PRUEBE EN SECRETARÍA.'); },
-        'usar:taper_huerfano': async (api) => { await lcd(api, 'NO SIRVO EN TÁPER. TENGO UN NOMBRE QUE MANTENER.'); },
-        'dar:taper_huerfano': async (api) => { await lcd(api, 'NO SIRVO EN TÁPER. TENGO UN NOMBRE QUE MANTENER.'); },
+        'usar:boli_muerto': async (api) => { await lcd(api, 'NO RECOJO CADÁVERES: PRUEBE EN SECRETARÍA.'); },
+        'usar:taper_huerfano': async (api) => { await lcd(api, LCD_TAPER); },
+        'dar:taper_huerfano': async (api) => { await lcd(api, LCD_TAPER); },
         'usar:*': async (api) => { await lcd(api, 'E-46: ESO NO ES UN CAFÉ.'); },
         'dar:*': async (api) => { await lcd(api, 'E-46: ESO NO ES UN CAFÉ.'); },
-        empujar: 'Ni la rozo. En la pantalla ya pone: «ANOTADO».',
-        tirar: 'Ni la rozo. En la pantalla ya pone: «ANOTADO».',
+        empujar: NI_LA_ROZO,
+        tirar: NI_LA_ROZO,
         coger: 'Pesa lo que un convenio colectivo.',
         abrir: 'La abro. Dentro, un pósit: «Si lees esto, salúdala. — C.»',
         cerrar: 'Ya está cerrada. Abierta, solo con buenas palabras.',
-        usar: 'Pulso el botón del café. Me mira. Así no. Habrá que hablarle.',
+        usar: 'Pulso el botón del café. Me mira y espera a que la salude.',
       } },
     // plan §4.4: uno de Mercados se esconde en la cola del microondas (Acto II-III, tras la estampida)
     { id: MER, when: ['reunion_terminada', '!mercados_huido'], defaultVerb: 'hablar',
       murmurs: ['Punto tres. Punto tres...', 'Aquí nadie convoca nada. Qué paz.'],
       handlers: {
-        mirar: 'Fermín Plazofijo, de Mercados, en la cola del microondas. No se mueve.',
+        mirar: 'Fermín Plazofijo, de Mercados, en la cola del microondas.',
         hablar: async (api) => { await api.dialog('mercados_office', 'M0'); },
         'dar:cafe': async (api) => { await mer(api, 'No, gracias. El café es de reunión. Y yo ya no voy a reuniones.'); },
         'dar:*': async (api) => { await mer(api, '¿Eso es un orden del día? Guárdatelo. Aquí no.'); },
-        empujar: 'Si le empujo, pierde el sitio en la cola. Sería lo más cruel que he hecho.',
-        tirar: 'Si le empujo, pierde el sitio en la cola. Sería lo más cruel que he hecho.',
-        coger: 'Su táper, no. Todavía. Hay que esperar a que suelte la presa.',
+        empujar: SITIO_COLA,
+        tirar: SITIO_COLA,
+        coger: 'Todavía no. Hay que esperar a que suelte la presa.',
       } },
     // Gervasio aquí SOLO tras D3 (plan §5.10): se va a ver si la máquina le saluda
     { id: GV, when: ['sala_abierta', '!climax_entrada', '!juego_terminado'], defaultVerb: 'hablar',   // en el clímax, escondido en la Sala
       murmurs: ['Sin el acta se está... Se está muy ligero.'],     // [PA] E5 M26 fuera, M27
       handlers: {
-        mirar: 'Gervasio, delante de Gertrudis. Ella no le sirve. Él no la saluda. Del todo.',
+        mirar: 'Gervasio, delante de Gertrudis. Ella no le sirve y él no la saluda.',
         hablar: hablarGervasio,
         'dar:cafe': async (api) => { await gv(api, '¿Café? Se agradece. Pero se espera a que la máquina lo ofrezca.'); },
         'dar:acta_reunion': async (api) => { await gv(api, 'Eso ya no es mío. Se ha delegado. En ti.'); },
-        'dar:ticket_n1': async (api) => { await gv(api, 'Un ticket. Eso es de Sistemas. Se les reenvía.'); },
+        'dar:ticket_n1': async (api) => { await gv(api, 'Un ticket. Eso es de Sistemas: se les reenvía.'); },
         'dar:*': async (api) => { await gv(api, 'Eso se deja... Se deja ahí. Ya se verá de quién es.'); },   // [PA] E5 M33
-        empujar: 'Diecinueve años sin moverse de su sitio. No voy a ser yo quien empiece.',
+        empujar: 'Lleva toda la tarde sin moverse de su sitio. No voy a ser yo quien empiece.',
         tirar: 'Si le tiro de la manga, me la delega.',
         coger: 'Gervasio espera algo. No sabe qué. Por si soy yo, me aparto.',
       } },

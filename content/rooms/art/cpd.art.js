@@ -649,6 +649,52 @@ export function primerPlanoRuben(g, r, t) {
   ditherOverlay(g, x, y, w, 10, '#000000', 0.25);
 }
 
+// ------------------------------------------------------------------ [PC] E6 §2.1 «MIENTRAS, EN LA REDACCIÓN»
+/** Plano detalle de la Redacción a oscuras (api.detalle, ≈ 244×98) mientras la R-3 está desenchufada: arriba, la pantalla
+ *  de métricas apagada; a la izquierda, el monitor de Yoli (único foco de luz) con su silueta delante; a la derecha, el cono
+ *  de la linterna de Anselmo, que cruza hacia el monitor (1 px cada 60 ms). Sin texto hablado dentro del dibujo.
+ *  `c` = { pub }: con `pub`, el monitor dice «PUBLICADO» en verde y parpadea cada 400 ms. */
+export function planoRedaccionOscuras(g, r, t, c = {}) {
+  const { x, y, w, h } = r;
+  const T = t || 0;
+  gradV(g, x, y, w, h, ['#04050a', '#06070e', '#0a0b14']);
+  // la pantalla de métricas, apagada: marco gris y un reflejo frío de nada
+  const sx = x + 62, sy = y + 6, sw = 120, sh = 26;
+  rect(g, sx - 2, sy - 2, sw + 4, sh + 4, '#1a1c26'); frameRect(g, sx - 2, sy - 2, sw + 4, sh + 4, '#2c2f3c');
+  rect(g, sx, sy, sw, sh, '#0d0f16');
+  line(g, sx + 8, sy + sh - 4, sx + 26, sy + 3, '#151824'); line(g, sx + 14, sy + sh - 3, sx + 32, sy + 4, '#131622');
+  vline(g, sx + (sw >> 1), sy + sh + 2, 6, '#1a1c26');                          // el cable que baja (y ya no va a ningún sitio)
+  // las mesas, en silueta, a lo largo del plano
+  rect(g, x, y + 72, w, 3, '#141620'); rect(g, x, y + 75, w, h - 75, '#07080d');
+  for (let k = 0; k < 5; k++) rect(g, x + 118 + k * 26, y + 60, 16, 12, '#0b0c13');   // monitores apagados de Desarrollo
+  // el monitor de Yoli: el único que da luz
+  const mx = x + 22, my = y + 44, mw = 40, mh = 26;
+  glow(g, mx + mw / 2 + 8, my + mh / 2 + 6, 46, 26, '#7fa4ff', 0.32, 5);
+  rect(g, mx, my, mw, mh, '#1c1e2a'); frameRect(g, mx, my, mw, mh, '#2e3242');
+  rect(g, mx + 2, my + 2, mw - 4, mh - 6, '#182a5c');
+  rect(g, mx + mw / 2 - 3, my + mh, 6, 2, '#1c1e2a');                            // el pie
+  if (c.pub) {                                                                    // parpadea cada 400 ms (sin dejar de leerse)
+    const on = (Math.floor(T / 400) & 1) === 0;
+    rect(g, mx + 2, my + 2, mw - 4, mh - 6, on ? '#0e3a1c' : '#0a2414');
+    kit.micro(g, 'PUBLICADO', mx + mw / 2, my + 9, on ? '#6dff8a' : '#2f8a48', { align: 'center' });
+  } else {
+    kit.micro(g, 'GUARDANDO', mx + mw / 2, my + 6, '#dfe8ff', { align: 'center' });
+    kit.micro(g, '.'.repeat(1 + (Math.floor(T / 300) % 3)), mx + 6, my + 13, '#dfe8ff');
+  }
+  // Yoli, de espaldas al plano y de cara al monitor: pelo y hombros (tres colores), el filo rosa de la luz
+  const yx = x + 74, yy = y + 64;
+  ellipse(g, yx, yy + 18, 16, 11, (xx, _y, d) => (d > 0.86 && xx < yx ? '#8a3a66' : '#140b16'));   // hombros
+  rect(g, yx - 3, yy + 6, 6, 4, '#140b16');                                        // cuello
+  ellipse(g, yx, yy, 8, 9, (xx, _y, d) => (d > 0.8 && xx < yx ? '#8a3a66' : '#2a1222'));          // cabeza y pelo, con el filo
+  ellipse(g, yx + 2, yy - 9, 4, 3, '#2a1222');                                     // el moño       (de luz del monitor)
+  // la linterna de Anselmo: un cono amarillo pálido que cruza de derecha a izquierda hacia el monitor
+  const lx = Math.max(x + 104, x + w - 26 - Math.floor(T / 60));
+  g.save(); g.globalAlpha = 0.35; ellipse(g, lx, y + 82, 11, 6, '#fff2a8'); g.restore();
+  g.save(); g.globalAlpha = 0.18; poly(g, [[lx + 4, y + 77], [lx + 26, y + 70], [lx + 26, y + 73], [lx + 6, y + 87]], '#fff2a8'); g.restore();
+  rect(g, lx + 26, y + 70, 2, 2, '#fff8d8');                                       // la bombilla de la linterna
+  ditherOverlay(g, x, y, w, 6, '#000000', 0.3);
+}
+
 // ------------------------------------------------------------------ geometría
 const layout = {
   ascensor_cpd: { rect: N.ascensor.rect, walkTo: N.ascensor.walkTo, face: 'up' },            // núcleo del kit (FL = 94)

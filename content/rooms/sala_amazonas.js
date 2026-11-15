@@ -12,6 +12,9 @@
 // becarios no tienen turno… y los conectados» (`sala_becario_sin_turno`, G) → Gertrudis lo reenvía (office.js,
 // `gertrudis_pregunta`, G) → Usar la tele (`teleSegunTurno`, escena `sala_tele_gertrudis`) → estampida con ATASCO
 // JUGABLE (`sala_amazonas_atasco`; vías empujar / cruasán / hablar / anuncio a los 10 s quieto; `resolverAtasco`).
+// [PA] ENMIENDA E6 §2.2 · el atasco se anuncia (plano de la puerta, «¿Necesitan ayuda?», Mirar = N2, anuncio a los 20 s);
+// §2.3 · Hablar con la tele con «sin turno»: árbol `tele_sala` (opciones del Vending) → `teleGertrudis({ sintonizada })`;
+// la vía del Vending sigue entera. §4.1 (E179-E209, X7, X14) y §4.3 (constantes, bajas de claves duplicadas).
 // §2.6 · la señal tras el clímax (`update`: crujido con `tamb3` y megafonía de Celestino a 10/25/45 s de tiempo quieto).
 // §5.2 Mercados con nombre (Fermín, Rogelio, Jacinto) · §5.4 el Lector Medio asiente sin globo · textos §4 (C46, C61-C63,
 // C98, M15, M24, M29-M32, M34, X04-X08, X10, D02-D05).
@@ -21,6 +24,7 @@ import { gong, SFX, rota } from '../escenas/planta_noble.js';
 import { duelInigo, climaxActivo, climaxEntrada, climaxReintento, climaxEmpujon, replicasD4, PUNTOS_D4 } from '../escenas/climax.js';
 import { tambaleo } from '../actors.js';
 import { MEGAFONIA_TAMBALEO, MEGAFONIA_TAMBALEO_S } from '../lib/celestino.js';
+import ITEMS from '../items.js';
 
 const GERV = 'gervasio_acta', INIGO = 'inigo_sinergia', LECTOR = 'lector_medio', MARIPAZ = 'maripaz_remitido';
 const MERC = ['mercados_1', 'mercados_2', 'mercados_3'];
@@ -30,6 +34,10 @@ const sayI = (api, t) => api.sayAs(INIGO, t);
 const sayM = (api, t) => api.sayAs(MARIPAZ, t);
 const sayMe = (api, n, t) => api.sayAs(MERC[n - 1], t);
 const aqui = (api, id) => { const p = api.actorPos(id); return !!(p && p.room === 'sala_amazonas' && api.isVisible(id)); };
+// [PA] E6 §4.3: una constante por cadena que se oye en dos ramas del mismo objeto
+const MARIPAZ_PAGINA7 = '¡Uy! Si me mueves a mí, se mueve la página 7.';
+const BOCA_ABAJO = 'Boca abajo en el suelo, delante de la mesa.';
+const POR_ESCRITO = 'Eso, por escrito. Si no está en el hilo, no escala.';
 
 // la tele de videollamadas, Actos I-II (rota con `tele_n`; tras la 5 vuelve a la 1)
 const TELE = [
@@ -40,7 +48,7 @@ const TELE = [
   ['«ENTRADA 5»: «PLAN CERO PAPEL · DIAPOSITIVAS: 400 · DATOS: 0».'],
 ];
 async function usarTele(api) {
-  if (api.flag('acto_3_iniciado')) { await api.say('No se enciende. El mando lo tiene alguien de Mercados. En el Vending.'); return; }
+  if (api.flag('acto_3_iniciado')) { await api.say('No se enciende. El mando lo tiene alguien de Mercados, en el Vending.'); return; }
   const n = api.inc('tele_n'); await api.say(TELE[(n - 1) % TELE.length]);
 }
 
@@ -48,6 +56,22 @@ async function usarTele(api) {
 // su voz sale de la tele, pero el globo va a su izquierda (sobre la pantalla del orden del día) para no tapar su LCD
 const GERTRUDIS_TV = { color: '#39FF14', at: [186, 62], width: 104 };
 const CONVOCADA = 'CONVOCADA. TODA LA EMPRESA EN COPIA. EMPIEZA EN CINCO MINUTITOS.';
+const TELE_E00 = 'E-00: DE NADA. ESO TAMBIÉN SE DICE.';
+/** [PA] E6 §2.3 · Hablar con la tele. Con «sin turno» (y sin la pregunta hecha en el Vending), la tele la sintoniza si se
+ *  la llama como a ella: con educación (árbol `tele_sala`, opciones del Vending, literal). La vía del Vending sigue entera:
+ *  con `gertrudis_pregunta`, la escena sale directamente (va antes que el árbol). */
+async function hablarTele(api) {
+  if (api.flag('sala_amazonas_atasco')) { await api.sayFrom('tele_amazonas', CONVOCADA, GERTRUDIS_TV); return; }
+  if (api.flag('gertrudis_pregunta') && !api.flag('reunion_terminada')) { await api.scene('sala_tele_gertrudis'); return; }
+  if (api.flag('sala_becario_sin_turno') && !api.flag('reunion_terminada')) {
+    await api.dialog('tele_sala');
+    if (api.flag('gertrudis_pregunta')) await api.scene('sala_tele_gertrudis', { sintonizada: true });
+    else api.setState('tele_amazonas', 'normal');
+    return;
+  }
+  await api.say(['«¿Me veis la pantalla?». La tele no contesta.', 'Es la experiencia completa.']);
+  if (!api.flag('reunion_terminada') && aqui(api, 'mercados_2')) await sayMe(api, 2, 'Se te ha congelado.');
+}
 async function teleSegunTurno(api, deHoy) {
   // con el atasco abierto, la tele sigue con Gertrudis: lo repite (0 líneas nuevas; no es una vía, §12.1)
   if (api.flag('sala_amazonas_atasco')) { await api.sayFrom('tele_amazonas', CONVOCADA, GERTRUDIS_TV); return; }
@@ -100,6 +124,7 @@ const MERCADOS_HABLAR = [
 const MERCADOS_MURMURA = [['Que alguien pida sala para salir de la sala.'], ['¿Me veis la pantalla? ...¿Hola? ¿Me veis?'],
   ['Entramos cinco minutitos. En marzo.']];
 // el atasco de la puerta (estampida): sus tres líneas de hoy, que durante el atasco también son sus murmullos (§2.1.7)
+const MERCADOS_ENCAJADOS = 'Los tres de Mercados, encajados en el marco, sin ceder un palmo.';
 const MERCADOS_ATASCO = ['¡Usted primero!', '¡No, usted, que es de Bolsa!', '¡Yo soy de Bolsa y de Mercados! ¡Tengo doble prioridad!'];
 const mercadosActor = (id, i) => ({
   id, when: ['!reunion_terminada', '!acto_3_iniciado', '!sala_amazonas_estampida'],
@@ -107,7 +132,8 @@ const mercadosActor = (id, i) => ({
   pos: (v) => (v.flag('sala_amazonas_atasco') ? 'atasco' : 'mesa'),
   murmurs: (v) => (v.flag('sala_amazonas_atasco') ? [MERCADOS_ATASCO[i]] : MERCADOS_MURMURA[i]),
   handlers: {
-    mirar: MERCADOS_MIRAR[i],
+    // [PA] E6 §2.2.3 (N2): con el atasco, Mirar a cualquiera de los tres describe el atasco (una línea para los tres)
+    mirar: async (api) => { await api.say(api.flag('sala_amazonas_atasco') ? MERCADOS_ENCAJADOS : MERCADOS_MIRAR[i]); },
     hablar: async (api) => {
       if (atascoAbierto(api)) { await resolverAtasco(api, 'hablar'); return; }
       await sayMe(api, i + 1, MERCADOS_HABLAR[i]);
@@ -129,7 +155,7 @@ const mercadosActor = (id, i) => ({
 // Teodoro (D2) y él la ha sellado (casilla_firma), el sello que se ve es el de Teodoro.
 const selloTeodoro = (api) => !!api.flag('casilla_firma');
 const fichaSellada = (api) => `Ficha de la página 7. Sellada por ${selloTeodoro(api) ? 'Teodoro' : 'Aurora'}. Impar.`;
-const INTRO_REVANCHA = '¿Llamar yo a Siestatón un viernes? Te lo pongo por escrito. Con banner.';
+const INTRO_REVANCHA = '¿Llamar yo a Siestatón un viernes? Te lo pongo por escrito.';
 export const duelMaripaz = {
   actor: MARIPAZ,
   from: 'Maripaz Remitido',
@@ -143,7 +169,7 @@ export const duelMaripaz = {
     R14: 'Si quieres lo vemos en una reunión rápida. Con pop-up de bienvenida.',
   },
   intro: [],
-  hurt: ['Uy. Eso tiene tarifa.', 'Bien dicho. Eso, al lado de un anuncio de tiritas.'],
+  hurt: ['Uy, eso tiene tarifa.', 'Bien dicho. Eso, al lado de un anuncio de tiritas.'],
   taunt: ['Eso no lo patrocina nadie.', 'Muy bonito. Pero sin anuncio no es contenido.'],
   finishers: [
     { atScore: 3, text: '¿Y quién me firma que esa página es noticia y no un hueco para anuncios?', object: 'ficha_pagina_7',
@@ -164,7 +190,7 @@ export const duelMaripaz = {
     api.hide('planillo_bajo_maripaz');
     api.sfx('pickup');
     await api.anim('bruno', 'reach', 400);
-    await sayM(api, 'Hueco libre: veintitrés líneas. Impar. Y sin un banner. Me duele.');
+    await sayM(api, 'Hueco libre: veintitrés líneas. Impar, y sin un banner.');
     // E2 §4.2.3: al pasar por detrás de Bruno, le pega en la mochila un adhesivo «SU ANUNCIO AQUÍ» (golpe de mazo)
     api.setWalkbox('fondo', true);
     try {
@@ -218,7 +244,7 @@ async function paginaSegunComercial(api) {
   await api.detalle({ titulo: 'PÁGINA 7 · PROPUESTA DE COMERCIAL', w: 200, h: 100, draw: paginaComercial }, async (api) => {
     await sayM(api, '¿Ves esa línea gris?');
     await api.say('¿La noticia?');
-    await sayM(api, 'Se ve demasiado. Estoy en ello.');
+    await sayM(api, 'Se ve demasiado; estoy en ello.');
   });
 }
 
@@ -229,9 +255,9 @@ async function d1Siestaton(api, info = {}) {
     if (n === 1) {
       await api.phone.say(['Ha llamado a Colchones Siestatón. Si desea dormir, pulse uno.',
         'Si ya duerme, no pulse. Le atenderemos en sueños.', 'Rrrrr... fiuuu... Rrrrr... fiuuu...']);
-      await api.say('Me han puesto un ronquido en espera. Cuelgo. Vuelvo con Maripaz.');
+      await api.say('Me han puesto un ronquido en espera. Cuelgo y vuelvo con Maripaz.');
     } else if (n === 2) {
-      await api.phone.say(['Bienvenido otra vez. Su llamada nos importa. Por eso bostezamos.', 'Rrrrr... RRRRR... fiuuu... fiuuu...']);
+      await api.phone.say(['Bienvenido otra vez. Su llamada nos importa, por eso bostezamos.', 'Rrrrr... RRRRR... fiuuu... fiuuu...']);
       await api.say('Ahora roncan dos. Están ampliando plantilla.');
     } else {
       await api.phone.say('Le pasamos con su comercial.');
@@ -256,7 +282,7 @@ export default buildRoom({
     sala_amazonas_gervasio_agachado: 'bool · P4 · D4, floja «siguientes pasos»: Gervasio agachado · arte',
     sala_amazonas_fondo_abierto: 'bool · P4 · nunca se pone: walkbox `fondo` (api.setWalkbox) · arte',
     sala_amazonas_orden_visto: 'bool · PA · E5 §2.1.2 · Mirar orden_del_dia · opción de Gervasio',
-    sala_amazonas_atasco: 'bool · PA · E5 §2.1.6 · Mercados encajados en la puerta · vías',
+    sala_amazonas_atasco: 'bool · PA · E5 §2.1.6 · Mercados encajados en la puerta · vías (E6: 20 s)',
   },
 
   objects: [
@@ -264,7 +290,7 @@ export default buildRoom({
       ir: salir,
       usar: salir,
       abrir: 'Ya está abierta. Nadie sale. Es un hecho cultural.',
-      cerrar: 'Si la cierro, esto se convierte en una reunión de verdad. No me atrevo.',
+      cerrar: 'Si la cierro, esto se convierte en una reunión de verdad.',
       mirar: 'La puerta. Abierta. Nadie la usa: el orden del día no lo permite.',
     } },
     { id: 'cartel_salida', name: 'cartel de salida', handlers: {
@@ -276,19 +302,19 @@ export default buildRoom({
     { id: 'proyector', name: 'proyector', when: 'acto_3_iniciado', state: 'diapo_247', color: '#B4E4FF', handlers: {
       mirar: async (api) => {
         if (api.getState('proyector') === 'diapo_248') await api.say('Diapositiva 248: «El viaje continúa». Ya no la mira nadie.');
-        else await api.say('Diapositiva 247 de 400: «Sinergias exponenciales: el viaje». No hay vuelta.');
+        else await api.say('Diapositiva 247 de 400: «Sinergias exponenciales: el viaje».');
       },
       usar: 'Le doy a «siguiente». La 247 se queda. Tiene más estabilidad que yo.',
-      empujar: 'Lo empujo un poco. Zumba. La 247 aguanta.',
-      cerrar: 'Si lo apago, Íñigo presenta a oscuras. Lo haría igual.',
+      empujar: 'Lo empujo un poco. Zumba, y la 247 aguanta.',
+      cerrar: 'Si lo apago, Íñigo presenta a oscuras, y lo haría igual.',
       coger: 'Está atornillado al techo. Tadeo lo propuso para toda la web.',
     } },
     { id: 'orden_del_dia', name: 'orden del día', handlers: {
       mirar: async (api) => {
-        if (api.flag('reunion_terminada')) await api.say('Todo tachado. Hasta «Siguientes pasos». Alguien lloraba.');
+        if (api.flag('reunion_terminada')) await api.say('Todo tachado, hasta «Siguientes pasos». La tinta está corrida.');
         else {
           await api.say(['ORDEN DEL DÍA: 1. Previsión. 2. Previsión de la previsión. 3. Siguientes pasos.',
-            'El punto 3. Nadie lo toca. Dicen que muerde.']);
+            'El punto 3. Nadie lo toca: dicen que muerde.']);
           api.setFlag('sala_amazonas_orden_visto', true);           // E5 §2.1.2: abre la pregunta a Gervasio
         }
       },
@@ -305,7 +331,7 @@ export default buildRoom({
       coger: async (api) => { await sayM(api, 'Ese planillo tiene un hueco. Es mío hasta que alguien llame a Siestatón.'); },
       tirar: 'Tiro un milímetro. Maripaz pesa más que el planillo.',
       usar: 'Para usarlo tendría que levantarse Maripaz. Eso se negocia aparte.',
-      empujar: 'Lo empujo hacia dentro. Maripaz se acomoda encima. Ha ganado terreno.',
+      empujar: 'Lo empujo hacia dentro y Maripaz se acomoda encima.',
     } },
     { id: 'minicruasanes', name: 'mini-cruasanes', handlers: {
       mirar: async (api) => { await api.say(['Ochenta mini-cruasanes para cuarenta periodistas.', 'Las matemáticas nunca fallan: no llegan.']); },
@@ -326,7 +352,7 @@ export default buildRoom({
       },
       coger: 'Si abro uno, me lo imputan como gasto de representación.',
       abrir: 'Abrir uno es asumir un gasto. Mejor me deshidrato con dignidad.',
-      empujar: async (api) => { api.sfx(SFX.botellines); await api.say('Los alineo. Catorce en fila. Parecen un comité.'); },
+      empujar: async (api) => { api.sfx(SFX.botellines); await api.say('Los alineo. Catorce en fila parecen un comité.'); },
     } },
     // la tele: Actos I-II, canales; Acto III, apagada hasta que la enciende Celestino en el clímax (estado `entrada_1`)
     // E5 §2.1.5: estados `buscando` (nieve, «BUSCANDO SEÑAL») y `gertrudis` (su LCD a pantalla completa, EN DIRECTO)
@@ -337,14 +363,11 @@ export default buildRoom({
         else await api.say('Una tele de videollamadas. Pegatina: «PULSAR ENTRADA 3. NO, LA 2. NO».');
       },
       usar: (api) => teleSegunTurno(api, usarTele),
-      hablar: (api) => teleSegunTurno(api, async (api) => {
-        await api.say(['«¿Me veis la pantalla?». La tele no contesta.', 'Es la experiencia completa.']);
-        if (!api.flag('reunion_terminada') && aqui(api, 'mercados_2')) await sayMe(api, 2, 'Se te ha congelado.');
-      }),
+      hablar: hablarTele,                           // [PA] E6 §2.3: con «sin turno», el árbol `tele_sala`
       coger: 'Atornillada. Alguien temió que la tele se fuera antes que Mercados.',
       cerrar: (api) => teleSegunTurno(api, async (api) => {
         if (api.flag('acto_3_iniciado')) await api.say('Ya está apagada. Más apagada sería una sala de espera.');
-        else await api.say('La apago. Se enciende sola en «BUSCANDO SEÑAL». No se rinde.');
+        else await api.say('La apago y se enciende sola en «BUSCANDO SEÑAL».');
       }),
       // E5 §2.1.5 (pista 3): el móvil no sintoniza; el resto del juego, el genérico del móvil
       'usar:movil': async (api) => {
@@ -352,14 +375,15 @@ export default buildRoom({
           await api.say('Desde mi móvil no me sintoniza nadie. Los once mil son de la cafetera.');
           return;
         }
-        const g = api.game.content.items.movil && api.game.content.items.movil.handlers && api.game.content.items.movil.handlers['usar:*'];
-        if (typeof g === 'function') await g(api); else await api.say(g || 'No le hago fotos. Luego me pide derechos de imagen.');
+        // [PA] E6 §4.3: el genérico del móvil se importa de items.js, no se copia
+        const g = ITEMS.movil.handlers['usar:*'];
+        if (typeof g === 'function') await g(api); else await api.say(g);
       },
     } },
     { id: 'caja_cables', name: 'caja de cables', when: '!acto_3_iniciado', handlers: {
       mirar: async (api) => { await api.say(['Catorce cables y siete adaptadores. Uno adapta un adaptador a otro.', 'Hay uno que encaja consigo mismo. Lo dejo así: es feliz.']); },
       usar: (api) => teleSegunTurno(api, usarTele),   // «Usar con tele_amazonas: igual que Usar la tele»
-      coger: 'Si me llevo un cable, alguien no podrá presentar. Tentador. No.',
+      coger: 'Si me llevo un cable, alguien no podrá presentar. Tentador.',
       abrir: 'Ya está abierta. Cierro la tapa y un cable me saluda por el hueco.',
       tirar: 'Tiro de un cable. Sale otro. Y otro. Es un truco de magia sin final.',
     } },
@@ -373,7 +397,7 @@ export default buildRoom({
   actors: [
     { id: GERV, when: (api) => !api.flag('reunion_terminada') || api.flag('sala_abierta'),
       pos: (v) => (v.flag('acto_3_iniciado') ? 'rincon' : 'preside'),
-      murmurs: ['Eso, en todo caso, lo hablamos.', 'Diecinueve años. Ni un marrón. Ni uno.'],     // E5 M29: fuera la de la salud
+      murmurs: ['Eso, en todo caso, lo hablamos.'],     // E5 M29: fuera la de la salud · [PA] E6 E198: fuera «Diecinueve años…»
       handlers: {
         mirar: async (api) => {
           if (api.flag('acto_3_iniciado')) await api.say('Gervasio, de pie junto a su sillón. Con un café que no le han servido.');
@@ -388,10 +412,10 @@ export default buildRoom({
           else if (api.flag('duelo_inigo_ganado')) await sayG(api, 'Lo que diga el Lector Medio. Que se está... Se está moviendo.');   // M34
           else await sayG(api, 'Yo aquí solo estoy en... en copia.');
         },
-        'dar:cafe': async (api) => { await sayG(api, '¿Un café? ¿A mí? Esto no estaba en el orden del día. Se agradece.'); },
+        'dar:cafe': async (api) => { await sayG(api, '¿Un café? ¿A mí? Esto no estaba en el orden del día.'); },
         'dar:acta_reunion': async (api) => { await sayG(api, 'No, no. El acta es tuya. Yo ya... Se ha cumplido.'); },
         'dar:*': async (api) => { await sayG(api, 'Eso lo coges tú, que tienes la agenda más limpia.'); },
-        empujar: 'Gervasio no se mueve. Diecinueve años esquivando marrones dan estabilidad.',
+        empujar: 'Gervasio no se mueve. Esquivar marrones da mucha estabilidad.',
       } },
     ...MERC.map(mercadosActor),
     // §5.9 · Maripaz en la Sala (Acto II hasta ganar D1), al fondo de la mesa, sentada en el planillo (E2 §4.3)
@@ -406,13 +430,13 @@ export default buildRoom({
           if (!((api.flag('duel:maripaz:perdido_n') || 0) > 0)) await popupMaripaz(api);
           await api.dialog('maripaz_sala');
         },
-        usar: async (api) => { await api.say('Le toco el hombro.'); await sayM(api, 'Has hecho clic en un anuncio. Ahora te sigo toda la noche.'); },
-        coger: async (api) => { await sayM(api, '¿Cogerme? Antes, el formulario de contacto, cariño. Catorce campos.'); },
-        empujar: async (api) => { api.sfx('hit'); await sayM(api, '¡Uy! Si me mueves a mí, se mueve la página 7.'); },
-        'dar:ficha_pagina_7': async (api) => { await sayM(api, 'Una ficha sin hueco. El hueco lo tengo yo. Debajo. Con banners.'); },
+        // [PA] E6 §4.3: «Has hecho clic en un anuncio…» se queda en Comercial; aquí, Usar = su Empujar
+        usar: async (api) => { api.sfx('hit'); await sayM(api, MARIPAZ_PAGINA7); },
+        coger: async (api) => { await sayM(api, '¿Cogerme? Antes, el formulario de contacto, cariño: catorce campos.'); },
+        empujar: async (api) => { api.sfx('hit'); await sayM(api, MARIPAZ_PAGINA7); },
+        'dar:ficha_pagina_7': async (api) => { await sayM(api, 'Una ficha sin hueco. El hueco lo tengo yo, aquí debajo.'); },
         'dar:cafe': async (api) => { await sayM(api, '¿Café? Ya tengo. Y la taza lleva anuncio. Mira: Cafés Madrugón.'); },
-        'dar:pieza_opa': async (api) => { await sayM(api, '¿Toda esta noticia sin un anuncio en medio? Se ve demasiado.'); },
-        'dar:correo_evaristo': async (api) => { await sayM(api, '¿Evaristo? Me revisa los contratos. Por él cobro lo pactado. Qué pena.'); },
+        // [PA] E6 E202 y §4.3: `dar:pieza_opa` y `dar:correo_evaristo` caen en su `dar:*` (las dos se quedan en Comercial)
         'dar:*': async (api) => { await sayM(api, 'Si no lleva logo, no lo cojo. Y si lo lleva, lo cobro.'); },
       } },
     // E5 §5.4 / M24: antes del clímax el cartón no habla ni lleva globo; asiente (gesto) y Gervasio decide por él
@@ -420,12 +444,12 @@ export default buildRoom({
       murmurs: [],
       handlers: {
         mirar: async (api) => {
-          if (api.flag('lector_derribado')) await api.say(['Boca abajo en el suelo, delante de la mesa.', 'Por detrás: «Atrezo – Focus group 2014».']);
-          else if (api.flag('chaqueta_en_lector')) await api.say('Junto a la pantalla, el Lector Medio, con la chaqueta de Ramírez. Asiente.');
-          else await api.say('Junto a la pantalla, el Lector Medio. Asiente.');
+          if (api.flag('lector_derribado')) await api.say([BOCA_ABAJO, 'Por detrás: «Atrezo – Focus group 2014».']);
+          else if (api.flag('chaqueta_en_lector')) await api.say('Junto a la pantalla, el Lector Medio, con la chaqueta de Ramírez, asintiendo.');
+          else await api.say('Junto a la pantalla, el Lector Medio, asintiendo.');
         },
         hablar: async (api) => {
-          if (api.flag('lector_derribado')) { await api.say('Boca abajo en el suelo, delante de la mesa.'); return; }
+          if (api.flag('lector_derribado')) { await api.say(BOCA_ABAJO); return; }
           const g = aqui(api, GERV);
           if (g) await sayG(api, 'Lo que diga el Lector Medio.');
           await asentir(api);
@@ -436,9 +460,9 @@ export default buildRoom({
           if (!api.flag('duelo_inigo_ganado') || !climaxActivo(api)) { await api.say('Todavía no. Primero, por escrito.'); return; }
           await api.scene('climax_empujon');
         },
-        coger: 'Lo levanto un poco. Pesa lo que un folio. Asiente igual.',
+        coger: 'Lo levanto un poco. Pesa lo que un folio, y asiente igual.',
         tirar: 'No tiro de la chaqueta de Ramírez. Aún tiene que volver a por ella.',
-        'usar:chicle': 'No. Ya lleva celo. Dos adhesivos en un lector es golpe de Estado.',
+        // [PA] E6 §4.3: «Usar adhesivo» → defecto (la del celo se queda en Despachos)
         'dar:*': 'Se lo enseño. Asiente. Antes le ha asentido al proyector.',
       } },
     { id: INIGO, when: 'acto_3_iniciado',
@@ -457,14 +481,42 @@ export default buildRoom({
         },
         'dar:cafe': async (api) => { await sayI(api, '¿Café? Ahora no. Voy por la 247.'); },
         'dar:tarjeta_becario': async (api) => { await sayI(api, 'Ya te tengo en la matriz. Abajo a la izquierda.'); },
-        'dar:ticket_n1': async (api) => { await sayI(api, 'Eso, por escrito. Si no está en el hilo, no escala.'); },
-        'dar:acta_reunion': async (api) => { await sayI(api, 'Eso, por escrito. Si no está en el hilo, no escala.'); },
+        'dar:ticket_n1': async (api) => { await sayI(api, POR_ESCRITO); },
+        'dar:acta_reunion': async (api) => { await sayI(api, POR_ESCRITO); },
         'dar:*': async (api) => { await sayI(api, 'Ese input no escala.'); },
         empujar: 'No. Está presentando. Si le empujo, pasa a la diapositiva 248.',
       } },
   ],
 
   dialogs: {
+    // [PA] E6 §2.3 · la tele, con «sin turno»: las opciones de Bruno son las del Vending (office.js `G0`), literal; la
+    // tele dice una sola línea nueva (N3). Sin actor (globo de Bruno), sin saludo.
+    tele_sala: {
+      actor: null, start: 'TV0',
+      nodes: {
+        TV0: {
+          options: [
+            { text: 'Buenas noches, Gertrudis.',
+              do: async (api) => {
+                api.setState('tele_amazonas', 'buscando'); api.sfx('click');
+                await api.wait(600);
+                api.setState('tele_amazonas', 'gertrudis'); api.sfx('beep');
+                await api.sayFrom('tele_amazonas', 'BUENAS NOCHES, SALA AMAZONAS.', GERTRUDIS_TV);
+                return 'TV1';
+              } },
+            { text: 'Nada.', exit: true, silent: true },              // la tele, como estaba
+          ],
+        },
+        TV1: {
+          options: [
+            { text: '¿Y cuáles son los siguientes pasos?',
+              do: async (api) => { api.setFlag('gertrudis_pregunta', true); return 'exit'; } },
+            { text: 'Nada. Gracias, Gertrudis.', exit: true,
+              do: async (api) => { await api.sayFrom('tele_amazonas', TELE_E00, GERTRUDIS_TV); } },
+          ],
+        },
+      },
+    },
     // §5.9 · nodo GV_REUNION (Gervasio preside; Mercados y, en el Acto II, Maripaz)
     gervasio_reunion: {
       actor: GERV, start: 'GV_REUNION',
@@ -479,7 +531,7 @@ export default buildRoom({
           options: [
             { text: '¿Qué se decide aquí?', once: true,
               do: async (api) => {
-                await sayG(api, 'Se decide... Se está decidiendo. Lo que diga el Lector Medio.');
+                await sayG(api, 'Se decide... Se está decidiendo por quien corresponda.');
                 if (api.flag('chaqueta_en_lector')) await sayG(api, 'Y Ramírez, que ha vuelto. Asiente mucho.');
                 await api.say('¿Y qué dice el Lector Medio?');
                 await sayG(api, 'Aún no se le ha preguntado. Se le preguntará. En el punto cuatro.');
@@ -488,7 +540,7 @@ export default buildRoom({
               do: async (api) => {
                 await sayG(api, 'La página 7 se... Eso habría que... Tú, que tienes la agenda limpia...');
                 await api.say('¿...que tengo la agenda limpia para qué?');
-                await sayG(api, 'Para eso. Muy bien visto. Se toma nota.');
+                await sayG(api, 'Para eso. Muy bien visto, se toma nota.');
               } },
             { text: '¿Puedo presidir yo un rato?', once: true,
               do: async (api) => {
@@ -557,14 +609,14 @@ export default buildRoom({
   defaults: {},
   ambient: [],
 
-  // E5 §2.1.6 (anuncio a los 10 s quietos con el atasco abierto) y §2.6 (señal tras el clímax: crujido y megafonía)
+  // E5 §2.1.6 (anuncio a los 20 s quietos con el atasco abierto, E6 §2.2) y §2.6 (señal tras el clímax: crujido y megafonía)
   update(api, dt) {
     if (api.flag('sala_amazonas_atasco')) {
       if (A.ctl && !A.resolviendo && api.quieto()) {
         A.quieto += dt;
         if (A.quieto >= ATASCO_ANUNCIO_S) {
           A.resolviendo = true;                                // (resolverAtasco lo vuelve a comprobar)
-          api.game.runScript((api) => resolverAtasco(api, 'anuncio', true), { label: 'atasco: anuncio (10 s)' });
+          api.game.runScript((api) => resolverAtasco(api, 'anuncio', true), { label: 'atasco: anuncio (20 s)' });
         }
       }
       return;
@@ -616,8 +668,8 @@ export default buildRoom({
 // ---------------------------------------------------------------- [PA] E5 §2.1 · «Pregunta del público» y el atasco
 // Estado de módulo (no se guarda: con el atasco abierto no se puede guardar, y `onEnter` lo pone a cero).
 const S = { quieto: 0, tamb: null };                       // §2.6: segundos de tiempo quieto tras D4; último fotograma
-const A = { ctl: null, resolviendo: false, quieto: 0 };    // §2.1.6: el atasco (ctl de api.estampida), reloj de 10 s
-const ATASCO_ANUNCIO_S = 10;
+const A = { ctl: null, resolviendo: false, quieto: 0 };    // §2.1.6: el atasco (ctl de api.estampida), reloj de 20 s
+const ATASCO_ANUNCIO_S = 20;                               // [PA] E6 §2.2.1 (antes, 10)
 /** §2.6 · ¿el jugador está sin actuar? Como `api.quieto()` (engine/efectos.js `quiet`), pero los globos que no
  *  bloquean (murmullos, ambiente, megafonía) no cuentan como actividad. */
 function sinActuar(api) {
@@ -638,11 +690,15 @@ async function asentir(api, id = LECTOR) {
 }
 
 /** §3.1 · Usar la tele con `gertrudis_pregunta`: Gertrudis pregunta en directo, estampida y atasco en la puerta. Al acabar
- *  la cinemática el control vuelve al jugador con `sala_amazonas_atasco` puesto (en modo rápido, vía `anuncio` aquí). */
-async function teleGertrudis(api) {
+ *  la cinemática el control vuelve al jugador con `sala_amazonas_atasco` puesto (en modo rápido, vía `anuncio` aquí).
+ *  [PA] E6 §2.3.3: con `opts.sintonizada` (árbol `tele_sala`) la tele ya está en `gertrudis`: sin «BUSCANDO SEÑAL».
+ *  [PA] E6 §2.2.2: al final, plano de la puerta (1 s), los tres se giran hacia Bruno y él pregunta «¿Necesitan ayuda?». */
+async function teleGertrudis(api, opts = {}) {
   await api.cutscene(async () => {
-    api.setState('tele_amazonas', 'buscando'); api.sfx('click');
-    await api.wait(600);
+    if (!opts.sintonizada || api.getState('tele_amazonas') !== 'gertrudis') {
+      api.setState('tele_amazonas', 'buscando'); api.sfx('click');
+      await api.wait(600);
+    }
     api.setState('tele_amazonas', 'gertrudis'); api.sfx('beep');
     for (const id of [...MERC, GERV]) if (aqui(api, id)) api.faceActor(id, 'tele_amazonas');
     if (aqui(api, 'mercados_2')) await sayMe(api, 2, '¡Se ve! ¡Por fin se ve la pantalla!');
@@ -673,12 +729,19 @@ async function teleGertrudis(api) {
     A.ctl = ctl; A.quieto = 0; A.resolviendo = false;
     api.setFlag('sala_amazonas_atasco', true);
     api.sinGuardar(true);                              // §2.1.6: nada de guardar con el atasco abierto
+    // [PA] E6 §2.2.2: el atasco se anuncia (dentro de la cinemática: no se come segundos del plazo de 20 s)
+    api.cameraTo(PUERTA[0] + 30); api.shake(200, 1);  // plano de la puerta, 1 s: los tres tiemblan encajados
+    await api.wait(700);
+    for (const id of MERC) if (aqui(api, id)) api.faceActor(id, api.player);   // se giran hacia Bruno, sin soltarse
+    await api.say('¿Necesitan ayuda?');                // nadie contesta
+    await api.wait(600);
+    api.cameraFollow();
   });
   if (api.game.fast) await resolverAtasco(api, 'anuncio');     // modo rápido (recorridos): sin soltar el control
 }
 
 /** §2.1.6 · fin del atasco por una vía ('empujar' | 'cruasan' | 'hablar' | 'anuncio'): una sola línea de vía, el plop, la
- *  sala vacía, «Se levanta la sesión», `reunion_terminada` y Maripaz. `desdeUpdate`: lo lanza el reloj de 10 s. */
+ *  sala vacía, «Se levanta la sesión», `reunion_terminada` y Maripaz. `desdeUpdate`: lo lanza el reloj de 20 s. */
 async function resolverAtasco(api, via, desdeUpdate = false) {
   if (!api.flag('sala_amazonas_atasco')) { A.resolviendo = false; return; }
   if (A.resolviendo && !desdeUpdate) return;

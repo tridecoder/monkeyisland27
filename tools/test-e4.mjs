@@ -4,7 +4,7 @@
 //     categoría y voz de Yoli en partida simulada), módulo de datos al día con piezas.json, 3 líneas a 190 px, y que la
 //     lógica no nombre ningún id de pieza (todo sale del fichero de datos: vale con otro juego de piezas del mismo formato);
 //   · sesión completa con ratón real (casillas del monitor y del panel, publicar, contador, récord, un clic dentro del
-//     monitor no cierra, un clic fuera sí, Esc), cinco publicaciones y cierre solo;
+//     monitor no cierra, un clic fuera sí, Esc), cinco publicaciones y la quinta abierta hasta «Dejarlo»;
 //   · móvil en horizontal con el dedo; guardar/cargar con el récord; cargar a mitad de sesión (sin estados colgados);
 //   · los nueve secretos del dueño, literales, con su etiqueta y la línea de Yoli (una vez por partida);
 //   · consecuencias: pósit en la pieza → Aurora lo corrige → Yoli lo nota; COINCIDO; demo del paso 34; paso 40 (con y sin
@@ -81,6 +81,13 @@ async function referencia() {
   ok(`titulador = generador de referencia en las ${total} combinaciones (titular, usuarios, categoría, voz; ≤ 3 líneas a 190 px; ${lineas} líneas de Yoli en la partida simulada)`);
   for (const l of LITERALES) must(REF.A.some(a => REF.S.some(s => REF.G.some(g => T.titular(...T.piezas(`${a.id}|${s.id}|${g.id}`)) === l))), 'no sale literal: ' + l);
   ok('las nueve frases del dueño salen literales');
+  // LA CASA (E6 §2.7): 225.000; la superan exactamente 7 combinaciones del generador de referencia y 4 no son secretos
+  must(T.CASA === 225000, 'CASA no es 225.000: ' + T.CASA);
+  const sup = [];
+  for (const a of REF.A) for (const s of REF.S) for (const g of REF.G) if (REF.usuarios(a, s, g) > T.CASA) sup.push(`${a.id}|${s.id}|${g.id}`);
+  const sinSecreto = sup.filter(k => !P.secretos.some(x => x.combo === k));
+  must(sup.length === 7 && sinSecreto.length === 4, `la meta (${T.CASA}) la superan ${sup.length} (${sinSecreto.length} sin secreto), no 7 (4): se revisa si se tocan las piezas`);
+  ok(`LA CASA = 225.000: la superan 7 combinaciones del generador (${sinSecreto.length} sin secreto: ${sinSecreto.join(', ')})`);
   // la lógica no nombra ningún id de pieza (todo sale de los datos): pecera.titulador.js (salvo las miniaturas, que
   // tienen un dibujo por defecto), las escenas, los diálogos, la sala, el epílogo y Aurora
   // (los ids que también son de categoría —«opa», los de gancho— se pueden nombrar como categoría: no se buscan)
@@ -217,11 +224,19 @@ async function sesionConRaton() {
   must(await until(t => __game.state().speaking.some(s => s.text === t), P.lineas[sec.linea], 20000), 'no se ve la reacción de Yoli al secreto');
   await wait(500); await shot('titulador-secreto-yoli');
   await esperaMenu(page, 30000);
-  // cuarta y quinta: el titulador se cierra solo
-  for (let k = 0; k < 2; k++) { await clicOpcion('¡Publicar!'); await wait(1600); if (k === 0) await esperaMenu(page, 20000); }
-  must(await until(() => !__game.state().detalle && !__game.state().busy, null, 30000), 'tras cinco publicaciones el titulador no se cierra');
+  // cuarta y quinta (E6 §2.7): la quinta se queda abierta, legible, hasta «Dejarlo»; ya no se cierra sola
+  await clicOpcion('¡Publicar!'); await esperaMenu(page, 20000);
+  await clicOpcion('¡Publicar!');
+  must(await until(() => (__game.currentDialogOptions() || []).join('|') === 'Dejarlo', null, 30000), 'tras la 5.ª publicación no se ofrece solo «Dejarlo»');
+  must((await st()).pubs === 5 && await detalle() === 'TITULADOR · DISCOVER', 'la 5.ª: ' + JSON.stringify(await st()));
+  await wait(3000);
+  must((await st() || {}).pubs === 5 && await detalle() === 'TITULADOR · DISCOVER' && (await opciones() || []).join('|') === 'Dejarlo', 'la 5.ª publicación se cierra sola antes de 3 s');
+  must((await st()).etiqueta && await G(() => __game.state().speaking.length === 0), 'la 5.ª no enseña su etiqueta');
+  await shot('titulador-quinta');
+  await dejar();
+  must(await until(() => !__game.state().detalle && !__game.state().busy, null, 30000), 'tras «Dejarlo» el titulador no se cierra');
   must((await flag('pecera_disc_hist')).length === 4 && await flag('pecera_disc_partidas') === 1, 'historial / partidas: ' + JSON.stringify([await flag('pecera_disc_hist'), await flag('pecera_disc_partidas')]));
-  ok('cinco publicaciones con el ratón: el titulador se cierra solo; historial de las 4 últimas, partidas = 1');
+  ok('cinco publicaciones con el ratón: la quinta queda abierta y legible (3 s después, solo «Dejarlo») hasta pulsarlo; historial de las 4 últimas, partidas = 1');
   // el pósit en la pieza (al salir, con la pieza y récord > el titular de Bruno)
   must(await flag('opa_posit') === 1 && await logHas('Te pego el mejor en un pósit.'), 'pósit: ' + await flag('opa_posit'));
   must(await G(() => __game.game.content.items.pieza_opa.iconKey(__game.game.viewFor())) === '_posit', 'icono de la pieza sin pósit');
@@ -269,7 +284,7 @@ async function secretos() {
   let prev = T.usuariosK(T.BRUNO), pubs = 0;
   const lits = LITERALES.map(l => T.A.flatMap(a => T.S.flatMap(s => T.G.map(g => `${a.id}|${s.id}|${g.id}`))).find(k => T.titularK(k) === l));
   for (const k of lits) {
-    if (pubs === 5) { await abrir(); pubs = 0; prev = T.usuariosK(T.BRUNO); }
+    if (pubs === 5) { await dejar(); await abrir(); pubs = 0; prev = T.usuariosK(T.BRUNO); }
     await componer(k);
     await publicar(); pubs++;
     const s = await st() || {};
