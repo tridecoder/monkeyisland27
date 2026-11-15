@@ -135,7 +135,7 @@ try {
     return G(() => __game.game.sentenceText());
   };
   const nTaza = await nombre('taza_no'), nOrd = await nombre('ordenador_bruno'), nYoli = await nombre('yoli_tendencias');
-  ok(/algo que dice que no$/.test(nTaza) && /algo$/.test(nOrd) && /alguien$/.test(nYoli), `nombres a oscuras: «${nTaza}» · «${nOrd}» · «${nYoli}»`);
+  ok(/algo que dice que no$/.test(nTaza) && /algo$/.test(nOrd) && /alguien que cuenta$/.test(nYoli), `nombres a oscuras: «${nTaza}» · «${nOrd}» · «${nYoli}»`);
   const hsN = await G(() => __game.showHotspots().filter(t => ['taza_no', 'kanban', 'yoli_tendencias'].includes(t.id)).map(t => t.name));
   ok(hsN.every(n => /^(algo|alguien)/.test(n)), `«ver hotspots» a oscuras tampoco dice los nombres: ${JSON.stringify(hsN)}`);
   await shot(page, 'apagon');

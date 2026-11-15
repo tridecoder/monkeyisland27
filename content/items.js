@@ -352,11 +352,11 @@ export default {
   },
   album_eventos: {
     name: 'álbum de Eventos', icon: icons.album_eventos,
-    handlers: { mirar: say(['En todas las fotos, al fondo, Rubén. Cena de Navidad, presentación, photocall.', 'Siempre yendo al baño. Siempre con un táper.']) },
+    handlers: { mirar: say(['En todas las fotos, al fondo, Zacarías. Navidad, presentación, photocall.', 'Siempre yendo al baño. Siempre con un táper.']) },
   },
   ticket_n1: {
     name: 'ticket nº 1', icon: icons.ticket_n1,
-    handlers: { mirar: say(['Ticket nº 1: «Alta becario Rubén». Asignado a: Titulator 3000.', 'Estado: CERRADO. El primer ticket que cierra Paco en su vida.']) },
+    handlers: { mirar: say(['Ticket nº 1: «Alta becario Zacarías». Asignado a: Titulator 3000.', 'Estado: CERRADO. El primer ticket que cierra Eutimio en su vida.']) },
   },
   acta_reunion: {
     name: 'acta de la reunión', icon: icons.acta_reunion,

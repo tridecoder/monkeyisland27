@@ -143,7 +143,7 @@ async function entrarSala(api) {
     return;
   }
   if (!api.flag('ruben_libre') || !api.has('ticket_n1')) {
-    await api.say('Tengo el acta. Pero sin lo de Rubén, Íñigo me desapalanca.');
+    await api.say('Tengo el acta. Pero sin lo de Zacarías, Íñigo me desapalanca.');
     return;
   }
   api.sfx('door');

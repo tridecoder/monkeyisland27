@@ -176,7 +176,7 @@ try {
   ok(await logHas('Publicando: ¿Qué hay al final del embudo? Emoji de embudo.') === 1, 'el embudo: lo publica el móvil');
   await setFlags({ pagina_cerrada: true });
   await verb('mirar', 'aro_borja');
-  ok(await logHas('Exclusiva en la página 7, por [NOMBRE]. Emoji de fuego.') === 1 && await logHas('Sin mi nombre. Con buena luz.') === 1, 'con pagina_cerrada: la exclusiva, una vez');
+  ok(await logHas('Exclusiva en la página 7, por [NOMBRE]. Emoji de fuego.') === 1 && await logHas('Mi primera firma en redes. Pone «[NOMBRE]».') === 1, 'con pagina_cerrada: la exclusiva, una vez');
   await setFlags({ pagina_cerrada: false });
 
   step('El monitor de Comercial (§4.4) y el árbol de Maripaz');
@@ -237,10 +237,10 @@ try {
   await G(() => __game.clearLog());
   for (let i = 0; i < 6; i++) await verb('mirar', 'portatil_tadeo');
   ok(await logHas('Ferretería Hermanos Tornillo') === 1 && await logHas('Propongo aplicarlo a las reuniones') === 1 && await logHas('Lo ha escrito una máquina.') === 1, 'reenvíos 5 y 6');
-  ok(!(await flag('rep_15')), 'sin R15 antes de Rubén');
+  ok(!(await flag('rep_15')), 'sin R15 antes de Zacarías');
   await setFlags({ ruben_encontrado: true });
   for (let i = 0; i < 4; i++) await verb('mirar', 'portatil_tadeo');
-  ok((await flag('rep_15')) === true && await logHas('Tadeo no lo ha leído. Yo sí.') === 1 && await logHas('Me la apunto') === 0, 'R15 con Rubén; sin «Me la apunto»');
+  ok((await flag('rep_15')) === true && await logHas('Tadeo no lo ha leído. Yo sí.') === 1 && await logHas('Me la apunto') === 0, 'R15 con Zacarías; sin «Me la apunto»');
   await setFlags({ ruben_encontrado: false });
   await shot('marketing');
 
@@ -270,12 +270,12 @@ try {
   await verb('coger', 'mercados_2');
   await verb('mirar', 'orden_del_dia');
   await verb('mirar', 'gervasio_acta');
-  ok(await logHas('Cuando empezó la reunión, era lampiño.') === 1 && await logHas('Cotizan. Y a la baja.') === 1, 'L22 y «Cotizan. Y a la baja.»');
+  ok(await logHas('Cuando empezó la reunión, era lampiño.') === 1 && await logHas('No se cogen. Cotizan.') === 1 && !(await logHas('Y a la baja.')), 'L22 y «No se cogen. Cotizan.» (E5 C63)');
   ok(await logHas('Dicen que muerde.') === 1 && await logHas('que ya lo tutea') === 1, 'orden del día y L23');
   ok(await G(() => !__game.log.some(l => /desde (marzo|2019)/i.test(l.text))), 'sin «desde marzo/2019»');
 
   // ================================================================ Acto II: reunión, Maripaz, estampida
-  step('Acto II: reunión con Maripaz sentada en el planillo; «siguientes pasos» → estampida con anuncio (§4.3)');
+  step('Acto II: reunión con Maripaz sentada en el planillo; «siguientes pasos» → «sin turno» → tele → estampida con anuncio (§4.3, E5 §2.1)');
   await setFlags({ acto_2_iniciado: true, aurora_conto_pasos: true, chaqueta_en_lector: true });
   await give('ficha_pagina_7');
   await G(() => __game.gotoRoom('pajarera'));
@@ -293,15 +293,22 @@ try {
   await verb('coger', 'planillo_bajo_maripaz');
   ok(await logHas('Es mío hasta que alguien llame a Siestatón.') === 1, 'Coger el planillo');
   await shot('sala-reunion');
+  await verb('mirar', 'orden_del_dia');                   // E5 §2.1: el punto 3 (sala_amazonas_orden_visto)
   await verb('hablar', 'gervasio_acta');
   ok(await logHas('Mientras, le vendo el punto tres a Mercados.') === 1, 'onStart de la reunión: Maripaz vende el punto tres');
   await choose('¿Quién tiene reservada la sala?');
   ok(await logHas('puede volver en cualquier momento') === 1, 'L24');
-  const estampida = async () => { await choose('¿y cuáles son los siguientes pasos?'); };
+  // E5 §2.1: la pregunta a Gervasio ya no estampa: «sin turno»; la reenvía Gertrudis (aquí, por estado) y la tele estampa
+  await choose('¿y cuáles son los siguientes pasos?');
+  await G(() => __game.waitIdle());
+  ok((await flag('sala_becario_sin_turno')) === true && !(await flag('reunion_terminada')) && await logHas('Los becarios no tienen turno. Pregunta la mesa... y los conectados.') === 1 && !(await state()).dialog,
+    'E5: Gervasio «…y los conectados» (sala_becario_sin_turno, sin reunion_terminada, diálogo cerrado)');
+  await setFlags({ gertrudis_pregunta: true });
+  const estampida = async () => { await verb('usar', 'tele_amazonas'); };
   if (args.shots) await shotDuring('estampida-anuncio', estampida, '¡Antes de salir, un anuncio de cinco segundos!', 700);
   else await estampida();
   await G(() => __game.waitIdle());
-  ok((await flag('reunion_terminada')) === true, 'paso 25 → reunion_terminada');
+  ok((await flag('reunion_terminada')) === true, 'paso 29 (Usar la tele, vía del anuncio en modo rápido) → reunion_terminada');
   ok(await logHas('¡Tengo doble prioridad!') === 1 && await logHas('¡Un momento! ¡Antes de salir, un anuncio de cinco segundos!') === 1, 'el anuncio de la estampida');
   ok(await G(() => { const a = __game.game.actors.maripaz_remitido; return !a.hold; }), 'Maripaz baja la tableta');
   for (const m of ['mercados_1', 'mercados_2', 'mercados_3']) ok((await inRoom(m)) !== 'sala_amazonas', `${m} ha huido`);
@@ -520,7 +527,7 @@ try {
   const cel = probe.filter(p => p.who === 'celestino' && p.tag === 'ENTRADA 1');   // (luego, el epílogo: otra escena)
   ok(cel.length === 2 && cel.every(p => p.tele === 'entrada_1' && p.lector.caido && p.lector.visible), 'el empujón se ve: Lector caído a la vista, Celestino por la tele');
   ok(await logHas('Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.') === 1 && await logHas('treinta y cinco euros con cincuenta y dos') === 1, 'Begoña: la factura, con coma (§5.6)');
-  ok(await logHas('Es lo que me como en atún.') === 1 && await logHas('Con ticket.') === 1, 'Rubén y Begoña: «¿Con táper?» «Con ticket.»');
+  ok(await logHas('Es lo que me como en atún.') === 1 && await logHas('Con ticket.') === 1, 'Zacarías y Begoña: «¿Con táper?» «Con ticket.»');
   ok(await logHas('Algo importante se nos acaba de escapar') === 0 && await logHas('Quedan ciento cincuenta y dos') === 0, 'fuera la frase críptica y la coletilla');
   ok((await flag('lector_derribado')) === true && (await flag('juego_terminado')) === true, 'empujón → final');
 

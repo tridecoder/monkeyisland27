@@ -25,7 +25,7 @@ const mer = (api, lines) => api.sayAs(MER, lines);
 const CHISMES = [
   ['CHISME: EL DE BOLSA A YOLI: "ESTO LO NECESITABA PARA AYER".', 'YOLI: "AYER NO PUEDO. TE MIRO HUECO PARA ANTEAYER".', 'rep_03'],
   ['CHISME: GERVASIO A ANSELMO: "ES QUE TÚ ERES EL QUE MEJOR ESCRIBE".', 'ANSELMO: "Y TÚ EL QUE MEJOR DELEGA. POR ESO ME ESCRIBES A MÍ".', 'rep_04'],
-  ['CHISME: ÍÑIGO A PACO: "ESTAMOS ANALIZANDO TODAS LAS OPCIONES".', 'PACO: "O SEA, QUE NO SABÉIS QUÉ HACER, PERO EN TABLA DINÁMICA".', 'rep_10'],
+  ['CHISME: ÍÑIGO A EUTIMIO: "ESTAMOS ANALIZANDO TODAS LAS OPCIONES".', 'EUTIMIO: "O SEA, QUE NO SABÉIS QUÉ HACER, PERO EN TABLA DINÁMICA".', 'rep_10'],
   ['CHISME: GERVASIO A MARIPAZ: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".', 'MARIPAZ: "¿TE VA EN MARZO, CARIÑO? ES CUANDO ACABAN LAS RÁPIDAS".', 'rep_14'],
 ];
 // chismes de relleno (rotan, saludos después del torrente); el del garaje (adenda 8bis), al final
@@ -295,9 +295,9 @@ export default buildRoom({
       usar: 'Pincho mi nombre en el corcho. Se cae. Ni la chincheta me reconoce.',
     } },
     { id: 'hoja_firmas', name: 'hoja de firmas', handlers: {
-      mirar: async (api) => { await api.say(['Curso obligatorio de prevención de riesgos. No lo ha hecho nadie.', 'Hay una sola firma: «Rubén (todavía aquí)».']); },
+      mirar: async (api) => { await api.say(['Curso obligatorio de prevención de riesgos. No lo ha hecho nadie.', 'Hay una sola firma: «Zacarías (todavía aquí)».']); },
       usar: 'Mi primera firma en papel no va a ser en una hoja de riesgos. Me niego.',
-      coger: 'Si me la llevo, Rubén pierde su firma. Y todavía no sé quién es.',
+      coger: 'Si me la llevo, Zacarías pierde su firma. Y todavía no sé quién es.',
     } },
     { id: 'cartel_cortado', name: 'cartel del cortado', handlers: {
       mirar: '«El cortado sube a 1,20 €». Escrito a mano. La noticia más leída del edificio.',
@@ -398,7 +398,8 @@ export default buildRoom({
 
   async onEnter(api) {
     // (Gertrudis mide 66 px: escala 1,5 en su definición, content/actors.js)
-    if (api.flag('office_emision')) api.setFlag('office_emision', 0);
+    // [I2] al cargar, el LCD queda como se guardó (si no, guardar → cargar no deja el estado idéntico: fuzz, paso 28)
+    if (api.flag('office_emision') && !api.restoring) api.setFlag('office_emision', 0);
     if (api.restoring) return;
     // plan §4.1: sin pantalla de métricas, Gertrudis se queda sin público (una vez)
     if (api.flag('cms_vivo') && api.flag('cafetera_viral') && !api.flag('office_e53_visto')) {

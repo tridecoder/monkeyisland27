@@ -586,10 +586,10 @@ export function planoRegletero(g, r, t, o = {}) {
   }
   // el pósit de Paco: tapa la etiqueta de la R-3 (menos el «R-3») y dice lo suyo a boli
   const py = top + 2 * (rowH + gap) - 4;
-  rect(g, x + 29, py + 1, 82, rowH + 9, 'rgba(0,0,0,0.35)');
-  rect(g, x + 27, py, 82, rowH + 8, '#f4e258'); hline(g, x + 27, py, 82, '#fff7a0'); vline(g, x + 108, py, rowH + 8, '#c8b030');
-  kit.micro(g, 'NI AUNQUE LO DIGA', x + 31, py + 4, '#2a3a8a');
-  kit.micro(g, 'EL TICKET 3.  PACO', x + 31, py + 12, '#2a3a8a');
+  rect(g, x + 29, py + 1, 84, rowH + 9, 'rgba(0,0,0,0.35)');                 // [I2] 2 px más ancho: «…EUTIMIO»
+  rect(g, x + 27, py, 84, rowH + 8, '#f4e258'); hline(g, x + 27, py, 84, '#fff7a0'); vline(g, x + 110, py, rowH + 8, '#c8b030');
+  kit.micro(g, 'NI AUNQUE LO DIGA', x + 29, py + 4, '#2a3a8a');
+  kit.micro(g, 'EL TICKET 3. EUTIMIO', x + 29, py + 12, '#2a3a8a');          // [I2] antes «…  PACO» (Paco → Eutimio)
   // el cable de la R-3 sube al techo: «a la Redacción»
   vline(g, x + w - 6, y, top + 2 * (rowH + gap) + 6 - y, PAL.metal[4]);
 }
@@ -652,7 +652,7 @@ export function primerPlanoRuben(g, r, t) {
 // ------------------------------------------------------------------ geometría
 const layout = {
   ascensor_cpd: { rect: N.ascensor.rect, walkTo: N.ascensor.walkTo, face: 'up' },            // núcleo del kit (FL = 94)
-  armarios: { rect: [102, 28, 66, 66], walkTo: [128, 108], face: 'up', priority: -1 },
+  armarios: { rect: [102, 28, 66, 46], walkTo: [128, 108], face: 'up', priority: -1 },   // [I2] hasta el regletero de E5 (sin solape, geo R2)
   armario_27: { rect: [170, 28, 32, 66], walkTo: [186, 110], face: 'up', priority: 1, draw: (g, v, t) => drawArmario27(g, v, t) },
   papel_continuo: {
     rect: [176, 94, 32, 38], walkTo: [190, 111], face: 'up', priority: 2,

@@ -130,12 +130,12 @@ try {
   must(!(await G(() => __game.log.some(l => l.who === 'celestino'))), 'E2 pasos 3-4: saludo en dos diálogos seguidos');
   await goto('pecera', 'vestibulo'); await goto('vestibulo', 'pecera');
   await clearLog(); await hablar('celestino'); await closeDialog();
-  must(!(await logHas('¡Vuelve el chaval')), 'E2 pasos 3-4: saludo tras una sola entrada');
+  must(!(await logHas('¡Vuelve al vestíbulo!')), 'E2 pasos 3-4: saludo tras una sola entrada');
   await goto('pecera', 'vestibulo'); await goto('vestibulo', 'pecera');
   await clearLog(); await hablar('celestino'); await closeDialog();
-  await expectLog(['¡Vuelve el chaval al vestíbulo! ¡Sin balón, pero con ganas!'], 'Celestino: saludo tras dos entradas');
+  await expectLog(['¡Vuelve al vestíbulo! ¡Sin balón, pero con ganas!'], 'Celestino: saludo tras dos entradas (E5 M13)');
   await clearLog(); await hablar('celestino'); await closeDialog();
-  must(!(await logHas('¡Vuelve el chaval')) && !(await logHas('pisa más área')), 'E2 pasos 3-4: saludo repetido sin entradas');
+  must(!(await logHas('¡Vuelve al vestíbulo!')) && !(await logHas('pisa más área')), 'E2 pasos 3-4: saludo repetido sin entradas');
   must(!(await logHas('¿Tú eres el nuevo?')), 'Celestino: «¿Tú eres el nuevo?» se repite');
   ok('Celestino §5.1 + E2: L1-L3, sin «¿Tú eres el nuevo?» repetido (C1), saludo cada ≥ 2 entradas, plaza once (§7.6)');
 
@@ -185,70 +185,72 @@ try {
   await setFlag('chaqueta_en_lector');
   await goto('pecera', 'vestibulo'); await clearLog(); await goto('vestibulo', 'pecera');
   await expectLog(['¡Buenas noches a la cafetera! ¡Juego limpio!'], 'hito al entrar (el más reciente)');
-  must(!(await logHas('¡El chaval viste al Lector Medio!')), 'hitos: se narra uno viejo');
+  must(!(await logHas('¡El Lector Medio sale con chaqueta!')), 'hitos: se narra uno viejo (E5 M09)');
   await goto('pecera', 'vestibulo'); await clearLog(); await goto('vestibulo', 'pecera');
   must(await G(() => __game.log.some(l => l.who === 'celestino')), 'sin hito pendiente, Celestino no dice el Ibex');
   must(!(await logHas('¡Buenas noches a la cafetera!')), 'hitos: se repite el ya narrado');
   ok('§4.7: al entrar, el hito más reciente sin narrar; si no hay, el Ibex');
 
-  // ------------------------------------------------------------ Sistemas: registro, Paco P0
+  // ------------------------------------------------------------ Sistemas: registro, Eutimio P0
   await setFlag('chisme_indice', 1);
   await goto('cpd', 'ascensor');
   await clearLog();
   await verb('mirar', 'registro_tickets');
   await expectFlags({ vio_ticket_3: true }, 'registro');
-  await expectLog(['«Alta becario Rubén». Estado: pendiente.', '«Alta portátil de Infografía». Denegado.', 'Firmado: Anselmo.',
+  await expectLog(['«Alta becario Zacarías». Estado: pendiente.', '«Alta portátil de Infografía». Denegado.', 'Firmado: Anselmo.',
     '«El CMS se cuelga con la pantalla de la Redacción».', '«Va a la regleta R-3 de Sistemas. Apagarla».'], 'registro §4.2 [E1]');
   const atun0 = await flag('rumor_atun_n');
   await hablar('paco_ticket');
-  must((await flag('rumor_atun_n')) === atun0, 'Paco: sigue contando el rumor B');
-  await expectLog(['No atiendo. Tengo 312 tickets'], 'Paco sin CMS');
-  must(!(await opts()).some(o => o.includes('fax')), 'Paco P0 ofrece el manual sin cms_vivo');
+  must((await flag('rumor_atun_n')) === atun0, 'Eutimio: sigue contando el rumor B');
+  await expectLog(['No atiendo. Tengo 312 tickets'], 'Eutimio sin CMS');
+  must(!(await opts()).some(o => o.includes('fax')), 'Eutimio P0 ofrece el manual sin cms_vivo');
   const nTk = await flag('paco_tickets');
   for (const o of ['¿Y por qué no va?', '¿Tú eres el de Sistemas?', '¿Cuándo fue la última vez que viste el sol?', '¿Me abres un ticket a mí? Para existir.',
     '¿Qué hay en el armario 27?', '¿Escuchas por la rejilla?']) await opcion(o);
   await opcion('Me voy.');
   await expectLog(['Nadie lo lee.', `${miles(nTk)}. Es tu número. Tiene más identidad que tú.`, 'En 2011. Sigo en cola.',
     'Ya tienes uno. El 31.207: «Becario sin alta definitiva».', 'Es el más estable que tengo.',
-    'Ticket 48.100: «Armario 27, mastica».', 'Escuchar sería abrir un ticket.', 'Cierra al salir. La puerta, no el servidor.'], 'Paco P0 §5.7 + E2 B10, §8, fase B (13)');
-  await expectNoLog(['Ticket propio', 'Esa es un servidor.'], 'E2 Paco P0');
+    'Ticket 48.100: «Armario 27, mastica».', 'Escuchar sería abrir un ticket.', 'Cierra al salir. La puerta, no el servidor.'], 'Eutimio P0 §5.7 + E2 B10, §8, fase B (13)');
+  await expectNoLog(['Ticket propio', 'Esa es un servidor.'], 'E2 Eutimio P0');
   await clearLog(); await hablar('paco_ticket'); await opcion('Me voy.');
   await expectNoLog(['Cierra al salir.', 'Estado: atendiendo', 'Otra vez tú.'], 'E2 §7.2 / pasos 21-22: despedida una vez, sin saludo de relleno');
   await verb('mirar', 'regleta_r3'); await verb('abrir', 'armarios'); await verb('empujar', 'ventilador'); await verb('mirar', 'libro_visitas');
   await verb('usar', 'ventilador'); await verb('abrir', 'libro_visitas');
-  await expectLog(['«PANTALLA DE MÉTRICAS. NO TOCAR».', 'Letra de Paco.', 'El 27 mastica.', 'Pesa más que el ventilador.', 'Libro de visitas de Sistemas',
-    'Nadie sabe dónde está el botón. Paco no pregunta.', 'Por la misma página. Con la esquina doblada.'], '§6.3 Sistemas + E2 §8');
-  ok('Sistemas: registro (nº 2 de Anselmo) → vio_ticket_3; Paco P0 con la cifra del contador (B10), despedida nueva; §8');
+  await expectLog(['Cinco regletas: NÓMINAS, ASCENSOR, un pósit, GERTRUDIS y NO TOCAR NUNCA.', 'El pósit, con letra de Eutimio', 'El 27 mastica.', 'Pesa más que el ventilador.', 'Libro de visitas de Sistemas',
+    'Nadie sabe dónde está el botón. Eutimio no pregunta.', 'Ya está abierto. Por la misma página.'], '§6.3 Sistemas + E2 §8 + E5 D08, C44');
+  ok('Sistemas: registro (nº 2 de Anselmo) → vio_ticket_3; Eutimio P0 con la cifra del contador (B10), despedida nueva; §8');
 
   // ------------------------------------------------------------ la regleta (paso 20)
   const t0 = await flag('paco_tickets');
   await clearLog();
-  await capturar(() => { __game.doVerb('tirar', 'regleta_r3'); },
-    [['¡ESTAMOS CIEGOS!', 'regleta-rejilla'], ['Tengo un hueco. Uno.', 'regleta-paco']]);
+  // E5 §2.2.4: Tirar abre el menú del regletero; la R-3 es la del pósit (sin la megafonía de Yoli: D10-D12)
+  await G(() => { __game.doVerb('tirar', 'regleta_r3'); }); await page.waitForTimeout(300);
+  await opcion('R-3'); await idle();
   await expectFlags({ cms_vivo: true, cpd_cms_sumado: true }, 'regleta');
   must((await flag('paco_tickets')) === t0 + 318, `regleta: el contador no salta +318 (${await flag('paco_tickets')})`);
   must((await objState('regleta_r3')) === 'apagada', 'regleta: estado apagada');
   await expectLog(['CORO: ¡Ha sido Diseño!', 'He sido yo. Pero gracias.', 'Trescientos dieciocho tickets nuevos.',
-    'Ya me han abierto otro ticket para saber por qué.', 'Tengo un hueco. Uno. ¿Qué querías?'], 'regleta §4.2 + E2 paso 20');
-  await expectNoLog(['Manda el más antiguo.', 'Se ha arreglado el CMS. Nadie sabe cómo.', 'Ya me han abierto un ticket para saberlo.'], 'E2 §7.2 / paso 20');
-  must((await logWho('¡ESTAMOS CIEGOS!')) === 'yoli_tendencias', 'regleta: la voz de la rejilla no es de Yoli');
+    'Tengo un hueco. Uno. ¿Qué querías?'], 'regleta §4.2 + E2 paso 20 + E5 §3.3');
+  await expectNoLog(['Manda el más antiguo.', 'Se ha arreglado el CMS. Nadie sabe cómo.', 'Ya me han abierto un ticket para saberlo.',
+    'Ya me han abierto otro ticket para saber por qué.', '¡ESTAMOS CIEGOS!', 'No sé qué apaga esto'], 'E2 §7.2 / paso 20 + E5 D10-D12');
   await goto('vestibulo', 'cpd'); await goto('cpd', 'vestibulo');
   must((await flag('paco_tickets')) === t0 + 318 + 1, 'regleta: el +318 se suma dos veces');
   await clearLog();
+  await setFlag('vio_pegatina_fax');                                        // E5 §2.3: la pegatina del fax (paso 19)
   await hablar('paco_ticket');
-  must(!(await logHas('Se ha arreglado el CMS')), 'Paco repite «Se ha arreglado el CMS» tras la escena');
+  must(!(await logHas('Se ha arreglado el CMS')), 'Eutimio repite «Se ha arreglado el CMS» tras la escena');
   must(!(await opts()).some(o => o.includes('Herminia')), 'MP1 sin anselmo_dijo_regla');
-  await opcion('¿Sabes algo del fax de la Redacción de papel?');
+  await opcion('Ticket 0.441. El fax de Teodoro.');
   await opcion('¿Algún cotilleo del consultor?');
   await opcion('¿Te escribe mucho Tadeo?');
   await opcion('¿Se ha caído el wifi?');
   await opcion('Me voy.');
-  await expectFlags({ paco_dio_manual: true, rep_12: true }, 'Paco P1');
-  await expectInv(['manual_fax'], [], 'Paco P1');
-  await expectLog(['Ticket 0.441, de 1999.', 'Es mi mejor empleada.', 'Ahora se ve perfectamente que no hay carretera.', 'Hacen buena pareja.',
-    'Has dejado de merecerlo.'], 'Paco P1');
+  await expectFlags({ paco_dio_manual: true, rep_12: true }, 'Eutimio P1');
+  await expectInv(['manual_fax'], [], 'Eutimio P1');
+  await expectLog(['0.441. De 1999. Estado: lo respetamos.', 'Toma el manual. Página 9: la respuesta automática. Mi mejor empleada.', 'Ahora se ve perfectamente que no hay carretera.', 'Hacen buena pareja.',
+    'Has dejado de merecerlo.'], 'Eutimio P1');
   await expectNoLog(['Menú 9.', 'Estado: atendiendo'], 'E2 paso 21');
-  ok('Paso 20: Tirar regleta_r3 → cms_vivo, rejilla (Yoli, coro), +318, Paco se gira; P1 con manual y R12 nueva');
+  ok('Paso 20: Tirar regleta_r3 → cms_vivo, rejilla (Yoli, coro), +318, Eutimio se gira; P1 con manual y R12 nueva');
 
   // ------------------------------------------------------------ rejilla (§4.7)
   await setFlag('acto_2_iniciado'); await setFlag('reunion_terminada');
@@ -276,7 +278,7 @@ try {
   await expectLog([`Ticket ${miles(nAlta + 1)}: «Alta becaria Herminia». ¿Persona o herramienta?`, 'Detrás del nº 1, que es de julio.', 'Total, uno más.'], 'P_ALTA (E2 B10)');
   ok('MP1: P_ALTA con «Persona.» (vuelve) y «Mejor no.» (sale sin alta)');
 
-  // ------------------------------------------------------------ revelación de Rubén (4.6, paso 35)
+  // ------------------------------------------------------------ revelación de Zacarías (4.6, paso 35)
   await setFlag('vio_borde_perforado');
   await setFlag('evaristo_escuchado');                                        // E2 §5.4 (lo pone P3 en el paso 28)
   await clearLog();
@@ -297,9 +299,9 @@ try {
   const probe = await G(() => { const g = __game.game; g.speak = g.__speakOrig; delete g.__speakOrig; return window.__probe; });
   const grito = probe.find(p => p.text === '¡EH! ¡QUE ES MI BORRADOR!'), primera = probe.find(p => p.text.startsWith('BECARIO DETECTADO'));
   must(grito && grito.armario === 'cerrado' && !grito.ruben, `4.6: al gritar, armario cerrado (${JSON.stringify(grito)})`);
-  must(primera && primera.armario === 'abierto' && primera.ruben && primera.ruben[1] < 100 && primera.style === 'titular', `4.6: 1.ª línea de Rubén, titular y dentro (${JSON.stringify(primera)})`);
+  must(primera && primera.armario === 'abierto' && primera.ruben && primera.ruben[1] < 100 && primera.style === 'titular', `4.6: 1.ª línea de Zacarías, titular y dentro (${JSON.stringify(primera)})`);
   const tras = probe.slice(probe.indexOf(primera) + 1);
-  must(tras.length > 10 && tras.every(p => p.armario === 'abierto' && p.ruben && p.ruben[1] >= 104), '4.6: el resto, armario abierto y Rubén fuera');
+  must(tras.length > 10 && tras.every(p => p.armario === 'abierto' && p.ruben && p.ruben[1] >= 104), '4.6: el resto, armario abierto y Zacarías fuera');
   must(probe.filter(p => p.style === 'titular' && p.who === 'bruno').length === 2, '4.6: Bruno no dice sus dos titulares');
   await expectFlags({ ruben_encontrado: true }, '4.6');
   await expectLog(['Plano detalle: ARMARIO 27', '«EL TITULATOR ERA UN CHAVAL»: LA VERDAD QUE NADIE TE CUENTA.', 'Del verano pasado.',
@@ -311,12 +313,12 @@ try {
     '¿Lo has hecho tú?', '¿Cuál es el 4?'], 'E2 armario (§7.2, §7.4 paso 37, fase B (10))');
   await clearLog(); await verb('tirar', 'ruben');
   await expectLog(['Y el pósit es de Anselmo.'], 'E2 §2.6.5 (cpd.js:477)');
-  must((await roomOf('ruben')) === 'cpd' && (await objState('armario_27')) === 'abierto', '4.6: Rubén en Sistemas con el armario abierto');
+  must((await roomOf('ruben')) === 'cpd' && (await objState('armario_27')) === 'abierto', '4.6: Zacarías en Sistemas con el armario abierto');
   await goto('vestibulo', 'cpd'); await goto('cpd', 'vestibulo');
-  must(!(await logHas('¡Sale un chaval del banquillo')), 'E2 fase B (8): Celestino retransmite el hallazgo de Rubén');
+  must(!(await logHas('¡Sale un chaval del banquillo')), 'E2 fase B (8): Celestino retransmite el hallazgo de Zacarías');
   ok('4.6 + E2: grito → armario → primer plano → titulares; los 48.000 y la coma (§5.4), tablero de Anselmo; sin retransmisión');
 
-  // ------------------------------------------------------------ árbol de Rubén §5.12 + táper (4.4) + MP1 con Rubén
+  // ------------------------------------------------------------ árbol de Zacarías §5.12 + táper (4.4) + MP1 con Zacarías
   await clearLog();
   await hablar('ruben');
   await opcion('¿Escribiste tú los discursos de Íñigo?');
@@ -324,15 +326,16 @@ try {
   await opcion('¿Qué es lo primero que vas a hacer fuera?');
   await opcion('¿Y el táper?');
   await opcion('Ahora vuelvo.');
-  await expectFlags({ rep_13: true, rep_15: true, taper_dado: false }, 'Rubén R0');
-  await expectLog(['«NO ES UN DESPIDO: ES UNA SALIDA EN VALOR».', 'newsletter personalizada', 'La IA era yo.', 'Me lo ha contado ella. Se llama Rubén.',
-    'Comer algo que no sea atún.', '¿TRAES TÁPER?', 'BECARIO PROMETE VOLVER.'], 'Rubén §5.12');
+  await expectFlags({ rep_13: true, rep_15: true, taper_dado: false }, 'Zacarías R0');
+  await expectLog(['«NO ES UN DESPIDO: ES UNA SALIDA EN VALOR».', 'newsletter personalizada', 'La IA era yo.', 'Me lo ha contado ella. Se llama Zacarías.',
+    'Comer algo que no sea atún.', '¿TRAES TÁPER?', 'BECARIO PROMETE VOLVER.'], 'Zacarías §5.12');
   await give('taper_huerfano');
   await clearLog();
   await capturar(() => { __game.doVerb('dar', 'ruben', 'taper_huerfano'); }, [['TÁPER DETECTADO', 'taper']]);
   await expectFlags({ taper_dado: true }, '4.4 táper');
   await expectInv([], ['taper_huerfano'], '4.4 táper');
-  await expectLog(['LO QUE HIZO ESTE BECARIO TE EMOCIONARÁ.', 'Ni la baja.', 'Para que dure.'], '4.4 táper');
+  await expectLog(['LO QUE HIZO ESTE BECARIO TE EMOCIONARÁ.', 'Nadie me había traído nunca nada.', 'Para que dure.'], '4.4 táper (E5 C72)');
+  await expectNoLog(['Ni la baja.'], 'E5 C72');
   await clearLog();
   await hablar('paco_ticket');
   await opcion('¿Me das de alta a una becaria? Se llama Herminia.');
@@ -340,20 +343,21 @@ try {
   await closeDialog();
   await expectFlags({ herminia_de_alta: true, cpd_ruben_oyo_alta: true }, 'MP1');
   await expectLog(['Herramientas, por el otro circuito. El rápido.', '«Herminia. Becaria de Desarrollo. Herramienta.» Estado: de la casa.',
-    'Esta casa da de alta antes a un portátil que a un chaval.', 'Yo también soy herramienta. Sin pegatina.'], 'MP1 E1.5 + E2 L16');
-  must((await logWho('Esta casa da de alta antes')) === 'paco_ticket', 'E2 L16: la línea no la dice Paco');
+    'Esta casa da de alta antes a un portátil que a un chaval.', 'Yo también soy herramienta.'], 'MP1 E1.5 + E2 L16 + E5 C73');
+  await expectNoLog(['Sin pegatina.'], 'E5 C73');
+  must((await logWho('Esta casa da de alta antes')) === 'paco_ticket', 'E2 L16: la línea no la dice Eutimio');
   await expectNoLog(['Lo apunto en «injusticias».', 'Me lo apunto.'], 'E2 §7.2 / L16');
-  ok('Rubén §5.12: rep_13, rep_15 (R15 nueva), táper → taper_dado; MP1 «Herramienta.» → herminia_de_alta con Rubén');
+  ok('Zacarías §5.12: rep_13, rep_15 (R15 nueva), táper → taper_dado; MP1 «Herramienta.» → herminia_de_alta con Zacarías');
 
-  // ------------------------------------------------------------ ruben_libre (lo pone P2) → Paco y armario vacío
+  // ------------------------------------------------------------ ruben_libre (lo pone P2) → Eutimio y armario vacío
   await setFlag('ruben_libre');
   await goto('vestibulo', 'cpd'); await goto('cpd', 'vestibulo');
-  must((await objState('armario_27')) === 'vacio' && (await roomOf('ruben')) !== 'cpd', 'ruben_libre: armario vacío y sin Rubén');
+  must((await objState('armario_27')) === 'vacio' && (await roomOf('ruben')) !== 'cpd', 'ruben_libre: armario vacío y sin Zacarías');
   await clearLog(); await hablar('paco_ticket'); await closeDialog();
-  await expectLog(['Ticket nº 1: cerrado. Por el tablero. Sin subir.', 'Es lo mejor que me ha pasado en la vida.'], 'Paco: ticket nº 1');
+  await expectLog(['Ticket nº 1. Estado: cerrado. No he tenido que subir.', 'Es lo mejor que me ha pasado en la vida.'], 'Eutimio: ticket nº 1 (E5 C75)');
   await clearLog(); await hablar('paco_ticket'); await closeDialog();
-  must(!(await logHas('Ticket nº 1: cerrado.')), 'Paco: repite lo del ticket nº 1');
-  ok('ruben_libre: Paco celebra el ticket nº 1 (una vez); armario vacío');
+  must(!(await logHas('Ticket nº 1. Estado: cerrado.')), 'Eutimio: repite lo del ticket nº 1');
+  ok('ruben_libre: Eutimio celebra el ticket nº 1 (una vez); armario vacío');
 
   // ------------------------------------------------------------ final §9 (modo rápido, versión con todo)
   for (const f of ['duelo_inigo_ganado', 'lector_derribado', 'correo_evaristo_listo', 'sala_abierta', 'pagina_cerrada', 'cafetera_viral']) await setFlag(f);
@@ -376,7 +380,7 @@ try {
     'De la Redacción de papel. Para ti.', 'QUE NADIE ME DESEE NADA.', 'Ni bici.',
     'La portada dura nueve.', 'Una. Pero se lo lee TODO. La he puesto de objetivo de empresa.', 'gracias por sacarme',
     '¿Has comido?', 'Te pongo un corazoncito.', 'Y te pongo «abrígate». Que nunca contestas.', 'Bruno Pellejo ha respondido: «Abrígate tú.»',
-    '¡Me ha contestado el periódico!', 'FE DE ERRATAS / En la edición de ayer, donde decía / «inteligencia artificial» / debía decir «Rubén».'];
+    '¡Me ha contestado el periódico!', 'FE DE ERRATAS / En la edición de ayer, donde decía / «inteligencia artificial» / debía decir «Zacarías».'];
   const pos = await G(o => { const L = __game.log.map(l => l.text); return o.map(s => L.findIndex(t => t.includes(s))); }, orden);
   pos.forEach((p, i) => must(p >= 0, `final: falta «${orden[i]}»`));
   pos.forEach((p, i) => must(i === 0 || p > pos[i - 1], `final: «${orden[i]}» fuera de orden`));

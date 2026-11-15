@@ -43,7 +43,7 @@ export function plantaPermitida(api, room) {
 
 // frases del ascensor durante el viaje (rotan en orden)
 export const FRASES = [
-  'Su planta ha quedado registrada con el ticket 48.216. Paco le atenderá.',
+  'Su planta ha quedado registrada con el ticket 48.216. Eutimio le atenderá.',
   'Este ascensor tiene espejo. Para que el becario se vea subir, aunque sea aquí.',
   'Hilo musical: el Ibex en diferido. Narra Celestino, desde el mostrador.',
   'Prohibido hablar de plazas de garaje. La rejilla del sótano lo oye todo.',

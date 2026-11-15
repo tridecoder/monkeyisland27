@@ -40,7 +40,7 @@ async function mirarPortatil(api) {
   const k = (n - 1) % PORTATIL.length;
   await api.say(PORTATIL[k]);
   if (k === 3 && api.flag('ruben_encontrado')) {
-    await api.say(['Contesta el Titulator: «Lo sé. Me lo ha contado ella. Se llama Rubén».',
+    await api.say(['Contesta el Titulator: «Lo sé. Me lo ha contado ella. Se llama Zacarías».',
       'Tadeo no lo ha leído. Yo sí.']);
     api.learnReply('rep_15');
   }

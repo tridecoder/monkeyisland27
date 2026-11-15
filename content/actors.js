@@ -326,7 +326,7 @@ export default {
       'Te pongo un «ofrecido por» tan pequeño que solo lo verá el supervisor.', '(lee la web) Incendio en un polígono. Y al lado, barbacoas. Lo cambio.'],
   },
   paco_ticket: {
-    name: 'Paco', color: '#92C0FF', speed: 50,
+    name: 'Eutimio', color: '#92C0FF', speed: 50,
     doll: {
       skin: '#ecdccc', hair: '#4a3a2a', hairStyle: 'short', beard: 'long', glasses: 'square', glassesColor: '#2a2a2a',
       glassesTape: '#f4f4f4', shirt: '#74767e', emblem: '#c8ccd8', keys: '#b8bcc4', pants: '#3a3a44', shoes: '#2a2a2a',
@@ -344,7 +344,7 @@ export default {
       '¿Y esto el Lector Medio lo entiende? Perfecto: asiente.'],
   },
   ruben: {
-    name: 'Rubén', color: '#B6FF4D', speed: 58,
+    name: 'Zacarías', color: '#B6FF4D', speed: 58,
     doll: {
       skin: '#d4dcb4', hair: '#5a4a3a', hairStyle: 'short', shirt: '#86888e', hood: '#86888e', neckphones: '#202024',
       eyebags: true, crumbs: '#e8c880', pants: '#3a3c48', shoes: '#5a5a60', build: 'slim', height: 0.98,

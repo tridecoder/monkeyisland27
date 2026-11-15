@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// AUDITORÍA DE TEXTOS (QA): juega el recorrido de la ENMIENDA E2 (44 pasos) en modo rápido y, en tres momentos (Actos I, II y III), prueba los
+// AUDITORÍA DE TEXTOS (QA): juega el recorrido de la ENMIENDA E5 (50 pasos) en modo rápido y, en tres momentos (Actos I, II y III), prueba los
 // 9 verbos con TODO lo visible de las 10 salas (saliendo de diálogos con su despedida); recoge cada línea dicha
 // (`__game.log`) y comprueba:
 //   · ninguna intervención de más de 80 caracteres (biblia §0);
 //   · ningún globo de más de 3 renglones a 210 px (se saldría por arriba / taparía la escena);
 //   · signos de apertura: cada «?» / «!» con su «¿» / «¡» en la misma frase;
-//   · nombres: elContable.es, Íñigo, Begoña, Rubén, Ramírez... con sus tildes;
+//   · nombres: elContable.es, Íñigo, Begoña, Zacarías, Ramírez... con sus tildes;
 //   · horas: lista de todas las horas que aparecen (18:30 → 21:00, relojes en 20:59, Begoña 19:00-19:15 / 19:07);
 //   · palabras prohibidas en lo que ve u oye el jugador (órdenes de dirección): «Pajarera» (es «Dirección») y «Office»
 //     (es «Vending»), en cualquier mayúscula: en las líneas dichas, los nombres de salas/objetos/PNJ, la botonera y TODAS
@@ -179,7 +179,7 @@ await collect();
 for (const s of STEPS) {
   if (s.n > 1) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); }
   await collect();
-  if ([13, 26, 40].includes(s.n)) await everything();     // Actos I, II (tras D1) y III (Rubén libre, paso 40 de E2)
+  if ([13, 30, 46].includes(s.n)) await everything();     // Actos I, II (tras D1) y III (Zacarías libre, paso 46 de E5)
 }
 await collect();
 
@@ -187,7 +187,7 @@ await collect();
 const texts = [...lines.keys()];
 const widths = await G(async (texts) => { const F = await import('/engine/font.js'); return texts.map(t => F.wrap(t, 210).length); }, texts);
 const long = [], tall = [], punct = [], names = [], times = new Map();
-const NAME_RULES = [[/\bInigo\b/, 'Íñigo'], [/\bÍnigo\b/, 'Íñigo'], [/\bBegona\b/, 'Begoña'], [/\bRuben\b/, 'Rubén'], [/\bRamirez\b/, 'Ramírez'], [/\bValentin\b/, 'Valentín'],
+const NAME_RULES = [[/\bInigo\b/, 'Íñigo'], [/\bÍnigo\b/, 'Íñigo'], [/\bBegona\b/, 'Begoña'], [/\bZacarias\b/, 'Zacarías'], [/\bRub[eé]n\b/, 'Zacarías (antes Rubén)'], [/\bPaco\b/, 'Eutimio (antes Paco)'], [/\bRamirez\b/, 'Ramírez'], [/\bValentin\b/, 'Valentín'],
   [/\bReticula\b/, 'Retícula'], [/\belcontable|\bEl ?Contable\.es|\bElContable/, 'elContable.es / «el Contable»'], [/\bCatacumbas\b/, 'Catacumba'], [/\bTeodor\b/, 'Teodoro']];
 texts.forEach((t, i) => {
   const who = lines.get(t).who;

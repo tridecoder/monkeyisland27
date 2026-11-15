@@ -4,6 +4,7 @@
 // aviso): `startDismisser` cierra su globo (como un clic) en cuanto `state().aviso` es true, y el test sigue.
 // E2 §7.2: las despedidas (`exit`) solo se oyen la primera vez; FAREWELLS elige por el TEXTO de la opción, no por lo
 // que se oye, así que no cambia. ENMIENDA E5 §2.7: el submenú de atajos del ascensor se resuelve con la opción 0 (`travel`).
+// En `esp.flags`, el valor '*' pide solo que el flag esté puesto (p. ej. `discover_ganador`, que guarda el titular ganador).
 // Un plano detalle con `bloqueo` (anuncios de Maripaz) se resuelve solo en modo rápido.
 export class StepFail extends Error {}
 export const fail = (msg) => { throw new StepFail(msg); };
@@ -158,7 +159,7 @@ async function check(esp) {
   const errs = [];
   if (esp.sala && st.room !== esp.sala) errs.push(`sala: ${st.room}, se esperaba ${esp.sala}`);
   const flags = Array.isArray(esp.flags) ? Object.fromEntries(esp.flags.map(f => [f, true])) : (esp.flags || {});
-  for (const [f, v] of Object.entries(flags)) if (v === false ? !!st.flags[f] : st.flags[f] !== v) errs.push(`flag ${f} = ${JSON.stringify(st.flags[f])}, se esperaba ${JSON.stringify(v)}`);
+  for (const [f, v] of Object.entries(flags)) if (v === false ? !!st.flags[f] : v === '*' ? !st.flags[f] : st.flags[f] !== v) errs.push(`flag ${f} = ${JSON.stringify(st.flags[f])}, se esperaba ${JSON.stringify(v)}`);
   for (const i of esp.tiene || []) if (!st.inventory.includes(i)) errs.push(`falta ${i} en el inventario`);
   for (const i of esp.notiene || []) if (st.inventory.includes(i)) errs.push(`${i} sigue en el inventario (debía gastarse)`);
   if (errs.length) fail(errs.join('; '));

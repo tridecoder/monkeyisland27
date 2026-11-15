@@ -837,7 +837,7 @@ function drawKanban(g, view) {
   const r = rng(27);
   const colores = [POSTIT.y, POSTIT.g, POSTIT.p, POSTIT.b, POSTIT.o];
   for (let i = 0; i < 4; i++) for (let k = 0; k < 3; k++) {
-    if (i === 0 && k === 0) continue;
+    if (i === 0 && k < 2) continue;                                              // (el sitio del pósit largo de la baja)
     const px0 = x + i * 20 + 3 + Math.floor(r() * 3), py0 = y + 15 + k * 10 + Math.floor(r() * 2);
     postit(g, px0, py0, colores[(i + k) % 5], { w: 13, h: 8 });
   }
@@ -855,10 +855,12 @@ function drawKanban(g, view) {
     if (desc && !MAL[view.state]) micro(g, 'patrocina: Comercial', x + 2, ly + 10, '#9a8a90');
   }
   // «BAJA / RUBÉN» desde julio, en POR HACER; con posit_descopeado, en la columna nueva (y su hueco, vacío)
-  const [rx, ry] = desc ? [x + 82, ly + 2] : [x + 1, y + 15];
-  rect(g, rx, ry, 19, 13, '#f49ab8'); hline(g, rx, ry, 19, '#ffffff'); hline(g, rx, ry + 12, 19, '#c0607e');
-  micro(g, 'BAJA', rx + 2, ry + 2, INK);
-  micro(g, 'RUBÉN', rx, ry + 7, PAL.red[2]);
+  // [I2] el becario se llama ahora Zacarías (id `ruben`): el nombre, partido en dos renglones («ZACA-» / «RÍAS»)
+  const [rx, ry] = desc ? [x + 82, ly - 1] : [x + 1, y + 15];
+  rect(g, rx, ry, 19, 19, '#f49ab8'); hline(g, rx, ry, 19, '#ffffff'); hline(g, rx, ry + 18, 19, '#c0607e');
+  micro(g, 'BAJA', rx + 2, ry + 1, INK);
+  micro(g, 'ZACA-', rx, ry + 7, PAL.red[2]);
+  micro(g, 'RÍAS', rx + 2, ry + 13, PAL.red[2]);
   if (view.flag('album_validado')) {                                             // la foto del álbum, grapada (§2.5.3)
     rect(g, rx + 13, ry - 3, 7, 6, '#ffffff'); rect(g, rx + 14, ry - 2, 5, 4, '#4a5a78');
     px(g, rx + 16, ry - 1, PAL.skin[4]); px(g, rx + 16, ry, '#dfe4ee');          // el chico pálido, al fondo

@@ -6,7 +6,7 @@
 //      y a los 12 s; cargar una partida guardada a mitad de la ventana → luz y Anselmo en su mesa; escalada n = 2.
 //   2. Columna del kanban (§2.5): rotulador antes del álbum (negativa), boli muerto, álbum a Anselmo (album_validado),
 //      Usar el tablero sin rotulador, tres columnas equivocadas (y «Tráeme algo…» a la tercera), SALIDA EN VALOR (con el
-//      táper en la mano de Rubén) y DESCOPEADO; el otro orden (álbum antes que rotulador); guardar/cargar a mitad y al final.
+//      táper en la mano de Zacarías) y DESCOPEADO; el otro orden (álbum antes que rotulador); guardar/cargar a mitad y al final.
 //   3. Coro por acto (K01-K04), solo con Bruno cerca. 4. F4 `junto()` sin fundido (Bruno corre). 5. F9 Custodia.
 //   6. La frase de Anselmo («El modelo es de fuera. El prompt es de dentro.» / «Eso lo hace nuestro.») se oye una vez.
 //   node tools/test-e5-pb.mjs              (capturas en tools/shots/e5-pb-*.png)
@@ -149,7 +149,7 @@ try {
   const t1 = await G(() => __game.game.time);
   const fin = await G(() => ({ n: __game.getFlag('apagon_n'), cms: !!__game.getFlag('cms_vivo'), noSave: !!__game.game.noSave, sp: __game.game.actors.anselmo_monolito.speed, nf: !!__game.game.actors.anselmo_monolito.noFreeze, x: Math.round(__game.game.actors.anselmo_monolito.x) }));
   ok(fin.n === 1 && !fin.cms && !fin.noSave && fin.sp === sp0 && !fin.nf, `cierre (Anselmo llega antes de los 12 s): luz, apagon_n 1, sin cms_vivo, se puede guardar (${JSON.stringify(fin)})`);
-  ok(await logHas('¿La quieres apagada? Ese cable baja a Sistemas. Que te la apague Paco.') && !(await logHas('Si funciona, la gente se acostumbra.')), 'cierre con «…Que te la apague Paco.» (D06), sin la línea vieja');
+  ok(await logHas('¿La quieres apagada? Ese cable baja a Sistemas. Que te la apague Eutimio.') && !(await logHas('Si funciona, la gente se acostumbra.')), 'cierre con «…Que te la apague Eutimio.» (D06), sin la línea vieja');
   ok(fin.x > 1000, `Anselmo, de vuelta en su mesa (x ${fin.x})`);
   // escalada n = 2, como hoy
   await G(() => __game.clearLog());
@@ -164,7 +164,7 @@ try {
   await sleep(1800);
   await G(() => __game.clearLog());
   await raton('usar', 'enchufe_pantalla');
-  ok(!(await flag('pecera_oscuras')) && !(await G(() => !!__game.game.apagon)) && await logHas('Que te la apague Paco.') && !(await flag('cms_vivo')) && await flag('apagon_n') === 1,
+  ok(!(await flag('pecera_oscuras')) && !(await G(() => !!__game.game.apagon)) && await logHas('Que te la apague Eutimio.') && !(await flag('cms_vivo')) && await flag('apagon_n') === 1,
     'Usar el enchufe a los 2 s → Bruno enchufa, luz, cierre de Anselmo, sin cms_vivo');
 
   // --- a los 12 s (Anselmo, entretenido: no llega)
@@ -176,7 +176,7 @@ try {
   await until(() => __game.game.busy > 0, null, 20000);                        // empieza el cierre (guion bloqueante)
   const tB = await G(() => __game.game.time);
   await until(() => !__game.getFlag('pecera_oscuras') && !__game.state().busy, null, 40000);
-  ok(tB - tA >= 11000 && tB - tA <= 13500 && await logHas('Que te la apague Paco.') && await G(() => __game.game.actors.anselmo_monolito.speed === 54),
+  ok(tB - tA >= 11000 && tB - tA <= 13500 && await logHas('Que te la apague Eutimio.') && await G(() => __game.game.actors.anselmo_monolito.speed === 54),
     `a los 12 s se cierra aunque Anselmo no haya llegado (${Math.round(tB - tA)} ms); vuelve a su paso de siempre`);
 
   // --- cargar a mitad de la ventana
@@ -231,12 +231,12 @@ try {
   await raton('usar', 'kanban', 'rotulador_rojo', false);
   await until(() => !!__game.currentDialogOptions());
   ok((await opciones()).includes('SALIDA EN VALOR') && (await opciones()).includes('DESCOPEADO'), 'con rep_13 y oyo_descopear, salen SALIDA EN VALOR y DESCOPEADO');
-  // (en modo rápido la escena pasa entera en un instante: se espía la mano de Rubén con un setter)
+  // (en modo rápido la escena pasa entera en un instante: se espía la mano de Zacarías con un setter)
   await G(() => { window.__taper = false; const r = __game.game.actors.ruben; let h = r.hold;
     Object.defineProperty(r, 'hold', { configurable: true, get: () => h, set: (v) => { h = v; if (v && v.item === 'taper_huerfano' && r.room === 'pecera') window.__taper = true; } }); });
   await clicOpcion('SALIDA EN VALOR');
   await idle();
-  ok(await G(() => window.__taper), 'con taper_dado, Rubén va a la ventana con el táper en la mano');
+  ok(await G(() => window.__taper), 'con taper_dado, Zacarías va a la ventana con el táper en la mano');
   await idle(); await seguir();
   const s1 = await G(() => ({ pd: __game.getFlag('posit_descopeado'), rl: __game.getFlag('ruben_libre'), col: __game.getFlag('columna_kanban'), inv: __game.state().inventory }));
   ok(s1.pd && s1.rl && s1.col === 'salida' && s1.inv.includes('ticket_n1') && s1.inv.includes('rotulador_rojo'), `SALIDA EN VALOR → posit_descopeado, ruben_libre, ticket_n1, columna 'salida', el rotulador se queda (${JSON.stringify(s1)})`);
@@ -244,7 +244,7 @@ try {
     && await logCount('Entonces es de la casa.') === 1 && await logHas('Revocado. Fecha: hoy. Efectos: julio.') && !(await logHas('Consultoría')), 'las tres líneas del arranque (§3.5), C94, sin «Consultoría»');
   await G(() => __game.clearLog());
   await raton('mirar', 'kanban');
-  ok(await logHas('Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Rubén.'), 'Mirar el tablero → «…SALIDA EN VALOR…»');
+  ok(await logHas('Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Zacarías.'), 'Mirar el tablero → «…SALIDA EN VALOR…»');
   await raton('usar', 'kanban', 'rotulador_rojo');
   ok(await logHas('Una columna nueva por noche. La siguiente, en la próxima versión.') && !(await opciones()), 'el rotulador, otra vez: ya no hay menú');
   await G(() => { const p = __game.game.player; p.x = 896; p.y = 128; p.path = []; p.dir = 'right'; }); await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-salida');

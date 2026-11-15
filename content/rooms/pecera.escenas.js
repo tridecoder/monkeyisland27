@@ -323,7 +323,7 @@ async function apagonCierre(api, via) {
       api.faceActor(A, api.player);
       await talk(api, [[A, 'Ese enchufe está en mis sistemas. Desenchufar es un cambio sin revisar.'],
         [Y, '...Ya no va.'], ['B', 'Iba mientras estaba apagada.'],
-        [A, '¿La quieres apagada? Ese cable baja a Sistemas. Que te la apague Paco.']]);
+        [A, '¿La quieres apagada? Ese cable baja a Sistemas. Que te la apague Eutimio.']]);
       limpiarOscuras(api);
       await deVuelta(api, A);
     });
@@ -365,7 +365,7 @@ async function apagonEscena(api) {
         await luzVuelve(api);
         await talk(api, [[A, 'Tercera vez. Te paso a BLOQUEADO.'], [A, 'Si quieres que se quede apagada, tráeme un motivo. ¿Tiene número?']]);
         await deVuelta(api, A);
-        await api.say('Un motivo con número y un cable que baja. Eso huele a Paco.');
+        await api.say('Un motivo con número y un cable que baja. Eso huele a Eutimio.');
       } else {
         await api.wait(500);
         await luzVuelve(api);

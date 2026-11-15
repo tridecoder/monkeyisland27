@@ -137,7 +137,7 @@ export default {
         options: [
           { text: '¿Por qué bloqueas a Herminia?', once: true,
             do: async (api) => talk(api, [[A, '¿De dónde viene? De Infografía. Hecha con IA. Fuera de mis sistemas.'], ['B', '¿Y si funciona?'],
-              [A, 'Peor. Si funciona, la gente se acostumbra.'], [A, 'Y si se rompe a las tres, ¿quién baja? Paco abre ticket. Bajo yo.']]) },
+              [A, 'Peor. Si funciona, la gente se acostumbra.'], [A, 'Y si se rompe a las tres, ¿quién baja? Eutimio abre ticket. Bajo yo.']]) },
           { text: '¿Y tú no usas IA?', once: true,
             do: async (api) => {
               await talk(api, [[A, 'Mucha. Para los demás departamentos.'], [A, 'Un corrector para Aurora. Notas de gasto generativas para Begoña.'],
@@ -158,8 +158,8 @@ export default {
               await talk(api, [[A, '¿Desde dónde?'], ['B', arriba ? 'Desde aquí. Un enchufe con número.' : 'Desde Sistemas. Una regleta.'],
                 [A, 'Solución de terceros. Funciona, pero no es mía. Próxima versión.']]);
             } },
-          { text: 'Necesito la baja de Rubén.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!album_validado', '!posit_descopeado'],
-            reply: ['¿Rubén? «Baja becario Rubén». En POR HACER. Letra de julio.', 'De mi tablero se sale de dos formas: hecho o muerto.',
+          { text: 'Necesito la baja de Zacarías.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!album_validado', '!posit_descopeado'],
+            reply: ['¿Zacarías? «Baja becario Zacarías». En POR HACER. Letra de julio.', 'De mi tablero se sale de dos formas: hecho o muerto.',
               'Para darlo por hecho, pruebas de que existió. Fotos. Actas. Algo.', 'Y que no venga de fuera.'] },
           { text: 'Mira este álbum.', if: 'has:album_eventos', goto: 'AN_ALBUM_INTRO' },
           { text: 'El Titulator era un becario.', once: true, if: ['ruben_encontrado', '!ruben_libre'],
@@ -302,17 +302,17 @@ async function salida(api, via) {
       await api.sayAs(A, '¿Con qué has escrito eso? ...Rotulador de Comercial. De fuera.');
       if (via === 3) {
         await api.sayAs(A, ['Salida en valor. Ni hecho ni muerto, pero sale.',
-          'La frase la escribió Rubén. Rubén tenía alta. ...Entonces es de la casa.']);
+          'La frase la escribió Zacarías. Zacarías tenía alta. ...Entonces es de la casa.']);
       } else await api.sayAs(A, 'Descopear. Quitar sin que se note. Eso es infraestructura.');
       api.setState('coro_desarrollo', null);
-      await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Paco.',
-        'Y en nuestros corazones, Rubén está en HECHO.']);
+      await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Eutimio.',
+        'Y en nuestros corazones, Zacarías está en HECHO.']);
       // (Tin. El ascensor se abre. Vacío. En el suelo, un papel.)
       api.sfx('beep');
       await api.wait(400);
       api.give('ticket_n1');
       api.sfx('pickup');
-      await api.say(['«Ticket nº 1: Alta becario Rubén. CERRADO.»', '«No subo. Nunca subo. Paco.»']);
+      await api.say(['«Ticket nº 1: Alta becario Zacarías. CERRADO.»', '«No subo. Nunca subo. Eutimio.»']);
       // (Tin. Sale Rubén del ascensor. Va derecho a la ventana; con el táper en la mano si se lo dieron, §2.5.5.)
       api.sfx('beep');
       api.setFlag('ruben_libre', true);
@@ -322,7 +322,7 @@ async function salida(api, via) {
       if (api.flag('taper_dado')) api.sostener(R, 'taper_huerfano');
       await api.walkActor(R, 1258, 114);
       api.faceActor(R, 'up');
-      await talk(api, [[R, 'Paco ha mandado primero el papeleo. Es el procedimiento.'],
+      await talk(api, [[R, 'Eutimio ha mandado primero el papeleo. Es el procedimiento.'],
         [R, 'Estoy esperando a que salga el sol. Me han dicho que existe.']]);
       // (La pantalla de Anselmo cambia sola: «ACCESO REVOCADO: TITULATOR 3000».) En plano: tablero, pantalla e Infografía.
       api.cameraTo(960);
@@ -347,7 +347,7 @@ async function salida(api, via) {
       api.cameraFollow();
       await api.walkActor(A, 672 + D, 118);
       api.faceActor(A, 'left');
-      await talk(api, [['B', 'La frase con la que Íñigo despide a la gente acaba de liberar a Rubén.']]);
+      await talk(api, [['B', 'La frase con la que Íñigo despide a la gente acaba de liberar a Zacarías.']]);
       await api.sayAs(R, 'Y la escribí yo. SEGUIREMOS INFORMANDO. Perdón.');
     });
   } finally {

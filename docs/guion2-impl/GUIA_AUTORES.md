@@ -115,8 +115,8 @@ sala, se pide; los locales, con el prefijo de vuestra sala en `flags` de la lóg
 ## 5. Pendientes del paquete común que caen en vuestras salas (crítica y plan)
 | Sala / archivo | Qué | Paquete |
 |---|---|---|
-| `cpd.js` (Paco, P3) | Cita la réplica vieja de R12 («…no pasa la ITV»): ahora es «Puestas. Ahora se ve perfectamente que no hay carretera.» | P1 |
-| `ecosistema.js` (portátil de Tadeo) | Cita la vieja R15 («Normal. Se lo has preguntado tú»): ahora es «Lo sé. Me lo ha contado ella. Se llama Rubén.» (y se aprende con Rubén, §7.3) | P4 / P1 |
+| `cpd.js` (Eutimio, P3) | Cita la réplica vieja de R12 («…no pasa la ITV»): ahora es «Puestas. Ahora se ve perfectamente que no hay carretera.» | P1 |
+| `ecosistema.js` (portátil de Tadeo) | Cita la vieja R15 («Normal. Se lo has preguntado tú»): ahora es «Lo sé. Me lo ha contado ella. Se llama Zacarías.» (y se aprende con Zacarías, §7.3) | P4 / P1 |
 | `office.js` | Chismes de Gertrudis que enseñan R03, R04, R10, R14: deben citar las réplicas nuevas; segundo café inútil (crítica §9.5) | P3 |
 | `pecera.js` | Coro cada 14-24 s con `setInterval`/`every` (ya lo limita el motor; reducir a las 4 discusiones); el ascensor nombra a Valentín antes de conocerle (crítica §5); «Pecera» a la vista | P2 |
 | `pecera.dialogos.js` | «Es lo más bonito…» ×2 (crítica §10.1.11); árbol de Valentín | P2 |
@@ -154,7 +154,7 @@ murmullos y el ambiente que estuvieran en pantalla (nada habla por debajo del an
 ### E2.2 Datos comunes ya cambiados (no los dupliquéis en la sala)
 
 - **Llamadas de Evaristo** (`content/game.js`, §5.7): L1 recortada (7 líneas, §7.4 paso 10), L3 nueva (sin la coma de
-  4,15 €), L4 con `!ruben_encontrado` (se pierde si Rubén aparece antes), L5 nueva con `ruben_libre` y
+  4,15 €), L4 con `!ruben_encontrado` (se pierde si Zacarías aparece antes), L5 nueva con `ruben_libre` y
   `!climax_entrada`. **Fuera la L2 y la LC** (`evaristo_lc`). Una llamada por entrada, como siempre.
 - **RV de Tadeo** (§7.4, paso 13): ya **no son aviso**; llegan solos al correo del móvil (`tadeo_rv_n` cuenta los
   llegados). RV1 y RV2 sin comentario de Bruno (§7.2). El portátil de Tadeo (P4) sigue igual.
@@ -286,7 +286,7 @@ Se hereda.»): una línea ASCII también cuenta para los topes, los «Como X.» 
   pisadas** (nombre visible oficial y planta) y lleva a Bruno a la entrada de siempre de la elegida
   (`content/lib/directorio.js`: `DESTINOS`, `destinoAbierto`, `usarDirectorio`). Bloqueos: ni la sala actual ni una sin
   pisar; todo menos el Vestíbulo pide `torno_abierto`; la Sala Amazonas solo antes del Acto III (en el III se entra por su
-  puerta: acta, Rubén y clímax); tras el empujón, nada. La sala de destino corre su `onEnter` y los avisos como siempre: si
+  puerta: acta, Zacarías y clímax); tras el empujón, nada. La sala de destino corre su `onEnter` y los avisos como siempre: si
   vuestra sala tiene una escena de entrada, también salta por el atajo. Salas pisadas: `api.visitada(room)` /
   `api.visitadas()` (las marca el motor; se guardan con la partida). Línea nueva (una, la primera vez): «Toco un nombre y
   el tótem me lleva. Ni ticket, ni cita previa.». El doble clic / doble toque en una salida ya existía (`engine/mover.js`).
@@ -363,3 +363,81 @@ Un fichero de datos nuevo con textos de pantalla se declara en `SOLO_PANTALLA` (
 - La demo del paso 34 se rotula «TITULADOR · PRUEBA» (es la prueba A/B de Yoli) y no guarda nada.
 - Versiones tachadas del paso 40 si el jugador no ha publicado: la demo y los secretos por debajo del ganador, de menos a
   más (las cuatro últimas). La hoja de lo más leído mide 300 px de ancho (no 220) para que la letra sea la del juego.
+
+## E5. ENMIENDA E5 — puzles de situación, poda de coletillas y nombres nuevos
+
+> Guion: `docs/guion2/ENMIENDA_E5.md` (definitiva). Paquetes P0 (motor) ∥ I1 (altas) → PA ∥ PB ∥ PC ∥ PD ∥ PE (salas) →
+> I2 (recorridos, pruebas, documentación). Prueba: `node tools/test-e5.mjs` (en `test-all`); capturas en
+> `tools/shots/e5-*.png`. APIs nuevas del motor, con su tabla: `docs/CONTENT_SCHEMA.md` §7, «ENMIENDA E5».
+
+### E5.0 Nombres: Eutimio y Zacarías (ids históricos `paco` y `ruben`)
+
+Por decisión del dueño, posterior a la enmienda, **Paco** (Sistemas) se llama **Eutimio** y **Rubén** (el becario del
+armario 27, el Titulator) se llama **Zacarías**. Solo cambia lo que se ve y se oye: el `name` de los actores, las
+líneas, las pantallas, las pistas de la abuela, la tarjeta FE DE ERRATAS y el arte con el nombre dibujado (la etiqueta
+de la brida y el pósit del regletero, «…EUTIMIO»; el pósit del kanban, «BAJA / ZACARÍAS»). **Los ids NO cambian**:
+el actor sigue siendo `paco_ticket` y `ruben`; los flags, `ruben_libre`, `ruben_encontrado`, `paco_dio_manual`,
+`paco_tickets`, `cpd_paco_fax_n`…; la escena `revelacion_ruben`; las funciones (`revelacionRuben`, `nidoRuben`,
+`drawPacoDesk`) y las descripciones de flags. Escribid el nombre nuevo en todo texto nuevo y el id viejo en el código.
+Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_BIBLIA.md`) siguen con los nombres viejos.
+`text-audit` vigila las tildes («Zacarias» sin tilde es un fallo de nombre).
+
+### E5.1 Dónde vive cada cosa
+
+| Qué (E5) | Fichero |
+|---|---|
+| Motor: `walkTo`/`walkActor` con `{ run }`, apagón con focos que siguen a un actor, `nameDark` e interceptor, `sinCongelar`, `estampida({ esperar })`, `quieto`, `sinGuardar`, `sfx('crujido')`, holgura táctil, doble clic con `parada` | `engine/*` (P0); prueba `tools/test-e5-motor.mjs` |
+| Ascensor con atajos (submenú tras la planta; `nombreDe`) | `content/lib/ascensor.js`, `content/lib/directorio.js` |
+| Flags G `sala_becario_sin_turno`, `gertrudis_pregunta`, `vio_pegatina_fax`, `album_validado`, `columna_kanban` (str); objeto `rotulador_rojo`; Mercados con nombre; `tamb3`; `MEGAFONIA_TAMBALEO`; `AURORA_RV` (N6); objetivos `reunion`, `turno`, `cms`, `armario`, `baja`, `columna` | `content/flags.js`, `items.js`, `actors.js`, `lib/celestino.js`, `lib/movil.js`, `pistas.js` (I1) |
+| Estampida por la tele: orden del día, «sin turno», tele (`teleSegunTurno`), `sala_tele_gertrudis`, atasco jugable (`resolverAtasco`: empujar / cruasán / hablar / anuncio), señal tras D4 (`update`) | `content/rooms/sala_amazonas.js` (+ arte), `content/escenas/climax.js` (`onWin`) |
+| La pregunta de Gertrudis («¿Y cuáles son los siguientes pasos?») | `content/rooms/office.js` |
+| Apagón jugable (`pecera_apagon` n = 1, `aOscuras`, `apagonCierre`), columna del kanban (`salida(api, via)`, `COLUMNAS`), coro K01-K04, F4 `junto()`, F9 Custodia | `content/rooms/pecera.escenas.js`, `pecera.dialogos.js`, `pecera.js`, `pecera.secretaria.js`, `art/pecera.art.js` |
+| Regletero (menú de cinco, `planoRegletero`), ticket 0.441 (`fax`/`fax441`), armario 27 en dos actos (`corre`) | `content/rooms/cpd.js`, `art/cpd.art.js` |
+| Pegatina del fax (`vio_pegatina_fax`), N6 (`rvLeido`), el Lector asiente sin globo | `content/rooms/catacumba.js`, `pajarera.js` |
+| El rotulador de objetivos (`termometro_ventas.coger`); Begoña sin «¿Usted ha sido feliz alguna vez?» | `content/rooms/ecosistema.js`, `administracion.dialogos.js` |
+
+### E5.2 Reglas nuevas de texto (`--e5`; `test-all` pasa `--plan --e2 --e5`)
+
+- Coletilla «frase + Y/Con/Sin/Ni + 1-3 palabras» (`COLETILLA_RE` de `tools/plan-rules.mjs`): ≤ 46 cadenas sin Eventos,
+  y ≤ 10 % de lo que dice cada personaje con ≥ 20 líneas oídas (sin el Lector Medio ni Eventos).
+- «chaval» ≤ 12, «criatura» ≤ 6, «RECHAZADO en la frente» ≤ 2 (sin Eventos). Recuento informativo de «de la/esta casa»
+  y de «mis sistemas» de Anselmo (si pasa de 5 oídas, «Ese enchufe está en mis sistemas.» → «Ese enchufe es de
+  Desarrollo.»).
+- Ninguna línea nueva con «Como…», coletilla, «criatura», «chaval» ni «cariño». Textos de pantalla (menú del regletero,
+  columnas del kanban, nombres a oscuras, la tele) no son líneas habladas.
+- Comprobar: `node tools/text-audit.mjs --estatico --plan --e2 --e5 --recuento` (con `--sala=<id>` para una sala).
+
+### E5.3 El recorrido de 50 pasos y las pruebas
+
+- `tools/walk-data.mjs` = §7.2 (50 pasos) y `ALT` = §7.3. Pasos nuevos: 19 (pegatina), 20 (apagón; en modo rápido la
+  ventana dura 0), 21 (regletero: `['opcion', 'R-3']`), 22 (`Ticket 0.441`), 26-29 (orden del día, Gervasio «sin
+  turno», Gertrudis, la tele; en modo rápido el atasco se resuelve por la vía del anuncio dentro de la escena), 43
+  (rotulador), 45 (álbum → `album_validado`; E4 S5 al entrar) y 46 (rotulador + kanban → SALIDA EN VALOR).
+- `walk-lib`: el submenú del ascensor se resuelve con la opción 0; en `esp.flags`, `'*'` = solo «puesto» (para flags de
+  texto como `discover_ganador`).
+- `extras.mjs` (100 pasos): los X de E2 renumerados (el apagón del XM2 ya va tras el paso 20) y XE5-1…11 (cuatro vías
+  del atasco desde la misma partida guardada, fallos del regletero, columnas equivocadas sin `rep_13`, ascensor con
+  atajo, Eutimio sin pegatina, papel del 27 en el II, tele «wifi y rencor» y móvil, a oscuras).
+- `play-mouse.mjs` juega los 50 pasos con ratón real (submenú del ascensor con clic, ventana a oscuras con Hablar a
+  Yoli, menú del regletero, Empujar a Fermín en el atasco, menú de columnas, megafonía tras D4) y deja capturas
+  `tools/shots/e5-raton-*.png`.
+- `fuzz.mjs`: puntos de guardado del nuevo recorrido (27-29 sin `reunion_terminada`), Usar/Hablar la tele y Usar el
+  rotulador con el kanban sueltos.
+- `test-e5.mjs`: las seis pruebas de paquete y, además, la frase de Anselmo una sola vez en el camino (paso 38) y
+  «…Entonces es de la casa.» una vez (paso 46), la medida del camino principal (§9.1) y el ascensor desde Sistemas.
+
+### E5.4 Decisiones de la integración (I2)
+
+- Vending: al **cargar** una partida, el LCD de Gertrudis queda como se guardó (`office_emision` ya no se pone a 0 en
+  `api.restoring`); si no, guardar tras la pregunta de Gertrudis y cargar no dejaba el estado idéntico (fuzz, paso 28).
+- Sistemas: el hotspot `armarios` llega ahora hasta el regletero (`rect` 66 × 46): el regletero ampliado de E5 lo
+  solapaba un 91 % (regla R2 de la auditoría de geometría, máx. 30 %). El pósit del regletero mide 2 px más para «…EUTIMIO»
+  y el pósit de la baja del kanban, tres renglones («BAJA / ZACA- / RÍAS»).
+- `play-mouse`: el clic de Empujar a Fermín en el atasco se repite si cae en el marco (los tres tiemblan encajados).
+- `plan-rules`: «ticket» seguido de número («Ticket 0.441», la opción del fax de E5 §3.4) no cuenta para el tope de
+  «ticket» de Bruno, como ya no contaban «Ticket nº 1» ni el apellido de Eutimio.
+- Los nombres a oscuras y el `parada` se declaran en la lógica de la sala (`content/lib/room.js` no copia esas claves
+  del arte; no se ha ampliado `ART_OBJ_KEYS`).
+- Pruebas antiguas al día con los textos de §4 (C17, C22, C44, C63, C72-C75, C94, D06-D17, M04, M09, M13, M20, K02,
+  R4, C83, C45, C102-C103) y con los puzles nuevos (regletero con menú, ticket 0.441, columna, estampida por la tele,
+  N6 con `rvLeido`, submenú del ascensor con Escape → rellano, `tamb3`).

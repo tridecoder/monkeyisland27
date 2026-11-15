@@ -6,7 +6,7 @@
 //   1 regletero: Mirar → plano detalle con las cinco etiquetas; R-1, R-2, R-4 desenchufan un segundo, no ponen `cms_vivo`
 //     y suben `cpd_regleta_mal_n`; R-5 no se tira (ni sube); «Mejor no.» nada; R-3 → `cms_vivo`, sin «¡ESTAMOS CIEGOS!»
 //     por la rejilla ni «Ya me han abierto otro ticket»; antes del apagón (apagon_n = 0) también vale
-//   2 ticket 0.441: sin pegatina, Paco dice que no dos veces (dos líneas distintas) y no da el manual; con la pegatina,
+//   2 ticket 0.441: sin pegatina, Eutimio dice que no dos veces (dos líneas distintas) y no da el manual; con la pegatina,
 //     «Ticket 0.441» → manual y sus dos líneas; sin el CMS, la opción no está
 //   3 armario 27: Acto II, Tirar papel ×2 → las dos líneas, sin `ruben_encontrado`; Acto III: al entrar, estado `corre` y
 //     la línea una vez (otra entrada, no); Mirar papel y Tirar armario con el texto nuevo; Tirar papel → `revelacion_ruben`
@@ -152,7 +152,7 @@ try {
     ['R-1', 'Esa es la de las nóminas. Si la tocas, no cobra nadie. Tú tampoco.', 1],
     ['R-2', '¡Ascensor parado en mitad de la jugada! ¡Tiempo muerto!', 2],
     ['R-4', 'E-55: UN SEGUNDO SIN CORRIENTE. ANOTADO CON RENCOR.', 3],
-    ['R-5', 'Pone «NUNCA». Paco la mira con ternura. No la toco.', 3],
+    ['R-5', 'Pone «NUNCA». Eutimio la mira con ternura. No la toco.', 3],
   ];
   let primero = true;
   for (const [r, linea, n] of fallos) {
@@ -186,7 +186,7 @@ try {
   await chooseOption('R-3');
   let s = await st();
   ok(s.flags.cms_vivo && (await ost('regleta_r3')) === 'apagada', 'R-3 → cms_vivo y la regleta apagada');
-  ok(await logHas('CORO: ¡Ha sido Diseño!') && await logHas('Trescientos dieciocho tickets nuevos') && await logHas('Tengo un hueco. Uno.'), 'R-3: el coro por la rejilla, los +318 y Paco que se gira');
+  ok(await logHas('CORO: ¡Ha sido Diseño!') && await logHas('Trescientos dieciocho tickets nuevos') && await logHas('Tengo un hueco. Uno.'), 'R-3: el coro por la rejilla, los +318 y Eutimio que se gira');
   ok(!(await logHas('ESTAMOS CIEGOS')) && !(await logHas('Ya me han abierto otro ticket')) && !(await logHas('No sé qué apaga esto')), 'R-3: sin la megafonía de Yoli, sin «Ya me han abierto…» ni «No sé qué apaga esto…» (D10-D12)');
   await G(() => __game.clearLog());
   await verbOn('mirar', 'regleta_r3');
@@ -203,7 +203,7 @@ try {
   ok(await logHas('Ya está cerrado. Cinco bridas lo dicen.'), 'Cerrar (C43)');
 
   // ================================================================ 2 · el ticket 0.441
-  console.log('\n§2.3 Paco y el ticket 0.441');
+  console.log('\n§2.3 Eutimio y el ticket 0.441');
   await fresh({ ...ACTO2 });
   await verbOn('hablar', 'paco_ticket');
   let o = await options();
@@ -230,8 +230,8 @@ try {
   await chooseOption('Ticket 0.441');
   s = await st();
   ok(s.inventory.includes('manual_fax') && s.flags.paco_dio_manual, 'manual_fax y paco_dio_manual');
-  ok(await logHas('0.441. De 1999. Estado: lo respetamos.') && await logHas('Toma el manual. Página 9: la respuesta automática. Mi mejor empleada.'), 'las dos líneas de Paco (D13)');
-  ok(!(await logHas('Lo único de esta casa')) && !(await logHas('Posando')), 'fuera «Lo único de esta casa…» y «Posando» de Paco');
+  ok(await logHas('0.441. De 1999. Estado: lo respetamos.') && await logHas('Toma el manual. Página 9: la respuesta automática. Mi mejor empleada.'), 'las dos líneas de Eutimio (D13)');
+  ok(!(await logHas('Lo único de esta casa')) && !(await logHas('Posando')), 'fuera «Lo único de esta casa…» y «Posando» de Eutimio');
   o = await options();
   ok(!o.some(x => /fax/i.test(x)), 'con el manual dado, no vuelve ninguna opción del fax');
   await closeMenu();

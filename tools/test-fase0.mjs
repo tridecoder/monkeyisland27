@@ -70,7 +70,7 @@ try {
   console.log('Duelo «Responder a todos» (plan §7)');
   await G(() => { for (const f of ['rep_05', 'rep_03', 'rep_13', 'rep_01', 'rep_07', 'rep_08', 'rep_09', 'rep_12']) __game.setFlag(f, true); __game.clearLog(); });
   G(() => __game.doVerb('hablar', 'paco_ticket'));
-  ok(await until(G, () => __game.state().duel && __game.state().dialog), 'Hablar con Paco abre el duelo de la demo');
+  ok(await until(G, () => __game.state().duel && __game.state().dialog), 'Hablar con Eutimio abre el duelo de la demo');
   let st = await G(() => __game.state());
   ok(st.dialog.length <= 5 && st.duel.correctIndex >= 0 && st.duel.weakIndex === st.dialog.length - 1, `menú ≤ 5 opciones: la correcta + señuelos + 1 floja (${st.dialog.length}: ${JSON.stringify(st.dialog)})`);
   ok(st.duel.body === 'Esto, entre tú y yo. Que no salga de la rejilla.' && st.duel.score === 'ACIERTOS 0/3 · FALLOS 0/3', `el ataque (paráfrasis) queda escrito en la ventana y el marcador en texto: «${st.duel.body}» · ${st.duel.score}`);
@@ -135,7 +135,7 @@ try {
   for (let i = 0; i < 3; i++) { await until(G, () => __game.state().dialog); await G(() => __game.chooseDialog(__game.state().duel.correctIndex)); }
   await G(() => __game.waitIdle());
   ok(await G(() => __game.state().lastDuel.result === 'won'), 'el duelo de la demo se gana con tres aciertos');
-  ok(await G(() => { const L = __game.log; const i = L.findIndex(l => l.who === 'paco_ticket' && l.text === 'Eso lo escribió alguien brillante.'); return i >= 0 && L[i + 1] && L[i + 1].who === 'celestino' && L[i + 1].text === 'Yo. Perdón.'; }), 'hurtByPair con otro actor: Paco encaja y Celestino remata (§7.6, Rubén en D4)');
+  ok(await G(() => { const L = __game.log; const i = L.findIndex(l => l.who === 'paco_ticket' && l.text === 'Eso lo escribió alguien brillante.'); return i >= 0 && L[i + 1] && L[i + 1].who === 'celestino' && L[i + 1].text === 'Yo. Perdón.'; }), 'hurtByPair con otro actor: Eutimio encaja y Celestino remata (§7.6, Zacarías en D4)');
 
   // ================================================================ ficha, meta, pistas, hora
   console.log('\nObjetivo, pistas y hora (plan §8)');
@@ -148,7 +148,7 @@ try {
   const L1 = await llamada(), L2 = await llamada(), L3 = await llamada(), L4 = await llamada();
   ok(L1.includes('A: En el pueblo, el que no sale en la foto no existe. Ponte en la foto.'), 'llamada 1: nivel 1 (metáfora)');
   ok(L2.includes('A: Si el torno no te conoce, preséntate en ese cuadro de caras.'), 'llamada 2: nivel 2 (concreta)');
-  ok(L3.includes('A: Pega tu cara donde salen los jefes. Con algo que pegue.') && L3[L3.length - 1] === 'B: Chicle, tarjeta, organigrama. Y luego el torno.', 'llamada 3: nivel 3 y Bruno dice la acción AL COLGAR');
+  ok(L3.includes('A: Pega tu cara donde salen los jefes. ¿Tienes algo que pegue?') && L3[L3.length - 1] === 'B: Chicle en la tarjeta, tarjeta en el organigrama, y al torno.', 'llamada 3: nivel 3 y Bruno dice la acción AL COLGAR (E5 C102, C103)');
   ok(L3.includes('A: El del mostrador siempre está mascando algo. Pídeselo.'), 'nivel 3: la línea extra (sin chicle)');
   ok(L4.includes('A: Te lo digo otra vez, hijo, que no comes.'), 'llamada 4: nivel 3 repetido con «Te lo digo otra vez»');
   const quita = (L) => L.filter(x => !/^A: (¿Bruno\?|Hijo, ¿ya|Te llamo porque)/.test(x)).join('|');
@@ -220,7 +220,7 @@ try {
   ok(R.max === 3 && R.falta >= 59000 && R.falta <= 121000, `reglas por defecto en la Redacción: máx. 3 por visita, la 1.ª a los 60-120 s (${R.falta} ms)`);
   await G(() => { __game.skipText(false); __game.clearLog(); });
   await enter();
-  ok(await until(G, () => __game.log.some(l => l.text === 'Internet está mal hecho.'), null, 6000), 'la sala solo da las líneas: el motor las dice');
+  ok(await until(G, () => __game.log.some(l => l.text === 'Internet está mal hecho.'), null, 6000), 'la sala solo da las líneas: el motor las dice (sala de demostración: la K02 de E5 sale de la Redacción, no de aquí)');
   // nunca encima de un globo: Bruno habla justo cuando toca la siguiente discusión
   await until(G, () => !__game.game.room.amb.running, null, 15000);
   const solape = await G(async () => {

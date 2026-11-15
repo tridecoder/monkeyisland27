@@ -31,8 +31,9 @@ const prueba = (re, t) => (typeof re === 'function' ? re(t) : re.test(t));
  *  `fuera` = salas que no cuentan. Herminia no tiene tope: deja de hablar (pasa a objeto). */
 export const TOPES = [
   { who: 'bruno', re: /\bVacante\b/, max: 2, txt: '«Vacante» en boca de Bruno' },
-  // «Ticket nº 1» y «Paco Ticket» son nombres (de objeto y de persona), no la muletilla; lo citado no cuenta
-  { who: 'bruno', re: /(?<!Paco )\bticket\b(?! n[ºo°])/i, max: 4, txt: '«ticket» en boca de Bruno', sinComillas: true },
+  // «Ticket nº 1», «Ticket 0.441» (E5 §3.4, la opción del fax: un número, no la muletilla) y «Eutimio Ticket» (antes
+  // «Paco Ticket») son nombres (de objeto y de persona), no la muletilla; lo citado no cuenta
+  { who: 'bruno', re: /(?<!(?:Paco|Eutimio) )\bticket\b(?! n[ºo°]| \d)/i, max: 4, txt: '«ticket» en boca de Bruno', sinComillas: true },
   // excepción: la línea de Eventos (sala protegida) en la que Bruno CITA a Comercial (eventos.js, aro de luz)
   // §6.1.2: «Bruno solo cita»: lo que va entre comillas no cuenta (sinComillas)
   { who: 'bruno', re: /lo hablamos|cariño|acreditad|cinco minutos/i, max: 0, txt: 'muletillas ajenas en boca de Bruno', sinComillas: true, fuera: ['eventos'] },   // Eventos, sala protegida: los «cinco minutos» son de la sala (Pilar)

@@ -361,7 +361,7 @@ export default buildRoom({
         : ['El ascensor. Detrás de los tornos, con su moqueta y su logo.', 'Desde aquí se ve la moqueta. Algún día la piso.']),
       cerrar: 'Se cierra solo. Celestino lo narra: «¡Y cierra! ¡Y cierra!».',
       empujar: 'Si empujo el ascensor, me lo cobra Sistemas como horas extra.',
-      tirar: 'Tiro de la puerta. No cede. Va con cita previa, como Paco.',
+      tirar: 'Tiro de la puerta. No cede. Va con cita previa, como Eutimio.',
       hablar: '¿Baja? Hace «tin». Es lo más amable que me han dicho hoy.',
     }, ascensorBloqueado),
     // la escalera del vestíbulo interior (detrás de los tornos): sube a la Redacción, como el torno abierto

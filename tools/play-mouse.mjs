@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// PARTIDA CON RATÓN REAL (QA): juega la partida ENTERA (pasos 1-44 de la ENMIENDA E2 §10.1: Actos I-III, los cuatro duelos,
+// PARTIDA CON RATÓN REAL (QA): juega la partida ENTERA (pasos 1-50 de la ENMIENDA E5 §7.2: Actos I-III, los cuatro duelos,
 // el clímax y el final) SOLO con
 // eventos de ratón reales sobre el canvas (clic en verbo, clic en objeto / icono del inventario, clic en opciones de
 // diálogo con sus flechas de scroll, clic derecho = verbo por defecto, clics para pasar los globos). `window.__game` solo
@@ -13,6 +13,9 @@
 //   node tools/play-mouse.mjs --solo=geometria   solo la auditoría      (--solo=raton: solo la partida)
 //   (C) y cada PNJ con Hablar sigue visible (≥ 80 % de cabeza y torso) con Bruno de pie en su punto de conversación
 //   node tools/play-mouse.mjs --lento            capturas de cada paso en tools/shots/raton-*.png
+// ENMIENDA E5 §7.4: el submenú de atajos del ascensor (clic en la sala de llegada), el apagón jugable (paso 20: se espera
+// a que vuelva la luz), el regletero (21), el atasco con una vía a clic (29: Empujar a Fermín), el menú de columnas (46)
+// y la señal tras el clímax (se espera la primera megafonía). Capturas de esos momentos, siempre: tools/shots/e5-raton-*.png.
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -245,10 +248,19 @@ async function travelMouse(to) {
     await settle();
     await clickTarget(next.id);          // sin verbo: «Ir a»
     await settle();
-    if (next.label) await chooseOption(next.label);   // el ascensor: botonera con clic real
+    if (next.label) { await chooseOption(next.label); await atajoLlegada(before); }   // el ascensor: botonera con clic real (y el submenú de E5)
     if ((await state()).room === before) fail(`la salida ${next.id} de ${before} no me ha llevado a ninguna parte`);
   }
 }
+/** ENMIENDA E5 §2.7: tras elegir planta, si sale el submenú de atajos, clic en la opción 0 (la sala de llegada). */
+async function atajoLlegada(from) {
+  await settle();
+  const o = await G((from) => (__game.game.state.room === from && __game.game.choice ? __game.game.choice.options[0] : null), from);
+  if (o) { submenus++; await chooseOption(o); }
+}
+let submenus = 0;
+const shotE5 = (name) => page.screenshot({ path: path.join(here, 'shots', `e5-raton-${name}.png`) });
+async function hastaQue(fn, ms = 30000) { const t0 = Date.now(); while (Date.now() - t0 < ms) { if (await G(fn)) return true; await wait(100); } return false; }
 async function duelMouse(seq) {
   const pairs = await G(() => Object.fromEntries(__game.game.content.duels.pairs.map(p => [p.id, p.reply])));
   let i = 0;
@@ -286,7 +298,7 @@ try {
   await wait(400);
 
   if (!args.solo || args.solo === 'raton') {
-    console.log('Partida con ratón real: pasos 1-44 de E2 (la partida entera, sin modo rápido, hasta los créditos)\n');
+    console.log('Partida con ratón real: pasos 1-50 de E5 (la partida entera, sin modo rápido, hasta los créditos)\n');
     // título: clic real en «Nueva partida»
     const it = await G(() => { const it = __game.game.titleLayout[0]; return [it.x + 8, it.y + 5]; });
     await vclick(...it);
@@ -308,15 +320,50 @@ try {
     await clickTarget('vestibulo_a_redaccion'); await settle();
     ok(!(await inner()) && (await state()).room === 'vestibulo', 'clic real en la escalera de la Redacción antes de abrir el torno: no llega');
     for (const s of STEPS.filter(s => s.n >= 2)) {
-      if (s.n === 26) {                  // E2 §4.2.1: el pop-up de la X menguante, tres veces antes de la D1 (sin modo rápido)
+      if (s.n === 30) {                  // E2 §4.2.1: el pop-up de la X menguante, tres veces antes de la D1 (sin modo rápido)
         for (let k = 1; k <= 3; k++) { await verbOn('hablar', 'maripaz_remitido'); await closeDialogMouse(); }
         const pn = await G(() => __game.getFlag('maripaz_popup_n'));
         ok(pn === 3 && anuncios.x.join() === '3,1' && anuncios.cuentas.length === 1 && anuncios.bloqueoRespetado === 1,
           `pop-up de Maripaz ×3 con el ratón: clic en la «×» de 3 px y de 1 px; la 3.ª, sin «×»: un clic durante «Podrá cerrar en 3» no la cierra, y al acabar sí (popup_n=${pn}, X=${anuncios.x}, cuentas=${anuncios.cuentas.length}, bloqueo ${anuncios.bloqueoRespetado}/${anuncios.bloqueoRoto})`);
       }
-      for (const a of s.acc) await runMouse(a);
+      for (const a of s.acc) {
+        if (s.n === 21 && a[0] === 'opcion') {           // E5 §2.2: el regletero, con las cinco etiquetas a la vista
+          await settle(); await page.mouse.move(5, 5); await wait(150); await shotE5('regletero');
+          const op = await G(() => (__game.game.choice ? __game.game.choice.options : []));
+          ok(op.length === 6 && /NÓMINAS/.test(op[0]) && /pósit/.test(op[2]) && /NO TOCAR NUNCA/.test(op[4]), `21 regletero: menú de cinco regletas y «Mejor no.» (${op.join(' | ')})`);
+        }
+        await runMouse(a);
+        if (s.n === 20 && a[0] === 'verbo') {             // E5 §2.2: la ventana a oscuras (12 s jugables)
+          const osc = await hastaQue(() => !!__game.getFlag('pecera_oscuras'), 30000);
+          await wait(1500); await shotE5('apagon');
+          ok(osc && await G(() => !!__game.game.apagon), '20 apagón jugable: a oscuras, con los focos de Yoli y de la linterna de Anselmo');
+          await clickVerb('hablar'); await clickTarget('yoli_tendencias'); await settle();
+          ok(await G(() => __game.log.some(l => String(l.text).includes('Estoy contando.'))), '20 a oscuras, clic en Hablar + Yoli: «¡Chsss! Estoy contando…»');
+          ok(await hastaQue(() => !__game.getFlag('pecera_oscuras') && !__game.game.apagon && !__game.game.busy, 40000), '20 la ventana se cierra sola (Anselmo vuelve a enchufar)');
+          await settle();
+          ok(await G(() => __game.log.some(l => String(l.text).includes('Que te la apague Eutimio.'))), '20 cierre del apagón: «Ese cable baja a Sistemas. Que te la apague Eutimio.»');
+        }
+        if (s.n === 29 && a[0] === 'verbo') {             // E5 §2.1: el atasco jugable, vía empujar con un clic
+          const at = await hastaQue(() => !!__game.getFlag('sala_amazonas_atasco') && !__game.game.busy, 60000);
+          await wait(600); await page.mouse.move(5, 5); await wait(150); await shotE5('atasco');
+          ok(at, '29 la tele: Gertrudis pregunta en directo → estampida → atasco en la puerta, con el control devuelto');
+          // los tres tiemblan encajados en la puerta: si el clic cae en el marco (Fermín se ha movido un píxel), otra vez
+          const hecho = () => G(() => __game.log.some(l => String(l.text).includes('Les doy un empujoncito.')));
+          let intentos = 0;
+          for (; intentos < 3 && !(await hecho()) && await G(() => !!__game.getFlag('sala_amazonas_atasco')); intentos++) {
+            await clickVerb('empujar'); await clickTarget('mercados_1'); await settle();
+          }
+          ok(await hecho(), `29 atasco: clic en Empujar + Fermín → «Les doy un empujoncito…» (vía empujar; ${intentos} clic${intentos === 1 ? '' : 's'})`);
+        }
+      }
       await settle();
       await R.check(s.esp);
+      if (s.n === 46) { await page.mouse.move(5, 5); await wait(300); await shotE5('kanban'); }
+      if (s.n === 49) {                                   // E5 §2.6: la señal tras el clímax (10 s de tiempo quieto)
+        const meg = await hastaQue(() => __game.log.some(l => String(l.text).includes('Balón suelto')), 30000);
+        await wait(400); await shotE5('senal');
+        ok(meg, '49 tras D4, sin tocar nada: la megafonía de Celestino («Balón suelto…»)');
+      }
       ok(true, `${String(s.n).padStart(2)} [${s.sala}] ${s.txt}`);
       if (s.n === 7) {                   // torno abierto: ahora sí se llega al ascensor andando (clic real)
         await clickTarget('ascensor_vestibulo'); await settle();
@@ -333,6 +380,7 @@ try {
       if (args.lento) await page.screenshot({ path: path.join(here, 'shots', `raton-${String(s.n).padStart(2, '0')}.png`) });
     }
     ok(anuncios.bloqueoRoto === 0 && anuncios.cuentas.includes('ANUNCIO'), `anuncio de entrada en Marketing y Comercial (5 s) visto sin modo rápido: el clic no lo salta antes de tiempo (cuentas: ${anuncios.cuentas.join(', ')})`);
+    ok(submenus > 0, `submenú de atajos del ascensor resuelto con clic en la sala de llegada (${submenus} veces)`);
     ok(maxOptLines > 5 && scrolledMenus > 0, `menús más largos que el panel se desplazan con sus flechas (máx. ${maxOptLines} líneas; ${scrolledMenus} elecciones tras desplazar)`);
     const fin = await G(() => { const L = __game.log; return { t: L.some(l => l.who === 'tarjeta'), a: L.some(l => String(l.text).includes('Abrígate tú.')), p: L.some(l => String(l.text).includes('¡Me ha contestado el periódico!')), st: __game.state() }; });
     ok(fin.t && fin.a && fin.p && (fin.st.mode === 'title' || !!fin.st.finished), '«Abrígate tú.» → «¡Me ha contestado el periódico!» → tarjeta FE DE ERRATAS (con un clic) → créditos → título');
@@ -342,13 +390,13 @@ try {
   if (!args.solo || args.solo === 'conexiones') {
     // CONEXIONES: cada salida de cada sala (y cada parada del ascensor) con un clic real; se llega a la sala que dice la
     // salida, en su entrada (la que se llama como la sala de origen), y esa entrada está junto a la salida de vuelta
-    console.log('\nConexiones (clic real en cada salida, Acto III con Rubén libre)\n');
+    console.log('\nConexiones (clic real en cada salida, Acto III con Zacarías libre)\n');
     await page.goto(base);
     await page.waitForFunction(() => !!window.__game);
     await G(() => __game.skipText(true));
     await R.startDismisser();
     await G(() => __game.newGame());
-    for (const s of STEPS.filter(s => s.n > 1 && s.n <= 40)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }   // 40: Rubén libre
+    for (const s of STEPS.filter(s => s.n > 1 && s.n <= 46)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }   // 46: Zacarías libre
     await G(() => { clearInterval(window.__dismisser); window.__dismisser = null; });
     const exits = await G(() => { const out = []; for (const [rid, r] of Object.entries(__game.game.content.rooms)) for (const o of r.objects || []) { if (o.exit) out.push({ room: rid, id: o.id, to: o.exit.room, entry: o.exit.entry || rid }); if (o.ascensor) out.push({ room: rid, id: o.id, lift: true }); } return out; });
     const lifts = exits.filter(e => e.lift);
@@ -365,7 +413,7 @@ try {
         await settle();
         await clickTarget(e.id);
         await settle();
-        if (e.lift) { const label = await G((to) => (__game.game.content.rooms[to].objects.find(o => o.ascensor) || {}).ascensor.label, d.to); await chooseOption(label); }
+        if (e.lift) { const label = await G((to) => (__game.game.content.rooms[to].objects.find(o => o.ascensor) || {}).ascensor.label, d.to); await chooseOption(label); await atajoLlegada(e.room); }
         await settle();
         const r = await G(({ d, from }) => {
           const g = __game.game, p = g.player, def = g.room.def;
@@ -399,7 +447,7 @@ try {
     await G(() => __game.skipText(true));
     await R.startDismisser();
     await G(() => __game.newGame());
-    const cps = [[8, 'ACTO I (tras 7.2)'], [16, 'ACTO II (inicio)'], [26, 'ACTO II (tras D1)'], [36, 'ACTO III (inicio)'], [38, 'ACTO III (Rubén encontrado)'], [40, 'ACTO III (Rubén libre)']];
+    const cps = [[8, 'ACTO I (tras 7.2)'], [16, 'ACTO II (inicio)'], [30, 'ACTO II (tras D1)'], [40, 'ACTO III (inicio)'], [42, 'ACTO III (Zacarías encontrado)'], [46, 'ACTO III (Zacarías libre)']];
     let done = 1;
     for (const [n, tag] of cps) {
       for (const s of STEPS.filter(s => s.n > done && s.n <= n)) { for (const a of s.acc) await R.run(a); await G(() => __game.waitIdle()); await R.check(s.esp); }
