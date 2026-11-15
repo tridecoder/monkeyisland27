@@ -207,9 +207,9 @@ try {
   await G(() => __game.skipText(false));
   await raton('hablar', 'valentin_reticula', null, false);
   ok(await until(() => __game.game.actors.valentin_reticula.variante === 'casco_fuera' && __game.game.speeches.some(s => s.text === '…'), null, 45000), 'se quita el casco (casco_fuera) y sale el globo «…»');
+  await page.mouse.move(5, 5); await shot('valentin');
   const pos = await G(() => { const g = __game.game; return { b: Math.round(g.player.x), v: Math.round(g.actors.valentin_reticula.x), dv: g.actors.valentin_reticula.dir }; });
   ok(pos.b < pos.v - 8 && pos.dv === 'left', `Bruno a su izquierda y Valentín mirándole (${JSON.stringify(pos)})`);
-  await verA('valentin_reticula'); await page.mouse.move(5, 5); await sleep(150); await shot('valentin');
   await G(() => __game.skipText(true)); await idle(); await seguir();
   const vl = await logDe('valentin_reticula');
   ok(vl.every(t => t === '…') && await logHas('...Nada. Perdone.') && await G(() => !__game.game.actors.valentin_reticula.variante), `sin palabras (${JSON.stringify(vl)}); vuelve a ponerse el casco`);
