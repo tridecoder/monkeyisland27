@@ -3,16 +3,12 @@
 // §4.4 el árbol de Maripaz (cada píxel es espacio publicitario; «cariño» y gong, de condimento); el rumor C pasa por ella
 // en segundo lugar (Aurora 1 → Maripaz 2 → desmentido de Teodoro). El asistente de Tadeo, igual.
 // El árbol de Pilar Escaleta (Eventos) vive en ./eventos.dialogos.js.
+// ENMIENDA E5 (PE): M17, fuera el «Llevas RECHAZADO en la frente.» de Maripaz (la llamada y la función `frente`).
 import { gong, SFX } from '../escenas/planta_noble.js';
 
 const MARIPAZ = 'maripaz_remitido';
 const sayM = (api, t) => api.sayAs(MARIPAZ, t);
 const tadeo = (api, t) => api.sayFrom('portatil_tadeo', t);
-
-/** biblia 5.5 `bruno_sellado_frente` (opcional): un comentario por PNJ, una vez. */
-async function frente(api, who) {
-  if (api.flag('bruno_sellado_frente') && api.once('frente_' + who)) await api.sayAs(who, 'Llevas RECHAZADO en la frente.');
-}
 
 export default {
   // ---------------------------------------------------------------- E2 §4.4 Maripaz (Acto I y tras D1)
@@ -24,7 +20,6 @@ export default {
         api.inc('rumor_teodoro_n');
         await sayM(api, 'Teodoro es el dueño del edificio. Lo compró en el 97. Por fax.');
       }
-      await frente(api, MARIPAZ);
       if (api.once('ecosistema_maripaz_saludo')) await sayM(api, '¿Esa cara? Te la patrocino. «Agobio, con Tilas Calmín».');
       else if (api.flag('duelo_maripaz_ganado') && api.once('ecosistema_maripaz_comision')) await sayM(api, 'Mi becario favorito. Te debo una comisión. No te la voy a pagar.');
       else await sayM(api, '¿Vuelves? En la web eso se llama fidelización. Se cobra el doble.');

@@ -14,6 +14,7 @@ import {
 import * as kit from '../../lib/kit.js';
 import { nucleoGeom } from '../../lib/edificio.js';
 import { sevenSeg } from './lib-vestibulo-micro.js';
+import { drawText } from '../../../engine/font.js';
 
 const W = 320, FL = 94;
 const N = nucleoGeom('cpd', FL);
@@ -330,7 +331,8 @@ function drawPapel(g, view, t) {
       rect(g, xx, yy, ww, 2, k & 1 ? PAL.paper[5] : PAL.paper[7]); hline(g, xx, yy, ww, PAL.paper[7]); hline(g, xx, yy + 1, ww, PAL.paper[3]);
       px(g, xx + 1, yy, PAL.ink[3]); px(g, xx + ww - 2, yy, PAL.ink[3]);
     }
-  } else {
+  } else if (st === 'corre') { drawPapelCorre(g, sx, sy, T); return; }
+  else {
     pts = []; for (let i = 0; i <= 44; i++) { const u = i / 44; pts.push([sx + 4 + Math.sin(u * 5.2) * 9 * (0.4 + u) + u * 14, sy + 2 + u * 37]); }
   }
   // sombra de la tira sobre el suelo
@@ -350,6 +352,38 @@ function drawPapel(g, view, t) {
   // el cabo asomando por la rendija (luz del papel)
   if (st !== 'tensa') rect(g, sx - 5, sy - 1, 11, 2, PAL.paper[7]);
   if (st === 'tensa') { glow(g, sx + 10, sy + 20, 14, 18, PAL.paper[7], 0.1, 3); px(g, sx + 22, sy + 38, PAL.paper[7]); }
+}
+
+/** E5 §2.4 · estado 'corre' (Acto III sin Rubén): la tira sale A CHORRO por la rendija (avanza 1 px cada 120 ms: los
+ *  pliegues y los agujeros de arrastre bajan) y se amontona en acordeón en el suelo, con un par de lazos sueltos. */
+function drawPapelCorre(g, sx, sy, T) {
+  const off = Math.floor(T / 120);                                               // 1 px cada 120 ms
+  const pileY = 112, x0 = sx + 1, x1 = sx + 9;
+  // la tira, de la rendija al montón, con una comba que tiembla
+  for (let yy = sy; yy < pileY - 6; yy++) {
+    const u = (yy - sy) / (pileY - 6 - sy);
+    const cx = Math.round(x0 + (x1 - x0) * u + Math.sin((yy + off) * 0.45) * 0.8 * u);
+    const w = Math.round(9 + 3 * u);
+    const fold = (((yy - sy) - off) >> 2) & 1;                                   // un pliegue cada 4 px, bajando
+    hline(g, cx - (w >> 1), yy, w, fold ? PAL.paper[7] : PAL.paper[5]);
+    if ((((yy - sy) - off) & 1) === 0) { px(g, cx - (w >> 1) + 1, yy, PAL.ink[3]); px(g, cx + (w >> 1) - 2, yy, PAL.ink[3]); }
+    if (yy > sy + 4) px(g, cx + (w >> 1) + 1, yy + 1, PAL.ink[0]);                // sombra a la derecha
+  }
+  // el montón en acordeón: 7 pliegues que se apilan; el de arriba «respira» con cada pliegue que llega
+  shadowEllipse(g, x1 + 1, pileY + 3, 15, 2.5, 0.6);
+  const sube = off % 4 < 2 ? 0 : 1;
+  for (let k = 0; k < 7; k++) {
+    const yy = pileY + 1 - k * 2 - (k === 6 ? sube : 0), ww = 20 - (k & 1) * 3 - (k >> 1), xx = x1 - (ww >> 1) + ((k * 3) % 3) - 1;
+    rect(g, xx, yy, ww, 2, k & 1 ? PAL.paper[5] : PAL.paper[7]); hline(g, xx, yy, ww, PAL.paper[7]); hline(g, xx, yy + 1, ww, PAL.paper[3]);
+    px(g, xx + 1, yy, PAL.ink[3]); px(g, xx + ww - 2, yy, PAL.ink[3]);
+  }
+  // dos lazos sueltos que se escurren del montón hacia cámara
+  for (let i = 0; i < 14; i++) {
+    const u = i / 13, xx = Math.round(x1 + 8 + u * 12), yy = Math.round(pileY + 2 + Math.sin(u * 3.1 + off * 0.05) * 3 + u * 6);
+    hline(g, xx, yy, 3, (i >> 1) & 1 ? PAL.paper[5] : PAL.paper[7]); if (i % 2 === 0) px(g, xx + 1, yy, PAL.ink[3]);
+  }
+  rect(g, sx - 5, sy - 1, 11, 2, PAL.paper[7]);                                  // la boca de la rendija, iluminada
+  glow(g, sx + 4, sy + 8, 12, 10, PAL.paper[7], 0.12, 3);
 }
 
 function drawVentilador(g, view, t) {
@@ -470,24 +504,94 @@ function animateLeds(g, view, t) {
   g.save(); g.globalAlpha = b; g.fillStyle = '#5ab0ff'; g.fillRect(96, 100, W - 96, 44); g.restore();
 }
 
-// ------------------------------------------------------------------ [P1] regleta R-3 (plan §4.2, paso 20)
-// 14×6 en el suelo, al pie del armario 24: cuerpo gris con tres enchufes, piloto verde (encendida) o apagado, una brida
-// blanca con su etiqueta y el cable gris que sube por el canto del rack hasta el techo (va a la pantalla de la Redacción).
-const REG = { x: 104, y: 95, w: 14, h: 6 };
+// ------------------------------------------------------------------ [PC] E5 §2.2.4 el REGLETERO (id `regleta_r3`)
+// Tablero de 42×20 atornillado al pie de los armarios 24-25: cinco regletas horizontales con su brida y su piloto. La R-3
+// lleva un pósit amarillo de Paco que le tapa la etiqueta; la R-5, etiqueta roja. De la R-3 sube el cable gris a la
+// Redacción (la pantalla de métricas). A 320×200 las etiquetas no se leen: el plano detalle (`planoRegletero`) las enseña.
+// `REGLETERO.off` (1-5, 0 = ninguna): la regleta que Bruno tiene desenchufada en ese segundo (lo pone cpd.js; no se guarda).
+export const REGLETERO = { off: 0 };
+const REG = { x: 104, y: 75, w: 42, h: 20 };
+const TAGS = ['paper', 'paper', 'posit', 'paper', 'rojo'];
 function drawRegleta(g, view, t) {
   const { x, y, w, h } = REG;
-  const on = String(view.state || 'encendida') !== 'apagada';
-  // el cable que sube por el canto izquierdo del rack 24 hasta el techo
-  vline(g, x + 1, 0, y + 1, PAL.metal[3]); vline(g, x + 2, 0, y + 1, PAL.metal[1]);
-  for (let yy = 8; yy < y - 4; yy += 14) { rect(g, x, yy, 4, 2, PAL.paper[6]); px(g, x + 3, yy + 1, PAL.paper[3]); }   // bridas por el camino
-  shadowEllipse(g, x + w / 2, y + h, w / 2 + 2, 1.5, 0.7);
-  rect(g, x, y, w, h, PAL.metal[2]); hline(g, x, y, w, PAL.metal[5]); hline(g, x, y + h - 1, w, PAL.ink[0]);
-  for (let k = 0; k < 3; k++) { rect(g, x + 2 + k * 3, y + 2, 2, 2, PAL.ink[0]); px(g, x + 2 + k * 3, y + 2, PAL.metal[1]); }
-  rect(g, x + w - 3, y + 2, 2, 2, on ? '#5cff5c' : '#123012');                                 // piloto
-  if (on) glow(g, x + w - 2, y + 3, 5, 3, '#5cff5c', 0.4 + 0.1 * Math.sin((t || 0) / 500), 2);
-  // la brida con su etiqueta, colgando del enchufe del medio
-  rect(g, x + 5, y - 3, 1, 3, PAL.paper[6]); rect(g, x + 4, y - 7, 7, 4, PAL.paper[7]); frameRect(g, x + 4, y - 7, 7, 4, PAL.paper[3]);
-  hline(g, x + 5, y - 6, 4, PAL.red[3]); hline(g, x + 5, y - 4, 3, PAL.ink[3]);
+  const r3 = String(view.state || 'encendida') !== 'apagada';
+  const T = t || 0;
+  // el cable de la R-3 sube por el canto del rack 24 hasta el techo, con sus bridas
+  vline(g, x + 1, 0, y + 9, PAL.metal[3]); vline(g, x + 2, 0, y + 9, PAL.metal[1]);
+  for (let yy = 8; yy < y - 4; yy += 14) { rect(g, x, yy, 4, 2, PAL.paper[6]); px(g, x + 3, yy + 1, PAL.paper[3]); }
+  // el tablero
+  shadowEllipse(g, x + w / 2, y + h + 1, w / 2 + 2, 1.5, 0.6);
+  rect(g, x - 1, y - 1, w + 2, h + 2, PAL.ink[0]);
+  rect(g, x, y, w, h, PAL.wood[1]); hline(g, x, y, w, PAL.wood[3]);
+  for (const [sx, sy] of [[x + 1, y + 1], [x + w - 2, y + 1], [x + 1, y + h - 2], [x + w - 2, y + h - 2]]) px(g, sx, sy, PAL.metal[6]);
+  for (let i = 0; i < 5; i++) {
+    const ry = y + 1 + i * 4, on = (i === 2 ? r3 : true) && REGLETERO.off !== i + 1;
+    // cuerpo gris con cuatro enchufes
+    rect(g, x + 12, ry, w - 14, 3, PAL.metal[3]); hline(g, x + 12, ry, w - 14, PAL.metal[5]); hline(g, x + 12, ry + 2, w - 14, PAL.metal[1]);
+    for (let k = 0; k < 4; k++) px(g, x + 15 + k * 5, ry + 1, PAL.ink[0]);
+    // piloto
+    const pc = on ? '#5cff5c' : '#123012';
+    px(g, x + w - 4, ry + 1, pc);
+    if (on) { g.save(); g.globalAlpha = 0.25 + 0.1 * Math.sin(T / 500 + i); g.fillStyle = '#5cff5c'; g.fillRect(x + w - 5, ry, 3, 3); g.restore(); }
+    // brida blanca
+    px(g, x + 13, ry - (i ? 0 : 0), PAL.paper[7]); px(g, x + 13, ry + 2, PAL.paper[7]);
+    // etiqueta a la izquierda (la R-3 la tapa el pósit, que se dibuja después)
+    if (TAGS[i] === 'rojo') { rect(g, x + 2, ry, 9, 3, PAL.red[3]); hline(g, x + 3, ry + 1, 6, PAL.paper[7]); }
+    else if (TAGS[i] === 'paper') { rect(g, x + 2, ry, 9, 3, PAL.paper[6]); hline(g, x + 3, ry + 1, 5 + (i % 2), PAL.ink[3]); }
+  }
+  // el pósit de Paco sobre la R-3, un poco torcido y más grande que la etiqueta
+  rect(g, x + 1, y + 8, 11, 6, '#f0e050'); hline(g, x + 1, y + 8, 11, '#fff490'); px(g, x + 11, y + 13, '#c8b030');
+  hline(g, x + 3, y + 10, 6, PAL.ink[3]); hline(g, x + 3, y + 12, 5, PAL.ink[3]);
+  kit.cantoVivo(g, x - 1, y - 1, w + 2, h + 2);
+}
+
+/** Plano detalle del regletero (api.detalle): cinco regletas con sus etiquetas legibles en la fuente del juego.
+ *  r = { x, y, w, h } en pantalla; o.r3 = la R-3 encendida; REGLETERO.off = la que está desenchufada en ese segundo. */
+export function planoRegletero(g, r, t, o = {}) {
+  const { x, y, w, h } = r;
+  const T = t || 0;
+  // tablero de contrachapado sobre el lateral del armario, con sus cuatro tornillos
+  paint(g, x, y, w, h, (xx, yy) => ditherPick(xx, yy, [PAL.wood[2], PAL.wood[1], PAL.wood[0]], 0.3 + (yy - y) / h * 0.5));
+  for (const [sx, sy] of [[x + 3, y + 3], [x + w - 4, y + 3], [x + 3, y + h - 4], [x + w - 4, y + h - 4]]) { rect(g, sx - 1, sy - 1, 3, 3, PAL.metal[3]); px(g, sx, sy, PAL.metal[7]); }
+  const rowH = 15, gap = 4, top = y + 6;
+  const NOMBRES = ['NÓMINAS', 'ASCENSOR', '', 'GERTRUDIS', 'NO TOCAR NUNCA'];
+  for (let i = 0; i < 5; i++) {
+    const ry = top + i * (rowH + gap), on = (i === 2 ? o.r3 !== false : true) && REGLETERO.off !== i + 1;
+    // el cable que sale por la derecha
+    const cab = [PAL.gold[3], PAL.blue[4], PAL.metal[4], PAL.teal[4], PAL.red[3]][i];
+    rect(g, x + w - 14, ry + 6, 14, 3, PAL.ink[0]); hline(g, x + w - 14, ry + 6, 14, cab);
+    // cuerpo de la regleta (gris, con cinco enchufes schuko y el interruptor con piloto)
+    const bx = x + 112, bw = w - 128;
+    rect(g, bx, ry, bw, rowH, PAL.ink[0]);
+    gradV(g, bx + 1, ry + 1, bw - 2, rowH - 2, [PAL.metal[5], PAL.metal[4], PAL.metal[3]]);
+    for (let k = 0; k < 4; k++) {
+      const cx = bx + 8 + k * 17;
+      ellipse(g, cx, ry + 7, 5, 5, PAL.metal[2]); ellipse(g, cx, ry + 7, 4, 4, PAL.metal[1]);
+      px(g, cx - 2, ry + 7, PAL.ink[0]); px(g, cx + 2, ry + 7, PAL.ink[0]);
+    }
+    // un enchufe enchufado en cada una (el de la R-3 es gris: la pantalla de la Redacción)
+    rect(g, bx + 21, ry + 3, 9, 9, i === 2 ? PAL.metal[2] : PAL.ink[2]); rect(g, bx + 23, ry + 5, 5, 5, i === 2 ? PAL.metal[3] : PAL.ink[3]);
+    const sw = bx + bw - 12;
+    rect(g, sw, ry + 3, 8, 9, on ? '#c02020' : '#501010'); rect(g, sw + 1, ry + 4, 6, 3, on ? '#ff6050' : '#702020');
+    if (on) glow(g, sw + 4, ry + 7, 9, 7, '#ff5040', 0.35 + 0.08 * Math.sin(T / 300 + i), 3);
+    // la brida (blanca) que la ata al tablero
+    rect(g, bx - 4, ry + 2, 3, rowH - 4, PAL.paper[7]); vline(g, bx - 2, ry + 2, rowH - 4, PAL.paper[4]);
+    // etiqueta
+    const lx = x + 8, lw = 100;
+    if (i === 4) { rect(g, lx, ry, lw, rowH, PAL.red[3]); frameRect(g, lx, ry, lw, rowH, PAL.red[1]); }
+    else { rect(g, lx, ry, lw, rowH, PAL.paper[6]); frameRect(g, lx, ry, lw, rowH, PAL.paper[3]); }
+    const tinta = i === 4 ? '#ffffff' : '#1a1a2a';
+    drawText(g, 'R-' + (i + 1), lx + 3, ry + 2, tinta, { outline: null });
+    if (NOMBRES[i]) drawText(g, NOMBRES[i], lx + 22, ry + 2, tinta, { outline: null });
+  }
+  // el pósit de Paco: tapa la etiqueta de la R-3 (menos el «R-3») y dice lo suyo a boli
+  const py = top + 2 * (rowH + gap) - 4;
+  rect(g, x + 29, py + 1, 82, rowH + 9, 'rgba(0,0,0,0.35)');
+  rect(g, x + 27, py, 82, rowH + 8, '#f4e258'); hline(g, x + 27, py, 82, '#fff7a0'); vline(g, x + 108, py, rowH + 8, '#c8b030');
+  kit.micro(g, 'NI AUNQUE LO DIGA', x + 31, py + 4, '#2a3a8a');
+  kit.micro(g, 'EL TICKET 3.  PACO', x + 31, py + 12, '#2a3a8a');
+  // el cable de la R-3 sube al techo: «a la Redacción»
+  vline(g, x + w - 6, y, top + 2 * (rowH + gap) + 6 - y, PAL.metal[4]);
 }
 
 // ------------------------------------------------------------------ [P1] primer plano de Rubén en su nido (plan §4.6)
@@ -552,7 +656,7 @@ const layout = {
   armario_27: { rect: [170, 28, 32, 66], walkTo: [186, 110], face: 'up', priority: 1, draw: (g, v, t) => drawArmario27(g, v, t) },
   papel_continuo: {
     rect: [176, 94, 32, 38], walkTo: [190, 111], face: 'up', priority: 2,
-    sprites: { asoma: (g, v, t) => drawPapel(g, v, t), tensa: (g, v, t) => drawPapel(g, v, t), recogida: (g, v, t) => drawPapel(g, v, t), default: (g, v, t) => drawPapel(g, v, t) },
+    sprites: { asoma: (g, v, t) => drawPapel(g, v, t), tensa: (g, v, t) => drawPapel(g, v, t), recogida: (g, v, t) => drawPapel(g, v, t), corre: (g, v, t) => drawPapel(g, v, t), default: (g, v, t) => drawPapel(g, v, t) },
   },
   ventilador: { rect: [203, 30, 22, 70], walkTo: [214, 112], face: 'up', draw: (g, v, t) => drawVentilador(g, v, t) },
   libro_visitas: { rect: [225, 62, 16, 38], walkTo: [232, 112], face: 'up', cache: true, draw: (g) => drawLibro(g) },
@@ -562,8 +666,8 @@ const layout = {
     layer: 'sorted', zy: 103, prop: true, draw: (g, v, t) => drawPacoDesk(g, v, t),
   },
   cementerio_ratones: { rect: [299, 86, 19, 18], walkTo: [306, 112], face: 'up', cache: true, draw: (g) => drawCaja(g) },
-  // [P1] la regleta R-3 (paso 20): al pie del armario 24
-  regleta_r3: { rect: [REG.x - 1, REG.y - 1, REG.w + 2, REG.h + 5], walkTo: [114, 106], face: 'up', priority: 2,
+  // [PC] E5: el regletero (paso 21), al pie de los armarios 24-25; Bruno se pone a su izquierda para no taparlo
+  regleta_r3: { rect: [REG.x - 1, REG.y - 1, REG.w + 2, REG.h + 2], walkTo: [96, 108], face: 'right', priority: 2,
     sprites: { encendida: (g, v, t) => drawRegleta(g, v, t), apagada: (g, v, t) => drawRegleta(g, v, t), default: (g, v, t) => drawRegleta(g, v, t) } },
   rejilla_cpd: { rect: [112, 121, 36, 15], walkTo: [130, 116], face: 'down', cache: true, draw: (g) => drawRejilla(g) },
   carro_kvm: { rect: [144, 90, 28, 36], layer: 'sorted', zy: 125, prop: true, draw: (g, v, t) => drawCarro(g, v, t) },

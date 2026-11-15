@@ -4,11 +4,12 @@
 // Reescritura de comedia, paquete P3 (docs/guion2/PLAN_COMEDIA.md): §5.8 Begoña, §4.5 la entrada nueva de la pared
 // (la factura del fax de la Redacción de papel), §6.3-6.4 líneas sueltas. El cartel del recorte lo firma Administración.
 // ENMIENDA E2 (P3): §5.2 (Evaristo, paso 28, en ./administracion.dialogos.js), §8 (fuera «desde julio»).
+// ENMIENDA E5 (PE): textos C53-C56 y C81 (sin coletillas; C56, Evaristo encantado de que le llamen).
 // El arte y la geometría están en ./art/administracion.art.js (artista de fondos). Árboles en ./administracion.dialogos.js.
 import { buildRoom } from '../lib/room.js';
 import art from './art/administracion.art.js';
 import dialogos, { recorte } from './administracion.dialogos.js';
-import { sello, rota } from '../escenas/planta_noble.js';
+import { sello, rota, SFX } from '../escenas/planta_noble.js';
 
 const BEGONA = 'begona_triplicado', EV = 'evaristo_salvedad';
 const sayBe = (api, t) => api.sayAs(BEGONA, t);
@@ -57,7 +58,7 @@ export default buildRoom({
   objects: [
     // la boca del pasillo, SIN puerta: la misma que se ve desde Marketing y Comercial (tipo 'pasillo')
     { id: 'administracion_a_ecosistema', name: 'pasillo a Marketing', exit: { room: 'ecosistema', tipo: 'pasillo' }, handlers: {
-      mirar: 'El pasillo, de vuelta a Marketing. Al fondo, la impresora. Y un gong.',
+      mirar: async (api) => { api.sfx(SFX.gong); await api.say('El pasillo, de vuelta a Marketing. Al fondo suena un gong.'); },   // E5 C53
       usar: async (api) => { await api.goto('ecosistema', 'administracion'); },
       abrir: 'Es un pasillo: viene abierto de serie. Begoña lo tiene en revisión.',
       cerrar: 'Si cierro el pasillo, Begoña me pide el F-3 de Pasillos. Por triplicado.',
@@ -117,7 +118,7 @@ export default buildRoom({
     { id: 'tazas_begona', name: 'tazas', handlers: {
       mirar: 'Tres tazas vacías. Una por copia.',
       coger: async (api) => { await sayBe(api, 'Esa es la del duplicado. Si se la lleva, quedo en original y triplicado.'); },
-      'usar:cafe': 'Lleno la del original y la dejo ahí. Begoña la mira con sospecha. Sin ticket.',
+      'usar:cafe': 'Lleno la del original y la dejo ahí. Begoña la mira con sospecha.',   // E5 C54
     } },
     { id: 'archivador_ejemplares', name: 'archivador EJEMPLARES', handlers: {
       mirar: '«EJEMPLARES». Once notas bien hechas en cuarenta años. Una por cuatrienio.',
@@ -143,7 +144,7 @@ export default buildRoom({
       mirar: 'Una coma enmarcada. Placa: «Cláusula 7, 2009. Nos ahorró una fusión».',
       hablar: 'Le digo que es preciosa. Desde dentro, Evaristo asiente.',
       coger: async (api) => { await sayEv(api, 'Esa coma no se presta. Ya hizo bastante en 2009.'); },
-      usar: 'Ya está en su sitio. Y bien puesta.',
+      usar: 'Ya está en su sitio. Evaristo me mira hasta que aparto la mano.',       // E5 C55
     } },
   ],
 
@@ -166,7 +167,7 @@ export default buildRoom({
           await sayBe(api, 'Entonces este café no ha existido.');
         },
         'dar:sobre_azucar': async (api) => { await sayBe(api, '¿Un sobre de azúcar? Sin nota de gasto, esto es azúcar.'); },
-        'dar:tarjeta_becario': async (api) => { await sayBe(api, '«Pellizco». ¿Viene a justificarse? Usted no tiene ticket. Ni foto.'); },
+        'dar:tarjeta_becario': async (api) => { await sayBe(api, '«Pellizco». ¿Viene a justificarse? Usted no tiene ticket.'); },   // E5 C81
         'dar:ticket_n1': async (api) => {
           await sayBe(api, 'Un ticket cerrado. Lo sello por emoción.');
           sello(api);
@@ -184,7 +185,8 @@ export default buildRoom({
       handlers: {
         mirar: async (api) => { await api.say(['Don Evaristo Salvedad, Controlling. Corbata de comas. Lupa al cuello.', 'Y un inalámbrico en la mano. Por si hay que llamar.']); },
         hablar: hablarEvaristo,
-        'usar:movil': 'No le llamo. Está a un metro. Y me lo cogería.',
+        // E5 C56: Evaristo, encantado de que le llamen
+        'usar:movil': async (api) => { await api.say('No le llamo. Está a un metro.'); await sayEv(api, 'Puede llamarme. Lo cogería.'); },
         'dar:pieza_opa': async (api) => { await sayEv(api, 'Treinta y una líneas. Diecisiete comas. Todas en su sitio.'); },
         'dar:copias_rechazadas': async (api) => {
           await sayEv(api, 'El triplicado tiene una coma distinta.');

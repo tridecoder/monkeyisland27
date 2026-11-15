@@ -123,6 +123,10 @@ function drawFax(g, x, y, papel, t) {
     poly(g, [[x + 3, y + 14], [x + 12, y + 14], [x + 13, y + 17], [x + 2, y + 17]], B[6]);
     for (let i = 0; i < 3; i++) hline(g, x + 4 + i, y + 15, 5 - i, B[3]);
   }
+  // [PD] E5 §2.3: la pegatina de mantenimiento de Paco («Sistemas. Ticket 0.441»), 2 px de alto en el frontal
+  rect(g, x + 4, y + 8, 6, 2, '#F2F0E6');
+  hline(g, x + 4, y + 8, 2, '#3A6AD0');
+  hline(g, x + 7, y + 9, 2, PAL.ink[3]);
   hline(g, x, y + 16, 26, B[0]);
   rect(g, x + 1, y + 17, 3, 1, PAL.ink[1]); rect(g, x + 22, y + 17, 3, 1, PAL.ink[1]);
   if (papel) {
