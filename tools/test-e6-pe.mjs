@@ -65,8 +65,8 @@ const visible = (G, id) => G((id) => { const o = __game.objects().find(o => o.id
 async function clicVerbo(page, G, verbo, id) {
   const v = await G((v) => __game.verbPos(v), verbo);
   await page.mouse.click(v.x, v.y); await sleep(80);
-  // el rotulador se pincha donde se VE (x 286-287, y 70-76: Bruno, parado junto al termómetro, no debe taparlo)
-  const c = id === 'rotulador_cordel' ? await G(() => __game.roomPointToClient(287, 74)) : await G((id) => __game.screenPos(id), id);
+  // el rotulador se pincha donde se VE (x 284-285, y 70-76: Bruno, parado junto al termómetro, no debe taparlo)
+  const c = id === 'rotulador_cordel' ? await G(() => __game.roomPointToClient(285, 74)) : await G((id) => __game.screenPos(id), id);
   await page.mouse.click(c.x, c.y);
 }
 /** recorte en bruto (PNG) de la zona del termómetro, para comparar el dibujo antes/después */

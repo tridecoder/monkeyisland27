@@ -47,8 +47,8 @@ const layout = {
   // Comercial
   rollup_comercial: { rect: [244, 32, 20, 64], walkTo: [254, 112], face: 'up', cache: true,
     sprites: { desplegado: (g) => drawRollup(g, false), enrollado: (g) => drawRollup(g, true), default: (g) => drawRollup(g, false) } },
-  termometro_ventas: { rect: [267, 30, 22, 34], walkTo: [278, 112], face: 'up' },
-  // E6 §2.9.1: el rotulador colgado del cordel (2×7 px en x 286-287, y 70-76, al borde derecho del papel para que Bruno, parado a su izquierda, no lo tape), pinchado en la parte baja del papelógrafo; rect = dibujo
+  termometro_ventas: { rect: [267, 30, 22, 34], walkTo: [270, 112], face: 'up' },
+  // E6 §2.9.1: el rotulador colgado del cordel (2×7 px en x 284-285, y 70-76, a la derecha del tubo; Bruno, parado a su izquierda (walkTo 270), no lo tapa), pinchado en la parte baja del papelógrafo; rect = dibujo
   // crecido para el mínimo de la auditoría (12×10) y pegado bajo el rect del termómetro (que se acorta) para no solaparse
   rotulador_cordel: { rect: [277, 64, 12, 16], walkTo: [270, 112], face: 'up', priority: 1, draw: drawRotuladorCordel },
   lema_enmarcado: { rect: [290, 18, 62, 33], walkTo: [318, 114], face: 'up' },
@@ -414,7 +414,7 @@ function drawTermometro(g) {
 }
 /** E6 §2.9.1 · el rotulador rojo de Comercial, colgado de un cordel de 1 px pinchado en el papelógrafo del termómetro. */
 function drawRotuladorCordel(g) {
-  const x = 286;
+  const x = 284;
   px(g, x, 63, PAL.metal[5]); px(g, x + 1, 63, PAL.metal[3]);                 // la chincheta
   vline(g, x, 64, 6, PAL.wood[5]);                                            // el cordel (1 px)
   rect(g, x, 70, 2, 2, PAL.ink[1]);                                           // la capucha
