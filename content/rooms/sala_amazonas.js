@@ -45,7 +45,8 @@ async function usarTele(api) {
 }
 
 // ---- [PA] E5 §2.1.5 · la tele según el turno: una sola puerta para Usar / Hablar / Cerrar la tele y Usar la caja de cables
-const GERTRUDIS_TV = { color: '#39FF14' };
+// su voz sale de la tele, pero el globo va a su izquierda (sobre la pantalla del orden del día) para no tapar su LCD
+const GERTRUDIS_TV = { color: '#39FF14', at: [186, 62], width: 104 };
 const CONVOCADA = 'CONVOCADA. TODA LA EMPRESA EN COPIA. EMPIEZA EN CINCO MINUTITOS.';
 async function teleSegunTurno(api, deHoy) {
   // con el atasco abierto, la tele sigue con Gertrudis: lo repite (0 líneas nuevas; no es una vía, §12.1)

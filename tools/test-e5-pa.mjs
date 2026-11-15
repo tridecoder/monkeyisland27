@@ -52,7 +52,18 @@ async function goto({ G }, room, entry) {
   await G(() => __game.skipText(true));
   await G(([r, e]) => __game.gotoRoom(r, e), [room, entry]);
   await G(() => { __game.skipSpeech(); return __game.waitIdle(); });
-  await G(() => { __game.skipText(false); __game.skipSpeech(); __game.game.speeches.length = 0; });
+  await G(() => { __game.skipSpeech(); __game.game.speeches.length = 0; });     // (el texto sigue en modo rápido)
+}
+/** Sin modo rápido: espera `cond` saltando los globos que no sean `keep` (texto que se quiere ver). */
+async function saltando(G, cond, keep = null, ms = 40000) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < ms) {
+    const r = await G(([c, k]) => { const g = __game.game; if (new Function('return ' + c)()) return true;
+      if (g.speeches.length && !(k && g.speeches.some(s => String(s.text).includes(k)))) __game.skipSpeech(); return false; }, [cond, keep]);
+    if (r) return true;
+    await sleep(80);
+  }
+  return false;
 }
 const shot = (page, name) => page.screenshot({ path: path.join(shots, `e5-pa-${name}.png`) });
 const until = async (G, fn, arg, ms = 8000) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { if (await G(fn, arg)) return true; await sleep(60); } return false; };
@@ -95,11 +106,9 @@ async function cerrarDialogo(G) {
 async function hastaAtasco(T) {
   const { G } = T;
   await G(() => { __game.setFlag('sala_amazonas_orden_visto', true); __game.setFlag('sala_becario_sin_turno', true); __game.setFlag('gertrudis_pregunta', true); });
-  await rapido(G, true);
+  await rapido(G, false);                         // (en modo rápido, la escena resolvería por la vía del anuncio)
   await G(() => { __game.game.runScript(api => api.scene('sala_tele_gertrudis'), { label: 'test tele' }); });
-  // el modo rápido resolvería por la vía del anuncio: se quita en cuanto arranca la escena
-  await sleep(30); await rapido(G, false);
-  await until(G, () => __game.getFlag('sala_amazonas_atasco') && !__game.state().busy, null, 60000);
+  await saltando(G, "__game.getFlag('sala_amazonas_atasco') && !__game.state().busy");
   await G(() => { __game.skipSpeech(); __game.game.speeches.length = 0; });
 }
 const viaLines = {
@@ -110,16 +119,15 @@ async function comprobarVia(T, via) {
   const { G } = T;
   await rapido(G, true);
   await until(G, () => __game.getFlag('reunion_terminada') && !__game.state().busy, null, 60000);
-  await rapido(G, false);
   const n = {}; for (const [k, t] of Object.entries(viaLines)) n[k] = await logCount(G, t);
   ok(n[via] === 1 && Object.entries(n).every(([k, c]) => k === via || c === 0), `vía ${via}: una sola línea de vía en el registro ${JSON.stringify(n)}`);
   const st = await G(() => { const s = __game.state(); return { rt: s.flags.reunion_terminada, est: s.flags.sala_amazonas_estampida, at: s.flags.sala_amazonas_atasco,
     merc: ['mercados_1', 'mercados_2', 'mercados_3'].filter(id => s.actors[id] && s.actors[id].room === 'sala_amazonas'), gerv: s.actors.gervasio_acta && s.actors.gervasio_acta.room,
-    noSave: __game.game.noSave, tele: s.objects.tele_amazonas && s.objects.tele_amazonas.state, bot: s.objects.botellines && s.objects.botellines.state, reg: __game.game.salaAtasco }; });
+    noSave: __game.game.noSave, tele: __game.game.getObjState('tele_amazonas').state, bot: __game.game.getObjState('botellines').state, reg: __game.game.salaAtasco }; });
   ok(st.rt && st.est && !st.at && !st.merc.length && st.gerv !== 'sala_amazonas' && !st.noSave, `vía ${via}: reunión terminada, Mercados y Gervasio fuera, atasco cerrado, se puede guardar ${JSON.stringify(st)}`);
   ok(st.reg && st.reg.regreso === (via !== 'cruasan'), `vía ${via}: el regreso mudo a por el cruasán ${via === 'cruasan' ? 'no' : 'sí'} (${JSON.stringify(st.reg)})`);
   ok(await logHas(G, 'Se levanta la sesión. Lo hablamos.') && await logHas(G, '¿Usted no huye?'), `vía ${via}: «Se levanta la sesión» y Maripaz`);
-  ok((st.tele || 'normal') === 'normal' && st.bot === 'tumbados', `vía ${via}: la tele vuelve a lo de siempre y los botellines quedan tumbados`);
+  ok((st.tele || 'normal') === 'normal' && st.bot === 'tumbados', `vía ${via}: la tele vuelve a lo de siempre y los botellines quedan tumbados (${st.tele}, ${st.bot})`);
 }
 
 try {
@@ -152,17 +160,19 @@ try {
     ok(await logHas(G, 'Para tocar el punto 3 hay que decirlo en voz alta, a quien preside.'), 'Usar orden del día: D02');
     await clic(T, 'hablar', 'gervasio_acta');
     ok(await clicOpcion(T, 'siguientes pasos?'), 'clic en «Bueno... ¿y cuáles son los siguientes pasos?»');
-    await rapido(G, true); await idle(G); await rapido(G, false);
+    await rapido(G, true); await idle(G);
     const s1 = await G(() => ({ st: __game.getFlag('sala_becario_sin_turno'), rt: __game.getFlag('reunion_terminada'), dlg: !!__game.game.choice }));
     ok(await logHas(G, 'Pregunta la mesa... y los conectados.') && s1.st && !s1.rt && !s1.dlg, `«…y los conectados», sin turno, sin reunion_terminada, diálogo cerrado ${JSON.stringify(s1)}`);
     ok(await logCount(G, 'Se toma nota. No la tomo yo') === 0, '`return exit`: no se gasta «Me voy.»');
     await G(() => __game.doVerb('hablar', 'gervasio_acta'));
     ok(!(await opciones(G)).some(o => o.includes('siguientes pasos')), 'tras el «sin turno», la opción ya no sale');
     await cerrarDialogo(G);
+    await rapido(G, false);
     await clic(T, 'usar', 'tele_amazonas');
-    await until(G, () => __game.state().objects.tele_amazonas && __game.state().objects.tele_amazonas.state === 'buscando', null, 8000);
+    await until(G, () => __game.game.getObjState('tele_amazonas').state === 'buscando', null, 8000);
+    await sleep(300);
     await shot(page, 'tele-buscando');
-    await rapido(G, true); await idle(G); await rapido(G, false);
+    await rapido(G, true); await idle(G);
     ok(await logHas(G, 'Alguien con wifi y rencor la encontraría enseguida.'), 'Usar tele con «sin turno»: «wifi y rencor»');
     await G(() => __game.doVerb('usar', 'tele_amazonas', 'movil'));
     ok(await logHas(G, 'Los once mil son de la cafetera.'), 'Usar móvil con la tele: «once mil»');
@@ -170,7 +180,7 @@ try {
     await goto(T, 'office', 'pecera');
     await clic(T, 'hablar', 'gertrudis');
     ok(await clicOpcion(T, '¿Y cuáles son los siguientes pasos?'), 'Gertrudis (con office_agotada y E-53 vistos): clic en la opción');
-    await rapido(G, true); await idle(G); await rapido(G, false);
+    await rapido(G, true); await idle(G);
     ok(await flag(G, 'gertrudis_pregunta') && await logHas(G, 'LA MANDO A LA PRÓXIMA PANTALLA QUE ME SINTONICE'), '→ gertrudis_pregunta y el LCD');
     ok(await G(() => __game.getFlag('office_emision') === 1 && !__game.game.choice), 'piloto EN DIRECTO puesto y diálogo cerrado');
     await G(() => __game.doVerb('hablar', 'gertrudis'));
@@ -180,14 +190,15 @@ try {
     console.log('\n§2.1 (f) clic en la tele → Gertrudis en directo, estampida, atasco con el control devuelto');
     await goto(T, 'sala_amazonas', 'pajarera');
     await G(() => __game.clearLog());
+    await rapido(G, false);
     await clic(T, 'usar', 'tele_amazonas');
-    await until(G, () => __game.game.speeches.some(s => String(s.text).includes('PREGUNTA DEL PÚBLICO')), null, 20000);
-    await sleep(500);
+    await saltando(G, "__game.game.speeches.some(s => String(s.text).includes('PREGUNTA DEL PÚBLICO'))");
+    await sleep(700);
     await shot(page, 'tele-gertrudis');
-    await until(G, () => __game.game.speeches.some(s => String(s.text).startsWith('CONVOCADA')), null, 40000);
-    await sleep(400);
+    await saltando(G, "__game.game.speeches.some(s => String(s.text).startsWith('CONVOCADA'))", 'PREGUNTA DEL');
+    await sleep(700);
     await shot(page, 'tele-convocada');
-    await until(G, () => __game.getFlag('sala_amazonas_atasco') && !__game.state().busy, null, 40000);
+    await saltando(G, "__game.getFlag('sala_amazonas_atasco') && !__game.state().busy");
     const s2 = await G(() => ({ busy: __game.state().busy, merc: ['mercados_1', 'mercados_2', 'mercados_3'].map(id => { const a = __game.game.actors[id]; return [Math.round(a.x), a.room]; }), ns: __game.game.noSave, rt: __game.getFlag('reunion_terminada') }));
     ok(await logHas(G, 'PREGUNTA DEL PÚBLICO: ¿Y CUÁLES SON LOS SIGUIENTES PASOS?') && await logHas(G, '¡Se ve! ¡Por fin se ve la pantalla!'), 'Rogelio «¡Se ve!» y Gertrudis por la tele');
     ok(await logHas(G, '¡Yo soy de Bolsa y de Mercados! ¡Tengo doble prioridad!'), 'las tres líneas del atasco');
@@ -203,6 +214,7 @@ try {
     ok(it.en === false && await G(() => __game.game.menu && __game.game.menu.page === 'main'), '«Guardar partida» en gris con el atasco abierto');
     await page.keyboard.press('Escape');
     await sleep(150);
+    await rapido(G, true);
     // otra cosa durante el atasco: lo de siempre (y la tele repite la convocatoria)
     await G(() => __game.doVerb('mirar', 'botellines'));
     await G(() => __game.doVerb('usar', 'tele_amazonas'));
@@ -234,7 +246,7 @@ try {
       // 10 s de tiempo quieto, con el ratón moviéndose sin parar (no cuenta)
       const t0 = Date.now();
       let k = 0;
-      while (!(await flag(G, 'reunion_terminada')) && Date.now() - t0 < 9000) { await page.mouse.move(200 + (k++ % 20) * 10, 200); await sleep(100); }
+      while (!(await flag(G, 'reunion_terminada')) && Date.now() - t0 < 9000) { await page.mouse.move(300 + (k++ % 20) * 10, 420); await sleep(100); }
       ok(!(await logHas(G, viaLines.anuncio)), 'antes de 10 s quietos, Maripaz no anuncia');
       await until(G, () => __game.log.some(l => String(l.text).includes('anuncio de cinco segundos')), null, 8000);
       ok((Date.now() - t0) >= 9500, `anuncio a los ~10 s (${Date.now() - t0} ms)`);
@@ -250,6 +262,7 @@ try {
     const { G } = T;
     await hastaAtasco(T);
     await G(() => __game.clearLog());
+    await rapido(G, true);
     await G(([id]) => __game.doVerb(id === 'sala_a_pajarera' ? 'ir' : 'hablar', id), [id]);
     await comprobarVia(T, via);
     ok((await G(() => __game.state().room)) === 'sala_amazonas', `${id}: Bruno no sale de la Sala`);
@@ -265,7 +278,7 @@ try {
     await G(() => __game.load(3));
     await idle(G);
     const s = await G(() => { const s = __game.state(); return { at: s.flags.sala_amazonas_atasco, est: s.flags.sala_amazonas_estampida, rt: s.flags.reunion_terminada,
-      merc: ['mercados_1', 'mercados_2', 'mercados_3', 'gervasio_acta'].filter(id => s.actors[id] && s.actors[id].room === 'sala_amazonas'), bot: s.objects.botellines && s.objects.botellines.state, log: __game.log.filter(l => l.who !== 'aviso').length }; });
+      merc: ['mercados_1', 'mercados_2', 'mercados_3', 'gervasio_acta'].filter(id => s.actors[id] && s.actors[id].room === 'sala_amazonas'), bot: __game.game.getObjState('botellines').state, log: __game.log.filter(l => l.who !== 'aviso').length }; });
     ok(!s.at && s.est && s.rt && !s.merc.length && s.bot === 'tumbados' && s.log === 0, `cargada: atasco resuelto, Mercados y Gervasio fuera, botellines tumbados, sin líneas ${JSON.stringify(s)}`);
     await T.ctx.close();
   }
@@ -292,6 +305,7 @@ try {
       sala_amazonas_climax_visto: true, climax_entrada: true, duelo_inigo_ganado: true, duelo_maripaz_ganado: true, casilla_hueco: true };
     const T = await open(F3);
     const { page, G } = T;
+    await rapido(G, false);
     await G(() => { const g = __game.game; g.__sfx = []; const o = g.audio.sfx.bind(g.audio); g.audio.sfx = (n, ...r) => { g.__sfx.push([n, Math.round(g.time)]); return o(n, ...r); }; });
     // Rubén en la sala, como tras el remate A; luego el onWin de Íñigo (su línea + las caras)
     await G(() => __game.game.runScript(async api => {
@@ -299,7 +313,7 @@ try {
       api.faceActor('inigo_sinergia', 'right'); api.faceActor('gervasio_acta', 'right');
       await api.game.room.def.duels.inigo.onWin(api);
     }, { label: 'test onWin' }));
-    await rapido(G, true); await idle(G); await rapido(G, false);
+    await saltando(G, "!__game.state().busy");
     await G(() => { __game.skipSpeech(); __game.game.speeches.length = 0; __game.clearLog(); });
     const caras = await G(() => { const g = __game.game, L = g.actors.lector_medio; return ['inigo_sinergia', 'gervasio_acta', 'ruben'].map(id => { const a = g.actors[id]; return [id, a.dir, Math.sign(L.x - a.x)]; }); });
     ok(caras.every(([, d, s]) => d === (s < 0 ? 'left' : 'right')), `onWin: Íñigo, Gervasio y Rubén miran al cartón ${JSON.stringify(caras)}`);
@@ -314,7 +328,7 @@ try {
     const t0 = Date.now();
     let k = 0, shotCaras = false;
     while (Date.now() - t0 < 11500 && !(await logHas(G, 'Balón suelto'))) {
-      await page.mouse.move(300 + (k++ % 30) * 8, 120 + (k % 7) * 10); await sleep(100);
+      await page.mouse.move(300 + (k++ % 30) * 8, 420 + (k % 7) * 4); await sleep(100);
       if (!shotCaras && Date.now() - t0 > 2000) {
         await until(G, () => { const g = __game.game; return g.actors.lector_medio && g.room.def.id === 'sala_amazonas' && (Math.floor((g.time % 3200) / 160) === 2); }, null, 4000);
         await shot(page, 'caras-carton'); shotCaras = true;
@@ -327,7 +341,9 @@ try {
     const cr = await G(() => __game.game.__sfx.filter(([n]) => n === 'crujido').length);
     ok(cr >= 2, `crujido con el fotograma tamb3 (${cr} veces)`);
     // Gervasio M34 (rompe la quietud un momento: no pasa nada)
+    await rapido(G, true);
     await G(() => __game.doVerb('hablar', 'gervasio_acta'));
+    await rapido(G, false);
     ok(await logHas(G, 'Lo que diga el Lector Medio. Que se está... Se está moviendo.'), 'Gervasio tras D4: M34');
     await G(() => { __game.skipSpeech(); __game.game.speeches.length = 0; });
     ok(await until(G, () => __game.log.some(l => String(l.text).startsWith('Ahí sigue. De pie')), null, 22000), '25 s: «Ahí sigue…»');
@@ -335,6 +351,7 @@ try {
     ok(await logCount(G, 'Balón suelto') === 1, 'cada megafonía, una sola vez');
     // el Lector asiente sin globo
     await G(() => __game.clearLog());
+    await rapido(G, true);
     await G(() => __game.doVerb('hablar', 'lector_medio'));
     ok(!(await G(() => __game.log.some(l => l.who === 'lector_medio'))) && await logHas(G, '...Pues ya está decidido.'), 'Hablar al Lector: asiente sin globo; Gervasio decide');
     // el empujón: la cadena final, intacta (juego terminado)

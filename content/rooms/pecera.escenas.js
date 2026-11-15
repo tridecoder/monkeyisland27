@@ -266,6 +266,9 @@ async function apagonJugable(api) {
   api.background(ventana);
 }
 
+/** Espera de la ventana que siempre cede el paso (en modo rápido `api.wait` resuelve al momento y el bucle no soltaría
+ *  el hilo). */
+const pausa = (api, ms) => (api.game.instant ? new Promise(r => setTimeout(r, ms)) : api.wait(ms));
 /** La ventana (guion NO bloqueante): Anselmo cruza; PLIN cada 2 s; a los 12 s o al llegar él, `apagonCierre`. */
 async function ventana(api) {
   const g = api.game, gen = g.gen, t0 = g.time, a = g.actors[A];
@@ -279,12 +282,12 @@ async function ventana(api) {
       plin += PLIN_MS;
       api.sfx(PLIN);                                   // (y el monitor parpadea en PUBLICADO)
       api.setState('monitor_yoli', 'guardando');
-      api.wait(140).then(() => { if (sigue()) api.setState('monitor_yoli', 'publicado'); });
+      pausa(api, 140).then(() => { if (sigue()) api.setState('monitor_yoli', 'publicado'); });
     }
-    await api.wait(80);
+    await pausa(api, 80);
   }
   if (!sigue()) return;
-  while (g.busy && sigue()) await api.wait(50);        // si Bruno está hablando a oscuras, que acabe la frase
+  while (g.busy && sigue()) await pausa(api, 50);        // si Bruno está hablando a oscuras, que acabe la frase
   if (!sigue()) return;
   g.runScript((api2) => apagonCierre(api2, V.llego ? 'anselmo' : 'tiempo'), { label: 'pecera:apagonCierre' });
 }
