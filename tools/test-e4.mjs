@@ -432,11 +432,11 @@ async function hojaYRafaga() {
   await setFlags({ intro_vista: true, torno_abierto: true, inigo_presentado: true });
   await goto('pecera'); await clearLog();
   await mirar('hoja-acto1');
-  must(await logHas('Lo más leído de la web. Impreso. Con chinchetas.'), 'O1');
+  must(await logHas('Lo más leído de la web, impreso y clavado con chinchetas.'), 'O1');
   await mirar('hoja-acto1-b');
-  must(await logHas('Esa ya está vieja. Te imprimo otra.'), 'O2');
+  must(await logHas('Esa ya está vieja; te imprimo otra.'), 'O2');
   await mirar('hoja-acto1-c');
-  must(await logCount('Esa ya está vieja.') === 1, 'O2 dos veces');
+  must(await logCount('Esa ya está vieja;') === 1, 'O2 dos veces');
   const f1 = await filas('I');
   must(f1.kw === 'PERSIANAS' && f1.filas.length === 5 && f1.extra && f1.extra[0] === 213, 'hoja I: ' + JSON.stringify(f1));
   await setFlags({ cms_vivo: true, cafetera_viral: true, acto_2_iniciado: true });

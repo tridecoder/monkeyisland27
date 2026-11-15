@@ -390,6 +390,8 @@ async function cmsVivo(api) {
       api.setState('pantalla_metricas', 'negra');
       api.apagon({ ms: 0, spots: SPOT_YOLI });
       await api.wait(400);
+      // E6 §2.1.4: a oscuras, Yoli también se queda ciega por este camino (las dos líneas de siempre, 0 nuevas)
+      await api.sayAs(Y, '¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?');
       // (Clic. Negro. Anselmo ya se está levantando.)
       await alEnchufe(api, A);
       await talk(api, [['B', 'Ticket nº 3: «El CMS se cuelga con esta pantalla».'], [A, '¿Tiene número?'], ['B', 'El tres.'],
@@ -401,6 +403,8 @@ async function cmsVivo(api) {
       api.setFlag('cms_vivo', true);
       api.setState('monitor_yoli', 'publicado');
       api.repaint();
+      api.sfx(PLIN);
+      await api.sayAs(Y, '...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!');
       await api.apagon(false);
       await talk(api, [['CORO', '¡Ha sido Diseño!'], ['B', 'He sido yo. Pero gracias.']]);
       await deVuelta(api, A);
@@ -468,7 +472,10 @@ async function dosIAs(api) {
     api.faceActor(A, 'left');                // (desde su mesa)
     await talk(api, [[A, 'Tiene alta de usuario interno. Lo que tiene alta es de la casa.']]);
     api.setFlag('anselmo_dijo_regla', true);
-    await api.say('Armario 27. Atún. Baño. Eso no es un modelo. Eso es un compañero.');
+    // E6 §2.5.1 (B2): Bruno ya no saca la conclusión; mira hacia el ascensor, sin línea
+    await api.wait(800);
+    api.face('right');
+    await api.wait(600);
   });
   api.setFlag('dos_ias_vista', true);
   api.setFlag('anselmo_dijo_regla', true);

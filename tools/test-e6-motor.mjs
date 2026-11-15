@@ -253,7 +253,7 @@ try {
       p.x = a.x + 6; p.y = a.y + 3; p.path = []; g.snapCamera();
       const ab = g.actorBox(a), pb = g.actorBox(p);
       // un punto dentro de Bruno (sin los pies), fuera de la caja exacta del actor y a ≤ 6 px de ella
-      for (let x = ab.x + ab.w; x < ab.x + ab.w + 6; x++) for (let y = pb.y + 4; y < pb.y + pb.h - 6; y++) {
+      for (let x = Math.ceil(ab.x + ab.w) + 1; x < ab.x + ab.w + 6; x++) for (let y = Math.ceil(pb.y) + 4; y < pb.y + pb.h - 6; y++) {
         if (x >= pb.x && x < pb.x + pb.w && y >= ab.y && y < ab.y + ab.h) return { id: a.id, x, y, pose0 };
       }
       return { id: a.id, x: null, pose0 };
@@ -262,7 +262,6 @@ try {
     if (n5 && n5.x != null) {
       await sleep(100);
       const c5 = await cli(n5.x, n5.y);
-      console.log('    DEBUG0', JSON.stringify(await T.G(([id, x, y]) => { const g = __game.game; return { yb: g.actorBox(g.actors[id]), pb: g.actorBox(g.player), x, y }; }, [n5.id, n5.x, n5.y])));
       await verbo('hablar');
       await T.page.mouse.move(c5.x, c5.y); await sleep(120);
       const sH = await T.G(() => __game.game.sentenceText());
@@ -271,7 +270,6 @@ try {
       ok(ex.length && ex[0][0] === 'hablar' && ex[0][1] === n5.id, `Hablar + clic en el borde de ${n5.id} tapado por Bruno: gana el de detrás («${sH}», ${JSON.stringify(ex)})`);
       await shot(T.page, 'hablar-tapado');
       await verbo('mirar');
-      console.log('    DEBUG', JSON.stringify(await T.G(([id, x, y]) => { const g = __game.game; return { yb: g.actorBox(g.actors[id]), pb: g.actorBox(g.player), x, y, path: g.actors[id].path.length, ppath: g.player.path.length, verb: g.ui.verb }; }, [n5.id, n5.x, n5.y])));
       await T.page.mouse.click(c5.x, c5.y); await sleep(200);
       ex = await T.G(() => window.__ex.splice(0));
       ok(ex.length && ex[0][1] === 'bruno', `en el mismo punto, Mirar → Bruno (${JSON.stringify(ex)})`);

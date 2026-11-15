@@ -20,7 +20,7 @@ import dialogos, { anselmoCtx, anselmoEnSuSitio, columnas } from './pecera.dialo
 import escenas from './pecera.escenas.js';
 import { talk, seq, PREFIX } from './pecera.voces.js';
 import { ascensorObjeto } from '../lib/ascensor.js';
-import { usarDirectorio, DIRECTORIO_COLOR } from '../lib/directorio.js';   // crítica 3 §9.8: atajo de desplazamiento
+import { usarDirectorio, DIRECTORIO_COLOR, SIN_DESTINO } from '../lib/directorio.js';   // crítica 3 §9.8 · E6 E344: la línea del punto rojo, importada
 import { dialogoCustodia, objetosSecretaria, flagsSecretaria } from './pecera.secretaria.js';
 import { darTaper } from './cpd.js';                      // [integrador] el táper también vale con Rubén en la Redacción
 import { titulador } from './pecera.titulador.js';          // ENMIENDA E4 §3bis: el titulador de Yoli
@@ -179,7 +179,7 @@ export default buildRoom({
     { id: 'directorio_planta', name: 'directorio con atajos', parada: true, defaultVerb: 'usar', color: DIRECTORIO_COLOR, handlers: {
       ir: usarDirectorio, usar: usarDirectorio,
       mirar: async (api) => {
-        if (api.once('pecera_directorio_mirado')) await seq([['B', 'Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.'], ['B', 'Un punto rojo: «ESTÁ AQUÍ». Gracias. Me hacía falta.']])(api);
+        if (api.once('pecera_directorio_mirado')) await seq([['B', 'Directorio de la planta 1: Despachos, Vending, Secretaría, Papel y Redacción.'], ['B', SIN_DESTINO]])(api);
         await usarDirectorio(api);
       },
       empujar: 'No se mueve. Está donde dice que está.',
@@ -299,7 +299,7 @@ export default buildRoom({
       },
       hablar: async (api) => {
         if (estadoPortatil(api) === 'paquete') { await api.say('Le digo hola al paquete. Por el hueco, una barra sube un poco.'); return; }
-        await talk(api, [['H', 'saludo recibido · hola: 100 %'], ['B', 'Me ha entendido a la primera. Aquí eso no pasa.']]);
+        await talk(api, [['H', 'saludo recibido · hola: 100 %']]);          // E6 §2.6 B6: la pantalla es el chiste
       },
       'usar:ficha_pagina_7': async (api) => {
         const n = casillas(api);
@@ -466,7 +466,8 @@ export default buildRoom({
       usar: async (api) => {
         if (api.flag('album_validado') && !api.flag('posit_descopeado')) {
           if (api.has('rotulador_rojo')) { await columnas(api); return; }
-          await api.say('Una columna nueva pide rotulador. El de Anselmo no sale de Desarrollo.');
+          // E6 §2.9.2 (N11): lo dice Anselmo, sin levantarse (su lógica: de fuera / de dentro)
+          await api.sayAs(A, 'Mi rotulador no sale de Desarrollo. Que te lo preste alguien de fuera.');
           return;
         }
         await api.say('Me escribo un pósit: "Firmar en papel". Lo pego en POR HACER.');
@@ -544,11 +545,19 @@ export default buildRoom({
       mirar: async (api) => api.say('Valentín Retícula, de Diseño y Producto. El cable de los cascos no va a nada.'),
       hablar: async (api) => {
         if (api.inc('pecera_valentin_n') === 1) {
+          // E6 §6.5 (N8): cameo MUDO. Bruno a su izquierda (no le tapa); Valentín le mira, se quita un auricular
+          // (variante `casco_fuera`, I1), espera con un globo «…» sin palabras y se lo vuelve a poner.
+          await api.walkTo(V);
+          api.faceActor(V, api.player);
           await api.say('¿No le molesta que le culpen de todo?');
-          await api.anim(V, 'reach', 500);                 // (se quita un casco; mira a Bruno; espera)
-          await api.wait(1400);
+          api.sfx('click');
+          await api.anim(V, 'reach', 300);
+          api.vestir(V, 'casco_fuera');
+          await api.sayAs(V, '…', { ms: 1400 });
           await api.say('...Nada. Perdone.');
-          await api.anim(V, 'reach', 400);                 // (se lo vuelve a poner)
+          api.vestir(V, null);
+          api.sfx('click');
+          await api.anim(V, 'reach', 300);
         } else await api.sayAs(V, 'Está en la bandeja.');
       },
       'dar:*': 'Se lo dejo en la mesa. Lo alinea con el borde sin mirarlo.',

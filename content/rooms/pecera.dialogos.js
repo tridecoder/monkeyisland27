@@ -182,6 +182,9 @@ export default {
           api.sfx('paper');
           api.repaint();
           await api.sayAs(A, 'Las fotos me valen. Pero yo no escribo columnas nuevas.');
+          // E6 §2.9.3: gesto sin línea; tapa su rotulador y se lo guarda en el cinto (el suyo no sale de Desarrollo)
+          api.sfx('click');
+          await api.anim(A, 'reach', 300);
           return 'exit';
         },
       },
@@ -347,7 +350,9 @@ async function salida(api, via) {
       api.cameraFollow();
       await api.walkActor(A, 672 + D, 118);
       api.faceActor(A, 'left');
-      await talk(api, [['B', 'La frase con la que Íñigo despide a la gente acaba de liberar a Brais.']]);
+      // E6 §2.6 B1: Bruno ya no explica la columna; Brais, en la ventana, se gira hacia ella y se despide en titular
+      await api.wait(500);
+      api.faceActor(R, 'kanban');
       await api.sayAs(R, 'SEGUIREMOS INFORMANDO.');
     });
   } finally {
