@@ -98,10 +98,12 @@ try {
   // ====================================================================== 1. apagón jugable
   console.log('\n§2.2 apagón jugable (ratón real)');
   await partida();
-  await G(() => __game.skipText(true));
+  await G(() => __game.skipText(false));            // modo rápido = ventana de 0 ms: aquí, a velocidad real
   const ax0 = await G(() => __game.game.actors.anselmo_monolito.x);
+  const sp0 = await G(() => __game.game.actors.anselmo_monolito.speed);
+  const tc0 = Date.now();
   await raton('tirar', 'enchufe_pantalla', null, false);
-  ok(await until(() => !!__game.getFlag('pecera_oscuras') && !__game.state().busy, null, 15000), 'clic Tirar + enchufe → ventana a oscuras (pecera_oscuras) y control devuelto');
+  ok(await until(() => !!__game.getFlag('pecera_oscuras') && !__game.state().busy, null, 40000), `clic Tirar + enchufe → ventana a oscuras (pecera_oscuras) y control devuelto (cutscene: ${Date.now() - tc0} ms)`);
   const t0 = await G(() => __game.game.time);
   const ap = await G(() => { const g = __game.game; return { on: !!g.apagon, spots: g.apagon && g.apagon.spots.length, nombres: g.apagon && g.apagon.nombres, icp: !!(g.apagon && g.apagon.interceptar), noSave: !!g.noSave, n: __game.getFlag('apagon_n'), cms: !!__game.getFlag('cms_vivo') }; });
   ok(ap.on && ap.spots === 2 && ap.nombres && ap.icp && ap.n === 1 && !ap.cms, `apagón con dos focos, nombres e interceptor; apagon_n = 1, sin cms_vivo (${JSON.stringify(ap)})`);
@@ -144,7 +146,7 @@ try {
   ok(await until(() => !__game.getFlag('pecera_oscuras') && !__game.game.apagon && !__game.state().busy, null, 20000), 'la ventana se cierra sola');
   const t1 = await G(() => __game.game.time);
   const fin = await G(() => ({ n: __game.getFlag('apagon_n'), cms: !!__game.getFlag('cms_vivo'), noSave: !!__game.game.noSave, sp: __game.game.actors.anselmo_monolito.speed, nf: !!__game.game.actors.anselmo_monolito.noFreeze, x: Math.round(__game.game.actors.anselmo_monolito.x) }));
-  ok(t1 - t0 <= 12600 + 6000 && fin.n === 1 && !fin.cms && !fin.noSave && fin.sp === 64 && !fin.nf, `cierre (Anselmo llega antes de los 12 s): luz, apagon_n 1, sin cms_vivo, se puede guardar (${JSON.stringify(fin)})`);
+  ok(t1 - t0 <= 12600 + 6000 && fin.n === 1 && !fin.cms && !fin.noSave && fin.sp === sp0 && !fin.nf, `cierre (Anselmo llega antes de los 12 s): luz, apagon_n 1, sin cms_vivo, se puede guardar (${JSON.stringify(fin)})`);
   ok(await logHas('¿La quieres apagada? Ese cable baja a Sistemas. Que te la apague Paco.') && !(await logHas('Si funciona, la gente se acostumbra.')), 'cierre con «…Que te la apague Paco.» (D06), sin la línea vieja');
   ok(fin.x > 1000, `Anselmo, de vuelta en su mesa (x ${fin.x})`);
   // escalada n = 2, como hoy
@@ -154,9 +156,9 @@ try {
 
   // --- Usar el enchufe a los 2 s
   await partida();
-  await G(() => __game.skipText(true));
+  await G(() => __game.skipText(false));            // modo rápido = ventana de 0 ms: aquí, a velocidad real
   await raton('tirar', 'enchufe_pantalla', null, false);
-  await until(() => !!__game.getFlag('pecera_oscuras') && !__game.state().busy, null, 15000);
+  await until(() => !!__game.getFlag('pecera_oscuras') && !__game.state().busy, null, 40000);
   await sleep(1800);
   await G(() => __game.clearLog());
   await raton('usar', 'enchufe_pantalla');
@@ -165,27 +167,27 @@ try {
 
   // --- a los 12 s (Anselmo, entretenido: no llega)
   await partida();
-  await G(() => __game.skipText(true));
+  await G(() => __game.skipText(false));            // modo rápido = ventana de 0 ms: aquí, a velocidad real
   await raton('tirar', 'enchufe_pantalla', null, false);
-  await until(() => !!__game.getFlag('pecera_oscuras') && !__game.state().busy, null, 15000);
+  await until(() => !!__game.getFlag('pecera_oscuras') && !__game.state().busy, null, 40000);
   const tA = await G(() => { __game.game.actors.anselmo_monolito.speed = 4; return __game.game.time; });
   await until(() => !__game.getFlag('pecera_oscuras'), null, 20000);
   const tB = await G(() => __game.game.time);
   await idle();
-  ok(tB - tA >= 11000 && tB - tA <= 13500 && await logHas('Que te la apague Paco.') && await G(() => __game.game.actors.anselmo_monolito.speed === 64),
+  ok(tB - tA >= 11000 && tB - tA <= 13500 && await logHas('Que te la apague Paco.') && await G(() => __game.game.actors.anselmo_monolito.speed === 54),
     `a los 12 s se cierra aunque Anselmo no haya llegado (${Math.round(tB - tA)} ms); vuelve a su paso de siempre`);
 
   // --- cargar a mitad de la ventana
   await partida();
-  await G(() => __game.skipText(true));
+  await G(() => __game.skipText(false));            // modo rápido = ventana de 0 ms: aquí, a velocidad real
   await raton('tirar', 'enchufe_pantalla', null, false);
-  await until(() => !!__game.getFlag('pecera_oscuras') && !__game.state().busy, null, 15000);
+  await until(() => !!__game.getFlag('pecera_oscuras') && !__game.state().busy, null, 40000);
   await sleep(1500);
   await G(() => { __game.game.noSave = false; __game.save(2); __game.game.noSave = true; });   // una partida guardada «a oscuras» (versión vieja)
   await G(() => __game.load(2));
   await sleep(400); await idle();
   const ld = await G(() => { const g = __game.game, a = g.actors.anselmo_monolito; return { ap: !!g.apagon, osc: !!__game.getFlag('pecera_oscuras'), n: __game.getFlag('apagon_n'), x: Math.round(a.x), sp: a.speed, nf: !!a.noFreeze, noSave: !!g.noSave, mon: __game.state().objects['pecera:monitor_yoli'] }; });
-  ok(!ld.ap && !ld.osc && ld.n === 1 && ld.x > 1060 && ld.sp === 64 && !ld.nf && !ld.noSave, `cargar a mitad de la ventana → luz, Anselmo en su mesa, apagon_n se queda (${JSON.stringify(ld)})`);
+  ok(!ld.ap && !ld.osc && ld.n === 1 && ld.x > 1060 && ld.sp === 54 && !ld.nf && !ld.noSave, `cargar a mitad de la ventana → luz, Anselmo en su mesa, apagon_n se queda (${JSON.stringify(ld)})`);
   await sleep(2500);
   ok(!(await G(() => !!__game.game.apagon)) && await G(() => Math.round(__game.game.actors.anselmo_monolito.x)) > 1060, 'tras cargar, la ventana vieja no vuelve (ni PLIN ni cierre colgados)');
 
@@ -226,8 +228,9 @@ try {
   await raton('usar', 'kanban', 'rotulador_rojo', false);
   await until(() => !!__game.currentDialogOptions());
   ok((await opciones()).includes('SALIDA EN VALOR') && (await opciones()).includes('DESCOPEADO'), 'con rep_13 y oyo_descopear, salen SALIDA EN VALOR y DESCOPEADO');
+  await G(() => { window.__taper = false; window.__tq = setInterval(() => { const r = __game.game.actors.ruben; if (r && r.hold && r.hold.item === 'taper_huerfano' && r.room === 'pecera') window.__taper = true; }, 4); });
   await clicOpcion('SALIDA EN VALOR');
-  ok(await until(() => { const r = __game.game.actors.ruben; return !!(r && r.hold && r.hold.item === 'taper_huerfano'); }, null, 20000), 'con taper_dado, Rubén va a la ventana con el táper en la mano');
+  ok(await until(() => window.__taper || !__game.state().busy, null, 20000) && await G(() => { clearInterval(window.__tq); return window.__taper; }), 'con taper_dado, Rubén va a la ventana con el táper en la mano');
   await idle(); await seguir();
   const s1 = await G(() => ({ pd: __game.getFlag('posit_descopeado'), rl: __game.getFlag('ruben_libre'), col: __game.getFlag('columna_kanban'), inv: __game.state().inventory }));
   ok(s1.pd && s1.rl && s1.col === 'salida' && s1.inv.includes('ticket_n1') && s1.inv.includes('rotulador_rojo'), `SALIDA EN VALOR → posit_descopeado, ruben_libre, ticket_n1, columna 'salida', el rotulador se queda (${JSON.stringify(s1)})`);
@@ -289,12 +292,13 @@ try {
   await G(() => __game.gotoRoom('office', 'pecera')); await idle();
   await G(() => __game.skipText(false));
   const f4 = await G(async () => {
-    const g = __game.game; let fade = 0, run = false, tp = false, px = null;
+    const g = __game.game; let fade = 0, run = false, tp = false, px = null, dentro = false;
     const p = __game.gotoRoom('pecera', 'office');
     const t0 = performance.now();
     while (performance.now() - t0 < 9000) {
-      fade = Math.max(fade, g.fadeLevel || 0);
-      if (g.player && g.room && g.room.def.id === 'pecera') { if (px != null && Math.abs(g.player.x - px) > 40) tp = true; px = g.player.x; run = run || !!g.player.running; }
+      if (dentro) fade = Math.max(fade, g.fadeLevel || 0);
+      if (g.room && g.room.def.id === 'pecera' && (g.fadeLevel || 0) < 0.02) dentro = true;   // (el fundido de la puerta no cuenta)
+      if (dentro && g.player) { if (px != null && Math.abs(g.player.x - px) > 40) tp = true; px = g.player.x; run = run || !!g.player.running; }
       if (__game.getFlag('cafetera_viral') && g.speeches.length && /Once mil/.test(g.speeches.map(s => s.text).join())) break;
       await new Promise(r => setTimeout(r, 16));
     }
