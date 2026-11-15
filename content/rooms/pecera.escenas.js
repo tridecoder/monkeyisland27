@@ -131,7 +131,7 @@ async function presentacionVillano(api) {
       await api.wait(500);
       await api.sayAs(I, 'EL IBEX ABRE PLANO. PLANO. ¿POR QUÉ NADIE HABLA DE ESTO?', { color: TITULATOR, at: [160 + Math.round(api.game.camX), 108] });
     });
-    await talk(api, [[I, 'Trescientos titulares esta tarde. Sin CMS. Sin silla. Sin convenio.']]);
+    await talk(api, [[I, 'Trescientos titulares esta tarde, sin CMS, sin silla y sin convenio.']]);
     // (Encuadre de Infografía. Leoncio, sin levantarse, señala su portátil con el lápiz.)
     await encuadre(api, 800);
     api.faceActor(I, 'right');
@@ -351,13 +351,13 @@ async function apagonEscena(api) {
       await api.wait(600);
       if (n === 2) {
         api.sfx(PLIN); api.setState('monitor_yoli', 'publicado');
-        await api.sayAs(Y, '¡Otra! ¡Ha entrado otra!');
+        await api.sayAs(Y, '¡Ha entrado otra!');
         // (Le tiembla el párpado. Se levanta y enchufa ella.)
         await alEnchufe(api, Y);
         await luzVuelve(api);
         api.setState('monitor_yoli', 'guardando');
         await talk(api, [[Y, 'Perdona. Si no veo la gráfica, no sé si estoy contenta.'], ['B', 'Pero estaba entrando todo.'],
-          [Y, 'Ya. Pero no lo veía entrar. Eso no cuenta.']]);
+          [Y, 'Ya. Pero si no lo veo entrar, no cuenta.']]);
         await deVuelta(api, Y);
       } else if (n === 3) {
         // (Anselmo cruza su cinta, enchufa sin mirar y vuelve.)
@@ -392,8 +392,8 @@ async function cmsVivo(api) {
       await api.wait(400);
       // (Clic. Negro. Anselmo ya se está levantando.)
       await alEnchufe(api, A);
-      await talk(api, [['B', 'Ticket nº 3, de 2017: «El CMS se cuelga con esta pantalla».'], [A, '¿Tiene número?'], ['B', 'El tres.'],
-        [A, '...Entonces existe. A HECHO (PERO NO). Con número.']]);
+      await talk(api, [['B', 'Ticket nº 3: «El CMS se cuelga con esta pantalla».'], [A, '¿Tiene número?'], ['B', 'El tres.'],
+        [A, '...Entonces existe. A HECHO (PERO NO).']]);
       // (Corta cinta y pega bajo el letrero: «SALVO TICKET Nº 3».)
       await api.anim(A, 'reach', 600);
       api.sfx('paper');
@@ -423,7 +423,7 @@ async function herminiaMide(api) {
     await api.wait(300);
     await talk(api, [['H', 'tu pieza · 31 líneas · hueco de la página 7: 23 · sobra: 26 %']]);
     api.faceActor(L, api.player);
-    await talk(api, [[L, 'Ya te la ha leído. Yo no, ¿eh? Yo ya no leo. Superviso.'], ['B', '¿Y quién quita un 26 %?'],
+    await talk(api, [[L, 'Ya te la ha leído. Yo no, ¿eh? Yo ya solo superviso.'], ['B', '¿Y quién quita un 26 %?'],
       [L, 'Ella no. Ella mide. Quitar siempre es de otro departamento.']]);
     api.sfx('beep');                         // (Segundo pitido.)
     await talk(api, [['H', 'infografía de la opa · hecha en 0,4 s · publicar: bloqueado'],
@@ -433,7 +433,7 @@ async function herminiaMide(api) {
     await api.anim(A, 'reach', 600);
     api.sfx('paper'); await api.wait(250); api.sfx('paper');
     api.setFlag('herminia_midio', true);
-    await talk(api, [[A, 'Hecha con una IA de fuera. No entra en ninguna pieza.'], [A, 'Encintar, no. Aislar el componente.']]);
+    await talk(api, [[A, 'Hecha con una IA de fuera. No entra en ninguna pieza.'], [A, 'Encintar, no: aislar el componente.']]);
     api.faceActor(A, api.player);
     await talk(api, [['B', '¿Y vosotros no usáis IA de fuera?'], [A, 'El modelo es de fuera. El prompt es de dentro.'], [A, 'Eso lo hace nuestro.'],
       [L, 'El prompt de Herminia lo escribí yo. En esta mesa.']]);
@@ -459,7 +459,7 @@ async function dosIAs(api) {
     await talk(api, [[A, 'Última vuelta. Integración: en la próxima versión.'], [L, 'Envuelta. Parece un regalo. De nadie.']]);
     await anselmoASuMesa(api, 975);          // (Anselmo vuelve a su mesa. Leoncio se gira hacia Bruno.)
     api.faceActor(L, api.player);
-    await talk(api, [[L, 'Antes de que la envolviera le pedí un gráfico del Titulator. Por curiosidad.']]);
+    await talk(api, [[L, 'Antes de que la envolviera le pedí un gráfico del Titulator, por curiosidad.']]);
     // (Por un hueco de la cinta, la pantalla.)
     api.sfx('beep');
     await talk(api, [['H', 'titulares por hora · picos: 14:00 y 14:30 · pausas de 5 min: 11'],
@@ -496,7 +496,7 @@ async function anexion(api) {
     // (Despega la pegatina «INFOGRAFÍA» y pega una de «DESARROLLO». Estado anexionada.)
     await api.anim(A, 'reach', 500);
     api.setState('herminia_portatil', 'anexionada');
-    await talk(api, [[L, '¿Me la estás quitando?'], [A, 'Quitar, no. Absorber en plataforma.'],
+    await talk(api, [[L, '¿Me la estás quitando?'], [A, 'Quitar, no: absorber en plataforma.'],
       ['H', '› propietario: Desarrollo · cambios en los gráficos: 0']]);
     // (Anselmo se agacha y arranca la cinta del suelo. Toda.)
     await api.walkActor(A, 900, 126);
@@ -505,7 +505,7 @@ async function anexion(api) {
     api.setFlag('infografia_integrada', true);
     api.repaint();
     await talk(api, [[A, 'Ya no hace falta frontera. Todo esto es Desarrollo.'],
-      [L, 'Me han anexionado. Pero integrada, que es lo que quería. Creo.']]);
+      [L, 'Me han anexionado. Pero integrada, que es lo que quería.']]);
     await anselmoASuMesa(api, 975);
   });
   api.setFlag('infografia_integrada', true);
@@ -559,8 +559,8 @@ async function chaqueta(api) {
     const p = api.actorPos(api.player);
     if (!p || Math.abs(p.x - YOLI_EN[0]) > 200) await junto(api, 690, 124, 700, Y);
     await talk(api, [[Y, '¿Ramírez? ¡Ramírez ha vuelto! ...Ah. No. Eres tú.'],
-      [Y, 'Por un segundo te he respetado. Ha sido raro. Bonito, pero raro.'],
-      ['D1', '¡Ramírez!'], ['D2', '¿Viene a por el yogur?'], ['D3', 'No.']]);
+      [Y, 'Por un segundo te he respetado.'],
+      ['D1', '¡Ramírez!'], ['D2', '¿Viene a por el yogur?']]);
   });
 }
 
@@ -570,7 +570,7 @@ async function banner(api) {
   if (!api.once('pecera_yoli_banner')) return;
   await api.cutscene(async (api) => {
     await encuadre(api, YOLI_EN[0] - 30);   // (la cámara busca a Yoli; ella mira la espalda de Bruno)
-    await talk(api, [[Y, '¿Llevas un banner en la espalda? ...Pues convierte. Me han mirado.']]);
+    await talk(api, [[Y, '¿Llevas un banner en la espalda? ...Pues convierte.']]);
   });
   api.cameraFollow();
 }
@@ -691,14 +691,14 @@ export function hojaTop(datos, ibex, hora) {
 export async function mirarHoja(api) {
   const n = api.inc('pecera_top_n');
   if (n >= 2) {
-    if (n === 2) await api.sayAs(Y, 'Esa ya está vieja. Te imprimo otra.');
+    if (n === 2) await api.sayAs(Y, 'Esa ya está vieja; te imprimo otra.');
     api.anim(Y, 'reach', 500); api.sfx('paper');
   }
   const III = api.flag('acto_3_iniciado');
   const version = III ? 'III' : api.flag('cms_vivo') ? 'II' : 'I';
   const ibex = III ? (api.flag('discover_ganador') ? 0 : 1) : Math.max(1, 4 - n);
   let lines;
-  if (n === 1) lines = [['player', 'Lo más leído de la web. Impreso. Con chinchetas.']];
+  if (n === 1) lines = [['player', 'Lo más leído de la web, impreso y clavado con chinchetas.']];
   else if (III && api.once('pecera_top_borrasca')) lines = [['player', 'Por fin salgo el primero. Soy una borrasca.']];
   else if (III && api.flag('discover_ganador') && api.once('pecera_top_ibex0')) {
     const C = (asuntoDe(ganadorK(api)) || {}).C || 'Discover';

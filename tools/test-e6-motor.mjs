@@ -262,6 +262,7 @@ try {
     if (n5 && n5.x != null) {
       await sleep(100);
       const c5 = await cli(n5.x, n5.y);
+      console.log('    DEBUG0', JSON.stringify(await T.G(([id, x, y]) => { const g = __game.game; return { yb: g.actorBox(g.actors[id]), pb: g.actorBox(g.player), x, y }; }, [n5.id, n5.x, n5.y])));
       await verbo('hablar');
       await T.page.mouse.move(c5.x, c5.y); await sleep(120);
       const sH = await T.G(() => __game.game.sentenceText());
@@ -270,6 +271,7 @@ try {
       ok(ex.length && ex[0][0] === 'hablar' && ex[0][1] === n5.id, `Hablar + clic en el borde de ${n5.id} tapado por Bruno: gana el de detrás («${sH}», ${JSON.stringify(ex)})`);
       await shot(T.page, 'hablar-tapado');
       await verbo('mirar');
+      console.log('    DEBUG', JSON.stringify(await T.G(([id, x, y]) => { const g = __game.game; return { yb: g.actorBox(g.actors[id]), pb: g.actorBox(g.player), x, y, path: g.actors[id].path.length, ppath: g.player.path.length, verb: g.ui.verb }; }, [n5.id, n5.x, n5.y])));
       await T.page.mouse.click(c5.x, c5.y); await sleep(200);
       ex = await T.G(() => window.__ex.splice(0));
       ok(ex.length && ex[0][1] === 'bruno', `en el mismo punto, Mirar → Bruno (${JSON.stringify(ex)})`);
