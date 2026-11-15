@@ -94,6 +94,7 @@ try {
     let L = await log(G);
     ok(L.includes('bruno: Un termómetro pintado a rotulador: «OBJETIVO Q3». Rojo hasta el 97 %.') && L.includes(CORDEL) && !L.includes(GONG),
       'Mirar el termómetro (sin coger): 1.ª línea de hoy y 2.ª «El rotulador cuelga al lado, de un cordel…»');
+    await G(() => __game.skipSpeech()); await idle(G);
     await G(() => __game.clearLog()); await clicVerbo(page, G, 'mirar', 'rotulador_cordel');
     await until(G, (t) => __game.log.some(l => l.text === t), 'El rotulador cuelga al lado, de un cordel, como el boli de un banco.', 6000); await idle(G);
     ok((await log(G)).includes(CORDEL), 'Mirar el rotulador (ratón): la línea del cordel');

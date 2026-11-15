@@ -184,7 +184,11 @@ try {
     const { G } = T;
     await porLaTele(T);
     await G(() => __game.clearLog());
-    if (via === 'empujar') await clic(T, 'usar', 'sala_a_pajarera');
+    if (via === 'empujar') {
+      // Usar la puerta: clic en el dintel (abajo la tapan los tres encajados)
+      const vp = await G(() => __game.verbPos('usar')); await T.page.mouse.click(vp.x, vp.y); await sleep(80);
+      const c = await G(() => __game.roomPointToClient(20, 34)); await T.page.mouse.click(c.x, c.y); await sleep(120);
+    }
     else if (via === 'hablar') await clic(T, null, 'mercados_2', 'right');
     else await clic(T, 'coger', 'minicruasanes');
     await comprobarVia(T, via);

@@ -70,10 +70,11 @@ async function jugador({ movil = false } = {}) {
     // sonidos y temblor, para ver la celebración
     async espiar() {
       await G(() => {
-        window.__sfx = [];
+        window.__sfx = []; window.__shakes = 0;
+        if (window.__espiando) return;
+        window.__espiando = true;
         const a = __game.game.audio, f = a.sfx.bind(a);
         a.sfx = (...x) => { window.__sfx.push(typeof x[0] === 'string' ? x[0] : 'nota'); return f(...x); };
-        window.__shakes = 0; window.__tshake = 0;
         const gm = __game.game, sh = gm.shake.bind(gm);
         gm.shake = (...x) => { window.__shakes++; return sh(...x); };
       });
