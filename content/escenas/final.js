@@ -14,6 +14,15 @@
 import { PAL, rect, hline, vline, frameRect, gradV, ellipse, line, glow } from '../../engine/draw.js';
 import { drawText, LINE_H } from '../../engine/font.js';
 import game from '../game.js';
+import PIEZAS from '../rooms/pecera.titulador.datos.js';
+
+/** ENMIENDA E4 S6: «Bruno. {Tus mejillones}: un millón cien mil. Nadie pasó del titular.» — `epi` del asunto ganador
+ *  (`discover_ganador`, paso 40); sin ganador (extra XE3 sin vuelta a la Redacción), la opa en Discover. */
+export function lineaDiscover(api) {
+  const id = api.flag('discover_ganador');
+  const s = id ? PIEZAS.asuntos.find(x => x.id === id) : null;
+  return s && s.epi ? `Bruno. ${s.epi}: un millón cien mil. Nadie pasó del titular.` : 'Bruno. Tu opa en Discover: un millón cien mil. Nadie pasó del titular.';
+}
 import vestArt, { drawCajaInigo, drawCruasan, drawPeriodicoMaripaz } from '../rooms/art/vestibulo.art.js';
 
 const C = 'celestino', A = 'abuela_remedios', Y = 'yoli_tendencias', R = 'ruben', I = 'inigo_sinergia', MP = 'maripaz_remitido',
@@ -187,9 +196,10 @@ async function final(api) {
     api.placeActor(Y, 'vestibulo', ey.from[0], ey.from[1], ey.from[2]); api.show(Y);
     await api.walkActor(Y, ey.at[0], ey.at[1]);
     api.faceActor(Y, 'bruno'); api.face(Y);
-    await api.sayAs(Y, ['Bruno. Esa cuenta que comenta «abrígate» en todo...',
+    // ENMIENDA E4 S6 (alternativa A): el ganador de Discover, un millón cien mil que no pasaron del titular; y una que sí
+    await api.sayAs(Y, [lineaDiscover(api), 'Menos esa cuenta que comenta «abrígate» en todo...',
       'Se ha leído tu opa entera. Cuarenta y siete minutos. La portada dura nueve.']);
-    await api.say('¿Cuántos lectores?');
+    await api.say('¿Cuántos, de un millón?');
     await api.sayAs(Y, 'Una. Pero se lo lee TODO. La he puesto de objetivo de empresa.');   // E2 L28 (fase B (16): sin la cafetera)
     await api.sayAs(Y, 'Y desde esta noche, otro. Comenta «gracias por sacarme». En mayúsculas.');
     api.faceActor(R, Y);

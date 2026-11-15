@@ -615,6 +615,11 @@ bottom right; implies `bloqueo: cuenta.ms`; without `ms` it stays `cuenta.ms + 1
 the close «×» of that size in the top-right corner; 1-2 px = a dot; 0 = none). Helpers exported by `engine/detalle.js`:
 `cuentaAtras(t, ms)`, `dibujarX(g, x, y, px, color)`, `bloqueado(game)`. Demo: `tools/demo-fase0.js` (`demo_popup`,
 `demo_anuncio`).
+**Planos que se tocan (ENMIENDA E4 §3bis, el titulador de Yoli):** `click: (x, y) => bool` — a click / tap INSIDE the
+content calls it with content-relative coordinates; returning `true` swallows it (it does not pick the `escape` option of
+an open menu nor skip a line); `false` = the usual behaviour. The titulador uses it so that its three slots open their
+menu with a click and a stray tap on the monitor does not close it (a tap in the room, outside the insert, still does).
+`engine/detalle.js` exports `clic(game, x, y)`.
 
 ### Time & effects
 `api.wait(ms)`, `api.fadeOut(ms)`, `api.fadeIn(ms)`, `api.shake(ms, px)`, `api.sfx(name|def)`, `api.music(id|null, fade)`.
@@ -698,7 +703,7 @@ time, saved), `api.cond(c)`, `api.getState(objId)`, `api.setState(objId, v)`, `a
 |---|---|
 | `await api.goto(roomId, entryId?)` | change room (onExit, fade, onEnter, autosave); the script continues in the new room |
 | `await api.dialog(dialogId, nodeId?)` | §9 |
-| `const i = await api.choose(['a', { text: 'b', disabled: true }])` | options in the panel; disabled = grey, not selectable |
+| `const i = await api.choose(['a', { text: 'b', disabled: true }], opts?)` | options in the panel; disabled = grey, not selectable. `opts`: `escape` (index that Esc / a tap in the room picks), `duel` (compact: 5 rows of 11 px on touch, no scroll), `inicio` (E4: index scrolled into view when the menu opens) |
 | `await api.scene(name, ...args)` | run a named scene registered by any room (`scenes`) or game.js. A missing scene only warns (stubs) |
 | `await api.cutscene(async (api) => {})` | skippable with Esc |
 | `await api.credits(opts?)` | credits INSIDE the game: scrolls `opts.credits`, resolves by itself when the text is gone and the game stays in `'play'` (same room), so the script can go on (post-credits). Instant in fast mode |
@@ -936,6 +941,8 @@ game by itself; `api.ending(opts)` ends the game (a click fast-forwards; at the 
 | `node tools/play-mouse.mjs [--solo=raton\|geometria] [--vis]` | Act I + duel D1 with REAL mouse events only (incl. the vestíbulo barrier: the lift is unreachable before `torno_abierto`, reachable after; the lift panel by clicks), and the geometry audit: every hotspot/NPC of every room in every act has its approach point on the floor, reachable from every entry, is not fully covered by another hotspot, and every talkable NPC shows ≥ 80 % of head+torso (silhouette render) with ≥ 120 px of own click area — also **with Bruno standing at its talk spot** (talk spots go to the SIDE of the NPC, never in front) (`--vis` prints the figures). Shared with `tools/sala.mjs` (`tools/geo-audit.mjs`), plus the redesign rules R1-R5 (≥ 12×10, overlaps ≤ 30 %, talk spot ≥ 24 px, kit signs whole, inside the room): errors in rooms whose art has `rediseno: true` (or with `--estricto`), warnings elsewhere (`--avisos` lists them); `--sala=a,b` limits the audit |
 | `node tools/fuzz.mjs [--solo=guardar\|duelos\|objetos] [--sala=a,b] [--rapido]` | save/load in every act and play on to the end; lose every duel once; Dar/Usar every item on every NPC and hotspot (no exceptions, no stuck dialogs, list of consumed items) |
 | `node tools/contrast.mjs [--todo]` | legibility: WCAG contrast of every speaker colour against its outline and against the real background of every room under the speech band (`SPEECH_BACKING`), same-room speakers distinguishable, and all UI / menu / duel text colours ≥ 4.5:1 |
+| `node tools/test-e4.mjs [--sin-capturas]` | ENMIENDA E4: the titulador against the reference generator (`docs/guion2/e4/gen.mjs`, every combination), the data module up to date with `piezas.json`, no piece ids in the logic; a full session with a real mouse and on an iPhone in landscape, save/load with the record, loading mid-session, the owner's nine literal secrets, the pósit (Aurora, Yoli), COINCIDO, the step-34 demo, step 40, the epilogue (with/without a winner), the «lo más leído» sheet per act and the burst of notices; screenshots `tools/shots/e4-*.png` |
+| `node tools/gen-titulador.mjs [--comprobar]` | regenerates `content/rooms/pecera.titulador.datos.js` from `docs/guion2/e4/piezas.json` (`--comprobar`: exit 1 if out of date). See §18 |
 | `node tools/make-icons.mjs` | regenerates the web-app icons `icons/icon-{180,192,512}.png` from the game's own drawing code (the only image files in the project) |
 | `node tools/text-audit.mjs [--plan]` | every line said in a full game + all 9 verbs on everything: > 80 chars, balloons over 3 rows, missing ¿ ¡, names, clock times, and staging: whoever says a line is not hidden (> 20 % of head+torso) by another actor standing in front |
 | `node tools/review.mjs [--solo=salas\|momentos]` | contact sheets for visual review → `tools/shots/review/` |
@@ -999,3 +1006,35 @@ hover, camX, music, menu, speaking, aviso, finished }` · `newGame()` · `gotoRo
    (sin errores), `node tools/walkthrough.mjs` (debe pasar al menos tus pasos o fallar en uno de otro paquete) y
    `node tools/smoke.mjs`.
 10. Si necesitas un cambio en un archivo compartido o en el motor: **no lo hagas**; descríbelo en tu informe final.
+
+---
+
+## 18. Data-only content: the titulador's pieces (ENMIENDA E4 §3bis)
+
+The minigame «titulador» (Yoli's monitor in the Redacción) is **logic + data**:
+- `content/rooms/pecera.titulador.js` — logic and drawing: `titulador(api, { demo })`, the formula (`titular`, `usuarios`,
+  `categoria`, `voz`: a copy of `docs/guion2/e4/gen.mjs`), the winner of step 40 (`ganadorK`), the pósit on exit. It does
+  **not** name any authority / subject / hook id: Bruno's own headline (category «honesto») is the first combination of
+  `demo_paso_34`, the default winner is `ganador_por_defecto`, the hook categories are the ones whose `si` reads
+  `gancho <id>`, and Yoli's lines are `lineas` (the «sube» / «baja» fallbacks are the `linea` of those categories).
+  The 24×24 thumbnails are drawn per subject id with a generic newspaper for an unknown one.
+- `content/rooms/pecera.titulador.datos.js` — **generated** by `node tools/gen-titulador.mjs` from
+  `docs/guion2/e4/piezas.json` (never edited by hand). Format: the JSON as is (`autoridades[{id, menu, k, t{gancho:
+  plantilla}, tObj?}]`, `asuntos[{id, dom 'casa'|'eco', menu, S, C, P, E, N, s, ES?, B, epi}]`, `ganchos[{id, menu, k}]`,
+  `afinidades`, `especiales{'a|s|g': texto}`, `lineas{id: texto}`, `categorias[{id, si, etiqueta, linea}]`,
+  `secretos[{combo, etiqueta, linea}]`, `demo_paso_34`, `ganador_por_defecto`, `sentimentales`, `formula.castigo_opa`).
+  `asuntos[].epi` is the epilogue's «Tus mejillones»; `C` is the short form used by «se ha ido a {los mejillones}».
+- `content/rooms/pecera.titulares.datos.js` — the 24 fixed headlines (§5): the burst of notices and the «lo más leído»
+  sheet per act. Hand-written data.
+
+**Screen-only text.** Both data modules wrap what is only SEEN (headlines, menus, labels) between
+`// @solo-pantalla:inicio` and `// @solo-pantalla:fin`. `tools/plan-rules.mjs` (`SOLO_PANTALLA`, `sinSoloPantalla`) and
+`tools/check.mjs` skip that block — and only in the files listed in `SOLO_PANTALLA` — for the whole-game caps and the
+80-character limit (they are not spoken lines). Forbidden visible words and «Como X.» endings are still checked there.
+What Yoli SAYS (`PIEZAS.lineas`) is generated outside the block and goes through every rule.
+
+**Replacing the set of pieces:** copy the new `piezas.json` (same format) and `gen.mjs` to `docs/guion2/e4/`, run
+`node tools/gen-titulador.mjs`, then `node tools/test-e4.mjs` (compares every combination with the new `gen.mjs`, and the
+literal owner's headlines) and `node tools/text-audit.mjs --estatico --plan --e2`. No logic changes are needed unless
+the format changes (a new marker in the templates, a new category rule): then `pecera.titulador.js` must follow `gen.mjs`.
+

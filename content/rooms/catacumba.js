@@ -428,15 +428,38 @@ const dialogoAurora = {
         // E2 §5.3 · paso 32: Aurora bendice la coma y la manda por el fax de Teodoro (tecla 3)
         { text: 'Don Evaristo pregunta si su coma está bien.', if: ['evaristo_escuchado', 'fax_con_papel', '!coma_bendecida'],
           do: comaDeEvaristo },
+        // ENMIENDA E4 S7 · contrapunto de papel 1: COINCIDO (Teodoro y Aurora, de acuerdo en gramática)
+        { text: 'Yoli quiere sacar mi opa con «los expertos coinciden».', once: true, if: ['pieza_escrita', 'fax_con_papel'],
+          do: async (api) => {
+            await aurora(api, '¿Coinciden en qué? «Coincidir» pide complemento.');
+            await imprime(api, 1);                               // (el fax se pone a escribir solo)
+            await fax(api, `${api.hora()}. Respuesta a Aurora: coincido.`);
+            await api.wait(900);                                 // (Aurora se quita las gafas)
+            await aurora(api, '...¿En qué?');
+            await fax(api, 'En que pide complemento.');
+          } },
         { text: 'Nada, Aurora. Gracias.', exit: true, reply: 'Lo has dicho bien. Me has descolocado.' },
       ],
     },
   },
 };
 
+/** ENMIENDA E4 S8 · contrapunto de papel 2: Aurora tacha el pósit de Yoli (opa_posit 1, pieza en la mano) hasta
+ *  devolver el titular original. Mismo patrón que quitarAdhesivo. */
+async function corregirPosit(api) {
+  if (api.flag('opa_posit') !== 1 || !api.has('pieza_opa')) return;
+  await aurora(api, 'Un pósit de la web en tu pieza; lo leo dos veces y no me entero.');
+  await aurora(api, 'Los dos puntos se inventaron para explicar, no para hacer esperar.');
+  for (let i = 0; i < 4; i++) { api.sfx('click'); await api.anim(AUR, 'reach', 260); }   // cuatro tachones; escribe encima
+  await api.say('Cuatro tachones para volver a mi titular.');
+  await aurora(api, 'Cinco. El quinto es para ti, por traérmelo.');
+  api.setFlag('opa_posit', 2);
+}
+
 async function hablarAurora(api) {
   if (!api.flag('acto_2_iniciado')) { await api.dialog('aurora', 'A_SIN_CAFE'); return; }
   if (api.flag('bruno_con_banner')) await quitarAdhesivo(api);
+  await corregirPosit(api);
   // adenda 8.3 · rumor C, paso 1 (una sola vez, antes del árbol)
   if (!(api.flag('rumor_teodoro_n') > 0)) {
     await aurora(api, 'Teodoro duerme aquí desde 1997. Detrás de esa cortina.');
@@ -804,7 +827,10 @@ export default buildRoom({
         // paso 30 · dos fuentes
         'dar:fotocopia_nota_direccion': darFuente,
         'dar:mensaje_fp': darFuente,
-        'dar:pieza_opa': async (api) => { await aurora(api, 'Tiene un adjetivo. Lo dejo. Hoy estoy de buenas.'); },
+        'dar:pieza_opa': async (api) => {
+          if (api.flag('opa_posit') === 1) { await corregirPosit(api); return; }   // E4 S8
+          await aurora(api, 'Tiene un adjetivo. Lo dejo. Hoy estoy de buenas.');
+        },
         'dar:acta_reunion': async (api) => { await aurora(api, 'Dos faltas en dos líneas. Para ser la primera acta, prometedora.'); },
         'dar:ficha_pagina_7': async (api) => { await aurora(api, 'La ficha es tuya. No la arrugues, que la rotativa lo nota.'); },
         'dar:boli_muerto': async (api) => { await aurora(api, 'No me lo devuelvas. A los muertos no se les corrige.'); },

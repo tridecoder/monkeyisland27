@@ -9,6 +9,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { sinSoloPantalla } from './plan-rules.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
@@ -108,7 +109,9 @@ if (content) {
   for (const f of files) {
     if (f.endsWith(path.join('content', 'flags.js')) || path.basename(f).startsWith('_plantilla')) continue;
     // comments are not scanned (line comments and /* */ blocks)
-    const src = fs.readFileSync(f, 'utf8').replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' ')).split('\n').map(l => l.replace(/(^|\s)\/\/.*$/, '$1')).join('\n');
+    // ENMIENDA E4: el bloque «solo pantalla» de los ficheros de datos de tools/plan-rules.mjs SOLO_PANTALLA (titulares que
+    // solo se ven) no son líneas habladas: fuera del límite de 80 caracteres (los ids y flags de ese bloque no se usan)
+    const src = sinSoloPantalla(rel(f), fs.readFileSync(f, 'utf8')).replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' ')).split('\n').map(l => l.replace(/(^|\s)\/\/.*$/, '$1')).join('\n');
     const lines = src.split('\n');
     const at = (idx) => `${rel(f)}:${src.slice(0, idx).split('\n').length}`;
     const scan = (re, cb) => { let m; while ((m = re.exec(src))) cb(m, at(m.index)); };

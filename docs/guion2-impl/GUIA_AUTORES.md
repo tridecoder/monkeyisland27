@@ -299,3 +299,67 @@ Se hereda.»): una línea ASCII también cuenta para los topes, los «Como X.» 
   Medio.». El final no cambia.
 - Pruebas: `node tools/test-critica3.mjs` (atajo con ratón y dedo, bloqueos, guardar/cargar, semáforo, señal); capturas en
   `tools/shots/e3b-*.png`.
+
+---
+
+## E4. ENMIENDA E4 — Audiencias (Yoli), Discover y el titulador
+
+> Guion: `docs/guion2/ENMIENDA_E4.md` (aprobado; epílogo con la alternativa A). Prueba: `node tools/test-e4.mjs`
+> (en `test-all`); capturas en `tools/shots/e4-*.png`.
+
+### E4.1 Dónde vive cada cosa
+
+| Qué (E4) | Fichero |
+|---|---|
+| El titulador (§3bis): bucle, fórmula, dibujo, al salir (pósit) | `content/rooms/pecera.titulador.js` (`titulador(api, { demo })`) |
+| Las piezas (autoridades, asuntos, ganchos, plantillas, especiales, afinidades, secretos, categorías, líneas de Yoli, demo del paso 34, ganador por defecto) | `content/rooms/pecera.titulador.datos.js` — **generado**, no se edita |
+| Los 24 titulares fijos (§5): la ráfaga y la hoja «lo más leído» por acto | `content/rooms/pecera.titulares.datos.js` |
+| S1 ráfaga, S3 hoja (`mirarHoja`, `hojaTop`, `filasHoja`), S4 `pecera_opa_ab`, S5 `pecera_opa_ganadora` | `content/rooms/pecera.escenas.js` |
+| S2 borrasca, árbol de Yoli (O5, O17-O20, M3) | `content/rooms/pecera.dialogos.js` |
+| Hotspot `lista_mas_leidas`, Usar `monitor_yoli`, Dar `pieza_opa` a Yoli, murmullo O21, entrada del paso 40 | `content/rooms/pecera.js` + `art/pecera.art.js` |
+| S7 COINCIDO y S8 `corregirPosit` | `content/rooms/catacumba.js` |
+| S6 epílogo (`lineaDiscover`) | `content/escenas/final.js` |
+| Flags `discover_ganador` (str, '') y `opa_posit` (int, 0); icono de la pieza con pósit | `content/flags.js`, `content/game.js` (`startFlags` con `str`), `content/items.js` |
+| Plano que se toca (`detalle({ click })`), menú con `inicio` | `engine/detalle.js`, `engine/core.js`, `engine/ui.js` |
+
+### E4.2 Sustituir el juego de piezas del titulador (otra vuelta de la mesa)
+
+1. Dejar el `piezas.json` nuevo (mismo formato) y su `gen.mjs` de referencia en `docs/guion2/e4/`.
+2. `node tools/gen-titulador.mjs` → reescribe `content/rooms/pecera.titulador.datos.js` (comprueba que la demo, el ganador,
+   los secretos y las líneas casan con las piezas; `--comprobar` solo mira si está al día).
+3. `node tools/test-e4.mjs` → compara TODAS las combinaciones con el `gen.mjs` nuevo (titular, usuarios, categoría y voz),
+   las nueve frases del dueño literales, ≤ 3 líneas a 190 px, y que la lógica no nombre ids de pieza. Si cambian las
+   nueve frases del dueño, se cambian en `LITERALES` de la prueba.
+4. `node tools/text-audit.mjs --estatico --plan --e2 --recuento` → las líneas de Yoli (`lineas`) pasan por todos los topes.
+
+No hace falta tocar la lógica: la demo del paso 34 es `demo_paso_34` (su primera combinación es el titular de Bruno, la
+categoría «honesto»), el ganador por defecto es `ganador_por_defecto` (el umbral del paso 40 son sus usuarios), las
+categorías de gancho son las que dicen `si: "gancho <id>"`, y «Tus mejillones» del epílogo y «se ha ido a {los
+mejillones}» de la hoja salen de `asuntos[].epi` y `asuntos[].C`. Solo si `gen.mjs` cambia de reglas (una marca nueva en
+las plantillas, otra condición de categoría) hay que copiar el cambio en `pecera.titulador.js`. Un asunto nuevo sin
+miniatura propia lleva un periódico genérico (las miniaturas de §3bis.5 se dibujan por id en `miniatura()`).
+
+### E4.3 Textos que solo se ven
+
+Los titulares, menús y etiquetas del titulador y los 24 fijos no son líneas habladas. En los dos ficheros de datos van
+entre `// @solo-pantalla:inicio` y `// @solo-pantalla:fin`; `tools/plan-rules.mjs` (`SOLO_PANTALLA`) y `tools/check.mjs`
+se saltan ese bloque para los topes «en todo el juego» y el límite de 80 caracteres, y SOLO en esos ficheros. Las palabras
+vetadas a la vista y los «Como X.» se siguen comprobando dentro. Lo que dice Yoli al publicar queda fuera del bloque.
+Un fichero de datos nuevo con textos de pantalla se declara en `SOLO_PANTALLA` (y se marca su bloque).
+
+### E4.4 Decisiones de implementación (dudas de §8 y otras)
+
+- **§8.1 Orden de entradas del Acto III:** la anexión (XE3) antes que el ganador, como dice el documento (XE4 no cambia).
+  Si el ganador no llega, el epílogo usa la variante de seguridad («Tu opa en Discover»).
+- **§8.2 Clic fuera del menú:** un toque DENTRO del monitor no cierra (el plano se queda el clic: `detalle({ click })`) y
+  en una casilla abre su menú; un toque en la sala, fuera del plano, Esc o «Dejarlo» lo cierran. Cargar partida con el
+  titulador abierto lo cierra sin tocar la partida cargada (`game.gen`).
+- **§8.3 Strings en flags:** `discover_ganador` y `pecera_disc_record_k` son `str`; `startFlags` pone `''` a los `str`.
+  Local nuevo `pecera_disc_ganador_k` (la combinación ganadora fijada en el paso 40, para la hoja III).
+- El plano mide 304 × 102 (el motor limita el ancho a 304) y lleva una fila de tres casillas tocables; el contador va a
+  escala 2 (con 576.000, 62 px) y la etiqueta debajo. El menú principal es compacto (5 filas al tacto, sin scroll) y cada
+  submenú se abre enseñando la pieza elegida (`choose({ inicio })`). «¡Publicar!» dice cuántas quedan.
+- Los globos van 2 px más abajo bajo un plano con rótulo (`hudTop`: +15, antes +13) para no tapar el rótulo.
+- La demo del paso 34 se rotula «TITULADOR · PRUEBA» (es la prueba A/B de Yoli) y no guarda nada.
+- Versiones tachadas del paso 40 si el jugador no ha publicado: la demo y los secretos por debajo del ganador, de menos a
+  más (las cuatro últimas). La hoja de lo más leído mide 300 px de ancho (no 220) para que la letra sea la del juego.

@@ -85,6 +85,20 @@ export function literales(src) {
   }
   return out;
 }
+/** ENMIENDA E4 §3bis/§5: ficheros de DATOS cuyo bloque marcado `// @solo-pantalla:inicio` … `// @solo-pantalla:fin` solo se
+ *  VE (titulares del titulador, de la hoja «lo más leído» y de la ráfaga de avisos, menús y etiquetas): no son líneas
+ *  habladas, así que no cuentan para los topes «en todo el juego» (TOPES_E2_JUEGO) ni para el límite de 80 caracteres
+ *  de tools/check.mjs. Solo se salta el bloque marcado, y solo en estos ficheros: lo de fuera (las líneas que dice Yoli
+ *  al publicar, `PIEZAS.lineas`) pasa por todas las reglas. Las palabras vetadas a la vista y los «Como X.» se siguen
+ *  comprobando también dentro del bloque (se ven). */
+export const SOLO_PANTALLA = [/content[\\/]rooms[\\/]pecera\.titulador\.datos\.js$/, /content[\\/]rooms[\\/]pecera\.titulares\.datos\.js$/];
+const MARCA_SP = /\/\/ @solo-pantalla:inicio[\s\S]*?\/\/ @solo-pantalla:fin/g;
+/** El código de `rel` sin su bloque «solo pantalla» (si es uno de los ficheros de SOLO_PANTALLA); los saltos de línea
+ *  se conservan para que los números de línea no cambien. */
+export function sinSoloPantalla(rel, src) {
+  if (!SOLO_PANTALLA.some(re => re.test(rel))) return src;
+  return src.replace(MARCA_SP, (m) => m.replace(/[^\n]/g, ' '));
+}
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : e.name.endsWith('.js') ? [path.join(d, e.name)] : []);
 // ENMIENDA E3 §1.5: sin el espacio en la clase (antes descartaba toda frase sin tildes, eñes ni comas, y con ella
 // fórmulas y remates «Como X.»); los ids (`fax_enmarcado`, `ecosistema/maripaz`) siguen fuera porque no llevan espacio
@@ -176,7 +190,7 @@ function cuentaE2Juego(root) {
   for (const f of walk(path.join(root, 'content'))) {
     const rel = path.relative(root, f);
     if (/[\\/]art[\\/]/.test(rel) || /flags\.js$/.test(rel) || /_plantilla/.test(rel)) continue;
-    for (const t of literales(fs.readFileSync(f, 'utf8'))) {
+    for (const t of literales(sinSoloPantalla(rel, fs.readFileSync(f, 'utf8')))) {
       if (!esTexto(t)) continue;
       for (const T of cuenta) { if (T.fuera && T.fuera.test(rel)) continue; const n = (t.match(T.re) || []).length; for (let i = 0; i < n; i++) T.hits.push(`${rel}: ${t}`); }
     }

@@ -263,7 +263,7 @@ async function principal() {
   await T.expectFlags({ rep_08: true }, 'paso 23');
   await T.musts(['Le contesté: «Y yo te leo desde el más absoluto modo avión».', 'Me ha puesto en copia a mi madre.',
     '...bien. Bajando, pero bien.', 'Menos una lectora: cuarenta y siete minutos. Comenta «abrígate». En todo.',
-    'Vuelve con un titular con número. El siete convierte.'], 'Yoli E2 §2.7');
+    'Te lo coloco en Discover. Con expertos.'], 'Yoli E2 §2.7 (E4 M3: la despedida con CMS)');
   lg = await T.log();
   must(!lg.some(l => l.who === 'yoli_tendencias' && /— ?\d/.test(l.text)), 'Yoli: cifras entre rayas');
   must(lg.filter(l => l.text.includes('modo avión')).length === 1, 'B5: línea duplicada');
@@ -294,7 +294,7 @@ async function principal() {
     HERMINIA + 'infografía de la opa · hecha en 0,4 s · publicar: bloqueado', 'Cuatro décimas. Yo tardaba una semana. Bien hecha, eso sí.',
     'Hecha con una IA de fuera. No entra en ninguna pieza.', 'Encintar, no. Aislar el componente.', '¿Y vosotros no usáis IA de fuera?',
     'El modelo es de fuera. El prompt es de dentro.', 'Eso lo hace nuestro.', 'El prompt de Herminia lo escribí yo. En esta mesa.',
-    'A un metro de mi cinta. Fuera.'], 'paso 34');
+    'A un metro de mi cinta. Fuera.', 'Uno era yo, comprobando.'], 'paso 34 (E4 S4: la prueba A/B de Yoli)');
   lg = await T.log();
   must(lg.filter(l => l.text.startsWith(HERMINIA)).length <= 3, 'paso 34: más de tres salidas de Herminia');
   must(!lg.some(l => /Diseño/.test(l.text) || ['valentin_reticula', 'coro_desarrollo'].includes(l.who)), 'paso 34: Diseño o el coro en la escena');
@@ -378,8 +378,11 @@ async function principal() {
   ok('paso 41: D3 sin R14 (R07, R01 + remate a los dos aciertos) → acta_reunion, sala_abierta');
 
   // ------------------------------------------------------------ §4.2.3 Yoli y el adhesivo, una vez al entrar
+  // ENMIENDA E4 S5 (paso 40): la primera entrada en el Acto III con la pieza escrita es la del ganador de Discover
   await T.clearLog();
   await R.travel('pecera'); await T.idle();
+  must(await T.logHas('En la dirección web. Donde no molesta.') && !!(await T.flag('discover_ganador')), 'E4 paso 40: el ganador de Discover');
+  await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
   must(await T.logHas('¿Llevas un banner en la espalda? ...Pues convierte. Me han mirado.'), '§4.2.3 Yoli');
   await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
   must(!(await T.logHas('¿Llevas un banner')), '§4.2.3 Yoli se repite');

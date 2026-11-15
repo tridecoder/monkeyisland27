@@ -19,6 +19,10 @@
 //                                   // `bloqueo: cuenta.ms` y, sin `ms`, el plano se queda cuenta.ms + 1500
 //     cerrarX: 3,                   // botón de cerrar «×» de N px en la esquina superior derecha (1 = un punto; 0 o
 //                                   // null = sin X). El motor lo pinta encima del dibujo del contenido.
+//     // --- PLANOS QUE SE TOCAN (ENMIENDA E4 §3bis: el titulador de Yoli) ---
+//     click: (x, y) => bool,        // un clic / toque DENTRO del contenido llama a click(x, y) con coordenadas relativas
+//                                   // al contenido; si devuelve true, el motor no hace nada más con ese clic (ni elige
+//                                   // la salida `escape` de un menú abierto, ni pasa una línea). false: lo de siempre.
 //   }, async (api) => { ... })      // opcional: cuerpo con el inserto abierto (se cierra al acabar, aunque lance)
 //
 // Ejemplo (Sala Amazonas, 3.ª vez: sin X, «Podrá cerrar en 3»):
@@ -46,9 +50,10 @@ export function open(game, ctx, opts = {}) {
     oscurecer: opts.oscurecer ?? 0.45, t0: game.time, owner: ctx, skip: null, prevTop: game.hudTop,
     cuenta: opts.cuenta ? { ms: 5000, texto: 'Podrá continuar en {n}', ...opts.cuenta } : null,
     cerrarX: Math.max(0, Math.round(Number(opts.cerrarX) || 0)),
+    click: typeof opts.click === 'function' ? opts.click : null,
   };
   D.bloqueo = Math.max(0, Number(opts.bloqueo ?? (D.cuenta ? D.cuenta.ms : 0)) || 0);
-  game.hudTop = y + h + (D.titulo ? 13 : 5);        // los globos, debajo del inserto
+  game.hudTop = y + h + (D.titulo ? 15 : 5);        // los globos, debajo del inserto y de su rótulo (la banda oscura del globo sube 2 px; E4)
   // el ambiente y los murmullos no se quedan debajo del inserto (E2: el anuncio tapa la sala; nada habla por encima)
   for (const sp of (game.speeches || []).filter(sp => sp.ambient)) game.endSpeech(sp);
   game.log.push({ who: 'aviso', name: null, text: 'Plano detalle' + (D.titulo ? ': ' + D.titulo : ''), room: game.state && game.state.room, t: Math.round(game.time) });
@@ -61,6 +66,13 @@ export function close(game) {
   game.detalle = null;
   game.hudTop = D.prevTop || 0;
   if (D.skip) { const r = D.skip; D.skip = null; r(); }
+}
+
+/** Clic de pantalla (x, y) dentro del contenido de un plano con `click`: true si el plano se lo queda. */
+export function clic(game, x, y) {
+  const D = game.detalle;
+  if (!D || !D.click || x < D.x || x >= D.x + D.w || y < D.y || y >= D.y + D.h) return false;
+  try { return D.click(x - D.x, y - D.y) === true; } catch (e) { game.error('detalle click() falló: ' + e.message, e); return false; }
 }
 
 /** Un clic / «.» durante la espera sin líneas cierra el plano (salvo durante su `bloqueo`, E2 §4.2.4). */

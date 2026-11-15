@@ -1109,6 +1109,8 @@ const layout = {
     sillas_con_chaqueta: { rect: [218, 64, 36, 40], walkTo: [236, 112], face: 'up' },
     figurantes_web: { rect: [254, 60, 30, 44], walkTo: [268, 112], face: 'up', draw: drawFigurantes },
     monitor_yoli: { rect: [284, 62, 22, 13], walkTo: [282, 122], face: 'up', priority: 2, draw: drawMonitorYoli },
+    // ENMIENDA E4 S3: la hoja impresa «TOP» (la pinta el fondo, rect(g, 286, 47, 18, 16)); se solapa 2 px con el monitor
+    lista_mas_leidas: { rect: [285, 46, 20, 18], walkTo: [292, 122], face: 'up', priority: 2 },
     // ECONOMÍA
     ordenador_bruno: { rect: [312, 44, 36, 48], walkTo: [330, 120], face: 'up', draw: drawOrdenadorBruno },
     silla_ramirez: { rect: [322, 98, 60, 16], walkTo: [350, 122], face: 'up', layer: 'sorted', zy: 112, draw: drawSillaRamirez },
