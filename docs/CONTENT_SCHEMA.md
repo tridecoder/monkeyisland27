@@ -809,38 +809,55 @@ is a declared rotating one, is a state one or is an exit; `node tools/text-audit
 ## 10. Duelos: «Responder a todos»
 
 The engine implements bible §6.2/§6.8; shared data is in `content/duelo.js`; **each rival is defined by the author of
-its room** in the logic file's `duels` (ids: `maripaz` D1 in `ecosistema`, `teodoro` D2 in `catacumba`, `gervasio`
-D3 in `office`, `inigo` D4 in `sala_amazonas`).
+its room** in the logic file's `duels` (ids: `maripaz` D1 in `sala_amazonas`, `teodoro` D2 in `catacumba`, `gervasio`
+D3 in `pajarera`, `inigo` D4 in `sala_amazonas` — data in `content/escenas/climax.js`).
 
 ### Rules (what the engine does) — plan de comedia §7
 - The rival always attacks, with its `deck` **in order** (rematch: it starts with the card that won last time, flag
-  `duel:<id>:empieza`). The attack (or its paraphrase `attackText[pair]`) is said in a balloon **and stays written in
-  the window** as `Cuerpo: «…»` while the player chooses.
+  `duel:<id>:empieza`). The attack (or its paraphrase `attackText[pair]`) is said in a balloon (the window reads
+  «Maripaz › Todos: escribiendo…» meanwhile), then the mail «arrives» (`¡ding!` and an envelope blinking next to every
+  actor in the room; by fax, the paper sound) **and stays written in the window** as «Maripaz › Todos: «…»» while the
+  player chooses; Bruno's answer replaces it as «Tú › Todos: «…»».
 - **Menu ≤ 5 lines, no scroll**: the correct reply if learned + up to 3 other learned replies (first those of this
   deck, then others, as decoys; a long reply that wraps costs a decoy) + **one weak reply** that rotates per rival
   (engine flag `duel:<id>:floja`; the comodín is part of the rotation). The position of the correct one changes every
   round. Nothing is learned in a duel. On touch screens the duel menu uses 5 rows of 11 px (no scroll).
-- Correct reply: +1, the attack leaves the deck, «+1» line in the thread, `onHit(api, duel, pairId)`, then the rival
+- Correct reply: +1, the attack leaves the deck; on screen one of the rival's dots goes out, the frame flashes green,
+  the rival steps back and a **notification** «Celestino: +1» drops into the phone (`duelo.js masUno`, below);
+  `onHit(api, duel, pairId)`, then the rival
   takes it with `hurtByPair[pair]` (rival or `duelo.js hurtByPair[<duel id>][<pair>]`; a string, a list of strings or
   a list of `[actor, line]` — another actor, e.g. Brais in D4, speaks only if he is in the room) or its `hurt` rotation.
 - Miss: one more `RE:`, somebody more in copy (`cc1` / `ccSteps[0]` = the rival's own CC, then «Toda la planta», then
-  «Dirección»), the attack goes to the end of the deck, and the rival **always** answers (wrong learned reply → `taunt`;
+  «Toda la empresa»; on screen «En copia: Siestatón, la planta, …» grows in the app bar, one of Bruno's dots goes out,
+  red flash, the window shakes and Bruno steps back), the attack goes to the end of the deck, and the rival **always** answers (wrong learned reply → `taunt`;
   weak reply → `opp.weakAnswers[text]` → `answers[<duel id>]` → `answerFax` → `answer`) **before** the defeat is decided.
 - Comodín: first use per duel → no score change, same attack again; second use = miss.
-- Score as text in the title bar: `ACIERTOS 2/3 · FALLOS 1/3` (plus the stamps). Window: 63 px.
+- **The window (rediseño «Responder a todos», `docs/guion2/duelo/DUELO_REDISENO.md` + the director's decisions):** Bruno's
+  phone, landscape, sliding up from his pocket before the first attack (`SLIDE_MS`; by fax, the Talleres paper coming
+  down): app bar «Correo» + «En copia: …»; a **fighting-game header**: the rival (head, name in its colour) and «Tú»
+  on the side where each stands, each with dots (the rival: `target` = `winScore` or the last finisher's `atScore`;
+  Bruno: `maxMisses`) and, in the middle, **what is at stake as a question** (`pregunta`); the body (2 lines); in the
+  first duel of the game a grey help line («Contesta con la réplica que la desmonte.», `texts.ayuda`) until the first
+  hit (engine flag `duel:ayuda`). Above the reply menu, the tab «LIBRETA · réplicas oídas por la casa»
+  (`texts.libreta`). `cabe` (the long reply), `aTiempo` (interrupting), the comodín and retiring put out no dot and
+  flash nothing. Height: 51 px (60 with the help line). `duelInfo.subject`, `cc`, `assigned` and `score`
+  («ACIERTOS 2/3 · FALLOS 1/3») are still computed (tests) but no longer drawn. `game.duelCaja` = the window's box.
+- **Verdict:** when the duel ends (won or lost; not when retiring) the answer to the question is **stamped** on the
+  window (sound of a stamp, 1,500 ms): green `veredicto.verbo + ': ' + veredicto.gana` («LLAMA: MARIPAZ») if Bruno wins,
+  red `… + veredicto.pierde` («LLAMA: B. POLLEJO») if he loses (`duelInfo.veredicto` = the text). Then the window closes.
 - Fair warning before starting if Bruno knows fewer replies of the deck than needed (unchanged).
-- Win: «Asignado a:» → the rival, flag `duel:<id>:won`, `onWin`.
+- Win: the verdict, flag `duel:<id>:won`, `onWin`.
 - Finishers (remates): unchanged — replies greyed out, **[Usar objeto]** / **[Retirarse del hilo]**; wrong object =
   a line, not a miss.
-- **Defeat** (`maxMisses`): the rival's `defeatLine` (string = narrator caption, or `[who, line]`; default the
-  «Lo que diga Gervasio» caption) → window closes → `duel:<id>:perdido_n` + 1 → `defeatLines` → the **defeat scene**
+- **Defeat** (`maxMisses`): the verdict → the rival's `defeatLine` (string = narrator caption, or `[who, line]`; default
+  the «RESPUESTA AUTOMÁTICA» caption) → window closes → `recoger(api, 'lost')` → `duel:<id>:perdido_n` + 1 → `defeatLines` → the **defeat scene**
   `defeatScene: '<scene name>'` (called with `{ duel, perdidos, ctl }`) and/or `onLose(api, duel, 'lost')` (`duel.perdidos`
   = defeats so far) → `defeatHeadline` (string or `(n) => string`) shown as a headline strip (`api.titular`). Never
   takes anything from the inventory.
-- Retiring: no consequence (no `perdido_n`), thread «RV: Bruno ha abandonado el hilo.», Bruno says the
+- Retiring: no consequence (no `perdido_n`), notification and log «RV: Bruno ha abandonado el hilo.», Bruno says the
   **`retireLine`** (crítica 3 · N7: the rival's own `duels.<id>.retireLine` if defined — `null` or `''` = silent —, else
   the common `duelo.js texts.retireLine`, «Me salgo del hilo. Vuelvo cuando tenga algo que adjuntar.»), then
-  `onLose(api, duel, 'retired')`.
+  `recoger(api, 'retired')` and `onLose(api, duel, 'retired')`.
 - **No autosave while a duel is open.** A save made during a duel (only possible by the test API) remembers it: loading
   it **restarts that duel from 0** (with the notice «Se retoma el hilo.»), it never drops the player in the room.
 - `await api.duel(id)` returns `true` only on victory. `__game.state().lastDuel = { id, result, hits, misses, perdidos }`;
@@ -865,7 +882,17 @@ duels: {
     attackText: {},                          // plan §7.4: the rival's PARAPHRASE of each attack { R10: '...' }
     cabe: undefined,                         // E6 §6.1: { R09: { max: 38, corta: 'Tráeme el contexto.', noCabe: 'NO CABE…' } } (below)
     aTiempo: undefined,                      // E7 §5.1: the rival types its attacks piece by piece; answering early interrupts (below)
-    cc1: 'Optimal Brains & Partners',        // CC added on the 1st miss (then «Toda la planta», «Dirección»); or ccSteps: [...]
+    cc1: 'Optimal Brains & Partners',        // CC added on the 1st miss (then «Toda la planta», «Toda la empresa»); or ccSteps: [...]
+    // ---- rediseño «Responder a todos» (all optional)
+    pregunta: '¿Quién apaga la rotativa?',   // what is at stake, as a short question (≤ 34 characters); default `subject`
+    veredicto: { verbo: 'APAGA', gana: 'NADIE', pierde: 'VACANTE' },   // the stamp: «APAGA: NADIE» (won) / «APAGA: VACANTE» (lost)
+                                             // (default verbo 'ASIGNADO', gana = rival's name, pierde = `assigned`, in capitals)
+    enCopia: ['Optimal', 'la planta', 'toda la empresa'],   // «En copia: …» after 1, 2, 3 misses (default: the CC steps, short)
+    sostener: 'movil',                       // what the rival holds during the thread (item id or { draw }); Bruno holds his
+                                             // `movil` (not by fax). Both are released when the window closes.
+    puesta: async (api, ctl) => {},          // before the window opens: put the rival where it is SEEN WHOLE, facing Bruno
+    recoger: async (api, result, ctl) => {}, // 'lost' / 'retired', right after the window closes: back to its place
+    fromShort: undefined,                    // name in the header and the body (default: the actor's `name`)
     weakAnswers: {},                         // optional { 'Te lo miro y te digo.': 'own answer' } (else duelo.js answers[id])
     hurtByPair: {},                          // optional { R13: [['inigo_sinergia', '...'], ['ruben', 'Yo. Perdón.']] }
     intro: ['Perfecto. Te lo pongo por escrito.'],       // before the window opens: strings (rival) or [who, line]
@@ -936,8 +963,15 @@ task dies when the duel ends (won, lost, retired: `finally`) and whenever `game.
 `body` (grows). `tools/walk-lib.mjs` and `play-mouse.mjs` wait for `escribiendo === false` before answering.
 
 `duel` (the control object handed to `script`/`onWin`/`onHit`): `hits`, `misses`, `setAssigned(text)`,
-`setSubject(text)`, `setCc(text)`, `thread(from, text)`, `hide()` / `show()` (the mail window, e.g. during a
-finisher cutscene).
+`setSubject(text)`, `setCc(text)`, `thread(from, text)` (a notification «from: text» in the phone), `hide()` / `show()`
+(the window, e.g. during a finisher cutscene).
+
+**Shared data of the redesign (`content/duelo.js`):** `masUno: { <duel id>: [actor id | { name, color }, …] }` — who
+gives each «+1» (one per hit, in order; people in the building at that moment); `cameos.<duel id> = { quien, text, ms }`
+— the cameo after the first hit as a notification «Tadeo: «RV: …»!!»; `texts.app` («Correo»), `texts.you` («Tú»),
+`texts.enCopia` («En copia:»), `texts.escribiendo`, `texts.libreta`, `texts.ayuda`. Engine helpers (`engine/duel.js`):
+`sobres(game, { ms, excluir })` (the envelope next to everybody in the room, also used by D1's set-up in the Sala) and
+`COL` / `PARES_CONTRASTE` (the window's colours; `tools/contrast.mjs` checks them).
 Start a duel from a dialog option: `{ text: 'Quiero firmar en tu página 7.', do: async (api) => { await api.duel('teodoro'); return 'exit'; } }`.
 **Result flags of bible §5.5** (`duelo_maripaz_ganado`, `casilla_hueco`, …) are set by your `onWin`.
 

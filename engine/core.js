@@ -7,7 +7,7 @@ import { toggleFullscreen, updateRotateHint } from './fullscreen.js';
 import { shadowEllipse, PAL } from './draw.js';
 import { makeApi } from './script.js';
 import { runDialog } from './dialog.js';
-import { runDuel } from './duel.js';
+import { runDuel, drawSobres, retroOffset } from './duel.js';
 import * as UI from './ui.js';
 import * as Phone from './phone.js';
 import * as Screens from './screens.js';
@@ -322,7 +322,7 @@ export class Game {
     if (this.choice && this.choice.escape != null) { const ch = this.choice; ch.resolve(ch.escape); }
     this.choice = null; this.menu = null; this.hud = null; this.phone = null; this.detalle = null; this.mudo = 0; this.hsShow = null; this.hsHold = false; this.hudTop = 0; this.cutscene = 0; this.skipCut = false; this.inDialog = 0;
     if (this.itemPick) { const r = this.itemPick.resolve; this.itemPick = null; r(null); }
-    this.notices = []; this.idleMs = 0; this.idleFired = false; this.comboFails = 0; this.duelInfo = null; this.duelActive = null;
+    this.notices = []; this.idleMs = 0; this.idleFired = false; this.comboFails = 0; this.duelInfo = null; this.duelActive = null; this.sobres = null;
     Fx.reset(this); Mov.reset(this);
     this.noSave = false;          // E5 §6.6 api.sinGuardar: nunca pasa de una partida a otra
     this.ui.verb = null; this.ui.item = null; this.ui.invScroll = 0; this.ui.sentence = null;
@@ -1304,6 +1304,7 @@ export class Game {
         }
       }
     }
+    if (this.sobres) safe(() => drawSobres(g, this), 'sobres');      // el «¡ding!» del correo: un sobre junto a cada presente
     if (this.hud) safe(() => this.hud(g), 'hud');
     if (this.phone) safe(() => Phone.draw(g, this), 'móvil');
     if (this.detalle) safe(() => Detalle.draw(g, this), 'plano detalle');
@@ -1349,6 +1350,8 @@ export class Game {
     const dw = Math.round(canvas.width * s), dh = Math.round(canvas.height * s);
     const bob = a.running && a.anim === 'walk' && !mask && fr % 2 ? Math.max(1, Math.round(s)) : 0;   // carrera: saltito al paso
     const dx = Math.round(a.x - (sp.ox + 1) * s), dy = Math.round(a.y - (sp.oy + 1) * s) - bob;
+    const kx = a.retro ? retroOffset(this, a) : 0;             // el duelo: paso atrás al encajar un golpe (engine/duel.js)
+    if (kx) { g.save(); g.translate(kx, 0); }
     if (flip) { g.save(); g.translate(Math.round(a.x) * 2, 0); g.scale(-1, 1); }
     if (pose) Pose.drawPosed(g, sp, canvas, dx, dy, s, pose, a.dir);
     else g.drawImage(canvas, dx, dy, dw, dh);
@@ -1356,6 +1359,7 @@ export class Game {
     if (a.hold) Pose.drawHold(g, this, a, sp, s, pose);
     if (this.phone && this.phone.ear && a.id === this.G.player) Phone.drawEar(g, this, a, this.actorBox(a));
     if (a.def.drawExtra) a.def.drawExtra(g, a, this.time, { s, box: this.actorBox(a), sprite: sp, pose });
+    if (kx) g.restore();
   }
   /** PENUMBRA (art `penumbra(view, t) → { color, alpha, spots, actor, actores } | null`): oscurece la sala por encima de
    *  todo (fondo, muebles, primer plano) MENOS los focos (`spots`: [cx, cy, rx, ry] elipses o { rect: [x, y, w, h] }) y

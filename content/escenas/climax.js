@@ -56,6 +56,11 @@ export const duelInigo = {
   subject: 'Plan Cero Papel – Llamar a la rotativa para apagarla',
   assigned: 'Vacante (perfil ideal)',
   assignedWin: 'Íñigo Sinergia',
+  // rediseño del duelo: lo que está en juego en el clímax (si gana Bruno, la rotativa no la apaga nadie)
+  pregunta: '¿Quién apaga la rotativa?',
+  veredicto: { verbo: 'APAGA', gana: 'NADIE', pierde: 'VACANTE' },
+  enCopia: ['Optimal', 'la planta', 'toda la empresa'],
+  sostener: 'movil',
   deck: DECK_D4,
   maxMisses: 3,
   intro: [],                          // la entrada la dice la escena (§7.4): «Perfecto. Te lo pongo por escrito.»

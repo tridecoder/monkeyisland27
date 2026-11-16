@@ -63,8 +63,9 @@ del duelo de vuestra sala (`duels: { … }`) es vuestro: el paquete común solo 
   `every` cortos.
 
 ### Duelo (§7) — el motor ya hace las reglas
-- Menú ≤ 5 (correcta + señuelos + 1 floja que rota), ataque escrito en la ventana, marcador «ACIERTOS 2/3 · FALLOS
-  1/3», CC que crece, la floja se contesta siempre, revancha que empieza por la carta que ganó, sin autoguardado.
+- Menú ≤ 5 (correcta + señuelos + 1 floja que rota), ataque escrito en la ventana (el móvil de Bruno con la app de
+  correo; el fax en D2), marcador de puntos estilo juego de lucha, «En copia» que crece, la floja se contesta siempre,
+  revancha que empieza por la carta que ganó, sin autoguardado. Ver «Duelo: la presentación» al final.
 - Lo vuestro, en el bloque `duels.<id>`: `attackText` (las paráfrasis de §7.4), `intro`, `taunt` (§7.5), `hurt`,
   `hurtByPair` propio si queréis (los de §7.6 ya están en `content/duelo.js`), `finishers` (remates), `onWin`, y la
   **derrota**: `defeatLine` (ya puesta), `defeatScene: '<escena>'` (la consecuencia cómica, ≤ 6 líneas, < 15 s; recibe
@@ -626,3 +627,40 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
   tele se enciende sola; 2.ª, señala la pantalla y la tele parpadea; 3.ª, la tele recoge la pregunta (la escena de siempre).
 - `migrarPartida`: partidas sin `evaristo_convoco` (de antes de que volviera la L2): convocadas por Begoña si ya pasó la
   nota; la L2 se da por pasada si ya es tarde para ella (Begoña, la L3 o el Acto III); si no, suena en su sitio.
+
+## Duelo: la presentación («Responder a todos» en el móvil)
+
+> Diseño: `docs/guion2/duelo/DUELO_REDISENO.md` con las decisiones del director (fuera «Le toca a:»/«Asignado a:»;
+> se entra al correo por el móvil; cabecera de duelo; lo que está en juego como pregunta y sello). Motor:
+> `engine/duel.js` (`drawHud`, `sobres`, `retroOffset`); prueba: `node tools/test-duelo-ui.mjs` (en `test-all`);
+> capturas `tools/shots/duelo-ui-*.png`. El esqueleto (parejas, aciertos/fallos, remates, `cabe`, `aTiempo`, comodín,
+> retirarse) y lo que leen las pruebas (`duelInfo.subject/cc/score/assigned/body`) NO cambian.
+
+- **Campos nuevos del rival** (`duels.<id>`, todos opcionales; detalle en `docs/CONTENT_SCHEMA.md` §10):
+  `pregunta` (lo que está en juego, ≤ 34 caracteres, en el centro de la cabecera), `veredicto: { verbo, gana, pierde }`
+  (el sello del final), `enCopia` (quién entra en copia tras el 1.º, 2.º y 3.º fallo), `sostener` (lo que lleva en la
+  mano el rival durante el hilo; Bruno lleva el `movil` salvo por fax), `puesta(api, ctl)` (antes de abrir la ventana:
+  el rival a la vista, de frente a Bruno) y `recoger(api, resultado, ctl)` (al perder o retirarse: vuelve a su sitio).
+- **Datos comunes** (`content/duelo.js`): `masUno` (quién da cada «+1», por duelo y en orden: gente que está en la casa
+  en ese momento), `cameos.inigo.quien` (Tadeo, como notificación), `texts.app/you/enCopia/escribiendo/libreta/ayuda`.
+
+| Duelo | Pregunta | Veredicto (gana / pierde) | «+1» | En copia |
+|---|---|---|---|---|
+| D1 Maripaz | ¿Quién llama a Siestatón? | LLAMA: MARIPAZ / LLAMA: B. POLLEJO | Celestino, Yoli, Gertrudis | Siestatón, la planta, toda la empresa |
+| D2 Teodoro (fax) | ¿Quién firma la página 7? | FIRMA: TEODORO / FIRMA: EL DE LA WEB | Begoña, Celestino, Yoli | Aurora, la planta, toda la empresa |
+| D3 Gervasio | ¿Quién redacta el acta? | REDACTA: GERVASIO / REDACTA: EL BECARIO | Eutimio, Anselmo | sus tres móviles, la planta, toda la empresa |
+| D4 Íñigo | ¿Quién apaga la rotativa? | APAGA: NADIE / APAGA: VACANTE | Yoli, Eutimio, Aurora, Begoña, Celestino (+ Tadeo) | Optimal, la planta, toda la empresa |
+
+- **D1, planteamiento** (solo antes del primer D1; las revanchas, no): tras las dos líneas de Maripaz, ella rodea la mesa
+  hasta delante de Bruno (`SITIO_D1 = [140, 130]`), levanta la tableta (`tabletaAlLado`, que no le tapa la cara) y dice
+  «Eso, por escrito. Con copia a todos.»; ¡ding! y un sobre junto a cada presente; Bruno saca el móvil: «Estamos a un
+  metro.»; Maripaz: «Por eso. Lo que no está en copia no ha pasado.». Durante el duelo sigue ahí; al perder o retirarse
+  vuelve a su silla. **Camino principal: +3 líneas** (553 → 556; los topes de `test-e5`, `test-e6` y `test-e7` siguen
+  valiendo: ≤ 576, ≤ 558 y ≤ 559).
+- **Aviso al aprender una réplica**: «Réplica apuntada. Para el próximo «responder a todos».» (`content/game.js`).
+- Al acertar no hay frase verde: notificación «Celestino: +1» dentro del móvil, destello verde, un punto del rival se
+  apaga y el rival da un paso atrás. Al fallar: destello rojo, temblor, un punto de Bruno se apaga, Bruno da un paso
+  atrás y crece «En copia: …». `cabe`, `aTiempo`, comodín y retirarse no apagan puntos ni destellan.
+- La ayuda gris «Contesta con la réplica que la desmonte.» sale solo en el primer duelo de la partida (flag de motor
+  `duel:ayuda`, que se pone con el primer acierto o al terminar ese duelo).
+- Colores de la ventana: `COL` y `PARES_CONTRASTE` de `engine/duel.js` (los comprueba `tools/contrast.mjs`).

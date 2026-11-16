@@ -221,6 +221,9 @@ const dueloGervasio = {
   subject: 'Redactar el acta de la última Reunión de Dirección',
   assigned: 'Vacante (becario)',
   assignedWin: 'Gervasio Acta',
+  // rediseño del duelo: lo que está en juego y el sello del final (el móvil lo saca `aTiempo` mientras escribe)
+  pregunta: '¿Quién redacta el acta?',
+  veredicto: { verbo: 'REDACTA', gana: 'GERVASIO', pierde: 'EL BECARIO' },
   // E2 §7.5 fase B (15): sin R14; remate a los dos aciertos. E6 §5.2: R03 segunda (la frase a medias); sigue a 2
   deck: ['R07', 'R03', 'R01', 'R05'],
   winScore: 2,

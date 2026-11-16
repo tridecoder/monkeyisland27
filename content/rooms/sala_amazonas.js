@@ -19,7 +19,9 @@
 // §5.2 Mercados con nombre (Fermín, Rogelio, Jacinto) · §5.4 el Lector Medio asiente sin globo · textos §4 (C46, C61-C63,
 // C98, M15, M24, M29-M32, M34, X04-X08, X10, D02-D05).
 import { buildRoom } from '../lib/room.js';
-import art, { popupComercial, paginaComercial, tabletaEnAlto } from './art/sala_amazonas.art.js';
+import art, { popupComercial, paginaComercial, tabletaEnAlto, tabletaAlLado, MARIPAZ_AT } from './art/sala_amazonas.art.js';
+import { sobres } from '../../engine/duel.js';
+import { SFX as SFX_MOVIL } from '../../engine/phone.js';
 import { gong, SFX, rota } from '../escenas/planta_noble.js';
 import { duelInigo, climaxActivo, climaxEntrada, climaxReintento, climaxEmpujon, replicasD4, PUNTOS_D4 } from '../escenas/climax.js';
 import { tambaleo } from '../actors.js';
@@ -162,11 +164,55 @@ const mercadosActor = (id, i) => ({
 const selloTeodoro = (api) => !!api.flag('casilla_firma');
 const fichaSellada = (api) => `Ficha de la página 7. Sellada por ${selloTeodoro(api) ? 'Teodoro' : 'Aurora'}. Impar.`;
 const INTRO_REVANCHA = '¿Llamar yo a Siestatón un viernes? Te lo pongo por escrito.';
+// Rediseño del duelo (decisión 5): durante el hilo, Maripaz se ve ENTERA, de pie delante de la mesa y de frente a Bruno
+// (que le habla desde [94, 124]), con la tableta en alto. Rodea la mesa por el pasillo del fondo; al perder o retirarse,
+// vuelve a su silla del planillo.
+const SITIO_D1 = [140, 130];
+async function maripazAlFrente(api) {
+  const p = api.actorPos(MARIPAZ);
+  api.pose(MARIPAZ, 'de_pie');
+  if (!(p && p.room === 'sala_amazonas' && Math.abs(p.x - SITIO_D1[0]) <= 2 && Math.abs(p.y - SITIO_D1[1]) <= 2)) {
+    api.setWalkbox('fondo', true);
+    try { await api.walkActor(MARIPAZ, SITIO_D1[0], SITIO_D1[1]); } finally { api.setWalkbox('fondo', false); }
+  }
+  api.faceActor(MARIPAZ, api.player);
+  api.faceActor(api.player, MARIPAZ);
+}
+async function maripazASuSitio(api) {
+  if (!aqui(api, MARIPAZ)) return;
+  api.setWalkbox('fondo', true);
+  try { await api.walkActor(MARIPAZ, MARIPAZ_AT[0], MARIPAZ_AT[1]); } finally { api.setWalkbox('fondo', false); }
+  api.placeActor(MARIPAZ, 'sala_amazonas', MARIPAZ_AT[0], MARIPAZ_AT[1], 'down');
+  api.pose(MARIPAZ, null);
+}
+// el planteamiento (solo la primera vez, antes del primer D1): se lo pone por escrito, con copia a todos, a un metro
+async function planteamientoD1(api) {
+  api.sinGuardar(true);                               // (nada de partidas guardadas con Maripaz a medio camino)
+  try {
+    await maripazAlFrente(api);
+    api.sostener(MARIPAZ, tabletaAlLado);
+    await sayM(api, 'Eso, por escrito. Con copia a todos.');
+    api.sfx('click'); await api.wait(170); api.sfx('click'); await api.wait(170);
+    api.sfx(SFX_MOVIL.ding); api.sfx(SFX_MOVIL.buzz);   // ¡ding! en el bolsillo de Bruno; un sobre junto a cada presente
+    sobres(api.game, { ms: 1800, excluir: [MARIPAZ] });
+    await api.wait(450);
+    api.sostener(api.player, 'movil');
+    await api.anim(api.player, 'reach', 300);
+    await api.say('Estamos a un metro.');
+    await sayM(api, 'Por eso. Lo que no está en copia no ha pasado.');
+  } finally { api.sinGuardar(false); }
+}
 export const duelMaripaz = {
   actor: MARIPAZ,
   from: 'Maripaz Remitido',
   subject: 'Llamar a Siestatón para pasarlos a la web (contiene publicidad)',
   assigned: 'B. Pollejo',
+  // rediseño del duelo: lo que está en juego, como pregunta, y el sello del final (el «Pollejo» mal escrito, como siempre)
+  pregunta: '¿Quién llama a Siestatón?',
+  veredicto: { verbo: 'LLAMA', gana: 'MARIPAZ', pierde: 'B. POLLEJO' },
+  sostener: tabletaAlLado,
+  puesta: maripazAlFrente,
+  recoger: maripazASuSitio,
   deck: ['R08', 'R04', 'R11', 'R14'],
   attackText: {
     R08: 'Te escribo desde el cariño más absoluto. Con un banner en la firma.',
@@ -184,13 +230,13 @@ export const duelMaripaz = {
   ],
   cc1: 'Colchones Siestatón',
   defeatLine: 'RESPUESTA AUTOMÁTICA DE COMERCIAL: «Cierre este anuncio para leer la respuesta».',
-  defeatLines: ['Asignado a ti, cariño. El teléfono de Siestatón es este. Antes, un anuncio.'],
+  defeatLines: ['Llamas tú.', 'Asignado a ti, cariño. El teléfono de Siestatón es este. Antes, un anuncio.'],
   defeatScene: 'd1_siestaton',
   defeatHeadline: 'BECARIO LLAMA A UN COLCHÓN UN VIERNES. EL COLCHÓN NO LO COGE',
   onWin: async (api) => {
     // crítica 3 · N8: si ha sellado Teodoro (D2 antes que D1), Maripaz no habla del café de Aurora
     await sayM(api, [selloTeodoro(api) ? '...Teodoro no sella nada que no quepa. Y tú has cabido.' : '...Aurora no sella nada sin café. Has invitado a la correctora.',
-      'Vale. Siestatón, a la web. Allí caben en todas partes.']);
+      'Vale. Llamo yo. Siestatón, a la web. Allí caben en todas partes.']);
     // se levanta; debajo, el planillo: lo dobla y se lo da a Bruno, que lo mete en la ficha
     api.pose(MARIPAZ, 'de_pie');
     api.hide('planillo_bajo_maripaz');
@@ -636,6 +682,7 @@ export default buildRoom({
                 else {
                   await sayM(api, ['¿Ocho meses sin confirmar? Eso no es un cliente, cariño. Es un exnovio.',
                     'Los paso a la web, que allí cabe todo. Pero alguien tiene que llamarles.']);
+                  await planteamientoD1(api);
                 }
                 await api.duel('maripaz');
                 return 'exit';
