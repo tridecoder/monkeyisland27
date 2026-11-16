@@ -2,7 +2,7 @@
 // TODAS LAS PRUEBAS con una tabla de resumen. Cada herramienta levanta su propio servidor en un puerto libre, así que
 // varios agentes pueden lanzarlas a la vez (y este script las lanza en paralelo: --jobs).
 //
-//   node tools/test-all.mjs                      todo (24 pruebas; ≈ 30 min con 3 en paralelo: test-e5, test-e6 y test-bloqueos pasan de 10)
+//   node tools/test-all.mjs                      todo (25 pruebas; ≈ 30 min con 3 en paralelo: test-e5, test-e6 y test-bloqueos pasan de 10)
 //   node tools/test-all.mjs --rapido             muestra: smoke sin dispositivos ni llamadas en tiempo real, play-mouse
 //                                                solo geometría, fuzz --rapido (≈ 2 min)
 //   node tools/test-all.mjs --sala=pecera        lo que toca a esa sala: check, motor, vista previa (tools/sala.mjs),
@@ -67,7 +67,8 @@ if (salas) {
   add('e6', 'test-e6.mjs', [], 2700);                 // ENMIENDA E6 §11.2: test-e6-motor, -i1 y -pa…pf; armario, columna, tele, duelos, COMODÍN, medida (49 pasos), topes E6
   add('e7-motor', 'test-e7-motor.mjs', [], 900);      // ENMIENDA E7 §5: `aTiempo` del duelo (D3) con ratón y dedo, D1/D2/D4 sin cambios, F3
   add('e7', 'test-e7.mjs', [], 1800);                 // ENMIENDA E7 §10: nudo del Acto II, tele, D3 por su camino, F4, F6, golpes restaurados, camino principal, topes E7
-  add('bloqueos', 'test-bloqueos.mjs', [], 2400);     // puertas ocultas: cada paso sin cada requisito, pistas por sub-estado, los tres casos del dueño, partidas antiguas
+  add('bloqueos', 'test-bloqueos.mjs', [], 2400);
+  add('coherencia', 'test-coherencia.mjs', [], 1200);  // lo que el juego da por hecho, pasa (Evaristo y su L2, correos que llegan, presuposiciones, sillas, Gervasio que insiste, partidas sin L2)     // puertas ocultas: cada paso sin cada requisito, pistas por sub-estado, los tres casos del dueño, partidas antiguas
 }
 const solo = args.solo ? String(args.solo).split(',') : null;
 const plan = solo ? T.filter(t => solo.some(s => t.name.startsWith(s) || t.file.startsWith(s))) : T;

@@ -393,7 +393,7 @@ try {
       await T.G(() => __game.clearLog());
       await T.raton('hablar', 'gervasio_acta'); await T.pasar();
       await T.clicOpcion('siguientes pasos'); await T.pasar();
-      ok(await T.logHas('Ya consta. Pregunta la mesa... y los conectados.'), 'repetida: «Ya consta. Pregunta la mesa... y los conectados.»');
+      ok(await T.logHas('Las preguntas de los conectados entran por la pantalla, cuando hay señal.'), 'repetida: Gervasio señala la pantalla («…entran por la pantalla, cuando hay señal.»)');
       await T.G(() => __game.clearLog());
       await T.raton('hablar', 'mercados_2'); await T.pasar();
       ok(await T.logHas('Yo pregunto por la tele. Cuando hay señal.'), 'Rogelio (el conectado) señala la tele');

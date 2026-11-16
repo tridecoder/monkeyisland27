@@ -10,6 +10,7 @@ import { buildRoom } from '../lib/room.js';
 import art from './art/administracion.art.js';
 import dialogos, { recorte, ENTRADA } from './administracion.dialogos.js';
 import { sello, rota, SFX } from '../escenas/planta_noble.js';
+import { prometerGracias } from '../lib/movil.js';
 
 const BEGONA = 'begona_triplicado', EV = 'evaristo_salvedad';
 const sayBe = (api, t) => api.sayAs(BEGONA, t);
@@ -207,9 +208,13 @@ export default buildRoom({
         'dar:correo_evaristo': async (api) => { await sayEv(api, 'Es mío. Pero lo envía usted. En el momento oportuno.'); },
         'dar:boli_muerto': async (api) => { await sayEv(api, 'Sin tinta. Ni para una coma. Lo siento por él.'); },
         'dar:ficha_pagina_7': async (api) => { await sayEv(api, 'Tres casillas y ninguna coma. Así cualquiera firma.'); },
-        'dar:*': async (api) => { await sayEv(api, 'Gracias. Lo leo y le escribo un correo muy pequeño.'); },
+        // [coherencia] la promesa se cumple (el «Agradecimiento» llega en la entrada siguiente); si ya lo ha prometido, de palabra
+        'dar:*': async (api) => {
+          if (prometerGracias(api)) await sayEv(api, 'Gracias. Lo leo y le escribo un correo muy pequeño.');
+          else await sayEv(api, 'Gracias. Lo leo. Esta vez se lo agradezco de palabra.');
+        },
         empujar: async (api) => { await sayBe(api, 'Ni se le ocurra. Si le empuja, vuelve a empezar la cláusula 12.'); },
-        coger: async (api) => { await sayEv(api, 'Una cosita: no me coja. Si me muevo, pierdo la línea.'); },
+        coger: async (api) => { await sayEv(api, 'No me coja. Si me muevo, pierdo la línea.'); },   // [coherencia] «Una cosita» al tope (7) con la L2
       } },
   ],
 

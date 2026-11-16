@@ -51,8 +51,12 @@ export default {
             reply: ['Lo que no está en el photocall no ha ocurrido.', 'Lo que está, tampoco. Pero sale mejor iluminado.'] },
           { text: '¿Cuántas sillas hay?',                                                  // (se queda)
             do: async (api) => {
-              const n = api.inc('ecosistema_sillas_n');
-              await sayP(api, n === 1 ? 'Ciento doce. ...Ciento doce. ...Ciento trece. ¿Quién ha traído una?' : 'Ciento doce. Las cuento cada cinco minutos. Por si se van.');
+              // [coherencia] (excepción del dueño: solo el número) la 1.ª cuenta encuentra la silla de más; con la crisis
+              // abierta son 113 en todo; devuelta la silla (o antes de que se descubra nunca), 112
+              const devuelta = api.flag('eventos_silla_devuelta');
+              const n = devuelta ? Math.max(1, sillasN(api)) + 1 : api.inc('ecosistema_sillas_n');
+              await sayP(api, n === 1 ? 'Ciento doce. ...Ciento once, ciento doce... ciento trece. ¿Quién ha traído una?'
+                : `${devuelta ? 'Ciento doce' : 'Ciento trece'}. Las cuento cada cinco minutos. Por si se van.`);
             } },
           { text: '¿Por qué hay que acreditarse?', once: true,
             reply: ['Tres personas juntas ya son un evento. Y un evento sin acreditar es un caos.', 'Ayer acredité a la cola de la máquina de café. Funcionó.'] },
@@ -82,7 +86,7 @@ export default {
             reply: ['¿Por teléfono? Tú, ella y la compañía: tres. ¡Evento!', 'Acreditada: «Abuela de Bruno. Acceso: todo. Que se abrigue».'] },
           { id: 'croqueta', text: 'Gracias por la croqueta.', once: true, if: 'eventos_croqueta',
             reply: ['No me las des. Te he apuntado como catering.', 'Y si alguien pregunta, a las 21:05 estaban todas.'] },
-          { text: 'Me voy.', exit: true, reply: '¡Hasta ahora! Te guardo la silla ciento trece.' },
+          { text: 'Me voy.', exit: true, reply: (api) => `¡Hasta ahora! Te guardo la silla ciento ${sillasN(api) >= 1 && !api.flag('eventos_silla_devuelta') ? 'trece' : 'doce'}.` },
         ],
       },
     },

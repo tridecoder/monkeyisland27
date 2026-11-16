@@ -401,25 +401,36 @@ try {
   await G(() => __game.gotoRoom('office'));
   av = await state();
   ok(av.flags.tadeo_rv_n === 1 && av.flags.evaristo_llamadas === 1 && await G(() => !__game.log.some(l => l.who === 'tadeo_adjunto' || /¡ding!/.test(l.text))), 'RV1 llega al correo sin aviso (E2 §7.4)');
-  await G(() => { __game.setFlag('acto_2_iniciado', true); __game.setFlag('acto_3_iniciado', true); __game.clearLog(); });
-  await G(() => __game.gotoRoom('sala_amazonas'));
-  ok((await state()).flags.evaristo_llamadas === 1, 'nunca en sala_amazonas con acto_3_iniciado');
+  // [coherencia] la L2 vuelve: convoca a Bruno al empezar el Acto II (no en Administración)
+  await G(() => { __game.setFlag('acto_2_iniciado', true); __game.clearLog(); });
+  await G(() => __game.gotoRoom('administracion'));
+  ok((await state()).flags.evaristo_llamadas === 1, 'L2: no suena en Administración (Evaristo está a un metro)');
   await G(() => __game.gotoRoom('office'));
   av = await state();
-  ok(av.flags.evaristo_llamadas === 1 && av.flags.tadeo_rv_n === 3 && !('evaristo_convoco' in av.flags), 'sin L2 (E2, fase B 4): nada suena; los tres RV en el correo; sin evaristo_convoco (retirado en la integración)');
+  ok(av.flags.evaristo_llamadas === 2 && av.flags.evaristo_convoco === 'llamada' && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Planta 2, al fondo de Administración.')),
+    'L2 (acto_2_iniciado): «¿Puede pasarse por mi despacho?…» → «Planta 2, al fondo de Administración.» (sin «Era solo eso.»); evaristo_convoco = llamada');
+  await G(() => { __game.setFlag('acto_3_iniciado', true); __game.clearLog(); });
+  await G(() => __game.gotoRoom('sala_amazonas'));
+  ok((await state()).flags.evaristo_llamadas === 2, 'nunca en sala_amazonas con acto_3_iniciado');
+  await G(() => __game.gotoRoom('office'));
+  av = await state();
+  ok(av.flags.evaristo_llamadas === 2 && av.flags.tadeo_rv_n === 3, 'sin condición (L3) nada suena; los tres RV en el correo');
   await G(() => { __game.doVerb('mirar', 'movil'); });
   ok(await G(() => __game.log.some(l => l.text.startsWith('Y 3 correos de Tadeo'))), 'Mirar móvil con tadeo_rv_n = 3: «Y 3 correos de Tadeo...»');
   await G(() => { __game.setFlag('pieza_recortada', true); __game.setFlag('acto_3_iniciado', false); __game.clearLog(); });
   await G(() => __game.gotoRoom('pecera'));
-  ok((await state()).flags.evaristo_llamadas === 2 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Veintitrés líneas. Ni una coma fuera de sitio.')), 'L3 (pieza_recortada), sin la coma de 4,15 € (E2 §5.7) y sin «Era solo eso.» (E6 E009)');
+  ok((await state()).flags.evaristo_llamadas === 3 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Veintitrés líneas. Ni una coma fuera de sitio.')), 'L3 (pieza_recortada), sin la coma de 4,15 € (E2 §5.7) y sin «Era solo eso.» (E6 E009)');
   await G(() => { __game.setFlag('acto_3_iniciado', true); __game.setFlag('ruben_encontrado', true); __game.clearLog(); });
   await G(() => __game.gotoRoom('office'));
-  ok((await state()).flags.evaristo_llamadas === 3 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Alguien come ahí abajo y no cobra.') && __game.log.some(l => l.who === 'bruno' && l.text === 'Se llama Brais.')),
+  ok((await state()).flags.evaristo_llamadas === 4 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Alguien come ahí abajo y no cobra.') && __game.log.some(l => l.who === 'bruno' && l.text === 'Se llama Brais.')),
     'L4 (E6 §2.5): suena tras abrir el armario (ruben_encontrado, sin ruben_libre): «…Alguien come ahí abajo y no cobra.» → Bruno «Se llama Brais.»');
-  await G(() => { __game.setFlag('ruben_libre', true); __game.clearLog(); });
+  await G(() => { __game.setFlag('ruben_libre', true); __game.takeItem('correo_evaristo'); __game.clearLog(); });
   await G(() => __game.gotoRoom('administracion'));      // (en la Redacción, con Brais libre, la entrada lanza su escena)
-  ok((await state()).flags.evaristo_llamadas === 4 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Una cosita. Me dicen que va a la Sala. ¿Lleva mi correo?')), 'L5 (ruben_libre): «¿Lleva mi correo?»');
-  await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'acto_2_iniciado', 'acto_3_iniciado', 'pieza_recortada', 'ruben_encontrado', 'ruben_libre']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); __game.setFlag('evaristo_convoco', false); });
+  ok((await state()).flags.evaristo_llamadas === 4, '[coherencia] L5 espera a que Bruno lleve el correo («¿Lleva mi correo?» / «En el bolsillo.»)');
+  await G(() => { __game.giveItem('correo_evaristo'); __game.clearLog(); });
+  await G(() => __game.gotoRoom('office'));
+  ok((await state()).flags.evaristo_llamadas === 5 && await G(() => __game.log.some(l => l.who === 'evaristo_salvedad' && l.text === 'Una cosita. Me dicen que va a la Sala. ¿Lleva mi correo?')), 'L5 (ruben_libre y el correo): «¿Lleva mi correo?»');
+  await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'acto_2_iniciado', 'acto_3_iniciado', 'pieza_recortada', 'ruben_encontrado', 'ruben_libre']) __game.setFlag(f, false); __game.setFlag('evaristo_llamadas', 0); __game.setFlag('tadeo_rv_n', 0); __game.setFlag('evaristo_convoco', ''); __game.takeItem('correo_evaristo'); });
 
   step('Llamadas: primer plano del móvil (api.phone) en pista, aviso e intro; se retira siempre');
   const phoneState = () => G(() => __game.state().phone);

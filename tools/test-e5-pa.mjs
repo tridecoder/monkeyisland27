@@ -166,8 +166,8 @@ try {
     ok(await logHas(G, 'Pregunta la mesa... y los conectados.') && s1.st && !s1.rt && !s1.dlg, `«…y los conectados», sin turno, sin reunion_terminada, diálogo cerrado ${JSON.stringify(s1)}`);
     ok(await logCount(G, 'Se toma nota. No la tomo yo') === 0, '`return exit`: no se gasta «Me voy.»');
     await G(() => { __game.clearLog(); return __game.doVerb('hablar', 'gervasio_acta'); });
-    // [bloqueos] repetida, la opción sigue y Gervasio vuelve a señalar a «los conectados»
-    ok(await G(() => __game.chooseText('siguientes pasos')) !== false && await logHas(G, 'Ya consta. Pregunta la mesa... y los conectados.'), 'tras el «sin turno», la opción sigue: «Ya consta…» (bloqueos)');
+    // [bloqueos] repetida, la opción sigue; [coherencia] a la 2.ª Gervasio señala la pantalla (a la 3.ª, la tele la recoge)
+    ok(await G(() => __game.chooseText('siguientes pasos')) !== false && await logHas(G, 'Las preguntas de los conectados entran por la pantalla, cuando hay señal.') && !(await G(() => __game.getFlag('reunion_terminada'))), 'tras el «sin turno», la opción sigue: la 2.ª, Gervasio señala la pantalla (bloqueos, coherencia)');
     await cerrarDialogo(G);
     await rapido(G, false);
     await clic(T, 'mirar', 'tele_amazonas');   // E7 F2: la pista, con Mirar (Usar abre el árbol de la tele)

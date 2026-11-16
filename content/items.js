@@ -219,9 +219,10 @@ export const FICHA = {
     'PIEZA: veintitrés líneas. Lista para Teodoro.',
     'PIEZA: treinta y una líneas. Sobra un 26 %, dice Herminia. ¿Quién recorta?'],      // E1.4.1 (herminia_midio)
   // E2 §10.4: notas a lápiz de la trama de la coma (Evaristo)
-  evaristo: ['Al margen, a lápiz: «Evaristo me ha llamado. Planta 2. Escucharle entero».',
+  evaristo: ['Al margen, a lápiz: «Evaristo me espera. Planta 2. Escucharle entero».',
     'Al margen, a lápiz: «La coma de Evaristo, a Aurora».',
-    'Al margen, a lápiz: «El correo, en el momento oportuno».'],
+    'Al margen, a lápiz: «El correo, en el momento oportuno».',
+    'Al margen, a lápiz: «Evaristo me ha llamado. Planta 2. Al fondo».'],   // [coherencia] tras la L2
 };
 /** Las líneas de Mirar la ficha según el estado de la partida (también las usa tools/test-fase0.mjs). */
 export function fichaViva(api) {
@@ -235,7 +236,9 @@ export function fichaViva(api) {
   // E2 §10.4: la coma de Evaristo (una nota como mucho)
   if (api.has('correo_evaristo') && !f('duelo_inigo_ganado')) out.push(FICHA.evaristo[2]);
   else if (f('evaristo_escuchado') && !f('coma_bendecida')) out.push(FICHA.evaristo[1]);
-  else if (f('nota_gasto_presentada') && !f('evaristo_escuchado')) out.push(FICHA.evaristo[0]);
+  // [coherencia] «me espera»: se lo dijo Begoña (con su consejo) sin que él llamara; «me ha llamado»: solo si sonó la L2
+  else if (api.flag('evaristo_convoco') === 'begona' && !f('evaristo_escuchado')) out.push(FICHA.evaristo[0]);
+  else if (api.flag('evaristo_convoco') === 'llamada' && !f('evaristo_escuchado')) out.push(FICHA.evaristo[3]);
   return out;
 }
 
@@ -278,7 +281,9 @@ export default {
       // adenda 2.2: con `tadeo_rv_n` ≥ 1 sustituye a la línea de la biblia
       mirar: async (api) => {
         const n = api.flag('tadeo_rv_n') || 0;
-        if (n >= 1) await api.say(['Mi móvil. Una llamada perdida de la abuela.', `Y ${n} correos de Tadeo. Todos «RV:». Ninguno leído.`]);
+        // [coherencia] «Ninguno leído» solo si es verdad (los RV: son los bits 0-2 de movil_leidos)
+        const leidos = Number(api.flag('movil_leidos') || 0) & ((1 << n) - 1);
+        if (n >= 1) await api.say(['Mi móvil. Una llamada perdida de la abuela.', `Y ${n} correos de Tadeo. Todos «RV:».${leidos ? '' : ' Ninguno leído.'}`]);
         else await api.say('Mi móvil. Una llamada perdida de la abuela. Siempre hay una.');
       },
       usar: async (api) => { await menuMovil(api); },                 // el menú del móvil: abuela (§5.6), correo, llamadas
