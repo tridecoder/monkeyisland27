@@ -19,6 +19,8 @@ const sayP = (api, t) => api.sayAs(PILAR, t);
 const sayM = (api, t) => api.sayAs(MARIPAZ, t);
 const acto = (api) => (api.flag('acto_3_iniciado') ? 3 : api.flag('acto_2_iniciado') ? 2 : 1);
 const crisis = (f) => (f('ecosistema_sillas_n') || 0) >= 1 && !f('eventos_silla_devuelta');
+// [coherencia] (excepción del dueño: solo el número) con la crisis abierta, son 113 en lo que diga o piense cualquiera
+const sillas = (api) => (crisis((k) => api.flag(k)) ? 'ciento trece' : 'ciento doce');
 
 // ¡GONG! (adenda §13.3): es de Eventos. Maripaz no está en la sala, pero el dinero tiene buen oído: contesta desde
 // Comercial, al otro lado de la puerta (su voz llega arriba, sin globo sobre nadie).
@@ -63,11 +65,13 @@ async function mirarLista(api) {
 // La silla 113 (micro-puzle opcional, no toca el grafo principal): mirarla descubre la pegatina de Comercial;
 // devolverla (Usar / Coger / Empujar, ya sabiendo de quién es) cierra la crisis de Pilar y trae la croqueta.
 async function devolverSilla(api) {
+  const habiaCrisis = crisis((k) => api.flag(k));
   await api.say('Es de Comercial. Se la devuelvo a Maripaz, que es de donde ha venido.');
   api.sfx(SFX.sillas);
   api.setFlag('eventos_silla_devuelta', true);
   await api.wait(400);
-  await sayP(api, ['Ciento diez, ciento once... ciento doce.', '¡CIENTO DOCE! ¡Vuelvo a ser persona!']);
+  // [coherencia] el alivio, solo si había crisis (si Pilar aún no había contado la de más, solo cuenta)
+  await sayP(api, habiaCrisis ? ['Ciento diez, ciento once... ciento doce.', '¡CIENTO DOCE! ¡Vuelvo a ser persona!'] : 'Ciento diez, ciento once... ciento doce.');
   await sayP(api, 'Bruno, eso merece algo. Toma: una croqueta antes de las 21:05.');
   await api.say('Está fría.');
   await sayP(api, 'Es una crisis de reputación. Pero es nuestra.');
@@ -77,6 +81,7 @@ async function tocarSilla(api) {
   if (api.flag('eventos_silla_mirada')) { await devolverSilla(api); return; }
   await api.say('La pongo recta en su cruz.');
   await sayP(api, 'Ciento doce... ciento trece. ¡No es la postura, es la silla!');
+  if (!(api.flag('ecosistema_sillas_n') || 0)) api.setFlag('ecosistema_sillas_n', 1);   // [coherencia] ya la ha contado: crisis
 }
 
 export default buildRoom({
@@ -195,21 +200,21 @@ export default buildRoom({
       hablar: async (api) => { await api.say('«Sí, sí, probando». El micro me devuelve un eco.'); await sayP(api, '¡Probando, cambio! Se te oye en Comercial.'); },
       coger: 'Si me llevo el atril, empiezo yo el evento. Y no sé de qué va.',
       empujar: 'No. Tiene su cruz de cinta. Y Pilar tiene memoria fotográfica de cruces.',
-      'usar:ficha_pagina_7': 'Leo la ficha desde el atril: tres casillas. Ovación de ciento doce sillas.',
+      'usar:ficha_pagina_7': async (api) => api.say(`Leo la ficha desde el atril: tres casillas. Ovación de ${sillas(api)} sillas.`),
       'usar:libreta_replicas': 'Ensayo réplicas en el atril. El eco me las devuelve mejoradas.',
     } },
     { id: 'sillas_evento', name: 'sillas', handlers: {
       mirar: async (api) => {
         if (api.flag('eventos_silla_devuelta')) { await api.say(['Todas en su cruz. Ciento doce, según el plano.', 'Pilar respira en mayúsculas.']); return; }
         const a = acto(api);
-        if (a === 1) await api.say(['Filas de sillas, cada una en su cruz de cinta. Cuento cincuenta y seis.', 'Pilar dice que son ciento doce. Las otras están «en el plano».']);
+        if (a === 1) await api.say(['Filas de sillas, cada una en su cruz de cinta. Cuento cincuenta y seis.', `Pilar dice que son ${sillas(api)}. Las otras están «en el plano».`]);
         else if (a === 2) await api.say(['Las sillas. Una sobresale por la derecha.', 'Pilar la mira de reojo cada cinco minutos.']);
-        else await api.say('Ciento doce sillas para un evento sin tema. La ocupación media es Pilar.');
+        else await api.say(`${sillas(api) === 'ciento trece' ? 'Ciento trece' : 'Ciento doce'} sillas para un evento sin tema. La ocupación media es Pilar.`);
       },
       usar: async (api) => { await api.say('Me siento un momento en la última fila.'); await sayP(api, '¡Público! ¡Ya tenemos uno! Cuatro minutos y medio.'); await api.say('Me levanto. Vuelven a ser cinco.'); },
       coger: 'Si me llevo una, Pilar tendrá que contar hacia atrás. Y eso es el reloj.',
       empujar: 'No. Cada silla está en su cruz. Si muevo una, Pilar lo nota en el walkie.',
-      hablar: '«¿Hay alguien?». Ciento doce sillas en silencio. El mejor público de la casa.',
+      hablar: async (api) => api.say(`«¿Hay alguien?». ${sillas(api) === 'ciento trece' ? 'Ciento trece' : 'Ciento doce'} sillas en silencio. El mejor público de la casa.`),
       'dar:*': 'Si dejo algo en una silla, Pilar lo acredita como asistente.',
     } },
     { id: 'silla_reservado', name: 'silla con «RESERVADO»', handlers: {
@@ -248,7 +253,7 @@ export default buildRoom({
         hablar: async (api) => { await api.say('Cojo un walkie: «¿Hola?».'); await api.sayFrom('mesa_sonido', 'WALKIE: Cinco minutos. Cambio.'); },
         abrir: 'Abro la tapa del cargador. Pilas de 2009 y un caramelo. Cierro.',
         coger: 'Cojo un walkie. Pilar me lo quita sin mirar. Tiene seis acreditaciones.',
-        'usar:movil': 'Conecto el móvil. Suena mi tono a todo volumen. Lo oyen ciento doce sillas.',
+        'usar:movil': async (api) => api.say(`Conecto el móvil. Suena mi tono a todo volumen. Lo oyen ${sillas(api)} sillas.`),
       } },
     { id: 'mesa_acreditaciones', name: 'mesa de acreditaciones', handlers: {
       mirar: mirarLista,
@@ -288,7 +293,8 @@ export default buildRoom({
     { id: PILAR,
       // §13.2 (seis murmullos de siempre) + §13.5 (nuevos, según la crisis de la silla 113)
       murmurs: (view) => [
-        'Cinco minutos. Siempre cinco minutos. Es mi zona horaria.', 'Ciento diez, ciento once, ciento doce... ¿Quién se ha sentado?',
+        'Cinco minutos. Siempre cinco minutos. Es mi zona horaria.',
+        ...(crisis((k) => view.flag(k)) ? [] : ['Ciento diez, ciento once, ciento doce... ¿Quién se ha sentado?']),   // [coherencia] con 113, no
         'Cinta en el suelo, cinta en el cable, cinta en el alma.', 'Tres en el ascensor. Eso ya es un evento. Sin acreditar.',
         'Si no hay croquetas, no es un evento. Es una reunión.', 'Aquí Eventos, cambio. Sí, a cinco minutos. Cambio y corto.',
         'Foco tres, me parpadeas. No, cambio, foco tres. Tú.', 'Ponente: por confirmar. Croquetas: confirmadísimas.',

@@ -289,6 +289,7 @@ export default buildRoom({
     sala_amazonas_fondo_abierto: 'bool · P4 · nunca se pone: walkbox `fondo` (api.setWalkbox) · arte',
     sala_amazonas_orden_visto: 'bool · PA · E5 §2.1.2 · Mirar orden_del_dia · opción de Gervasio',
     sala_amazonas_atasco: 'bool · PA · E5 §2.1.6 · Mercados encajados en la puerta · vías (E6: 20 s)',
+    sala_amazonas_insiste_n: 'int · [coherencia] · insistencias a Gervasio (Acto II) · 3.ª: la tele',
   },
 
   objects: [
@@ -415,7 +416,12 @@ export default buildRoom({
         },
         hablar: async (api) => {
           if (atascoAbierto(api)) { await resolverAtasco(api, 'hablar'); return; }
-          if (!api.flag('acto_3_iniciado')) { await api.dialog('gervasio_reunion'); return; }
+          if (!api.flag('acto_3_iniciado')) {
+            await api.dialog('gervasio_reunion');
+            // [coherencia] a la tercera insistencia, la tele recoge la pregunta sola (la escena de siempre, ya sintonizada)
+            if (A.teleRecoge) { A.teleRecoge = false; await api.scene('sala_tele_gertrudis', { sintonizada: true }); }
+            return;
+          }
           // E2 §4.2.3: la reacción al adhesivo (una vez, compartida con la de Despachos)
           if (api.flag('bruno_con_banner') && api.once('pajarera_gervasio_banner')) { await sayG(api, 'Ese anuncio en la espalda... se agradece. Pero lo hablamos.'); return; }
           if (api.flag('lector_derribado')) await sayG(api, 'Diecinueve años y nadie lo había preguntado.');
@@ -576,11 +582,37 @@ export default buildRoom({
                   await sayG(api, 'Los siguientes pasos los pide quien trae página. ¿Tú traes página?');
                   return 'exit';
                 }
+                // [coherencia] insistir TAMBIÉN resuelve, con una escalada que enseña el puzle: 1.ª, la tele se enciende
+                // sola en «BUSCANDO SEÑAL»; 2.ª, Gervasio señala la pantalla y la tele parpadea; 3.ª, la tele recoge la
+                // pregunta (Gertrudis lo oye todo) y sale la escena de siempre. Hablar/Usar la tele y el Vending siguen.
+                const n = api.inc('sala_amazonas_insiste_n');
                 await api.wait(800);                                   // las tres cabezas se levantan y vuelven a bajar
-                if (api.flag('gertrudis_pregunta')) await sayG(api, 'Las preguntas de los conectados entran por la pantalla, cuando hay señal.');
-                else if (api.flag('sala_becario_sin_turno')) await sayG(api, 'Ya consta. Pregunta la mesa... y los conectados.');
-                else await sayG(api, 'Los becarios no tienen turno. Pregunta la mesa... y los conectados.');
-                if (aqui(api, 'mercados_2')) api.faceActor('mercados_2', 'tele_amazonas');   // Rogelio mira la tele
+                if (n >= 3) {
+                  for (const id of [...MERC, GERV]) if (aqui(api, id)) api.faceActor(id, 'tele_amazonas');
+                  api.setState('tele_amazonas', 'buscando'); api.sfx('click');
+                  await api.wait(600);
+                  api.setState('tele_amazonas', 'gertrudis'); api.sfx('beep');
+                  await api.sayFrom('tele_amazonas', 'BUENAS NOCHES, SALA AMAZONAS.', GERTRUDIS_TV);
+                  api.setFlag('sala_becario_sin_turno', true);
+                  api.setFlag('gertrudis_pregunta', true);
+                  A.teleRecoge = true;                                 // la escena, al cerrar el árbol (hablar de Gervasio)
+                  return 'exit';
+                }
+                if (n === 2 || api.flag('gertrudis_pregunta')) {
+                  api.faceActor(GERV, 'tele_amazonas');                // señala la pantalla
+                  await api.anim(GERV, 'reach', 600);
+                  await sayG(api, 'Las preguntas de los conectados entran por la pantalla, cuando hay señal.');
+                  for (let i = 0; i < 3; i++) {                        // la tele parpadea
+                    api.setState('tele_amazonas', 'buscando'); api.sfx('click'); await api.wait(260);
+                    api.setState('tele_amazonas', 'normal'); await api.wait(200);
+                  }
+                } else {
+                  await sayG(api, 'Los becarios no tienen turno. Pregunta la mesa... y los conectados.');
+                  if (aqui(api, 'mercados_2')) api.faceActor('mercados_2', 'tele_amazonas');   // Rogelio mira la tele
+                  api.setState('tele_amazonas', 'buscando'); api.sfx('click');                // la tele se enciende sola
+                  await api.wait(1400);
+                  api.setState('tele_amazonas', 'normal');
+                }
                 api.setFlag('sala_becario_sin_turno', true);
                 return 'exit';                                         // no gasta «Me voy.»
               } },
@@ -686,7 +718,7 @@ export default buildRoom({
 // ---------------------------------------------------------------- [PA] E5 §2.1 · «Pregunta del público» y el atasco
 // Estado de módulo (no se guarda: con el atasco abierto no se puede guardar, y `onEnter` lo pone a cero).
 const S = { quieto: 0, tamb: null };                       // §2.6: segundos de tiempo quieto tras D4; último fotograma
-const A = { ctl: null, resolviendo: false, quieto: 0 };    // §2.1.6: el atasco (ctl de api.estampida), reloj de 20 s
+const A = { ctl: null, resolviendo: false, quieto: 0, teleRecoge: false };    // §2.1.6: el atasco (ctl de api.estampida), reloj de 20 s
 const ATASCO_ANUNCIO_S = 20;                               // [PA] E6 §2.2.1 (antes, 10)
 /** §2.6 · ¿el jugador está sin actuar? Como `api.quieto()` (engine/efectos.js `quiet`), pero los globos que no
  *  bloquean (murmullos, ambiente, megafonía) no cuentan como actividad. */

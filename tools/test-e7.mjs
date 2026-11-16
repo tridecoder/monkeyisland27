@@ -395,7 +395,7 @@ try {
   // ====================================================================== F4
   if (toca('f4')) {
     console.log('\n§2.4 · F4: «¿Falta mucho?» (Evaristo se va a escribir)');
-    const T = await open({ ...ACTO2, nota_gasto_presentada: true }, 'administracion');
+    const T = await open({ ...ACTO2, nota_gasto_presentada: true, evaristo_convoco: 'begona' }, 'administracion');   // [coherencia] Begoña le manda
     const { page, G, until, untilSkip, clicOpcion, raton, logHas, shot } = T;
     await raton('hablar', 'evaristo_salvedad');
     await clicOpcion('¿Para qué me ha llamado?');
@@ -414,7 +414,9 @@ try {
     if (!(await G(() => (__game.currentDialogOptions() || []).includes('¿Falta mucho?')))) { await G(() => { if (__game.game.choice) __game.game.choice.resolve(-1); }); await G(() => __game.waitIdle()); await G(() => __game.doVerb('hablar', 'evaristo_salvedad')); await clicOpcion('¿Para qué me ha llamado?'); }
     await G(() => __game.clearLog());
     await clicOpcion('¿Falta mucho?'); await G(() => __game.waitIdle());
-    ok(!(await logHas('Correo nuevo de Evaristo')), 'la segunda vez, sin aviso');
+    // [coherencia] lo pone por escrito DE VERDAD: la segunda prisa, la segunda parte (llega a la bandeja), sin repetir la 1
+    ok(await logHas('Correo nuevo de Evaristo Salvedad: «Una cosita (2 de 3)».') && !(await logHas('«Una cosita (1 de 3)»')), 'la segunda vez, la parte 2 (no otra vez la 1)');
+    ok(await G(() => String(__game.getFlag('evaristo_correos')).split(',').filter(t => /^[12]@/.test(t)).length === 2), 'las dos partes, en la bandeja');
     await T.ctx.close();
   }
 

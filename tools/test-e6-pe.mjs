@@ -206,7 +206,7 @@ try {
     };
     await dice('mirar', 'evaristo_salvedad', null, 'Don Evaristo Salvedad, Controlling, con corbata de comas y lupa al cuello.');
     // B9: «¿Falta mucho?» → «Si tiene prisa…», sin «Le he mirado el reloj…»
-    await G(() => { __game.skipText(true); __game.clearLog(); });
+    await G(() => { __game.skipText(true); __game.clearLog(); __game.setFlag('evaristo_convoco', 'llamada'); });   // [coherencia] le ha llamado (L2)
     await G(() => __game.doVerb('hablar', 'evaristo_salvedad'));
     await G(() => __game.chooseText('¿Para qué me ha llamado?'));
     await G(() => __game.chooseText('¿Falta mucho?')); await idle(G);

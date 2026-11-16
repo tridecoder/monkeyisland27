@@ -46,9 +46,9 @@ const OPCIONES_CORREO = [
   { text: '¿Y no me lo puede decir ahora?', once: true, reply: 'Ahora no. Lo verbal no lleva comas.' },
   { text: '¿Falta mucho?', exit: true,
     do: async (api) => {
-      await api.anim(api.player, 'reach', 700);    // E7 F4: Bruno mira el móvil (más largo)
       const parte = [1, 2, 3].find(i => !correoLlegado(api, i));
       if (!parte) { await sayEv(api, 'Ya se lo he puesto por escrito. Las tres partes.'); return; }
+      await api.anim(api.player, 'reach', 700);    // E7 F4: Bruno mira el móvil (más largo)
       await sayEv(api, 'Si tiene prisa, se lo pongo por escrito.');
       api.faceActor(EV, 'up');                     // (De espaldas. Lo pone por escrito, de verdad.)
       for (let i = 0; i < 3; i++) { api.sfx('typewriter'); await api.wait(380); }

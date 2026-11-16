@@ -438,7 +438,7 @@ try {
   await G(() => { __game.skipText(true); for (const f of ['torno_abierto', 'inigo_presentado', 'silla_libre', 'rep_11', 'gertrudis_saludada', 'acto_2_iniciado', 'cms_vivo', 'reunion_terminada', 'casilla_hueco', 'nota_gasto_presentada']) __game.setFlag(f, true); __game.giveItem('ficha_pagina_7'); });
   ok(await G(() => __game.game.condApi().objetivo.actual('administracion') === 'coma' && __game.game.condApi().objetivo.meta('administracion') === 'Evaristo me llama y Begoña me manda a verle. Algo le quita el sueño.'), 'objetivo nuevo «coma» (paso 28) en Administración, con su meta');
   F = await ficha();
-  ok(F.includes('Al margen, a lápiz: «Evaristo me ha llamado. Planta 2. Escucharle entero».'), 'ficha: nota a lápiz de Evaristo (sin escuchar)');
+  ok(F.includes('Al margen, a lápiz: «Evaristo me espera. Planta 2. Escucharle entero».'), 'ficha: nota a lápiz de Evaristo (sin escuchar; [coherencia] «me espera»: se lo dice Begoña)');
   await G(() => { __game.setFlag('evaristo_escuchado', true); __game.setFlag('fax_con_papel', true); __game.setFlag('casilla_fuente', true); });   // (va tras «fuente» en la lista)
   ok(await G(() => __game.game.condApi().objetivo.actual('catacumba') === 'bendicion'), 'objetivo nuevo «bendicion» (paso 32) en la Redacción de papel');
   F = await ficha();

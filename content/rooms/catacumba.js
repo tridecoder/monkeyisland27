@@ -443,7 +443,8 @@ const dialogoAurora = {
           do: async (api) => { await aurora(api, ['Ahora escríbela en tu ordenador, fuera del CMS, que ahí vive el Titulator.', 'Y sin adjetivos; si se te escapa uno, que sea el bueno.']); } },
         { text: '¿Ha oído cómo pregunta Custodia?', if: 'custodia_regla', once: true,
           do: async (api) => { await aurora(api, ['Eso, criatura, es una sentencia.']); } },
-        { text: 'Íñigo dice que en la reunión van a apagar la rotativa.', if: 'acto_3_iniciado', once: true,
+        // [coherencia] lo de la rotativa lo dice el fax al abrir el Acto III (E2 quitó la visita de Íñigo que lo decía)
+        { text: 'Teodoro dice que en la reunión van a apagar la rotativa.', if: 'acto_3_iniciado', once: true,
           do: async (api) => { await aurora(api, ['Esa reunión no decide nada sin acta.', 'Y Gervasio no ha escrito un acta en su vida.']); } },
         // E2 §5.3 · paso 32: Aurora bendice la coma y la manda por el fax de Teodoro (tecla 3)
         // [bloqueos] la opción sale con Evaristo escuchado; sin papel en el fax, Aurora dice qué falta
@@ -453,7 +454,9 @@ const dialogoAurora = {
             await comaDeEvaristo(api);
           } },
         // ENMIENDA E4 S7 · contrapunto de papel 1: COINCIDO (Teodoro y Aurora, de acuerdo en gramática)
-        { text: 'Yoli quiere sacar mi opa con «los expertos coinciden».', once: true, if: ['pieza_escrita', 'fax_con_papel'],
+        // [coherencia] solo si Bruno ha abierto el titulador de Yoli (ahí está «Los expertos coinciden»; la demo no lo usa)
+        { text: 'Yoli quiere sacar mi opa con «los expertos coinciden».', once: true,
+          if: ['pieza_escrita', 'fax_con_papel', (api) => Number(api.flag('pecera_disc_partidas') || 0) >= 1 || !!api.flag('opa_posit')],
           do: async (api) => {
             await aurora(api, '¿Coinciden en qué? «Coincidir» pide complemento.');
             await imprime(api, 1);                               // (el fax se pone a escribir solo)

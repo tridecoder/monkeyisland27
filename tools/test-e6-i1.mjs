@@ -65,8 +65,8 @@ async function open(flags, room) {
   return { ctx, page, G };
 }
 const log = (G) => G(() => __game.log.filter(l => l.who !== 'aviso').map(l => l.who + ': ' + l.text));
-// L1 y L3 ya oídas: la siguiente pendiente es la L4
-const OIDAS = async (G) => G(() => { const o = __game.game.state.once || (__game.game.state.once = {}); o['once:evaristo_L1'] = true; o['once:evaristo_L3'] = true; __game.setFlag('evaristo_llamadas', 2); });
+// L1, L2 ([coherencia]: vuelve) y L3 ya oídas: la siguiente pendiente es la L4
+const OIDAS = async (G) => G(() => { const o = __game.game.state.once || (__game.game.state.once = {}); o['once:evaristo_L1'] = true; o['once:evaristo_L2'] = true; o['once:evaristo_L3'] = true; __game.setFlag('evaristo_llamadas', 3); });
 const ACTO3 = { intro_vista: true, torno_abierto: true, inigo_presentado: true, acto_2_iniciado: true, acto_3_iniciado: true, pieza_recortada: true, pagina_cerrada: true };
 
 try {
