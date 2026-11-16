@@ -1,0 +1,340 @@
+diff -ru -x node_modules antes_repo/content/duelo.js proto/content/duelo.js
+--- antes_repo/content/duelo.js	2026-11-16 15:50:04.801393246 +0000
++++ proto/content/duelo.js	2026-11-16 15:56:02.449734566 +0000
+@@ -104,6 +104,13 @@
+     },
+   },
+ 
++  // PROTOTIPO: quién contesta «+1» a cada acierto (en orden), por duelo
++  masUno: {
++    maripaz: [{ name: 'Celestino', color: '#E8C170' }, { name: 'Yoli', color: '#FF78B8' }, { name: 'Gertrudis', color: '#F0A040' }],
++    teodoro: [{ name: 'Aurora', color: '#8a3a2a' }, { name: 'LA GOYITA', color: '#1e5a2a' }, { name: 'Celestino', color: '#7a5a20' }],
++    gervasio: [{ name: 'Eutimio', color: '#92C0FF' }, { name: 'Anselmo', color: '#7FFFD4' }],
++    inigo: [{ name: 'Yoli', color: '#FF78B8' }, { name: 'Eutimio', color: '#92C0FF' }, { name: 'Aurora', color: '#FF8A7A' }, { name: 'Gertrudis', color: '#F0A040' }, { name: 'Celestino', color: '#E8C170' }],
++  },
+   // Textos fijos de la ventana de correo (§6.2).
+   texts: {
+     to: 'Todos',
+diff -ru -x node_modules antes_repo/content/escenas/climax.js proto/content/escenas/climax.js
+--- antes_repo/content/escenas/climax.js	2026-11-16 15:50:04.801457624 +0000
++++ proto/content/escenas/climax.js	2026-11-16 15:59:40.013615550 +0000
+@@ -54,6 +54,7 @@
+   to: 'Todos',
+   cc: 'Toda la empresa',
+   subject: 'Plan Cero Papel – Llamar a la rotativa para apagarla',
++  marron: 'Llamar a la rotativa para apagarla',  // PROTOTIPO
+   assigned: 'Vacante (perfil ideal)',
+   assignedWin: 'Íñigo Sinergia',
+   deck: DECK_D4,
+diff -ru -x node_modules antes_repo/content/rooms/catacumba.js proto/content/rooms/catacumba.js
+--- antes_repo/content/rooms/catacumba.js	2026-11-16 15:50:04.801967635 +0000
++++ proto/content/rooms/catacumba.js	2026-11-16 15:59:40.012495704 +0000
+@@ -598,6 +598,7 @@
+   actor: TEO,
+   from: 'Teodoro Cuerpodoce',
+   subject: 'Firma de la web en papel. Asignado a: quien se atreva',
++  marron: 'Firmar la web en la página 7',  // PROTOTIPO
+   assigned: 'EL DE LA WEB',
+   assignedWin: 'Teodoro Cuerpodoce',
+   deck: ['R06', 'R02', 'R09'],                        // E2 fase B (6): un ataque menos (sin R03); E6 §5.1: los tres
+diff -ru -x node_modules antes_repo/content/rooms/pajarera.js proto/content/rooms/pajarera.js
+--- antes_repo/content/rooms/pajarera.js	2026-11-16 15:50:04.801641385 +0000
++++ proto/content/rooms/pajarera.js	2026-11-16 15:59:40.013171504 +0000
+@@ -219,6 +219,7 @@
+   actor: G,
+   from: 'Gervasio Acta',
+   subject: 'Redactar el acta de la última Reunión de Dirección',
++  marron: 'Redactar el acta de la última Reunión',  // PROTOTIPO
+   assigned: 'Vacante (becario)',
+   assignedWin: 'Gervasio Acta',
+   // E2 §7.5 fase B (15): sin R14; remate a los dos aciertos. E6 §5.2: R03 segunda (la frase a medias); sigue a 2
+diff -ru -x node_modules antes_repo/content/rooms/sala_amazonas.js proto/content/rooms/sala_amazonas.js
+--- antes_repo/content/rooms/sala_amazonas.js	2026-11-16 15:50:04.802119878 +0000
++++ proto/content/rooms/sala_amazonas.js	2026-11-16 15:58:29.204544276 +0000
+@@ -166,6 +166,7 @@
+   actor: MARIPAZ,
+   from: 'Maripaz Remitido',
+   subject: 'Llamar a Siestatón para pasarlos a la web (contiene publicidad)',
++  marron: 'Llamar a Siestatón', sostener: tabletaEnAlto,          // PROTOTIPO
+   assigned: 'B. Pollejo',
+   deck: ['R08', 'R04', 'R11', 'R14'],
+   attackText: {
+@@ -636,6 +637,13 @@
+                 else {
+                   await sayM(api, ['¿Ocho meses sin confirmar? Eso no es un cliente, cariño. Es un exnovio.',
+                     'Los paso a la web, que allí cabe todo. Pero alguien tiene que llamarles.']);
++                  // PROTOTIPO §2: saca la tableta, teclea, suenan todos los móviles de la sala
++                  api.sostener(MARIPAZ, tabletaEnAlto);
++                  await sayM(api, 'Eso, por escrito. Con copia a todos.');
++                  api.sfx('click'); await api.wait(180); api.sfx('click'); await api.wait(180); api.sfx('beep');
++                  api.sostener(api.player || 'bruno', 'movil');
++                  await api.say('Estamos a un metro.');
++                  await sayM(api, 'Por eso. Lo que no está en copia no ha pasado.');
+                 }
+                 await api.duel('maripaz');
+                 return 'exit';
+diff -ru -x node_modules antes_repo/engine/duel.js proto/engine/duel.js
+--- antes_repo/engine/duel.js	2026-11-16 15:50:04.800771013 +0000
++++ proto/engine/duel.js	2026-11-16 15:58:29.203833386 +0000
+@@ -25,8 +25,9 @@
+ //  - E6 §6.2: the comodín carries the menu tag «COMODÍN» (`choose` option `{ text, tag }`).
+ //  - HUD = mail window (63 px): De / Para / CC · Asunto (RE: RE: ...) · Cuerpo · Asignado a · «ACIERTOS 2/3 · FALLOS 1/3».
+ import { drawText, measure, wrap, citar } from './font.js';
+-import { rect, hline, frameRect } from './draw.js';
++import { rect, hline, vline, frameRect, px } from './draw.js';
+ 
++const ccCorto = (t) => ({ 'Toda la planta': 'Planta', 'Toda la empresa': 'Empresa', 'Colchones Siestatón': 'Siestatón', 'Optimal Brains & Partners': 'Optimal', 'Sus tres móviles': 'Sus 3 móviles' }[t] || t);
+ const asArray = x => x == null ? [] : Array.isArray(x) ? x : [x];
+ export const MAX_REPLY_OPTIONS = 4;          // correct + 3 decoys; + 1 weak = 5 lines
+ export const OPTION_W = 288;                 // width of a menu line (engine/ui.js choiceLayout)
+@@ -86,7 +87,13 @@
+     id, phase: 'intro', hits: 0, misses: 0, re: opp.re ?? 1, subject: opp.subject || '', cc: opp.cc || null, ccExtra: [],
+     assigned: opp.assigned || 'Vacante', from: fromName, to: opp.to || T.to, style: fax ? 'fax' : 'mail',
+     thread: null, result: null, finIdx: 0, body: null, target, maxMisses, round: 0,
++    // PROTOTIPO (rediseño): quién «tiene la palabra» en el cuerpo, escalera de CC visible, +1 con nombre, avisos
++    sender: 'rival', mine: null, chips: null, toast: null, fx: null, ding: 0, marron: opp.marron || opp.subject || '',
++    fromShort: opp.fromShort || ((oppActor && oppActor.name) || fromName), actorId, assignedWin: opp.assignedWin || fromName,
++    fromColor: (oppActor && oppActor.color) || '#ffd080', masUno: asArray((D.masUno || {})[id]), libreta: true,
+   };
++  S.chips = (asArray(opp.ccChips).length ? asArray(opp.ccChips) : ccSteps.map(ccCorto)).slice(0, maxMisses);
++  while (S.chips.length < maxMisses) S.chips.push(S.chips.length === maxMisses - 1 ? 'Empresa' : 'Planta');
+   const info = game.duelInfo = {
+     id, opponent: actorId, phase: 'intro', attack: null, options: null, optionPairs: null, correctIndex: -1, weakIndex: -1, correctItem: null, body: null,
+     escribiendo: false, interrumpeN: 0,             // E7 `aTiempo`
+@@ -133,7 +140,9 @@
+     const known = deck.filter(p => flags[pairs.get(p).flag]).length;
+     if (T.notReady && known < Math.min(target, deck.length)) await say('player', T.notReady);
+     await sayList(opp.intro);
+-    game.hud = hud; game.hudTop = 66;   // drawHud adjusts it to the window height
++    // PROTOTIPO: los dos con el móvil en la mano mientras dure el hilo (el fax no: Teodoro escribe en la máquina)
++    if (!fax) { api.sostener(game.G.player || 'bruno', 'movil'); if (opp.sostener !== null) api.sostener(actorId, opp.sostener || 'movil'); }
++    game.hud = hud; game.hudTop = 46;   // drawHud adjusts it to the window height
+     let guard = 0;
+     while (guard++ < 300) {
+       // ---- finisher pending?
+@@ -179,8 +188,9 @@
+         }
+       } else {
+         S.cola = false; tl = null;
+-        S.body = attack; info.body = attack;
++        S.sender = 'rival'; S.mine = null; S.body = null; S.escribiendo = 'escribiendo'; info.body = attack;
+         await say('rival', attack);
++        S.escribiendo = null; S.body = attack; S.ding = game.realTime; api.sfx('beep');
+       }
+       const opts = buildMenu(pid);
+       info.options = opts.map(o => o.text);
+@@ -203,6 +213,7 @@
+       }
+       tl = null;
+       S.round++;
++      S.sender = 'player'; S.mine = ch.text; S.ding = game.realTime;
+       await say('player', ch.text);
+       if (ch.kind === 'larga') {
+         // E6 §6.1 (c): la réplica larga no cabe. Nunca suma fallo: ni `misses`, ni RE:, ni CC, ni se mueve el mazo.
+@@ -220,7 +231,9 @@
+       }
+       if (ch.kind === 'reply' && ch.pair === pid) {
+         S.hits++; deck.shift(); api.sfx('good');
+-        if (T.plusOne) ctl.thread(T.plusOne.from, T.plusOne.text);
++        const quien = S.masUno[(S.hits - 1) % Math.max(1, S.masUno.length)] || { name: 'Alguien' };
++        S.toast = { name: quien.name, color: quien.color || '#9cf0a4', text: '+1', ms: 2200, until: game.realTime + 2200 };
++        S.fx = { k: 'hit', t: game.realTime };
+         if (opp.onHit) await opp.onHit(api, ctl, pid);
+         const pending = finishers[S.finIdx];
+         const ending = (!finishers.length && S.hits >= target) || (pending && S.hits >= pending.atScore);
+@@ -228,7 +241,7 @@
+         const hp = (opp.hurtByPair && opp.hurtByPair[pid]) || (D.hurtByPair && D.hurtByPair[id] && D.hurtByPair[id][pid]);
+         if (!ending || hp) await sayList(hp || next('hurt'));
+         const cam = D.cameos && D.cameos[id];
+-        if (cam && S.hits === 1 && api.once('cameo:' + id)) ctl.thread(cam.from, cam.text, cam.ms);
++        if (cam && S.hits === 1 && api.once('cameo:' + id)) S.toast = { name: cam.from.replace(/ respondió a todos:$/, ''), color: '#ffcc99', text: cam.text, ms: cam.ms || 3000, until: game.realTime + (cam.ms || 3000) };
+         continue;
+       }
+       if (ch.kind === 'comodin' && !S.comodinUsed) {
+@@ -238,6 +251,7 @@
+       }
+       // ---- miss: one more RE:, somebody more in copy, the rival ALWAYS answers before the defeat is decided
+       S.misses++; S.re++; deck.push(deck.shift()); api.sfx('bad');
++      S.fx = { k: 'miss', t: game.realTime }; if (game.shake) game.shake(220, 1);
+       const step = ccSteps[Math.min(S.misses, ccSteps.length) - 1];
+       if (step && !S.ccExtra.includes(step) && step !== S.cc) S.ccExtra.push(step);
+       if (ch.kind === 'weak') {
+@@ -380,68 +394,122 @@
+   return t.trimEnd() + '...';
+ }
+ 
+-/** Mail (or fax) window at the top of the room view: 63 px with the attack written in «Cuerpo». */
++/** PROTOTIPO · ventana del hilo, 41 px: barra (el marrón y a quién le toca) · cuerpo (quién escribe y qué, grande) ·
++ *  pie (+1 a favor · CC que crece). Debajo, el aviso «+1» y la pestaña de la libreta sobre el menú. */
+ function drawHud(g, game, S) {
+   const fax = S.style === 'fax';
+   const C = fax
+-    ? { bg: '#e8dfc6', bar: '#b4a68a', barText: '#3a3020', label: '#564c3e', text: '#2a2218', line: '#92856e', edge: '#4e463c', assign: '#952a24', win: '#1e5a2a', body: '#3a2a10', miss: '#952a24' }
+-    : { bg: '#141a30', bar: '#2c5098', barText: '#e8f0ff', label: '#94a6d4', text: '#e8ecf8', line: '#26305c', edge: '#06080f', assign: '#f2d468', win: '#9cf0a4', body: '#ffe9a8', miss: '#ff9a8a' };
+-  const x = 4, y = 2, w = 312;
+-  const subjW = w - measure('Asunto:') - 12;
+-  let subj = wrap(subjectText(S), subjW);
+-  if (subj.length > 1) subj = [fit(subj.join(' '), subjW)];       // one line: the body needs the room
+-  const bodyW = w - measure('Cuerpo:') - 12;
+-  let body = S.body ? wrap(citar(S.body), bodyW) : [];
+-  if (body.length > 2) body = S.cola ? ['...' + body[body.length - 2], body[body.length - 1]]   // E7: el trozo nuevo, siempre a la vista
+-    : [body[0], fit(body.slice(1).join(' '), bodyW)];
+-  const h = 63;
++    ? { bg: '#e8dfc6', bar: '#b4a68a', barText: '#2a2218', label: '#6a5c48', text: '#2a2218', line: '#b0a284', edge: '#4e463c',
++        body: '#2a1c08', mine: '#1e3a6a', chipOff: '#a89a7e', chipOn: '#952a24', chipOnText: '#fff4e0', slotOff: '#b0a284', slotOn: '#1e5a2a',
++        toca: '#952a24', tocaText: '#fff4e0', win: '#1e5a2a' }
++    : { bg: '#141a30', bar: '#2c5098', barText: '#e8f0ff', label: '#94a6d4', text: '#e8ecf8', line: '#26305c', edge: '#06080f',
++        body: '#ffe9a8', mine: '#a8e0ff', chipOff: '#3c4878', chipOn: '#d8402c', chipOnText: '#ffffff', slotOff: '#3c4878', slotOn: '#3cb050',
++        toca: '#8a1e1e', tocaText: '#ffe070', win: '#1e6a2e' };
++  const t = game.realTime;
++  const x = 4, y = 2, w = 312, h = 43;
+   game.hudTop = y + h + 3;
+-  g.save(); g.globalAlpha = fax ? 0.97 : 0.94; rect(g, x, y, w, h, C.bg); g.restore();
+-  frameRect(g, x - 1, y - 1, w + 2, h + 2, C.edge);
++  // golpe: el marco destella verde (acierto) o rojo (fallo) 400 ms
++  const fx = S.fx && t - S.fx.t < 450 ? S.fx.k : null;
++  rect(g, x, y, w, h, C.bg);
++  frameRect(g, x - 1, y - 1, w + 2, h + 2, fx === 'hit' ? '#5cff70' : fx === 'miss' ? '#ff4a3a' : C.edge);
++  if (fx) frameRect(g, x - 2, y - 2, w + 4, h + 4, fx === 'hit' ? '#2a8a3a' : '#8a2418');
++  // ---- barra: [sobre] el marrón ............ Le toca a: [B. Pollejo]
+   rect(g, x, y, w, 10, C.bar);
+-  if (fax) { for (let i = x + 2; i < x + w - 2; i += 6) rect(g, i, y + 4, 2, 1, C.line); }
+-  drawText(g, fax ? 'FAX · TALLERES' : 'RESPONDER A TODOS', x + 3, y - 1, C.barText, { outline: null, bold: !fax });
+-  // score as text (rule 12), right of the title bar
+-  const sc = scoreText(S);
+-  drawText(g, sc, x + w - 4, y - 1, fax ? C.barText : '#ffffff', { outline: null, align: 'right' });
+-  if (S.escribiendo) {
+-    // E7 `aTiempo`: «escribiendo» + 1-3 puntos en la barra del título, entre el título y el marcador (como un chat)
+-    const x0 = x + 3 + measure(fax ? 'FAX · TALLERES' : 'RESPONDER A TODOS') + 8, x1 = x + w - 4 - measure(sc) - 8;
+-    const t = S.escribiendo + '.'.repeat(1 + Math.floor(game.realTime / 400) % 3);
+-    drawText(g, t, Math.round((x0 + x1 - measure(S.escribiendo + '...')) / 2), y - 1, fax ? C.barText : '#c8d8ff', { outline: null });
+-  }
+-  const row = (yy, label, value, col) => {
+-    drawText(g, label, x + 4, yy, C.label, { outline: null });
+-    const lw = measure(label) + 4;
+-    drawText(g, fit(value, w - lw - 8), x + 4 + lw, yy, col || C.text, { outline: null });
+-  };
+-  const cc = ccText(S);
+-  row(y + 9, 'De:', S.from + '   Para: ' + S.to + (cc ? '   CC: ' + cc : ''));
+-  row(y + 19, 'Asunto:', subj[0]);
+-  drawText(g, 'Cuerpo:', x + 4, y + 29, C.label, { outline: null });
+-  body.forEach((l, i) => drawText(g, l, x + 8 + measure('Cuerpo:'), y + 29 + i * 9, C.body, { outline: null }));
+-  hline(g, x + 3, y + 49, w - 6, C.line);
+-  drawText(g, 'Asignado a:', x + 4, y + 50, C.label, { outline: null });
+-  const lw = measure('Asignado a:') + 5;
++  if (fax) { for (let i = x + 2; i < x + w - 2; i += 6) rect(g, i, y + 8, 2, 1, C.line); }
++  // icono: sobre (correo) u hoja con agujeros (fax)
++  const ix = x + 3, iy = y + 2;
++  if (fax) { rect(g, ix, iy, 7, 7, '#fff8e8'); for (let k = 0; k < 3; k++) px(g, ix + 1, iy + 1 + k * 2, '#8a7a5a'); hline(g, ix + 3, iy + 2, 3, '#8a7a5a'); hline(g, ix + 3, iy + 4, 3, '#8a7a5a'); }
++  else { rect(g, ix, iy + 1, 9, 6, '#e8f0ff'); for (let k = 0; k < 4; k++) { px(g, ix + 1 + k, iy + 2 + k, '#2c5098'); px(g, ix + 7 - k, iy + 2 + k, '#2c5098'); } }
+   const won = S.result === 'won';
+-  drawText(g, fit(S.assigned, 150), x + 4 + lw, y + 50, won ? C.win : C.assign, { outline: fax ? null : '#000000', bold: true });
+-  // stamps: «+1» per hit and a cross per miss, right-aligned
+-  let rx = x + w - 6;
+-  for (let i = 0; i < S.maxMisses; i++) {
+-    const on = i < S.misses;
+-    rx -= 7; rect(g, rx, y + 54, 5, 5, on ? (fax ? '#952a24' : '#e86040') : C.line);
+-    if (on) { rect(g, rx + 1, y + 56, 3, 1, C.bg); }
++  const quien = won ? (S.assignedWin || S.assigned) : S.assigned;
++  const tocaTxt = fit(quien, 110);
++  const tw = measure(tocaTxt, { bold: true }) + 6;
++  const lab = 'Le toca a:';
++  const lw = measure(lab);
++  const chipX = x + w - tw - 2;
++  rect(g, chipX, y + 1, tw, 8, won ? C.win : C.toca);
++  drawText(g, tocaTxt, chipX + 3, y - 1, won ? '#e8ffe8' : C.tocaText, { outline: null, bold: true });
++  drawText(g, lab, chipX - lw - 3, y - 1, C.barText, { outline: null });
++  let asunto = S.marron; const amax = chipX - lw - 10 - (ix + 12);
++  while (asunto.length > 3 && measure(asunto, { bold: true }) > amax) asunto = asunto.slice(0, -2).trimEnd() + '…';
++  drawText(g, asunto, ix + 12, y - 1, C.barText, { outline: null, bold: true });
++  // ---- cuerpo: «Maripaz › Todos:» + el texto (dos líneas, grande) — o «Tú:» con la réplica de Bruno
++  const mine = S.sender === 'player' && S.mine;
++  const who = mine ? 'Tú › Todos:' : `${S.fromShort} › Todos:`;
++  const whoCol = mine ? C.mine : (fax ? C.label : S.fromColor);
++  drawText(g, who, x + 4, y + 10, whoCol, { outline: null, bold: true });
++  const bx = x + 8 + measure(who, { bold: true });
++  const bodyW = x + w - 4 - bx;
++  if (!mine && !S.body && S.escribiendo) {
++    const dots = '.'.repeat(1 + Math.floor(t / 400) % 3);
++    drawText(g, S.escribiendo + dots, bx, y + 10, C.label, { outline: null });
++  } else {
++    const txt = mine ? S.mine : S.body;
++    let lines = txt ? wrap(citar(fax && !mine ? txt : txt), bodyW) : [];
++    if (lines.length > 2) lines = S.cola && !mine ? ['...' + lines[lines.length - 2], lines[lines.length - 1]] : [lines[0], fit(lines.slice(1).join(' '), bodyW)];
++    lines.forEach((l, i) => drawText(g, l, bx, y + 10 + i * 10, mine ? C.mine : C.body, { outline: null }));
++    if (!mine && S.escribiendo) {           // E7 aTiempo: sigue escribiendo
++      const dots = '.'.repeat(1 + Math.floor(t / 400) % 3);
++      drawText(g, S.escribiendo + dots, x + w - 4, y + 10, C.label, { outline: null, align: 'right' });
++    }
++  }
++  hline(g, x + 3, y + 30, w - 6, C.line);
++  const fy = y + 32;
++  // ---- pie: [+1][+1][+1] a la izquierda · CC: [Siestatón][Planta][Empresa] a la derecha
++  let sx = x + 4;
++  for (let i = 0; i < S.target; i++) {
++    const on = i < S.hits;
++    const nuevo = on && i === S.hits - 1 && fx === 'hit';
++    const bw = 15;
++    if (on) rect(g, sx, fy, bw, 10, nuevo ? '#9cff9c' : C.slotOn);
++    else frameRect(g, sx, fy, bw, 10, C.slotOff);
++    drawText(g, '+1', sx + bw / 2, fy - 1, on ? (fax ? '#f4ffe8' : '#0c2410') : C.slotOff, { outline: null, align: 'center', bold: on });
++    sx += bw + 2;
++  }
++  let cx = x + w - 3;
++  const chipW = S.chips.map(c => measure(c) + 6);
++  for (let i = S.chips.length - 1; i >= 0; i--) {
++    cx -= chipW[i];
++    const on = i < S.misses || S.defeat;
++    const nuevo = on && i === S.misses - 1 && fx === 'miss';
++    if (on) rect(g, cx, fy, chipW[i], 10, nuevo ? '#ff8a6a' : C.chipOn);
++    else frameRect(g, cx, fy, chipW[i], 10, C.chipOff);
++    drawText(g, S.chips[i], cx + 3, fy - 1, on ? C.chipOnText : C.chipOff, { outline: null });
++    cx -= 2;
++  }
++  drawText(g, 'CC:', cx - 1, fy - 1, C.label, { outline: null, align: 'right' });
++  // ---- el aviso «+1» (forma de notificación del móvil, la misma de la escena viral)
++  if (S.toast && t < S.toast.until) {
++    const T = S.toast;
++    const age = t - (T.until - (T.ms || 1800));
++    const txt = `${T.name}: ${T.text}`;
++    const lines = wrap(txt, 150).slice(0, 2);
++    const W = Math.max(...lines.map(l => measure(l))) + 16;
++    const slide = Math.max(0, 1 - age / 160);
++    const xx = Math.round(320 - W - 4 + slide * (W + 8)), yy = y + h + 3;
++    const hh = 4 + lines.length * 10;
++    g.save(); g.globalAlpha = 0.92; rect(g, xx, yy, W, hh, fax ? '#f2ead4' : '#141a30'); g.restore();
++    frameRect(g, xx, yy, W, hh, T.color);
++    rect(g, xx + 3, yy + 4, 5, 5, T.color);
++    lines.forEach((l, j) => drawText(g, l, xx + 11, yy + 1 + j * 10, fax ? '#2a2218' : '#e8ecf8', { outline: null }));
++    game.hudTop = Math.max(game.hudTop, yy + hh + 2);
++  }
++  // ---- la sala recibe: un sobre parpadea sobre cada uno de los presentes al llegar un correo
++  if (S.ding && t - S.ding < 900 && game.room && !fax) {
++    for (const a of Object.values(game.actors)) {
++      if (a.room !== game.room.def.id || !a.visible || a.id === S.actorId || a.id === (game.G && game.G.player)) continue;
++      const b = game.actorBox ? game.actorBox(a) : null; if (!b) continue;
++      const ex = Math.round(b.x + b.w / 2 - (game.camX || 0)) - 4, ey = Math.round(b.y) - 9;
++      if (ey < game.hudTop) continue;
++      if (Math.floor((t - S.ding) / 150) % 2 === 0) { rect(g, ex, ey, 9, 6, '#ffe070'); for (let k = 0; k < 4; k++) { px(g, ex + 1 + k, ey + 1 + k, '#8a5a10'); px(g, ex + 7 - k, ey + 1 + k, '#8a5a10'); } }
++    }
+   }
+-  rx -= 6;
+-  for (let i = 0; i < S.hits; i++) { const tw = measure('+1'); rx -= tw + 3; drawText(g, '+1', rx, y + 50, C.win, { outline: fax ? null : '#000000' }); }
+-  if (S.thread && game.realTime < S.thread.until) {
+-    // the reply-all thread line (cameos, «+1»): up to two lines under the window
+-    const t = S.thread.from + ' ' + S.thread.text;
+-    let tl = wrap(t, 290);
+-    if (tl.length > 2) tl = [tl[0], fit(tl.slice(1).join(' '), 290)];
+-    const tw = Math.min(300, Math.max(...tl.map(l => measure(l))) + 8);
+-    g.save(); g.globalAlpha = 0.85; rect(g, 160 - tw / 2, y + h + 1, tw, 11 * tl.length, fax ? '#d2c6a8' : '#0c1020'); g.restore();
+-    tl.forEach((l, i) => drawText(g, l, 160, y + h + 1 + i * 10, fax ? '#2a2218' : '#9cf0a4', { align: 'center', outline: null }));
+-    game.hudTop = y + h + 3 + 11 * tl.length;
++  // ---- pestaña de la libreta sobre el menú de réplicas
++  if (game.choice && S.phase === 'reply' && S.libreta) {
++    const tab = fax ? 'LIBRETA · réplicas oídas por la casa' : 'LIBRETA · réplicas oídas por la casa';
++    const tw2 = measure(tab) + 10;
++    rect(g, 2, 134, tw2, 10, '#1c1834'); frameRect(g, 2, 134, tw2, 11, '#4a4470');
++    rect(g, 3, 143, tw2 - 2, 2, '#1c1834');
++    drawText(g, tab, 7, 132, '#c8bce8', { outline: null });
+   }
+ }

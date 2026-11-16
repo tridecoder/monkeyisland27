@@ -605,3 +605,24 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
   tienen cartas de más).
 - `migrarPartida` (content/game.js): estampida cortada → reunión terminada; `gertrudis_pregunta` sin «sin turno» → sin
   turno; `herminia_midio` → `pecera_prompt_oido` (la frase de Anselmo ya oída).
+
+## Coherencia — lo que el juego da por hecho tiene que haber pasado
+
+> Prueba: `node tools/test-coherencia.mjs` (en `test-all`); capturas `tools/shots/coherencia-*.png` y
+> `tools/shots/gervasio-insiste-*.png`.
+
+- **Regla**: ninguna línea u opción presupone un suceso que la partida no ha tenido (una llamada, un correo, que alguien
+  dijo algo, que algo está arreglado); y todo lo que un personaje o un aviso anuncia, pasa (o es claramente su manera de
+  hablar). Ante la duda, condición o variante de texto.
+- **La L2 de Evaristo vuelve** (`content/game.js` `LLAMADAS`): al empezar el Acto II, en cualquier sala menos
+  Administración; se salta con `evaristo_escuchado`. Marca `evaristo_convoco = 'llamada'`; Begoña, al cerrar la nota,
+  `'begona'` si nadie le había convocado. «¿Para qué me ha llamado?» pide `evaristo_convoco`; sin él, «¿Qué quería
+  decirme?» (nodo `E_COSITA`, mismas opciones). La L5 («¿Lleva mi correo?») pide `has:correo_evaristo`.
+- **Correos que llegan**: un correo que se anuncia con aviso se entrega con `llegaCorreoEvaristo(api, id)` de
+  `content/lib/movil.js` (bandeja + aviso en la misma función; flag `evaristo_correos`). No escribáis
+  `api.notice('Correo nuevo…')` a mano: la prueba lo busca. Lo que Evaristo promete de palabra, `prometerGracias(api)`
+  (llega en la entrada siguiente, desde `avisos`).
+- **Insistir también resuelve**: Gervasio y «¿y cuáles son los siguientes pasos?» (`sala_amazonas_insiste_n`): 1.ª, la
+  tele se enciende sola; 2.ª, señala la pantalla y la tele parpadea; 3.ª, la tele recoge la pregunta (la escena de siempre).
+- `migrarPartida`: partidas sin `evaristo_convoco` (de antes de que volviera la L2): convocadas por Begoña si ya pasó la
+  nota; la L2 se da por pasada si ya es tarde para ella (Begoña, la L3 o el Acto III); si no, suena en su sitio.

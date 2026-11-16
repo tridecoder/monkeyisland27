@@ -607,10 +607,10 @@ export default buildRoom({
                     api.setState('tele_amazonas', 'normal'); await api.wait(200);
                   }
                 } else {
+                  api.setState('tele_amazonas', 'buscando'); api.sfx('click');                // la tele se enciende sola
                   await sayG(api, 'Los becarios no tienen turno. Pregunta la mesa... y los conectados.');
                   if (aqui(api, 'mercados_2')) api.faceActor('mercados_2', 'tele_amazonas');   // Rogelio mira la tele
-                  api.setState('tele_amazonas', 'buscando'); api.sfx('click');                // la tele se enciende sola
-                  await api.wait(1400);
+                  await api.wait(1200);
                   api.setState('tele_amazonas', 'normal');
                 }
                 api.setFlag('sala_becario_sin_turno', true);

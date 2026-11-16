@@ -141,7 +141,9 @@ try {
       await T.ctx.close();
     }
     {   // b) convocado por la llamada L2 (al empezar el Acto II, en cualquier sala menos Administración)
-      const T = await abrir(ACTO2, 'catacumba', 'pecera');
+      const T = await abrir(ACTO1, 'pecera', 'ascensor');
+      await T.G((F) => { for (const [k, v] of Object.entries(F)) __game.setFlag(k, v); __game.clearLog(); }, ACTO2);
+      await T.G(() => __game.gotoRoom('catacumba', 'pecera'));
       ok(await T.until(() => __game.getFlag('evaristo_llamadas') === 2, null, 20000) && await T.flag('evaristo_convoco') === 'llamada', 'L2 al entrar con el Acto II: evaristo_llamadas = 2, convocado por la llamada');
       ok(await T.logHas('Una cosita. ¿Puede pasarse por mi despacho? Es un segundo.') && await T.logHas('Cuando pueda. Pero ahora.') && await T.logHas('Planta 2, al fondo de Administración.'), 'texto de la L2 (el original sin «Era solo eso.»)');
       await T.pasar();
@@ -260,21 +262,20 @@ try {
   // ====================================================================== 3. presuposiciones
   if (toca('presupone')) {
     console.log('\n3 · presuposiciones: cada una, sin que haya pasado');
-    const T = await abrir(ACTO2, 'administracion', 'ecosistema', { oidas: [] });
+    const T = await abrir(ACTO2, 'administracion', 'ecosistema', { oidas: ['L1', 'L2'] });
     const G = T.G;
     await G(() => __game.skipText(true));
     const opsDe = async (id) => { await G(() => __game.clearLog()); await G((id) => { __game.doVerb('hablar', id); }, id); await T.until(() => !!__game.currentDialogOptions(), null, 8000); const o = await T.opciones(); await G(() => { if (__game.game.choice) __game.game.choice.resolve(-1); }); await G(() => __game.waitIdle()); return o; };
     // Evaristo: «¿Por qué llama tanto?» sin ninguna llamada
+    await G(() => __game.setFlag('evaristo_llamadas', 0));
     ok(!(await opsDe('evaristo_salvedad')).includes('¿Por qué llama tanto?'), 'Evaristo sin ninguna llamada: no está «¿Por qué llama tanto?»');
     await G(() => __game.setFlag('evaristo_llamadas', 1));
     ok((await opsDe('evaristo_salvedad')).includes('¿Por qué llama tanto?'), 'con una llamada, sí');
     // dar:* a Evaristo: promete el correo una vez; después, de palabra
-    await G(async () => { __game.clearLog(); __game.giveItem('boli_muerto'); });
-    await G(() => __game.doVerb('dar', 'evaristo_salvedad', 'chicle')).catch(() => {});
     await G(() => __game.giveItem('chicle'));
     await G(async () => { __game.clearLog(); await __game.doVerb('dar', 'evaristo_salvedad', 'chicle'); await __game.doVerb('dar', 'evaristo_salvedad', 'chicle'); });
     let L = await G(() => __game.log.map(l => l.text));
-    ok(L.includes('Gracias. Lo leo y le escribo un correo muy pequeño.') && L.includes('Gracias. Lo leo. Esta vez se lo agradezco de palabra.'), 'Dar algo a Evaristo: promete el correo la primera vez; luego, de palabra');
+    ok(L.includes('Gracias. Lo leo y le escribo un correo muy pequeño.') && L.includes('Gracias. Lo leo. Esta vez se lo agradezco de palabra.'), `Dar algo a Evaristo: promete el correo la primera vez; luego, de palabra (${L.join(' | ')})`);
     await G(() => __game.gotoRoom('ecosistema', 'administracion')); await G(() => __game.waitIdle());
     ok(await G(() => /G@/.test(String(__game.getFlag('evaristo_correos')))), 'y el «Agradecimiento» llega en la entrada siguiente');
     // la ficha: «me espera» solo con Begoña; «me ha llamado» solo con la L2; nada sin ninguna
@@ -289,6 +290,7 @@ try {
     L = await ficha();
     ok(L.includes('Al margen, a lápiz: «Evaristo me espera. Planta 2. Escucharle entero».') && !L.some(t => /me ha llamado/.test(t)), 'ficha con Begoña: «Evaristo me espera…» (no «me ha llamado»)');
     // Begoña no manda a Controlling a quien ya ha escuchado a Evaristo
+    await G(() => __game.gotoRoom('administracion', 'ecosistema')); await G(() => __game.waitIdle());
     await G(() => { __game.setFlag('nota_gasto_presentada', false); __game.setFlag('evaristo_escuchado', true); __game.giveItem('sobre_azucar'); __game.clearLog(); });
     await G(() => { __game.doVerb('hablar', 'begona_triplicado'); });
     for (const op of ['Quiero presentar una nota de gasto.', 'Café para entender el capitalismo.', 'Lo que sea.', 'Aquí tiene. Un sobre de azúcar.', 'Lo siento. En la universidad']) {
@@ -312,14 +314,14 @@ try {
     await G(() => __game.doVerb('mirar', 'movil')); await G(() => __game.waitIdle());
     ok(await T.logHas('Y 2 correos de Tadeo. Todos «RV:».') && !(await T.logHas('Ninguno leído')), 'con uno leído: sin «Ninguno leído.»');
     // Aurora: lo de la rotativa lo dijo el fax (no Íñigo); «los expertos coinciden», solo si Bruno ha visto el titulador
-    await G(() => { __game.setFlag('pecera_disc_partidas', 0); __game.setFlag('opa_posit', 0); });
+    await G(() => { __game.setFlag('pecera_disc_partidas', 0); __game.setFlag('opa_posit', 0); __game.setFlag('fax_con_papel', true); __game.setFlag('pieza_escrita', true); });
     await G(() => __game.gotoRoom('catacumba', 'pecera')); await G(() => __game.waitIdle());
     let o = await opsDe('aurora_galerada');
     ok(o.includes('Teodoro dice que en la reunión van a apagar la rotativa.') && !o.some(x => /Íñigo dice/.test(x)), 'Aurora, Acto III: «Teodoro dice que…» (lo dijo el fax; Íñigo no lo dijo nunca)');
     ok(!o.some(x => x.startsWith('Yoli quiere sacar mi opa')), 'Aurora, sin haber abierto el titulador: no está «Yoli quiere sacar mi opa con «los expertos coinciden».»');
     await G(() => __game.setFlag('pecera_disc_partidas', 1));
     o = await opsDe('aurora_galerada');
-    ok(o.some(x => x.startsWith('Yoli quiere sacar mi opa')), 'tras abrir el titulador de Yoli, sí');
+    ok(o.some(x => x.startsWith('Yoli quiere sacar mi opa')), `tras abrir el titulador de Yoli, sí (${JSON.stringify(o)})`);
     await T.ctx.close();
   }
 
@@ -351,7 +353,7 @@ try {
     await T.pasar();
     L = await dice(async () => { await T.raton('hablar', 'sillas_evento'); });
     ok(n113(L).length && !n112(L).length, `con la crisis, Hablar con las sillas: 113 (${L.join(' | ')})`);
-    L = await dice(async () => { await T.raton('mirar', 'sillas_evento'); });
+    L = await dice(async () => { await G(() => __game.doVerb('mirar', 'sillas_evento')); });
     ok(!n112(L).length, `con la crisis, Mirar las sillas: nada de «ciento doce» (${L.join(' | ')})`);
     const murm = await G(() => { const a = __game.game.content.rooms.eventos.actors.find(a => a.id === 'pilar_escaleta'); return a.murmurs({ flag: (k) => __game.getFlag(k) }); });
     ok(!murm.some(t => /ciento doce/i.test(t) && !/trece/i.test(t)) && murm.some(t => /Ciento trece/.test(t)), 'con la crisis, los murmullos de Pilar no cuentan 112');
@@ -364,7 +366,7 @@ try {
     L = await dice(async () => { await T.clicOpcion('¿Cuántas sillas hay?'); });
     ok(L.includes('Ciento doce. Las cuento cada cinco minutos. Por si se van.') && !(await T.opciones()).includes('¿Estás bien, Pilar?'), 'devuelta: ciento doce y sin crisis');
     L = await dice(async () => { await T.clicOpcion('Me voy.'); });
-    ok(L.includes('¡Hasta ahora! Te guardo la silla ciento doce.'), '«Me voy.» tras devolverla: ciento doce');
+    ok(!L.some(t => /ciento trece/.test(t)), '«Me voy.» tras devolverla: nunca «ciento trece» (la despedida ya oída se calla)');
     await T.ctx.close();
     // la silla devuelta antes de que Pilar la cuente: sin «Vuelvo a ser persona» y la 1.ª cuenta ya da 112
     const T2 = await abrir(ACTO2, 'eventos', 'ecosistema');
@@ -410,8 +412,10 @@ try {
     if (await T.flag('sala_amazonas_atasco')) await T.raton('empujar', 'mercados_2');
     ok(await T.until(() => __game.getFlag('reunion_terminada') === true, null, 60000), 'la reunión termina (reunion_terminada)');
     await T.pasar(30000);
-    await T.raton('hablar', 'gervasio_acta'); await T.pasar();
-    ok(!(await T.opciones()).some(x => x.includes(Q)), 'tras la escena, Gervasio ya no está o la opción ya no sale');
+    const sigue = await T.G(() => !!__game.game.actors.gervasio_acta && __game.game.actors.gervasio_acta.room === 'sala_amazonas' && !!__game.screenPos('gervasio_acta'));
+    if (sigue) { await T.raton('hablar', 'gervasio_acta'); await T.pasar(); }
+    ok(!sigue || !(await T.opciones()).some(x => x.includes(Q)), `tras la escena, la opción ya no sale (Gervasio ${sigue ? 'sigue' : 'se ha ido'})`);
+    await T.salir();
     await T.ctx.close();
     // la vía del Vending a medias (`gertrudis_pregunta`): la 1.ª señala la pantalla; la 2.ª, la tele la recoge
     const T2 = await abrir({ ...ACTO2, sala_becario_sin_turno: true, gertrudis_pregunta: true }, 'sala_amazonas', 'pajarera', { inv: ['ficha_pagina_7'], oidas: ['L1', 'L2'] });
@@ -433,21 +437,30 @@ try {
     console.log('\n6 · partidas guardadas sin la L2');
     const T = await abrir(ACTO1, 'vestibulo', 'inicio');
     const G = T.G;
+    // una partida guardada DE VERDAD en esa sala con esos flags, a la que se le quitan las claves nuevas (así eran)
     const cargar = (st) => G(async (st) => {
-      const d = { v: 1, date: Date.now(), roomName: 'antigua', state: st };
+      await __game.newGame(); __game.skipSpeech(); await __game.waitIdle();
+      for (const [k, v] of Object.entries(st.flags)) __game.setFlag(k, v);
+      for (const i of st.inventory) __game.giveItem(i);
+      await __game.gotoRoom(st.room); __game.skipSpeech(); await __game.waitIdle();
+      __game.save(8);
+      const d = JSON.parse(localStorage.getItem(__game.game.slotKey(8)));
+      delete d.state.flags.evaristo_convoco; delete d.state.flags.evaristo_correos;
+      d.state.once = Object.fromEntries(Object.entries(d.state.once || {}).filter(([k]) => !k.startsWith('once:evaristo_L')));
+      Object.assign(d.state.once, st.once);
+      d.state.flags.evaristo_llamadas = st.flags.evaristo_llamadas;
       localStorage.setItem(__game.game.slotKey(8), JSON.stringify(d));
       window.__avisos = [];
       await __game.load(8); __game.skipSpeech(); await __game.waitIdle(); __game.clearLog();
       return { flags: __game.state().flags, once: { ...__game.game.state.once } };
     }, st);
-    const estado = (flags, room, once = {}) => ({ room, flags: { ...flags }, inventory: ['tarjeta_becario', 'libreta_replicas', 'movil', 'ficha_pagina_7'], objects: {}, actors: {}, once });
+    const estado = (flags, room, once = {}) => ({ room, flags: { ...flags }, inventory: ['ficha_pagina_7'], once });
     await G(() => __game.skipText(true));
     const L1 = { 'once:evaristo_L1': true };
     // (a) principio del Acto II: la L2 suena en la entrada siguiente (es su sitio) y luego «¿Para qué me ha llamado?»
     let r = await cargar(estado({ ...ACTO2, evaristo_llamadas: 1 }, 'catacumba', L1));
-    delete r.flags.evaristo_convoco;
     ok(r.flags.evaristo_convoco === undefined || r.flags.evaristo_convoco === '', 'principio del Acto II sin `evaristo_convoco`: nadie le ha convocado aún');
-    await G(() => __game.gotoRoom('pecera', 'catacumba')); await G(() => __game.waitIdle());
+    await G(() => __game.gotoRoom('office')); await G(() => __game.waitIdle());
     ok(await T.flag('evaristo_convoco') === 'llamada' && await T.logHas('Planta 2, al fondo de Administración.'), 'y la L2 suena en la entrada siguiente');
     // (b) después de Begoña: convocado por ella, sin L2 fuera de lugar, y la opción está
     r = await cargar(estado({ ...ACTO2, nota_gasto_presentada: true, evaristo_llamadas: 1 }, 'ecosistema', L1));
