@@ -38,6 +38,8 @@ export const ADENDA_FLAGS = [
   'discover_ganador', 'opa_posit',
   // ENMIENDA E5 §2 (I1): booleanos a false y `columna_kanban` (str) a ''
   'sala_becario_sin_turno', 'gertrudis_pregunta', 'vio_pegatina_fax', 'album_validado', 'columna_kanban',
+  // ENMIENDA E7 (I1)
+  'oyo_papel_begona',
 ];
 
 export default {
@@ -167,6 +169,8 @@ export default {
   vio_pegatina_fax: 'bool · PD · catacumba · Mirar fax (pegatina «Ticket 0.441», §2.3.1) · PC (cpd: opción fax441 de Paco), pistas (firma)',
   album_validado: 'bool · PB · pecera · Dar álbum a Anselmo (AN_ALBUM_INTRO, §2.5.3) · PB (kanban, columnas, arte), pistas (baja, columna)',
   columna_kanban: "str · PB · pecera · salida(api, via): 'salida' | 'descopeado' ('' sin columna, §2.5.5) · PB (arte del kanban, Mirar kanban)",
+  // ---------------------------------------------------------------- ENMIENDA E7 (I1)
+  oyo_papel_begona: 'bool · E7 · catacumba (Aurora, «¿De dónde saco papel…?») o administracion (Begoña, «¿Me da unos folios?») · items.js (ficha: FIRMA)',
   // también prefijos reservados del motor: obj:<objetivo> (api.objetivo.marcar), obj:hora, ambient:<sala>.<id>
 
   // ---------------------------------------------------------------- réplicas del duelo (§6.3 + adenda 7.1)

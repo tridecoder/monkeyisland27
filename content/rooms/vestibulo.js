@@ -44,7 +44,7 @@ const ibexLine = (api, n) => { const l = IBEX[acto(api)]; return l[(Math.max(1, 
 
 // adenda 8bis.1: el cuadro de llaves rota 1…5 (la 5, solo en el Acto III) y después entre la 2 y la última
 const PLAZAS = [
-  ['El cuadro de llaves del garaje: doce plazas y ciento doce aspirantes.', 'Debajo, a lápiz, la línea de sucesión. Hay más tachones que nombres.'],
+  ['El cuadro de llaves del garaje. Doce plazas. Ciento doce aspirantes.', 'Debajo, a lápiz, la línea de sucesión. Hay más tachones que nombres.'],
   ['«Plaza 3: Ramírez. Libre. Ocupada por su ausencia».', 'Es la más codiciada. Nadie la usa y todos la quieren.'],    // E2 §8
   ['«Sucesión plaza 3: Maripaz, Yoli, el ficus y el móvil de Borja».', 'Me busco. Debajo del todo: «Vacante (bici)». Tachado.'],   // E2 §3.3
   ['«Plaza 1: Teodoro C., 1997». No ha salido del edificio desde entonces.', 'Nadie se atreve a pedírsela. Ni a desearle nada.'],
@@ -342,7 +342,7 @@ export default buildRoom({
         await api.say('Dentro hay una sola sugerencia: «Más sugerencias». Firmado: el buzón.');
         api.setFlag('vestibulo_buzon_abierto', true);
       },
-      usar: 'Escribo «Más becarios con contrato». La ranura la escupe.',
+      usar: 'Escribo «Más becarios con contrato». La ranura la escupe. Polvo y principios.',
       'dar:*': 'Es un buzón de sugerencias. Pruebas, no se aceptan.',
       cerrar: 'Lleva cerrado desde que se inventó el correo electrónico.',
       coger: 'Está atornillado. A él sí lo hicieron fijo.',
@@ -391,7 +391,7 @@ export default buildRoom({
       },
       coger: 'No. Ha sobrevivido a tres ERE. No voy a ser yo el cuarto.',
       'dar:cafe': 'No bebe. Por eso dura tanto.',
-      'dar:*': 'No acepta nada. Ni regalos ni sugerencias. Por eso sigue en plantilla.',
+      'dar:*': 'No acepta nada: ni regalos ni sugerencias.',
       empujar: async (api) => {
         const n = api.inc('planta_empujada_n');
         api.sfx('whoosh');
@@ -402,7 +402,7 @@ export default buildRoom({
         else await api.say('La dejo como estaba. No quiero que me oiga empujar.');
       },
       tirar: 'Si le tiro de una hoja, me la deja en la mano. Es de plástico, pero digna.',
-      usar: 'La riego con la mirada. Es de plástico: no necesita más.',
+      usar: 'La riego con la mirada. No necesita más. Es de plástico.',
     } },
     // ADENDA 3.1: el narrador automático del Ibex (de Desarrollo), amordazado
     { id: 'altavoz_ibex', name: 'altavoz', color: '#CCCCCC', handlers: {
@@ -450,7 +450,7 @@ export default buildRoom({
         'Treinta años en este mostrador, y el mostrador tiene peor rodilla que yo.', 'Si me preguntan por el Ibex, digo que va.',
         'A las seis y media sale todo el mundo. A las seis y treinta y uno, silencio.',          // §8.7
         'A estas horas quedan los de guardia, los que viven aquí y los que no se van.',          // §8.7
-        ...(v.flag('acto_2_iniciado') ? ['Hoy tres me han preguntado por mi salud, con mucho interés.'] : []),   // 8bis.1
+        ...(v.flag('acto_2_iniciado') ? ['Hoy tres me han preguntado por mi salud. Con mucho interés. Estoy de miedo.'] : []),   // 8bis.1
       ],
       handlers: {
         mirar: say('Celestino, el conserje, con la bufanda del Ibex.',

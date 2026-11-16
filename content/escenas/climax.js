@@ -136,7 +136,7 @@ export async function climaxEntrada(api) {
       await sayI(api, 'Siguiente.');
       await api.wait(700);
       await sayI(api, ['Siguiente.', 'Perfecto. La 247, como veis, tiene mucho recorrido.']);
-      await api.say(['El proyector se colgó en la 247 hace tres semanas.', 'Él cree que avanza. El Lector Medio cree que asiente.']);
+      await api.say(['El proyector se colgó en la 247 hace tres semanas.']);
       await sayI(api, ['...y en la fase 3, el papel pasa a ser un recuerdo de marca.',
         '¿Vacante? Esto es una Reunión de Dirección. Los becarios no tienen voz.']);
       await api.say('Pero tienen correo.');

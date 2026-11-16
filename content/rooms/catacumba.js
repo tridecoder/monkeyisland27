@@ -368,7 +368,7 @@ const dialogoAurora = {
         await aurora(api, 'Gracias, criatura. Este café está mal escrito, pero se entiende.');
         await api.say('Aurora, quiero firmar en papel. Mañana.');
         await aurora(api, ['Para firmar hacen falta tres cosas: hueco, fuente y firma.',
-          'Toma la ficha de la página 7. Ahí lo tienes, por casillas.']);
+          'Toma la ficha de la página 7. Ahí lo tienes todo, en casillas.']);
         api.give('ficha_pagina_7');
         api.sfx('pickup');
         await aurora(api, ['La página está vendida a unos colchones. Eso se decide en la Sala Amazonas.',
@@ -403,6 +403,9 @@ const dialogoAurora = {
           do: async (api) => { await aurora(api, ['Una que no tenga nadie. Y que aguante hasta mañana.', 'Una exclusiva se guarda para el papel. La web la tiene a las 00:01.']); } },
         { text: '¿Cómo convenzo a Teodoro?', once: true,
           reply: 'Contestándole. Teodoro solo respeta al que le contesta mejor que él.' },
+        // E7 F1 (E1): de dónde sale el papel. Dice qué falta y dónde; no qué hacer
+        { text: '¿De dónde saco papel para el fax?', if: '!fax_con_papel', once: true,
+          reply: 'Papel, en esta casa, solo gasta Begoña. Lo devuelve por triplicado.', setFlag: 'oyo_papel_begona' },
         { text: '¿Por qué no se hablan usted y Teodoro?', once: true,
           do: async (api) => {
             await aurora(api, ['En 1996 me mandó un fax que empezaba «Con el debido respeto...».',
@@ -433,7 +436,7 @@ const dialogoAurora = {
         { text: '¿Y ahora qué?', if: ['casilla_fuente', '!pieza_escrita'],
           do: async (api) => { await aurora(api, ['Ahora escríbela en tu ordenador, fuera del CMS, que ahí vive el Titulator.', 'Y sin adjetivos; si se te escapa uno, que sea el bueno.']); } },
         { text: '¿Ha oído cómo pregunta Custodia?', if: 'custodia_regla', once: true,
-          do: async (api) => { await aurora(api, ['Abre interrogación y cierra con punto.', 'Eso no es una pregunta, criatura. Es una sentencia.']); } },
+          do: async (api) => { await aurora(api, ['Eso, criatura, es una sentencia.']); } },
         { text: 'Íñigo dice que en la reunión van a apagar la rotativa.', if: 'acto_3_iniciado', once: true,
           do: async (api) => { await aurora(api, ['Esa reunión no decide nada sin acta.', 'Y Gervasio no ha escrito un acta en su vida.']); } },
         // E2 §5.3 · paso 32: Aurora bendice la coma y la manda por el fax de Teodoro (tecla 3)
@@ -463,7 +466,7 @@ async function corregirPosit(api) {
   await aurora(api, 'Los dos puntos se inventaron para explicar, no para hacer esperar.');
   for (let i = 0; i < 4; i++) { api.sfx('click'); await api.anim(AUR, 'reach', 260); }   // cuatro tachones; escribe encima
   await api.say('Cuatro tachones para volver a mi titular.');
-  await aurora(api, 'Cinco. El quinto es para ti, por traérmelo.');
+  await aurora(api, 'Cinco. El quinto es por traérmelo.');
   api.setFlag('opa_posit', 2);
 }
 
@@ -732,7 +735,7 @@ export default buildRoom({
       tirar: 'No. Las agujas están así por convenio.',
     } },
     { id: 'fotos_jefes_cierre', name: 'fotos de jefes de cierre', handlers: {
-      mirar: async (api) => { await api.say(['Jefes de cierre en blanco y negro, todos con bigote.', 'El bigote también era de plantilla.']); },
+      mirar: async (api) => { await api.say(['Jefes de cierre en blanco y negro. Todos con bigote.']); },
       coger: 'No. Llevan cuarenta años colgadas. Debajo, la pared es de otro color.',
       hablar: 'Les digo que voy a firmar en papel. Ninguno se ríe. Es el bigote.',
       usar: 'No tengo bigote que comparar.',
@@ -761,7 +764,7 @@ export default buildRoom({
       usar: 'Lo señalo. Aurora me señala a mí. Hemos llegado a un acuerdo.',
     } },
     { id: 'libro_estilo', name: 'Libro de Estilo', handlers: {
-      mirar: async (api) => { await api.say(['El Libro de Estilo. Más grueso que la plantilla fija.', 'Página 1: «No se dice a nivel de». Página 2: «A nivel de comas, ver pág. 3».']); },
+      mirar: async (api) => { await api.say(['El Libro de Estilo.', 'Página 1: «No se dice a nivel de». Página 2: «A nivel de comas, ver pág. 3».']); },
       coger: async (api) => {
         if (!api.flag('acto_2_iniciado')) { await tocSinCafe(api, 'Toc en el lomo. El libro no se mueve.'); return; }
         await aurora(api, 'Ese libro, ni tocarlo; se consulta aquí, de pie y con las manos limpias.');
@@ -822,7 +825,7 @@ export default buildRoom({
         },
         'dar:mensaje_fp': async (api) => { await fax(api, 'Las fuentes, a Aurora. Yo solo mido.'); },
         'dar:fotocopia_nota_direccion': async (api) => { await fax(api, 'Las fuentes, a Aurora. Yo solo mido.'); },
-        'dar:acta_reunion': async (api) => { await fax(api, 'Dos líneas. Cabe en un faldón.'); },
+        'dar:acta_reunion': async (api) => { await fax(api, 'Dos líneas. Cabe en un faldón. Y sobra.'); },
         'dar:tarjeta_becario': async (api) => { await fax(api, '«Pellizco». Once con espacios. Mal medido y peor escrito.'); },
         'dar:taper_huerfano': async (api) => { await fax(api, 'Vacío. Cabe todo. No lo quiero.'); },
         'dar:correo_evaristo': async (api) => { await fax(api, 'De Controlling. Ni lo mido. Lo respeto.'); },
@@ -833,7 +836,7 @@ export default buildRoom({
       } },
     { id: AUR, defaultVerb: 'hablar',
       handlers: {
-        mirar: 'Aurora, correctora. Tiene un boli rojo clavado en el moño.',
+        mirar: 'Aurora, correctora. Tiene un boli rojo clavado en el moño. Por si acaso.',
         hablar: hablarAurora,
         // paso 16 · el café de Aurora
         'dar:cafe': async (api) => {

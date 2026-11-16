@@ -25,7 +25,7 @@ const acto = (api) => (api.flag('acto_3_iniciado') ? 3 : api.flag('acto_2_inicia
 // encontrado, contesta el Titulator con la réplica nueva (§7.3 del plan).
 const PORTATIL = [
   ['En pantalla: «La IA dice que lo más pesado de la web es el logo».'],
-  ['Debajo: «Propongo quitar el logo. Por si os sirve!!», enviado a todos.'],
+  ['Debajo: «Propongo quitar el logo. Por si os sirve!!». Enviado a todos.'],
   ['«La IA dice que la gente no lee. RV: a todos. Para que lo lean».'],
   ['«La IA está de acuerdo conmigo. Adjunto pantallazo de la IA de acuerdo».'],
   ['«RV: La IA dice que nuestra web se mueve mucho al cargar».', '«Propongo atornillarla».',
@@ -35,13 +35,13 @@ const PORTATIL = [
 ];
 async function mirarPortatil(api) {
   if (api.flag('ecosistema_portatil_cerrado')) { await api.say(['Cerrado.', 'Se oye la moqueta.']); return; }
-  if ((api.flag('portatil_tadeo_n') || 0) === 0) await api.say(['El portátil de Tadeo, de Negocio. Se fue a las seis.', 'Su portátil, no.']);
+  if ((api.flag('portatil_tadeo_n') || 0) === 0) await api.say(['El portátil de Tadeo, de Negocio.']);
   const n = api.inc('portatil_tadeo_n');
   const k = (n - 1) % PORTATIL.length;
   await api.say(PORTATIL[k]);
   if (k === 3 && api.flag('ruben_encontrado')) {
     await api.say(['Contesta el Titulator: «Lo sé. Me lo ha contado ella. Se llama Brais».',
-      'Tadeo no lo ha leído; yo, sí.']);
+      'Tadeo no lo ha leído. Yo sí.']);
     api.learnReply('rep_15');
   }
 }
@@ -50,7 +50,7 @@ async function cerrarPortatil(api) {
   if (api.flag('ecosistema_portatil_cerrado')) { await api.say('Ya está cerrado. Por fin descansa.'); return; }
   const a = acto(api);
   if (a === 1) {
-    await api.say('Lo cierro y se abre solo.');
+    await api.say('Lo cierro. Se abre solo.');
     await tadeo(api, '«He detectado que querías cerrarme. ¿Te ayudo a cerrarme?».');
   } else if (a === 2) {
     api.sfx(SFX.plin);
@@ -296,7 +296,7 @@ export default buildRoom({
     } },
     { id: 'pizarra_sinergia', name: 'pizarra', handlers: {
       mirar: 'Pone SINERGIA en tres colores. Si la miras fijamente, aparece un velero.',
-      usar: 'Debajo escribo «¿Y qué es?». Se borra solo.',
+      usar: 'Debajo escribo «¿Y qué es?». Se borra solo. Por vergüenza.',
       coger: 'No me llevo la pizarra. Si la muevo, se escapa el velero.',
       empujar: 'La empujo. Se ve otro velero. Hay más sinergia de la que parece.',
       hablar: 'Le pregunto qué es sinergia. Me contesta un velero.',
@@ -317,7 +317,7 @@ export default buildRoom({
       usar: 'Me pongo al lado. Soy una oportunidad.',
       hablar: async (api) => {
         if (maripazAqui(api)) await api.say('Le leo el lema en voz alta. Maripaz asiente y le busca hueco a un banner.');
-        else await api.say('Le leo el lema en voz alta y suena a anuncio.');
+        else await api.say('Le leo el lema en voz alta. Suena a anuncio.');
       },
     } },
     pantallaObjeto,
@@ -366,7 +366,7 @@ export default buildRoom({
         if (n === 0) await api.say(['Una piel de plátano junto a la impresora. Pósit: «Para Gervasio (plaza 7)».', 'Gervasio no imprime nunca. El plan tiene un fallo.']);
         else await api.say('Sigue ahí. Nadie la pisa. Aquí todo el mundo mira dónde pone el pie.');
       },
-      coger: async (api) => { await mp(api, '¡Deja eso! Lleva un adhesivo de patrocinio por debajo.', 'Mejor la dejo. Alguien la ha puesto con mucha planificación.'); },
+      coger: async (api) => { await mp(api, '¡Deja eso! Lleva un adhesivo de patrocinio. Por debajo.', 'Mejor la dejo. Alguien la ha puesto con mucha planificación.'); },
       empujar: 'La aparto con el pie. Aquí no se cae nadie: aquí la gente se jubila.',
       usar: 'No. Yo quiero una plaza de bici.',                                            // E5 C50
       hablar: 'Le pregunto a quién espera. El pósit lo dice todo.',

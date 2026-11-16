@@ -32,6 +32,15 @@ export const MAX_REPLY_OPTIONS = 4;          // correct + 3 decoys; + 1 weak = 5
 export const OPTION_W = 288;                 // width of a menu line (engine/ui.js choiceLayout)
 export const COMODIN_TAG = 'COMODÍN';        // E6 §6.2: etiqueta del comodín en el menú (micro, gris, a la derecha)
 export const LARGA_MS = 1200;                // E6 §6.1: lo que se ve cortado en el cuerpo tras elegir la réplica larga
+export const TROZO_MS = 1300;                // E7 `aTiempo`: lo mínimo entre trozo y trozo (game.timedMs lo sube si no da para leerlo)
+/** E7 `aTiempo`: lo que dice Bruno al ser cortado: hasta el primer signo (. , : ; ? !) o las tres primeras palabras, + «...». */
+export function cortada(t) {
+  const s = String(t).replace(/^[¡¿«"]+/, '');
+  const m = s.match(/^[^.,:;?!]+/);
+  const w = s.split(/\s+/).slice(0, 3).join(' ');
+  const base = (m && m[0].length <= w.length ? m[0] : w).replace(/[.,:;?!…\s]+$/, '');
+  return base + '...';
+}
 
 /** Lines a duel datum may hold: 'line' (rival) · ['line', 'line'] (rival) · [who, line] · [[who, line], ...].
  *  `who` = 'player' | 'narrator' | 'rival' | 'obj:<object>' | an actor id. */
@@ -80,6 +89,7 @@ export async function runDuel(game, api, idOrDef) {
   };
   const info = game.duelInfo = {
     id, opponent: actorId, phase: 'intro', attack: null, options: null, optionPairs: null, correctIndex: -1, weakIndex: -1, correctItem: null, body: null,
+    escribiendo: false, interrumpeN: 0,             // E7 `aTiempo`
     get hits() { return S.hits; }, get misses() { return S.misses; }, get subject() { return subjectText(S); }, get assigned() { return S.assigned; },
     get cc() { return ccText(S); }, get score() { return scoreText(S); }, target, maxMisses,
   };
@@ -108,7 +118,14 @@ export async function runDuel(game, api, idOrDef) {
   const music = opp.music !== undefined ? opp.music : D.music;
   const hud = (g) => drawHud(g, game, S);
   game.inDialog = (game.inDialog || 0) + 1;
-  game.duelActive = { id };
+  const activo = game.duelActive = { id };
+  const gen0 = game.gen;
+  let tl = null;                                  // E7 `aTiempo`: la escritura en curso { done, cancel }
+  const vivo = () => game.duelActive === activo && game.gen === gen0;
+  const paraEscritura = () => {
+    if (tl) tl.cancel = true;
+    if (S.escribiendo) { S.escribiendo = null; info.escribiendo = false; if (opp.aTiempo && opp.aTiempo.sostener) api.sostener(actorId, null); }
+  };
   let won = false;
   try {
     if (music) api.music(music, 0.6);
@@ -133,8 +150,38 @@ export async function runDuel(game, api, idOrDef) {
       const pid = deck[0], pair = pairs.get(pid);
       const attack = (opp.attackText && opp.attackText[pid]) || pair.attack;
       info.phase = 'reply'; info.attack = pid; S.phase = 'reply';
-      S.body = attack; info.body = attack;
-      await say('rival', attack);
+      const tz = opp.aTiempo && opp.aTiempo.trozos && asArray(opp.aTiempo.trozos[pid]);
+      if (tz && tz.length) {
+        // E7 `aTiempo`: el globo dice el primer trozo; el resto se escribe en el cuerpo mientras el menú está abierto
+        S.cola = true; S.body = tz[0]; info.body = tz[0];
+        await say('rival', tz[0]);
+        tl = { done: tz.length < 2 || game.instant, cancel: false };
+        if (tl.done) {
+          S.body = tz.join(' '); info.body = S.body;
+          // (modo rápido: la frase entera, de golpe; va al log como aviso igual que cuando acaba de escribirse)
+          if (tz.length > 1) game.log.push({ who: 'aviso', name: fromName, text: S.body, room: game.state && game.state.room, t: Math.round(game.time) });
+        }
+        else {
+          const yo = tl, A = opp.aTiempo;
+          S.escribiendo = A.escribiendo || '...'; info.escribiendo = true;
+          if (A.sostener) api.sostener(actorId, A.sostener);
+          (async () => {
+            for (let k = 1; k < tz.length; k++) {
+              await game.sleep(game.timedMs('duelo', tz[k], A.ms || TROZO_MS));
+              if (yo.cancel || !vivo()) return;
+              S.body = tz.slice(0, k + 1).join(' '); info.body = S.body; api.sfx('click');
+            }
+            if (yo.cancel || !vivo()) return;
+            yo.done = true; S.escribiendo = null; info.escribiendo = false;
+            if (A.sostener) api.sostener(actorId, null);
+            game.log.push({ who: 'aviso', name: fromName, text: S.body, room: game.state && game.state.room, t: Math.round(game.time) });
+          })();
+        }
+      } else {
+        S.cola = false; tl = null;
+        S.body = attack; info.body = attack;
+        await say('rival', attack);
+      }
       const opts = buildMenu(pid);
       info.options = opts.map(o => o.text);
       // E6 §6.1 (b): con `cabe`, la larga dice 'larga' y `correctIndex` apunta a la corta (la que gana)
@@ -145,6 +192,16 @@ export async function runDuel(game, api, idOrDef) {
       const i = await game.choose(opts.map(o => o.kind === 'comodin' ? { text: o.text, tag: COMODIN_TAG } : o.text), { duel: true });
       const ch = opts[Math.max(0, i)];
       info.options = null; info.optionPairs = null; info.correctIndex = -1; info.weakIndex = -1;
+      if (tl && !tl.done) {
+        // E7 `aTiempo`: ha contestado mientras el rival escribía. No es fallo: ni RE:, ni CC, ni mazo, ni comodín, ni ronda.
+        paraEscritura(); tl = null;
+        S.interrumpeN = (S.interrumpeN || 0) + 1; info.interrumpeN = S.interrumpeN; info.phase = 'interrumpido';
+        await say('player', cortada(ch.text));
+        await say('rival', S.interrumpeN === 1 && opp.aTiempo.interrumpe ? opp.aTiempo.interrumpe : next('taunt'));
+        info.phase = 'reply';
+        continue;                                   // el mismo ataque, desde el primer trozo
+      }
+      tl = null;
       S.round++;
       await say('player', ch.text);
       if (ch.kind === 'larga') {
@@ -233,6 +290,7 @@ export async function runDuel(game, api, idOrDef) {
     game.lastDuel = { id, result: S.result, hits: S.hits, misses: S.misses, perdidos: flags['duel:' + id + ':perdido_n'] || 0 };
     return won;
   } finally {
+    paraEscritura();                                // E7 `aTiempo`: ninguna escritura sobrevive al duelo
     game.inDialog = Math.max(0, (game.inDialog || 1) - 1);
     game.hud = null; game.hudTop = 0;
     game.duelInfo = null; game.duelActive = null;
@@ -334,7 +392,8 @@ function drawHud(g, game, S) {
   if (subj.length > 1) subj = [fit(subj.join(' '), subjW)];       // one line: the body needs the room
   const bodyW = w - measure('Cuerpo:') - 12;
   let body = S.body ? wrap(citar(S.body), bodyW) : [];
-  if (body.length > 2) body = [body[0], fit(body.slice(1).join(' '), bodyW)];
+  if (body.length > 2) body = S.cola ? ['...' + body[body.length - 2], body[body.length - 1]]   // E7: el trozo nuevo, siempre a la vista
+    : [body[0], fit(body.slice(1).join(' '), bodyW)];
   const h = 63;
   game.hudTop = y + h + 3;
   g.save(); g.globalAlpha = fax ? 0.97 : 0.94; rect(g, x, y, w, h, C.bg); g.restore();
@@ -345,6 +404,12 @@ function drawHud(g, game, S) {
   // score as text (rule 12), right of the title bar
   const sc = scoreText(S);
   drawText(g, sc, x + w - 4, y - 1, fax ? C.barText : '#ffffff', { outline: null, align: 'right' });
+  if (S.escribiendo) {
+    // E7 `aTiempo`: «escribiendo» + 1-3 puntos en la barra del título, entre el título y el marcador (como un chat)
+    const x0 = x + 3 + measure(fax ? 'FAX · TALLERES' : 'RESPONDER A TODOS') + 8, x1 = x + w - 4 - measure(sc) - 8;
+    const t = S.escribiendo + '.'.repeat(1 + Math.floor(game.realTime / 400) % 3);
+    drawText(g, t, Math.round((x0 + x1 - measure(S.escribiendo + '...')) / 2), y - 1, fax ? C.barText : '#c8d8ff', { outline: null });
+  }
   const row = (yy, label, value, col) => {
     drawText(g, label, x + 4, yy, C.label, { outline: null });
     const lw = measure(label) + 4;

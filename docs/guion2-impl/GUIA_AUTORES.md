@@ -466,9 +466,9 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
 ### E6.2 Reglas de texto nuevas (`--e6`; `test-all` pasa `--plan --e2 --e5 --e6`, también con `--sala`)
 
 - **Remate seco** (`esRemateSeco` de `tools/plan-rules.mjs`): cadena de ≥ 2 frases cuya última frase tiene 1-3 palabras
-  y acaba en «.» o «!» (no cuentan preguntas, frases cortadas ni cadenas de una frase; sin `music.js`). Tope: ≤ 16,5 %
-  de las cadenas del juego. Aviso (no fallo): un fichero de sala por encima del 22 % (sin Eventos ni los datos del
-  titulador).
+  y acaba en «.» o «!» (no cuentan preguntas, frases cortadas ni cadenas de una frase; sin `music.js`). Tope: ≤ 17,9 %
+  de las cadenas del juego (era 16,5 % en E6; E7 §7 lo sube con la restauración). Aviso (no fallo): un fichero de sala
+  por encima del 26 % (era 22 %; sin Eventos ni los datos del titulador). Ver E7.2.
 - Topes en cadenas: «táper» ≤ 17, año 19xx/20xx ≤ 35, «Huele a 2019» ≤ 1, «Diecinueve años» ≤ 4, «Lo que diga el Lector
   Medio» ≤ 5, «Era solo eso» ≤ 5; en el código de la Redacción, «D3: No.» (`['D3', 'No.']` y `['D3', '...No.']`) ≤ 6.
 - Aviso: **duplicados audibles** (cadena > 25 caracteres en dos salas distintas, sin las de `DUP_PERMITIDAS`). Si una
@@ -530,3 +530,59 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
 - Pruebas antiguas al día con §4.1 y §11.1 (`test-comedia-p1…p4`, `smoke` L3/L4/L5, `test-fase0` E346, `test-e5` con el
   recorrido de 49); `test-comedia-p2` ya no pregunta por `nerea_backlog`: comprueba que en la Redacción, de Desarrollo,
   solo están Anselmo y el coro.
+
+## E7. ENMIENDA E7 — entrada al nudo, la tele, el duelo de Gervasio y los golpes que vuelven
+
+> Guion: `docs/guion2/ENMIENDA_E7.md` (la contra, aprobada). Todo el texto que cambia está en UNA tabla,
+> `docs/guion2/e7/tabla_e7.mjs` (110 filas `{id, fichero, actual, nuevo|null, origen, motivo}` y 18 altas); el código del
+> diseño y del motor, como parches literales, en `docs/guion2/e7/contra/disenio_patch.mjs` (34). Pruebas:
+> `node tools/test-e7-motor.mjs` y `node tools/test-e7.mjs` (las dos en `test-all`); capturas `tools/shots/e7-*.png`.
+> API nueva: `aTiempo` del duelo (`docs/CONTENT_SCHEMA.md` §10).
+
+### E7.1 Dónde vive cada cosa
+
+| Qué (E7) | Fichero |
+|---|---|
+| `aTiempo` del duelo («escribiendo…» en la barra del título, interrumpir no es fallo, `cortada`, `TROZO_MS`), F3 (la barra no se queda con «Usar <objeto>» tras adjuntar) | `engine/duel.js`, `engine/core.js` |
+| Gervasio escribe a trozos (`dueloGervasio.aTiempo`; R07 acortado a 71 caracteres; `attackText` se queda de respaldo) | `content/rooms/pajarera.js` |
+| El nudo: Aurora «¿De dónde saco papel para el fax?» (N1-N2), Begoña «¿Me da unos folios?…» (N3-N4), el sobre de azúcar abre el impreso (`ENTRADA`, `sobreANota`, con Dar y con Usar en Begoña o la ventanilla), «Importe cero» (N5), F4 | `rooms/catacumba.js`, `rooms/administracion.js`, `rooms/administracion.dialogos.js` |
+| `oyo_papel_begona`; `M.nota` (N6) y `nota` también en `catacumba`; la ficha `FICHA.firmaPapel` (N11) y el margen N9; pistas `nota`, `turno` n3, `acta` | `content/flags.js`, `content/pistas.js`, `content/items.js` |
+| La tele: `sinTurno`, `teleBuscando`, `hablarTele(api, { usar })` — Usar tele / caja de cables = Hablar; «wifi y rencor» con Mirar y Cerrar | `content/rooms/sala_amazonas.js` |
+| F6: la escena de Anselmo en dos tiempos (sin las tres explicaciones; se queda «Nos hemos quedado sin IA de la casa.») | `content/rooms/pecera.dialogos.js` |
+| Topes de §7 y el aviso por personaje (`REMATE_PERSONAJE_AVISO`, `rematePorPersonaje`) | `tools/plan-rules.mjs`, `tools/text-audit.mjs` |
+
+### E7.2 Criterio de la restauración y topes
+
+- **Un remate corto que es el golpe se queda; se cortan chistes apilados, coletillas que comentan y explicaciones.**
+  Vuelve el original de E6 solo si es *claramente* mejor: recupera un golpe que gira la frase («Suben.», «Estoy de
+  miedo.», «Lo dejo abierto.»), deshace una fusión que enterraba el golpe («214 respuestas.», «Es de plástico.»,
+  «Rojo.») o quita un tic («, por X.», punto y coma en boca de alguien). No vuelve un segundo chiste apilado, una
+  coletilla que comenta, un cambio de puntuación sin golpe ganado ni nada del hilo de «abrígate».
+- **Vetos que no se tocan:** «Y un comentario: «abrígate». La cuenta de siempre.» (Yoli, escena viral) se queda
+  EXACTAMENTE como está; E103 no vuelve (el final cita su forma de hoy); `content/escenas/final.js` no se toca.
+- **Topes nuevos** (E7 §7): remate seco ≤ **17,9 %** de las cadenas (con E7: 585 de 3.565 = 16,4 %); aviso por fichero de
+  sala **26 %** (la peor, `ecosistema.js`, 24,6 %); ningún otro tope sube.
+- **Aviso por personaje** (nunca fallo): sobre lo OÍDO (`text-audit` completo; `rematePorPersonaje` de
+  `tools/plan-rules.mjs`), quien diga ≥ 20 líneas distintas no debería pasar del 30 % de remate seco. Fuera el fax
+  (Teodoro: es formato), el Lector Medio, los avisos y Eventos. Con E7, el más alto es Gervasio (≈ 26 %). Si salta, se
+  mira a ese personaje: no se reescribe para ganar décimas.
+- Comprobar: `node tools/text-audit.mjs --estatico --plan --e2 --e5 --e6 --recuento` (el aviso por personaje sale en el
+  `text-audit` completo, sección «[E7] Remate seco por personaje»).
+
+### E7.3 Recorridos y pruebas
+
+- `walk-data.mjs`: los 49 pasos no cambian (solo el texto de 45 y 46). En modo rápido D3 no escribe a trozos: la frase
+  entera de golpe (y al registro como aviso: la comprobación de la R03 de `test-e6` y `play-mouse` sigue valiendo).
+- `walk-lib.mjs` (`--lento`) y `play-mouse.mjs` esperan a que Gervasio acabe de escribir antes de contestar.
+- `extras.mjs`: XE5-10 con Mirar tele; XE7-T1/T2 (Usar tele y caja de cables), XE7-N2 (Aurora, ficha, folios), XE7-N1
+  (el sobre con Dar y con Usar en la ventanilla), XE7-N3 («Importe cero»), XE7-F4 (sin aviso la segunda vez).
+- Pruebas de E6 que comprueban la tabla de E6 (`test-e6-pc`, `-pd`) se saltan las filas que E7 sustituye.
+
+### E7.4 Decisiones de la integración (I2)
+
+- En modo rápido, la frase entera de D3 también va al registro como aviso (la enmienda solo la registraba al acabar de
+  escribirse; sin esto, en modo rápido el registro solo tenía el primer trozo y `test-e6` no encontraba «El acta se
+  necesitaba para... para...»). No se oye ni suma topes.
+- Esc durante la escritura abre la pausa y la congela (§5.1.6); cargar o empezar partida desde la pausa mata la tarea
+  (`game.gen`).
+

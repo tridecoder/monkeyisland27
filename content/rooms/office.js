@@ -21,7 +21,7 @@ const lcd = (api, lines) => api.sayAs(GER, lines);
 const gv = (api, lines) => api.sayAs(GV, lines);
 const mer = (api, lines) => api.sayAs(MER, lines);
 // [PA] E6 §4.1 (E057, E058) y §4.3: una constante por cadena que se oye en dos claves del mismo objeto
-const LCD_DEVOLUCION = 'NO SE ADMITEN DEVOLUCIONES.';
+const LCD_DEVOLUCION = 'NO SE ADMITEN DEVOLUCIONES. NI SENTIMIENTOS.';
 const LCD_TARJETA = 'NO ACEPTO TARJETAS. SOLO MODALES.';
 const LCD_TAPER = 'NO SIRVO PARA LLEVAR. TENGO UN NOMBRE QUE MANTENER.';
 const NI_LA_ROZO = 'Ni la rozo. En la pantalla ya pone: «ANOTADO».';
@@ -207,7 +207,7 @@ async function huidaMercados(api) {
 }
 const dialogoMercados = {
   actor: MER, start: 'M0',
-  onStart: async (api) => { await mer(api, 'Chsss. Aquí la cola tiene orden.'); },
+  onStart: async (api) => { await mer(api, 'Chsss. Aquí la cola tiene orden. Me siento seguro.'); },
   nodes: {
     M0: {
       options: [
@@ -241,7 +241,7 @@ export default buildRoom({
       mirar: 'La Redacción, por el arco. Se oye teclear «pensiones».',
       usar: async (api) => { await api.goto('pecera'); },
       abrir: 'Más abierto no puede estar. Es un arco.',
-      cerrar: 'Para cerrar un arco hace falta una puerta y un presupuesto.',
+      cerrar: 'Para cerrar un arco hace falta una puerta y un presupuesto. No hay ninguno.',
       empujar: 'Empujo el aire del arco. Cede.',
       hablar: 'Le digo a la Redacción que ahora vuelvo. Nadie levanta la vista.',
       coger: 'El arco se queda. Yo, de momento, también.',
@@ -268,7 +268,7 @@ export default buildRoom({
     // la máquina de vending (la que da nombre a la sala)
     { id: 'maquina_vending', name: 'máquina de vending', handlers: {
       mirar: 'Le queda una bolsa de pipas caducada. Lleva años a punto de caer.',
-      usar: 'Pulso la B4. Las pipas se asoman y se quedan colgando.',
+      usar: 'Pulso la B4. Las pipas se asoman y se quedan colgando. Las animo. Nada.',
       'usar:tarjeta_becario': 'No acepta tarjetas. Ni de becario. Solo monedas, y no tengo.',
       'usar:cafe': 'Darle café a la máquina de enfrente de Gertrudis sería una provocación.',
       coger: 'Pegatina: «NO ZARANDEAR». Debajo, a boli: «lo digo por experiencia. R.»',
@@ -278,7 +278,7 @@ export default buildRoom({
     } },
     { id: 'microondas', name: 'microondas', handlers: {
       mirar: async (api) => {
-        if (api.flag('office_microondas_visto')) await api.say('Sus dueños se fueron a las seis y media. Los tuppers siguen en la cola.');
+        if (api.flag('office_microondas_visto')) await api.say('Los nueve tuppers siguen en la cola. Nadie viene a por ellos.');
         else { api.setFlag('office_microondas_visto', true); await api.say('Nueve tuppers en cola. El primero lleva ahí desde la hora de comer.'); }
       },
       usar: 'Hay cola. Colarse aquí es despido procedente.',
@@ -292,7 +292,7 @@ export default buildRoom({
     { id: 'tablon', name: 'tablón', handlers: {
       mirar: async (api) => {
         await api.say([
-          'Un hilo impreso, «RE: RE: RE: ¿De quién es el yogur?», con 214 respuestas.',
+          'Un hilo impreso: «RE: RE: RE: ¿De quién es el yogur?». 214 respuestas.',
           'Uno: «Como ya comenté en mi anterior correo, que parece que nadie ha leído...»',
           'Respuesta: «Lo leímos todos. Por eso no contestó nadie».',
         ]);
@@ -314,7 +314,7 @@ export default buildRoom({
     { id: 'fregadero', name: 'fregadero', handlers: {
       mirar: 'Tazas de eventos. La del «Foro de Innovación» tiene moho innovador.',
       usar: 'Si friego una taza, mañana me toca fregar todas. Así empezó Celestino.',
-      coger: 'La taza del Foro de Innovación ha echado raíces en el escurridor.',
+      coger: 'La taza del Foro de Innovación no se mueve. Ha echado raíces. Disruptivas.',
       'usar:cafe': 'Tirar un café de Gertrudis por el fregadero. Me oiría.',
       'usar:taper_huerfano': 'Ya está limpio. Lo vuelvo a fregar. Por tener algo hecho.',
       abrir: 'Abro el grifo. Tose dos veces y suelta un hilo. Lo cierro antes de que opine.',
@@ -349,7 +349,7 @@ export default buildRoom({
   actors: [
     { id: GER, defaultVerb: 'hablar',
       handlers: {
-        mirar: async (api) => { await api.say(['Gertrudis, la cafetera. Tiene pantalla y carácter.', 'Un pósit: «Servicio técnico: CELESTINO, ext. 0».']); },
+        mirar: async (api) => { await api.say(['Gertrudis, la cafetera. Tiene pantalla y carácter. Lo segundo, más.', 'Un pósit: «Servicio técnico: CELESTINO, ext. 0».']); },
         hablar: async (api) => { await api.dialog('gertrudis', 'G0'); },
         'usar:cafe': async (api) => { await lcd(api, LCD_DEVOLUCION); },
         'dar:cafe': async (api) => { await lcd(api, LCD_DEVOLUCION); },
@@ -389,7 +389,7 @@ export default buildRoom({
         hablar: hablarGervasio,
         'dar:cafe': async (api) => { await gv(api, '¿Café? Se agradece. Pero se espera a que la máquina lo ofrezca.'); },
         'dar:acta_reunion': async (api) => { await gv(api, 'Eso ya no es mío. Se ha delegado. En ti.'); },
-        'dar:ticket_n1': async (api) => { await gv(api, 'Un ticket. Eso es de Sistemas: se les reenvía.'); },
+        'dar:ticket_n1': async (api) => { await gv(api, 'Un ticket. Eso es de Sistemas. Se les reenvía.'); },
         'dar:*': async (api) => { await gv(api, 'Eso se deja... Se deja ahí. Ya se verá de quién es.'); },   // [PA] E5 M33
         empujar: 'Lleva toda la tarde sin moverse de su sitio. No voy a ser yo quien empiece.',
         tirar: 'Si le tiro de la manga, me la delega.',

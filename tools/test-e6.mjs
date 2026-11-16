@@ -18,7 +18,7 @@
 //   §11.2.10 el menú de D1 lleva la etiqueta COMODÍN (una sola opción)
 //   §11.2.11 medida del camino principal (contra la de E5 con este mismo método, 552 líneas: tope +6 de §1; §9.1 preveía
 //            −2, ver la nota en el código) y topes: `text-audit --estatico --plan --e2 --e5 --e6 --recuento` sin
-//            fallos, remate seco ≤ 16,5 % y ninguna sala > 22 % (aviso a cero)
+//            fallos, remate seco ≤ 17,9 % (E7 §7) y ninguna sala > 26 % (aviso a cero; E7 §7)
 //   node tools/test-e6.mjs [--solo=motor,i1,pa,pb,pc,pd,pe,pf,propias] [--sala=pecera,…] [--jobs=2]
 //     --sala: solo las pruebas de los paquetes que tocan esas salas, y las propias
 // Registros completos de cada prueba en tools/shots/test-e6/<nombre>.log; el camino en tools/shots/test-e6/camino-principal.tsv.
@@ -178,8 +178,8 @@ if (quiere('propias')) {
   fs.writeFileSync(path.join(logDir, 'text-audit.log'), ta.o);
   const rec = ta.o.split('\n').filter(l => /E6 §8\)/.test(l) && /\d+ \/ /.test(l)).map(l => l.trim().replace(/^· /, ''));
   ok(ta.c === 0 && /PLAN: OK/.test(ta.o) && /E2: OK/.test(ta.o) && /E5: OK/.test(ta.o) && /E6: OK/.test(ta.o), `text-audit --estatico --plan --e2 --e5 --e6: OK${rec.length ? '\n      ' + rec.join('\n      ') : ''}`);
-  const sala22 = (ta.o.match(/Remate seco por fichero de sala > 22 %[^:]*: (\d+)/) || [])[1];
-  ok(sala22 === '0', `ninguna sala pasa del 22 % de remate seco (aviso: ${sala22})`);
+  const sala26 = (ta.o.match(/Remate seco por fichero de sala > 26 %[^:]*: (\d+)/) || [])[1];
+  ok(sala26 === '0', `ninguna sala pasa del 26 % de remate seco (E7 §7; aviso: ${sala26})`);
   const dups = (ta.o.match(/Duplicados audibles[^:]*: (\d+)/) || [])[1];
   ok(dups === '0', `sin duplicados audibles entre salas (§4.3; aviso: ${dups})`);
 }

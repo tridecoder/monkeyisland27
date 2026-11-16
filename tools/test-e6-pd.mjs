@@ -326,13 +326,16 @@ try {
   // ================================================================ textos (§4.1, B4, B5, E177, X1, X4)
   console.log('\n§4.1 Textos');
   const { T } = await import(path.join(root, 'docs/guion2/e6/tabla.mjs'));
-  const mios = T.filter(r => r[0] === 'rooms/catacumba.js' || r[0] === 'rooms/pajarera.js');
+  // ENMIENDA E7 (tabla_e7.mjs) restaura o cambia algunas de estas filas: las que E7 sustituye ya no son de E6
+  const E7 = new Set((await import(path.join(root, 'docs/guion2/e7/tabla_e7.mjs'))).filas.map(r => r.fichero + '|' + r.actual));
+  const todas = T.filter(r => r[0] === 'rooms/catacumba.js' || r[0] === 'rooms/pajarera.js');
+  const mios = todas.filter(r => !E7.has(r[0] + '|' + r[2]));
   const src = Object.fromEntries(['rooms/catacumba.js', 'rooms/pajarera.js'].map(f => [f, fs.readFileSync(path.join(root, 'content', f), 'utf8')]));
   // E177 se borra solo en `grabacion` (en la opción de Gervasio, M25, se queda): se mira el cuerpo de esa función
   const grabacionSrc = (src['rooms/pajarera.js'].match(/async function grabacion[\s\S]*?\n}/) || [''])[0];
   const sigue = (f, act, id) => (id === 'E177' ? /sayAs\(G|gv\(/.test(grabacionSrc) || grabacionSrc.includes(`'${act}'`) : src[f].includes(act));
   const malos = mios.filter(([f, act, nuevo, , id]) => sigue(f, act, id) || (nuevo !== null && !src[f].includes(nuevo)));
-  ok(mios.length === 40 && malos.length === 0, `las ${mios.length} filas de §4.1: ninguna «actual» queda y todas las nuevas están${malos.length ? ' — mal: ' + malos.map(r => r[4]).join(', ') : ''}`);
+  ok(todas.length === 40 && malos.length === 0, `las ${mios.length} filas de §4.1 (+ ${todas.length - mios.length} que cambia E7): ninguna «actual» queda y todas las nuevas están${malos.length ? ' — mal: ' + malos.map(r => r[4]).join(', ') : ''}`);
   ok(!src['rooms/catacumba.js'].includes('DATO SIN CONTEXTO. Y DE LA WEB') && !src['rooms/pajarera.js'].includes('No digo quién.'), 'los ataques viejos (R09 de D2, R03 de D3) ya no están');
   // muestra jugada (Papel)
   await partida('catacumba', {}, []);
@@ -340,7 +343,7 @@ try {
   await TX('mirar', 'mesa_teodoro', null, 'La mesa de Teodoro, ordenada al milímetro.', 'Muy ordenada.', 'E223');
   await TX('coger', 'catacumba_a_pecera', null, 'No la cojo: esta puerta separa el papel del clic.', '1994', 'E222');
   await TX('coger', 'fax', null, 'Pesa lo que pesa una década.', 'de 1992', 'E241');
-  await TX('mirar', 'aurora_galerada', null, 'Aurora, correctora. Tiene un boli rojo clavado en el moño.', 'Por si acaso.', 'E237');
+  await TX('mirar', 'aurora_galerada', null, 'Aurora, correctora. Tiene un boli rojo clavado en el moño. Por si acaso.', null, 'E237 (E7: vuelve «Por si acaso.»)');
   await TX('mirar', 'fax_enmarcado', null, 'Un fax enmarcado: «¿Esto lo has contrastado?».', '2003', 'E242');
   // X1 (Aurora antes del café), con clic en la opción
   await G(() => __game.skipText(true));
@@ -375,10 +378,10 @@ try {
   await G(() => __game.chooseText('¿Quién decide lo del Plan Cero Papel?')); await until(() => !!__game.game.choice);
   ok(await logHas('Lo que diga el Lector Medio.') && await logHas('...Pues ya está decidido.'), 'M25 se queda en la opción de Gervasio');
   await G(() => __game.chooseText('Me voy.')); await idle(); await G(() => __game.skipText(false));
-  await TX('empujar', 'pajarera_a_pecera', null, 'Empujo el cristal. Desde la Redacción parece que pido auxilio.', 'Un poco sí.', 'E155');
+  await TX('empujar', 'pajarera_a_pecera', null, 'Empujo el cristal. Desde la Redacción parece que pido auxilio. Un poco sí.', null, 'E155 (E7: vuelve «Un poco sí.»)');
   await G(() => __game.setFlag('acto_3_iniciado', true));
   await TX('mirar', 'hoja_reservas', null, 'Ha pisado la reserva de un hombre que no está.', 'Eso es nivel.', 'X4');
-  await TX('cerrar', 'puerta_sala', null, 'Cerrada por dentro. Se oye pasar una diapositiva, muy despacio.', 'Muy despacio.', 'E165');
+  await TX('cerrar', 'puerta_sala', null, 'Cerrada por dentro. Se oye pasar una diapositiva. Muy despacio.', null, 'E165 (E7: vuelve el original)');
   // B4: la escena de la chaqueta
   await partida('pecera', { bruno_con_chaqueta: true, chaqueta_en_lector: false });
   await G(() => { __game.game.state.once = {}; __game.clearLog(); });

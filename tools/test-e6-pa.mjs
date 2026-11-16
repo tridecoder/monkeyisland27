@@ -238,8 +238,8 @@ try {
     ok(!(await G(() => !!__game.game.choice)) && await logHas(G, '¿Me veis la pantalla?'), 'Hablar tele antes del «sin turno»: lo de hoy');
     await G(() => __game.setFlag('sala_becario_sin_turno', true));
     await G(() => __game.clearLog());
-    await G(() => __game.doVerb('usar', 'tele_amazonas'));
-    ok(await logHas(G, 'Alguien con wifi y rencor la encontraría enseguida.') && !(await flag(G, 'sala_amazonas_atasco')), 'Usar tele con «sin turno»: «wifi y rencor» (pista de las dos vías)');
+    await G(() => __game.doVerb('mirar', 'tele_amazonas'));   // E7 F2: la pista pasa a Mirar (y Cerrar); Usar = Hablar
+    ok(await logHas(G, 'Alguien con wifi y rencor la encontraría enseguida.') && !(await flag(G, 'sala_amazonas_atasco')) && !(await G(() => !!__game.game.choice)), 'Mirar tele con «sin turno»: «wifi y rencor» (pista de las dos vías; E7)');
     // Mirar a Mercados sin atasco: su línea de siempre
     await G(() => __game.doVerb('mirar', 'mercados_1'));
     ok(await logHas(G, 'Fermín Plazofijo, de Mercados. Cuando empezó') && !(await logHas(G, 'encajados en el marco')), 'Mirar a Fermín sin atasco: lo de siempre');

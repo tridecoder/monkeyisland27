@@ -335,7 +335,7 @@ async function posit() {
   await clearLog();
   await G(() => __game.doVerb('hablar', 'aurora_galerada'));
   must(await flag('opa_posit') === 2, 'Aurora no corrige el pósit');
-  for (const t of ['Un pósit de la web en tu pieza', 'para hacer esperar.', 'Cuatro tachones para volver a mi titular.', 'El quinto es para ti, por traérmelo.']) must(await logHas(t), 'falta ' + t);
+  for (const t of ['Un pósit de la web en tu pieza', 'para hacer esperar.', 'Cuatro tachones para volver a mi titular.', 'El quinto es por traérmelo.']) must(await logHas(t), 'falta ' + t);
   await G(() => __game.chooseText('Yoli quiere sacar mi opa'));
   await idle();
   for (const t of ['«Coincidir» pide complemento.', 'RESPUESTA A AURORA: COINCIDO.', '...¿En qué?', 'EN QUE PIDE COMPLEMENTO.']) must(await logHas(t), 'COINCIDO: falta ' + t);
@@ -438,9 +438,9 @@ async function hojaYRafaga() {
   await mirar('hoja-acto1');
   must(await logHas('Lo más leído de la web, impreso y clavado con chinchetas.'), 'O1');
   await mirar('hoja-acto1-b');
-  must(await logHas('Esa ya está vieja; te imprimo otra.'), 'O2');
+  must(await logHas('Esa ya está vieja. Te imprimo otra.'), 'O2 (E7 E133)');
   await mirar('hoja-acto1-c');
-  must(await logCount('Esa ya está vieja;') === 1, 'O2 dos veces');
+  must(await logCount('Esa ya está vieja.') === 1, 'O2 dos veces');
   const f1 = await filas('I');
   must(f1.kw === 'PERSIANAS' && f1.filas.length === 5 && f1.extra && f1.extra[0] === 213, 'hoja I: ' + JSON.stringify(f1));
   await setFlags({ cms_vivo: true, cafetera_viral: true, acto_2_iniciado: true });

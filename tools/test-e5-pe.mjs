@@ -221,7 +221,7 @@ try {
     ok(optsB0.at(-1) === 'Nada. Me iba.', 'la despedida sigue al final');
     const L = await log(G);
     ok(L.includes('begona_triplicado: Las fotos mentales solo se aceptan con NIF.'), 'C82: «Las fotos mentales solo se aceptan con NIF.»');
-    ok(L.includes('begona_triplicado: Un sobre de azúcar caducado, del bolsillo de Ramírez, por el olor.') && !L.some(l => /sánscrito/.test(l)), 'R2: sin «…un ticket en sánscrito.»');
+    ok(L.includes('begona_triplicado: Un sobre de azúcar. Caducado. Del bolsillo de Ramírez, por el olor.') && !L.some(l => /sánscrito/.test(l)), 'R2: sin «…un ticket en sánscrito.»');
     ok(!L.some(l => /F-1|Felicidad|1987/.test(l)), 'ninguna línea del F-1 de Felicidad');
     await clicOpcion('Nada. Me iba.'); await idle(G);
     // «Varios.» → la frente (C57)

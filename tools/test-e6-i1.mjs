@@ -38,8 +38,8 @@ const obj = (id) => pistas.OBJETIVOS.find(o => o.id === id);
 ok(/rotulador/.test(obj('columna').niveles[0]), 'abuela, `columna` nivel 1: habla del rotulador');
 ok(obj('columna').niveles[1] === 'La de los anuncios pinta sus objetivos a rotulador: pídeselo.', '`columna` nivel 2 (E361)');
 ok(obj('turno').niveles[2][0] === 'A esa tele dale las buenas noches, como a la cafetera, y pregúntale.'
-  && obj('turno').niveles[2][1] === 'Hablar con la tele: «Buenas noches, Gertrudis». Y lo de los pasos.', '`turno` nivel 3: la tele (E362, E363)');
-ok(SIN_DESTINO === 'Un punto rojo: «ESTÁ AQUÍ». Gracias.', 'SIN_DESTINO (E344)');
+  && obj('turno').niveles[2][1] === 'La tele: «Buenas noches, Gertrudis». Y lo de los pasos.', '`turno` nivel 3: la tele (E362, E363; E7 P-turno3)');
+ok(SIN_DESTINO === 'Un punto rojo: «ESTÁ AQUÍ». Gracias. Me hacía falta.', 'SIN_DESTINO (E344; E7: vuelve el original)');
 ok(duelo.hurtByPair.teodoro.R09 === '...CABE.' && duelo.hurtByPair.teodoro.R02 === 'ESO ME LO DIJO ELLA. EN 1996.', 'D2: «...CABE.» pasa de la R02 a la R09');
 ok(actors.bruno.handlers.hablar === actors.bruno.handlers.mirar, 'bruno.handlers.hablar = mirar');
 ok(actors.valentin_reticula.variants && actors.valentin_reticula.variants.casco_fuera, 'Valentín: variante casco_fuera');

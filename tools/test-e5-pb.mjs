@@ -154,7 +154,7 @@ try {
   // escalada n = 2, como hoy
   await G(() => __game.clearLog());
   await G(() => __game.doVerb('tirar', 'enchufe_pantalla'));
-  ok(await flag('apagon_n') === 2 && await logHas('¡Ha entrado otra!') && !(await logHas('¡Otra! ¡Ha entrado otra!')) && !(await G(() => !!__game.game.apagon)) && !(await flag('pecera_oscuras')), 'segundo tirón: la escalada n = 2 de siempre (cutscene, sin ventana)');
+  ok(await flag('apagon_n') === 2 && await logHas('¡Otra! ¡Ha entrado otra!') && !(await G(() => !!__game.game.apagon)) && !(await flag('pecera_oscuras')), 'segundo tirón: la escalada n = 2 de siempre (cutscene, sin ventana)');
 
   // --- Usar el enchufe a los 2 s
   await partida();

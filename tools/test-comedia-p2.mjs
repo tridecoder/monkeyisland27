@@ -105,7 +105,7 @@ async function principal() {
   await T.goto('pecera', 'vestibulo');
   await T.expectFlags({ inigo_presentado: true }, '7.2');
   await T.musts(['¡No entra nada! El CMS, el programa de publicar, lleva dos horas colgado.',
-    'Trescientos titulares esta tarde, sin CMS, sin silla y sin convenio.', 'Aquí ya tenemos una IA. Herminia. Hace sola las infografías.',
+    'Trescientos titulares esta tarde. Sin CMS. Sin silla. Sin convenio.', 'Aquí ya tenemos una IA. Herminia. Hace sola las infografías.',
     '¿Cuánto factura?', 'Entonces no es una IA. Es un hobby.', 'Y no ha pasado por mis sistemas.',
     HERMINIA + 'cinta de Desarrollo · tiras: 1 · motivo: no consta', 'Coste cero, disponibilidad total. Te tengo en la matriz, Vacante.'], '7.2');
   must(!(await T.logHas('Vengo a reimaginar el perímetro.')), '7.2: E5 R4 fuera «Vengo a reimaginar el perímetro.»');
@@ -178,7 +178,7 @@ async function principal() {
   await T.clearLog();
   must((await G(() => __game.objects().find(o => o.id === 'herminia_portatil').name)) === 'Herminia, la IA de Infografía', 'E2 §2.2: nombre del portátil');
   await T.verb('mirar', 'herminia_portatil'); await T.verb('usar', 'herminia_portatil'); await T.verb('hablar', 'herminia_portatil');
-  await T.musts(['Herminia, la IA de Leoncio: un portátil que hace solo las infografías.', 'mirándola. Encima, una tira de cinta.',
+  await T.musts(['Herminia, la IA de Leoncio: un portátil que hace solo las infografías.', 'Mirándola. Encima, una tira de cinta.',
     HERMINIA + 'quesito de Desarrollo · suma: 130 % · corregir: bloqueado', 'Ella lo arreglaría en una décima.',
     HERMINIA + 'saludo recibido · hola: 100 %'], 'portátil');
   must(!(await T.logHas('Me ha entendido a la primera.')), 'E6 §2.6 B6: Bruno ya no comenta la pantalla de Herminia');
@@ -195,7 +195,7 @@ async function principal() {
   must(!(await T.opciones()).some(o => o.includes('gráficos de Anselmo')), 'Leoncio: la opción del Acto II sale en el Acto I');
   await T.opcion('Me voy.');
   await T.musts(['Vacante. En tarta, eres un quesito muy fino.', 'Mi IA. La hice yo, en tres fines de semana.', 'Me duele, pero me incluyo.',
-    'Dejaron las chaquetas en las sillas, mirándola, por respeto.', 'Le he mandado cuarenta y un pósits.', 'En su tipografía, que es fea.',
+    'Dejaron las chaquetas en las sillas, mirándola.', 'Le he mandado cuarenta y un pósits.', 'En su tipografía, que es fea.',
     HERMINIA + 'Bruno · aportación a la planta: 0,3 % · tendencia: plana', 'Cuidado con la cinta. Se ha movido desde que has llegado.'], 'Leoncio');
   must(!(await T.logHas('Al currículum.')), 'L14: sigue la línea de Bruno');
   await T.clearLog();
@@ -300,7 +300,7 @@ async function principal() {
   await T.verb('usar', 'ordenador_bruno');
   await T.expectFlags({ pieza_escrita: true, herminia_midio: true }, 'paso 34');
   await T.expectInv(['pieza_opa'], [], 'paso 34');
-  await T.musts([HERMINIA + 'tu pieza · 31 líneas · hueco de la página 7: 23 · sobra: 26 %', 'Ya te la ha leído. Yo no, ¿eh? Yo ya solo superviso.',
+  await T.musts([HERMINIA + 'tu pieza · 31 líneas · hueco de la página 7: 23 · sobra: 26 %', 'Ya te la ha leído. Yo no, ¿eh? Yo ya no leo. Superviso.',
     '¿Y quién quita un 26 %?', 'Ella no. Ella mide. Quitar siempre es de otro departamento.',
     HERMINIA + 'infografía de la opa · hecha en 0,4 s · publicar: bloqueado', 'Cuatro décimas. Yo tardaba una semana. Bien hecha, eso sí.',
     'Hecha con una IA de fuera. No entra en ninguna pieza.', 'Encintar, no: aislar el componente.', '¿Y vosotros no usáis IA de fuera?',
@@ -332,7 +332,7 @@ async function principal() {
   await R.travel('catacumba'); await T.clearLog(); await R.travel('pecera'); await T.idle();
   await T.expectFlags({ dos_ias_vista: true, anselmo_dijo_regla: true }, 'momento 8');
   await T.musts(['Última vuelta. Integración: en la próxima versión.', 'Envuelta. Parece un regalo. De nadie.',
-    'Antes de que la envolviera le pedí un gráfico del Titulator, por curiosidad.',
+    'Antes de que la envolviera le pedí un gráfico del Titulator.',
     HERMINIA + 'titulares por hora · picos: 14:00 y 14:30 · pausas de 5 min: 11', HERMINIA + 'origen: Sistemas, armario 27 · consumo: atún',
     'Una IA que come a las dos y va once veces al baño.', 'Tiene alta de usuario interno. Lo que tiene alta es de la casa.'], 'momento 8');
   must(!(await T.logHas('Eso es un compañero.')), 'E6 §2.5 B2: fuera «Eso no es un modelo. Eso es un compañero.»');
@@ -422,10 +422,12 @@ async function principal() {
   await T.expectInv(['ticket_n1', 'rotulador_rojo'], ['album_eventos'], 'paso 46');
   await T.musts(['¿Con qué has escrito eso? ...Rotulador de Comercial. De fuera.', 'Salida en valor. Ni hecho ni muerto, pero sale.',
     'La frase la escribió Brais. Brais tenía alta. ...Entonces es de la casa.',
-    'Columna nueva. La primera que no dice que no.', 'Y en nuestros corazones, Brais está en HECHO.',
+    'Columna nueva. La primera que no dice que no.',
     'No subo. Nunca subo. Eutimio.', 'Estoy esperando a que salga el sol.', 'Revocado. Fecha: hoy. Efectos: julio.',
-    'Integró una IA que era un becario.', 'Nos hemos quedado sin IA de la casa.', HERMINIA + 'alta de usuario: no · propietaria: Infografía',
-    '...Lo miro en la próxima versión.', 'SEGUIREMOS INFORMANDO.'], 'columna (E5 §3.5, C94; E6 B1)');
+    'Nos hemos quedado sin IA de la casa.', HERMINIA + 'alta de usuario: no · propietaria: Infografía',
+    'SEGUIREMOS INFORMANDO.'], 'columna (E5 §3.5, C94; E6 B1; E7 F6)');
+  for (const t of ['Y en nuestros corazones, Brais está en HECHO.', 'Integró una IA que era un becario.', '...Lo miro en la próxima versión.'])
+    must(!(await T.logHas(t)), `E7 F6: ya no se dice «${t}»`);
   must(!(await T.logHas('La frase con la que Íñigo')) && !(await T.logHas('Y la escribí yo.')), 'E6 §2.6 B1: fuera la explicación de Bruno y «Y la escribí yo.»');
   must(!(await T.logHas('Consultoría.')) && !(await T.logHas('Eso sí lo sé hacer yo.')), 'E5 D17: fuera «Consultoría.» y «…Eso sí lo sé hacer yo.»');
   lg = await T.log();
@@ -523,7 +525,7 @@ async function sacarCapturas() {
   sin(T, () => T.opcion('SALIDA EN VALOR'));
   await shotWhen(T, 'Columna nueva. La primera que no dice que no.', 'salida-tablero');
   await shotWhen(T, 'Estoy esperando a que salga el sol.', 'salida-ruben');
-  await shotWhen(T, 'Integró una IA que era un becario.', 'salida-revocado');
+  await shotWhen(T, 'Revocado. Fecha: hoy. Efectos: julio.', 'salida-revocado');
   await shotWhen(T, 'alta de usuario: no', 'salida-manos', 300);
   await shotWhen(T, 'SEGUIREMOS INFORMANDO.', 'salida-brais');   // E6 B1: la columna acaba en Brais
   await fin(T);

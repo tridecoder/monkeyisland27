@@ -169,7 +169,7 @@ try {
   ok(Lc.includes('A: La tele de tu abuelo no iba si él la miraba. Apágale algo a alguien.'), 'en Sistemas, la pista del CMS (objetivo de la sala)');
   await G(() => __game.gotoRoom('administracion'));
   Lc = await llamada();
-  ok(Lc.includes('A: ¿Has hecho la cuenta de gastos? Hazla mal. Te enseñan una buena.'), 'en Administración, la de la nota de gasto (nivel 1 al cambiar de objetivo)');
+  ok(Lc.includes('A: En las oficinas sin papel siempre hay una que lo gasta en decir que no.'), 'en Administración, la de la nota de gasto (nivel 1 al cambiar de objetivo; E7 P-nota1)');
   ok(await G(() => __game.game.condApi().objetivo.actual('cpd') === 'cms'), 'api.objetivo.actual(sala)');
   await G(() => __game.game.condApi().objetivo.marcar('cms'));
   ok(await G(() => __game.game.condApi().objetivo.hecho('cms') && !__game.game.condApi().objetivo.pendientes().includes('cms')), 'api.objetivo.marcar / hecho / pendientes');
@@ -177,7 +177,7 @@ try {
   await G(() => { __game.giveItem('ficha_pagina_7'); __game.setFlag('cms_vivo', false); __game.game.state.flags['obj:cms'] = false; });
   const ficha = () => G(async () => { __game.clearLog(); await __game.doVerb('mirar', 'ficha_pagina_7'); return __game.log.filter(l => l.who === 'bruno').map(l => l.text); });
   let F = await ficha();
-  ok(F[0] === 'Ficha de la página 7. Hueco, fuente, firma.' && F.includes('HUECO: vendida a Siestatón, sin confirmar. Lo decide la Sala Amazonas.') && F.includes('FUENTE: dos fuentes, dice Aurora. Tengo cero.') && F.includes('FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.') && F.includes('Al margen, a lápiz: «Arriba no me atiende nadie. El CMS está en coma».'), 'ficha (estado inicial): casillas pendientes y la nota al margen');
+  ok(F[0] === 'Ficha de la página 7. Hueco, fuente, firma.' && F.includes('HUECO: vendida a Siestatón, sin confirmar. Lo decide la Sala Amazonas.') && F.includes('FUENTE: dos fuentes, dice Aurora. Tengo cero.') && F.includes('FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.') && F.includes('Al margen, a lápiz: «CMS en coma. Sistemas no atiende a nadie».'), 'ficha (estado inicial, margen E7 N9): casillas pendientes y la nota al margen');
   const icon0 = await G(() => __game.game.content.items.ficha_pagina_7.iconKey(__game.game.viewFor()));
   await G(() => { for (const f of ['reunion_terminada', 'fax_con_papel', 'cms_vivo', 'casilla_fuente', 'pieza_escrita']) __game.setFlag(f, true); __game.giveItem('fotocopia_nota_direccion'); });
   F = await ficha();

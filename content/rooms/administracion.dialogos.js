@@ -31,15 +31,24 @@ async function frente(api, who, text) {
   if (api.flag('bruno_sellado_frente') && api.once('frente_' + who)) await api.sayAs(who, text);
 }
 
+/** E7 F1 (E3): se entra al impreso por el sobre de azúcar (administracion.js `sobreANota`): sin el saludo. */
+export const ENTRADA = { sobre: false };
+
 export default {
   // ---------------------------------------------------------------- §7.6.2 Begoña
   begona: {
     actor: BEGONA, start: 'B0',
-    onStart: async (api) => { await sayBe(api, 'Son las 19:07. Te quedan ocho minutos de existencia administrativa.'); },
+    onStart: async (api) => {
+      if (ENTRADA.sobre) { ENTRADA.sobre = false; return; }        // E7 F1 (E3): por el sobre, directo al impreso
+      await sayBe(api, 'Son las 19:07. Te quedan ocho minutos de existencia administrativa.');
+    },
     nodes: {
       B0: {
         options: [
           { text: 'Quiero presentar una nota de gasto.', if: '!nota_gasto_presentada', goto: 'B_NOTA' },
+          // E7 F1 (E2): el papel de esta casa sale rechazado (qué falta, no qué hacer)
+          { text: '¿Me da unos folios? Son para el fax de Teodoro.', if: ['acto_2_iniciado', '!nota_gasto_presentada', '!fax_con_papel'],
+            once: true, reply: 'Folios no doy. De esta ventanilla solo sale papel rechazado.', setFlag: 'oyo_papel_begona' },
           { text: 'Llevan siendo las 19:07 toda la tarde.', once: true, reply: 'Por eso sigo abierta. El horario se cumple.' },
           // plan §5.8 [3]: el recorte del 26 %, en directo, sobre una pregunta (siembra el paso 33)
           { text: 'Begoña, con todo el respeto, yo solo venía a preguntarle si...', once: true,
@@ -72,7 +81,7 @@ export default {
             do: async (api) => {
               await api.wait(900);                         // (Pausa. Revisa la nada por las dos caras.)
               await sayBe(api, '...Correcta. Aprobada. Vete. Me has hecho daño.');
-              await api.say('He hecho un trámite bien. Lo pongo en «logros».');
+              await api.say('Un trámite bien hecho, y ni un papel. Lo pongo en «logros».');
             } },
           { text: 'Café para entender el capitalismo.', goto: 'B_IMPORTE' },
           { text: 'Varios.', once: true, goto: 'B0',
@@ -83,7 +92,7 @@ export default {
               await api.say('RECHAZADO, en la frente. Mi primer documento oficial.');   // E5 C57
             } },
           { text: 'Representación. Me represento a mí mismo.', once: true,
-            reply: 'Eso es autoestima, y no desgrava.' },
+            reply: 'Eso es autoestima. Y no desgrava.' },
         ],
       },
       B_IMPORTE: {
@@ -107,7 +116,7 @@ export default {
       B_INSULTO: {
         onEnter: async (api) => {
           if (api.once('administracion_b_insulto')) {
-            await sayBe(api, 'Un sobre de azúcar caducado, del bolsillo de Ramírez, por el olor.');   // E5 R2
+            await sayBe(api, 'Un sobre de azúcar. Caducado. Del bolsillo de Ramírez, por el olor.');   // E5 R2
           } else await sayBe(api, 'Esto... esto sigue siendo un insulto a la contabilidad.');
         },
         options: [
@@ -187,10 +196,11 @@ export default {
           { text: '¿Y no me lo puede decir ahora?', once: true, reply: 'Ahora no. Lo verbal no lleva comas.' },
           { text: '¿Falta mucho?', exit: true,
             do: async (api) => {
-              await api.anim(api.player, 'reach', 400);    // E6 B9: Bruno mira el reloj; el gesto no se explica
+              await api.anim(api.player, 'reach', 700);    // E7 F4: Bruno mira el móvil (más largo)
               await sayEv(api, 'Si tiene prisa, se lo pongo por escrito.');
-              api.sfx('typewriter');                       // (Teclea. Vuelve a su mesa.)
-              await api.wait(700);
+              api.faceActor(EV, 'up');                     // (De espaldas. Lo pone por escrito, de verdad.)
+              for (let i = 0; i < 3; i++) { api.sfx('typewriter'); await api.wait(380); }
+              if (api.once('administracion_evaristo_por_escrito')) api.notice('Correo nuevo de Evaristo Salvedad: «Una cosita (1 de 3)».');
             } },
           { text: '¿De qué trata?', goto: 'E_DET' },
         ],

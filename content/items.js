@@ -212,7 +212,8 @@ export const FICHA = {
   firma: ['FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.',
     'FIRMA: el fax ya habla. Ahora hay que ganárselo contestando.',
     'FIRMA, hecho: «Trece con espacios. Cabe.»'],
-  margen: 'Al margen, a lápiz: «Arriba no me atiende nadie. El CMS está en coma».',
+  firmaPapel: 'FIRMA: el fax no tiene papel. El papel, en esta casa, sale de Begoña.',   // E7 F1 (N11), con oyo_papel_begona
+  margen: 'Al margen, a lápiz: «CMS en coma. Sistemas no atiende a nadie».',
   pieza: ['PIEZA: sin escribir. Primero las fuentes; luego, mi ordenador.',
     'PIEZA: treinta y una líneas. El hueco, veintitrés. Me sobran ocho.',                    // E2 L34
     'PIEZA: veintitrés líneas. Lista para Teodoro.',
@@ -228,7 +229,7 @@ export function fichaViva(api) {
   const out = [FICHA.titulo];
   out.push(FICHA.hueco[f('casilla_hueco') ? 2 : f('reunion_terminada') ? 1 : 0]);
   out.push(FICHA.fuente[f('casilla_fuente') ? 2 : (api.has('fotocopia_nota_direccion') || api.has('mensaje_fp')) ? 1 : 0]);
-  out.push(FICHA.firma[f('casilla_firma') ? 2 : f('fax_con_papel') ? 1 : 0]);
+  out.push(f('casilla_firma') ? FICHA.firma[2] : f('fax_con_papel') ? FICHA.firma[1] : f('oyo_papel_begona') ? FICHA.firmaPapel : FICHA.firma[0]);
   if (!f('cms_vivo')) out.push(FICHA.margen);
   if (f('casilla_fuente') || f('pieza_escrita')) out.push(FICHA.pieza[f('pieza_recortada') ? 2 : f('pieza_escrita') ? (f('herminia_midio') ? 3 : 1) : 0]);
   // E2 §10.4: la coma de Evaristo (una nota como mucho)

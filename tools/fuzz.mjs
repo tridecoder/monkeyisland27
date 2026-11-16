@@ -53,6 +53,9 @@ async function step(n) {
 const engineErrors = () => G(() => __game.errors.filter(e => !e.warn).length);
 /** Sale de cualquier diálogo / duelo / selector. Devuelve false si no se puede (callejón). */
 async function escape() {
+  // E7: el impreso de la nota de gasto (al que ahora se entra Dando o Usando el sobre de azúcar con Begoña) no tiene
+  // despedida: si el mismo menú vuelve tras elegir, se prueba la opción de encima (así se sale rellenándolo)
+  let firma = null, ultima = -1;
   for (let k = 0; k < 40; k++) {
     await G(() => __game.waitIdle());
     const st = await state();
@@ -65,6 +68,9 @@ async function escape() {
     if (st.dialog) {
       let i = FAREWELLS.map(f => st.dialog.findIndex(o => norm(o).startsWith(f))).find(x => x >= 0);
       if (i == null || i < 0) { const en = st.dialogDisabled || []; i = st.dialog.length - 1; while (en.includes(i) && i > 0) i--; }
+      const f = st.dialog.join('|');
+      if (f === firma && ultima >= 0) i = (ultima - 1 + st.dialog.length) % st.dialog.length;
+      firma = f; ultima = i;
       await G(i => __game.chooseDialog(i), i);
       continue;
     }
