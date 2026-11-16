@@ -278,7 +278,7 @@ async function atajoSemaforoSenal() {
   const M = await G(async () => (await import('/content/pistas.js')).OBJETIVOS.find(o => o.id === 'empujon'));
   must(meta.includes('El Lector Medio se tambalea. Un empujoncito y deja de asentir.'), '«Mirar a Bruno» tras D4: ' + JSON.stringify(meta));
   const ll = await tresLlamadas('sala_amazonas');
-  must(ll[0].some(l => l.includes('empujoncito')) && ll[1].some(l => l.includes('cartón')) && ll[2].some(l => l.includes('Empújalo')) && ll[2].some(l => l === 'B: Empujar al Lector Medio.'),
+  must(ll[0].some(l => l.includes('empujoncito')) && ll[1].some(l => l.includes('cartón')) && ll[2].some(l => l.includes('Empújalo')) && ll[2].some(l => l === 'B: Sala Amazonas: Empujar al Lector Medio.'),
     'la abuela no apunta al cartón y a Empujar: ' + JSON.stringify(ll));
   await setFlags({ lector_derribado: true });
   vs = await variantes(3400);
@@ -347,7 +347,8 @@ try {
   must(!L3.some(l => l.includes('Cotillea, que es gratis')), 'N1: sigue la pista vaga «Cotillea, que es gratis»');
   await setFlags({ rep_08: true });
   [, L2, L3] = await tresLlamadas('sala_amazonas');
-  must(L3.includes('B: ' + d11[1]) && !L3.includes('B: ' + d08[1]), `N1: nivel 3 (D1) con solo R11 pendiente: ${JSON.stringify(L3)}`);
+  // [bloqueos] con R08, R04 y R14 Bruno ya gana D1 (tres aciertos; la R11 que falta es un fallo de tres): sin «Me faltan réplicas»
+  must(!L3.includes('B: Me faltan réplicas.') && !L3.includes('B: ' + d08[1]), `N1: nivel 3 (D1) con solo R11 pendiente (le bastan las que sabe): ${JSON.stringify(L3)}`);
   must(d11[1].includes('ordenador'), 'N1: el nivel 3 de R11 no nombra el ordenador');
   await setFlags({ rep_11: true });
   [, L2, L3] = await tresLlamadas('sala_amazonas');
@@ -361,17 +362,19 @@ try {
   await setFlags({ rep_06: true });
   ok('N1: D2 (Teodoro): falta R06 → «' + d06[1] + '»');
   // D3 (Gervasio, objetivo acta): falta R07 (el ordenador de Gervasio)
-  await setFlags({ acto_3_iniciado: true, ruben_encontrado: true, posit_descopeado: true, ruben_libre: true, rep_07: false, rep_01: true, rep_03: true, rep_05: true });
+  // [bloqueos] la abuela solo avisa si las que sabe no bastan (D3 gana con dos): aquí sabe solo la R03
+  await setFlags({ acto_3_iniciado: true, ruben_encontrado: true, posit_descopeado: true, ruben_libre: true, rep_07: false, rep_01: false, rep_03: true, rep_05: false });
   [, L2, L3] = await tresLlamadas('pajarera');
   const d07 = await DONDE('rep_07');
   must(L2.includes('A: ' + d07[0]) && L3.includes('B: ' + d07[1]), `N1: D3 sin R07: ${JSON.stringify(L3)}`);
   ok('N1: D3 (Gervasio): falta R07 → «' + d07[1] + '»');
   // D4 (Íñigo, objetivo inigo): faltan R15 y R16
-  await setFlags({ sala_abierta: true, rep_07: true, rep_10: true, rep_12: true, rep_13: true, rep_15: false, rep_16: false });
+  // [bloqueos] D4 pide cinco; con cuatro (R10, R12, R13, R05) faltan R16, R01, R07, R15: la abuela, la primera; Bruno, tres sitios
+  await setFlags({ sala_abierta: true, rep_05: true, rep_01: false, rep_07: false, rep_10: true, rep_12: true, rep_13: true, rep_15: false, rep_16: false });
   [, L2, L3] = await tresLlamadas('pajarera');   // (en la Sala, sala_abierta lanza el clímax)
-  const d15 = await DONDE('rep_15'), d16 = await DONDE('rep_16');
-  must(L2.includes('A: ' + d16[0]) && L3.includes('B: ' + d16[1]) && L3.includes('B: ' + d15[1]), `N1: D4 sin R15 ni R16: ${JSON.stringify(L3)}`);
-  ok('N1: D4 (Íñigo): faltan R16 y R15 → Evaristo y Brais, con sitio y objeto');
+  const d01 = await DONDE('rep_01'), d16 = await DONDE('rep_16');
+  must(L2.includes('A: ' + d16[0]) && L3.includes('B: ' + d16[1]) && L3.includes('B: ' + d01[1]), `N1: D4 con cuatro réplicas: ${JSON.stringify(L3)}`);
+  ok('N1: D4 (Íñigo): con cuatro de cinco, falta R16 (Evaristo) y luego R01, con sitio y objeto');
 
   // ------------------------------------------------------------ N5 salida de los Despachos
   const nombre = await G(() => (__game.game.content.rooms.pajarera.objects || []).find(o => o.id === 'pajarera_a_pecera').name);

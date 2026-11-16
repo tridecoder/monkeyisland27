@@ -586,3 +586,22 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
 - Esc durante la escritura abre la pausa y la congela (§5.1.6); cargar o empezar partida desde la pausa mata la tarea
   (`game.gen`).
 
+
+## Bloqueos («puertas ocultas») — lo que responde el juego cuando falta algo
+
+> Prueba: `node tools/test-bloqueos.mjs` (en `test-all`); capturas `tools/shots/bloqueos-*.png`.
+
+- **Regla**: una opción de diálogo o una acción del camino principal no se esconde tras un requisito que nada anuncia.
+  La opción está y quien contesta dice qué falta (o quién lo tiene), sin dar la solución masticada. Solo se esconden
+  las preguntas que Bruno no puede hacer sin saber algo (el número del ticket, la coma de Evaristo, la frase de la
+  columna); la lista blanca, con el motivo, está en `EXCEPCIONES` de la prueba.
+- **Pistas por sub-estado** (`content/pistas.js`): `sub: [{ si, niveles?, meta?, extra?, previa? }]`; el primero que se
+  cumple sustituye esos campos (`engine/objetivos.js` `variante`; `api.objetivo.variante(id)`). Nivel 1 sugiere, 2 dice
+  quién o dónde, 3 = [abuela, Bruno al colgar con sitio, objeto y verbo].
+- **Objetivos opcionales** (`opcional: true`, p. ej. `boli`): no cuentan para la abuela ni «Mirar a Bruno» salvo en
+  foco: la sala llama a `api.objetivo.foco('<id>')` cuando el jugador lo intenta. El foco vale en las salas del objetivo
+  hasta que la abuela lo dice entero (nivel 3) o el jugador avanza un objetivo principal.
+- **Réplicas que faltan**: la abuela solo dice «Me faltan réplicas.» si las que sabe Bruno no llegan para ganar (D3 y D4
+  tienen cartas de más).
+- `migrarPartida` (content/game.js): estampida cortada → reunión terminada; `gertrudis_pregunta` sin «sin turno» → sin
+  turno; `herminia_midio` → `pecera_prompt_oido` (la frase de Anselmo ya oída).

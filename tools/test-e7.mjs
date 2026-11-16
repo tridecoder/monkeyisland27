@@ -107,7 +107,10 @@ try {
     const lit = (await import('./plan-rules.mjs')).literales;
     const src = (f) => fs.readFileSync(path.join(root, 'content', f), 'utf8');
     const malas = [];
+    // [bloqueos] filas de pistas.js que la ronda de bloqueos rehace a propósito (el nivel 3 de Bruno dice sitio y verbo)
+    const SUSTITUIDAS = new Set(['P-nota3b', 'P-turno3', 'P-acta3b']);
     for (const r of filas) {
+      if (SUSTITUIDAS.has(r.id)) continue;
       const L = lit(src(r.fichero));
       if (L.includes(r.actual) && !filas.some(o => o !== r && o.fichero === r.fichero && o.nuevo === r.actual)) malas.push(`${r.id}: sigue «${r.actual}»`);
       if (r.nuevo != null && !L.includes(r.nuevo)) malas.push(`${r.id}: falta «${r.nuevo}»`);

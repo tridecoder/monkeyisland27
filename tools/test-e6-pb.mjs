@@ -102,7 +102,8 @@ try {
   const conFrase = [];
   const walk = (d) => { for (const f of fs.readdirSync(d)) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) walk(p); else if (f.endsWith('.js') && fs.readFileSync(p, 'utf8').includes(`'${FRASE}'`)) conFrase.push(path.relative(root, p)); } };
   walk(path.join(root, 'content'));
-  ok(conFrase.length === 1 && conFrase[0].endsWith('pecera.escenas.js') && src.includes(`[A, '${FRASE}'], [A, 'Eso lo hace nuestro.']`), `la frase de Anselmo, entera y en un solo sitio (${conFrase.join(', ')})`);
+  // [bloqueos] la frase vuelve al árbol de Anselmo (pecera.dialogos.js); la escena la dice entera solo si no se oyó
+  ok(conFrase.length === 2 && conFrase.some(f => f.endsWith('pecera.escenas.js')) && conFrase.some(f => f.endsWith('pecera.dialogos.js')) && src.includes(`[A, '${FRASE}'], [A, 'Eso lo hace nuestro.']`), `la frase de Anselmo, entera, en el árbol y en la escena (${conFrase.join(', ')})`);
 
   // ====================================================================== 1. camino del registro con Yoli
   console.log('\n§2.1.4 camino del registro: Tirar enchufe con vio_ticket_3 (ratón real)');

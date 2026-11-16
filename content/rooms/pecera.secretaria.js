@@ -67,6 +67,7 @@ export const dialogoCustodia = {
             await cu(api, 'Ja.');
             await api.wait(500);              // (No se ríe. Lo dice. Es una sílaba.)
             await cu(api, 'Seis años en la web y viene a pedirme un boli para el papel.');
+            await cu(api, 'La firma de la página 7 se la gana con Teodoro, no con un boli.');   // [bloqueos] el boli no hace falta
           } },
         { text: 'Para tenerlo, por si acaso.', goto: 'CU0',
           do: async (api) => { await cu(api, '"Por si acaso" es como desaparecen ochenta y tres bolis al año.'); } },
@@ -76,6 +77,7 @@ export const dialogoCustodia = {
             await api.wait(400);
             await cu(api, ['Boli muerto, boli nuevo.', 'Tráigame el cadáver. Gastado de trabajar, no de perderlo.', 'Eso lo noto.']);
             api.setFlag('custodia_regla', true);
+            api.objetivo.foco('boli');                // [bloqueos] micropuzle opcional: la abuela y Bruno, si se pregunta
           } },
       ],
     },

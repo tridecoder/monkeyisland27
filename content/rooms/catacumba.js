@@ -341,6 +341,12 @@ async function quitarAdhesivo(api) {
   await api.face(AUR);
 }
 
+/** paso 16 · el café de Aurora (Dar o Usar). */
+async function darCafeAurora(api) {
+  if (!api.flag('acto_2_iniciado')) { await api.dialog('aurora', 'A_CAFE'); return; }
+  await aurora(api, 'Ya me he tomado uno. El segundo me vuelve amable. No te conviene.');
+}
+
 const dialogoAurora = {
   actor: AUR, start: 'A_MENU',
   nodes: {
@@ -440,8 +446,12 @@ const dialogoAurora = {
         { text: 'Íñigo dice que en la reunión van a apagar la rotativa.', if: 'acto_3_iniciado', once: true,
           do: async (api) => { await aurora(api, ['Esa reunión no decide nada sin acta.', 'Y Gervasio no ha escrito un acta en su vida.']); } },
         // E2 §5.3 · paso 32: Aurora bendice la coma y la manda por el fax de Teodoro (tecla 3)
-        { text: 'Don Evaristo pregunta si su coma está bien.', if: ['evaristo_escuchado', 'fax_con_papel', '!coma_bendecida'],
-          do: comaDeEvaristo },
+        // [bloqueos] la opción sale con Evaristo escuchado; sin papel en el fax, Aurora dice qué falta
+        { text: 'Don Evaristo pregunta si su coma está bien.', if: ['evaristo_escuchado', '!coma_bendecida'],
+          do: async (api) => {
+            if (!api.flag('fax_con_papel')) { await aurora(api, 'Su coma está bien. Pero se lo digo por fax, y ese fax no tiene papel.'); return; }
+            await comaDeEvaristo(api);
+          } },
         // ENMIENDA E4 S7 · contrapunto de papel 1: COINCIDO (Teodoro y Aurora, de acuerdo en gramática)
         { text: 'Yoli quiere sacar mi opa con «los expertos coinciden».', once: true, if: ['pieza_escrita', 'fax_con_papel'],
           do: async (api) => {
@@ -781,8 +791,14 @@ export default buildRoom({
       },
       coger: async (api) => {
         // antes del café: el golpecito, con texto (crítica §10.1.12)
-        if (!api.flag('acto_2_iniciado')) { await golpecito(api); await api.say('¡Au! Me ha corregido la mano. En rojo.'); return; }
-        if (!api.flag('custodia_regla')) { await aurora(api, '¿Un boli muerto? ¿Para qué quieres tú un cadáver, criatura?'); return; }
+        // [bloqueos] cada «no» dice qué falta: el café (Aurora) o quién pide un boli muerto (Custodia)
+        api.objetivo.foco('boli');
+        if (!api.flag('acto_2_iniciado')) {
+          await golpecito(api);
+          await api.say(api.flag('custodia_regla') ? '¡Au! Sin café, Aurora no suelta ni a sus muertos.' : '¡Au! Me ha corregido la mano. En rojo.');
+          return;
+        }
+        if (!api.flag('custodia_regla')) { await aurora(api, 'Un boli muerto solo le sirve a Custodia. Y a ti no te lo ha pedido.'); return; }
         if (!api.flag('boli_muerto_cogido')) {
           await aurora(api, 'Ese murió corrigiendo un «detrás mío». Llévatelo. Que se sepa.');
           api.give('boli_muerto');
@@ -839,10 +855,8 @@ export default buildRoom({
         mirar: 'Aurora, correctora. Tiene un boli rojo clavado en el moño. Por si acaso.',
         hablar: hablarAurora,
         // paso 16 · el café de Aurora
-        'dar:cafe': async (api) => {
-          if (!api.flag('acto_2_iniciado')) { await api.dialog('aurora', 'A_CAFE'); return; }
-          await aurora(api, 'Ya me he tomado uno. El segundo me vuelve amable. No te conviene.');
-        },
+        'dar:cafe': darCafeAurora,
+        'usar:cafe': darCafeAurora,                       // [bloqueos] «Usar café con Aurora» = Dar (antes, la genérica)
         // paso 30 · dos fuentes
         'dar:fotocopia_nota_direccion': darFuente,
         'dar:mensaje_fp': darFuente,

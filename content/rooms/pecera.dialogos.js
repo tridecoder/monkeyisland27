@@ -142,9 +142,13 @@ export default {
             do: async (api) => {
               await talk(api, [[A, 'Mucha. Para los demás departamentos.'], [A, 'Un corrector para Aurora. Notas de gasto generativas para Begoña.'],
                 ['B', '¿Y esa IA no es de fuera?']]);
-              // E5 §2.8 (M20, D19): la frase entera se oye UNA vez, en pecera_herminia_mide; aquí, el eco o la pregunta
-              if (api.flag('herminia_midio')) await api.sayAs(A, 'Ya te lo he dicho. Lo escribí yo. En mayúsculas.');
-              else await api.sayAs(A, '¿Tú de qué departamento vienes?');
+              // [bloqueos] la frase vuelve aquí (la favorita del dueño): entera la primera vez que se oye, en el árbol o en
+              // pecera_herminia_mide; si ya se oyó en la escena, el eco (D19)
+              if (api.flag('pecera_prompt_oido')) await api.sayAs(A, 'Ya te lo he dicho. Lo escribí yo. En mayúsculas.');
+              else {
+                await talk(api, [[A, 'El modelo es de fuera. El prompt es de dentro.'], [A, 'Eso lo hace nuestro.']]);
+                api.setFlag('pecera_prompt_oido', true);
+              }
             } },
           { text: '¿Qué tal con Yoli?', once: true,                 // paso 24 (heredado de Nemesio): cita la réplica de R09
             reply: ['Me dijo que mi dato de tráfico estaba «sacado de contexto».', '¿El contexto? ¿De dónde viene? De la web. No entra.',
@@ -266,7 +270,8 @@ async function columnaMal(api, via) {
       api.repaint();
       api.faceActor(A, api.player);
       await api.sayAs(A, MAL[via]);
-      if (api.inc('pecera_columna_mal_n') === 3 && !api.flag('rep_13') && !api.flag('oyo_descopear')) {
+      // [bloqueos] a la primera (antes, a la tercera): sin la frase fina, la pista va ya con el primer borrón
+      if (api.inc('pecera_columna_mal_n') === 1 && !api.flag('rep_13') && !api.flag('oyo_descopear')) {
         await api.sayAs(A, 'Tráeme algo que no sea ni hecho ni muerto. Eso no existe.');
       }
     });

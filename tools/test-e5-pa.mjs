@@ -137,7 +137,8 @@ try {
     const T = await open();
     const { G } = T;
     await G(() => __game.doVerb('hablar', 'gervasio_acta'));
-    ok(!(await opciones(G)).some(o => o.includes('siguientes pasos')), 'sin Mirar el orden del día, Gervasio no ofrece la pregunta');
+    // [bloqueos] la pregunta ya no pide Mirar el orden del día (era una puerta oculta): está siempre
+    ok((await opciones(G)).some(o => o.includes('siguientes pasos')), 'sin Mirar el orden del día, Gervasio ya ofrece la pregunta (bloqueos)');
     await cerrarDialogo(G);
     await G(() => __game.doVerb('usar', 'tele_amazonas'));
     ok(!(await logHas(G, 'wifi y rencor')) && !(await flag(G, 'sala_amazonas_atasco')) && await logHas(G, 'Celestino le narra'), 'tele antes de Gervasio: la rotación de siempre');
@@ -164,8 +165,9 @@ try {
     const s1 = await G(() => ({ st: __game.getFlag('sala_becario_sin_turno'), rt: __game.getFlag('reunion_terminada'), dlg: !!__game.game.choice }));
     ok(await logHas(G, 'Pregunta la mesa... y los conectados.') && s1.st && !s1.rt && !s1.dlg, `«…y los conectados», sin turno, sin reunion_terminada, diálogo cerrado ${JSON.stringify(s1)}`);
     ok(await logCount(G, 'Se toma nota. No la tomo yo') === 0, '`return exit`: no se gasta «Me voy.»');
-    await G(() => __game.doVerb('hablar', 'gervasio_acta'));
-    ok(!(await opciones(G)).some(o => o.includes('siguientes pasos')), 'tras el «sin turno», la opción ya no sale');
+    await G(() => { __game.clearLog(); return __game.doVerb('hablar', 'gervasio_acta'); });
+    // [bloqueos] repetida, la opción sigue y Gervasio vuelve a señalar a «los conectados»
+    ok(await G(() => __game.chooseText('siguientes pasos')) !== false && await logHas(G, 'Ya consta. Pregunta la mesa... y los conectados.'), 'tras el «sin turno», la opción sigue: «Ya consta…» (bloqueos)');
     await cerrarDialogo(G);
     await rapido(G, false);
     await clic(T, 'mirar', 'tele_amazonas');   // E7 F2: la pista, con Mirar (Usar abre el árbol de la tele)

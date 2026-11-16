@@ -140,6 +140,8 @@ const mercadosActor = (id, i) => ({
     mirar: async (api) => { await api.say(api.flag('sala_amazonas_atasco') ? MERCADOS_ENCAJADOS : MERCADOS_MIRAR[i]); },
     hablar: async (api) => {
       if (atascoAbierto(api)) { await resolverAtasco(api, 'hablar'); return; }
+      // [bloqueos] con «sin turno», Rogelio (el conectado) señala la tele
+      if (i === 1 && sinTurno(api)) { await sayMe(api, 2, 'Yo pregunto por la tele. Cuando hay señal.'); return; }
       await sayMe(api, i + 1, MERCADOS_HABLAR[i]);
     },
     empujar: async (api) => {
@@ -327,6 +329,7 @@ export default buildRoom({
         else await api.say('Para tocar el punto 3 hay que decirlo en voz alta, a quien preside.');
       },
       coger: 'Es una pantalla. Si me la llevo, la reunión me sigue a casa.',
+      'usar:ficha_pagina_7': 'La página 7 no sale en el orden del día. Se decide en el punto 3.',   // [bloqueos]
       hablar: 'Leo el punto 3 en voz baja. Fermín se estremece.',
     } },
     // §4.4: Maripaz incuba el planillo (8×3 px bajo ella). Se ve, no se coge: se negocia (D1).
@@ -363,6 +366,8 @@ export default buildRoom({
     { id: 'tele_amazonas', name: 'tele de videollamadas', states: ['normal', 'entrada_1', 'buscando', 'gertrudis'], handlers: {
       mirar: async (api) => {
         if (sinTurno(api)) { await teleBuscando(api); return; }   // E7 F2: la pista, donde se mira
+        // [bloqueos] con la pregunta ya mandada desde el Vending: que se vea que la tele es la que falta
+        if (api.flag('gertrudis_pregunta') && !api.flag('reunion_terminada')) { await api.say('«BUSCANDO SEÑAL». La pregunta de Gertrudis está esperando una pantalla.'); return; }
         if (api.getState('tele_amazonas') === 'entrada_1') await api.say('«ENTRADA 1»: el vestíbulo. Celestino retransmite.');
         else if (api.flag('acto_3_iniciado')) await api.say('Apagada. Solo el piloto rojo, en reposo. Se lo ha ganado.');
         else await api.say('Una tele de videollamadas. Pegatina: «PULSAR ENTRADA 3. NO, LA 2. NO».');
@@ -563,10 +568,18 @@ export default buildRoom({
                 await sayG(api, 'Se abre un turno de... Se abrirá. Cuando se cierre el punto tres.');
               } },
             // E5 §2.1.3: ya no termina la reunión: Gervasio le niega el turno al becario… y se lo da a «los conectados»
-            { text: 'Bueno... ¿y cuáles son los siguientes pasos?', if: ['aurora_conto_pasos', 'sala_amazonas_orden_visto', '!sala_becario_sin_turno'],
+            // [bloqueos] la opción está siempre (antes pedía el café de Aurora y Mirar el orden del día, y sin eso no
+            // salía): en el Acto I Gervasio dice qué falta (una página); repetida, vuelve a señalar a «los conectados»
+            { text: 'Bueno... ¿y cuáles son los siguientes pasos?',
               do: async (api) => {
+                if (!api.flag('aurora_conto_pasos') && !api.flag('acto_2_iniciado')) {
+                  await sayG(api, 'Los siguientes pasos los pide quien trae página. ¿Tú traes página?');
+                  return 'exit';
+                }
                 await api.wait(800);                                   // las tres cabezas se levantan y vuelven a bajar
-                await sayG(api, 'Los becarios no tienen turno. Pregunta la mesa... y los conectados.');
+                if (api.flag('gertrudis_pregunta')) await sayG(api, 'Las preguntas de los conectados entran por la pantalla, cuando hay señal.');
+                else if (api.flag('sala_becario_sin_turno')) await sayG(api, 'Ya consta. Pregunta la mesa... y los conectados.');
+                else await sayG(api, 'Los becarios no tienen turno. Pregunta la mesa... y los conectados.');
                 if (aqui(api, 'mercados_2')) api.faceActor('mercados_2', 'tele_amazonas');   // Rogelio mira la tele
                 api.setFlag('sala_becario_sin_turno', true);
                 return 'exit';                                         // no gasta «Me voy.»
