@@ -168,12 +168,12 @@ try {
     ok(!(await opciones(G)).some(o => o.includes('siguientes pasos')), 'tras el «sin turno», la opción ya no sale');
     await cerrarDialogo(G);
     await rapido(G, false);
-    await clic(T, 'usar', 'tele_amazonas');
+    await clic(T, 'mirar', 'tele_amazonas');   // E7 F2: la pista, con Mirar (Usar abre el árbol de la tele)
     await until(G, () => __game.game.getObjState('tele_amazonas').state === 'buscando', null, 8000);
     await sleep(300);
     await shot(page, 'tele-buscando');
     await rapido(G, true); await idle(G);
-    ok(await logHas(G, 'Alguien con wifi y rencor la encontraría enseguida.'), 'Usar tele con «sin turno»: «wifi y rencor»');
+    ok(await logHas(G, 'Alguien con wifi y rencor la encontraría enseguida.'), 'Mirar tele con «sin turno»: «wifi y rencor» (E7 F2)');
     await G(() => __game.doVerb('usar', 'tele_amazonas', 'movil'));
     ok(await logHas(G, 'Los once mil son de la cafetera.'), 'Usar móvil con la tele: «once mil»');
     // el puntito verde (cafetera en redes, reunión en marcha): se pinta 450 ms de cada 4 s

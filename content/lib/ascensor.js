@@ -50,7 +50,7 @@ export const FRASES = [
   'RV de Tadeo: «La IA dice que subir es lo contrario de bajar. Por si os sirve!!».',
   'Este ascensor no consta en el organigrama. Funciona igual. O por eso.',
   'Optimal Brains propone sustituirme por una escalera. Más escalable.',
-  'Si al abrir oye un gong, alguien ha vendido algo.',
+  'Si al abrir oye un gong, alguien ha vendido algo. No se asuste.',
 ];
 // negativas de los botones bloqueados (solo con el torno cerrado)
 export const NEGATIVAS = {

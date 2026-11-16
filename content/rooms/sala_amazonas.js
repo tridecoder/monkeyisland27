@@ -60,10 +60,21 @@ const TELE_E00 = 'E-00: DE NADA. ESO TAMBIÉN SE DICE.';
 /** [PA] E6 §2.3 · Hablar con la tele. Con «sin turno» (y sin la pregunta hecha en el Vending), la tele la sintoniza si se
  *  la llama como a ella: con educación (árbol `tele_sala`, opciones del Vending, literal). La vía del Vending sigue entera:
  *  con `gertrudis_pregunta`, la escena sale directamente (va antes que el árbol). */
-async function hablarTele(api) {
+// E7 F2: la ventana «sin turno» (sin la pregunta del Vending y con la reunión abierta)
+const sinTurno = (api) => !!api.flag('sala_becario_sin_turno') && !api.flag('gertrudis_pregunta') && !api.flag('reunion_terminada');
+/** E7 F2: la tele busca señal sola; la pista «wifi y rencor» pasa a Mirar y a Cerrar (literal de hoy). */
+async function teleBuscando(api) {
+  api.setState('tele_amazonas', 'buscando');
+  api.sfx('click');
+  await api.wait(1000);
+  await api.say('«BUSCANDO SEÑAL». Alguien con wifi y rencor la encontraría enseguida.');
+  api.setState('tele_amazonas', 'normal');
+}
+async function hablarTele(api, { usar = false } = {}) {
   if (api.flag('sala_amazonas_atasco')) { await api.sayFrom('tele_amazonas', CONVOCADA, GERTRUDIS_TV); return; }
   if (api.flag('gertrudis_pregunta') && !api.flag('reunion_terminada')) { await api.scene('sala_tele_gertrudis'); return; }
   if (api.flag('sala_becario_sin_turno') && !api.flag('reunion_terminada')) {
+    if (usar) { api.setState('tele_amazonas', 'buscando'); api.sfx('click'); }   // E7 F2: Usar la enciende (nieve) y abre el árbol
     await api.dialog('tele_sala');
     if (api.flag('gertrudis_pregunta')) await api.scene('sala_tele_gertrudis', { sintonizada: true });
     else api.setState('tele_amazonas', 'normal');
@@ -72,18 +83,11 @@ async function hablarTele(api) {
   await api.say(['«¿Me veis la pantalla?». La tele no contesta.', 'Es la experiencia completa.']);
   if (!api.flag('reunion_terminada') && aqui(api, 'mercados_2')) await sayMe(api, 2, 'Se te ha congelado.');
 }
-async function teleSegunTurno(api, deHoy) {
+async function teleSegunTurno(api, deHoy, { usar = false } = {}) {
   // con el atasco abierto, la tele sigue con Gertrudis: lo repite (0 líneas nuevas; no es una vía, §12.1)
   if (api.flag('sala_amazonas_atasco')) { await api.sayFrom('tele_amazonas', CONVOCADA, GERTRUDIS_TV); return; }
   if (api.flag('gertrudis_pregunta') && !api.flag('reunion_terminada')) { await api.scene('sala_tele_gertrudis'); return; }
-  if (api.flag('sala_becario_sin_turno') && !api.flag('gertrudis_pregunta') && !api.flag('reunion_terminada')) {
-    api.setState('tele_amazonas', 'buscando');
-    api.sfx('click');
-    await api.wait(1000);
-    await api.say('«BUSCANDO SEÑAL». Alguien con wifi y rencor la encontraría enseguida.');
-    api.setState('tele_amazonas', 'normal');
-    return;
-  }
+  if (sinTurno(api)) { if (usar) await hablarTele(api, { usar: true }); else await teleBuscando(api); return; }   // E7 F2
   await deHoy(api);
 }
 
@@ -244,7 +248,7 @@ async function paginaSegunComercial(api) {
   await api.detalle({ titulo: 'PÁGINA 7 · PROPUESTA DE COMERCIAL', w: 200, h: 100, draw: paginaComercial }, async (api) => {
     await sayM(api, '¿Ves esa línea gris?');
     await api.say('¿La noticia?');
-    await sayM(api, 'Se ve demasiado; estoy en ello.');
+    await sayM(api, 'Se ve demasiado. Estoy en ello.');
   });
 }
 
@@ -257,7 +261,7 @@ async function d1Siestaton(api, info = {}) {
         'Si ya duerme, no pulse. Le atenderemos en sueños.', 'Rrrrr... fiuuu... Rrrrr... fiuuu...']);
       await api.say('Me han puesto un ronquido en espera. Cuelgo y vuelvo con Maripaz.');
     } else if (n === 2) {
-      await api.phone.say(['Bienvenido otra vez. Su llamada nos importa, por eso bostezamos.', 'Rrrrr... RRRRR... fiuuu... fiuuu...']);
+      await api.phone.say(['Bienvenido otra vez. Su llamada nos importa. Por eso bostezamos.', 'Rrrrr... RRRRR... fiuuu... fiuuu...']);
       await api.say('Ahora roncan dos. Están ampliando plantilla.');
     } else {
       await api.phone.say('Le pasamos con su comercial.');
@@ -358,12 +362,13 @@ export default buildRoom({
     // E5 §2.1.5: estados `buscando` (nieve, «BUSCANDO SEÑAL») y `gertrudis` (su LCD a pantalla completa, EN DIRECTO)
     { id: 'tele_amazonas', name: 'tele de videollamadas', states: ['normal', 'entrada_1', 'buscando', 'gertrudis'], handlers: {
       mirar: async (api) => {
+        if (sinTurno(api)) { await teleBuscando(api); return; }   // E7 F2: la pista, donde se mira
         if (api.getState('tele_amazonas') === 'entrada_1') await api.say('«ENTRADA 1»: el vestíbulo. Celestino retransmite.');
         else if (api.flag('acto_3_iniciado')) await api.say('Apagada. Solo el piloto rojo, en reposo. Se lo ha ganado.');
         else await api.say('Una tele de videollamadas. Pegatina: «PULSAR ENTRADA 3. NO, LA 2. NO».');
       },
-      usar: (api) => teleSegunTurno(api, usarTele),
-      hablar: hablarTele,                           // [PA] E6 §2.3: con «sin turno», el árbol `tele_sala`
+      usar: (api) => teleSegunTurno(api, usarTele, { usar: true }),   // E7 F2: con «sin turno», Usar = Hablar
+      hablar: (api) => hablarTele(api),                           // [PA] E6 §2.3: con «sin turno», el árbol `tele_sala`
       coger: 'Atornillada. Alguien temió que la tele se fuera antes que Mercados.',
       cerrar: (api) => teleSegunTurno(api, async (api) => {
         if (api.flag('acto_3_iniciado')) await api.say('Ya está apagada. Más apagada sería una sala de espera.');
@@ -382,7 +387,7 @@ export default buildRoom({
     } },
     { id: 'caja_cables', name: 'caja de cables', when: '!acto_3_iniciado', handlers: {
       mirar: async (api) => { await api.say(['Catorce cables y siete adaptadores. Uno adapta un adaptador a otro.', 'Hay uno que encaja consigo mismo. Lo dejo así: es feliz.']); },
-      usar: (api) => teleSegunTurno(api, usarTele),   // «Usar con tele_amazonas: igual que Usar la tele»
+      usar: (api) => teleSegunTurno(api, usarTele, { usar: true }),   // «Usar con tele_amazonas: igual que Usar la tele» (E7 F2)
       coger: 'Si me llevo un cable, alguien no podrá presentar. Tentador.',
       abrir: 'Ya está abierta. Cierro la tapa y un cable me saluda por el hueco.',
       tirar: 'Tiro de un cable. Sale otro. Y otro. Es un truco de magia sin final.',
@@ -445,8 +450,8 @@ export default buildRoom({
       handlers: {
         mirar: async (api) => {
           if (api.flag('lector_derribado')) await api.say([BOCA_ABAJO, 'Por detrás: «Atrezo – Focus group 2014».']);
-          else if (api.flag('chaqueta_en_lector')) await api.say('Junto a la pantalla, el Lector Medio, con la chaqueta de Ramírez, asintiendo.');
-          else await api.say('Junto a la pantalla, el Lector Medio, asintiendo.');
+          else if (api.flag('chaqueta_en_lector')) await api.say('Junto a la pantalla, el Lector Medio, con la chaqueta de Ramírez. Asiente.');
+          else await api.say('Junto a la pantalla, el Lector Medio. Asiente.');
         },
         hablar: async (api) => {
           if (api.flag('lector_derribado')) { await api.say(BOCA_ABAJO); return; }
@@ -460,7 +465,7 @@ export default buildRoom({
           if (!api.flag('duelo_inigo_ganado') || !climaxActivo(api)) { await api.say('Todavía no. Primero, por escrito.'); return; }
           await api.scene('climax_empujon');
         },
-        coger: 'Lo levanto un poco. Pesa lo que un folio, y asiente igual.',
+        coger: 'Lo levanto un poco. Pesa lo que un folio. Asiente igual.',
         tirar: 'No tiro de la chaqueta de Ramírez. Aún tiene que volver a por ella.',
         // [PA] E6 §4.3: «Usar adhesivo» → defecto (la del celo se queda en Despachos)
         'dar:*': 'Se lo enseño. Asiente. Antes le ha asentido al proyector.',
@@ -540,7 +545,7 @@ export default buildRoom({
               do: async (api) => {
                 await sayG(api, 'La página 7 se... Eso habría que... Tú, que tienes la agenda limpia...');
                 await api.say('¿...que tengo la agenda limpia para qué?');
-                await sayG(api, 'Para eso. Muy bien visto, se toma nota.');
+                await sayG(api, 'Para eso. Muy bien visto. Se toma nota.');
               } },
             { text: '¿Puedo presidir yo un rato?', once: true,
               do: async (api) => {

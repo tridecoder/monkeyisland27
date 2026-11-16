@@ -240,7 +240,7 @@ try {
   ok(!(await flag('rep_15')), 'sin R15 antes de Brais');
   await setFlags({ ruben_encontrado: true });
   for (let i = 0; i < 4; i++) await verb('mirar', 'portatil_tadeo');
-  ok((await flag('rep_15')) === true && await logHas('Tadeo no lo ha leído; yo, sí.') === 1 && await logHas('Me la apunto') === 0, 'R15 con Brais; sin «Me la apunto»');
+  ok((await flag('rep_15')) === true && await logHas('Tadeo no lo ha leído. Yo sí.') === 1 && await logHas('Me la apunto') === 0, 'R15 con Brais; sin «Me la apunto»');
   await setFlags({ ruben_encontrado: false });
   await shot('marketing');
 
@@ -329,7 +329,7 @@ try {
     const { d } = await duranteDetalle(() => choose('¿Qué hace usted con el planillo?'), { titulo: 'PÁGINA 7 · PROPUESTA DE COMERCIAL', texto: '¿La noticia?', esperaMs: 400, shotName: 'pagina7' });
     ok(!!d, 'plano detalle: PÁGINA 7 · PROPUESTA DE COMERCIAL');
   }
-  ok(await logHas('Se ve demasiado; estoy en ello.') === 1, '«Se ve demasiado; estoy en ello.»');
+  ok(await logHas('Se ve demasiado. Estoy en ello.') === 1, '«Se ve demasiado. Estoy en ello.» (E7 E183)');
   await choose('¿Y si la gente no quiere anuncios?');
   ok(await logHas('No la encuentran.') === 1, '«No la encuentran.»');
   await choose('Luego vuelvo.');

@@ -95,7 +95,7 @@ export default {
             reply: ['Mi IA. La hice yo, en tres fines de semana.', 'Hace sola las infografías de la casa. Papel, web y redes.',
               'Mejor que todo mi departamento. Me incluyo.', 'Me duele, pero me incluyo.'] },
           { text: '¿Y tu departamento?', once: true,
-            reply: ['Se fue a las seis y media. Herminia no ficha.', 'Dejaron las chaquetas en las sillas, mirándola, por respeto.',
+            reply: ['Ficharon y se fueron. Herminia no ficha.', 'Dejaron las chaquetas en las sillas, mirándola.',
               'Yo ya no dibujo. Superviso. Que es mirarla con orgullo.'] },
           { text: '¿Por qué no se publica lo que hace?', once: true,
             reply: ['Porque Anselmo no la integra. Dice que no ha pasado por Desarrollo.',
@@ -113,7 +113,7 @@ export default {
           { text: '¿Y si Herminia te sustituye a ti también?', once: true,
             reply: ['Ya lo ha hecho. En septiembre. No se lo he dicho a nadie.', 'Ni a ella. Es muy sensible a los datos.'] },
           { text: 'El Titulator era un becario.', once: true, if: 'ruben_encontrado',
-            reply: ['Lo sé. Ella lo dijo a las ocho y veinte, en barras.', 'Nadie mira las barras. Para eso existo yo.'] },
+            reply: ['Lo sé. Ella lo dijo a las ocho y veinte. En barras.', 'Nadie mira las barras. Para eso existo yo.'] },
           { text: '¿Qué tal ahora con Anselmo?', if: 'infografia_integrada',
             reply: 'Me han absorbido en plataforma. Sigo aquí, supervisando desde Desarrollo.' },
           { text: 'Me voy.', exit: true, reply: 'Cuidado con la cinta. Se ha movido desde que has llegado.' },
@@ -205,7 +205,7 @@ export default {
             do: async (api) => talk(api, [['D2', '¡No gritamos!'], ['D1', '¡Es que juntos no nos oímos!'],
               [A, 'Juntos son un incendio. Por separado, santos.']]) },
           { text: '¿Con quién estáis enfadados?', once: true,
-            do: async (api) => talk(api, [['D1', 'Con el navegador, con los lectores y con la lluvia.'], ['D2', 'Con el de al lado.'],
+            do: async (api) => talk(api, [['D1', 'Con el navegador. Con los lectores. Con la lluvia.'], ['D2', 'Con el de al lado.'],
               ['D1', '¡Con el de al lado no!'], ['D2', '¡Pues ahora sí!']]) },
           { text: 'El CMS lo he arreglado yo.', once: true, if: 'cms_vivo',
             do: async (api) => talk(api, [['D2', 'Lo hemos arreglado nosotros.'], ['B', 'He desenchufado una pantalla.'], ['wait', 900],
@@ -308,8 +308,7 @@ async function salida(api, via) {
           'La frase la escribió Brais. Brais tenía alta. ...Entonces es de la casa.']);
       } else await api.sayAs(A, 'Descopear. Quitar sin que se note. Eso es infraestructura.');
       api.setState('coro_desarrollo', null);
-      await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Eutimio.',
-        'Y en nuestros corazones, Brais está en HECHO.']);
+      await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Eutimio.']);
       // (Tin. El ascensor se abre. Vacío. En el suelo, un papel.)
       api.sfx('beep');
       await api.wait(400);
@@ -325,7 +324,7 @@ async function salida(api, via) {
       if (api.flag('taper_dado')) api.sostener(R, 'taper_huerfano');
       await api.walkActor(R, 1258, 114);
       api.faceActor(R, 'up');
-      await talk(api, [[R, 'Eutimio ha mandado primero el papeleo, por procedimiento.'],
+      await talk(api, [[R, 'Eutimio ha mandado primero el papeleo. Es el procedimiento.'],
         [R, 'Estoy esperando a que salga el sol. Me han dicho que existe.']]);
       // (La pantalla de Anselmo cambia sola: «ACCESO REVOCADO: TITULATOR 3000».) En plano: tablero, pantalla e Infografía.
       api.cameraTo(960);
@@ -333,18 +332,19 @@ async function salida(api, via) {
       api.repaint();
       await api.wait(500);
       api.faceActor(A, 'right');
-      await talk(api, [[A, 'Revocado. Fecha: hoy. Efectos: julio.'],
-        [L, 'Integró una IA que era un becario. Y rechaza una IA que es una IA.']]);
+      await talk(api, [[A, 'Revocado. Fecha: hoy. Efectos: julio.']]);   // E7 F6 (a): primer tiempo
       // (Anselmo mira el portátil envuelto. Da un paso hacia Infografía.)
       api.cameraTo(840);
       await api.walkActor(A, TABLERO_X - 20, TABLERO_Y - 2);
       api.faceActor(A, 'left');
-      await api.sayAs(A, 'Nos hemos quedado sin IA de la casa.');
+      await api.sayAs(A, 'Nos hemos quedado sin IA de la casa.');   // E7 F6: se queda (el gesto no se lee seguro a 320×200)
+      // (Mira el portátil, aparta la vista, lo vuelve a mirar.)
+      api.faceActor(A, 'right'); await api.wait(700); api.faceActor(A, 'left'); await api.wait(400);
       // (Leoncio pone las dos manos encima del paquete. No dice nada.)
       api.faceActor(L, 'up');
       await api.anim(L, 'reach', 1500);
       await talk(api, [['H', 'alta de usuario: no · propietaria: Infografía']]);
-      await api.sayAs(A, '...Lo miro en la próxima versión.');
+      await api.wait(600);                           // E7 F6: Anselmo se va sin decir nada
       // (Anselmo vuelve a su sitio.)
       api.faceActor(L, 'down');
       api.cameraFollow();

@@ -19,8 +19,9 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   silla: 'Necesito sentarme. Seis años de pie: tengo rodillas de becario senior.',
   correo: 'Tengo silla. Ya puedo mirar mi ordenador como un adulto.',
   cafe: 'La correctora no habla antes del café. Necesito un café que no sea para mí.',
-  cms: 'Arriba no me atiende nadie mientras el CMS no vaya.',   // E5 C71
+  cms: 'Con el CMS caído, en Sistemas no atienden a nadie.',   // E5 C71
   hff: 'Hueco, fuente y firma. Lo pone la ficha.',
+  nota: 'Teodoro no habla sin papel. Y en esta casa no queda un folio sin sellar.',   // E7 F1 (N6)
   cierre: 'Lo tengo todo. Solo falta que Teodoro diga «cabe».',
   acto3: 'A las nueve apagan la rotativa. Y alguien teclea en el armario 27.',
   // [integrador] con Rubén ya fuera del armario, la línea del armario 27 se queda vieja (álbum y baja)
@@ -73,17 +74,17 @@ export const OBJETIVOS = [
   { id: 'turno', acto: 2, hecho: 'reunion_terminada', activo: 'sala_becario_sin_turno', salas: ['sala_amazonas', 'office', 'pecera'], meta: M.turno, niveles: [
     'Si a ti no te dejan preguntar, que pregunte alguien que salga en la tele.',
     'Esa cafetera tan educada sale en todas las pantallas, hijo. Hasta en la mía.',
-    ['A esa tele dale las buenas noches, como a la cafetera, y pregúntale.', 'Hablar con la tele: «Buenas noches, Gertrudis». Y lo de los pasos.']],
+    ['A esa tele dale las buenas noches, como a la cafetera, y pregúntale.', 'La tele: «Buenas noches, Gertrudis». Y lo de los pasos.']],
     previa: { si: 'gertrudis_pregunta', nivel: 1, abuela: 'La cafetera ya lo ha mandado. Ahora alguien tiene que sintonizarla.' } },
   { id: 'hueco', acto: 2, hecho: 'casilla_hueco', activo: 'reunion_terminada', salas: ['sala_amazonas'], meta: M.hff, niveles: [
     'La que se queda sentada es que quiere que le hables.',
     'Si alguien tiene algo apartado y no lo usa, ya no es suyo.',                                 // E2 §8 / §10.3
     ['Díselo por escrito, que es como se dicen las cosas.', 'A Maripaz: «Siestatón no ha confirmado la página 7».']],
     duelo: 'maripaz' },                                                   // N1: dónde está cada réplica que falta
-  { id: 'nota', acto: 2, hecho: 'nota_gasto_presentada', activo: 'acto_2_iniciado', salas: ['ecosistema', 'administracion'], meta: M.hff, niveles: [
-    '¿Has hecho la cuenta de gastos? Hazla mal. Te enseñan una buena.',
-    'La de la ventanilla enseña las buenas si le das una mala.',
-    ['Presenta una cuenta mal hecha. Lo que lleves en el bolsillo te vale.', 'Nota de gasto a Begoña, con el azúcar de justificante.']] },
+  { id: 'nota', acto: 2, hecho: 'nota_gasto_presentada', activo: 'acto_2_iniciado', salas: ['catacumba', 'ecosistema', 'administracion'], meta: M.nota, niveles: [   // E7 F1
+    'En las oficinas sin papel siempre hay una que lo gasta en decir que no.',
+    '¿Has hecho la cuenta de gastos? Hazla mal, que las malas vuelven con copia.',
+    ['Lo que lleves en el bolsillo vale de justificante. Y pídele una bien hecha.', 'Nota de gasto a Begoña, con el azúcar. Y que me enseñe una bien hecha.']] },
   // E2 §10.3 · paso 28: escuchar a Evaristo hasta el final (Administración)
   { id: 'coma', acto: [2, 3], hecho: 'evaristo_escuchado', activo: 'nota_gasto_presentada', salas: ['administracion', 'ecosistema'], meta: M.coma, niveles: [
     'A los mayores hay que dejarlos acabar, hijo. Lo bueno lo dicen al final.',
@@ -142,8 +143,8 @@ export const OBJETIVOS = [
     extra: { si: ['!rep_13', '!oyo_descopear'], abuela: 'Pero antes pregúntale al chico por los discursos de ese señor.' } },
   { id: 'acta', acto: 3, hecho: 'sala_abierta', activo: 'acto_3_iniciado', salas: ['pajarera'], meta: M.acta, niveles: [
     'En una reunión manda el que escribe el acta. Que la escriba otro.',
-    'El de la puerta quiere un acta. Y que no se sepa con quién comió.',
-    ['Gánale al de la puerta y enséñale su cuenta de la comida.', 'Duelo con Gervasio. Remate: su nota.']], duelo: 'gervasio' },
+    'A ese señor no le pises las frases, hijo. Espera a que se le acaben.',
+    ['Cuando deje de escribir, contéstale. Y al final, su cuenta de la comida.', 'Gervasio: esperar a que acabe de escribir. Remate: su nota de la comida.']], duelo: 'gervasio' },
   { id: 'inigo', acto: 3, hecho: 'duelo_inigo_ganado', activo: 'sala_abierta', salas: ['sala_amazonas'], meta: M.climax, niveles: [
     'A los que hablan mucho se les contesta corto.',
     'Cuando pida papeles, dale lo del chico, lo de la reunión y lo de las comas.',                   // E2 §10.3
@@ -166,7 +167,7 @@ export function actoActual(api) {
  *  Si cambia dónde se aprende una réplica (content/flags.js, descripción de `rep_XX`), se cambia aquí. */
 export const DONDE = {
   rep_01: ['En el cuarto del café hay un corcho con cartas. Léelo, que es gratis.', 'Vending: Mirar el tablón. El hilo del yogur.'],
-  rep_02: ['La del boli rojo y el del fax no se hablan; pregúntale por qué.', 'Redacción de papel: a Aurora, por qué no se habla con Teodoro.'],
+  rep_02: ['La del boli rojo y el del fax no se hablan. Pregúntale por qué.', 'Redacción de papel: a Aurora, por qué no se habla con Teodoro.'],
   rep_03: ['La cafetera esa cuenta chismes si la saludas, hijo.', 'Vending: «Buenas noches, Gertrudis», el primer chisme.'],
   rep_04: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
   rep_05: ['El del mostrador de abajo sabe lo que se dice en el ascensor.', 'Vestíbulo: a Celestino, «¿Algún cotilleo?».'],
@@ -176,8 +177,8 @@ export const DONDE = {
   rep_09: ['Pregúntale al del tablero cómo se lleva con la chica de los números.', 'Redacción: a Anselmo, «¿Qué tal con Yoli?».'],
   rep_10: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
   rep_11: ['Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar.', 'Redacción: mi ordenador, sentado. Ramírez espera mis comentarios.'],
-  rep_12: ['El de los cables sabe cosas del señor del traje; pregúntale.', 'Sistemas, con el CMS vivo: a Eutimio, «¿Algún cotilleo del consultor?».'],
-  rep_13: ['El chico del armario escribía los discursos; pregúntale.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».'],
+  rep_12: ['El de los cables sabe cosas del señor del traje. Pregúntale.', 'Sistemas, con el CMS vivo: a Eutimio, «¿Algún cotilleo del consultor?».'],
+  rep_13: ['El chico del armario escribía los discursos. Pregúntale.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».'],
   rep_14: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
   rep_15: ['Pregúntale al chico del armario por los correos de ese Tadeo.', 'Sistemas: a Brais, «¿Te llegaban correos de Tadeo?».'],
   rep_16: ['Al señor de las comas, escúchale hasta el final.', 'Administración: escuchar entero a Evaristo. «¿De qué trata?» y «Siga».'],

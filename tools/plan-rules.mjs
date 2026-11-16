@@ -307,7 +307,7 @@ const FUERA_MUSICA = /[\\/]music\.js$/;
 /** TOPES_E6_JUEGO (mismas cadenas que TOPES_E5_JUEGO, + `fuera` de music.js). `test`: función en lugar de `re`;
  *  `pct`: tope sobre el total de cadenas del mismo filtro (`base`). */
 export const TOPES_E6_JUEGO = [
-  { test: esRemateSeco, pct: 0.165, fuera: FUERA_MUSICA, txt: 'remate seco (E6 §8): ≤ 16,5 % de las cadenas' },      // 20,2 % → 14,4 %
+  { test: esRemateSeco, pct: 0.179, fuera: FUERA_MUSICA, txt: 'remate seco (E6 §8, E7): ≤ 17,9 % de las cadenas' },  // 20,2 % → 14,4 % (E6) → 16,4 % (E7 §7: real + 1,5)
   { re: /t[áa]per/i, porCadena: true, max: 17, txt: '«táper» (E6 §8)' },                                             // 32 → 17
   { re: /\b(?:19|20)\d\d\b/, porCadena: true, max: 35, fuera: FUERA_MUSICA, txt: 'año 19xx/20xx (E6 §8)' },         // 64 → 33
   { re: /Huele a 2019/, porCadena: true, max: 1, txt: '«Huele a 2019» (E6 §8)' },                                    // 3 → 1
@@ -315,9 +315,26 @@ export const TOPES_E6_JUEGO = [
   { re: /Lo que diga el Lector Medio/, porCadena: true, max: 5, txt: '«Lo que diga el Lector Medio» (E6 §8)' },      // 7 → 5
   { re: /Era solo eso/, porCadena: true, max: 5, txt: '«Era solo eso» (E6 §8)' },                                    // 7 → 5
 ];
-/** Aviso (no fallo, E6 §8): remate seco por fichero de sala > 22 % (salvo Eventos y los datos del titulador). Rev. 2: la
- *  peor queda en 21,9 % (ecosistema.js); el aviso salta si una sala vuelve a pasar del 22 %. */
-export const REMATE_SALA_AVISO = { pct: 0.22, fuera: /eventos|titulador\.datos/ };
+/** Aviso (no fallo, E6 §8): remate seco por fichero de sala > 26 % (salvo Eventos y los datos del titulador). E6 rev. 2
+ *  lo dejaba en 22 % (peor, 21,9 %); con la restauración de E7 (§7) la peor es ecosistema.js (24,6 %) y el aviso pasa a 26 %. */
+export const REMATE_SALA_AVISO = { pct: 0.26, fuera: /eventos|titulador\.datos/ };
+/** ENMIENDA E7 §7 · aviso (nunca fallo): remate seco por PERSONAJE sobre las líneas OÍDAS [{ who, text, room }] (sin
+ *  Eventos): quien diga ≥ 20 líneas distintas y pase del 30 % de `esRemateSeco`. Fuera el fax (Teodoro: es formato),
+ *  el Lector Medio y los avisos. Con E7, el más alto es Gervasio (≈ 26 %). */
+export const REMATE_PERSONAJE_AVISO = { minimo: 20, max: 0.30, fuera: ['fax', 'lector_medio', 'aviso'] };
+export function rematePorPersonaje(lines) {
+  const por = new Map();
+  for (const l of lines) {
+    if (!l.who || !l.text || l.room === 'eventos' || REMATE_PERSONAJE_AVISO.fuera.includes(l.who)) continue;
+    const p = por.get(l.who) || { who: l.who, vistas: new Set(), rem: 0 };
+    if (p.vistas.has(l.text)) continue;
+    p.vistas.add(l.text); if (esRemateSeco(l.text)) p.rem++;
+    por.set(l.who, p);
+  }
+  return [...por.values()].map(p => ({ who: p.who, n: p.vistas.size, rem: p.rem, pct: p.rem / Math.max(1, p.vistas.size) }))
+    .map(p => ({ ...p, pasa: p.n >= REMATE_PERSONAJE_AVISO.minimo && p.pct > REMATE_PERSONAJE_AVISO.max }))
+    .sort((a, b) => b.pct - a.pct);
+}
 /** Sobre el CÓDIGO (sin comentarios), no sobre cadenas: «D3: No.» ≤ 6 (cuenta ['D3', 'No.'] y ['D3', '...No.']). */
 export const TOPES_E6_FUENTE = [
   { re: /\[\s*'D3'\s*,\s*'(?:\.\.\.)?No\.'\s*\]/g, max: 6, ficheros: /content[\\/]rooms[\\/]pecera/, txt: '«D3: No.» (E6 §8)' },   // 12 → 6
@@ -392,7 +409,7 @@ export function topesE6Juego(root, salas = null) {
 /** Recuento de cada tope de E6, pase o no (text-audit --estatico --recuento). */
 export const recuentoE6Juego = (root) => [...cuentaE6(root), ...cuentaE6Fuente(root)].map(T => ({
   txt: T.txt, n: T.hits.length, max: T.pct != null ? `${pctTxt(T.pct * 100, 100)} (${T.hits.length} de ${T.base} = ${pctTxt(T.hits.length, T.base)})` : T.max }));
-/** Aviso: remate seco por fichero de sala (content/rooms/, sin art/) por encima del 22 %. Devuelve también la tabla entera
+/** Aviso: remate seco por fichero de sala (content/rooms/, sin art/) por encima del 26 % (E7). Devuelve también la tabla entera
  *  para el recuento: [{ rel, n, rem, pct, pasa }]. `salas`: solo los ficheros de esas salas. */
 export function rematePorSala(root, salas = null) {
   const por = new Map();

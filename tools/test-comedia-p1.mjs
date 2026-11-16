@@ -339,13 +339,13 @@ try {
   await clearLog();
   await hablar('paco_ticket');
   await opcion('¿Me das de alta a una becaria? Se llama Herminia.');
-  await capturar(() => { __game.chooseText('Herramienta.'); }, [['Esta casa da de alta antes', 'alta-paco'], ['¿CUARENTA SEGUNDOS?', 'alta-herminia']]);
+  await capturar(() => { __game.chooseText('Herramienta.'); }, [['Herramientas, por el otro circuito', 'alta-paco'], ['¿CUARENTA SEGUNDOS?', 'alta-herminia']]);
   await closeDialog();
   await expectFlags({ herminia_de_alta: true, cpd_ruben_oyo_alta: true }, 'MP1');
   await expectLog(['Herramientas, por el otro circuito, el rápido.', '«Herminia. Becaria de Desarrollo. Herramienta.» Estado: de la casa.',
-    'Esta casa da de alta antes a un portátil que a un chaval.', 'Yo también soy herramienta.'], 'MP1 E1.5 + E2 L16 + E5 C73');
+    'Yo también soy herramienta.'], 'MP1 E1.5 + E5 C73');
   await expectNoLog(['Sin pegatina.'], 'E5 C73');
-  must((await logWho('Esta casa da de alta antes')) === 'paco_ticket', 'E2 L16: la línea no la dice Eutimio');
+  await expectNoLog(['Esta casa da de alta antes a un portátil que a un chaval.'], 'E7 EXP-1: fuera la explicación (Brais la paga)');
   await expectNoLog(['Lo apunto en «injusticias».', 'Me lo apunto.'], 'E2 §7.2 / L16');
   ok('Brais §5.12: rep_13, rep_15 (R15 nueva), táper → taper_dado; MP1 «Herramienta.» → herminia_de_alta con Brais');
 

@@ -306,11 +306,14 @@ try {
   console.log('\n§4.1 Filas de cpd.js y vestibulo.js (tabla.mjs)');
   const { T, TUMBADAS } = await import('../docs/guion2/e6/tabla.mjs');
   const leer = (f) => fs.readFileSync(path.resolve(here, '../content', f), 'utf8');
-  const filas = T.filter(r => /rooms\/(cpd|vestibulo)\.js$/.test(r[0]));
+  // ENMIENDA E7 (tabla_e7.mjs) restaura o cambia algunas de estas filas: las que E7 sustituye ya no son de E6
+  const E7 = new Set((await import('../docs/guion2/e7/tabla_e7.mjs')).filas.map(r => r.fichero + '|' + r.actual));
+  const filas = T.filter(r => /rooms\/(cpd|vestibulo)\.js$/.test(r[0]) && !E7.has(r[0] + '|' + r[2]));
+  const deE7 = T.filter(r => /rooms\/(cpd|vestibulo)\.js$/.test(r[0])).length - filas.length;
   const q = (t) => "'" + t.replace(/'/g, "\\'") + "'";
   const malA = filas.filter(r => leer(r[0]).includes(q(r[1])));
   const malN = filas.filter(r => r[2] !== null && !leer(r[0]).includes(q(r[2])));
-  ok(filas.length === 43 && !malA.length, `${filas.length} filas: ninguna «actual» queda${malA.length ? ': ' + malA.map(r => r[4]).join(', ') : ''}`);
+  ok(filas.length + deE7 === 43 && !malA.length, `${filas.length} filas (+ ${deE7} que cambia E7): ninguna «actual» queda${malA.length ? ': ' + malA.map(r => r[4]).join(', ') : ''}`);
   ok(!malN.length, `todas las «nuevas» están${malN.length ? ': faltan ' + malN.map(r => r[4]).join(', ') : ''}`);
   const tumb = TUMBADAS.filter(r => /rooms\/(cpd|vestibulo)\.js$/.test(r[0]));
   const malT = tumb.filter(r => !leer(r[0]).includes(q(r[1])));

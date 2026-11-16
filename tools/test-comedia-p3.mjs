@@ -213,7 +213,7 @@ try {
   await R.run(['dar', 'cafe', 'aurora_galerada']); await R.run(['cerrar']); await idle();
   await R.check({ tiene: ['ficha_pagina_7'], flags: ['aurora_conto_pasos', 'aurora_hablo_fax', 'acto_2_iniciado'], notiene: ['cafe'] });
   ok(await logHas('el punto que nadie toca') && await logHas('ACTO II: HUECO, FUENTE, FIRMA'), 'paso 16: ficha, aurora_hablo_fax (ahora en A_CAFE), Acto II');
-  ok(await logHas('Ahí lo tienes, por casillas.') && !(await logHas('la pausa era miedo')) && !(await logHas('desde marzo')), '§7.3: Aurora tras el café, recortada');
+  ok(await logHas('Toma la ficha de la página 7. Ahí lo tienes todo, en casillas.') && !(await logHas('la pausa era miedo')) && !(await logHas('desde marzo')), '§7.3: Aurora tras el café, recortada');
   await R.run(['verbo', 'hablar', 'aurora_galerada']); await R.run(['opcion', '¿Por qué no se hablan usted y Teodoro?']); await R.run(['cerrar']); await idle();
   ok(await flag('rep_02') === true && await flag('rumor_teodoro_n') === 1, 'paso 17: rep_02 (+ rumor C1)');
   await R.run(['verbo', 'mirar', 'fax_enmarcado']);

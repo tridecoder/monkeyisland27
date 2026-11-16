@@ -180,7 +180,7 @@ try {
       await G(() => __game.clearLog()); await G(([v, o, i]) => __game.doVerb(v, o, i), [verbo, id, item]);
       const L = await log(G); ok(L.some(l => l.includes(esperado)), `${verbo} ${id}: «${esperado}»`);
     };
-    await dice('usar', 'pizarra_sinergia', null, 'Debajo escribo «¿Y qué es?». Se borra solo.');
+    await dice('usar', 'pizarra_sinergia', null, 'Debajo escribo «¿Y qué es?». Se borra solo. Por vergüenza.');   // E7 E286
     await dice('coger', 'lema_enmarcado', null, 'Si lo descuelgo, detrás habrá un módulo.');
     await dice('abrir', 'impresora_tercera', null, 'Dentro hay un folio que pone «PRUEBA».');
     await dice('coger', 'rollup_comercial', null, 'El roll-up no se toca: está contratado.');
@@ -213,12 +213,13 @@ try {
     const L = await log(G);
     ok(L.some(l => l.endsWith('Si tiene prisa, se lo pongo por escrito.')), 'B9: sale «Si tiene prisa, se lo pongo por escrito.»');
     ok(!L.some(l => /mirado el reloj/.test(l)), 'B9: «Le he mirado el reloj y se ha dado cuenta.» ya no se dice');
+    ok(await G(() => __game.log.some(l => l.who === 'aviso' && l.text === 'Correo nuevo de Evaristo Salvedad: «Una cosita (1 de 3)».')), 'E7 F4: el aviso del correo de Evaristo, en el log');
     ok(L.some(l => l.includes('Pase un segundo, que es una cosita muy pequeña.')), 'E322: «Pellejo, con jota. Pase un segundo, que es una cosita muy pequeña.»');
     await shot(page, 'administracion');
     await ctx.close();
   }
   const src = fs.readFileSync(path.resolve(here, '../content/rooms/administracion.dialogos.js'), 'utf8');
-  ok(/await api\.anim\(api\.player, 'reach', 400\);[^\n]*\n\s*await sayEv\(api, 'Si tiene prisa/.test(src), 'B9: el gesto (anim reach, 400) va justo antes de «Si tiene prisa…»');
+  ok(/await api\.anim\(api\.player, 'reach', 700\);[^\n]*\n\s*await sayEv\(api, 'Si tiene prisa/.test(src), 'B9 (E7 F4: 700 ms): el gesto va justo antes de «Si tiene prisa…»');
 } catch (e) {
   failures++; console.log('  ✗ excepción: ' + (e && e.stack || e));
 } finally {

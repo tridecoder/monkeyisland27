@@ -298,6 +298,11 @@ async function duelMouse(seq) {
     if (st.pickItem) { await clickInventory(seq[i - 1].objeto); continue; }
     if (!st.dialog) { void s; continue; }
     const want = seq[i];
+    // E7 `aTiempo` (D3): Gervasio escribe a trozos; contestar antes de que acabe le corta. Se espera a que termine.
+    if (st.duel.phase === 'reply' && st.duel.escribiendo) {
+      if (!(await hastaQue(() => { const d = __game.state().duel; return !d || !d.escribiendo; }, 20000))) fail('el rival no acaba de escribir');
+      continue;
+    }
     if (st.duel.phase === 'reply') {
       // E6 §6.7: 'R09:larga' elige la réplica larga (no cabe: se repite el ataque, sin fallo); 'R09', la corta si la hay
       const [wid, modo] = want.split(':');

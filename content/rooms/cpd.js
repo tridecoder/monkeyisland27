@@ -308,7 +308,6 @@ const pacoDialog = {
             api.sfx('beep');
             await api.sayAs(P, '«Herminia. Becaria de Desarrollo. Herramienta.» Estado: de la casa.');
             api.setFlag('herminia_de_alta', true);
-            await api.sayAs(P, 'Esta casa da de alta antes a un portátil que a un chaval.');   // E2 L16
             if (rubenAqui(api)) {
               api.faceActor(R, 'bruno');
               await api.sayAs(R, '¿CUARENTA SEGUNDOS? ...Perdón. Yo también soy herramienta.');
@@ -408,7 +407,7 @@ export default buildRoom({
 
   objects: [
     ascensorObjeto('ascensor_cpd', {
-      mirar: 'El ascensor. En el sótano, el «tin» suena más bajito, por respeto.',
+      mirar: 'El ascensor. En el sótano, el «tin» suena más bajito. Por respeto.',
       cerrar: 'Se cierra solo. Lo programó Eutimio. Tiene número de incidencia.',
       empujar: 'No. Si lo empujo, Eutimio lo apunta como «impulso no autorizado».',
       hablar: '«Subo». No contesta. Pero sube. Ya es más que la mayoría.',
@@ -418,8 +417,8 @@ export default buildRoom({
       abrir: 'Cerrados. Treinta y nueve zumban. El 27 mastica.',
       hablar: 'Les hablo. Me contestan en mi bemol. Es más de lo que hace mucha gente.',
       empujar: 'Empujo uno. Eutimio carraspea. Paro, y Eutimio para.',
-      coger: 'Pesan como un servidor, porque son servidores.',
-      tirar: 'Tiro de un cable. Eutimio carraspea a seis metros y lo suelto.',
+      coger: 'Pesan como un servidor. Porque son servidores.',
+      tirar: 'Tiro de un cable. Eutimio carraspea a seis metros. Lo suelto.',
     } },
     { id: 'armario_27', name: 'armario 27', state: 'cerrado', states: ['cerrado', 'entreabierto', 'abierto', 'vacio'], handlers: {
       mirar: async (api) => {
@@ -471,7 +470,7 @@ export default buildRoom({
       mirar: mirarRegletero,
       tirar: usarRegletero,
       usar: usarRegletero,
-      empujar: 'La empujo con el pie. El piloto ni parpadea: tiene brida.',
+      empujar: 'La empujo con el pie. El piloto ni parpadea. Tiene brida.',
       coger: 'Tiene brida. No me la llevo. Pero el enchufe no tiene brida.',
       abrir: 'No se abre. Dentro solo hay corriente. Y no es la mía.',
       cerrar: async (api) => { await api.say(api.getState('regleta_r3') === 'apagada' ? '¿Volver a encenderla? Arriba ya se han acostumbrado.' : 'Ya está cerrado. Cinco bridas lo dicen.'); },
@@ -492,29 +491,29 @@ export default buildRoom({
     } },
     { id: 'libro_visitas', name: 'libro de visitas', handlers: {
       mirar: async (api) => {
-        if (api.flag('ruben_libre')) await api.say(['Libro de visitas de Sistemas: «Brais. Entrada: julio. Salida: hoy».', 'La salida, con letra de Eutimio, apretando mucho.']);
+        if (api.flag('ruben_libre')) await api.say(['Libro de visitas de Sistemas: «Brais. Entrada: julio. Salida: hoy».', 'La salida, con letra de Eutimio. Apretando mucho.']);
         else await api.say('Libro de visitas de Sistemas: «Brais. Entrada: julio. Salida: —».');
       },
       usar: 'Firmo: «Bruno. Entrada: 2020. Salida: —».',
       coger: 'Si me lo llevo, Eutimio no sabe quién ha venido. Que es nadie, pero apuntado.',
       abrir: 'Ya está abierto. Por la misma página.',
-      cerrar: 'Si lo cierro, Brais no sale ni en el libro.',
+      cerrar: 'Si lo cierro, Brais no sale ni en el libro. Lo dejo abierto.',
     } },
     { id: 'contador_tickets', name: 'contador de tickets', handlers: {
       mirar: async (api) => { await api.say(`TICKETS ABIERTOS: ${miles(api.flag('paco_tickets'))}. Sube cada vez que respiro. Lo he comprobado.`); },
-      usar: 'No tiene botones. Sube uno cada vez que entro: soy una incidencia.',
+      usar: 'No tiene botones. Sube uno cada vez que entro. Soy una incidencia.',
       empujar: async (api) => { api.inc('paco_tickets'); api.sfx('beep'); await api.say('Lo empujo. Sube uno. Me lo apunta a mí.'); },
       hablar: 'Le pido que baje. Sube. Es su forma de decir que no.',
       coger: 'Ocho tornillos para un contador. A mí me sujetan con un convenio.',
     } },
     { id: 'registro_tickets', name: 'registro de tickets', handlers: {
       mirar: async (api) => {
-        await api.say([api.flag('ruben_libre') ? 'Ticket nº 1, julio: «Alta becario Brais». Estado: cerrado.'
+        await api.say([api.flag('ruben_libre') ? 'Ticket nº 1, julio: «Alta becario Brais». Estado: cerrado. Por fin.'
           : 'Ticket nº 1, julio: «Alta becario Brais». Estado: pendiente.',
         'Nº 2, hoy: «Alta portátil de Infografía». Denegado.', 'Motivo: «No ha pasado por Desarrollo». Firmado: Anselmo.',
         'Nº 3: «El CMS se cuelga con la pantalla de la Redacción».', '«Va a la regleta R-3 de Sistemas. Apagarla». Estado: no prioritario.']);
         api.setFlag('vio_ticket_3', true);
-        if (api.flag('herminia_de_alta')) await api.say('Y al final, de hoy: «Alta becaria Herminia», en cuarenta segundos.');
+        if (api.flag('herminia_de_alta')) await api.say('Y al final, de hoy: «Alta becaria Herminia». Cuarenta segundos.');
       },
       abrir: async (api) => { await api.say('Lo abro por donde siempre: por el principio. Nadie llega al final.'); },
       coger: 'Pesa más que la paciencia de Eutimio. No me lo llevo.',
@@ -523,7 +522,7 @@ export default buildRoom({
     { id: 'cementerio_ratones', name: 'caja de ratones', handlers: {
       mirar: 'Caja de ratones de bola. Eutimio no los tira. Dice que aún ruedan por dentro.',
       coger: 'Si me llevo uno, Eutimio lo apunta. Y lo tacha cuando ruede.',
-      usar: 'Muevo una bola y rueda por dentro, como decía Eutimio.',
+      usar: 'Muevo una bola. Rueda por dentro. Eutimio tenía razón.',
       hablar: 'Les doy el pésame. Uno rueda. Lo tomo como un sí.',
       empujar: 'La caja no se mueve. Pesa como treinta jefes de Sistemas.',
     } },
@@ -541,8 +540,8 @@ export default buildRoom({
   actors: [
     { id: P,
       murmurs: ['48.213... 48.214... Esto no para.', 'No, mamá, el wifi no se ha caído. Has dejado de merecerlo.',
-        'A las seis y media se va la gente. Los tickets se quedan. Y yo...',              // §8.7 · E5 C76
-        'Me abrió un ticket con márgenes, y lo tengo enmarcado.'],                          // adenda 4.6b
+        'Los tickets nunca se van a casa. Y yo...',              // §8.7 · E5 C76
+        'Me abrió un ticket con márgenes. Lo tengo enmarcado.'],                          // adenda 4.6b
       handlers: {
         mirar: 'Eutimio Ticket. No le da la luz natural desde que había fax en cada mesa.',
         hablar: async (api) => { await api.dialog('paco'); },
@@ -562,7 +561,7 @@ export default buildRoom({
       hablar: async (api) => { await api.dialog('ruben'); },
       'dar:taper_huerfano': darTaper,
       'dar:cafe': rub('¿Café? Gracias. Pero lo que necesito es un táper.'),
-      'dar:album_eventos': rub('Ahí salgo. Al fondo. Siempre al fondo.'),
+      'dar:album_eventos': rub('Ahí salgo. Al fondo. Siempre al fondo. Es mi encuadre.'),
       'dar:*': async (api) => { await api.titular('¿ES COMIDA?', { who: R }); await api.sayAs(R, '...No. Pues gracias igual.'); },
       empujar: 'No. Bastante empujado está. Lleva cuatro meses en un armario.',
       tirar: 'No puedo sacarlo a tirones. Su baja es un pósit. Y el pósit es de Anselmo.',

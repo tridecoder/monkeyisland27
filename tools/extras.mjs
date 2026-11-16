@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Walkthrough de EXTRAS: reproduce el recorrido de la ENMIENDA E6 (walk-data.mjs, 49 pasos) INTERCALANDO los pasos X de
 // la tabla del plan §3.5 (con la ENMIENDA E1.9, E2 §10.1 —XE5, XE6—, los informes E2 de P1-P4, E5 §7.4 —XE5-1…11— y
-// E6 §11.1 —XE6-1…5—) en su sitio (`tras: N` = justo
+// E6 §11.1 —XE6-1…5— y E7 §6 —XE7-…—) en su sitio (`tras: N` = justo
 // después del paso N; `tras: 'XE3'` = después de ese paso X).
 //   node tools/extras.mjs              todo, hasta la tarjeta FE DE ERRATAS y los créditos
 //   node tools/extras.mjs --hasta=XE3  se para (con éxito) tras ese paso X (o tras el paso numérico, p. ej. --hasta=20)
@@ -99,8 +99,8 @@ const X = [
   { n: 'XE5-9', tras: 23, sala: 'cpd', txt: '[E5] Tirar papel_continuo ×2 en el Acto II', acc: [V('tirar', 'papel_continuo'), V('tirar', 'papel_continuo')], esp: { flags: { ruben_encontrado: false, cpd_papel_tirones: 2 }, log: ['Tiro un poco. Desde dentro, alguien tira más fuerte.', 'Desde dentro no sueltan. El de ahí no está distraído.'] } },
   // XE5-7 · ascensor con atajo: Sistemas → planta 1 → «Redacción de papel» (llega por la Redacción)
   { n: 'XE5-7', tras: 23, sala: 'catacumba', txt: '[E5] Ascensor con atajo: Sistemas → Planta 1 → «Redacción de papel»', acc: [['ascensor', 'Planta 1', 'Redacción de papel']], esp: { sala: 'catacumba' } },
-  // XE5-10 · la tele con «sin turno» y sin la pregunta: «wifi y rencor»; el móvil con la tele: «once mil»
-  { n: 'XE5-10', tras: 27, sala: 'sala_amazonas', txt: '[E5] Usar tele (sin turno, sin pregunta) · Usar móvil con tele', acc: [V('usar', 'tele_amazonas'), ['usar', 'movil', 'tele_amazonas']], esp: { flags: { reunion_terminada: false }, log: ['Alguien con wifi y rencor la encontraría enseguida.', 'Desde mi móvil no me sintoniza nadie. Los once mil son de la cafetera.'] } },
+  // XE5-10 · la tele con «sin turno» y sin la pregunta: «wifi y rencor» (E7 F2: con Mirar; Usar abre el árbol); el móvil con la tele: «once mil»
+  { n: 'XE5-10', tras: 27, sala: 'sala_amazonas', txt: '[E5, E7] Mirar tele (sin turno, sin pregunta) · Usar móvil con tele', acc: [V('mirar', 'tele_amazonas'), ['usar', 'movil', 'tele_amazonas']], esp: { flags: { reunion_terminada: false }, log: ['Alguien con wifi y rencor la encontraría enseguida.', 'Desde mi móvil no me sintoniza nadie. Los once mil son de la cafetera.'] } },
   // XE5-1…4 · las cuatro vías del atasco, cada una desde la misma partida (tras el paso 27; E6: el atasco llega por la
   // tele, §2.3); al final, se vuelve a ella y el paso 28 hace la estampida del recorrido (vía del anuncio en modo rápido)
   { n: 'XE5-1', tras: 27, sala: 'sala_amazonas', txt: '[E5] Atasco, vía empujar (Empujar a Fermín)', acc: [['guardar', 'xe5_27'], ['ir', 'sala_amazonas'], ['atasco'], V('empujar', 'mercados_1')], esp: { flags: { reunion_terminada: true, sala_amazonas_estampida: true, sala_amazonas_atasco: false }, log: ['Les doy un empujoncito. Salen los tres de golpe.', 'Se levanta la sesión. Lo hablamos.'], nolog: ['¡Ese medio cruasán es mío!', '¿Y la próxima reunión, cuándo es?', 'un anuncio de cinco segundos'] } },
@@ -114,6 +114,23 @@ const X = [
   // XE6-3 · la vía del Vending entera: la pregunta en el Vending → Hablar tele en la Sala → la escena, sin el árbol
   { n: 'XE6-3', tras: 'XE6-5', sala: 'sala_amazonas', txt: '[E6] Vía del Vending: pregunta a Gertrudis → Hablar tele → escena sin árbol', acc: [['guardar', 'xe6_27'], ['ir', 'office'], V('hablar', 'gertrudis'), O('¿Y cuáles son los siguientes pasos?'), SALIR, ['ir', 'sala_amazonas'], V('hablar', 'tele_amazonas')], esp: { flags: ['gertrudis_pregunta', 'reunion_terminada', 'sala_amazonas_estampida'], log: ['PREGUNTA DEL PÚBLICO'], nolog: ['BUENAS NOCHES, SALA AMAZONAS.'] } },
   { n: 'XE6-3b', tras: 'XE6-3', sala: 'sala_amazonas', txt: '[E6] (cargar la partida del paso 27)', acc: [['cargar', 'xe6_27']], esp: { sala: 'sala_amazonas', flags: { gertrudis_pregunta: false, reunion_terminada: false } } },
+  // ------------------------------------------------------------------ ENMIENDA E7 §6 (XE7-…)
+  // XE7-T1 / T2 · con «sin turno», Usar la tele (o la caja de cables) = Hablar: el árbol de la tele y la estampida
+  { n: 'XE7-T1', tras: 'XE6-3b', sala: 'sala_amazonas', txt: '[E7] Usar tele → árbol → «Buenas noches, Gertrudis.» → «¿Y cuáles son los siguientes pasos?»', acc: [['guardar', 'xe7_27'], V('usar', 'tele_amazonas'), O('Buenas noches, Gertrudis.'), O('¿Y cuáles son los siguientes pasos?')], esp: { flags: ['gertrudis_pregunta', 'reunion_terminada', 'sala_amazonas_estampida'], log: ['tele_amazonas:BUENAS NOCHES, SALA AMAZONAS.', 'PREGUNTA DEL PÚBLICO'], nolog: ['wifi y rencor'] } },
+  { n: 'XE7-T1b', tras: 'XE7-T1', sala: 'sala_amazonas', txt: '[E7] (cargar la partida del paso 27)', acc: [['cargar', 'xe7_27']], esp: { sala: 'sala_amazonas', flags: { gertrudis_pregunta: false, reunion_terminada: false } } },
+  { n: 'XE7-T2', tras: 'XE7-T1b', sala: 'sala_amazonas', txt: '[E7] Usar caja de cables → el mismo árbol → estampida', acc: [V('usar', 'caja_cables'), O('Buenas noches, Gertrudis.'), O('¿Y cuáles son los siguientes pasos?')], esp: { flags: ['gertrudis_pregunta', 'reunion_terminada'], log: ['tele_amazonas:BUENAS NOCHES, SALA AMAZONAS.'] } },
+  { n: 'XE7-T2b', tras: 'XE7-T2', sala: 'sala_amazonas', txt: '[E7] (cargar la partida del paso 27)', acc: [['cargar', 'xe7_27']], esp: { sala: 'sala_amazonas', flags: { gertrudis_pregunta: false, reunion_terminada: false } } },
+  // XE7-N2 · el papel del fax: Aurora (N1-N2), la ficha (N11 y N9) y Begoña (N3-N4; la opción no vuelve)
+  { n: 'XE7-N2', tras: 16, sala: 'catacumba', txt: '[E7] Aurora «¿De dónde saco papel para el fax?» · Mirar ficha · Begoña «¿Me da unos folios?»', acc: [['guardar', 'xe7_16'], V('hablar', 'aurora_galerada'), O('¿De dónde saco papel para el fax?'), SALIR, V('mirar', 'ficha_pagina_7'), ['ir', 'administracion'], V('hablar', 'begona_triplicado'), O('¿Me da unos folios? Son para el fax de Teodoro.'), ['sinOpcion', '¿Me da unos folios?'], SALIR], esp: { flags: ['oyo_papel_begona'], log: ['aurora_galerada:Papel, en esta casa, solo gasta Begoña. Lo devuelve por triplicado.', 'bruno:FIRMA: el fax no tiene papel. El papel, en esta casa, sale de Begoña.', 'bruno:Al margen, a lápiz: «CMS en coma. Sistemas no atiende a nadie».', 'begona_triplicado:Folios no doy. De esta ventanilla solo sale papel rechazado.'] } },
+  { n: 'XE7-N2b', tras: 'XE7-N2', sala: 'catacumba', txt: '[E7] (cargar la partida del paso 16)', acc: [['cargar', 'xe7_16']], esp: { sala: 'catacumba', flags: { oyo_papel_begona: false } } },
+  // XE7-N1 · el sobre de azúcar abre el impreso (sin el saludo de Begoña) y la nota sale por ahí (alternativa al paso 30)
+  { n: 'XE7-N1', tras: 29, sala: 'administracion', txt: '[E7] Dar sobre a Begoña → impreso (sin «Son las 19:07…») → la nota entera por ahí', acc: [['guardar', 'xe7_29'], ['ir', 'administracion'], ['dar', 'sobre_azucar', 'begona_triplicado'], O('Café para entender el capitalismo.'), O('Lo que sea.'), O('Aquí tiene. Un sobre de azúcar. Es casi un ticket.'), O('Pues enséñeme cómo es una nota bien hecha'), SALIR], esp: { flags: ['nota_gasto_presentada'], tiene: ['fotocopia_nota_direccion', 'copias_rechazadas'], log: ['begona_triplicado:¿Un sobre de azúcar? Sin nota de gasto, esto es azúcar.', 'begona_triplicado:Uno: concepto. Dos: importe. Tres: justificante.'], nolog: ['Son las 19:07.'] } },
+  { n: 'XE7-N1b', tras: 'XE7-N1', sala: 'administracion', txt: '[E7] (cargar) · Usar sobre con la ventanilla → el impreso → «Importe cero» (N5) → B0 con la nota', acc: [['cargar', 'xe7_29'], ['ir', 'administracion'], ['usar', 'sobre_azucar', 'ventanilla'], ['conOpcion', 'Café para entender el capitalismo.'], O('Nada. Importe cero. No he gastado nada.'), ['conOpcion', 'Quiero presentar una nota de gasto.'], SALIR], esp: { flags: { nota_gasto_presentada: false }, log: ['¿Un sobre de azúcar? Sin nota de gasto, esto es azúcar.', 'bruno:Un trámite bien hecho, y ni un papel. Lo pongo en «logros».'], nolog: ['Son las 19:07.'] } },
+  // XE7-N3 · «Importe cero» por el menú de siempre: aprobada, y ni un papel (N5); B0 conserva la nota
+  { n: 'XE7-N3', tras: 'XE7-N1b', sala: 'administracion', txt: '[E7] (cargar) Begoña → nota → «Importe cero» → N5; la nota sigue en el menú', acc: [['cargar', 'xe7_29'], ['ir', 'administracion'], V('hablar', 'begona_triplicado'), O('Quiero presentar una nota de gasto.'), O('Nada. Importe cero. No he gastado nada.'), ['conOpcion', 'Quiero presentar una nota de gasto.'], SALIR], esp: { flags: { nota_gasto_presentada: false }, log: ['begona_triplicado:Son las 19:07.', 'bruno:Un trámite bien hecho, y ni un papel. Lo pongo en «logros».'] } },
+  { n: 'XE7-N3b', tras: 'XE7-N3', sala: 'administracion', txt: '[E7] (cargar la partida del paso 29)', acc: [['cargar', 'xe7_29']], esp: { flags: { nota_gasto_presentada: false } } },
+  // XE7-F4 · «¿Falta mucho?»: Evaristo se va a escribir; el aviso del correo, solo la primera vez
+  { n: 'XE7-F4', tras: 'XE5', sala: 'administracion', txt: '[E7] Evaristo → «¿Falta mucho?» (2.ª vez: sin aviso)', acc: [['enLog', 'aviso:Correo nuevo de Evaristo Salvedad: «Una cosita (1 de 3)».'], ['marca'], V('hablar', 'evaristo_salvedad'), O('¿Para qué me ha llamado?'), O('¿Falta mucho?'), SALIR, ['noDesdeMarca', 'Correo nuevo de Evaristo Salvedad']], esp: { flags: { evaristo_escuchado: false } } },
   // XE5-6 · sin rep_13 ni oyo_descopear: las tres columnas equivocadas y «Tráeme algo…» a la tercera
   { n: 'XE5-6', tras: 44, sala: 'pecera', txt: '[E5] Columnas equivocadas ×3 sin rep_13 ni oyo_descopear', acc: [['guardar', 'xe5_45'], ['flag', 'rep_13', false], ['flag', 'oyo_descopear', false], ['usar', 'rotulador_rojo', 'kanban'], O('DESPEDIDOS'), ['usar', 'rotulador_rojo', 'kanban'], O('HECHO (DE VERDAD)'), ['usar', 'rotulador_rojo', 'kanban'], O('FIRMAR EN PAPEL')], esp: { flags: { posit_descopeado: false, pecera_columna_mal_n: 3 }, log: ['Eso es «muerto» con corbata.', '«De verdad» no es un estado.', 'Eso es tuyo. Mi tablero no es tu diario.', 'Tráeme algo que no sea ni hecho ni muerto.'] } },
   { n: 'XE5-6b', tras: 'XE5-6', sala: 'pecera', txt: '[E5] (cargar)', acc: [['cargar', 'xe5_45']], esp: { flags: ['album_validado', 'rep_13', 'oyo_descopear'] } },
@@ -151,6 +168,7 @@ async function hastaQue(cond, ms = 40000) {
   }
   throw new StepFail(`no se cumplió a tiempo: ${cond}`);
 }
+let marcaLog = 0;
 const EXTRA = {
   guardar: (k) => G((k) => { __game.save(k); }, k),
   cargar: async (k) => { await G((k) => __game.load(k), k); await G(() => { __game.skipSpeech(); return __game.waitIdle(); }); },
@@ -176,6 +194,22 @@ const EXTRA = {
   enLog: async (t) => {
     const L = await G(() => __game.log.map(l => `${l.who}:${l.text}`));
     if (!L.some(l => (t.includes(':') ? l.startsWith(t) : l.includes(t)))) throw new StepFail(`no ha salido en la partida: ${t}`);
+  },
+  /** E7: el menú de diálogo abierto (no) tiene una opción que contiene ese texto. */
+  sinOpcion: async (t) => {
+    await G(() => __game.waitIdle());
+    const op = await G(() => __game.currentDialogOptions() || []);
+    if (op.some(o => o.includes(t))) throw new StepFail(`la opción «${t}» sigue en el menú: ${JSON.stringify(op)}`);
+  },
+  conOpcion: async (t) => {
+    await G(() => __game.waitIdle());
+    const op = await G(() => __game.currentDialogOptions() || []);
+    if (!op.some(o => o.includes(t))) throw new StepFail(`falta la opción «${t}» en el menú: ${JSON.stringify(op)}`);
+  },
+  /** E7: marca el registro; `noDesdeMarca` falla si el texto sale después de la marca. */
+  marca: async () => { marcaLog = await G(() => __game.log.length); },
+  noDesdeMarca: async (t) => {
+    if (await G(([k, t]) => __game.log.slice(k).some(l => String(l.text).includes(t)), [marcaLog, t])) throw new StepFail(`ha vuelto a salir: ${t}`);
   },
   /** Estado visual de un objeto de la sala. */
   estado: async (id, want) => {

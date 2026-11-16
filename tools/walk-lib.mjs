@@ -79,7 +79,7 @@ async function travel(to) {
 async function playDuel(seq0) {
   let seq = seq0;
   const pairs = await G(() => Object.fromEntries(__game.game.content.duels.pairs.map(p => [p.id, p.reply])));
-  let i = 0;
+  let i = 0, esperas = 0;
   for (let guard = 0; guard < 80; guard++) {
     const st = await state();
     if (!st.duel) {
@@ -87,6 +87,8 @@ async function playDuel(seq0) {
       return;
     }
     if (!st.dialog && !st.pickItem) { await page.waitForTimeout(30); continue; }
+    // E7 `aTiempo` (D3, sin modo rápido): el rival escribe a trozos; se espera a que acabe (contestar antes le corta)
+    if (st.duel.phase === 'reply' && st.duel.escribiendo && esperas++ < 500) { guard--; await page.waitForTimeout(60); continue; }
     const want = seq[i];
     if (want === undefined) fail(`el duelo sigue tras las ${seq.length} jugadas previstas (fase ${st.duel.phase})`);
     if (st.duel.phase === 'reply') {

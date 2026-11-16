@@ -108,7 +108,7 @@ async function suplica(api, primera) {
     await api.say('Un titular pidiendo socorro. Con número de armario. Eso no es clickbait.');
     if (here(api, I)) await api.sayAs(I, 'Alucinaciones. Es normal en modelos tan avanzados.');
   } else {
-    await api.say('Otra vez «ARMARIO 27». Los titulares no se repiten; las personas, sí.');
+    await api.say('Otra vez: «ARMARIO 27». Los titulares no se repiten. Las personas, sí.');
     if (here(api, I)) await api.sayAs(I, 'Sigue alucinando. Eso es que aprende.');
   }
 }
@@ -140,8 +140,8 @@ async function mirarTitulator(api) {
 async function entrarSala(api) {
   if (!acto3(api)) { api.sfx('door'); await api.goto('sala_amazonas', 'pajarera'); return; }
   if (!api.flag('sala_abierta') || !api.has('acta_reunion')) {
-    if (here(api, G)) await gv(api, ['Sin acta de la anterior no se abre la siguiente, por reglamento.', 'Se escribió en una reunión.']);
-    else await api.say('OCUPADO. Llamar a esta puerta es pedir una prórroga.');
+    if (here(api, G)) await gv(api, ['Sin acta de la anterior no se abre la siguiente. Es el reglamento.', 'Se escribió en una reunión.']);
+    else await api.say('OCUPADO hasta 2031. Llamar a esta puerta es pedir una prórroga.');
     return;
   }
   if (!api.flag('ruben_libre') || !api.has('ticket_n1')) {
@@ -231,6 +231,17 @@ const dueloGervasio = {
     R03: 'El acta se necesitaba para... para...',                  // E6 §5.2 (N10): la R03 le termina la frase
     R05: 'Lo del acta, entre tú y yo. Que no salga de esta puerta.',
   },
+  // E7 · «no le pises la frase» (engine/duel.js `aTiempo`): Gervasio escribe a trozos; contestar antes de que acabe le
+  // corta (no cuenta fallo) y el ataque vuelve a empezar. El R07 empieza como el R03 y acaba en el R07.
+  aTiempo: {
+    ms: 1300, escribiendo: 'escribiendo', interrumpe: 'Me has interrumpido. Se apunta.', sostener: 'movil',
+    trozos: {
+      R07: ['Esto se necesitaba para...', 'para cuando...', 'me consta que ya lo hablamos.'],
+      R03: ['El acta se necesitaba para...', 'para...'],
+      R01: ['Ya se dijo en el otro correo...', 'ese que no se leyó...'],
+      R05: ['Lo del acta, entre tú y yo...', 'que no salga de esta puerta.'],
+    },
+  },
   intro: ['Mejor por escrito. Que conste que lo has pedido tú.'],
   hurt: ['Eso habría que verlo. Se verá.', 'Se toma nota. Por alguien.'],
   taunt: ['Eso se... Eso no venía a cuento. Se agradece.', 'Se toma nota. La tomas tú.'],
@@ -265,7 +276,7 @@ const dueloGervasio = {
 async function gervasioDerrota(api, info = {}) {
   await gv(api, '...¿Yo? Asignado a ti. El acta, digo.');
   await api.anim(api.player, 'reach', 700);                    // (Bruno escribe en la libreta, despacio.)
-  if ((info.perdidos || 1) > 1) await api.say('«Acuerdos: uno, perder otro duelo». Mi segunda acta.');
+  if ((info.perdidos || 1) > 1) await api.say('«Acuerdos: uno, perder otro duelo». Mi segunda acta. Ya tengo archivo.');
   else await api.say('«Acuerdos: uno, perder un duelo». Ya está. Mi primera acta.');
   await gv(api, 'Un acta escrita por un becario no es un acta. Es un diario.');
 }
@@ -284,7 +295,7 @@ export default buildRoom({
       mirar: 'Tras el cristal, la Redacción. Desde aquí parece un acuario con wifi.',
       abrir: async (api) => api.goto('pecera', 'pajarera'), usar: async (api) => api.goto('pecera', 'pajarera'),
       hablar: 'Le hago gestos al tótem del vestíbulo. Me contesta: «AQUÍ». Ya lo sé.',
-      empujar: 'Empujo el cristal. Desde la Redacción parece que pido auxilio.',
+      empujar: 'Empujo el cristal. Desde la Redacción parece que pido auxilio. Un poco sí.',
     } },
     { id: 'persiana', name: 'persiana', handlers: {
       mirar: 'Persiana a media altura. Mitad transparencia, mitad no preguntes.',
@@ -295,7 +306,7 @@ export default buildRoom({
     } },
     { id: 'postits', name: 'pósits', handlers: {
       mirar: 'Cuatro colores. Uno por estado de ánimo. Íñigo los tiene contados.',
-      coger: async (api) => (acto3(api) ? api.say('No. Íñigo los tiene contados por colores.') : api.sayAs(I, 'Eso es propiedad intelectual.')),
+      coger: async (api) => (acto3(api) ? api.say('No. Íñigo los tiene contados. Por colores.') : api.sayAs(I, 'Eso es propiedad intelectual.')),
       usar: 'Me pego uno verde en el pecho: "Oportunidad". Nadie lo ve.',
       tirar: 'Si tiro de uno, cae la pared entera. Es una estructura muy apalancada.',
     } },
@@ -322,7 +333,7 @@ export default buildRoom({
       usar: async (api) => (acto3(api) ? api.say('No hay nada que usar. Solo el atril y un cable que se va hacia la Sala.') : api.sayAs(I, 'No toques el modelo. Se enfría.')),
       'usar:movil': 'No le hago fotos. Luego me titula: "BECARIO FOTOGRAFÍA UNA IA. LA IA, INCÓMODA".',
       hablar: async (api) => (acto3(api) ? api.say('Le hablo a un atril vacío. Contesta lo mismo que la Reunión de Dirección.') : api.say('Le pregunto quién le escribe los titulares. Parpadea. En mayúsculas.')),
-      coger: async (api) => (acto3(api) ? api.say('Se lo ha llevado Íñigo. Con cuidado de que no se enfríe.') : api.sayAs(I, 'Cuidado, que es una licencia de cuarenta y ocho mil al mes.')),
+      coger: async (api) => (acto3(api) ? api.say('Se lo ha llevado Íñigo. Con cuidado de que no se enfríe.') : api.sayAs(I, 'Cuidado, que es una licencia. Cuarenta y ocho mil al mes. Una inversión.')),
     } },
     { id: 'mesa_direccion', name: 'mesa grande', handlers: {
       mirar: seq([['B', 'Una mesa enorme. Encima, un informe: "Lo que quiere el Lector Medio".'], ['B', 'Lo abro. Está en blanco. Se nota que lo ha validado.']]),
@@ -351,7 +362,7 @@ export default buildRoom({
       },
       ir: entrarSala, usar: entrarSala, abrir: entrarSala, empujar: entrarSala,
       hablar: async (api) => api.say(acto3(api) ? 'Toc, toc. Desde dentro: "Siguiente diapositiva". No era a mí.' : 'Toc, toc en el marco. Desde dentro: "Siguiente punto".'),
-      cerrar: async (api) => api.say(salaCerrada(api) ? 'Cerrada por dentro. Se oye pasar una diapositiva, muy despacio.'
+      cerrar: async (api) => api.say(salaCerrada(api) ? 'Cerrada por dentro. Se oye pasar una diapositiva. Muy despacio.'
         : 'Tiene una cuña. Si la quito, alguien tendría que salir.'),
     } },
     { id: 'hoja_reservas', name: 'hoja de reservas', handlers: {
@@ -490,7 +501,7 @@ export default buildRoom({
               do: async (api) => {
                 api.sfx('drop');                              // (se le iluminan los ojos; se le cae un móvil)
                 await talk(api, [[G, '¿Lo harías? ¿Por escrito? ¿Con tu nombre?'], ['B', '...No. Era para ver qué cara ponía.'],
-                  [G, 'Se agradece la iniciativa igual, y se archiva.']]);
+                  [G, 'Se agradece la iniciativa igual. Se archiva.']]);
               } },
             { text: 'Me voy.', exit: true, reply: 'Se verá.' },
           ],

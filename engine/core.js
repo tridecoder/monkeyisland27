@@ -884,6 +884,7 @@ export class Game {
   sentenceText() {
     if (this.ui.sentence) return this.ui.sentence;
     let h = this.ui.hover;
+    if (h && h.kind === 'inv' && !this.state.inventory.includes(h.id)) h = this.ui.hover = null;   // E7 F3
     // E5 §6.2: el nombre se recalcula si cambia la luz con el ratón quieto (apagón con `nombres`, y al volver la luz)
     if (h && h.kind !== 'inv' && (this.apagon || h.oscuro)) h = this.ui.hover = this.renombrar(h);
     const v = this.ui.verb;
@@ -1081,7 +1082,8 @@ export class Game {
   pickItem(prompt) {
     if (this.itemPick) { const r = this.itemPick.resolve; this.itemPick = null; r(null); }
     return new Promise(res => {
-      this.itemPick = { prompt: prompt || 'Usar objeto:', resolve: id => { this.itemPick = null; res(id); this.checkIdle(); } };
+      // E7 F3: al resolverse, la barra no se queda con «Usar <objeto>» (hover del inventario sin mover el ratón)
+      this.itemPick = { prompt: prompt || 'Usar objeto:', resolve: id => { this.itemPick = null; this.ui.hover = null; this.ui.sentence = null; res(id); this.checkIdle(); } };
       this.checkIdle();
     });
   }

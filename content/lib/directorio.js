@@ -32,7 +32,7 @@ export const DESTINOS = [
 ];
 export const QUEDARSE = 'Nada, me quedo aquí.';
 export const PRIMER_VIAJE = 'Toco un nombre y el tótem me lleva. Ni ticket, ni cita previa.';
-export const SIN_DESTINO = 'Un punto rojo: «ESTÁ AQUÍ». Gracias.';   // la línea de Mirar de siempre
+export const SIN_DESTINO = 'Un punto rojo: «ESTÁ AQUÍ». Gracias. Me hacía falta.';   // la línea de Mirar de siempre
 
 /** ¿Funciona el directorio ahora? (fuera tras el empujón y en el final) */
 export function directorioActivo(api) {

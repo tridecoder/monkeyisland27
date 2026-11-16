@@ -95,7 +95,7 @@ try {
   console.log('§0 en el código');
   const src = ['pecera.js', 'pecera.escenas.js', 'pecera.dialogos.js', 'pecera.secretaria.js'].map(f => fs.readFileSync(path.join(root, 'content/rooms', f), 'utf8')).join('\n');
   const fuera = ['Huele a 2019', 'Eso es un compañero', 'despide a la gente', 'Me ha entendido a la primera', 'Nadie lo hizo', 'Una columna nueva pide rotulador',
-    'Me hacía falta', 'Mi parte favorita', 'Desde hoy.', 'Ayuda bastante', '¡Otra! ¡Ha entrado otra!', 'Nos ganan. Tienen horario', 'Me han mirado', 'Y la escribí yo'];
+    'Mi parte favorita', 'Desde hoy.', 'Me han mirado', 'Y la escribí yo'];   // E7: vuelven «Me hacía falta», «Ayuda bastante», «¡Otra! ¡Ha entrado otra!» y «Nos ganan. Tienen horario»
   const quedan = fuera.filter(t => src.includes(t));
   ok(!quedan.length, `fuera de los ficheros de PB: ${fuera.length} cadenas (quedan: ${quedan.join(' · ') || 'ninguna'})`);
   ok(/import \{[^}]*SIN_DESTINO[^}]*\} from '\.\.\/lib\/directorio\.js'/.test(src) && !src.includes('«ESTÁ AQUÍ»'), 'E344: el tótem importa SIN_DESTINO (sin copia de la cadena)');
@@ -124,7 +124,7 @@ try {
   ok(await flag('dos_ias_vista') && await logHas('Tiene alta de usuario interno. Lo que tiene alta es de la casa.'), 'la escena acaba en la regla de Anselmo');
   ok(!(await logHas('compañero')) && !(await logHas('Armario 27. Atún.')) && (await logDe('bruno')).length === 0, 'Bruno no dice nada en la escena (fuera «…Eso es un compañero.»)');
   ok(await G(() => __game.game.player.dir) === 'right', 'Bruno mira hacia el ascensor (dir right)');
-  ok(await logHas('Antes de que la envolviera le pedí un gráfico del Titulator, por curiosidad.'), 'E129 aplicada');
+  ok(await logHas('Antes de que la envolviera le pedí un gráfico del Titulator.'), 'E129 (E7: tercera del autor)');
 
   // ====================================================================== 3. tablero y columna
   console.log('\n§2.9.2-3 y §2.6 B1: tablero, rotulador y columna (ratón real)');
@@ -163,7 +163,7 @@ try {
   const br = await logDe('ruben');
   ok(await flag('ruben_libre') && br.at(-1) === 'SEGUIREMOS INFORMANDO.' && !(await logHas('despide a la gente')) && !(await logHas('Y la escribí yo')), `columna: sin la explicación de Bruno; Brais cierra con «SEGUIREMOS INFORMANDO.» (${JSON.stringify(br)})`);
   ok(await G(() => __game.game.actors.ruben.dir) === 'left', 'Brais se gira hacia la columna (left)');
-  ok(await logHas('Eutimio ha mandado primero el papeleo, por procedimiento.'), 'E118 aplicada');
+  ok(await logHas('Eutimio ha mandado primero el papeleo. Es el procedimiento.'), 'E118 (E7: vuelve el original)');
 
   // ====================================================================== 4. sueltas de la sala
   console.log('\n§2.6 B6/B7, §4.2 coro, E344, E070');
@@ -190,10 +190,10 @@ try {
   await until(() => !!__game.currentDialogOptions() || !__game.state().busy, null, 6000);
   if (await opciones()) { await clicOpcion('Nada, me quedo aquí.'); }
   await idle(); await seguir();
-  ok(await logHas(SIN_DESTINO) && !(await logHas('Me hacía falta')), `E344: Mirar el tótem → «${SIN_DESTINO}»`);
+  ok(await logHas(SIN_DESTINO) && /Me hacía falta\.$/.test(SIN_DESTINO), `E344 (E7: con «Me hacía falta»): Mirar el tótem → «${SIN_DESTINO}»`);
   await G(() => __game.clearLog());
   await raton('empujar', 'pecera_a_vestibulo');
-  ok((await logDe('bruno')).at(-1) === 'Empujar a alguien escaleras abajo sería una salida en valor.', 'E070: sin el «No.»');
+  ok((await logDe('bruno')).at(-1) === 'Empujar a alguien escaleras abajo sería una salida en valor. No.', 'E070 (E7: vuelve el «No.»)');
   await G(() => __game.clearLog());
   await G(() => { __game.setFlag('herminia_midio', true); __game.setFlag('pieza_recortada', true); __game.giveItem('pieza_opa'); });
   await raton('usar', 'herminia_portatil', 'pieza_opa');
@@ -227,7 +227,7 @@ try {
   const fr = await G(() => __game.log.map(l => String(l.text)));
   const i1 = fr.indexOf(FRASE), i2 = fr.indexOf('Eso lo hace nuestro.');
   ok(await flag('herminia_midio') && await logCount(FRASE) === 1 && await logCount('Eso lo hace nuestro.') === 1 && i2 === i1 + 1, 'paso 37: la frase entera, una vez, seguida');
-  ok(await logHas('Encintar, no: aislar el componente.') && await logHas('Ya te la ha leído. Yo no, ¿eh? Yo ya solo superviso.'), 'E124, E125 aplicadas en la misma escena');
+  ok(await logHas('Encintar, no: aislar el componente.') && await logHas('Ya te la ha leído. Yo no, ¿eh? Yo ya no leo. Superviso.'), 'E124 (E7) y E125 en la misma escena');
 } catch (e) {
   failures++;
   console.log('  ✗ EXCEPCIÓN: ' + (e && e.stack || e));
