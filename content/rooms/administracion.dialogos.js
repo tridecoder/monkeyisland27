@@ -8,6 +8,7 @@
 // ENMIENDA E5 (PE): C57, C82, C83, R2. Por decisión del dueño, fuera la opción de Begoña «¿Usted ha sido feliz alguna
 // vez?» y su respuesta (F-1 de Felicidad): no la pedía ningún flag, pista ni paso.
 import { sello } from '../escenas/planta_noble.js';
+import { llegaCorreoEvaristo, correoLlegado, prometerGracias } from '../lib/movil.js';
 
 const BEGONA = 'begona_triplicado', EV = 'evaristo_salvedad';
 const sayBe = (api, t) => api.sayAs(BEGONA, t);
@@ -30,6 +31,31 @@ export async function recorte(api) {
 async function frente(api, who, text) {
   if (api.flag('bruno_sellado_frente') && api.once('frente_' + who)) await api.sayAs(who, text);
 }
+
+/** [coherencia] La primera línea de E_CORREO / E_COSITA: quién le llamó (la L2, Begoña o nadie) y si ya ha escrito. */
+function primeraLinea(api, convocado) {
+  const escrito = correoLlegado(api, 1);
+  if (!convocado) return escrito ? 'Le he escrito un correo. Va en tres partes.' : 'Le voy a escribir un correo. Para comunicarle una cosa.';
+  if (escrito) return 'Para comunicarle que le he escrito un correo. Va en tres partes.';
+  return api.flag('evaristo_convoco') === 'llamada' ? 'Le he llamado para comunicarle que le voy a escribir un correo.'
+    : 'Le he hecho llamar para comunicarle que le voy a escribir un correo.';
+}
+/** E_CORREO y E_COSITA: lo mismo, sea cual sea la entrada. «¿Falta mucho?» (E7 F4): lo pone por escrito DE VERDAD; cada
+ *  vez, la parte siguiente de «Una cosita» llega a la bandeja con su aviso; con las tres ya enviadas, no teclea más. */
+const OPCIONES_CORREO = [
+  { text: '¿Y no me lo puede decir ahora?', once: true, reply: 'Ahora no. Lo verbal no lleva comas.' },
+  { text: '¿Falta mucho?', exit: true,
+    do: async (api) => {
+      await api.anim(api.player, 'reach', 700);    // E7 F4: Bruno mira el móvil (más largo)
+      const parte = [1, 2, 3].find(i => !correoLlegado(api, i));
+      if (!parte) { await sayEv(api, 'Ya se lo he puesto por escrito. Las tres partes.'); return; }
+      await sayEv(api, 'Si tiene prisa, se lo pongo por escrito.');
+      api.faceActor(EV, 'up');                     // (De espaldas. Lo pone por escrito, de verdad.)
+      for (let i = 0; i < 3; i++) { api.sfx('typewriter'); await api.wait(380); }
+      llegaCorreoEvaristo(api, parte);             // llega a la bandeja, sin leer, con su aviso
+    } },
+  { text: '¿De qué trata?', goto: 'E_DET' },
+];
 
 /** E7 F1 (E3): se entra al impreso por el sobre de azúcar (administracion.js `sobreANota`): sin el saludo. */
 export const ENTRADA = { sobre: false };
@@ -147,8 +173,12 @@ export default {
           api.take('sobre_azucar');
           api.setFlag('nota_gasto_presentada', true);
           api.sfx('pickup');
-          // E2 §5.2: Begoña le manda a Controlling (sustituye a la llamada L2)
-          await sayBe(api, 'Y pase por Controlling. Don Evaristo le espera. Escúchele hasta el final.');
+          // E2 §5.2: Begoña le manda a Controlling ([coherencia] también si ya le llamó él en la L2: «le espera» vale;
+          // si ya le escuchó, no: no le manda a donde ya ha ido)
+          if (!api.flag('evaristo_escuchado')) {
+            await sayBe(api, 'Y pase por Controlling. Don Evaristo le espera. Escúchele hasta el final.');
+            if (!api.flag('evaristo_convoco')) api.setFlag('evaristo_convoco', 'begona');
+          }
         },
         options: [
           { text: '¿Y qué hago yo con dos copias de un rechazo?', goto: 'B0',
@@ -165,6 +195,9 @@ export default {
   // ---------------------------------------------------------------- E2 §5.2 · don Evaristo Salvedad (paso 28)
   // Humor amable: su manía es la que salva el periódico. Hay que escucharle hasta el final: «¿Para qué me ha llamado?»
   // → «¿De qué trata?» → «Siga.». Cualquier prisa le devuelve a su mesa; se repite desde E0, sin coste.
+  // [coherencia] «¿Para qué me ha llamado?» solo si le han convocado (la L2 o Begoña: `evaristo_convoco`); si Bruno sube
+  // por su cuenta, la entrada es «¿Qué quería decirme?» (vale con los dos saludos) y llega al mismo sitio. La primera
+  // línea de E_CORREO dice quién le llamó y si el correo ya está escrito.
   evaristo: {
     actor: EV, start: 'E0',
     onStart: async (api) => {
@@ -175,8 +208,9 @@ export default {
     nodes: {
       E0: {
         options: [
-          { text: '¿Para qué me ha llamado?', if: ['acto_2_iniciado', '!evaristo_escuchado'], goto: 'E_CORREO' },
-          { text: '¿Por qué llama tanto?', once: true, reply: 'Por escrito se pierden matices. En persona, comas. Por teléfono, nada.' },   // E5 C83
+          { text: '¿Para qué me ha llamado?', if: ['acto_2_iniciado', '!evaristo_escuchado', 'evaristo_convoco'], goto: 'E_CORREO' },
+          { text: '¿Qué quería decirme?', if: ['acto_2_iniciado', '!evaristo_escuchado', '!evaristo_convoco'], goto: 'E_COSITA' },
+          { text: '¿Por qué llama tanto?', once: true, if: (api) => Number(api.flag('evaristo_llamadas') || 0) >= 1, reply: 'Por escrito se pierden matices. En persona, comas. Por teléfono, nada.' },   // E5 C83
           { text: '¿Qué hay en esas carpetas?', once: true,
             reply: ['Todos los contratos de la casa. Leídos. Sobre todo la letra pequeña.', 'La grande la lee cualquiera.'] },
           { text: '¿Ha visto mi contrato?', once: true,
@@ -187,24 +221,12 @@ export default {
             lines: [[BEGONA, 'Una vez encontró una coma distinta en uno. No dormí en un año.']] },
           { text: '¿Ha enviado ya el correo?', if: 'correo_evaristo_listo',
             reply: 'Programado. Para el momento oportuno. Lo lleva usted en la mano.' },
-          { text: 'Me voy.', exit: true, reply: 'Gracias por venir. Le escribiré un correo para agradecérselo.' },
+          // [coherencia] la promesa se cumple: el «Agradecimiento» llega a la bandeja en la entrada siguiente
+          { text: 'Me voy.', exit: true, reply: 'Gracias por venir. Le escribiré un correo para agradecérselo.', do: async (api) => { prometerGracias(api); } },
         ],
       },
-      E_CORREO: {
-        onEnter: async (api) => { await sayEv(api, 'Le he llamado para comunicarle que le voy a escribir un correo.'); },
-        options: [
-          { text: '¿Y no me lo puede decir ahora?', once: true, reply: 'Ahora no. Lo verbal no lleva comas.' },
-          { text: '¿Falta mucho?', exit: true,
-            do: async (api) => {
-              await api.anim(api.player, 'reach', 700);    // E7 F4: Bruno mira el móvil (más largo)
-              await sayEv(api, 'Si tiene prisa, se lo pongo por escrito.');
-              api.faceActor(EV, 'up');                     // (De espaldas. Lo pone por escrito, de verdad.)
-              for (let i = 0; i < 3; i++) { api.sfx('typewriter'); await api.wait(380); }
-              if (api.once('administracion_evaristo_por_escrito')) api.notice('Correo nuevo de Evaristo Salvedad: «Una cosita (1 de 3)».');
-            } },
-          { text: '¿De qué trata?', goto: 'E_DET' },
-        ],
-      },
+      E_CORREO: { onEnter: async (api) => { await sayEv(api, primeraLinea(api, true)); }, options: OPCIONES_CORREO },
+      E_COSITA: { onEnter: async (api) => { await sayEv(api, primeraLinea(api, false)); }, options: OPCIONES_CORREO },
       E_DET: {
         onEnter: async (api) => { await sayEv(api, 'De una coma.'); },
         options: [

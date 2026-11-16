@@ -8,7 +8,7 @@ import { PAL, rect, px, hline, vline, gradV, glow, rng, ditherPick, frameRect, l
 import { drawText, measure } from '../engine/font.js';
 import music from './music.js';
 import flags, { ADENDA_FLAGS } from './flags.js';
-import { RV_TADEO } from './lib/movil.js';
+import { RV_TADEO, correoPendienteEvaristo } from './lib/movil.js';
 import { OBJETIVOS, SALUDOS, OTRA_VEZ, ABUELA_VIRAL, DESPEDIDA, horaMovil, actoActual, DONDE, FALTAN_REPLICAS } from './pistas.js';
 
 // ------------------------------------------------------------------ §8.2 respuestas por defecto (rotan en orden)
@@ -94,7 +94,7 @@ async function pistas(api) {
 }
 
 // ------------------------------------------------------------------ ADENDA §2 + ENMIENDA E2 §5.7: avisos al entrar en sala
-// Llamadas de Evaristo (E2: L1, L3, L4 y L5; la L2 y la LC ya no existen) — contador `evaristo_llamadas`.
+// Llamadas de Evaristo (E2: L1, L3, L4 y L5; [coherencia] vuelve la L2, la que le convoca) — contador `evaristo_llamadas`.
 // Mecánica única: el MOTOR llama a `afterEnter` (abajo) tras el `onEnter` de CADA sala; los autores de sala NO tienen
 // que hacer nada. No salta si la entrada ya ha lanzado una escena / diálogo / duelo / cinemática, ni al cargar partida,
 // ni en `sala_amazonas` con `acto_3_iniciado`, ni tras el final. Como mucho UN aviso por entrada (también si alguien
@@ -102,6 +102,8 @@ async function pistas(api) {
 // condición ya no se puede cumplir (`salta`) se da por perdida (L4 si Brais ya está libre; L5 dentro del clímax).
 // E2 §7.4 (paso 13): los «RV:» de Tadeo YA NO SON AVISOS: llegan solos al correo del móvil (content/lib/movil.js) al
 // entrar en una sala con su condición (`tadeo_rv_n` cuenta los llegados), sin globo ni «¡ding!».
+// [coherencia] Los correos de Evaristo que quedan por llegar («Una cosita» 2 y 3, «Agradecimiento») llegan aquí, uno por
+// entrada y solo si en esa entrada no suena una llamada (content/lib/movil.js `correoPendienteEvaristo`), con su aviso.
 const EV = 'evaristo_salvedad';
 const callLine = async (api, who, text) => {
   const g = api.game, t0 = g.time, dur = g.speechDuration(text);
@@ -113,7 +115,7 @@ const callLine = async (api, who, text) => {
 };
 // Las llamadas de Evaristo: el móvil de Bruno en primer plano con el retrato de don Evaristo (api.phone). Cortas.
 const EV_CALL = { caller: EV, label: 'Evaristo', sub: 'Controlling', ringMs: 1000 };
-const llamada = (id, cond, guion, salta = null) => ({ id, cond, salta, run: async (api) => {
+const llamada = (id, cond, guion, salta = null, alSonar = null) => ({ id, cond, salta, alSonar, run: async (api) => {
   await api.phone.call(EV_CALL, async () => {
     for (const [who, text] of (typeof guion === 'function' ? guion(api) : guion)) {
       if (who === 'E') await callLine(api, EV, text);
@@ -129,7 +131,12 @@ export const LLAMADAS = [
     ['E', 'Anotado. Era solo eso.'], ['ring'],
     ['E', 'Perdone. ¿Pellejo con jota o con ge?'], ['B', 'Con jota.'], ['E', 'Ahora sí era solo eso.'],
     ['B', 'Es el primero que me lo pregunta.']]),
-  // (L2 eliminada, fase B (4): a Evaristo le manda Begoña al cerrar el paso 27)
+  // [coherencia] la L2 vuelve (la eliminó E2 fase B (4) y el juego seguía diciendo «¿Para qué me ha llamado?»): convoca a
+  // Bruno al empezar el Acto II. No suena en Administración (está a un metro); se salta si ya le ha escuchado. Begoña
+  // también le manda (B_EJEMPLAR). Sin «Era solo eso.» (tope del auditor).
+  llamada('L2', ['acto_2_iniciado', (api) => api.room !== 'administracion'], [
+    ['E', 'Una cosita. ¿Puede pasarse por mi despacho? Es un segundo.'], ['B', '¿Ahora?'], ['E', 'Cuando pueda. Pero ahora.'],
+    ['E', 'Planta 2, al fondo de Administración.']], 'evaristo_escuchado', (api) => api.setFlag('evaristo_convoco', 'llamada')),
   llamada('L3', 'pieza_recortada', [
     ['E', 'Una cosita. Begoña me manda el triplicado de su recorte.'],
     ['E', 'Ella recorta sin leer. Yo leo sin recortar.'],
@@ -140,7 +147,8 @@ export const LLAMADAS = [
     ['E', 'En Sistemas no come atún nadie. Lo he cruzado con las nóminas.'],
     ['E', 'Alguien come ahí abajo y no cobra.'],
     ['B', 'Se llama Brais.']], 'ruben_libre'),
-  llamada('L5', ['ruben_libre', '!climax_entrada'], [
+  // [coherencia] «¿Lleva mi correo?» / «En el bolsillo.»: solo si Bruno lo lleva (el Acto III no exige la coma)
+  llamada('L5', ['ruben_libre', 'has:correo_evaristo', '!climax_entrada'], [
     ['E', 'Una cosita. Me dicen que va a la Sala. ¿Lleva mi correo?'], ['B', 'En el bolsillo.'],
     ['E', 'Envíelo en el momento oportuno. Usted lo notará. Era solo eso.']], 'climax_entrada'),
 ];
@@ -174,12 +182,16 @@ async function avisos(api) {
   if (g.cutscene > 0 || g.inDialog) return false;
   if (api.room === 'sala_amazonas' && api.flag('acto_3_iniciado')) return false;
   const call = siguienteLlamada(api);
-  if (!call || !api.cond(call.cond)) return false;
+  if (!call || !api.cond(call.cond)) {
+    if (correoPendienteEvaristo(api)) { g.avisoEntryN = g.entryN; return true; }
+    return false;
+  }
   g.avisoEntryN = g.entryN;
   g.avisoActive = true;
   try {
     api.once('evaristo_' + call.id);
     api.inc('evaristo_llamadas');
+    if (call.alSonar) call.alSonar(api);
     await call.run(api);
     // la primera vez que suena el móvil: cómo se usa (orden del director: que se descubra)
     if (api.once('movil_pista_uso')) api.notice('Usa el móvil para llamar a la abuela o leer el correo', { color: '#9fd8ff', ms: 4200 });
@@ -193,7 +205,7 @@ const afterEnter = (api) => avisos(api);
 const FLAGS_RETIRADOS = ['leoncio_acepta_alta', 'bandeja_diseno_abierta', 'rumor_atun_n', 'rumor_plaza_n', 'gertrudis_error_indice',
   'evaristo_lc',                                          // E2 §5.3: la LC ya no existe
   'rumor_firma_n', 'planta_oyo',                          // E2 fase B (1): el rumor A desaparece
-  'evaristo_convoco', 'pecera_nemesio_saludo'];           // E2 §10.2: sin lector (la L2 y Nemesio ya no existen)
+  'pecera_nemesio_saludo'];                               // E2 §10.2: sin lector (Nemesio ya no existe; `evaristo_convoco` vuelve con la L2)
 function migrarPartida(st) {
   const inv = Array.isArray(st.inventory) ? st.inventory : (st.inventory = []);
   const fl = st.flags || (st.flags = {});
@@ -208,7 +220,16 @@ function migrarPartida(st) {
   const n = Number(fl.evaristo_llamadas) || 0;
   if (n > 0 && !Object.keys(once).some(k => k.startsWith('once:evaristo_L'))) {
     const k = n - (fl.evaristo_lc ? 1 : 0);                // las antiguas L1..Lk ya sonaron
-    for (const [id, min] of [['L1', 1], ['L3', 3], ['L4', 4], ['L5', 5]]) if (k >= min) once['once:evaristo_' + id] = true;
+    for (const [id, min] of [['L1', 1], ['L2', 2], ['L3', 3], ['L4', 4], ['L5', 5]]) if (k >= min) once['once:evaristo_' + id] = true;
+  }
+  // [coherencia] partidas de antes de que volviera la L2 (no tienen `evaristo_convoco`, ni siquiera vacío): si Begoña ya le
+  // mandó a Controlling, convocado por ella; y la L2 no suena fuera de lugar (después de Begoña, de la L3 o en el Acto III).
+  // Si van por el principio del Acto II, la L2 suena en la entrada siguiente, que es su sitio.
+  if (!('evaristo_convoco' in fl)) {
+    fl.evaristo_convoco = once['once:evaristo_L2'] ? 'llamada' : fl.nota_gasto_presentada ? 'begona' : '';   // (L2 de antes de E2)
+    const tarde = fl.nota_gasto_presentada || fl.evaristo_escuchado || fl.acto_3_iniciado || ['L3', 'L4', 'L5'].some(id => once['once:evaristo_' + id]);
+    if (tarde) once['once:evaristo_L2'] = true;
+    if (!('evaristo_correos' in fl)) fl.evaristo_correos = '';
   }
   // E2 §5.3: con la coma cerrada por la vía antigua (LC o E_ENVIO), el correo impreso que ahora es objeto
   if (fl.correo_evaristo_listo && !fl.duelo_inigo_ganado && !inv.includes('correo_evaristo')) inv.push('correo_evaristo');

@@ -1,8 +1,9 @@
 // EL MÓVIL DE BRUNO (objeto `movil`, `solo: true`): «Usar móvil» (o Usar móvil con Bruno, clic derecho, doble toque)
 // abre el primer plano del móvil en MODO APLICACIÓN (engine/phone.js) con su menú en el panel:
 //   · «Llamar a la abuela»   → la escena de pistas de siempre (content/game.js `pistas`, líneas sin cambios)
-//   · «Correo (N sin leer)»  → la bandeja: los «RV:» de Tadeo que ya han llegado (E2: ya no hay aviso; llegan solos) y
-//                              tres correos fijos de la casa; del más nuevo al más viejo; se leen de uno en uno
+//   · «Correo (N sin leer)»  → la bandeja: los «RV:» de Tadeo que ya han llegado (E2: ya no hay aviso; llegan solos), los
+//                              de Evaristo que ha anunciado un aviso ([coherencia]) y tres correos fijos de la casa;
+//                              del más nuevo al más viejo; se leen de uno en uno
 //   · «Llamadas perdidas»    → la eterna de la abuela y las de Evaristo hasta ahora
 //   · «Guardar el móvil»     → cierra (también Esc o un toque en la sala)
 // Leer un correo solo toca `movil_leidos` (bits de leídos): no suma contadores de la biblia ni de la adenda.
@@ -20,6 +21,51 @@ export const RV_TADEO = [   // plan §5.16: tres, sin siglas
   ['acto_2_iniciado', 'RV: RV: RV: La IA dice que la web va más rápida sin lo más grande!!', ''],
   ['acto_3_iniciado', 'RV x5: Reflexión sobre armarios: "AYÚDAME ESTOY EN EL ARMARIO 27"', 'Lo ha visto toda la empresa. Y nadie lo ha leído.'],
 ];
+
+/** [coherencia] Los correos de don Evaristo: cada uno que el juego anuncia con un aviso LLEGA a la bandeja en ese
+ *  momento (sin leer). «Una cosita» va en tres partes: la 1 la escribe en «¿Falta mucho?» (administracion.dialogos.js);
+ *  la 2 y la 3 llegan solas en las dos entradas en sala siguientes (content/game.js `avisos`), o antes si Bruno le
+ *  vuelve a meter prisa. «Agradecimiento» es el que promete de palabra al despedirse (o al darle algo): llega en la
+ *  entrada siguiente. Nada de esto es el `correo_evaristo` de la trama (impreso por el fax, asunto «Una coma»). */
+export const CORREOS_EVARISTO = {
+  1: { bit: 3, asunto: 'Una cosita (1 de 3)', cuerpo: ['Estimado señor Pellejo, con jota:', 'Lo que le quiero comunicar no cabe en un correo. Va en tres.'],
+    bruno: 'Una cosita muy pequeña. En tres entregas.' },
+  2: { bit: 4, asunto: 'Una cosita (2 de 3)', cuerpo: ['Es sobre una coma.', 'Sigue en el próximo.'],
+    bruno: 'Me lo está dando por entregas. Y yo, enganchado.' },
+  3: { bit: 5, asunto: 'Una cosita (3 de 3)', cuerpo: ['Fin.', 'Atentamente, Evaristo Salvedad. Controlling.'],
+    bruno: 'Tres correos. Ni una errata. Ni un dato.' },
+  G: { bit: 6, asunto: 'Agradecimiento', cuerpo: ['Gracias por pasar por Controlling.', 'Su visita ha durado once minutos. Ninguno sobraba.'],
+    bruno: 'Me da las gracias por escrito. Aquí no me las dan ni de palabra.' },
+};
+export const DE_EVARISTO = 'Evaristo Salvedad';
+const tokens = (api) => String(api.flag('evaristo_correos') || '').split(',').filter(Boolean);
+/** ¿Ha llegado ya el correo `id` de Evaristo? */
+export const correoLlegado = (api, id) => tokens(api).some(t => t.split('@')[0] === String(id));
+/** ¿Ha prometido Evaristo el de agradecimiento (o ya ha llegado)? */
+export const graciasPrometidas = (api) => tokens(api).some(t => t === 'g' || t.startsWith('G@'));
+/** El correo `id` llega a la bandeja AHORA, sin leer, con su aviso. Devuelve false si ya estaba. */
+export function llegaCorreoEvaristo(api, id) {
+  const C = CORREOS_EVARISTO[id];
+  if (!C || correoLlegado(api, id)) return false;
+  const t = tokens(api).filter(x => !(id === 'G' && x === 'g'));
+  t.push(`${id}@${num(api, 'tadeo_rv_n')}`);
+  api.setFlag('evaristo_correos', t.join(','));
+  api.notice(`Correo nuevo de ${DE_EVARISTO}: «${C.asunto}».`);
+  return true;
+}
+/** Evaristo promete de palabra el correo de agradecimiento: llega en la entrada en sala siguiente. */
+export function prometerGracias(api) {
+  if (graciasPrometidas(api)) return false;
+  api.setFlag('evaristo_correos', [...tokens(api), 'g'].join(','));
+  return true;
+}
+/** Al entrar en una sala (content/game.js `avisos`): llega como mucho UN correo pendiente de Evaristo. */
+export function correoPendienteEvaristo(api) {
+  if (correoLlegado(api, 1) && !correoLlegado(api, 2)) return llegaCorreoEvaristo(api, 2);
+  if (correoLlegado(api, 2) && !correoLlegado(api, 3)) return llegaCorreoEvaristo(api, 3);
+  if (tokens(api).includes('g')) return llegaCorreoEvaristo(api, 'G');
+  return false;
+}
 
 /** Correos fijos (siempre en la bandeja, al fondo): bit de leído, remitente, quién «habla» el texto, fecha, asunto, cuerpo. */
 const FIJOS = [
@@ -39,15 +85,21 @@ const num = (api, f) => Number(api.flag(f) || 0);
 const leido = (api, bit) => ((num(api, 'movil_leidos') >> bit) & 1) === 1;
 const marcar = (api, bit) => { if (!leido(api, bit)) api.setFlag('movil_leidos', num(api, 'movil_leidos') | (1 << bit)); };
 
-/** La bandeja: los RV: que ya han llegado (del más nuevo al más viejo) y, debajo, los fijos. */
-function bandeja(api) {
+/** La bandeja: los RV: de Tadeo y los de Evaristo que ya han llegado (del más nuevo al más viejo) y, debajo, los fijos. */
+export function bandeja(api) {
   const n = Math.min(num(api, 'tadeo_rv_n'), RV_TADEO.length);
-  const out = [];
-  for (let i = n - 1; i >= 0; i--) {
+  const ev = tokens(api).filter(t => t.includes('@')).map(t => { const [id, k] = t.split('@'); return { id, k: Number(k) || 0 }; });
+  const evaristo = (k) => ev.filter(e => e.k === k && CORREOS_EVARISTO[e.id]).map(({ id }) => {
+    const C = CORREOS_EVARISTO[id];
+    return { bit: C.bit, de: DE_EVARISTO, who: 'evaristo_salvedad', fecha: 'hoy', asunto: C.asunto, cuerpo: C.cuerpo, bruno: C.bruno };
+  });
+  const cron = [...evaristo(0)];                                    // en orden de llegada
+  for (let i = 0; i < n; i++) {
     const [, asunto, bruno] = RV_TADEO[i];
-    out.push({ bit: i, de: 'Tadeo Adjunto', who: 'tadeo_adjunto', fecha: 'hoy', asunto: asunto.replace(/^((RV: )+|RV x\d: )/, ''), completo: asunto, cuerpo: [asunto], bruno });
+    cron.push({ bit: i, de: 'Tadeo Adjunto', who: 'tadeo_adjunto', fecha: 'hoy', asunto: asunto.replace(/^((RV: )+|RV x\d: )/, ''), completo: asunto, cuerpo: [asunto], bruno });
+    cron.push(...evaristo(i + 1));
   }
-  return out.concat(FIJOS);
+  return cron.reverse().concat(FIJOS);
 }
 const sinLeer = (api) => bandeja(api).filter(c => !leido(api, c.bit)).length;
 const corto = (t, n = 34) => (t.length > n ? t.slice(0, n - 1).trimEnd() + '…' : t);

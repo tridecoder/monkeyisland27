@@ -40,6 +40,8 @@ export const ADENDA_FLAGS = [
   'sala_becario_sin_turno', 'gertrudis_pregunta', 'vio_pegatina_fax', 'album_validado', 'columna_kanban',
   // ENMIENDA E7 (I1)
   'oyo_papel_begona',
+  // [coherencia] la L2 vuelve y los correos de Evaristo llegan de verdad (str a '')
+  'evaristo_convoco', 'evaristo_correos',
 ];
 
 export default {
@@ -133,7 +135,10 @@ export default {
   ascensor_negativas_n: 'int · común (lib/ascensor.js) · +1 por planta denegada · rotación de las negativas',
 
   // ---------------------------------------------------------------- el móvil de Bruno (content/lib/movil.js)
-  movil_leidos: 'int · común (lib/movil.js) · bits de los correos leídos en el móvil (0-4 RV: de Tadeo, 8-10 fijos) · el menú del móvil',
+  movil_leidos: 'int · común (lib/movil.js) · bits de los correos leídos en el móvil (0-2 RV: de Tadeo, 3-6 Evaristo, 8-10 fijos) · el menú del móvil',
+  // [coherencia] quién ha convocado a Bruno a Controlling y los correos de Evaristo que han llegado de verdad
+  evaristo_convoco: "str · común (game.js L2; administracion Begoña) · '' | 'llamada' (L2) | 'begona' (B_EJEMPLAR, sin L2) · administracion («¿Para qué me ha llamado?»), ficha",
+  evaristo_correos: "str · común (lib/movil.js) · correos de Evaristo llegados, en orden: '1@k,2@k,3@k,G@k' (k = RV: de Tadeo ya llegados); 'g' = el de agradecimiento, prometido · bandeja del móvil",
 
   // ---------------------------------------------------------------- PLAN DE COMEDIA §3.4 (altas; las bajas, cuando las
   // salas dejen de usarlos). Los pone/lee cada paquete; el motor solo pone duel:<id>:* (no hace falta declararlos).
