@@ -222,7 +222,7 @@ export const FICHA = {
   evaristo: ['Al margen, a lápiz: «Evaristo me espera. Planta 2. Escucharle entero».',
     'Al margen, a lápiz: «La coma de Evaristo, a Aurora».',
     'Al margen, a lápiz: «El correo, en el momento oportuno».',
-    'Al margen, a lápiz: «Evaristo me ha llamado. Planta 2, al fondo de Administración».'],   // [coherencia] tras la L2
+    'Al margen, a lápiz: «Evaristo me ha llamado. Planta 2. Al fondo».'],   // [coherencia] tras la L2
 };
 /** Las líneas de Mirar la ficha según el estado de la partida (también las usa tools/test-fase0.mjs). */
 export function fichaViva(api) {
