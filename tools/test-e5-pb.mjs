@@ -93,7 +93,8 @@ try {
   const walk = (d) => { for (const f of fs.readdirSync(d)) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) walk(p); else if (f.endsWith('.js')) fuentes.push(p); } };
   walk(path.join(root, 'content'));
   const conFrase = fuentes.filter(f => fs.readFileSync(f, 'utf8').split('\n').some(l => l.includes(`'${FRASE}'`) || l.includes(`'Eso lo hace nuestro.'`)));
-  ok(conFrase.length === 1 && conFrase[0].endsWith('pecera.escenas.js'), `solo pecera.escenas.js (pecera_herminia_mide) dice la frase: ${conFrase.map(f => path.relative(root, f)).join(', ')}`);
+  // [bloqueos] la frase vuelve al árbol de Anselmo; la escena la dice entera solo si no se oyó antes (si no, el eco)
+  ok(conFrase.length === 2 && conFrase.some(f => f.endsWith('pecera.escenas.js')) && conFrase.some(f => f.endsWith('pecera.dialogos.js')), `la frase, en el árbol de Anselmo y en pecera_herminia_mide: ${conFrase.map(f => path.relative(root, f)).join(', ')}`);
 
   // ====================================================================== 1. apagón jugable
   console.log('\n§2.2 apagón jugable (ratón real)');
@@ -221,7 +222,7 @@ try {
     await idle(); await seguir();
     ok(await logHas(linea) && !(await flag('posit_descopeado')) && !(await G(() => (__game.state().objects['pecera.kanban'] || {}).state)), `clic en ${col} → Anselmo la borra con la manga: «${linea}»`);
   }
-  ok(await logCount('Tráeme algo que no sea ni hecho ni muerto. Eso no existe.') === 1 && await flag('pecera_columna_mal_n') === 3, '«Tráeme algo…» a la tercera, una vez');
+  ok(await logCount('Tráeme algo que no sea ni hecho ni muerto. Eso no existe.') === 1 && await flag('pecera_columna_mal_n') === 3, '«Tráeme algo…» a la primera (bloqueos), una vez');
   await raton('usar', 'kanban', 'rotulador_rojo', false);
   await clicOpcion('Mejor no.'); await idle(); await seguir();
   ok(!(await flag('posit_descopeado')) && !(await opciones()), '«Mejor no.» no hace nada');
@@ -326,20 +327,21 @@ try {
   ok(!(await opciones()), '«Nada, perdone.» cierra');
 
   // ====================================================================== 5. la frase de Anselmo, una vez
-  console.log('\n§2.8 M20: la frase de Anselmo se oye entera una vez (paso 38)');
-  await partida({ cms_vivo: true, rep_11: true, casilla_fuente: true, herminia_midio: false });
+  // [bloqueos] la frase se dice entera la primera vez, en el árbol o en la escena; la segunda, el eco
+  console.log('\n§2.8 M20 (bloqueos): la frase de Anselmo, entera en el árbol; en el paso 38, el eco');
+  await partida({ cms_vivo: true, rep_11: true, casilla_fuente: true, herminia_midio: false, pecera_prompt_oido: false });
   await raton('hablar', 'anselmo_monolito', null, false);
   await clicOpcion('¿Y tú no usas IA?'); await until(() => !!__game.currentDialogOptions(), null, 8000);
-  ok(await logHas('¿Tú de qué departamento vienes?') && !(await logHas(FRASE)), 'antes del paso 38: «¿Tú de qué departamento vienes?» (M20)');
+  ok(await logCount(FRASE) === 1 && await logCount('Eso lo hace nuestro.') === 1 && !(await logHas('¿Tú de qué departamento vienes?')), 'en el árbol, antes del paso 38: la frase entera');
   await clicOpcion('Me voy.'); await idle(); await seguir();
   await raton('usar', 'ordenador_bruno');
   await idle();
   await G(() => __game.skipSpeech());
-  ok(await flag('herminia_midio') && await logCount(FRASE) === 1 && await logCount('Eso lo hace nuestro.') === 1, 'paso 38 (Usar el ordenador): la frase entera, una vez');
+  ok(await flag('herminia_midio') && await logCount(FRASE) === 1 && await logHas('Ya te lo dije. Lo que cuenta es lo de dentro.'), 'paso 38 (Usar el ordenador): el eco, sin repetir la frase');
   await G(() => { delete __game.game.state.once['once:dialog:anselmo'] ; });
   await G(() => __game.newGame()); await idle();
   ok(true, '(nueva partida para el eco)');
-  await partida({ cms_vivo: true, herminia_midio: true });
+  await partida({ cms_vivo: true, herminia_midio: true, pecera_prompt_oido: true });
   await raton('hablar', 'anselmo_monolito', null, false);
   await clicOpcion('¿Y tú no usas IA?'); await until(() => !!__game.currentDialogOptions(), null, 8000);
   ok(await logHas('Ya te lo he dicho. Lo escribí yo. En mayúsculas.') && !(await logHas('El prompt es de dentro')), 'después: el eco «Ya te lo he dicho. Lo escribí yo. En mayúsculas.» (D19), sin medio prompt');

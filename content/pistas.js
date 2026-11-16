@@ -35,93 +35,126 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   columna: 'Anselmo ya cree que Brais existe. Lo que no hay es columna para que se vaya.',
   coma: 'Evaristo me llama y Begoña me manda a verle. Algo le quita el sueño.',   // integración: en el paso 28 solo ha sonado la L1
   bendicion: 'Evaristo duda de su propia coma. Necesita a alguien que sepa de comas.',
+  // [bloqueos] metas propias donde antes se repetía «Hueco, fuente y firma» (no decía qué toca ahora)
+  reunion: 'La página 7 se decide en esa reunión. Y esa reunión no se acaba nunca.',
+  hueco: 'Maripaz se ha quedado sentada en el planillo. La página 7 está debajo.',
+  papel: 'El fax de Teodoro sigue sin papel. Y yo llevo un taco de copias rechazadas.',
+  fuente: 'Un fax anónimo y una nota con reverso. Dos fuentes, si alguien las contrasta.',
+  firma: 'Teodoro no firma a nadie de la web. Habrá que contestarle mejor que él.',
+  pieza: 'Ya tengo fuente. Falta escribir la pieza, y tengo silla para hacerlo.',
+  recorte: 'Mi pieza tiene 31 líneas y el hueco, 23. Alguien tiene que cortar.',
 };
 
+// [bloqueos] niveles 1-3: el 1 sugiere, el 2 dice quién o dónde, el 3 (Bruno al colgar) dice sitio, objeto y verbo.
+// `sub`: sub-estados (engine/objetivos.js `variante`): el primero que se cumple sustituye niveles / meta / extra / previa.
 export const OBJETIVOS = [
   { id: 'torno', acto: 1, hecho: 'torno_abierto', salas: ['vestibulo'], meta: M.torno, niveles: [
     'En el pueblo, el que no sale en la foto no existe. Ponte en la foto.',
     'Si el torno no te conoce, preséntate en ese cuadro de caras.',
-    ['Pega tu cara donde salen los jefes. ¿Tienes algo que pegue?', 'Chicle en la tarjeta, tarjeta en el organigrama, y al torno.']],
+    ['Pega tu cara donde salen los jefes. ¿Tienes algo que pegue?', 'Vestíbulo: chicle en la tarjeta, tarjeta en el organigrama, y al torno.']],
     extra: { si: ['!has:chicle', '!tarjeta_con_chicle'], abuela: 'El del mostrador siempre está mascando algo: pídeselo.' } },
   { id: 'silla', acto: 1, hecho: 'silla_libre', activo: 'torno_abierto',      // [integrador] desde el torno (antes, entre el torno y la 7.2 Bruno decía la meta final)
     salas: ['pecera', 'pajarera'], meta: M.silla, niveles: [
     '¿Estás de pie? Siéntate, hijo. La silla es del que llega.',
-    'Tu abuelo, con chaqueta, mandaba en el bar. Pónsela a alguien que mande.',
-    ['El que manda ahí es el que dice a todo que sí.', 'La chaqueta de Ramírez, al Lector Medio.']] },
+    'Esa silla la guarda una chaqueta. Sin chaqueta, no la guarda nadie.',
+    ['Coge la chaqueta de esa silla, hijo, que no muerde.', 'Redacción: Coger la chaqueta de Ramírez. Y ponérsela al Lector Medio.']],
+    sub: [{ si: 'has:chaqueta_ramirez', niveles: [
+      'Tu abuelo, con chaqueta, mandaba en el bar. Pónsela a alguien que mande.',
+      'En los despachos hay uno que dice a todo que sí. Ese manda.',
+      ['Ponle la chaqueta al que dice a todo que sí.', 'Despachos: Usar la chaqueta de Ramírez con el Lector Medio.']] }] },
   { id: 'correo', acto: 1, hecho: (api) => !!api.flag('rep_11') || !!api.flag('casilla_hueco'),   // N1: R11 solo sirve contra Maripaz
     activo: 'silla_libre', salas: ['pecera'], meta: M.correo, niveles: [
     'Ahora que estás sentado, mira lo tuyo. Que nunca lo miras.',
     'En el ordenador tendrás cartas sin abrir. Tu tío tiene el buzón igual.',
-    ['Mira tu ordenador, hijo. Con silla ya se ve.', 'Mirar mi ordenador, sentado.']] },
-  { id: 'cafe', acto: 1, hecho: 'gertrudis_saludada', activo: 'inigo_presentado', salas: ['office', 'pecera'], meta: M.cafe, niveles: [
+    ['Mira tu ordenador, hijo. Con silla ya se ve.', 'Redacción: Mirar mi ordenador, ya sentado.']] },
+  { id: 'cafe', acto: 1, hecho: 'gertrudis_saludada', activo: 'inigo_presentado', salas: ['office', 'pecera', 'catacumba'], meta: M.cafe, niveles: [   // [bloqueos] delante de Aurora sin café, el café (no el correo)
     '¿Has saludado a todo el mundo? A las máquinas también.',
     'La cafetera esa no da café por botones. Lo da por educación.',
-    ['Dale las buenas noches a la cafetera, en alto.', 'Vending: «Buenas noches, Gertrudis», y darle lo que pida.']] },
-  { id: 'aurora', acto: 1, hecho: 'acto_2_iniciado', activo: 'has:cafe', salas: ['catacumba'], meta: M.cafe, niveles: [
+    ['Dale las buenas noches a la cafetera, en alto.', 'Vending: hablar con Gertrudis, «Buenas noches, Gertrudis».']] },
+  { id: 'aurora', acto: 1, hecho: 'acto_2_iniciado', activo: 'has:cafe', salas: ['catacumba', 'office'], meta: M.cafe, niveles: [
     'Los que corrigen siempre están cansados. Tu abuelo corregía la quiniela.',
     'A la señora del cartel no le hables: dale. Primero el café.',
-    ['Dale el café a la que corrige. La del boli rojo.', 'El café, a Aurora.']] },
+    ['Dale el café a la que corrige. La del boli rojo.', 'Redacción de papel: Dar el café a Aurora.']] },
   { id: 'cms', acto: 2, hecho: 'cms_vivo', activo: 'acto_2_iniciado', salas: ['pecera', 'cpd'], meta: M.cms, niveles: [
     'La tele de tu abuelo no iba si él la miraba. Apágale algo a alguien.',
     'Si te la vuelven a enchufar, apágala donde no lleguen. Sigue el cable.',                     // E5 §2.2
-    ['El cable baja a los ordenadores. Apaga la regleta que no dice lo que es.', 'Sistemas: en el regletero, la R-3. La del pósit de Eutimio.']] },
+    ['El cable baja a los ordenadores. Apaga la regleta que no dice lo que es.', 'Sistemas: Tirar de la R-3 del regletero. La del pósit de Eutimio.']] },
   // ENMIENDA E5 §2.1: la reunión se parte en dos (preguntar a quien preside → que pregunte quien sale en la tele)
+  // [bloqueos] la pregunta a Gervasio ya no pide Mirar el orden del día; el nivel 2 cambia si ya lo ha mirado
   { id: 'reunion', acto: 2, hecho: (api) => !!api.flag('sala_becario_sin_turno') || !!api.flag('reunion_terminada'), activo: 'acto_2_iniciado',
-    salas: ['pajarera', 'sala_amazonas'], meta: M.hff, niveles: [
+    salas: ['pajarera', 'sala_amazonas'], meta: M.reunion, niveles: [
     'Las reuniones se acaban cuando alguien pregunta lo que nadie quiere tocar.',
-    'En esa reunión tienen los puntos en una pantalla. Busca el que nadie toca.',
-    ['Pregúntale al que preside por ese punto.', 'Orden del día, punto 3. A Gervasio: «¿y los siguientes pasos?».']] },
+    'En esa reunión tienen los puntos en una pantalla. Mira cuál no tocan.',
+    ['Pregúntale al que preside por los pasos que vienen, hijo.', 'Sala Amazonas: a Gervasio, «¿y cuáles son los siguientes pasos?».']],
+    sub: [{ si: 'sala_amazonas_orden_visto', niveles: [
+      'Las reuniones se acaban cuando alguien pregunta lo que nadie quiere tocar.',
+      'Ese punto que nadie toca, pregúntaselo al que preside. En alto.',
+      ['Pregúntale al que preside por los pasos que vienen, hijo.', 'Sala Amazonas: a Gervasio, «¿y cuáles son los siguientes pasos?».']] }] },
+  // [bloqueos] tres sub-estados: sin turno (tele o Vending), la pregunta ya mandada por Gertrudis, el atasco
   { id: 'turno', acto: 2, hecho: 'reunion_terminada', activo: 'sala_becario_sin_turno', salas: ['sala_amazonas', 'office', 'pecera'], meta: M.turno, niveles: [
     'Si a ti no te dejan preguntar, que pregunte alguien que salga en la tele.',
     'Esa cafetera tan educada sale en todas las pantallas, hijo. Hasta en la mía.',
-    ['A esa tele dale las buenas noches, como a la cafetera, y pregúntale.', 'La tele: «Buenas noches, Gertrudis». Y lo de los pasos.']],
-    previa: { si: 'gertrudis_pregunta', nivel: 1, abuela: 'La cafetera ya lo ha mandado. Ahora alguien tiene que sintonizarla.' } },
-  { id: 'hueco', acto: 2, hecho: 'casilla_hueco', activo: 'reunion_terminada', salas: ['sala_amazonas'], meta: M.hff, niveles: [
+    ['A esa tele dale las buenas noches, como a la cafetera, y pregúntale.', 'Sala Amazonas: a la tele, «Buenas noches, Gertrudis». Y lo de los pasos.']],
+    sub: [
+      { si: 'sala_amazonas_atasco', meta: 'Los de Mercados, encajados en la puerta. Alguien tendrá que ayudarles.', niveles: [
+        'Esos señores no saben salir por una puerta. Échales una mano.',
+        'Los de la puerta están encajados, hijo. Un empujoncito con educación.',
+        ['Empújalos, o pregúntales cuándo es la próxima reunión.', 'Sala Amazonas: Empujar a los de Mercados, en la puerta.']] },
+      { si: 'gertrudis_pregunta', meta: 'Gertrudis ya ha mandado la pregunta. Falta una pantalla que la sintonice.', niveles: [
+        'La cafetera ya lo ha mandado. Ahora alguien tiene que sintonizarla.',
+        'La cafetera sale en la primera tele que se encienda. Prueba la de la reunión.',
+        ['Enciende la tele de la reunión, hijo, que la cafetera ya ha hablado.', 'Sala Amazonas: Usar la tele, o hablarle.']] },
+    ] },
+  { id: 'hueco', acto: 2, hecho: 'casilla_hueco', activo: 'reunion_terminada', salas: ['sala_amazonas'], meta: M.hueco, niveles: [
     'La que se queda sentada es que quiere que le hables.',
     'Si alguien tiene algo apartado y no lo usa, ya no es suyo.',                                 // E2 §8 / §10.3
-    ['Díselo por escrito, que es como se dicen las cosas.', 'A Maripaz: «Siestatón no ha confirmado la página 7».']],
+    ['Díselo por escrito, que es como se dicen las cosas.', 'Sala Amazonas: a Maripaz, «Siestatón no ha confirmado la página 7».']],
     duelo: 'maripaz' },                                                   // N1: dónde está cada réplica que falta
   { id: 'nota', acto: 2, hecho: 'nota_gasto_presentada', activo: 'acto_2_iniciado', salas: ['catacumba', 'ecosistema', 'administracion'], meta: M.nota, niveles: [   // E7 F1
     'En las oficinas sin papel siempre hay una que lo gasta en decir que no.',
     '¿Has hecho la cuenta de gastos? Hazla mal, que las malas vuelven con copia.',
-    ['Lo que lleves en el bolsillo vale de justificante. Y pídele una bien hecha.', 'Nota de gasto a Begoña, con el azúcar. Y que me enseñe una bien hecha.']] },
+    ['Lo que lleves en el bolsillo vale de justificante. Y pídele una bien hecha.', 'Administración: nota de gasto a Begoña, con el azúcar. Y una bien hecha.']] },
   // E2 §10.3 · paso 28: escuchar a Evaristo hasta el final (Administración)
   { id: 'coma', acto: [2, 3], hecho: 'evaristo_escuchado', activo: 'nota_gasto_presentada', salas: ['administracion', 'ecosistema'], meta: M.coma, niveles: [
     'A los mayores hay que dejarlos acabar, hijo. Lo bueno lo dicen al final.',
     'Ese señor que te llama tanto quiere contarte algo. No le metas prisa.',
-    ['Escúchale entero, hijo, aunque se te enfríe la cena.', 'Evaristo: «¿De qué trata?» y «Siga».']] },
-  { id: 'papel_fax', acto: 2, hecho: 'fax_con_papel', activo: 'nota_gasto_presentada', salas: ['catacumba'], meta: M.hff, niveles: [
+    ['Escúchale entero, hijo, aunque se te enfríe la cena.', 'Administración: escuchar a Evaristo. «¿De qué trata?» y «Siga».']] },
+  { id: 'papel_fax', acto: 2, hecho: 'fax_con_papel', activo: 'nota_gasto_presentada', salas: ['catacumba'], meta: M.papel, niveles: [
     'Las máquinas viejas, sin papel, no hablan. Dales papel. ¿Has cenado?',
     'Ese papel que te rechazaron tiene la espalda en blanco.',
-    ['Lo que no te sirve a ti le sirve a una máquina.', 'Las copias rechazadas, al fax de Teodoro.']] },
-  { id: 'fuente', acto: 2, hecho: 'casilla_fuente', activo: 'fax_con_papel', salas: ['catacumba'], meta: M.hff, niveles: [
+    ['Lo que no te sirve a ti le sirve a una máquina.', 'Redacción de papel: Usar las copias rechazadas con el fax.']] },
+  { id: 'fuente', acto: 2, hecho: 'casilla_fuente', activo: 'fax_con_papel', salas: ['catacumba'], meta: M.fuente, niveles: [
     'Lo que me cuenta una vecina no me lo creo hasta que me lo cuenta otra.',
     'Tienes un papel del fax y otro de la ventanilla: dos vecinas.',
-    ['Llévale las dos vecinas a la que corrige.', 'El fax de F.P. y la nota, a Aurora.']] },
+    ['Llévale las dos vecinas a la que corrige.', 'Redacción de papel: Dar la fotocopia de la nota a Aurora.']] },
   // E2 §10.3 · paso 32: Aurora bendice la coma y la manda por el fax (Redacción de papel)
   { id: 'bendicion', acto: [2, 3], hecho: 'coma_bendecida', activo: ['evaristo_escuchado', 'fax_con_papel'], salas: ['catacumba'], meta: M.bendicion, niveles: [
     'Si dudas de una coma, pregúntale a la que corrige.',
     'La señora del boli rojo sabe de comas más que el cura.',
-    ['Pregúntale a la del boli por la coma de ese señor.', 'A Aurora: la coma de Evaristo.']] },
-  { id: 'firma', acto: 2, hecho: 'casilla_firma', activo: 'fax_con_papel', salas: ['catacumba'], meta: M.hff, niveles: [
+    ['Pregúntale a la del boli por la coma de ese señor.', 'Redacción de papel: a Aurora, lo de la coma de Evaristo.']] },
+  { id: 'firma', acto: 2, hecho: 'casilla_firma', activo: 'fax_con_papel', salas: ['catacumba'], meta: M.firma, niveles: [
     'Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor.',
     'Si el del fax se pone terco, que le conteste su propia máquina.',
-    ['Contéstale mejor que él, y al final, lo de su máquina.', 'Duelo con Teodoro. Remate: el manual.']], duelo: 'teodoro',
-    extra: { si: '!has:manual_fax', abuela: 'El de los ordenadores no da nada sin número. Míralo en la máquina.' } },   // E5 §2.3
-  { id: 'pieza', acto: 2, hecho: 'pieza_escrita', activo: 'casilla_fuente', salas: ['pecera'], meta: M.hff, niveles: [
+    ['Contéstale mejor que él, y al final, lo de su máquina.', 'Redacción de papel: a Teodoro, «Quiero firmar». Remate: el manual.']], duelo: 'teodoro',
+    // [bloqueos] sin el manual, el nivel 2 y el 3 dicen dónde está (antes, solo un extra del nivel 3)
+    sub: [{ si: '!has:manual_fax', niveles: [
+      'Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor.',
+      'El de los ordenadores guarda el manual de esa máquina. Pídeselo con su número.',
+      ['Mira el número que lleva el fax y díselo al de los ordenadores.', 'Fax: Mirar la pegatina. Sistemas: a Eutimio, «Ticket 0.441».']] }] },
+  { id: 'pieza', acto: 2, hecho: 'pieza_escrita', activo: 'casilla_fuente', salas: ['pecera'], meta: M.pieza, niveles: [
     '¿Y has escrito ya? Siéntate en tu silla y escribe.',
     'Lo de escribir, en tu mesa. Que te ha costado la silla.',
-    ['Escribe en tu máquina, hijo, que lo entienda tu abuela.', 'Mi ordenador, a escribir.']] },
-  { id: 'recorte', acto: 2, hecho: 'pieza_recortada', activo: 'pieza_escrita', salas: ['catacumba', 'administracion'], meta: M.hff, niveles: [
+    ['Escribe en tu máquina, hijo, que lo entienda tu abuela.', 'Redacción: Usar mi ordenador. A escribir.']] },
+  { id: 'recorte', acto: 2, hecho: 'pieza_recortada', activo: 'pieza_escrita', salas: ['catacumba', 'administracion'], meta: M.recorte, niveles: [
     'Si te sobra, dáselo a quien corta. La que me hace los bajos no pregunta.',
     'La de la ventanilla no lee: corta. Y el fax llega a todas partes.',
-    ['Mándaselo a la que corta, por la máquina o en mano.', 'La pieza a Begoña: fax, tecla 2, o subir.']],
+    ['Mándaselo a la que corta, por la máquina o en mano.', 'Redacción de papel: la pieza al fax, tecla 2. O en mano, a Begoña.']],
     // E1.4.1: con `herminia_midio`, antes del nivel 1
     previa: { si: 'herminia_midio', nivel: 1, abuela: 'Hasta la maquinita de los dibujos sabe cuánto te sobra, hijo.' } },   // E2 §10.3
   { id: 'cierre', acto: 2, hecho: 'pagina_cerrada', activo: ['casilla_hueco', 'casilla_fuente', 'casilla_firma', 'pieza_recortada'], salas: ['*'], meta: M.cierre, niveles: [
     '¿Y a qué esperas para darle los papeles a ese señor del fax?',
     'Tienes las tres cosas, hijo. Llévalas a quien manda en el papel.',
-    ['Al señor del fax llévale los papeles de mi parte.', 'La ficha, a Teodoro.']] },
+    ['Al señor del fax llévale los papeles de mi parte.', 'Redacción de papel: Dar la ficha a Teodoro.']] },
   { id: 'armario', acto: 3, hecho: 'ruben_encontrado', activo: 'acto_3_iniciado', salas: ['cpd', 'pecera'], meta: M.acto3, niveles: [
     'Si de un armario sale papel, es que alguien escribe dentro, hijo.',
     'Antes tiraban desde dentro. Ahora el de dentro está muy liado escribiendo.',                 // E5 §2.4
@@ -130,30 +163,61 @@ export const OBJETIVOS = [
     activo: 'ruben_encontrado', salas: ['eventos', 'cpd'], meta: M.baja, niveles: [
     'Para que dejen irse a alguien, hay que demostrar que estuvo.',
     'Las fotos de las fiestas las guarda la que las organiza.',
-    ['Pídele las fotos a la de las fiestas.', 'El álbum de Pilar. Brais sale al fondo.']] },
+    ['Pídele las fotos a la de las fiestas.', 'Eventos: a Pilar, «¿Me prestas el álbum?». Brais sale al fondo.']] },
   // ENMIENDA E5 §2.5: `baja` = enseñar el álbum (album_validado); `columna` = escribir la columna con el rotulador
   { id: 'baja', acto: 3, hecho: 'album_validado', activo: (api) => api.has('album_eventos'), salas: ['pecera'], meta: M.baja, niveles: [
     'Las fotos, enséñaselas al que lleva la lista. Que vea que el chico existe.',
     'El del tablero no se cree nada sin pruebas. Ya tienes pruebas.',
-    ['Enséñale las fotos al del tablero.', 'El álbum, a Anselmo.']] },
+    ['Enséñale las fotos al del tablero.', 'Redacción: Dar el álbum a Anselmo.']] },
+  // [bloqueos] `columna` por sub-estados: falta la frase (Brais o Eventos), falta el rotulador, o solo escribirla
   { id: 'columna', acto: 3, hecho: 'ruben_libre', activo: 'album_validado', salas: ['pecera', 'ecosistema'], meta: M.columna, niveles: [
-    'En esa pizarra se escribe con rotulador, hijo, y no con el de ese señor.',
-    'La de los anuncios pinta sus objetivos a rotulador: pídeselo.',
-    ['Escribe en el tablero la frase fina del chico, y mueve tú el papelito.', 'Rotulador de Maripaz y tablero de Anselmo: «SALIDA EN VALOR».']],
-    extra: { si: ['!rep_13', '!oyo_descopear'], abuela: 'Pero antes pregúntale al chico por los discursos de ese señor.' } },
+    'Ya tienes con qué y qué escribir. Al tablero, hijo.',
+    'Escribe en el tablero la frase fina del chico, y mueve tú el papelito.',
+    ['El rotulador, al tablero del que no se cree nada.', 'Redacción: Usar el rotulador con el kanban. «SALIDA EN VALOR».']],
+    sub: [
+      { si: ['!rep_13', '!oyo_descopear'], meta: 'Para sacar a Brais del tablero hace falta una columna que no diga «despedido».', niveles: [
+        'Para que alguien se vaya sin que parezca que lo echan, hay palabras finas.',
+        'El chico del armario escribía discursos finos. Pregúntale por ellos.',
+        ['Pregúntale al chico por los discursos de ese señor del traje.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».']] },
+      { si: '!has:rotulador_rojo', meta: 'Ya sé qué columna escribir. Me falta un rotulador que no sea de Anselmo.', niveles: [
+        'En esa pizarra se escribe con rotulador, hijo, y no con el de ese señor.',
+        'La de los anuncios pinta sus objetivos a rotulador. Lo tiene colgado.',
+        ['Coge el rotulador que cuelga junto a los objetivos de ventas.', 'Marketing y Comercial: Coger el rotulador del termómetro de ventas.']] },
+      { si: '!rep_13', niveles: [
+        'Ya tienes con qué y qué escribir. Al tablero, hijo.',
+        'Escribe en el tablero esa palabra rara que oíste en las fiestas.',
+        ['El rotulador, al tablero del que no se cree nada.', 'Redacción: Usar el rotulador con el kanban. «DESCOPEADO».']] },
+    ] },
   { id: 'acta', acto: 3, hecho: 'sala_abierta', activo: 'acto_3_iniciado', salas: ['pajarera'], meta: M.acta, niveles: [
     'En una reunión manda el que escribe el acta. Que la escriba otro.',
     'A ese señor no le pises las frases, hijo. Espera a que se le acaben.',
-    ['Cuando deje de escribir, contéstale. Y al final, su cuenta de la comida.', 'Gervasio: esperar a que acabe de escribir. Remate: su nota de la comida.']], duelo: 'gervasio' },
-  { id: 'inigo', acto: 3, hecho: 'duelo_inigo_ganado', activo: 'sala_abierta', salas: ['sala_amazonas'], meta: M.climax, niveles: [
+    ['Cuando deje de escribir, contéstale. Y al final, su cuenta de la comida.', 'Despachos: a Gervasio, que acabe de escribir. Remate: su nota de la comida.']], duelo: 'gervasio' },
+  { id: 'inigo', acto: 3, hecho: 'duelo_inigo_ganado', activo: ['sala_abierta', 'ruben_libre'], salas: ['sala_amazonas', 'pajarera'], meta: M.climax, niveles: [
     'A los que hablan mucho se les contesta corto.',
     'Cuando pida papeles, dale lo del chico, lo de la reunión y lo de las comas.',                   // E2 §10.3
-    ['Primero lo del chico; luego la reunión; luego la coma.', 'Remates: el ticket nº 1, el acta y el correo de Evaristo.']], duelo: 'inigo',
+    ['Primero lo del chico; luego la reunión; luego la coma.', 'Sala Amazonas, remates: el ticket nº 1, el acta y el correo de Evaristo.']], duelo: 'inigo',
     extra: { si: '!has:correo_evaristo', abuela: 'Y el papel del señor de las comas, que lo vas a necesitar.' } },
   { id: 'empujon', acto: 3, hecho: 'lector_derribado', activo: 'duelo_inigo_ganado', salas: ['sala_amazonas'], meta: M.empujon, niveles: [
     'A los que nunca dicen nada, hijo, un empujoncito con educación.',
     'Ese de cartón lleva semanas diciendo que sí. Que diga otra cosa.',
-    ['Empújalo, que es de cartón y no se hace daño.', 'Empujar al Lector Medio.']] },
+    ['Empújalo, que es de cartón y no se hace daño.', 'Sala Amazonas: Empujar al Lector Medio.']] },
+  // [bloqueos] micropuzle OPCIONAL del boli muerto (Custodia ↔ Aurora): no hace falta para acabar. Solo sale cuando el
+  // jugador lo intenta (`api.objetivo.foco('boli')`, en catacumba.js y pecera.secretaria.js) y en sus salas.
+  { id: 'boli', opcional: true, hecho: 'custodia_ablandada', activo: (api) => !!api.flag('custodia_regla') || api.flag('obj:foco') === 'boli',
+    salas: ['pecera', 'catacumba'], meta: 'Custodia da un boli nuevo por uno muerto. Muerto de trabajar.', niveles: [
+    'Los bolis que mueren trabajando, hijo, mueren en la mesa del que más corrige.',
+    'La del boli rojo los gasta todos. Mira en su mesa, después del café.',
+    ['Coge el boli sin tinta de la mesa de la que corrige.', 'Redacción de papel: Coger los bolis de Aurora, después del café.']],
+    sub: [
+      { si: '!custodia_regla', meta: 'Un boli muerto. A alguien le servirá. A mí, de momento, no.', niveles: [
+        'Un boli gastado no le sirve a nadie, hijo. Bueno, a una sí.',
+        'La del ventanuco de tu planta da bolis. Pregúntale cómo se consiguen.',
+        ['Pídele un boli a la del ventanuco y pregúntale cómo se consigue.', 'Redacción: a Custodia, «¿Me deja un boli?» y «¿Y cómo se consigue…?».']] },
+      { si: 'has:boli_muerto', meta: 'Llevo un boli muerto en el bolsillo. Custodia lo estará esperando.', niveles: [
+        'Ese boli sin tinta, llévaselo a la que lo pidió.',
+        'La del ventanuco te preguntará para qué. Dile la verdad.',
+        ['Dile que es para apuntar lo que te digan, hijo. Que es verdad.', 'Redacción: Dar el boli muerto a Custodia. «Para apuntar lo que me digan».']] },
+    ] },
 ];
 
 /** crítica 3 · N2: el acto en curso (lo registra content/game.js como `acto`; lo usa engine/objetivos.js). */

@@ -35,10 +35,12 @@ const duelo = (await import('../content/duelo.js')).default;
 const { SIN_DESTINO } = await import('../content/lib/directorio.js');
 const actors = (await import('../content/actors.js')).default;
 const obj = (id) => pistas.OBJETIVOS.find(o => o.id === id);
-ok(/rotulador/.test(obj('columna').niveles[0]), 'abuela, `columna` nivel 1: habla del rotulador');
-ok(obj('columna').niveles[1] === 'La de los anuncios pinta sus objetivos a rotulador: pídeselo.', '`columna` nivel 2 (E361)');
+// [bloqueos] `columna` va por sub-estados: sin rotulador, el nivel 1 habla del rotulador y el 2 dice dónde está
+const sinRot = obj('columna').sub.find(s => s.si === '!has:rotulador_rojo');
+ok(sinRot && /rotulador/.test(sinRot.niveles[0]), 'abuela, `columna` sin rotulador, nivel 1: habla del rotulador');
+ok(sinRot && sinRot.niveles[1] === 'La de los anuncios pinta sus objetivos a rotulador. Lo tiene colgado.', '`columna` sin rotulador, nivel 2 (E361; bloqueos: colgado, no «pídeselo»)');
 ok(obj('turno').niveles[2][0] === 'A esa tele dale las buenas noches, como a la cafetera, y pregúntale.'
-  && obj('turno').niveles[2][1] === 'La tele: «Buenas noches, Gertrudis». Y lo de los pasos.', '`turno` nivel 3: la tele (E362, E363; E7 P-turno3)');
+  && obj('turno').niveles[2][1] === 'Sala Amazonas: a la tele, «Buenas noches, Gertrudis». Y lo de los pasos.', '`turno` nivel 3: la tele (E362, E363; E7 P-turno3; bloqueos: con sitio)');
 ok(SIN_DESTINO === 'Un punto rojo: «ESTÁ AQUÍ». Gracias. Me hacía falta.', 'SIN_DESTINO (E344; E7: vuelve el original)');
 ok(duelo.hurtByPair.teodoro.R09 === '...CABE.' && duelo.hurtByPair.teodoro.R02 === 'ESO ME LO DIJO ELLA. EN 1996.', 'D2: «...CABE.» pasa de la R02 a la R09');
 ok(actors.bruno.handlers.hablar === actors.bruno.handlers.mirar, 'bruno.handlers.hablar = mirar');

@@ -439,8 +439,15 @@ async function herminiaMide(api) {
     api.setFlag('herminia_midio', true);
     await talk(api, [[A, 'Hecha con una IA de fuera. No entra en ninguna pieza.'], [A, 'Encintar, no: aislar el componente.']]);
     api.faceActor(A, api.player);
-    await talk(api, [['B', '¿Y vosotros no usáis IA de fuera?'], [A, 'El modelo es de fuera. El prompt es de dentro.'], [A, 'Eso lo hace nuestro.'],
-      [L, 'El prompt de Herminia lo escribí yo. En esta mesa.']]);
+    // [bloqueos] si Bruno ya oyó la frase en el árbol de Anselmo, aquí solo el eco; si no, entera
+    if (api.flag('pecera_prompt_oido')) {
+      await talk(api, [['B', '¿Y lo vuestro no viene de fuera?'], [A, 'Ya te lo dije. Lo que cuenta es lo de dentro.'],
+        [L, 'El prompt de Herminia lo escribí yo. En esta mesa.']]);
+    } else {
+      await talk(api, [['B', '¿Y vosotros no usáis IA de fuera?'], [A, 'El modelo es de fuera. El prompt es de dentro.'], [A, 'Eso lo hace nuestro.'],
+        [L, 'El prompt de Herminia lo escribí yo. En esta mesa.']]);
+      api.setFlag('pecera_prompt_oido', true);
+    }
     api.faceActor(A, 'left');
     await talk(api, [[A, 'A un metro de mi cinta. Fuera.']]);
     await anselmoASuMesa(api, 975);          // (Anselmo vuelve a su lado de la frontera.)

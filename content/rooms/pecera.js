@@ -125,6 +125,7 @@ export default buildRoom({
   name: 'Redacción',
   music: 'm_pecera',
   flags: {
+    pecera_prompt_oido: 'bool · bloqueos · la frase del prompt de Anselmo, ya oída · el eco',
     pecera_figurantes_n: 'int · P2 · +1 por Mirar figurantes_web (monitores)',
     pecera_sillas_n: 'int · P2 · +1 por Mirar sillas_con_chaqueta',
     pecera_pantalla_anselmo_n: 'int · P2 · +1 por Mirar pantalla_anselmo (rotación Acto II)',
@@ -233,6 +234,8 @@ export default buildRoom({
         : '"¿Me lees?" Baja a 3.417. Creo que se ha ido el que me leía.'),
       tirar: 'Está atornillada a la pared. Y Yoli, a la pantalla.',
       empujar: 'Ni la toco. Se refresca cada segundo: me vería venir.',
+      // [bloqueos] apagarla es razonable (la pista del CMS): no tiene botón, tiene un enchufe
+      cerrar: async (api) => api.say(api.flag('cms_vivo') ? 'Ya está apagada. Que no se entere Yoli.' : 'No tiene botón. Solo un cable que baja a un enchufe.'),
     } },
     { id: 'monitor_yoli', name: 'monitor de Yoli', parada: true, handlers: {
       mirar: async (api) => {
@@ -473,6 +476,7 @@ export default buildRoom({
       },
       'usar:rotulador_rojo': rotuladorEnTablero,
       'usar:boli_muerto': 'Un boli no pinta en pizarra. Este, ni en papel.',
+      'usar:album_eventos': 'El tablero no mira fotos. Anselmo, sí: el tablero es suyo.',   // [bloqueos] → Dar el álbum a Anselmo
     } },
     { id: 'posit_1998', name: 'pósit amarillísimo', handlers: {
       mirar: seq([['B', 'Un pósit amarillísimo: "Contratar al becario de marzo – 1998".'], ['B', 'Está en HECHO (PERO NO).']]),
@@ -480,6 +484,7 @@ export default buildRoom({
       usar: 'No lo muevo. En HECHO (PERO NO) se está calentito.',
       'usar:rotulador_rojo': rotuladorEnTablero,
       'usar:boli_muerto': 'Un boli no pinta en pizarra. Este, ni en papel.',
+      'usar:album_eventos': 'El tablero no mira fotos. Anselmo, sí: el tablero es suyo.',   // [bloqueos] → Dar el álbum a Anselmo
     } },
     { id: 'calendario_ferreteria', name: 'calendario de ferretería', handlers: {
       mirar: seq([['B', 'Calendario de Ferretería Hermanos Tornillo. Anselmo solo se fía de este.'], ['B', 'Trae santoral, fases de la luna y una oferta de tacos del 8.']]),

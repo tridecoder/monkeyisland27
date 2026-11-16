@@ -12,7 +12,7 @@ import { RV_TADEO } from './lib/movil.js';
 import { OBJETIVOS, SALUDOS, OTRA_VEZ, ABUELA_VIRAL, DESPEDIDA, horaMovil, actoActual, DONDE, FALTAN_REPLICAS } from './pistas.js';
 
 // ------------------------------------------------------------------ §8.2 respuestas por defecto (rotan en orden)
-const DEFAULTS = {
+export const DEFAULTS = {
   mirar: ['Es exactamente lo que parece. En esta casa, eso ya es noticia.', 'Lo miro con intensidad de periodista sin cenar. No descubro nada.', 'Nada que contrastar.', 'Si lo miro más, Yoli me lo cuenta como tiempo de permanencia.', 'Visto. Ni una errata. Sospechoso.'],
   coger: ['Está inventariado. Aquí todo está inventariado menos yo.', 'Si lo cojo, alguien me pedirá una nota de gasto por tocarlo.', 'No es mío. Aquí nada es mío. Ni la silla, hasta hace poco.', 'Mejor no. Luego desaparece algo y el becario es el primero en la lista.', 'No me cabe. Mi mochila ya va llena de chapas de eventos.'],
   usar: ['No veo cómo. El manual se lo llevó alguien al jubilarse.', 'Usarlo así sería innovación. Y la innovación la cobra la consultora.', 'No funciona. Lo añado a mis competencias: «equipos averiados».', 'No se me ocurre para qué. Y eso que he hecho un máster.', 'Mejor no lo toco. Si se rompe, sale en el parte con mi nombre mal escrito.'],
@@ -24,7 +24,7 @@ const DEFAULTS = {
   tirar: ['Tiro. Nada. Tiene más resistencia que el papel.', 'Aquí el que tira de algo se convierte en el responsable.', 'No pienso tirar de eso. En esta empresa ya tira siempre el becario.', 'Tiro. No sale. Le pido perdón. Me parece lo correcto.', 'Mejor no. Todo lo que tiene cable acaba en Sistemas.'],
 };
 // §8.6: «Combinar 10 cosas seguidas sin éxito»
-const COMBO_GAG = '¿Estás probando todo con todo? Así trabajan en Administración.';
+export const COMBO_GAG = '¿Estás probando todo con todo? Así trabajan en Administración.';
 const rotation = {};
 function rotating(verb) {
   return async (api) => {
@@ -47,7 +47,13 @@ function replicasQueFaltan(api, id) {
   const D = api.game.content.duels, opp = id && D.opponents && D.opponents[id];
   if (!opp) return [];
   const flagDe = new Map((D.pairs || []).map(p => [p.id, p.flag]));
-  return (opp.deck || []).map(pid => flagDe.get(pid)).filter(f => f && !api.flag(f));
+  const deck = (opp.deck || []).map(pid => flagDe.get(pid)).filter(Boolean);
+  // [bloqueos] solo faltan si no llegan para ganar: el duelo pide tantas réplicas como el último remate (engine/duel.js
+  // `target`); con esas, las demás del mazo sobran (D3 y D4 tienen más cartas de las que hacen falta)
+  const fins = (opp.finishers || []).map(f => f.atScore || 0);
+  const target = fins.length ? Math.max(...fins) : (opp.winScore || 3);
+  if (deck.filter(f => api.flag(f)).length >= target) return [];
+  return deck.filter(f => !api.flag(f));
 }
 async function pistas(api) {
   const n = api.inc('abuela_llamadas');
@@ -221,6 +227,17 @@ function migrarPartida(st) {
     si('ruben_encontrado', 'cpd');
     st.visitadas = [...v].filter(Boolean);
   }
+  // [bloqueos] partidas de antes de E5-E7 que no deben quedarse a medias:
+  // · una estampida cortada (Mercados ya fuera, pero la reunión sin terminar): Gervasio se quedaba presidiendo una mesa
+  //   vacía y la tele relanzaba la estampida sin nadie a quien estampar. Se da por terminada.
+  if (fl.sala_amazonas_estampida && !fl.reunion_terminada) fl.reunion_terminada = true;
+  // · la reunión de antes de E5 se acababa con la pregunta a Gervasio: si ya se hizo (Maripaz o Gertrudis lo saben),
+  //   cuenta como «sin turno» para que la tele y el Vending sigan.
+  if (fl.gertrudis_pregunta && !fl.sala_becario_sin_turno && !fl.reunion_terminada) fl.sala_becario_sin_turno = true;
+  // · la frase de Anselmo: quien vio a Herminia medir la pieza ya la oyó (el árbol dirá el eco, no la frase otra vez)
+  if (fl.herminia_midio && !fl.pecera_prompt_oido) fl.pecera_prompt_oido = true;
+  // · el foco de un micropuzle opcional no se arrastra de una partida vieja
+  if (fl['obj:foco'] && fl.custodia_ablandada) { delete fl['obj:foco']; delete fl['obj:foco_n']; }
   for (const k of FLAGS_RETIRADOS) delete fl[k];
   if (st.actors) for (const id of ['nerea_backlog', 'borja_engagement']) delete st.actors[id];   // E2 §2.6 y §3: ya no existen
   return st;

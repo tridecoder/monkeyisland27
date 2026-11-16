@@ -177,7 +177,9 @@ export const TOPES_E2 = [
 ];
 /** Repetibles declaradas (§7.6, clases 2 y 3): texto de la opción (sin signos ni mayúsculas). */
 export const REPETIBLES_E2 = ['¿Cómo va el Ibex?', '¿Cuántas sillas hay?', '¿Y de qué va el evento?', 'Buenas noches, Gertrudis.',
-  'Buenas noches otra vez.', '¿Me da un café sin saludar?', '¿Ha enviado ya el correo?', '¿Qué tal ahora con Anselmo?', '¿Qué noticia puedo traer?'];
+  'Buenas noches otra vez.', '¿Me da un café sin saludar?', '¿Ha enviado ya el correo?', '¿Qué tal ahora con Anselmo?', '¿Qué noticia puedo traer?',
+  // [bloqueos] la pregunta a Gervasio está siempre (antes la escondía un `if`); repetida, Gervasio vuelve a señalar la tele
+  'Bueno... ¿y cuáles son los siguientes pasos?'];
 const normOp = (t) => String(t).toLowerCase().replace(/[¿?¡!.,«»"“”]/g, '').replace(/\s+/g, ' ').trim();
 
 /** Topes de E2 «en todo el juego» sobre las cadenas literales de content/ (sin arte, flags ni plantilla). */
