@@ -282,8 +282,8 @@ try {
       ok(I.attack === 'R07' && I.esc === true, 'R07 con Gervasio escribiendo');
       await page.mouse.move(5, 5); await sleep(700); await shot('d3-escribiendo');
       const px = await G(() => { const g = __game.game, d = g.ctx.getImageData(0, 0, 320, 200).data; let n = 0;
-        for (let y = 0; y < 60; y++) for (let x = 0; x < 320; x++) { const i = (y * 320 + x) * 4; if (d[i] === 0xc8 && d[i + 1] === 0xd8 && d[i + 2] === 0xff) n++; } return n; });
-      ok(px > 20, `«escribiendo…» pintado en la barra del título (#c8d8ff, ${px} px)`);
+        for (let y = 26; y < 48; y++) for (let x = 0; x < 320; x++) { const i = (y * 320 + x) * 4; if (d[i] === 0x9a && d[i + 1] === 0xa4 && d[i + 2] === 0xc8) n++; } return n; });   // rediseño del duelo: en el cuerpo, COL.mail.label
+      ok(px > 20, `«escribiendo…» pintado en el cuerpo del correo, detrás del trozo (#9aa4c8, ${px} px)`);
       // la trampa del R07: contestar la del R03 en cuanto se ve «Esto se necesitaba para...»
       const i03 = I.pairs.indexOf('R03');
       await clickOpt(i03 >= 0 ? i03 : 0);
@@ -521,7 +521,7 @@ try {
     const lineas = dichas.length, chars = dichas.reduce((a, l) => a + l.text.length, 0), min = dichas.reduce((a, l) => a + ms(l.text), 0) / 60000;
     const E6 = { lineas: 553, min: 32.4 };
     console.log(`    camino principal (49 pasos, modo rápido): ${lineas} líneas · ${chars.toLocaleString('es-ES')} caracteres · ${min.toFixed(1).replace('.', ',')} min de lectura`);
-    console.log(`    frente a E6 (${E6.lineas} líneas · ${String(E6.min).replace('.', ',')} min): ${lineas - E6.lineas >= 0 ? '+' : ''}${lineas - E6.lineas} líneas · ${(min - E6.min >= 0 ? '+' : '') + (min - E6.min).toFixed(1).replace('.', ',')} min (§8 prevé −4 líneas y ≈ −5 s)`);
+    console.log(`    frente a E6 (${E6.lineas} líneas · ${String(E6.min).replace('.', ',')} min): ${lineas - E6.lineas >= 0 ? '+' : ''}${lineas - E6.lineas} líneas · ${(min - E6.min >= 0 ? '+' : '') + (min - E6.min).toFixed(1).replace('.', ',')} min (§8 prevé −4 líneas y ≈ −5 s; el rediseño del duelo suma +3: el planteamiento del D1)`);
     fs.mkdirSync(path.join(shots, 'test-e7'), { recursive: true });
     fs.writeFileSync(path.join(shots, 'test-e7', 'camino-principal.tsv'), Object.entries(porPaso).flatMap(([n, X]) => X.filter(l => l.who !== 'aviso' && l.who !== 'tarjeta').map(l => `${n}\t${l.who}\t${l.text}`)).join('\n') + '\n');
     ok(lineas <= E6.lineas + 6 && min <= E6.min + 1, `saldo de §8: ${lineas - E6.lineas >= 0 ? '+' : ''}${lineas - E6.lineas} líneas (≤ +6) y ${(min - E6.min).toFixed(1).replace('.', ',')} min (≤ +1)`);

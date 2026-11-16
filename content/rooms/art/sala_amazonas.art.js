@@ -699,6 +699,22 @@ export const tabletaEnAlto = {
     void dir;
   },
 };
+/** La tableta en alto DURANTE EL DUELO D1 (rediseño): a la altura de la cabeza pero del lado de Bruno, con el brazo
+ *  estirado hacia él, para que se le vea la cara (la de la estampida, `tabletaEnAlto`, se la tapa). */
+export const tabletaAlLado = {
+  draw(g, x, y, s, dir) {
+    const f = dir === 'right' ? 1 : -1;
+    const tw = 13, th = 9;
+    const tx = Math.round(f > 0 ? x + 4 : x - 4 - tw), ty = Math.round(y - 22 * s);
+    const ax = f > 0 ? tx + 1 : tx + tw - 2, ay = ty + th;
+    line(g, Math.round(x), Math.round(y), ax, ay, PAL.ink[1], 2);                       // el brazo, estirado
+    line(g, Math.round(x), Math.round(y) - 1, ax, ay - 1, '#e8b48c');
+    rect(g, tx - 1, ty - 1, tw + 2, th + 2, PAL.ink[0]);
+    rect(g, tx, ty, tw, th, '#1c2a58');
+    rect(g, tx + 1, ty + 1, tw - 2, 3, '#ff7a20');
+    kit.micro(g, '5', tx + 5, ty + 4, '#ffffff', { registrar: false });
+  },
+};
 void measure;
 
 // ------------------------------------------------------------------ geometría

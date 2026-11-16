@@ -289,7 +289,7 @@ try {
   await G(async () => { const a = __game.game.condApi(); a.learnReply('rep_05'); a.learnReply('rep_03'); a.learnReply('rep_03'); });
   const st1 = await state();
   ok(st1.flags.rep_05 && st1.flags.rep_03, 'learnReply pone los flags rep_05 y rep_03');
-  ok(await G(() => __game.log.filter(l => l.who === 'aviso' && l.text === 'Réplica apuntada en la libreta.').length === 2), 'aviso «Réplica apuntada» solo la primera vez de cada una');
+  ok(await G(() => __game.log.filter(l => l.who === 'aviso' && l.text === 'Réplica apuntada. Para el próximo «responder a todos».').length === 2), 'aviso «Réplica apuntada» solo la primera vez de cada una');
   await fast(false);
   G(code => __game.game.runScript(api => api.duel(eval(code)), { label: 'duelo de prueba' }), TEST_DUEL);
   ok(await waitFor(() => __game.state().duel && __game.state().dialog), 'se abre el duelo con opciones');

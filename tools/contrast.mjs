@@ -30,6 +30,7 @@ const r = await page.evaluate(async () => {
   const core = await import('./engine/core.js');
   const ui = await import('./engine/ui.js');
   const scr = await import('./engine/screens.js');
+  const duel = await import('./engine/duel.js');
   const SB = g.G.speechBacking === undefined ? core.SPEECH_BACKING : g.G.speechBacking;
   const rgb = (h) => { h = String(h).replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
   const lum = ([r, gg, b]) => { const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(gg) + 0.0722 * f(b); };
@@ -90,9 +91,8 @@ const r = await page.evaluate(async () => {
     ['frase', U.sentence, pbg], ['frase con verbo', U.sentenceVerb, pbg],
     ['opción', U.opt, pbg], ['opción (hover)', U.optHover, pbg], ['opción deshabilitada', U.optDisabled, pbg],
     ['menú: item', S.item, mbox], ['menú: hover', S.hover, mbox], ['menú: deshabilitado', S.dis, mbox], ['menú: título', S.title, mbox], ['pie / «clic para volver»', S.faint, [4, 3, 10]],
-    ['duelo: etiqueta', '#94a6d4', rgb('#141a30')], ['duelo: texto', '#e8ecf8', rgb('#141a30')], ['duelo: barra', '#e8f0ff', rgb('#2c5098')],
-    ['duelo: asignado', '#f2d468', rgb('#141a30')], ['duelo: +1 / hilo', '#9cf0a4', rgb('#0c1020')],
-    ['fax: etiqueta', '#564c3e', rgb('#e8dfc6')], ['fax: texto', '#2a2218', rgb('#e8dfc6')], ['fax: asignado', '#952a24', rgb('#e8dfc6')], ['fax: hilo', '#2a2218', rgb('#d2c6a8')],
+    // la ventana del duelo (rediseño: el móvil con la app de correo / el fax): los pares los da engine/duel.js
+    ...duel.PARES_CONTRASTE.map(([n, c, b]) => [n, c, rgb(b)]),
     ['aviso (banda)', '#ffffff', mixc([255, 255, 255], [8, 6, 14], 0.82)], ['créditos', '#d8d0f0', [16, 14, 28]],
   ].map(([n, c, b]) => ({ n, c, k: ratio(rgb(c), b) }));
   return { textRes, near, uiPairs, SB };

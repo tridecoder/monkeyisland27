@@ -21,11 +21,13 @@ export const PW = 96, PH = 146, PY = 2;       // cuerpo del móvil (px), y de su
 const SLIDE_MS = 380, HANG_MS = 520;
 const PORT_W = 72, PORT_H = 54;
 
-const SFX = {
+export const SFX = {
   pick: [{ wave: 'square', f: [900, 1500], dur: 0.05, vol: 0.1 }, { wave: 'square', f: [1500, 1500], dur: 0.05, vol: 0.08, at: 0.08 }],
   hang: [{ wave: 'square', f: [900, 900], dur: 0.07, vol: 0.09 }, { wave: 'square', f: [700, 700], dur: 0.07, vol: 0.09, at: 0.1 }, { wave: 'square', f: [520, 380], dur: 0.16, vol: 0.09, at: 0.2 }],
   dial: [{ wave: 'triangle', f: [425, 425], dur: 0.45, vol: 0.12 }],
   buzz: [{ wave: 'square', f: [110, 100], dur: 0.14, vol: 0.09, duty: 0.3 }, { wave: 'square', f: [110, 100], dur: 0.14, vol: 0.09, duty: 0.3, at: 0.2 }],
+  // el «¡ding!» de un correo que llega (el duelo «Responder a todos» y su planteamiento: engine/duel.js)
+  ding: [{ wave: 'triangle', f: [1568, 1568], dur: 0.09, vol: 0.12 }, { wave: 'triangle', f: [2349, 2349], dur: 0.22, vol: 0.1, at: 0.08 }],
 };
 
 const ease = {
@@ -130,7 +132,7 @@ export async function close(game, opts = {}) {
 export function kill(game) { game.phone = null; }
 
 // ------------------------------------------------------------------ dibujo
-function rrect(g, x, y, w, h, c, r = 4) {
+export function rrect(g, x, y, w, h, c, r = 4) {
   const inset = [4, 2, 1, 1, 0].slice(0, r + 1);
   g.fillStyle = c;
   for (let i = 0; i < h; i++) {

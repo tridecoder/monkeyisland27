@@ -600,6 +600,9 @@ const dueloTeodoro = {
   subject: 'Firma de la web en papel. Asignado a: quien se atreva',
   assigned: 'EL DE LA WEB',
   assignedWin: 'Teodoro Cuerpodoce',
+  // rediseño del duelo: lo que está en juego (pregunta del marcador) y el sello del final; por fax, sin móviles
+  pregunta: '¿Quién firma la página 7?',
+  veredicto: { verbo: 'FIRMA', gana: 'TEODORO', pierde: 'EL DE LA WEB' },
   deck: ['R06', 'R02', 'R09'],                        // E2 fase B (6): un ataque menos (sin R03); E6 §5.1: los tres
   maxMisses: 3,
   style: 'fax',

@@ -69,8 +69,17 @@ export default {
   },
   // adenda 7.4: cameo decorativo (no suma ni resta): tras el PRIMER acierto de Bruno en ese duelo, una sola vez
   // en toda la partida, entra esta línea en el hilo del correo.
+  // Rediseño del duelo: sale como NOTIFICACIÓN en el móvil, «Tadeo: «RV: …»!!» (`quien` = actor del nombre y el color).
   cameos: {
-    inigo: { from: 'Tadeo Adjunto respondió a todos:', text: '«RV: Resumen IA: todos de acuerdo»!!', ms: 4200 },
+    inigo: { quien: 'tadeo_adjunto', text: '«RV: Resumen IA: todos de acuerdo»!!', ms: 4200 },
+  },
+  // Rediseño del duelo (decisión 7): quién da cada «+1» al acertar, por duelo y en orden (un acierto, una notificación
+  // «Celestino: +1» en el móvil). Gente de la casa que está en el edificio en ese momento (ids de actor: nombre y color).
+  masUno: {
+    maripaz: ['celestino', 'yoli_tendencias', 'gertrudis'],                                   // Acto II
+    teodoro: ['begona_triplicado', 'celestino', 'yoli_tendencias'],    // Acto II, por fax (Aurora es su «En copia»)
+    gervasio: ['paco_ticket', 'anselmo_monolito'],                                            // D3 se gana con 2
+    inigo: ['yoli_tendencias', 'paco_ticket', 'aurora_galerada', 'begona_triplicado', 'celestino'],   // clímax: 5 aciertos
   },
   // §7.1.13 — comodín: entra en la rotación de flojas; la 1.ª vez en un duelo no suma ni resta (el rival repite el
   // ataque); la 2.ª cuenta como fallo.
@@ -104,10 +113,17 @@ export default {
     },
   },
 
-  // Textos fijos de la ventana de correo (§6.2).
+  // Textos fijos de la ventana de correo (§6.2; rediseño: docs/guion2/duelo/DUELO_REDISENO.md).
   texts: {
     to: 'Todos',
-    plusOne: { from: 'planta.vestibulo@:', text: '+1. Totalmente de acuerdo con Bruno.' },
+    // rediseño (la ventana es el móvil de Bruno con la app de correo): barra, «Tú», «En copia», la pestaña sobre el menú
+    // de réplicas y la ayuda del primer duelo de la partida (una línea gris hasta el primer acierto)
+    app: 'Correo',
+    you: 'Tú',
+    enCopia: 'En copia:',
+    escribiendo: 'escribiendo',
+    libreta: 'LIBRETA · réplicas oídas por la casa',
+    ayuda: 'Contesta con la réplica que la desmonte.',
     useObject: '[Usar objeto]',
     retire: '[Retirarse del hilo]',
     pickPrompt: 'Adjuntar al hilo:',

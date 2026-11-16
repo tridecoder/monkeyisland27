@@ -364,8 +364,14 @@ try {
     if (n === 1) {
       ok(st.duel.attack === 'R08' && await logHas('Es un exnovio.') === 1 && await logHas('Te lo pongo por escrito. Con banner.') === 0, 'entrada desde el árbol (sin intro del duelo)');
       ok(st.duel.subject.includes('(contiene publicidad)'), 'asunto: «(contiene publicidad)»');
+      // rediseño del duelo: el planteamiento («por escrito, con copia a todos», a un metro) solo la primera vez
+      ok(await logHas('Eso, por escrito. Con copia a todos.') === 1 && await logHas('Estamos a un metro.') === 1
+        && await logHas('Por eso. Lo que no está en copia no ha pasado.') === 1, 'planteamiento del D1 (la primera vez): las tres líneas');
       await shot('duelo-d1');
-    } else ok(await logHas('¿Llamar yo a Siestatón un viernes? Te lo pongo por escrito.') === 1 && !(await logHas('Con banner.')), `revancha (${n}): «…Te lo pongo por escrito.» (E6 X7: sin «Con banner.»)`);
+    } else {
+      ok(await logHas('¿Llamar yo a Siestatón un viernes? Te lo pongo por escrito.') === 1 && !(await logHas('Con banner.')), `revancha (${n}): «…Te lo pongo por escrito.» (E6 X7: sin «Con banner.»)`);
+      ok(await logHas('Estamos a un metro.') === 0 && await logHas('Con copia a todos.') === 0, `revancha (${n}): sin el planteamiento («Estamos a un metro.» no vuelve)`);
+    }
     for (let i = 0; i < 3; i++) await pickWeak();
     await G(() => __game.waitIdle());
     ok((await flag('duel:maripaz:perdido_n')) === n, `perdido_n = ${n}`);
@@ -385,6 +391,7 @@ try {
   ok(await logHas('¿Y quién me firma que esa página es noticia y no un hueco para anuncios?') === 1 && await logHas('Sellada por Aurora. Impar.') === 1, 'remate con la ficha');
   ok(await logHas('Siestatón, a la web. Allí caben en todas partes.') === 1 && await logHas('Impar, y sin un banner.') === 1, 'victoria (§4.3)');
   ok(await logHas('Tenías la espalda desaprovechada.') === 1 && await logHas('Y quitad el ronquido de la espera.') === 1, 'el adhesivo y el ronquido');
+  ok(await logHas('Estamos a un metro.') === 0, 'la victoria tras las revanchas, sin el planteamiento');
   ok(await G(() => { const g = __game.game; return g.spriteOf(g.player) === g.player.variants.con_banner; }), 'Bruno lleva el adhesivo (variante con_banner)');
   ok((await inRoom('maripaz_remitido')) !== 'sala_amazonas', 'Maripaz se va de la Sala');
   if (args.shots) {

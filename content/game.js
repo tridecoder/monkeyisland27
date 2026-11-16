@@ -397,7 +397,7 @@ export default {
   quitConfirm: { text: '¿Seguro que quiere salir?', yes: 'Sí', no: 'Lo hablamos' },
 
   // §5.5: aviso al aprender una réplica (api.learnReply('rep_XX')); solo la primera vez
-  learnReply: { notice: 'Réplica apuntada en la libreta.', sfx: 'good', color: '#F2D468' },
+  learnReply: { notice: 'Réplica apuntada. Para el próximo «responder a todos».', sfx: 'good', color: '#F2D468' },
 
   // escenas comunes (Usar movil → api.scene('pistas'))
   scenes: { pistas, avisos },
