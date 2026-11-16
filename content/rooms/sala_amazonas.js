@@ -230,13 +230,13 @@ export const duelMaripaz = {
   ],
   cc1: 'Colchones Siestatón',
   defeatLine: 'RESPUESTA AUTOMÁTICA DE COMERCIAL: «Cierre este anuncio para leer la respuesta».',
-  defeatLines: ['Asignado a ti, cariño. El teléfono de Siestatón es este. Antes, un anuncio.'],
+  defeatLines: ['Llamas tú.', 'Asignado a ti, cariño. El teléfono de Siestatón es este. Antes, un anuncio.'],
   defeatScene: 'd1_siestaton',
   defeatHeadline: 'BECARIO LLAMA A UN COLCHÓN UN VIERNES. EL COLCHÓN NO LO COGE',
   onWin: async (api) => {
     // crítica 3 · N8: si ha sellado Teodoro (D2 antes que D1), Maripaz no habla del café de Aurora
     await sayM(api, [selloTeodoro(api) ? '...Teodoro no sella nada que no quepa. Y tú has cabido.' : '...Aurora no sella nada sin café. Has invitado a la correctora.',
-      'Vale. Siestatón, a la web. Allí caben en todas partes.']);
+      'Vale. Llamo yo. Siestatón, a la web. Allí caben en todas partes.']);
     // se levanta; debajo, el planillo: lo dobla y se lo da a Bruno, que lo mete en la ficha
     api.pose(MARIPAZ, 'de_pie');
     api.hide('planillo_bajo_maripaz');
