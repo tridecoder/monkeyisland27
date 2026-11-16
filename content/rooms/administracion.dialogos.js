@@ -175,7 +175,7 @@ export default {
           api.sfx('pickup');
           // E2 §5.2: Begoña le manda a Controlling ([coherencia] también si ya le llamó él en la L2: «le espera» vale;
           // si ya le escuchó, no: no le manda a donde ya ha ido)
-          if (!api.flag('evaristo_escuchado')) {
+          if (api.flag('acto_2_iniciado') && !api.flag('evaristo_escuchado')) {   // (en el Acto I Evaristo aún no tiene nada que contar)
             await sayBe(api, 'Y pase por Controlling. Don Evaristo le espera. Escúchele hasta el final.');
             if (!api.flag('evaristo_convoco')) api.setFlag('evaristo_convoco', 'begona');
           }
@@ -201,7 +201,9 @@ export default {
   evaristo: {
     actor: EV, start: 'E0',
     onStart: async (api) => {
-      if (api.once('administracion_evaristo_saludo')) await sayEv(api, 'Pellejo, con jota. Pase un segundo, que es una cosita muy pequeña.');
+      // [coherencia] en el Acto I no tiene nada que contar (no promete una «cosita»): era la jota (la de la L1)
+      if (!api.flag('acto_2_iniciado') && api.once('administracion_evaristo_saludo')) await sayEv(api, 'Pellejo, con jota. Lo tengo anotado. Era eso, nada más.');
+      else if (api.once('administracion_evaristo_saludo')) await sayEv(api, 'Pellejo, con jota. Pase un segundo, que es una cosita muy pequeña.');
       else await sayEv(api, 'Disculpe. ¿Tiene un segundo? Son tres.');
       await frente(api, EV, 'Lleva «RECHAZADO» en la frente. Bien centrado.');
     },

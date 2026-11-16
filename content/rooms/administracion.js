@@ -214,7 +214,7 @@ export default buildRoom({
           else await sayEv(api, 'Gracias. Lo leo. Esta vez se lo agradezco de palabra.');
         },
         empujar: async (api) => { await sayBe(api, 'Ni se le ocurra. Si le empuja, vuelve a empezar la cláusula 12.'); },
-        coger: async (api) => { await sayEv(api, 'Una cosita: no me coja. Si me muevo, pierdo la línea.'); },
+        coger: async (api) => { await sayEv(api, 'No me coja. Si me muevo, pierdo la línea.'); },   // [coherencia] «Una cosita» al tope (7) con la L2
       } },
   ],
 

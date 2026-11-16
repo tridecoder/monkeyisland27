@@ -236,8 +236,8 @@ export function fichaViva(api) {
   // E2 §10.4: la coma de Evaristo (una nota como mucho)
   if (api.has('correo_evaristo') && !f('duelo_inigo_ganado')) out.push(FICHA.evaristo[2]);
   else if (f('evaristo_escuchado') && !f('coma_bendecida')) out.push(FICHA.evaristo[1]);
-  // [coherencia] «me espera»: se lo dice Begoña (con su consejo); «me ha llamado»: solo si sonó la L2
-  else if (f('nota_gasto_presentada') && !f('evaristo_escuchado')) out.push(FICHA.evaristo[0]);
+  // [coherencia] «me espera»: se lo dijo Begoña (con su consejo) sin que él llamara; «me ha llamado»: solo si sonó la L2
+  else if (api.flag('evaristo_convoco') === 'begona' && !f('evaristo_escuchado')) out.push(FICHA.evaristo[0]);
   else if (api.flag('evaristo_convoco') === 'llamada' && !f('evaristo_escuchado')) out.push(FICHA.evaristo[3]);
   return out;
 }

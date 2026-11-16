@@ -323,6 +323,22 @@ try {
     o = await opsDe('aurora_galerada');
     ok(o.some(x => x.startsWith('Yoli quiere sacar mi opa')), `tras abrir el titulador de Yoli, sí (${JSON.stringify(o)})`);
     await T.ctx.close();
+    // Acto I (partida libre): la nota de gasto antes del café. Begoña no le manda a ver a un Evaristo sin nada que
+    // contar, y el saludo de Evaristo no promete una «cosita» que en el Acto I no existe
+    const T1 = await abrir(ACTO1, 'administracion', 'ecosistema', { inv: ['sobre_azucar'] });
+    await T1.G(() => __game.skipText(true));
+    await T1.G(() => { __game.doVerb('hablar', 'begona_triplicado'); });
+    for (const op of ['Quiero presentar una nota de gasto.', 'Café para entender el capitalismo.', 'Lo que sea.', 'Aquí tiene. Un sobre de azúcar.', 'Lo siento. En la universidad']) {
+      await T1.until(() => !!__game.currentDialogOptions(), null, 8000); await T1.G((op) => __game.chooseText(op), op);
+    }
+    await T1.until(() => !!__game.currentDialogOptions(), null, 8000);
+    ok(await T1.flag('nota_gasto_presentada') && !(await T1.logHas('Don Evaristo le espera')) && await T1.flag('evaristo_convoco') === '', 'Acto I: la nota sí; «Don Evaristo le espera», no (aún no tiene nada que contar)');
+    await T1.G(() => { if (__game.game.choice) __game.game.choice.resolve(-1); }); await T1.G(() => __game.waitIdle());
+    await T1.G(() => { __game.clearLog(); __game.doVerb('hablar', 'evaristo_salvedad'); });
+    await T1.until(() => !!__game.currentDialogOptions(), null, 8000);
+    ok(await T1.logHas('Pellejo, con jota. Lo tengo anotado. Era eso, nada más.') && !(await T1.logHas('Pase un segundo')), 'Acto I: el saludo de Evaristo no promete una «cosita»: era la jota');
+    ok(!(await T1.opciones()).some(x => /llamado|decirme/.test(x)), 'Acto I: ni «¿Para qué me ha llamado?» ni «¿Qué quería decirme?»');
+    await T1.ctx.close();
   }
 
   // ====================================================================== 4. las sillas de Pilar
@@ -399,7 +415,8 @@ try {
     ok(await T.flag('sala_amazonas_insiste_n') === 1, 'guardar/cargar: la cuenta de insistencias se conserva');
     await T.G(() => __game.clearLog());
     ok(await preguntar(), '2.ª: la pregunta otra vez');
-    await sleep(900); await T.shot('gervasio-insiste-2');
+    await T.until(() => __game.game.speeches.some(x => /entran por la pantalla/.test(x.text)), null, 10000);
+    await sleep(500); await T.shot('gervasio-insiste-2');
     await T.pasar();
     ok(await T.logHas('Las preguntas de los conectados entran por la pantalla, cuando hay señal.') && !(await T.flag('reunion_terminada')), '2.ª: Gervasio señala la pantalla («…entran por la pantalla, cuando hay señal.») y la tele parpadea');
     await T.G(() => __game.clearLog());
