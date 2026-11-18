@@ -151,7 +151,7 @@ async function regleteroElige(r) {
   for (let k = 0; k < 3; k++) {
     await verbOn('tirar', 'regleta_r3');
     await settle();
-    if (await G(() => !!__game.game.choice)) break;
+    if (await G(() => !!(__game.game.choice && __game.game.choice.layout))) break;
     await wait(300);
   }
   const pt = await G((want) => {
