@@ -331,7 +331,7 @@ const rubenDialog = {
             await api.titular('TODOS. «NO ES UN DESPIDO: ES UNA SALIDA EN VALOR».', { who: R });
             await api.sayAs(R, ['...Esa es mía.', 'Le escribí también la respuesta. Por si un día alguien se la decía.']);
             await api.say('¿Y cuál era?');
-            await api.sayAs(R, '«Claro. Y la carta de despido es una newsletter personalizada».');
+            await api.sayAs(R, '«¿A cuántos días por año?».');                         // [P9] R13
             api.learnReply('rep_13');
           } },
         { id: 'tadeo', text: '¿Te llegaban correos de Tadeo?', once: true,
@@ -508,7 +508,8 @@ export default buildRoom({
     } },
     { id: 'registro_tickets', name: 'registro de tickets', handlers: {
       mirar: async (api) => {
-        await api.say([api.flag('ruben_libre') ? 'Ticket nº 1, julio: «Alta becario Brais». Estado: cerrado. Por fin.'
+        // [P14] la primera línea: dos numeraciones (el registro, desde julio; el contador, la suya)
+        await api.say(['Este registro lo empezó Eutimio en julio. El contador lleva la otra numeración.', api.flag('ruben_libre') ? 'Ticket nº 1, julio: «Alta becario Brais». Estado: cerrado. Por fin.'
           : 'Ticket nº 1, julio: «Alta becario Brais». Estado: pendiente.',
         'Nº 2, hoy: «Alta portátil de Infografía». Denegado.', 'Motivo: «No ha pasado por Desarrollo». Firmado: Anselmo.',
         'Nº 3: «El CMS se cuelga con la pantalla de la Redacción».', '«Va a la regleta R-3 de Sistemas. Apagarla». Estado: no prioritario.']);

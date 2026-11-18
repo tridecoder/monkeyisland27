@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Iconos de la web app (180 apple-touch-icon, 192 y 512 del manifest). ÚNICA excepción a «no hay imágenes»: se generan
-// con el propio código de dibujo del juego (paleta PAL, el sprite de Bruno y una portada de elContable.es), a 48x48 px
+// con el propio código de dibujo del juego (paleta PAL, el sprite de Bruno y una portada de elincontable.es), a 48x48 px
 // «virtuales» escalados sin suavizado. Uso: node tools/make-icons.mjs  → icons/icon-{180,192,512}.png
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -44,7 +44,7 @@ const urls = await page.evaluate(async () => {
   g.drawImage(fr, minX, top, cw, ch, Math.round(32 - cw), 16, cw * 2, ch * 2);
   // banda roja de la fe de erratas
   rect(g, 0, 50, N, 14, PAL.red[3]); hline(g, 0, 50, N, PAL.red[5]); hline(g, 0, 63, N, PAL.red[1]);
-  drawText(g, 'elContable.es', 32, 53, PAL.paper[7], { align: 'center', outline: null });
+  drawText(g, 'elincontable.es', 32, 53, PAL.paper[7], { align: 'center', outline: null });
   glow(g, 32, 30, 30, 26, '#ffe2a0', 0.06, 3);
   const out = {};
   for (const size of [180, 192, 512]) {

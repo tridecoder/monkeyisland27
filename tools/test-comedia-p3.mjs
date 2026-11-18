@@ -121,15 +121,15 @@ try {
     'L17: E-48, E-49 y E-50 (y se queda en E-50)');
   await shotDuring('cafetera-saludo', () => chooseNoWait('Buenas noches, Gertrudis.'), [2500, 9000]);
   await R.check({ tiene: ['cafe'], flags: { gertrudis_saludada: true, cafetera_viral: true, rep_03: true, chisme_indice: 1 } });
-  ok(await logHas('AYER NO PUEDO. TE MIRO HUECO PARA ANTEAYER'), '1.er saludo: café, cafetera_viral, rep_03 con la réplica NUEVA de R03');
+  ok(await logHas('AYER FUE CUANDO EMPEZASTE LA FRASE'), '1.er saludo: café, cafetera_viral, rep_03 con la réplica NUEVA de R03');
   ok(!(await logHas('CORTADO. DE QUÉ')) && !(await logHas('Me lo apunto')) && !(await logHas('RUMOR: EL BECARIO')), 'fase B (9) y (1): sin «CORTADO…», sin «Me lo apunto», sin rumor A');
   o = await opts();
   ok(o && o.includes('Buenas noches otra vez.') && !o.includes('¿Me da un café sin saludar?'), 'aparece «Buenas noches otra vez.» (sin cerrar el diálogo)');
   await shotDuring('cafetera-en-directo', () => chooseNoWait('Buenas noches otra vez.'), [4300, 6000, 10500]);
   await R.check({ flags: { cafetera_en_directo: true, rep_04: true, rep_10: true, rep_14: true, chisme_indice: 4 } });
-  ok(await logHas('GERVASIO A ANSELMO') && await logHas('ANSELMO: "Y TÚ EL QUE MEJOR DELEGA. POR ESO ME ESCRIBES A MÍ"') && await logHas('GERVASIO A MARIPAZ')
-    && await logHas('¿TE VA EN MARZO, CARIÑO? ES CUANDO ACABAN LAS RÁPIDAS') && await logHas('EN TABLA DINÁMICA') && !(await logHas('NEMESIO')) && !(await logHas('BORJA')),
-    'el bis: R04 (Anselmo), R10 y R14 (Maripaz), sin Nemesio ni Borja');
+  ok(await logHas('MARIPAZ A ANSELMO') && await logHas('ANSELMO: "SI VALIERA ALGO, ME LA COBRARÍAS"') && await logHas('GERVASIO A BEGOÑA')
+    && await logHas('BEGOÑA: "¿TE VA EN MARZO? ES CUANDO ACABAN LAS RÁPIDAS"') && await logHas('EN TABLA DINÁMICA') && !(await logHas('NEMESIO')) && !(await logHas('BORJA')),
+    'el bis: R04 (Maripaz a Anselmo), R10 y R14 (Gervasio a Begoña, [P9]/[P15]), sin Nemesio ni Borja');
   ok(await logHas('VIRAL:') && !(await logHas('Récord personal')) && !(await logHas('Me lo...')), 'ráfaga viral; fuera «Me lo...» y «Récord personal…» (§7.2, fase B)');
   ok(!(await flag('office_emision')), 'el piloto EN DIRECTO se apaga al acabar');
   o = await opts();
@@ -230,15 +230,15 @@ try {
   await clearLog();
   await shotDuring('fax-vomita', () => G(() => __game.doVerb('usar', 'fax', 'copias_rechazadas')), [3400, 7000]);
   await R.check({ flags: ['fax_con_papel'], tiene: ['mensaje_fp'], notiene: ['copias_rechazadas'] });
-  ok(await logHas('18:01. RESPUESTA A AURORA') && await logHas('18:42.') && await logHas('18:55.') && await logHas('19:10. RESPUESTA A TODO LO DEMÁS') && await logHas('19:12. GOYITA'),
-    'con tres intentos: las cuatro respuestas atrasadas + la Goyita');
+  ok(await logHas('18:01. RESPUESTA A AURORA') && await logHas('18:42.') && await logHas('18:55.') && await logHas('19:10. RESPUESTA A TODO LO DEMÁS') && await logHas('19:12. BENITA'),
+    'con tres intentos: las cuatro respuestas atrasadas + la Benita');
   ok(await logHas('nadie le había dado papel') && await logHas('MÍO, TODO LO DEMÁS'), 'Aurora y el «ESE NO ES MÍO» de F.P.');
   ok((await G(() => __game.state().objects['catacumba.fax'])).state === 'con_papel', 'el fax queda con_papel');
   await R.run(['verbo', 'mirar', 'mensaje_fp']);
   ok(await flag('vio_borde_perforado') === true, 'paso 29: borde perforado');
   await clearLog();
   await verb('mirar', 'fax');
-  ok(await logHas('1 GOYITA, 2 ADMINISTRACIÓN, 3 CONTROLLING'), 'Mirar fax con papel: las tres teclas');
+  ok(await logHas('1 BENITA, 2 ADMINISTRACIÓN, 3 CONTROLLING'), 'Mirar fax con papel: las tres teclas');
 
   await clearLog();
   await verb('mirar', 'reloj_2147'); await verb('mirar', 'camastro'); await verb('coger', 'teodoro_cuerpodoce'); await verb('mirar', 'fax_enmarcado');
@@ -307,10 +307,10 @@ try {
   ok(await logHas('ME SOBRAN OCHO. NO RECORTO: YO SOLO MIDO.'), 'Dar pieza a Teodoro: «ME SOBRAN OCHO» por fax');
   await G(() => __game.doVerb('usar', 'fax', 'pieza_opa'));
   for (let k = 0; k < 50 && !(await opts()); k++) await page.waitForTimeout(20);
-  ok(JSON.stringify(await opts()) === JSON.stringify(['1: GOYITA', '2: ADMINISTRACIÓN', '3: CONTROLLING', 'Mejor no.']), 'menú de las tres teclas');
-  await choose('1: GOYITA');
-  ok(await flag('fax_tecla_n') === 1 && await logHas('LA GOYITA NO TIRA BORRADORES'), 'tecla 1: la Goyita ofende a Teodoro (fax_tecla_n = 1)');
-  await verb('usar', 'fax', 'pieza_opa'); await choose('1: GOYITA');
+  ok(JSON.stringify(await opts()) === JSON.stringify(['1: BENITA', '2: ADMINISTRACIÓN', '3: CONTROLLING', 'Mejor no.']), 'menú de las tres teclas');
+  await choose('1: BENITA');
+  ok(await flag('fax_tecla_n') === 1 && await logHas('LA BENITA NO TIRA BORRADORES'), 'tecla 1: la Benita ofende a Teodoro (fax_tecla_n = 1)');
+  await verb('usar', 'fax', 'pieza_opa'); await choose('1: BENITA');
   ok(await logHas('TE MIDO LA MANO') && await flag('fax_tecla_n') === 1, 'tecla 1 otra vez: «TE MIDO LA MANO»');
   await clearLog();
   await verb('usar', 'fax', 'pieza_opa'); await choose('3: CONTROLLING');

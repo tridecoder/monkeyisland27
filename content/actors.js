@@ -178,7 +178,7 @@ const lectorCaido = defineSprite({
   },
 });
 
-// ------------------------------------------------------------------ el teléfono rojo de Teodoro (7.3a y «Goyita. Tira.»)
+// ------------------------------------------------------------------ el teléfono rojo de Teodoro (7.3a y «Benita. Tira.»)
 /** Auricular rojo de baquelita, vertical, con la parte de oír arriba (x, y = esquina superior izquierda, 4x11). */
 export function auricularRojo(g, x, y) {
   rect(g, x, y, 4, 3, '#c83a3a'); hline(g, x, y, 4, '#f07060');          // oído

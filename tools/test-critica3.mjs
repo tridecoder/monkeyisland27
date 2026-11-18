@@ -312,9 +312,9 @@ try {
   await clearLog();
   await verb('usar', 'ordenador_bruno');
   must(await flag('rep_11') === true, 'N1: Usar el ordenador sentado no da rep_11');
-  must(await logCount('Respuesta: «Espera sentado. Si encuentras silla».') === 1, 'N1: Usar el ordenador no enseña el correo de Ramírez');
+  must(await logCount('En borradores, mi respuesta: «Poder, he podido».') === 1, 'N1: Usar el ordenador no enseña el correo de Ramírez');
   await verb('usar', 'ordenador_bruno'); await verb('mirar', 'ordenador_bruno');
-  must(await logCount('Respuesta: «Espera sentado. Si encuentras silla».') === 1, 'N1: el correo de Ramírez se repite (debe salir una sola vez)');
+  must(await logCount('En borradores, mi respuesta: «Poder, he podido».') === 1, 'N1: el correo de Ramírez se repite (debe salir una sola vez)');
   ok('N1: Usar el ordenador (sentado) da la réplica R11 como Mirar; una sola vez');
 
   // ------------------------------------------------------------ N2 Mirar a Bruno por acto (con objetivos viejos pendientes)
@@ -383,10 +383,10 @@ try {
 
   // ------------------------------------------------------------ N9 la libreta, comillas
   await G(() => __game.newGame()); await idle();
-  await setFlags({ rep_09: true, rep_01: true });
+  await setFlags({ rep_06: true, rep_01: true });
   await verb('usar', 'libreta_replicas');
   const lib = await G(() => __game.currentDialogOptions());
-  must(lib && lib.includes('«Tráeme el contexto. Le hago una pieza aparte: “El contexto, explicado”.»'), `N9: la libreta no cambia las comillas de dentro: ${JSON.stringify(lib)}`);
+  must(lib && lib.includes('«Con dos fuentes y media. La media dijo “yo no te he dicho nada”.»'), `N9: la libreta no cambia las comillas de dentro: ${JSON.stringify(lib)}`);
   must(lib.every(o => (o.match(/«/g) || []).length <= 1), `N9: comillas «» anidadas en la libreta: ${JSON.stringify(lib)}`);
   await chooseByText('[Cerrar la libreta]'); await idle();
   ok('N9: la libreta cita con «…» y lo de dentro con “…”');

@@ -44,16 +44,16 @@ export default {
         api.faceActor(Y, 'up');
         await api.sayAs(Y, 'Ponle nombre. Venga. Ponle nombre a la borrasca.');
         api.faceActor(Y, api.player);
-        await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario elContable, cuánto cobra un becario.',
+        await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario incontable, cuánto cobra un becario.',
           'Perdona. Sin nombre no la pincha nadie. La borrasca, digo.']);
-      } else await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario elContable, cuánto cobra un becario.', 'Perdona, me sale solo.']);
+      } else await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario incontable, cuánto cobra un becario.', 'Perdona, me sale solo.']);
     },
     nodes: {
       Y0: {
         options: [
           { text: '¿Algún hilo bueno esta noche?', once: true,
-            reply: ['Maripaz me escribió «desde el más absoluto cariño».', 'Le contesté: «Y yo te leo desde el más absoluto modo avión».',
-              'Me ha puesto en copia a mi madre.'],
+            reply: ['Maripaz me escribió «desde el más absoluto cariño».', 'Le contesté: «Se nota. Has puesto a mi jefe en copia».',   // [P9] R08
+              'Ahora ha puesto en copia a mi madre.'],
             do: async (api) => { api.learnReply('rep_08'); } },
           { text: '¿Y tú cómo estás? Tú, no la audiencia.', once: true,
             do: async (api) => {
@@ -151,8 +151,9 @@ export default {
               }
             } },
           { text: '¿Qué tal con Yoli?', once: true,                 // paso 24 (heredado de Nemesio): cita la réplica de R09
-            reply: ['Me dijo que mi dato de tráfico estaba «sacado de contexto».', '¿El contexto? ¿De dónde viene? De la web. No entra.',
-              'Le dije: «Tráeme el contexto. Le hago una pieza aparte».', '«El contexto, explicado». No hemos vuelto a comer juntos.'],
+            // [P9] R09: la rama entera; Bruno aprende aquí la larga y la corta (la que cabe en el fax del D2)
+            reply: ['Yoli dijo que mi dato de tráfico estaba «sacado de contexto».', 'Le contesté: «Claro que lo saqué. El contexto no cabía en la pieza».',
+              'Como no lo entendió, se lo resumí: «Lo saqué yo. No cabía».', 'No hemos vuelto a comer juntos.'],
             do: async (api) => { api.learnReply('rep_09'); } },
           { text: '¿Por qué invades la sección de Leoncio?', once: true, if: 'acto_2_iniciado',
             reply: ['Invadir, no. Desplegar capacidad.', 'Mi quesito suma 130 %. Desarrollo siempre da de más.'] },

@@ -42,6 +42,8 @@ export const ADENDA_FLAGS = [
   'oyo_papel_begona',
   // [coherencia] la L2 vuelve y los correos de Evaristo llegan de verdad (str a '')
   'evaristo_convoco', 'evaristo_correos',
+  // [P7] aprender perdiendo: pistas de la libreta (int, bits de las réplicas)
+  'libreta_pistas',
 ];
 
 export default {
@@ -139,6 +141,7 @@ export default {
   // [coherencia] quién ha convocado a Bruno a Controlling y los correos de Evaristo que han llegado de verdad
   evaristo_convoco: "str · común (game.js L2; administracion Begoña) · '' | 'llamada' (L2) | 'begona' (B_EJEMPLAR, sin L2) · administracion («¿Para qué me ha llamado?»), ficha",
   evaristo_correos: "str · común (lib/movil.js) · correos de Evaristo llegados, en orden: '1@k,2@k,3@k,G@k' (k = RV: de Tadeo ya llegados); 'g' = el de agradecimiento, prometido · bandeja del móvil",
+  libreta_pistas: 'int · común (engine/duel.js con content/duelo.js `pistas`) · [P7] bit de cada réplica (R01 = 1) cuyo ataque se recibió en un duelo sin saberla; se borra al aprenderla (api.learnReply) · libreta_replicas, duelo (pósit)',
 
   // ---------------------------------------------------------------- PLAN DE COMEDIA §3.4 (altas; las bajas, cuando las
   // salas dejen de usarlos). Los pone/lee cada paquete; el motor solo pone duel:<id>:* (no hace falta declararlos).

@@ -36,6 +36,14 @@
 //    on the window (`veredicto`: «LLAMA: MARIPAZ» green / «LLAMA: B. POLLEJO» red). Above the reply menu, the tab
 //    «LIBRETA · réplicas oídas por la casa». The old «RE:», CC, «Asignado a» and «ACIERTOS 2/3 · FALLOS 1/3» are
 //    still computed (duelInfo.subject / cc / assigned / score) but no longer drawn.
+//  - [P7] aprender perdiendo (`D.pistas` de content/duelo.js: { flag, aviso, repaso, de(pair) }): se entra siempre, sepa
+//    Bruno las réplicas que sepa. Cada ataque recibido sin su réplica apunta en la libreta (bit de la pareja en el flag
+//    `pistas.flag`, en el orden de `pairs`) dónde se aprende (`de(pair)`): la primera vez, aviso `pistas.aviso`; mientras
+//    el menú está abierto, la pista se ve en un pósit sobre la pestaña LIBRETA. Al perder, si alguna pista de este mazo
+//    sigue apuntada, Bruno dice `pistas.repaso`. Las pistas se borran al aprender la réplica (api.learnReply).
+//  - [P8] `aTiempo.rapido: { tramos, pausa }`: en cuanto un ataque se ha escrito entero sin que Bruno le pise, los
+//    siguientes llegan en `tramos` tramos (los trozos del final, juntos) y con las pausas × `pausa`; si Bruno le pisa,
+//    ese ataque vuelve al ritmo lento (trozos y pausas de siempre) hasta que lo deje acabar.
 //  - staging: `puesta(api, ctl)` (before the window opens: walk the rival to where it is seen whole) and
 //    `recoger(api, result, ctl)` (lost / retired, right after the window closes); `sostener` = what the rival holds
 //    during the thread (Bruno holds his phone, except by fax).
@@ -134,6 +142,7 @@ export async function runDuel(game, api, idOrDef) {
   };
   const ctl = {   // handed to finisher scripts, onHit and onLose
     get hits() { return S.hits; }, get misses() { return S.misses; }, get perdidos() { return flags['duel:' + id + ':perdido_n'] || 0; },
+    get remates() { return S.finIdx; },             // remates ya resueltos (para un `hurtByPair` que dependa de ellos)
     setAssigned: (t) => { S.assigned = t; }, setSubject: (t) => { S.subject = t; }, setCc: (t) => { S.cc = t; S.ccExtra = []; },
     setBody: (t) => { S.body = t; },
     // una línea del hilo (cameos, retirada): como NOTIFICACIÓN en el móvil, «Nombre: texto»
@@ -181,9 +190,7 @@ export async function runDuel(game, api, idOrDef) {
   let won = false;
   try {
     if (music) api.music(music, 0.6);
-    // rule 11: fair warning when Bruno does not know enough replies of this deck
-    const known = deck.filter(p => flags[pairs.get(p).flag]).length;
-    if (T.notReady && known < Math.min(target, deck.length)) await say('player', T.notReady);
+    // [P7] ya no hay aviso de «faltan réplicas» al entrar: se aprende perdiendo (pistas en la libreta)
     await sayList(opp.intro);
     // el rival, a la vista y de frente (D1: Maripaz rodea la mesa); los dos con el aparato en la mano
     if (opp.puesta) await opp.puesta(api, ctl);
@@ -210,7 +217,13 @@ export async function runDuel(game, api, idOrDef) {
       const pid = deck[0], pair = pairs.get(pid);
       const attack = (opp.attackText && opp.attackText[pid]) || pair.attack;
       info.phase = 'reply'; info.attack = pid; S.phase = 'reply';
-      const tz = opp.aTiempo && opp.aTiempo.trozos && asArray(opp.aTiempo.trozos[pid]);
+      let tz = opp.aTiempo && opp.aTiempo.trozos && asArray(opp.aTiempo.trozos[pid]);
+      // [P8] tras un ataque escrito entero sin pisarle, en `tramos` tramos y con pausas más cortas (salvo el que le pisó)
+      const RA = opp.aTiempo && opp.aTiempo.rapido;
+      const rapido = !!(RA && tz && tz.length > 1 && S.enteroOido && S.lentoPid !== pid);
+      if (rapido) { const n = Math.max(1, RA.tramos || 2); if (tz.length > n) tz = tz.slice(0, n - 1).concat([tz.slice(n - 1).join(' ')]); }
+      const pausa = rapido ? (RA.pausa ?? 0.6) : 1;
+      info.rapido = rapido; info.tramos = tz && tz.length ? tz.length : 0;
       S.sender = 'rival'; S.mine = null;
       if (tz && tz.length) {
         // E7 `aTiempo`: el globo dice el primer trozo; el resto se escribe en el cuerpo mientras el menú está abierto
@@ -220,6 +233,7 @@ export async function runDuel(game, api, idOrDef) {
         tl = { done: tz.length < 2 || game.instant, cancel: false };
         if (tl.done) {
           S.body = tz.join(' '); info.body = S.body;
+          if (tz.length > 1) S.enteroOido = true;
           // (modo rápido: la frase entera, de golpe; va al log como aviso igual que cuando acaba de escribirse)
           if (tz.length > 1) game.log.push({ who: 'aviso', name: fromName, text: S.body, room: game.state && game.state.room, t: Math.round(game.time) });
         }
@@ -229,12 +243,12 @@ export async function runDuel(game, api, idOrDef) {
           if (A.sostener) api.sostener(actorId, A.sostener);
           (async () => {
             for (let k = 1; k < tz.length; k++) {
-              await game.sleep(game.timedMs('duelo', tz[k], A.ms || TROZO_MS));
+              await game.sleep(Math.round(game.timedMs('duelo', tz[k], A.ms || TROZO_MS) * pausa));
               if (yo.cancel || !vivo()) return;
               S.body = tz.slice(0, k + 1).join(' '); info.body = S.body; api.sfx('click');
             }
             if (yo.cancel || !vivo()) return;
-            yo.done = true; S.escribiendo = null; info.escribiendo = false;
+            yo.done = true; S.escribiendo = null; info.escribiendo = false; S.enteroOido = true;
             if (A.sostener) api.sostener(actorId, null);
             game.log.push({ who: 'aviso', name: fromName, text: S.body, room: game.state && game.state.room, t: Math.round(game.time) });
           })();
@@ -246,6 +260,7 @@ export async function runDuel(game, api, idOrDef) {
         try { await say('rival', attack); } finally { S.tecleando = false; }
         llega();
       }
+      apuntarPista(pid);                              // [P7] sin la réplica: dónde se aprende, a la libreta
       const opts = buildMenu(pid);
       info.options = opts.map(o => o.text);
       // E6 §6.1 (b): con `cabe`, la larga dice 'larga' y `correctIndex` apunta a la corta (la que gana)
@@ -260,12 +275,15 @@ export async function runDuel(game, api, idOrDef) {
         // E7 `aTiempo`: ha contestado mientras el rival escribía. No es fallo: ni RE:, ni CC, ni mazo, ni comodín, ni ronda.
         paraEscritura(); tl = null;
         S.interrumpeN = (S.interrumpeN || 0) + 1; info.interrumpeN = S.interrumpeN; info.phase = 'interrumpido';
+        S.lentoPid = pid;                           // [P8] le ha pisado: este ataque vuelve al ritmo lento
         await say('player', cortada(ch.text));
         await say('rival', S.interrumpeN === 1 && opp.aTiempo.interrumpe ? opp.aTiempo.interrumpe : next('taunt'));
         info.phase = 'reply';
         continue;                                   // el mismo ataque, desde el primer trozo
       }
       tl = null;
+      if (S.lentoPid === pid) S.lentoPid = null;      // [P8] lo ha dejado acabar: vuelve el ritmo que tocara
+      S.pista = null;
       S.round++;
       S.sender = 'player'; S.mine = ch.text;          // «Tú › Todos: «…»» mientras Bruno lo dice
       await say('player', ch.text);
@@ -295,7 +313,8 @@ export async function runDuel(game, api, idOrDef) {
         const pending = finishers[S.finIdx];
         const ending = (!finishers.length && S.hits >= target) || (pending && S.hits >= pending.atScore);
         // §7.6: `hurtByPair` (rival or duelo.js) beats the `hurt` rotation; may make another actor speak
-        const hp = (opp.hurtByPair && opp.hurtByPair[pid]) || (D.hurtByPair && D.hurtByPair[id] && D.hurtByPair[id][pid]);
+        let hp = (opp.hurtByPair && opp.hurtByPair[pid]) || (D.hurtByPair && D.hurtByPair[id] && D.hurtByPair[id][pid]);
+        if (typeof hp === 'function') hp = hp(ctl) || null;      // una reacción que depende del duelo (p. ej. de los remates)
         if (!ending || hp) await sayList(hp || next('hurt'));
         const cam = D.cameos && D.cameos[id];
         if (cam && S.hits === 1 && api.once('cameo:' + id)) {
@@ -374,6 +393,9 @@ export async function runDuel(game, api, idOrDef) {
       const head = typeof opp.defeatHeadline === 'function' ? opp.defeatHeadline(n, api) : opp.defeatHeadline;
       // crítica 3 · N10: el titular de la derrota es del Titulator, no de Bruno (registro: who 'titulator')
       if (head) await api.titular(head, { from: opp.headlineFrom || 'titulator' });
+      // [P7] Bruno repasa: le faltaban réplicas de este mazo y están apuntadas en la libreta
+      const PL = D.pistas;
+      if (PL && PL.repaso && deck0.some(p => !flags[pairs.get(p).flag] && pistaApuntada(p))) await say('player', PL.repaso);
     }
     game.lastDuel = { id, result: S.result, hits: S.hits, misses: S.misses, perdidos: flags['duel:' + id + ':perdido_n'] || 0 };
     return won;
@@ -385,6 +407,25 @@ export async function runDuel(game, api, idOrDef) {
     game.duelInfo = null; game.duelActive = null; game.duelVista = null; game.duelCaja = null;
     game.finDialogo = game.time;                      // crítica 3 · N6: margen del ambiente (engine/efectos.js)
     if (music) api.music(prevMusic || null, 0.8);
+  }
+
+  /** [P7] ¿Está apuntada en la libreta la pista de la pareja `p`? (bit de su orden en `pairs`) */
+  function pistaApuntada(p) {
+    const PL = D.pistas, b = pairOrder.indexOf(p);
+    return !!(PL && b >= 0 && (Number(flags[PL.flag]) || 0) & (1 << b));
+  }
+  /** [P7] Ataque recibido sin su réplica: apunta en la libreta dónde se aprende (aviso la primera vez) y la enseña en
+   *  el pósit de la pestaña mientras el menú está abierto. */
+  function apuntarPista(pid) {
+    const PL = D.pistas, pair = pairs.get(pid);
+    S.pista = null; info.pista = null;
+    if (!PL || flags[pair.flag]) return;
+    const txt = typeof PL.de === 'function' ? PL.de(pair) : null;
+    if (!txt) return;
+    S.pista = txt; info.pista = txt;
+    if (pistaApuntada(pid)) return;
+    flags[PL.flag] = (Number(flags[PL.flag]) || 0) | (1 << pairOrder.indexOf(pid));
+    if (PL.aviso) game.notice(PL.aviso, { color: PL.color });
   }
 
   /** El correo del rival acaba de llegar: «¡ding!» y un sobre junto a cada presente (en el fax, el papel). */
@@ -489,6 +530,7 @@ export const COL = {
     dotOn: '#2a2218', dotOff: '#b8aa8c', toastBg: '#f6f0de', toastText: '#2a2218', hit: '#1e8a3a', miss: '#c8302a', you: '#1e3a6a' },
   sello: { ok: '#4ae070', okBg: '#06140a', no: '#ff5a48', noBg: '#1a0604' },
   libreta: { bg: '#1c1834', edge: '#4a4470', text: '#c8bce8' },
+  pista: { bg: '#f2e08a', edge: '#8a6a18', text: '#2a1e08', sombra: '#000000' },     // [P7] el pósit de la libreta
 };
 export const PARES_CONTRASTE = [
   ['duelo: barra «Correo» / En copia', COL.mail.barText, COL.mail.bar], ['duelo: en copia', COL.mail.copia, COL.mail.bar],
@@ -500,6 +542,7 @@ export const PARES_CONTRASTE = [
   ['fax: notificación', COL.fax.toastText, COL.fax.toastBg],
   ['duelo: sello ganado', COL.sello.ok, COL.sello.okBg], ['duelo: sello perdido', COL.sello.no, COL.sello.noBg],
   ['duelo: pestaña LIBRETA', COL.libreta.text, COL.libreta.bg],
+  ['duelo: pista apuntada (pósit)', COL.pista.text, COL.pista.bg],
 ];
 
 const ease = {
@@ -554,6 +597,7 @@ function drawHud(g, game, S) {
   const t = game.time;
   const h = winH(S);
   game.hudTop = WY + h + 3;
+  game.duelPositTop = null;
   // entrada: el móvil sube desde abajo (del bolsillo); el fax baja por la ranura
   const k = Math.max(0, Math.min(1, (t - S.t0) / SLIDE_MS));
   let oy = fax ? Math.round(-(h + 4) * (1 - ease.outCubic(k))) : Math.round((200 - WY) * (1 - ease.outBack(k)));
@@ -640,6 +684,7 @@ function drawHud(g, game, S) {
     notificacion: S.toast && t - S.toast.t0 < S.toast.ms && !S.veredicto ? `${S.toast.name}: ${S.toast.text}` : null,
     destello: fx, veredicto: S.veredicto ? { text: S.veredicto.text, ok: S.veredicto.ok } : null,
     ayuda: !!(S.ayuda && T.ayuda && S.hits === 0 && !S.veredicto), libreta: !!(game.choice && S.phase === 'reply' && T.libreta && !S.veredicto),
+    pista: (game.choice && S.phase === 'reply' && S.pista && !S.veredicto) ? S.pista : null,
     caja: { x: WX, y: WY, w: WW, h }, entrando: k < 1,
   };
   const qx0 = sx + 3 + anchoLado[0] + 8, qx1 = sx + sw - 3 - anchoLado[1] - 8;
@@ -706,6 +751,16 @@ function drawHud(g, game, S) {
     const L = COL.libreta, tw2 = measure(T.libreta) + 10;
     rect(g, 2, 134, tw2, 10, L.bg); frameRect(g, 2, 134, tw2, 11, L.edge); rect(g, 3, 143, tw2 - 2, 2, L.bg);
     drawText(g, T.libreta, 7, 132, L.text, { outline: null });
+    // [P7] sin la réplica de este ataque: la pista apuntada (dónde se aprende), en un pósit pegado encima de la pestaña
+    if (S.pista) {
+      const P = COL.pista, ls = wrap(S.pista, 296).slice(0, 3);
+      const pw = Math.max(...ls.map(l => measure(l))) + 10, ph = ls.length * 10 + 3, py = 133 - ph;
+      g.save(); g.globalAlpha = 0.5; rect(g, 4, py + 2, pw, ph, P.sombra); g.restore();
+      rect(g, 2, py, pw, ph, P.bg); frameRect(g, 2, py, pw, ph, P.edge);
+      rect(g, 2, py, 3, ph, P.edge);                                           // el filo engomado del pósit
+      ls.forEach((l, i) => drawText(g, l, 8, py - 1 + i * 10, P.text, { outline: null }));
+      game.duelPositTop = py;
+    }
   }
 }
 

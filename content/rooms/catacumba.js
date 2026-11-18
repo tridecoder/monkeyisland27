@@ -16,7 +16,8 @@
 //
 // Regla de Teodoro: NUNCA habla. Sus líneas salen del fax, EN MAYÚSCULAS (telegrama), con su color y el prefijo
 // «TEODORO (fax):» (api.sayFrom('fax', ...), helper `fax()`); sin `fax_con_papel` teclea, el fax pita y no sale nada.
-// Solo habla en voz alta una vez, al teléfono rojo, en la escena 7.3a (api.sayAs('teodoro_cuerpodoce', ...)).
+// En voz alta solo habla por el teléfono rojo, y dos veces ([P14]): al cerrar la página 7 («Benita. Página 7
+// cerrada…», escena 7.3a, que abre el Acto III) y en el clímax («Benita. Tira.»), con api.sayAs('teodoro_cuerpodoce', ...).
 // Estados del objeto `fax` para el arte: 'sin_papel' / 'con_papel' / 'imprimiendo' (el papel sale 2 px cada 80 ms);
 // E2 §4.2.6: 'faldon' (la hoja larguísima de Comercial) y 'tragando' (el fax se la come, despacio).
 import { buildRoom } from '../lib/room.js';
@@ -153,7 +154,7 @@ async function escenaActo3a(api) {
     if (api.flag('catacumba_tecla3') || (api.game.state.once || {})['once:evaristo_L3']) await fax(api, 'Y Controlling la ha leído entera. Ese hombre lee.');
     // (Descuelga el teléfono rojo. Por primera vez se le oye la voz: ronca, bajita.)
     await descolgar(api);
-    await api.sayAs(TEO, 'Goyita. Página 7 cerrada. Esta noche firma un chaval.');
+    await api.sayAs(TEO, 'Benita. Página 7 cerrada. Esta noche firma un chaval.');
     await colgar(api);
     // E2 L19: (Aurora se quita las gafas. Se las vuelve a poner.)
     await api.anim(AUR, 'reach', 450); await api.wait(500); await api.anim(AUR, 'reach', 450);
@@ -182,7 +183,7 @@ async function faxConPapel(api) {
   if (n >= 1) atrasadas.push('18:42. Respuesta a «¿hola?»: no.');
   if (n >= 2) atrasadas.push('18:55. Respuesta a «¿me oye?»: sí. Por desgracia.');
   if (n >= 3) atrasadas.push('19:10. Respuesta a todo lo demás: ver respuestas anteriores.');
-  atrasadas.push('19:12. Goyita, ¿me oyes? Tú aguanta.');
+  atrasadas.push('19:12. Benita, ¿me oyes? Tú aguanta.');
   for (const l of atrasadas) { api.sfx('paper'); await fax(api, l); }
   api.faceActor(TEO, 'right');
   await aurora(api, 'Lleva toda la tarde contestándote; nadie le había dado papel.');
@@ -203,8 +204,8 @@ async function teclaGoyita(api) {
     await api.anim(api.player, 'reach', 300);
     await api.anim(TEO, 'reach', 250);
     api.sfx('hit');
-    await fax(api, ['La Goyita no tira borradores.', 'Y a ella no le marca nadie más que yo.']);
-    await api.say('Perdón, Goyita.');
+    await fax(api, ['La Benita no tira borradores.', 'Y a ella no le marca nadie más que yo.']);
+    await api.say('Perdón, Benita.');
     api.inc('fax_tecla_n');
     return;
   }
@@ -280,7 +281,7 @@ async function faldonComercial(api) {
 async function usarPiezaConFax(api) {
   if (!api.flag('fax_con_papel')) { await api.say('Sin papel, este fax no traga ni una coma.'); return; }
   if (api.flag('pieza_recortada')) { await api.say('Ya está recortada. Si la vuelvo a enviar, Begoña recorta el recorte.'); return; }
-  const i = await api.choose(['1: GOYITA', '2: ADMINISTRACIÓN', '3: CONTROLLING', 'Mejor no.'], { escape: 3 });
+  const i = await api.choose(['1: BENITA', '2: ADMINISTRACIÓN', '3: CONTROLLING', 'Mejor no.'], { escape: 3 });
   if (i === 0) await teclaGoyita(api);
   else if (i === 1) await teclaAdministracion(api);
   else if (i === 2) await teclaControlling(api);
@@ -414,8 +415,8 @@ const dialogoAurora = {
           reply: 'Papel, en esta casa, solo gasta Begoña. Lo devuelve por triplicado.', setFlag: 'oyo_papel_begona' },
         { text: '¿Por qué no se hablan usted y Teodoro?', once: true,
           do: async (api) => {
-            await aurora(api, ['En 1996 me mandó un fax que empezaba «Con el debido respeto...».',
-              'Le contesté dándole las gracias por avisarme. Antes de lo que venía.',
+            await aurora(api, ['En 1996 me mandó un fax que empezaba «Corrígeme si me equivoco».',   // [P9] R02
+              'Le contesté: «Con mucho gusto: te equivocas».',
               'No me ha vuelto a dirigir la palabra. Han sido treinta años muy buenos.']);
             api.learnReply('rep_02');
           } },
@@ -514,7 +515,7 @@ const dialogoTeodoro = {
         { text: '¿Por qué solo habla por fax?', once: true,
           do: async (api) => { await fax(api, 'Lo que se dice se lo lleva el aire. Lo que se faxea, se archiva.'); } },
         { text: '¿Con quién habla por el teléfono rojo?', once: true,
-          do: async (api) => { await fax(api, ['Con la Goyita. La rotativa. Vive en el polígono.', 'No me pide likes. Solo papel, tinta y que no la llame impresora.']); } },
+          do: async (api) => { await fax(api, ['Con la Benita. La rotativa. Vive en el polígono.', 'No me pide likes. Solo papel, tinta y que no la llame impresora.']); } },
         { text: '¿Qué le pasa con la web?', once: true,
           do: async (api) => { await fax(api, ['En internet una errata se corrige, chaval. En papel se enmarca.', 'Si firma uno de la web, el papel se acaba.']); } },
         { text: 'He encontrado una página perdida del Libro de Estilo.', if: 'profecia_leida', once: true,
@@ -523,7 +524,7 @@ const dialogoTeodoro = {
         { text: '¿Conoce a Herminia, la de Infografía?', once: true,
           do: async (api) => { await fax(api, ['La máquina de Leoncio respeta el cuerpo 9. Lo he medido. Nueve.', 'Le mando faxes. Me contesta con un quesito. Nos entendemos.']); } },
         { text: '¿Conoce a don Evaristo?', once: true,
-          do: async (api) => { await fax(api, ['Es de los nuestros. Él cuenta comas. Yo, líneas.', 'Una vez me devolvió un fax corregido. Lo tengo enmarcado.']); } },
+          do: async (api) => { await fax(api, ['Es de los nuestros. Él cuenta comas. Yo, líneas.', 'Una vez me devolvió un fax corregido. Tenía razón.']); } },
         { text: 'Me voy.', exit: true, do: async (api) => { await fax(api, 'Cierra al salir. El reloj no se toca: las 20:59 caben.'); } },
       ],
     },
@@ -610,12 +611,12 @@ const dueloTeodoro = {
   // plan §7.4: la paráfrasis de cada ataque, en telegrama
   attackText: {
     R06: '¿CONTRASTADO? FUENTES. NÚMERO.',
-    R02: 'CON TODO EL RESPETO QUE ME MERECE LA WEB. QUE ES POCO.',
-    R09: 'DATO SIN CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.',   // E6 §5.1 (N7)
+    R02: 'CORRÍGEME SI ME EQUIVOCO: LA WEB NO ES UN PERIÓDICO.',                       // [P9]
+    R09: 'DATO SACADO DE CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.',   // E6 §5.1 (N7); [P9] «SACADO»
   },
   // E6 §5.1 · el tercer asalto, que quepa: el menú trae la R09 entera (el fax la corta y Teodoro la devuelve; nunca es
   // fallo) y la versión corta de Bruno, que cabe en una línea de fax (N8). 1.ª larga: N9; 2.ª y siguientes: el taunt.
-  cabe: { R09: { max: 38, corta: 'Tráeme el contexto.', noCabe: 'NO CABE. REPITA EN TREINTA Y OCHO.' } },
+  cabe: { R09: { max: 38, corta: 'Lo saqué yo. No cabía.', noCabe: 'NO CABE. REPITA EN TREINTA Y OCHO.' } },
   intro: ['¿Tú? ¿El de la web? ¿En mi página? Contesta.'],
   hurt: ['Hum. Cabe.', 'Eso, en mis tiempos, era una portada.'],
   taunt: ['Treinta y ocho caracteres de nada.', 'Respuesta a otro fax. Devuelto.'],
@@ -655,7 +656,7 @@ export default buildRoom({
     catacumba_galeradas_n: 'int · catacumba · +1 por Mirar galeradas (la 2.ª, titular de los áridos, §8.3)',
     catacumba_desmentido_c: 'bool · catacumba · Teodoro ya desmintió el rumor C (adenda 8.3)',
     catacumba_reloj_n: 'int · catacumba · +1 por Empujar reloj_2147',
-    catacumba_tecla1: 'bool · P3 · catacumba · ya se probó la tecla 1 (GOYITA) del fax',
+    catacumba_tecla1: 'bool · P3 · catacumba · ya se probó la tecla 1 (BENITA) del fax',
     catacumba_tecla3: 'bool · P3 · catacumba · ya se probó la tecla 3 (CONTROLLING): Evaristo',
     catacumba_factura: 'bool · P3 · catacumba · factura del fax (0,26 €) · P3 (tablón, pared)',
   },
@@ -694,13 +695,13 @@ export default buildRoom({
     } },
     { id: 'fax', name: 'fax', color: '#D9CFA6', state: 'sin_papel', states: ['sin_papel', 'con_papel', 'imprimiendo', 'faldon', 'tragando'],
       // el fax «escupe solo» (murmullos de Teodoro) — solo si tiene papel
-      murmurs: (v) => (v.flag('fax_con_papel') ? ['CUERPO 9. INTERLINEADO 10. CORAZÓN 12.', 'GOYITA, ¿ME OYES? TÚ AGUANTA.'] : []),
+      murmurs: (v) => (v.flag('fax_con_papel') ? ['CUERPO 9. INTERLINEADO 10. CORAZÓN 12.', 'BENITA, ¿ME OYES? TÚ AGUANTA.'] : []),
       murmurColor: '#D9CFA6',
       handlers: {
         mirar: async (api) => {
           if (api.flag('fax_con_papel')) {
             await api.say(['Tiene papel. Teodoro lo mira como quien mira a un hijo que vuelve.',
-              'Tres teclas de marcación rápida: 1 GOYITA, 2 ADMINISTRACIÓN, 3 CONTROLLING.']);
+              'Tres teclas de marcación rápida: 1 BENITA, 2 ADMINISTRACIÓN, 3 CONTROLLING.']);
           } else await api.say('Un fax de 1992: «SIN PAPEL». Pegatina: «Mantenimiento: Sistemas. Ticket 0.441».');
           // E5 §2.3 (D20/C34): la pegatina de Paco se ve en el mismo Mirar; con papel, el flag se pone sin línea
           if (!api.flag('vio_pegatina_fax')) api.setFlag('vio_pegatina_fax', true);

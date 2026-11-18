@@ -19,7 +19,7 @@
 // §5.2 Mercados con nombre (Fermín, Rogelio, Jacinto) · §5.4 el Lector Medio asiente sin globo · textos §4 (C46, C61-C63,
 // C98, M15, M24, M29-M32, M34, X04-X08, X10, D02-D05).
 import { buildRoom } from '../lib/room.js';
-import art, { popupComercial, paginaComercial, tabletaEnAlto, tabletaAlLado, MARIPAZ_AT } from './art/sala_amazonas.art.js';
+import art, { popupComercial, paginaComercial, paginaPopup, POPUP_MS, tabletaEnAlto, tabletaAlLado, MARIPAZ_AT } from './art/sala_amazonas.art.js';
 import { sobres } from '../../engine/duel.js';
 import { SFX as SFX_MOVIL } from '../../engine/phone.js';
 import { gong, SFX, rota } from '../escenas/planta_noble.js';
@@ -216,8 +216,8 @@ export const duelMaripaz = {
   deck: ['R08', 'R04', 'R11', 'R14'],
   attackText: {
     R08: 'Te escribo desde el cariño más absoluto. Con un banner en la firma.',
-    R04: 'Hazlo tú, que escribes divinamente. Entre tus párrafos caben tres banners.',
-    R11: 'Me quedo a la espera de tus comentarios. Mientras, te pongo un vídeo.',
+    R04: 'Hazlo tú, que te va a dar mucha visibilidad. Te pongo junto al banner.',   // [P9]
+    R11: '¿Has podido ver mi correo? El vídeo dura veinte segundos. No se salta.',   // [P9]
     R14: 'Si quieres lo vemos en una reunión rápida. Con pop-up de bienvenida.',
   },
   intro: [],
@@ -242,7 +242,7 @@ export const duelMaripaz = {
     api.hide('planillo_bajo_maripaz');
     api.sfx('pickup');
     await api.anim('bruno', 'reach', 400);
-    await sayM(api, 'Hueco libre: veintitrés líneas. Impar, y sin un banner.');
+    await sayM(api, 'Hueco libre: veintitrés líneas. Impar, y sin faldón.');
     // E2 §4.2.3: al pasar por detrás de Bruno, le pega en la mochila un adhesivo «SU ANUNCIO AQUÍ» (golpe de mazo)
     api.setWalkbox('fondo', true);
     try {
@@ -296,8 +296,11 @@ async function paginaSegunComercial(api) {
   await api.detalle({ titulo: 'PÁGINA 7 · PROPUESTA DE COMERCIAL', w: 200, h: 100, draw: paginaComercial }, async (api) => {
     await sayM(api, '¿Ves esa línea gris?');
     await api.say('¿La noticia?');
-    await sayM(api, 'Se ve demasiado. Estoy en ello.');
+    await sayM(api, 'Se ve demasiado. Por eso lleva pop-up.');            // [P10]
   });
+  // [P10] segundo plano: abre el planillo por el pliegue y se levanta un colchón de cartulina troquelada sobre la línea gris
+  api.sfx('paper');
+  await api.detalle({ titulo: 'PÁGINA 7 · PROPUESTA DE COMERCIAL', w: 200, h: 100, draw: paginaPopup, ms: POPUP_MS + 2300 });
 }
 
 /** §7.7 · derrota de D1: Bruno llama a Colchones Siestatón (primer plano del móvil); escala con la 2.ª y la 3.ª. */
@@ -482,7 +485,7 @@ export default buildRoom({
     ...MERC.map(mercadosActor),
     // §5.9 · Maripaz en la Sala (Acto II hasta ganar D1), al fondo de la mesa, sentada en el planillo (E2 §4.3)
     { id: MARIPAZ, when: ['acto_2_iniciado', '!casilla_hueco', '!acto_3_iniciado'],
-      murmurs: ['Entre esta silla y aquella cabe un banner. Lo he medido.', 'Esta reunión, con un pop-up al principio, ya sería rentable.'],
+      murmurs: ['Entre esta silla y aquella cabe un roll-up. Lo he medido.', 'Esta reunión, con un pop-up al principio, ya sería rentable.'],
       handlers: {
         mirar: 'Maripaz, Comercial. Sentada en el planillo, con una tableta llena de anuncios.',
         hablar: async (api) => {

@@ -231,16 +231,18 @@ const dueloGervasio = {
   attackText: {
     R07: 'Esto ya se... se habló. Me consta. Lo hablamos.',
     R01: 'Ya se dijo en el otro correo. Ese que no se leyó...',
-    R03: 'El acta se necesitaba para... para...',                  // E6 §5.2 (N10): la R03 le termina la frase
+    R03: 'El acta se necesitaba para... para... para ayer.',       // E6 §5.2 (N10); [P9] el tercer trozo, «para ayer.»
     R05: 'Lo del acta, entre tú y yo. Que no salga de esta puerta.',
   },
   // E7 · «no le pises la frase» (engine/duel.js `aTiempo`): Gervasio escribe a trozos; contestar antes de que acabe le
   // corta (no cuenta fallo) y el ataque vuelve a empezar. El R07 empieza como el R03 y acaba en el R07.
   aTiempo: {
     ms: 1300, escribiendo: 'escribiendo', interrumpe: 'Me has interrumpido. Se apunta.', sostener: 'movil',
+    // [P8] tras el primer ataque escuchado entero, dos tramos y pausas un 40 % más cortas; si le pisa, ese ataque, lento
+    rapido: { tramos: 2, pausa: 0.6 },
     trozos: {
       R07: ['Esto se necesitaba para...', 'para cuando...', 'me consta que ya lo hablamos.'],
-      R03: ['El acta se necesitaba para...', 'para...'],
+      R03: ['El acta se necesitaba para...', 'para...', 'para ayer.'],             // [P9]
       R01: ['Ya se dijo en el otro correo...', 'ese que no se leyó...'],
       R05: ['Lo del acta, entre tú y yo...', 'que no salga de esta puerta.'],
     },
@@ -525,6 +527,7 @@ export default buildRoom({
 async function leerEnviados(api) {
   if (here(api, G)) { await api.say('Con Gervasio delante, leerle el correo sería periodismo de investigación.'); return; }
   await api.say(['Enviados. Gervasio a Teodoro: "Me consta que esto ya lo hablamos".',            // paso 11 (E2 §7.4)
-    'Teodoro, por fax escaneado: "A ti te consta. A mí me consta que hablabas tú".']);
+    'Teodoro, por fax escaneado: "¿En qué acta consta?".']);                       // [P9] R07
   api.learnReply('rep_07');
+  await api.say('No hay respuesta. Gervasio no ha escrito un acta en su vida.');      // [P9] siembra el D3
 }

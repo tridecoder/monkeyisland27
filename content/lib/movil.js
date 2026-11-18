@@ -75,7 +75,7 @@ const FIJOS = [
   { bit: 9, de: 'Administración', who: 'begona_triplicado', fecha: 'ayer', asunto: 'Nota de gasto RECHAZADA (se adjunta duplicado)',
     cuerpo: ['Su nota «Café para pensar» queda RECHAZADA.', 'Motivo: pensar no es un gasto deducible. Triplicado, por correo interno.'],
     bruno: '«Pensar no es deducible». Lo enmarco.' },
-  { bit: 10, de: 'elContable.es', who: null, fecha: 'hace 6 años', asunto: '¡Bienvenido a elContable.es, Bruno!',
+  { bit: 10, de: 'elincontable.es', who: null, fecha: 'hace 6 años', asunto: '¡Bienvenido a El Incontable, Bruno!',
     cuerpo: ['¡Bienvenido, Bruno! Tu acceso estará listo en 24 horas.', 'Mientras, lee el libro de estilo: página 1 de 900. Un abrazo, Personal.'],
     bruno: 'Sin leer. El acceso «en 24 horas» sigue en camino.' },                 // E2 §8
 ];

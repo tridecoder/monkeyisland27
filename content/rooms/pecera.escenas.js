@@ -207,16 +207,17 @@ async function luzVuelve(api) {
 // que le sigue), nombres a oscuras (`nameDark`) y los verbos por el interceptor del motor (`aOscuras`). Anselmo cruza de
 // su mesa al enchufe sin prisa (guion no bloqueante, `sinCongelar`); cada 2 s, PLIN y el monitor parpadea en PUBLICADO.
 // Se cierra con lo primero de: Anselmo llega · Bruno Usa el enchufe · 12 s (en modo rápido, 0) → `apagonCierre`.
-const VENTANA_MS = 12000, PLIN_MS = 2000;
+// [P5] 12 s la primera vez; del segundo apagón en adelante, 5 s (la escalada de siempre se dice al cerrar).
+const VENTANA_MS = 12000, VENTANA_REPE_MS = 5000, PLIN_MS = 2000;
 const ANSELMO_SIN_PRISA = 40;                 // px/s (54 de serie): de su mesa al enchufe, ≈ 11 s
 /** Estado de la ventana (de módulo: no se guarda; al cargar, `limpiarOscuras` desde el onEnter de la sala). */
-const V = { abierta: false, llego: false, v0: null, gen: -1 };
+const V = { abierta: false, llego: false, v0: null, gen: -1, n: 1 };
 const focos = () => [SPOT_YOLI[0], { actor: A, rx: 10, ry: 8 }];
 
 /** Verbos a oscuras (§2.2.2): todos pasan por aquí antes de andar; `true` = no sigue (Bruno no sale de la sala). */
 async function aOscuras(api, verbo, id, item) {
   if (!V.abierta) return false;
-  if (verbo === 'usar' && id === 'enchufe_pantalla' && !item) { await apagonCierre(api, 'bruno'); return true; }
+  if (verbo === 'usar' && id === 'enchufe_pantalla' && !item) { await (V.n > 1 ? cierreRepeticion(api, 'bruno') : apagonCierre(api, 'bruno')); return true; }
   if (verbo === 'hablar' && id === Y) { await api.sayAs(Y, '¡Chsss! Estoy contando. Diecisiete. Dieciocho.'); return true; }
   if ((verbo === 'hablar' || verbo === 'empujar') && id === A) { await api.sayAs(A, 'No me tapes la linterna. Voy a mi enchufe.'); return true; }
   if (verbo === 'coger' && id === 'taza_no') { await talk(api, [['D3', 'No.']]); return true; }
@@ -260,7 +261,7 @@ async function apagonJugable(api) {
   }
   api.setFlag('pecera_oscuras', true);
   api.sinGuardar(true);
-  V.abierta = true; V.llego = false; V.gen = api.game.gen;
+  V.abierta = true; V.llego = false; V.gen = api.game.gen; V.n = 1;
   api.cameraFollow();
   if (api.game.instant) { await apagonCierre(api, 'tiempo'); return; }   // modo rápido: ventana de 0 ms
   api.background(ventana);
@@ -272,12 +273,15 @@ const pausa = (api, ms) => (api.game.instant ? new Promise(r => setTimeout(r, ms
 /** La ventana (guion NO bloqueante): Anselmo cruza; PLIN cada 2 s; a los 12 s o al llegar él, `apagonCierre`. */
 async function ventana(api) {
   const g = api.game, gen = g.gen, t0 = g.time, a = g.actors[A];
-  if (a && V.v0 == null) { V.v0 = a.speed; a.speed = ANSELMO_SIN_PRISA; }
-  api.sinCongelar(A);
-  api.walkActor(A, ENCHUFE[0] + 16, ENCHUFE[1]).then((ok) => { if (ok !== false) V.llego = true; });
+  const repe = V.n > 1, ms = repe ? VENTANA_REPE_MS : VENTANA_MS;
+  if (!repe) {                                         // [P5] en las repeticiones Anselmo no cruza: se cierra a los 5 s
+    if (a && V.v0 == null) { V.v0 = a.speed; a.speed = ANSELMO_SIN_PRISA; }
+    api.sinCongelar(A);
+    api.walkActor(A, ENCHUFE[0] + 16, ENCHUFE[1]).then((ok) => { if (ok !== false) V.llego = true; });
+  }
   let plin = t0 + PLIN_MS;
   const sigue = () => V.abierta && g.gen === gen && g.room && g.room.def.id === 'pecera';
-  while (sigue() && !V.llego && g.time - t0 < VENTANA_MS) {
+  while (sigue() && !V.llego && g.time - t0 < ms) {
     if (g.time >= plin) {
       plin += PLIN_MS;
       api.sfx(PLIN);                                   // (y el monitor parpadea en PUBLICADO)
@@ -289,7 +293,7 @@ async function ventana(api) {
   if (!sigue()) return;
   while (g.busy && sigue()) await pausa(api, 50);        // si Bruno está hablando a oscuras, que acabe la frase
   if (!sigue()) return;
-  g.runScript((api2) => apagonCierre(api2, V.llego ? 'anselmo' : 'tiempo'), { label: 'pecera:apagonCierre' });
+  g.runScript((api2) => (repe ? cierreRepeticion(api2, 'tiempo') : apagonCierre(api2, V.llego ? 'anselmo' : 'tiempo')), { label: 'pecera:apagonCierre' });
 }
 
 /** Cierre de la ventana (§3.2): enchufa Anselmo (o ya enchufó Bruno); luz; «…Que te la apague Paco.». */
@@ -340,6 +344,9 @@ async function apagonCierre(api, via) {
 async function apagonEscena(api) {
   const n = api.inc('apagon_n');
   if (n === 1) { await apagonJugable(api); return; }
+  // [P5] del segundo apagón en adelante: Bruno tira, negro y (n = 2) «¡Otra!»; luego una ventana a oscuras de 5 s, como
+  // la primera (interceptor, nombres, PLIN), y al cerrarse la escalada de siempre (`cierreRepeticion`)
+  let dentro = false;
   try {
     await api.cutscene(async (api) => {
       await api.walkTo(ENCHUFE[0] - 16, ENCHUFE[1] + 4);
@@ -347,24 +354,53 @@ async function apagonEscena(api) {
       api.cameraTo(ENCHUFE[0] + 40);
       await api.anim(api.player, 'reach', 500);
       api.setState('pantalla_metricas', 'negra');
-      api.apagon({ ms: 0, spots: SPOT_YOLI });
+      api.apagon({ ms: 0, nombres: true, spots: SPOT_YOLI, interceptar: aOscuras });
       await api.wait(600);
       if (n === 2) {
         api.sfx(PLIN); api.setState('monitor_yoli', 'publicado');
         await api.sayAs(Y, '¡Otra! ¡Ha entrado otra!');
+      }
+    });
+    dentro = true;
+  } finally {
+    if (!dentro) { limpiarOscuras(api); api.setState('monitor_yoli', null); api.refreshActors(); }
+  }
+  api.setFlag('pecera_oscuras', true);
+  api.sinGuardar(true);
+  V.abierta = true; V.llego = false; V.gen = api.game.gen; V.n = n;
+  api.cameraFollow();
+  if (api.game.instant) { await cierreRepeticion(api, 'tiempo'); return; }   // modo rápido: ventana de 0 ms
+  api.background(ventana);
+}
+
+/** [P5] Cierre de la ventana de una repetición (5 s, o Bruno enchufa): la escalada de siempre según `V.n`. */
+async function cierreRepeticion(api, via) {
+  V.abierta = false;
+  const n = V.n;
+  try {
+    await api.cutscene(async (api) => {
+      if (via === 'bruno') {
+        await api.walkTo(ENCHUFE[0] - 16, ENCHUFE[1] + 4);
+        api.face('up');
+        await api.anim(api.player, 'reach', 500);     // (Bruno enchufa)
+      }
+      limpiarOscuras(api);
+      api.setState('pantalla_metricas', 'negra');
+      api.apagon({ ms: 0, spots: SPOT_YOLI });        // (sin ventana: lo que queda es escena)
+      if (n === 2) {
         // (Le tiembla el párpado. Se levanta y enchufa ella.)
-        await alEnchufe(api, Y);
+        if (via !== 'bruno') await alEnchufe(api, Y);
         await luzVuelve(api);
         api.setState('monitor_yoli', 'guardando');
         await talk(api, [[Y, 'Perdona. Si no veo la gráfica, no sé si estoy contenta.'], ['B', 'Pero estaba entrando todo.'],
           [Y, 'Ya. Pero si no lo veo entrar, no cuenta.']]);
-        await deVuelta(api, Y);
+        if (via !== 'bruno') await deVuelta(api, Y);
       } else if (n === 3) {
         // (Anselmo cruza su cinta, enchufa sin mirar y vuelve.)
-        await alEnchufe(api, A);
+        if (via !== 'bruno') await alEnchufe(api, A);
         await luzVuelve(api);
         await talk(api, [[A, 'Tercera vez. Te paso a BLOQUEADO.'], [A, 'Si quieres que se quede apagada, tráeme un motivo. ¿Tiene número?']]);
-        await deVuelta(api, A);
+        if (via !== 'bruno') await deVuelta(api, A);
         await api.say('Un motivo con número y un cable que baja. Eso huele a Eutimio.');
       } else {
         await api.wait(500);
@@ -373,8 +409,11 @@ async function apagonEscena(api) {
       }
     });
   } finally {
+    limpiarOscuras(api);
     if (api.game.apagon) await api.apagon(false);
     api.setState('pantalla_metricas', null);
+    api.setState('monitor_yoli', null);
+    api.cameraFollow();
     api.refreshActors();
   }
 }

@@ -21,7 +21,7 @@ export const VETADAS = [
   // reglas del dueño: Diseño (y Producto) e Infografía nunca en la misma línea
   [(t) => /Diseño|DISEÑO/.test(t) && /Infograf[ií]a|INFOGRAF[IÍ]A/.test(t), 'Diseño e Infografía en la misma línea'],
 ];
-/** El nombre del periódico real (el que NO es elContable) no aparece en NINGÚN fichero del repositorio: se busca sin
+/** El nombre del periódico real (el que NO es El Incontable) no aparece en NINGÚN fichero del repositorio: se busca sin
  *  escribirlo (el patrón va codificado para que este archivo tampoco lo contenga). */
 // Opcional y fuera del repositorio: MARCA_VETADA=<expresión> node tools/text-audit.mjs comprueba que no aparece en ningún fichero.
 export const MARCA_REAL = process.env.MARCA_VETADA ? new RegExp(process.env.MARCA_VETADA, 'i') : null;
@@ -311,7 +311,7 @@ const FUERA_MUSICA = /[\\/]music\.js$/;
 export const TOPES_E6_JUEGO = [
   { test: esRemateSeco, pct: 0.179, fuera: FUERA_MUSICA, txt: 'remate seco (E6 §8, E7): ≤ 17,9 % de las cadenas' },  // 20,2 % → 14,4 % (E6) → 16,4 % (E7 §7: real + 1,5)
   { re: /t[áa]per/i, porCadena: true, max: 17, txt: '«táper» (E6 §8)' },                                             // 32 → 17
-  { re: /\b(?:19|20)\d\d\b/, porCadena: true, max: 35, fuera: FUERA_MUSICA, txt: 'año 19xx/20xx (E6 §8)' },         // 64 → 33
+  { re: /\b(?:19|20)\d\d\b/, porCadena: true, max: 36, fuera: FUERA_MUSICA, txt: 'año 19xx/20xx (E6 §8)' },         // 64 → 33; [P9] 36 (R11 «en 2019», Íñigo «Visión 2030»)
   { re: /Huele a 2019/, porCadena: true, max: 1, txt: '«Huele a 2019» (E6 §8)' },                                    // 3 → 1
   { re: /Diecinueve años/, porCadena: true, max: 4, txt: '«Diecinueve años» (E6 §8)' },                              // 9 → 4
   { re: /Lo que diga el Lector Medio/, porCadena: true, max: 5, txt: '«Lo que diga el Lector Medio» (E6 §8)' },      // 7 → 5

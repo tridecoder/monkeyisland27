@@ -227,7 +227,8 @@ export function actoActual(api) {
   return 1;
 }
 
-/** crítica 3 · N1: dónde se aprende cada réplica (flag → [abuela, nivel 2-3; Bruno al colgar, nivel 3: sitio y objeto]).
+/** [P7] La nota de Bruno (`[1]`) es también la pista que el duelo apunta en la libreta (content/duelo.js `pistas`).
+ *  crítica 3 · N1: dónde se aprende cada réplica (flag → [abuela, nivel 2-3; Bruno al colgar, nivel 3: sitio y objeto]).
  *  Si cambia dónde se aprende una réplica (content/flags.js, descripción de `rep_XX`), se cambia aquí. */
 export const DONDE = {
   rep_01: ['En el cuarto del café hay un corcho con cartas. Léelo, que es gratis.', 'Vending: Mirar el tablón. El hilo del yogur.'],
@@ -240,7 +241,7 @@ export const DONDE = {
   rep_08: ['La chica de los números tiene hilos buenos. Cuando le vaya el ordenador.', 'Redacción, con el CMS vivo: a Yoli, «¿Algún hilo bueno esta noche?».'],
   rep_09: ['Pregúntale al del tablero cómo se lleva con la chica de los números.', 'Redacción: a Anselmo, «¿Qué tal con Yoli?».'],
   rep_10: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
-  rep_11: ['Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar.', 'Redacción: mi ordenador, sentado. Ramírez espera mis comentarios.'],
+  rep_11: ['Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar.', 'Redacción: mi ordenador, sentado. Ramírez pregunta si he podido verlo.'],
   rep_12: ['El de los cables sabe cosas del señor del traje. Pregúntale.', 'Sistemas, con el CMS vivo: a Eutimio, «¿Algún cotilleo del consultor?».'],
   rep_13: ['El chico del armario escribía los discursos. Pregúntale.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».'],
   rep_14: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
@@ -266,7 +267,7 @@ export const DESPEDIDA = 'Abrígate.';
 /** Hora de la historia (siempre creciente: el motor guarda la mayor). Los relojes del edificio siguen en 20:59. */
 export function horaMovil(api) {
   const f = (k) => !!api.flag(k);
-  if (f('lector_derribado') || f('juego_terminado')) return '21:00';            // «Goyita. Tira.»
+  if (f('lector_derribado') || f('juego_terminado')) return '21:00';            // «Benita. Tira.»
   if (f('sala_amazonas_climax_visto') || f('climax_entrada')) return '20:59';   // entrada en el clímax
   if (f('sala_abierta')) return '20:53';
   if (f('ruben_libre')) return '20:44';

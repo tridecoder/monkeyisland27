@@ -178,12 +178,12 @@ const celestinoDialog = {
         { id: 'cafe', text: '¿Dónde hay café en esta casa?', once: true,
           reply: 'En el Vending. Gertrudis. La cafetera.',
           lines: [['player', '¿Y cómo se le pide?'], [C, 'Pedir, no. Se saluda. Dale las buenas noches.'],
-            [C, 'Nadie se las da. Yo sí. Por eso a mí me pone espuma.']],                       // E2 L1
+            [C, 'Nadie se las da. Yo se las daba. Me ponía espuma.']],                       // E2 L1
           setFlag: 'celestino_pista_gertrudis' },
         { id: 'cotilleo', text: '¿Algún cotilleo?', once: true,                              // E2 L2 (A + E)
-          reply: ['¡Jugada de ascensor! Gervasio, al de Mercados: «Que esto no salga de aquí».',
-            '¡Y el de Mercados, de primeras: «Tranquilo: de aquí no sale ni el wifi»!',
-            '¡Tres años sin hablarse! ¡Y el wifi sigue sin salir!'],
+          reply: ['¡Jugada de correo! Gervasio, responder a todos: «Que esto no salga de aquí».',
+            '¡Contesta Mercados, a todos: «Me lo estás diciendo en un responder a todos»!',
+            '¡Me llegó hasta a mí! ¡Y yo soy un mostrador!'],
           do: async (api) => { api.learnReply('rep_05'); } },
         { id: 'ibex', text: '¿Cómo va el Ibex?',                                            // (rota, se queda)
           do: async (api) => {
@@ -278,14 +278,14 @@ export default buildRoom({
     } },
     { id: 'logo_pared', name: 'logo', handlers: {
       mirar: async (api) => {
-        if (!api.flag('vestibulo_logo_visto')) await api.say('Letras de metal: «elContable.es». A la «e» le falta un tornillo.');
-        else await api.say(['Un periódico económico que se llama el Contable.', 'Es lo más honesto que ha hecho nunca un periódico económico.']);
+        if (!api.flag('vestibulo_logo_visto')) await api.say('Letras de metal: «elincontable.es». Al «in» le falta un tornillo.');
+        else await api.say(['Un periódico económico que se llama El Incontable.', 'Es lo más honesto que ha hecho nunca un periódico económico.']);
         api.setFlag('vestibulo_logo_visto', true);
       },
-      coger: 'Si me llevo la «e», se queda en «lContable». Suena a gestoría con prisas.',
+      coger: 'Si me llevo el «in», queda «elcontable.es». Una gestoría.',
       tirar: 'Le falta un tornillo. Si tiro, le faltan dos. Y a mí, el trabajo.',
-      empujar: 'No llego. Y si llego, la «e» se cae con todo su tornillo.',
-      hablar: '«Buenas noches, Contable». La «e» se mueve un poco. Lo tomo como un sí.',
+      empujar: 'No llego. Y si llego, el «in» se cae con todo su tornillo.',
+      hablar: '«Buenas noches, Incontable». El «in» se mueve un poco. Lo tomo como un sí.',
     } },
     { id: 'torno', name: 'torno', color: LED, exit: { room: 'pecera', tipo: 'torno' }, handlers: {
       ir: async (api) => {

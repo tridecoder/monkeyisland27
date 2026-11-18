@@ -302,6 +302,9 @@ export function makeApi(game, ctx = {}) {
       game.checkFlag(flag, 'learnReply');
       if (game.state.flags[flag]) return false;
       game.state.flags[flag] = true;
+      // [P7] la pista de la libreta (dónde se aprendía) se borra al aprenderla
+      const PL = D.pistas, b = pair ? (D.pairs || []).indexOf(pair) : -1;
+      if (PL && PL.flag && b >= 0 && game.state.flags[PL.flag]) game.state.flags[PL.flag] = (Number(game.state.flags[PL.flag]) || 0) & ~(1 << b);
       const L = game.G.learnReply || {};
       if (L.notice !== false) game.notice(L.notice || 'Réplica apuntada.', { color: L.color });
       if (L.sfx !== false) game.audio.sfx(L.sfx || 'good');

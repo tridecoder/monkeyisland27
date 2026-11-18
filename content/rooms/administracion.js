@@ -161,7 +161,7 @@ export default buildRoom({
     { id: BEGONA,
       murmurs: ['Original. Duplicado. Triplicado. Original. Duplicado...', 'Las 19:07. Qué rápido pasa la tarde. No pasa.',
         'Se ha ido todo el mundo. Yo cierro a las 19:15. Por principios.',
-        'Esto es el Contable, niño. Aquí cuadra todo menos las nóminas.',
+        'Esto es El Incontable, niño. Y yo lo cuento todo.',
         'Don Evaristo me ha llamado para decirme que me llamará. Qué hombre.'],
       handlers: {
         mirar: async (api) => { await api.say(['Begoña Triplicado. Manguitos, gafas rojas y tres sellos.', 'Uno por mano y otro por si acaso.']); },

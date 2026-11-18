@@ -116,9 +116,9 @@ if (quiere('propias')) {
       '28: «Buenas noches, Gertrudis.» → «BUENAS NOCHES, SALA AMAZONAS.» → la pregunta en directo → atasco con «¿Necesitan ayuda?»');
     ok(!pisaVending.length && !enCamino('E-53').length, `28: el Vending no se pisa en el Acto II tras el 14 (ni E-53)${pisaVending.length ? ': pasos ' + pisaVending.join(', ') : ''}`);
     // §5 · duelos
-    ok(tiene(36, 'DATO SIN CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.') && tiene(36, 'Tráeme el contexto.', 'bruno') && tiene(36, '...CABE.') && !tiene(36, 'NO CABE'),
-      '36: D2 de tres asaltos; el tercero, la R09 corta («Tráeme el contexto.» → «...CABE.»)');
-    ok(tiene(46, 'El acta se necesitaba para... para...') && tiene(46, 'Ayer no puedo. Te miro hueco para anteayer.', 'bruno'), '46: D3, la frase a medias y la R03 que la termina');
+    ok(tiene(36, 'DATO SACADO DE CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.') && tiene(36, 'Lo saqué yo. No cabía.', 'bruno') && tiene(36, '...CABE.') && !tiene(36, 'NO CABE'),
+      '36: D2 de tres asaltos; el tercero, la R09 corta («Lo saqué yo. No cabía.» → «...CABE.»; [P9])');
+    ok(tiene(46, 'El acta se necesitaba para... para... para ayer.') && tiene(46, 'Ayer fue cuando empezaste la frase.', 'bruno'), '46: D3, la frase a medias y la R03 que la termina');
     // la frase de Anselmo, una vez y en el 37 (E6 cabecera)
     const f1 = enCamino('El modelo es de fuera. El prompt es de dentro.');
     ok(f1.length === 1 && f1[0][0] === 37 && f1[0][1] === 1, `«El modelo es de fuera. El prompt es de dentro.»: una vez, en el paso 37 (${JSON.stringify(f1)})`);

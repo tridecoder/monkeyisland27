@@ -4,7 +4,7 @@
 inventario, diálogos y duelos verbales por correo: «Responder a todos»), hecha en JavaScript sin dependencias ni
 compilación: todo el arte es pixel art procedural y la música se sintetiza en el navegador.
 
-Viernes, 18:30. Bruno Pellejo, becario desde hace seis años en el periódico ficticio **elContable.es**, tiene hasta el
+Viernes, 18:30. Bruno Pellejo, becario desde hace seis años en el periódico ficticio **El Incontable** (elincontable.es), tiene hasta el
 cierre de las 21:00 para firmar, por fin, en papel.
 
 > El medio, la empresa y **todos los personajes son ficticios**. Cualquier parecido con periódicos, empresas o personas

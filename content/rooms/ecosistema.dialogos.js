@@ -58,7 +58,7 @@ export default {
           // ENMIENDA E3 §4.3 B19: el segundo registro (lee el periódico, nunca a Bruno); el remate vuelve al eje
           { text: '¿Usted se lee el periódico?', once: true,
             reply: ['De la cabecera a las esquelas. Para vender un hueco hay que leer lo de al lado.',
-              'Lo más leído es la fe de erratas. Y ahí no me dejan poner ni un banner.'] },
+              'Lo más leído es la fe de erratas. Y ahí no me dejan ni un anuncio por palabras.'] },
           { text: '¿Qué tal con Siestatón?', if: 'duelo_maripaz_ganado', once: true,
             reply: 'Encantados. En la web caben en todas partes. Hasta en la X de cerrar.' },
           { text: 'Me voy.', exit: true,

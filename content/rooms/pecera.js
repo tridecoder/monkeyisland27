@@ -49,8 +49,9 @@ const CORO_ACTO_3 = [[['D2', '¿Lo del Titulator ha sido Diseño?'], ['D3', 'No.
 // paso 13 (E2 §7.4): sentado, el correo se ve; la réplica R11 (contra Maripaz). Con Mirar o con Usar el ordenador
 // (crítica 3 · N1); una sola vez: con `rep_11` ya sabida, cada verbo dice lo suyo.
 async function leerCorreoRamirez(api) {
-  await api.say(['Con silla, el correo se ve. Ramírez: «Quedo a la espera de tus comentarios».',
-    'Respuesta: «Espera sentado. Si encuentras silla».']);
+  // [P9] R11: el correo de Ramírez pregunta; la respuesta es un borrador de Bruno que nunca mandó
+  await api.say(['Con silla, el correo se ve. Ramírez, en 2019: «¿Has podido verlo?».',
+    'En borradores, mi respuesta: «Poder, he podido».', 'Nunca la mandé. La apunto.']);
   api.learnReply('rep_11');
   await api.say(['Y una autorrespuesta de Brais: «Estoy fuera de la oficina desde julio».', '«Bueno, fuera no. Dentro. Muy dentro».']);
 }
@@ -323,7 +324,7 @@ export default buildRoom({
         if (!api.flag('rep_11')) {                                          // paso 13 (E2 §7.4)
           await leerCorreoRamirez(api);
         } else {
-          await api.say(['Bandeja de entrada. Ramírez sigue a la espera de mis comentarios.', 'Y Brais sigue fuera de la oficina. Bueno, dentro. Muy dentro.']);
+          await api.say(['Bandeja de entrada. Ramírez sigue preguntando si he podido.', 'Y Brais sigue fuera de la oficina. Bueno, dentro. Muy dentro.']);
         }
       },
       usar: async (api) => {
@@ -344,7 +345,7 @@ export default buildRoom({
       'usar:cafe': async (api) => api.say(['Tentador. Pero el teclado de al lado ya lo probó en 2017.', 'Sigue escribiendo en negrita.']),
       'usar:pieza_opa': 'Ya está escrita. Ahora le faltan hueco, fuente y firma.',
       hablar: 'Le susurro "papel". Se le acelera el ventilador. Le ha dado miedo.',
-      coger: 'Es del Contable. Lo pone una pegatina. Con mi nombre mal escrito.',
+      coger: 'Es de El Incontable. Lo pone una pegatina. Con mi nombre mal escrito.',
       cerrar: 'Lo cierro. Cuatro mil ciento doce piezas me miran desde el escritorio.',
     } },
     { id: 'silla_ramirez', name: 'silla de Ramírez', handlers: {
@@ -527,7 +528,7 @@ export default buildRoom({
       },
       'dar:album_eventos': async (api) => api.sayAs(Y, ['¿Fotos de eventos? Eso no lo ve nadie.', 'Bueno. Uno. El del fondo.']),
     },
-      murmurs: ['Esto sube. Esto baja. Esto soy yo.', 'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.',
+      murmurs: ['Esto sube. Esto baja. Esto soy yo.', '"Incontable": cero búsquedas al mes.',
         '«Los expertos coinciden»... Ya buscaré expertos. Primero, que coincidan.'] },   // L29 + E4 O21
     // (E2 §2.6: Nemesio, `nerea_backlog`, ya no está: su mesa es el hotspot `mesa_guardia` y lo suyo lo hace Anselmo.)
     { id: R, when: ['ruben_libre', '!lector_derribado'], handlers: {

@@ -308,7 +308,7 @@ try {
       await page.keyboard.press('Escape');
       ok(await until(() => __game.game.duelInfo && __game.game.duelInfo.escribiendo === false, null, 10000), 'al volver, acaba la frase');
       I = await D();
-      ok(I.body === 'El acta se necesitaba para... para...', `R03 entera: «${I.body}»`);
+      ok(I.body === 'El acta se necesitaba para... para... para ayer.', `R03 entera: «${I.body}»`);
       await clickOpt(I.ci);
       ok(await untilSkip(() => __game.game.duelInfo && __game.game.duelInfo.phase === 'finisher' && !!__game.game.choice, null, 15000), 'remate');
       I = await D(); await clickOpt(I.options.indexOf('[Usar objeto]'));
@@ -525,7 +525,7 @@ try {
     fs.mkdirSync(path.join(shots, 'test-e7'), { recursive: true });
     fs.writeFileSync(path.join(shots, 'test-e7', 'camino-principal.tsv'), Object.entries(porPaso).flatMap(([n, X]) => X.filter(l => l.who !== 'aviso' && l.who !== 'tarjeta').map(l => `${n}\t${l.who}\t${l.text}`)).join('\n') + '\n');
     ok(lineas <= E6.lineas + 6 && min <= E6.min + 1, `saldo de §8: ${lineas - E6.lineas >= 0 ? '+' : ''}${lineas - E6.lineas} líneas (≤ +6) y ${(min - E6.min).toFixed(1).replace('.', ',')} min (≤ +1)`);
-    ok(porPaso[46].some(l => l.who === 'aviso' && l.text === 'El acta se necesitaba para... para...'), '46 en modo rápido: la R03 entera, al registro como aviso');
+    ok(porPaso[46].some(l => l.who === 'aviso' && l.text === 'El acta se necesitaba para... para... para ayer.'), '46 en modo rápido: la R03 entera, al registro como aviso');
     const F6 = ['Y en nuestros corazones, Brais está en HECHO.', 'Integró una IA que era un becario. Y rechaza una IA que es una IA.', '...Lo miro en la próxima versión.'];
     ok(!porPaso[45].some(l => F6.includes(l.text)) && porPaso[45].some(l => l.text === 'Nos hemos quedado sin IA de la casa.'), '45: F6 (fuera las tres; «Nos hemos quedado sin IA de la casa.» dentro)');
     const { rematePorPersonaje, REMATE_PERSONAJE_AVISO } = await import('./plan-rules.mjs');

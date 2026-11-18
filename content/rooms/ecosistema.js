@@ -399,7 +399,7 @@ export default buildRoom({
           await api.cutscene(async (api) => {
             api.faceActor(MARIPAZ, 'bruno'); await api.anim(MARIPAZ, 'reach', 400); api.sfx('paper');   // la coge
             api.faceActor(MARIPAZ, 'down'); await api.wait(1400);                                        // la lee, con el dedo
-            for (let i = 0; i < 3; i++) { api.sfx('click'); await api.wait(350); }                       // tres golpecitos: ahí iría un banner
+            for (let i = 0; i < 3; i++) { api.sfx('click'); await api.wait(350); }                       // tres golpecitos: ahí iría un módulo ([P10])
             await api.wait(600); api.faceActor(MARIPAZ, 'bruno');
             await sayM(api, 'Línea nueve: «Hidrovoltia, a por el Robledal». Quita el sueño. Siestatón.');
             await sayM(api, 'Y la conclusión vale un faldón entero. Que no te la recorten.');

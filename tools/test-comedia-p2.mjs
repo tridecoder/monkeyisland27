@@ -207,7 +207,7 @@ async function principal() {
   await T.opcion('Me voy.');
   await T.expectFlags({ rep_09: true }, 'paso 24');
   await T.musts(['Alto. Esto es Desarrollo. ¿Traes algo de fuera?', 'Solo a mí.', 'Lo vacío no se integra, pero tampoco molesta.',
-    'Peor. Si funciona, la gente se acostumbra.', 'Eutimio abre ticket. Bajo yo.', 'Tráeme el contexto. Le hago una pieza aparte',
+    'Peor. Si funciona, la gente se acostumbra.', 'Eutimio abre ticket. Bajo yo.', 'Le contesté: «Claro que lo saqué. El contexto no cabía en la pieza».',
     'Cierra la frontera al salir. No tiene puerta. Ciérrala igual.'], 'Anselmo');
   must(!(await T.logHas('Bueno, ella no come. Mide.')), 'sigue «ella no come»');
   await T.hablar('anselmo_monolito'); await T.opcion('Me voy.');
@@ -250,7 +250,7 @@ async function principal() {
   await T.hablar('yoli_tendencias');
   must(!(await R.state()).dialog, 'Yoli sin cms_vivo abre menú');
   await T.musts(['becario con silla... ¿Con silla? Ahora no. Se cae el CMS.', 'Vuelve con un titular con número. El siete convierte.'], 'B4');
-  must(!(await T.logHas('Teodoro vive en la Redacción de papel')) && !(await T.logHas('nuevo dueño del Contable')), 'Yoli sigue con rumores');
+  must(!(await T.logHas('Teodoro vive en la Redacción de papel')) && !(await T.logHas('nuevo dueño de El Incontable')), 'Yoli sigue con rumores');
   await T.setFlag('vio_ticket_3');
   await T.clearLog();
   await T.verb('tirar', 'enchufe_pantalla');
@@ -272,12 +272,12 @@ async function principal() {
   must(!(await T.opciones()).includes('Íñigo va a cerrar el papel.'), 'Yoli: la del Acto III sale antes');
   await T.opcion('Me voy.');
   await T.expectFlags({ rep_08: true }, 'paso 23');
-  await T.musts(['Le contesté: «Y yo te leo desde el más absoluto modo avión».', 'Me ha puesto en copia a mi madre.',
+  await T.musts(['Le contesté: «Se nota. Has puesto a mi jefe en copia».', 'Ahora ha puesto en copia a mi madre.',
     '...bien. Bajando, pero bien.', 'Menos una lectora: cuarenta y siete minutos, y comenta «abrígate» en todo.',
     'Te lo coloco en Discover. Con expertos.'], 'Yoli E2 §2.7 (E4 M3: la despedida con CMS)');
   lg = await T.log();
   must(!lg.some(l => l.who === 'yoli_tendencias' && /— ?\d/.test(l.text)), 'Yoli: cifras entre rayas');
-  must(lg.filter(l => l.text.includes('modo avión')).length === 1, 'B5: línea duplicada');
+  must(lg.filter(l => l.text.includes('Has puesto a mi jefe en copia')).length === 1, 'B5: línea duplicada');
   ok('E2 §2.7 Yoli (B5, C6, sin cifras entre rayas) → rep_08');
   await T.clearLog();
   await T.hablar('coro_desarrollo');

@@ -204,7 +204,7 @@ try {
   if (args.shots) await shotDuring('e3-periodico', () => choose('¿Usted se lee el periódico?'), 'Para vender un hueco hay que leer lo de al lado.', 500);
   else await choose('¿Usted se lee el periódico?');
   ok(await logWho('De la cabecera a las esquelas. Para vender un hueco hay que leer lo de al lado.') === 'maripaz_remitido'
-    && await logWho('Lo más leído es la fe de erratas. Y ahí no me dejan poner ni un banner.') === 'maripaz_remitido', 'E3 B19: «¿Usted se lee el periódico?»');
+    && await logWho('Lo más leído es la fe de erratas. Y ahí no me dejan ni un anuncio por palabras.') === 'maripaz_remitido', 'E3 B19: «¿Usted se lee el periódico?»');
   ok(!(await opts()).includes('¿Usted se lee el periódico?'), 'E3 B19: la opción es `once`');
   await choose('La web va muy lenta.');
   ok(await logHas('Eso te lo arreglo con un pop-up, cariño.') === 1 && await logHas('mientras lo cierras, no te das cuenta') === 1, '«Eso te lo arreglo con un pop-up»');
@@ -329,7 +329,7 @@ try {
     const { d } = await duranteDetalle(() => choose('¿Qué hace usted con el planillo?'), { titulo: 'PÁGINA 7 · PROPUESTA DE COMERCIAL', texto: '¿La noticia?', esperaMs: 400, shotName: 'pagina7' });
     ok(!!d, 'plano detalle: PÁGINA 7 · PROPUESTA DE COMERCIAL');
   }
-  ok(await logHas('Se ve demasiado. Estoy en ello.') === 1, '«Se ve demasiado. Estoy en ello.» (E7 E183)');
+  ok(await logHas('Se ve demasiado. Por eso lleva pop-up.') === 1, '«Se ve demasiado. Por eso lleva pop-up.» ([P10])');
   await choose('¿Y si la gente no quiere anuncios?');
   ok(await logHas('No la encuentran.') === 1, '«No la encuentran.»');
   await choose('Luego vuelvo.');
@@ -389,7 +389,7 @@ try {
   let st = await state();
   ok(st.flags.duelo_maripaz_ganado && st.flags.casilla_hueco && st.flags.bruno_con_banner, 'paso 26: duelo_maripaz_ganado, casilla_hueco, bruno_con_banner');
   ok(await logHas('¿Y quién me firma que esa página es noticia y no un hueco para anuncios?') === 1 && await logHas('Sellada por Aurora. Impar.') === 1, 'remate con la ficha');
-  ok(await logHas('Siestatón, a la web. Allí caben en todas partes.') === 1 && await logHas('Impar, y sin un banner.') === 1, 'victoria (§4.3)');
+  ok(await logHas('Siestatón, a la web. Allí caben en todas partes.') === 1 && await logHas('Impar, y sin faldón.') === 1, 'victoria (§4.3)');
   ok(await logHas('Tenías la espalda desaprovechada.') === 1 && await logHas('Y quitad el ronquido de la espera.') === 1, 'el adhesivo y el ronquido');
   ok(await logHas('Estamos a un metro.') === 0, 'la victoria tras las revanchas, sin el planteamiento');
   ok(await G(() => { const g = __game.game; return g.spriteOf(g.player) === g.player.variants.con_banner; }), 'Bruno lleva el adhesivo (variante con_banner)');

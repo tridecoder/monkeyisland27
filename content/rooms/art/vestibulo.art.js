@@ -1,5 +1,5 @@
 // SALA `vestibulo` — ARTE Y GEOMETRÍA (REDISEÑO P1, docs/GUIA_REDISENO.md §3, §4, §10, §11).
-// Vestíbulo nocturno de elContable.es (planta 0). De izquierda a derecha:
+// Vestíbulo nocturno de elincontable.es (planta 0). De izquierda a derecha:
 //   ENTRADA   (x 0-152)   mármol claro: puerta de la calle (noche / amanecer), organigrama, cuadro de llaves, ficus.
 //   CONTROL   (x 154-218) pizarra con franja de seguridad: mostrador BAJO de Celestino, Ibex, altavoz, cartel colgado.
 //   TORNOS    (diagonal)  tres bancadas de acero con alas de cristal; el carril de atrás es el de Bruno.
@@ -413,18 +413,25 @@ function paintBackground(g, view) {
 }
 
 // ------------------------------------------------------------------ logo de letras metálicas (pared de la entrada)
-const LOGO = { text: 'elContable.es', cx: 90, y: 14 };
+const LOGO = { text: 'elincontable.es', cx: 90, y: 14 };
+// [P13] «elincontable.es»: el «in» cuelga torcido de su único tornillo (la «i» baja 1 px y la «n», 2); sin él,
+// «elcontable.es»: una gestoría.
 function logo(g) {
-  const t = LOGO.text, tw = measureText(t);
+  const w = (s) => measureText(s, { bold: true }) + 1;                            // avance en negrita, con su espacio
+  const tw = w('el') + w('in') + w('contable.es') - 1;
   const x = Math.round(LOGO.cx - tw / 2), y = LOGO.y;
-  label(g, t, x + 1, y + 2, PAL.ink[0], { bold: true });
-  label(g, t, x, y + 1, PAL.metal[3], { bold: true });
-  label(g, t, x, y, PAL.metal[7], { bold: true });
-  const cx = (s) => x + measureText(s);
-  for (const s of ['el', 'elC', 'elCont', 'elContab', 'elContable.']) px(g, cx(s) + 1, y + 10, PAL.gold[5]);
-  px(g, x + 2, y + 9, PAL.ink[0]); px(g, x + 2, y + 10, PAL.wood[0]);             // agujero sin tornillo en la primera «e»
+  const xi = x + w('el'), xn = xi + w('i'), xc = xi + w('in');
+  const trozos = [['el', x, 0], ['i', xi, 1], ['n', xn, 2], ['contable.es', xc, 0]];
+  for (const [s, tx, dy] of trozos) {
+    label(g, s, tx + 1, y + dy + 2, PAL.ink[0], { bold: true });
+    label(g, s, tx, y + dy + 1, PAL.metal[3], { bold: true });
+    label(g, s, tx, y + dy, PAL.metal[7], { bold: true });
+  }
+  for (const sx of [x + w('e'), xc + w('c'), xc + w('cont'), xc + w('contab'), xc + w('contable.')]) px(g, sx + 1, y + 10, PAL.gold[5]);
+  px(g, xn + 2, y + 12, PAL.gold[5]);                                              // el único tornillo del «in», bajo la «n» caída
+  px(g, xi, y + 9, PAL.ink[0]); px(g, xi, y + 10, PAL.wood[0]);                    // el agujero del que se soltó la «i»
   hline(g, x - 4, y + 12, tw + 8, PAL.wood[0]); hline(g, x - 4, y + 13, tw + 8, PAL.wood[5]);   // repisa
-  rect(g, x + 5, y + 11, 1, 1, PAL.metal[6]);                                      // el tornillo, en la repisa
+  rect(g, xi + 3, y + 11, 1, 1, PAL.metal[6]);                                     // el tornillo que falta, en la repisa
 }
 
 // ------------------------------------------------------------------ cartel colgado sobre los tornos (se conserva)
@@ -719,7 +726,7 @@ const layout = {
   paraguero: { rect: [43, 70, 18, 32], layer: 'sorted', zy: 103, prop: true, cache: true, draw: (g) => drawParaguero(g) },
   cartel_suelo: { rect: [86, 94, 20, 20], layer: 'sorted', zy: 113, prop: true, cache: true, draw: (g) => drawSueloMojado(g) },
   fardo_periodicos: { rect: [157, 66, 22, 20], layer: 'sorted', zy: 105, draw: (g) => drawFardo(g) },
-  logo_pared: { rect: [60, 13, 60, 17], walkTo: [74, 108], face: 'up' },
+  logo_pared: { rect: [50, 13, 80, 17], walkTo: [74, 108], face: 'up' },
   // el NÚCLEO del kit: coordenadas del contrato (nucleoGeom, FL = 94)
   ascensor_vestibulo: { rect: N.ascensor.rect, walkTo: N.ascensor.walkTo, face: 'up' },
   vestibulo_a_redaccion: { rect: N.escaleras.sube.rect, walkTo: N.escaleras.sube.walkTo, face: N.escaleras.sube.face },

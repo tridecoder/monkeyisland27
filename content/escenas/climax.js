@@ -23,7 +23,7 @@ const sayR = (api, t) => api.sayAs(RUBEN, t);
 const sayBe = (api, t) => api.sayAs(BEGONA, t);
 
 // staging (coordenadas de la sala rediseñada, docs/GUIA_REDISENO.md §5; la puerta es la entrada `pajarera` del arte).
-// Mesa en el centro con la cabecera a la DERECHA (Gervasio, de pie junto a su sillón vacío en [304, 112]); el Lector
+// Mesa en el centro con la cabecera a la DERECHA (Gervasio, de vuelta del Vending [P14], de pie junto a su sillón vacío en [304, 112]); el Lector
 // Medio, a la IZQUIERDA de la pantalla ([100, 120]); Íñigo presenta bajo la pantalla ([222, 122]). El Lector cae hacia
 // la derecha, delante de la mesa (centro ≈ [137, 124]): nadie se pone delante del cartón caído ni de su pegatina.
 const PUERTA = [30, 118];
@@ -62,6 +62,18 @@ export const duelInigo = {
   enCopia: ['Optimal', 'la planta', 'toda la empresa'],
   sostener: 'movil',
   deck: DECK_D4,
+  // [P9] Íñigo, con voz propia: van con sus réplicas nuevas R13, R05 y R07; las de R10, R12, R16, R01 y R15 son las
+  // «opcionales» del guion (líneas extra). Las réplicas valen igual.
+  attackText: {
+    R10: 'Estamos analizando todas las opciones. Con un framework propio.',
+    R12: 'Hay que poner las luces largas, Vacante. Visión 2030.',
+    R13: 'Vacante, no es un despido: es una salida en valor.',
+    R05: 'Esto, entre nosotros, es confidencial. Que no salga de esta sala.',
+    R16: 'Eso es un detalle sin importancia, Vacante. No escala.',
+    R01: 'Como ya expuse en mi anterior deck, que parece que nadie ha leído...',
+    R07: 'Me consta que esto ya lo alineamos en el último comité.',
+    R15: 'Lo he consultado con la IA y está de acuerdo conmigo. Al cien por cien.',
+  },
   maxMisses: 3,
   intro: [],                          // la entrada la dice la escena (§7.4): «Perfecto. Te lo pongo por escrito.»
   hurt: ['Ese input no lo tenía en el framework.', 'Interesante. Lo pongo en azul.'],
@@ -121,8 +133,8 @@ export const duelInigo = {
     // §7.7: Íñigo despega el pósit de Bruno de «Ideal» y lo pega en «Prescindible»
     await api.anim(INIGO, 'reach', 400);
     await sayI(api, 'Siguiente.');
-    if (replicasD4(api) >= PUNTOS_D4) await api.say('Le vuelvo a hablar. Un consultor siempre tiene un hueco en la agenda.');
-    else await api.say('Me faltan réplicas. Tengo que cotillear más. La 247 no se va a mover.');
+    // [P7] siempre; si faltan réplicas, el motor añade «Me faltan réplicas. Están apuntadas en la libreta.»
+    await api.say('Le vuelvo a hablar. Un consultor siempre tiene un hueco en la agenda.');
   },
 };
 
@@ -257,13 +269,13 @@ export async function climaxEmpujon(api) {
     await sayBe(api, 'Con lo que nos deben hay para un contrato.');
     await sayR(api, '¿Con táper?');
     await sayBe(api, 'Con ticket.');
-    // «Goyita. Tira.» (por los altavoces, la voz de Teodoro por el teléfono rojo): un inserto en la esquina enseña
+    // «Benita. Tira.» (por los altavoces, la voz de Teodoro por el teléfono rojo): un inserto en la esquina enseña
     // la Catacumba, con Teodoro al aparato, el auricular en la oreja y el cable rizado hasta el teléfono descolgado.
     api.sfx('phone');
     api.game.hud = insertoTeodoro(api.game); api.game.hudTop = 0;
     try {
       await api.wait(700);
-      await api.sayAs('teodoro_cuerpodoce', 'Goyita. Tira.', { at: [INSERTO.x + (INSERTO.w >> 1), INSERTO.y + INSERTO.h + 16] });
+      await api.sayAs('teodoro_cuerpodoce', 'Benita. Tira.', { at: [INSERTO.x + (INSERTO.w >> 1), INSERTO.y + INSERTO.h + 16] });
       await api.wait(300);
     } finally { api.game.hud = null; }
     api.sfx(SFX.rotativa); api.shake(1800, 1);
@@ -307,7 +319,7 @@ function insertoTeodoro(game) {
     rect(g, x, y + 46, w, h - 46, PAL.wood[3]); hline(g, x, y + 46, w, PAL.wood[5]);
     // cartel «ROTATIVA» y el teléfono rojo descolgado
     rect(g, x + 5, y + 22, 38, 12, PAL.paper[6]); rect(g, x + 5, y + 22, 38, 2, PAL.red[3]);
-    label(g, 'GOYITA', x + 24, y + 22, PAL.red[2], { align: 'center' });
+    label(g, 'BENITA', x + 24, y + 22, PAL.red[2], { align: 'center' });
     const bx = x + 14, by = y + 44;
     rect(g, bx, by, 18, 6, PAL.red[3]); hline(g, bx, by, 18, PAL.red[5]); hline(g, bx, by + 5, 18, PAL.red[1]);
     rect(g, bx + 1, by - 2, 2, 2, PAL.red[2]); rect(g, bx + 15, by - 2, 2, 2, PAL.red[2]);
@@ -343,7 +355,7 @@ async function heroeDeLaComa(api, duel) {
     api.sfx('phone');                                              // el teléfono de conferencias: CONTROLLING
     await api.wait(600);
     await evTel(api, 'Buenas noches. Una cosita. Muy pequeña.');
-    await sayI(api, '¿Quién es Evaristo?');
+    await sayI(api, '¿Evaristo? ¿Otra vez?');                         // [P14] Íñigo ya le conoce
     await sayG(api, 'El que llama. De mis tres móviles, uno es para no cogerle.');
     await evTel(api, 'Cláusula 12: punto de miles y coma decimal. «48,000» son 48 euros.');
     await sayI(api, '¡Es formato internacional! ¡Lo entiende todo el mundo!');

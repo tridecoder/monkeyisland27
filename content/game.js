@@ -259,6 +259,8 @@ function migrarPartida(st) {
   if (fl.herminia_midio && !fl.pecera_prompt_oido) fl.pecera_prompt_oido = true;
   // · el foco de un micropuzle opcional no se arrastra de una partida vieja
   if (fl['obj:foco'] && fl.custodia_ablandada) { delete fl['obj:foco']; delete fl['obj:foco_n']; }
+  // [P7] partidas de antes de «aprender perdiendo»: libreta sin pistas (se apuntan en el próximo duelo)
+  if (!('libreta_pistas' in fl)) fl.libreta_pistas = 0;
   for (const k of FLAGS_RETIRADOS) delete fl[k];
   if (st.actors) for (const id of ['nerea_backlog', 'borja_engagement']) delete st.actors[id];   // E2 §2.6 y §3: ya no existen
   return st;
@@ -280,8 +282,9 @@ function frontPage(g, t, { x0 = 34, y0 = 4, w = 252, h = 136, credits = false } 
   if (!credits) {
     drawText(g, 'FE DE ERRATAS', x0 + w / 2, y0 + 4, ink, { align: 'center', scale: 3, outline: null });
     hline(g, x0 + 8, y0 + 40, w - 16, ink); hline(g, x0 + 8, y0 + 42, w - 16, ink);
-    drawText(g, 'Una aventura de cierre', x0 + 10, y0 + 43, PAL.paper[1], { outline: null });
-    drawText(g, 'elContable.es · Sáb. · Pág. 7', x0 + w - 10, y0 + 43, PAL.paper[1], { outline: null, align: 'right' });
+    // [P13] con el nombre nuevo la cabecera es más larga: 6 px de margen (antes 10) para que no se junten
+    drawText(g, 'Una aventura de cierre', x0 + 6, y0 + 43, PAL.paper[1], { outline: null });
+    drawText(g, 'elincontable.es · Sáb. · Pág. 7', x0 + w - 6, y0 + 43, PAL.paper[1], { outline: null, align: 'right' });
     hline(g, x0 + 8, y0 + 54, w - 16, PAL.paper[2]);
   }
   const top = credits ? y0 + 6 : y0 + 58;

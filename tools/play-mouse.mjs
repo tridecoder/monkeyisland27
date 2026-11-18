@@ -423,9 +423,9 @@ try {
       if (s.n === 36) {
         const d = await G(() => __game.state().lastDuel);
         ok(d && d.result === 'won' && d.misses === 0 && d.hits === 3, `36 D2 con el ratón: R06, R02, la R09 larga («NO CABE…», sin fallo) y la corta → ganado 3/3 sin fallos (${JSON.stringify(d)})`);
-        ok(await G(() => __game.log.some(l => /NO CABE\. REPITA/.test(l.text)) && __game.log.some(l => l.who === 'bruno' && l.text === 'Tráeme el contexto.')), '36 D2: «NO CABE. REPITA EN TREINTA Y OCHO.» y «Tráeme el contexto.» en el registro');
+        ok(await G(() => __game.log.some(l => /NO CABE\. REPITA/.test(l.text)) && __game.log.some(l => l.who === 'bruno' && l.text === 'Lo saqué yo. No cabía.')), '36 D2: «NO CABE. REPITA EN TREINTA Y OCHO.» y «Lo saqué yo. No cabía.» ([P9]) en el registro');
       }
-      if (s.n === 46) ok(await G(() => __game.log.some(l => l.text === 'El acta se necesitaba para... para...')), '46 D3: el segundo ataque es la frase a medias');
+      if (s.n === 46) ok(await G(() => __game.log.some(l => l.text === 'El acta se necesitaba para... para... para ayer.')), '46 D3: el segundo ataque, la frase a trozos hasta «para ayer.» ([P9])');
       if (s.n === 48) {                                   // E5 §2.6: la señal tras el clímax (10 s de tiempo quieto)
         const meg = await hastaQue(() => __game.log.some(l => String(l.text).includes('Balón suelto')), 30000);
         await wait(400); await shotE5('senal');

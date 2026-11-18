@@ -1,5 +1,5 @@
 // SALA `cpd` — ARTE Y GEOMETRÍA (REDISEÑO P1, docs/GUIA_REDISENO.md §3, §4, §10, §11).
-// Sótano −1 de elContable.es, en luz azul fría. De izquierda a derecha:
+// Sótano −1 de elincontable.es, en luz azul fría. De izquierda a derecha:
 //   NÚCLEO         (x 0-96)    terrazo; caja de escalera CERRADA («SOLO EVACUACIÓN», no hay escalera en la planta −1) y el
 //                              ascensor «−1» (kit.nucleo, FL = 94); placa «−1 SISTEMAS».
 //   PASILLO FRÍO   (x 96-226)  falso suelo técnico, armarios 24-27 con la luz azul; carro de consola exento en el plano medio,

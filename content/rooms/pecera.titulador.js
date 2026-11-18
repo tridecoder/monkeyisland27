@@ -111,10 +111,10 @@ export function versionesDefecto() {
     .filter(k => k !== BRUNO && k !== P.ganador_por_defecto).map(combinacion).filter(c => c.u < tope).sort((x, y) => x.u - y.u);
   return ks.slice(-4);
 }
-/** URL de la pieza de Bruno (la opa queda en la dirección web): `elcontable.es/mercados/<slug>`. */
+/** URL de la pieza de Bruno (la opa queda en la dirección web): `elincontable.es/mercados/<slug>`. */
 export function urlBruno() {
   const slug = titularK(BRUNO).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  return 'elcontable.es/mercados/' + slug;
+  return 'elincontable.es/mercados/' + slug;
 }
 
 // ======================================================================== estado y bucle
@@ -296,7 +296,7 @@ export function drawTitulador(g, r, t, st) {
   if (st.flash && st.flash.t0 == null) st.flash.t0 = t;
   const flashT = st.flash ? t - st.flash.t0 : 9999;
   wrap(titularK(st.combo), 190).slice(0, 3).forEach((l, i) => drawText(g, l, cx + 31, cy + 2 + i * 11, flashT < 260 ? '#8a2a5a' : '#141220', { outline: null }));
-  micro(g, 'ELCONTABLE.ES · HACE 1 MIN', cx + 31, cy + chh - 7, '#8a8070');
+  micro(g, 'ELINCONTABLE.ES · HACE 1 MIN', cx + 31, cy + chh - 7, '#8a8070');
   // ---------------------------------------------------------------- contador (el protagonista)
   const kx = x + 228, kw = w - 230, kc = kx + (kw >> 1);
   micro(g, 'USUARIOS', kc, y + 3, '#9fb0d8', { align: 'center' });

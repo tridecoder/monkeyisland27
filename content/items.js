@@ -12,9 +12,19 @@ import { menuMovil } from './lib/movil.js';
 async function abrirLibreta(api) {
   const D = api.game.content.duels;
   const learned = (D.pairs || []).filter(p => api.flag(p.flag));
+  // [P7] las pistas que han apuntado los duelos (dónde se aprende cada réplica que faltaba), en gris, al final
+  const pistas = pistasLibreta(api);
   await api.say(`Mi libreta de réplicas: ${learned.length} de ${N_REPLICAS}. En otra empresa esto sería un máster.`);
-  if (!learned.length) return;
-  await api.choose(learned.map(p => citar(p.reply)).concat(['[Cerrar la libreta]']), { escape: learned.length });
+  if (!learned.length && !pistas.length) return;
+  const opts = learned.map(p => citar(p.reply)).concat(pistas.map(t => ({ text: t, disabled: true })), ['[Cerrar la libreta]']);
+  await api.choose(opts, { escape: opts.length - 1 });
+}
+/** [P7] Textos de las pistas apuntadas en la libreta (réplicas aún no aprendidas), en el orden de las parejas. */
+export function pistasLibreta(api) {
+  const D = api.game.content.duels, PL = D.pistas;
+  if (!PL) return [];
+  const bits = Number(api.flag(PL.flag)) || 0;
+  return [...new Set((D.pairs || []).filter((p, i) => (bits & (1 << i)) && !api.flag(p.flag)).map(p => PL.de(p)).filter(Boolean))];
 }
 
 // ------------------------------------------------------------------ icon helpers

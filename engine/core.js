@@ -1315,7 +1315,9 @@ export class Game {
   drawNotices(g) {
     this.notices = this.notices.filter(n => this.realTime < n.until);
     this.notices.forEach((n, i) => {
-      const w = measure(n.text) + 12, x = Math.round(160 - w / 2), y = 128 - i * 14;
+      // [P7] en un duelo con la pista de la libreta a la vista, los avisos suben encima de su pósit
+      const base = this.hud && this.duelPositTop != null ? Math.min(128, this.duelPositTop - 15) : 128;
+      const w = measure(n.text) + 12, x = Math.round(160 - w / 2), y = base - i * 14;
       g.save(); g.globalAlpha = 0.82; g.fillStyle = '#08060e'; g.fillRect(x, y, w, 13); g.restore();
       g.fillStyle = n.color; g.fillRect(x, y, w, 1); g.fillRect(x, y + 12, w, 1);
       drawText(g, n.text, 160, y + 1, n.color, { align: 'center' });

@@ -130,8 +130,9 @@ async function settle(ms = 40000) {
 }
 
 const FAX = 'TEODORO (fax): ';
-const ATQ_R09 = 'DATO SIN CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.';
-const CORTA = 'Tráeme el contexto.';
+// [guion3 t1] [P9]: «SACADO» en el ataque y la corta nueva de la R09
+const ATQ_R09 = 'DATO SACADO DE CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.';
+const CORTA = 'Lo saqué yo. No cabía.';
 const NO_CABE = 'NO CABE. REPITA EN TREINTA Y OCHO.';
 const TAUNT = 'TREINTA Y OCHO CARACTERES DE NADA.';
 const D2_FLAGS = { acto_2_iniciado: true, aurora_conto_pasos: true, fax_con_papel: true, rep_06: true, rep_02: true, rep_09: true, rep_07: true, rep_03: true };
@@ -178,7 +179,7 @@ try {
   I = await info();
   ok(I.attack === 'R09' && I.hits === 2 && I.body === ATQ_R09, `3.er ataque R09: «${I.body}»`);
   const iL = I.pairs.indexOf('larga');
-  ok(iL >= 0 && I.options[iL] === pairs.R09 && I.options[I.ci] === CORTA, 'el menú trae la larga entera y la corta («Tráeme el contexto.»)');
+  ok(iL >= 0 && I.options[iL] === pairs.R09 && I.options[I.ci] === CORTA, 'el menú trae la larga entera y la corta («Lo saqué yo. No cabía.»)');
   ok(I.options.filter(o => o === CORTA).length === 1 && I.pairs.filter(p => p === 'larga').length === 1, 'una larga y una corta');
   ok(log.some(t => t === FAX + ATQ_R09), 'Teodoro lo dice por el fax (N7)');
   await shot('d2-menu-cabe');
@@ -220,7 +221,7 @@ try {
   ok(await menuD(), 'la corta (clic)');
   I = await info();
   log = await logTexts();
-  ok(log.includes(CORTA) && log.includes(FAX + '...CABE.'), 'Bruno: «Tráeme el contexto.» → Teodoro: «...CABE.»');
+  ok(log.includes(CORTA) && log.includes(FAX + '...CABE.'), 'Bruno: «Lo saqué yo. No cabía.» → Teodoro: «...CABE.»');
   ok(log.indexOf(FAX + '...CABE.') > log.indexOf(CORTA), '«...CABE.» va detrás de la corta');
   ok(I.phase === 'finisher' && I.hits === 3 && /^ACIERTOS 3\/3 · FALLOS 0\/3$/.test(I.score), `remate a los tres aciertos: «${I.score}»`);
   await shot('d2-remate');
@@ -265,10 +266,15 @@ try {
   await partida('catacumba', { ...D2_FLAGS, rep_09: false }, ['ficha_pagina_7', 'manual_fax']);
   await G(() => __game.skipText(true));
   await abrirD2();
-  ok(await logHas('Aún no tengo con qué contestarle. Debería cotillear más.'), 'aviso `notReady` (con dos de tres ya no basta)');
+  // [guion3 t1] [P7]: ya no hay aviso `notReady`; se entra igual y el ataque sin réplica apunta la pista en la libreta
+  ok(!(await logHas('Aún no tengo con qué contestarle')), '[P7] sin aviso `notReady`: se entra sin la R09');
   for (let k = 0; k < 8; k++) {
     I = await info(); if (!I || I.phase !== 'reply') break;
-    if (I.attack === 'R09') { ok(!I.pairs.includes('larga') && !I.options.includes(CORTA) && I.ci === -1, `sin la R09: en su ataque ni larga ni corta (${JSON.stringify(I.pairs)})`); break; }
+    if (I.attack === 'R09') {
+      ok(!I.pairs.includes('larga') && !I.options.includes(CORTA) && I.ci === -1, `sin la R09: en su ataque ni larga ni corta (${JSON.stringify(I.pairs)})`);
+      ok(await logHas('Pista apuntada en la libreta.') && (await flag('libreta_pistas') & (1 << 8)), '[P7] la pista de la R09, apuntada en la libreta');
+      break;
+    }
     await clickOpt(I.ci); await menuD();
   }
   // retirarse a base de flojas
@@ -289,7 +295,7 @@ try {
   console.log('\n§5.2 D3 · Gervasio');
   const opp3 = await G(() => { const o = __game.game.content.duels.opponents.gervasio; return { deck: o.deck, at: o.finishers.map(f => f.atScore), win: o.winScore, r03: o.attackText.R03 }; });
   ok(JSON.stringify(opp3.deck) === '["R07","R03","R01","R05"]' && opp3.at[0] === 2 && opp3.win === 2, `mazo ${JSON.stringify(opp3.deck)}, sigue a dos (${opp3.win}/${opp3.at[0]})`);
-  ok(opp3.r03 === 'El acta se necesitaba para... para...', 'attackText.R03 (N10)');
+  ok(opp3.r03 === 'El acta se necesitaba para... para... para ayer.', 'attackText.R03 (N10; [P9] «para ayer.»)');
   // antes del Acto III: sin duelo
   await partida('pajarera', { acto_2_iniciado: true, reunion_terminada: true, rep_07: true, rep_03: true }, ['fotocopia_nota_direccion']);
   await clicVerboEn('hablar', 'gervasio_acta');
@@ -307,15 +313,15 @@ try {
   await clickOpt(I.ci); await menuD();
   ok(await logHas('Me consta que... Bueno. Se constaba.'), 'R07 → «Me consta que... Bueno. Se constaba.»');
   I = await info();
-  ok(I.attack === 'R03' && I.body === 'El acta se necesitaba para... para...' && I.options[I.ci] === pairs.R03, `2.º ataque, la frase a medias; la R03 en el menú («${pairs.R03}»)`);
-  ok(await logHas('El acta se necesitaba para... para...') && !(await logHas('Por alguien. No digo quién.')), 'Gervasio lo dice a medias (la de antes ya no)');
+  ok(I.attack === 'R03' && I.body === 'El acta se necesitaba para... para... para ayer.' && I.options[I.ci] === pairs.R03, `2.º ataque, la frase hasta «para ayer.» ([P9]); la R03 en el menú («${pairs.R03}»)`);
+  ok(await logHas('El acta se necesitaba para... para... para ayer.') && !(await logHas('Por alguien. No digo quién.')), 'Gervasio lo dice a trozos (la de antes ya no)');
   await shot('d3-frase-a-medias');
   await clearLog();
   await clickOpt(I.ci); await menuD();
   I = await info();
   log = await logTexts();
   const iR = log.indexOf(pairs.R03), iF = log.findIndex(t => t.includes('Yo con Hidrovoltia no he comido en mi vida.'));
-  ok(iR >= 0 && iF === iR + 1, `la R03 (clic) y el remate justo detrás, sin línea en medio (${JSON.stringify(log.slice(iR, iF + 1))})`);
+  ok(iR >= 0 && iF === iR + 2 && log[iR + 1].includes('La frase se... se empezó en plazo.'), `la R03 (clic), su reacción nueva ([P9]) y el remate detrás (${JSON.stringify(log.slice(iR, iF + 1))})`);
   ok(I.phase === 'finisher' && /^ACIERTOS 2\/2 · FALLOS 0\/3$/.test(I.score), `remate: «${I.score}»`);
   await shot('d3-remate');
   await rematar('fotocopia_nota_direccion');

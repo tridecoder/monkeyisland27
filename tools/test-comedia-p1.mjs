@@ -120,9 +120,9 @@ try {
   await expectFlags({ celestino_dio_chicle: true, celestino_pista_gertrudis: true, rep_05: true }, 'Celestino');
   await expectInv(['chicle'], [], 'Celestino');
   await expectLog(['¡Y nada! ¡No consta!', 'La web no tiene pared, chaval.', 'Desde el Mundial del 82.', '¡Algo trama el míster!',
-    'Se saluda. Dale las buenas noches.', 'Nadie se las da. Yo sí. Por eso a mí me pone espuma.',
-    '¡Jugada de ascensor! Gervasio, al de Mercados: «Que esto no salga de aquí».', '«Tranquilo: de aquí no sale ni el wifi»!',
-    '¡Tres años sin hablarse! ¡Y el wifi sigue sin salir!', '¿El Ibex? ¿Me preguntas a mí por el Ibex?',
+    'Se saluda. Dale las buenas noches.', 'Nadie se las da. Yo se las daba. Me ponía espuma.',
+    '¡Jugada de correo! Gervasio, responder a todos: «Que esto no salga de aquí».', '«Me lo estás diciendo en un responder a todos»!',
+    '¡Me llegó hasta a mí! ¡Y yo soy un mostrador!', '¿El Ibex? ¿Me preguntas a mí por el Ibex?',
     'Treinta años en este mostrador y eres el primero.', '¡Partidazo!', 'Pero se entrena mucho.', '¡Y el chaval se retira al vestuario sin marcar!'], 'Celestino §5.1 + E2 L1-L3');
   await expectNoLog(['Porque aquí no sale.', '¡No oigo el final!', '¿En treinta años?', 'Desde 2019'], 'E2 L1-L3');
   // E2 §7.4 pasos 3-4: el saludo solo tras ≥ 2 entradas en la sala desde el último (aquí, desde la intro)
@@ -327,7 +327,7 @@ try {
   await opcion('¿Y el táper?');
   await opcion('Ahora vuelvo.');
   await expectFlags({ rep_13: true, rep_15: true, taper_dado: false }, 'Brais R0');
-  await expectLog(['«NO ES UN DESPIDO: ES UNA SALIDA EN VALOR».', 'newsletter personalizada', 'La IA era yo.', 'Me lo ha contado ella. Se llama Brais.',
+  await expectLog(['«NO ES UN DESPIDO: ES UNA SALIDA EN VALOR».', '«¿A cuántos días por año?».', 'La IA era yo.', 'Me lo ha contado ella. Se llama Brais.',
     'Comer algo que no sea atún.', '¿TRAES TÁPER?', 'BECARIO PROMETE VOLVER.'], 'Brais §5.12');
   await give('taper_huerfano');
   await clearLog();
@@ -442,7 +442,7 @@ try {
     must((await state()).mode === 'ending', 'tras la tarjeta no salen los créditos');
     const lines = await G(() => __game.game.ending.lines.map(l => l.t));
     for (const l of ['Una aventura de cierre', 'Asignado a: quien no se escaqueó', 'Asignado a: Gertrudis. Se lo había ganado.',
-      'Asignado a: don Evaristo Salvedad. Leyó hasta el final.', 'Asignado a: el móvil de Borja. Lo publicó a las nueve.',
+      'Asignado a: don Evaristo Salvedad. Leyó hasta el final.',
       'Atrezo. Focus group 2014. Asintió.', 'Gracias por jugar.', 'Abrígate.']) must(lines.includes(l), `créditos: falta «${l}»`);
     must(!lines.some(l => /Borja Engagement/.test(l)), 'créditos: sale Borja Engagement (E2 §3.3)');
     must(!lines.some(l => /Diseño|Infografía|Valentín|Herminia/.test(l)), 'créditos: sale Diseño, Infografía, Valentín o Herminia');

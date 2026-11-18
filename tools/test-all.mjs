@@ -2,7 +2,7 @@
 // TODAS LAS PRUEBAS con una tabla de resumen. Cada herramienta levanta su propio servidor en un puerto libre, así que
 // varios agentes pueden lanzarlas a la vez (y este script las lanza en paralelo: --jobs).
 //
-//   node tools/test-all.mjs                      todo (26 pruebas; ≈ 30 min con 3 en paralelo: test-e5, test-e6 y test-bloqueos pasan de 10)
+//   node tools/test-all.mjs                      todo (27 pruebas; ≈ 30 min con 3 en paralelo: test-e5, test-e6 y test-bloqueos pasan de 10)
 //   node tools/test-all.mjs --rapido             muestra: smoke sin dispositivos ni llamadas en tiempo real, play-mouse
 //                                                solo geometría, fuzz --rapido (≈ 2 min)
 //   node tools/test-all.mjs --sala=pecera        lo que toca a esa sala: check, motor, vista previa (tools/sala.mjs),
@@ -69,12 +69,13 @@ if (salas) {
   add('duelo-ui', 'test-duelo-ui.mjs', [], 900);     // rediseño del duelo: el móvil, la cabecera de puntos, «+1», «En copia», el sello, la ayuda (ratón y dedo)
   add('e7', 'test-e7.mjs', [], 1800);                 // ENMIENDA E7 §10: nudo del Acto II, tele, D3 por su camino, F4, F6, golpes restaurados, camino principal, topes E7
   add('bloqueos', 'test-bloqueos.mjs', [], 2400);
+  add('guion3-t1', 'test-guion3-t1.mjs', [], 1500);   // guion nuevo, tanda 1: El Incontable, réplicas nuevas, papel/web y pop-up de cartulina, aprender perdiendo, Gervasio, apagón
   add('coherencia', 'test-coherencia.mjs', [], 1200);  // lo que el juego da por hecho, pasa (Evaristo y su L2, correos que llegan, presuposiciones, sillas, Gervasio que insiste, partidas sin L2)     // puertas ocultas: cada paso sin cada requisito, pistas por sub-estado, los tres casos del dueño, partidas antiguas
 }
 const solo = args.solo ? String(args.solo).split(',') : null;
 const plan = solo ? T.filter(t => solo.some(s => t.name.startsWith(s) || t.file.startsWith(s))) : T;
 // las largas primero (mejor reparto en paralelo)
-const WEIGHT = { e6: 7, e5: 6, bloqueos: 6, e7: 5, fuzz: 5, 'play-mouse': 4, smoke: 4, e4: 3, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
+const WEIGHT = { 'guion3-t1': 4, e6: 7, e5: 6, bloqueos: 6, e7: 5, fuzz: 5, 'play-mouse': 4, smoke: 4, e4: 3, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
 plan.sort((a, b) => (WEIGHT[b.name.split(' ')[0]] || 1) - (WEIGHT[a.name.split(' ')[0]] || 1));
 if (args.lista) { for (const t of plan) console.log(`${t.name.padEnd(22)} node tools/${t.file} ${t.args.join(' ')}`); process.exit(0); }
 
