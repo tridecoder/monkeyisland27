@@ -13,6 +13,7 @@
 > - **[P10] Formatos publicitarios por soporte:** en el papel, solo formatos de papel (faldón, robapáginas, módulo, anuncio por palabras); banners, pop-ups y vídeo, solo en web, correo y pantallas. Para la página 7, Maripaz propone un pop-up de cartulina, como los libros desplegables.
 > - **[P11] Historia más simple y cosida (tandas 1 y 2 del informe del juez):** Evaristo entrega él mismo su correo (la coma con Aurora pasa a opcional); el CMS es condición del HUECO y Sistemas atiende siempre; Eutimio da el manual al apagar la R-3; el rotulador llega al ganar a Maripaz; el atasco de la puerta es automático; fuera el ticket nº 3, los tirones 3.º y 4.º, el faldón, la L3 y la L5; Herminia mide en 4–6 líneas y Begoña cierra el clímax en cuatro; Brais es F.P. (Bruno le debe la noticia); Íñigo mueve el pósit de Bruno al ganar la FIRMA y trae en persona la amenaza al cerrar la página 7.
 > - **[P12] Eventos, integrada:** Íñigo es el ponente de Pilar (brindis del Plan Cero Papel a las 21:05) y su rider pide cero papel: el álbum va a la trituradora a las 21:04. Falta la silla 112, que Íñigo se llevó en julio y es la de Brais en el armario 27: decírselo a Pilar salva el álbum. Fuera la segunda palabra del kanban y el micropuzle de la silla 113; las croquetas se quedan todas.
+> - **[P16] La rotativa cambia de nombre:** «la Goyita» pasa a ser «la Benita» en todo el guion (cambio global, sin tachados; los ids técnicos no cambian).
 > - **[P13] El periódico se llama «El Incontable»** (en la web, elincontable.es): cambio global de nombre y cinco chistes nuevos donde el nombre era el chiste.
 > - **[P14] Pasada de coherencia (segunda vuelta del juez y lector 2):** la silla 112 se deduce (la opción sale tras mirar la silla o preguntarle a Brais, y hay que elegir dónde está); Pilar distingue acreditar de asistir; el rotulador sale del termómetro con Maripaz; respaldo del pósit «Prescindible»; un solo aviso del armario 27 al abrir el Acto III; la impresora de los Despachos; sin cena de Navidad para Brais, que sale a por atún pero no se puede ir; plantas, Gervasio, Gertrudis, Íñigo y Evaristo, el momento oportuno, el sello de la ficha, la regla de Teodoro, el registro de tickets y referencias cruzadas.
 > - **[P15] Decisiones del dueño:** R06 y R14 vuelven a las réplicas de hoy (con lo que [P9] queda en 9 réplicas de 16, tres con ataque nuevo; el chisme de R14 conserva dos mejoras de [P9]); se queda el chiste de la gestoría; nuevos el «Mirar (después)» del logo y el murmullo de Yoli del nombre; aprobadas las pistas de la abuela que estaban pendientes (la silla de Pilar, el manual, el álbum y R05); como mucho seis opciones a la vez en cada árbol de diálogo; Gertrudis vuelve a «NADIE ME SALUDABA DESDE 2019.» y Celestino pasa a hablar en pasado.
@@ -118,7 +119,7 @@
 
 > NOTA: [P11] [P12] Resumen al día: el CMS ya no es la llave de Sistemas sino del hueco; la coma y el correo de Evaristo llegan en el Acto II, de su mano; Íñigo actúa en el Acto II y trae la amenaza; Brais es F.P.; Eventos entra en la trama por el rider del ponente y la silla 112. «Cómo acaba» no cambia.
 
-**Cómo acaba.** En la Sala Amazonas, Bruno «responde a todos» a Íñigo: el ticket de alta de Brais, el acta (que solo dice «pedir más café») y el correo de Evaristo desmontan el plan. Bruno empuja al Lector Medio, el cartón de Marketing que lo aprobaba todo asintiendo; cae. Teodoro, por el teléfono rojo: «Goyita. Tira.» La rotativa arranca. Sábado, 6:00: los periódicos llegan al Vestíbulo con la pieza de Bruno, bien firmada; desfila la casa. La abuela le cuenta que ya no lee el papel: lo lee en el móvil y le pone «abrígate» en todo. Bruno, por fin, contesta: «Abrígate tú.» Y ella: «¡Me ha contestado el periódico!» Fe de erratas, créditos, fin.
+**Cómo acaba.** En la Sala Amazonas, Bruno «responde a todos» a Íñigo: el ticket de alta de Brais, el acta (que solo dice «pedir más café») y el correo de Evaristo desmontan el plan. Bruno empuja al Lector Medio, el cartón de Marketing que lo aprobaba todo asintiendo; cae. Teodoro, por el teléfono rojo: «Benita. Tira.» La rotativa arranca. Sábado, 6:00: los periódicos llegan al Vestíbulo con la pieza de Bruno, bien firmada; desfila la casa. La abuela le cuenta que ya no lee el papel: lo lee en el móvil y le pone «abrígate» en todo. Bruno, por fin, contesta: «Abrígate tú.» Y ella: «¡Me ha contestado el periódico!» Fe de erratas, créditos, fin.
 
 ## Estructura
 <!-- orden canónico: tools/walk-data.mjs (STEPS, 49 pasos; ALT = orden alternativo) · objetivos y dependencias: content/pistas.js (OBJETIVOS: hecho / activo) -->
@@ -168,7 +169,7 @@ Tres actos, diez salas en cuatro plantas (−1 Sistemas · 0 Vestíbulo · 1 Red
 **D. La pieza y el cierre**
 1. (Con la FUENTE hecha) en la Redacción, **usar mi ordenador** → **mi exclusiva** (31 líneas; el hueco es de 23). Herminia la mide; Yoli la prueba en su titulador. *Opcional: el minijuego del titulador.*
 2. **Recortarla**: usar la pieza con el fax → tecla **2: ADMINISTRACIÓN** *(o dársela a Begoña)* → 23 líneas.
-3. Con hueco, fuente, firma y la pieza recortada: **dar la ficha a Teodoro** → la página 7 cerrada, «Goyita. Página 7 cerrada.» → entra Íñigo: «A las nueve, la Reunión de Dirección apaga la rotativa.» → **ACTO III**.
+3. Con hueco, fuente, firma y la pieza recortada: **dar la ficha a Teodoro** → la página 7 cerrada, «Benita. Página 7 cerrada.» → entra Íñigo: «A las nueve, la Reunión de Dirección apaga la rotativa.» → **ACTO III**.
 
 *Opcional en el Acto II, en Eventos:* el rider del ponente (llega por un «RV:» de Tadeo), la trituradora nueva y lo que pide Íñigo («Agua con gas. Cero papel en sala. Y sin turno de preguntas»). *Opcional, con el correo de Evaristo:* preguntarle a Aurora por la coma → Aurora le escribe a Evaristo por el fax de Teodoro.
 
@@ -184,7 +185,7 @@ Tres actos, diez salas en cuatro plantas (−1 Sistemas · 0 Vestíbulo · 1 Red
 5. **La columna.** **Usar el rotulador con el kanban** (el de Maripaz, desde el D1) → «SALIDA EN VALOR» → el pósit de Brais sale, llega el **ticket nº 1** y Brais queda libre.
 6. **El acta.** En los Despachos, a Gervasio: «Necesito el acta de la última reunión.» → **duelo D3** (sin pisarle la frase; remate: la **fotocopia** de su nota) → **acta de la reunión**.
 7. **El clímax.** **Usar la puerta de la Sala** (con acta, Brais libre y ticket) → **duelo D4** con Íñigo (remates: **ticket nº 1**, **acta**, **correo de Evaristo**).
-8. **El empujón.** **Empujar al Lector Medio** → Pilar, por el walkie de Íñigo: «Empezamos sin ponente.» → Aurora: «Tira, Teodoro.» → «Goyita. Tira.» → **final**.
+8. **El empujón.** **Empujar al Lector Medio** → Pilar, por el walkie de Íñigo: «Empezamos sin ponente.» → Aurora: «Tira, Teodoro.» → «Benita. Tira.» → **final**.
 
 ### Opcional (no hace falta para acabar)
 - **Boli muerto, boli nuevo** (Custodia ↔ Aurora): preguntar a Custodia cómo se consigue un boli → coger los bolis de Aurora → dárselo a Custodia → «Para apuntar lo que me digan.» → desbloquea «¿Dónde está…?».
@@ -391,11 +392,11 @@ graph TD
 
 ### Teodoro Cuerpodoce (jefe de cierre)
 <!-- actor teodoro_cuerpodoce · catacumba.js -->
-- **Dónde**: Redacción de papel, con su fax, su teléfono rojo (la Goyita, la rotativa) y su camastro.
+- **Dónde**: Redacción de papel, con su fax, su teléfono rojo (la Benita, la rotativa) y su camastro.
 - **Qué quiere**: que nadie de la web firme en papel; que todo «quepa».
 - **Cómo habla**: nunca en voz alta: por fax, en telegrama y mayúsculas («Trece con espacios. Cabe.»). Solo habla por el teléfono rojo.
-- **Función**: rival del D2 (la FIRMA); cierra la página 7 y contesta a la amenaza de Íñigo («Si no hay rotativa, no hay firma»); «Goyita. Tira.» en el clímax, después del «Tira, Teodoro.» de Aurora; en el epílogo le regala a Bruno su plaza de garaje.
-- **Mejor línea**: **TEODORO:** Goyita. Página 7 cerrada. Esta noche firma un chaval.
+- **Función**: rival del D2 (la FIRMA); cierra la página 7 y contesta a la amenaza de Íñigo («Si no hay rotativa, no hay firma»); «Benita. Tira.» en el clímax, después del «Tira, Teodoro.» de Aurora; en el epílogo le regala a Bruno su plaza de garaje.
+- **Mejor línea**: **TEODORO:** Benita. Página 7 cerrada. Esta noche firma un chaval.
 
 ### Eutimio Ticket (Sistemas)
 <!-- actor paco_ticket · cpd.js -->
@@ -1721,11 +1722,11 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 #### I.5 · Redacción de papel / Cierre (planta 1)
 <!-- content/rooms/catacumba.js · sala catacumba -->
 
-*Al otro lado de la puerta doble y el umbral de latón, la redacción del periódico de papel: «misma planta, otro siglo». Galeradas colgadas como jamones, fotos de jefes de cierre con bigote, un reloj parado en las 20:59, el Libro de Estilo calzado con una tableta. A la izquierda, la mesa de Teodoro con su fax de 1992, el teléfono rojo (línea directa con la rotativa, la Goyita) y el tipómetro; detrás de una cortina, su camastro. A la derecha, la mesa de Aurora con su cartel y sus bolígrafos rojos.*
+*Al otro lado de la puerta doble y el umbral de latón, la redacción del periódico de papel: «misma planta, otro siglo». Galeradas colgadas como jamones, fotos de jefes de cierre con bigote, un reloj parado en las 20:59, el Libro de Estilo calzado con una tableta. A la izquierda, la mesa de Teodoro con su fax de 1992, el teléfono rojo (línea directa con la rotativa, la Benita) y el tipómetro; detrás de una cortina, su camastro. A la derecha, la mesa de Aurora con su cartel y sus bolígrafos rojos.*
 
 **Quién hay**: Aurora Galerada (correctora) y Teodoro Cuerpodoce (jefe de cierre).
 
-**Regla de Teodoro**: nunca habla. Sus líneas salen **del fax**, impresas en mayúsculas con el prefijo «TEODORO (fax):» (en este documento se citan con la caja del código; en pantalla salen en mayúsculas). Sin papel en el fax, teclea, el fax pita y no sale nada. En voz alta solo habla por el teléfono rojo, y dos veces: al cerrar la página 7 («Goyita. Página 7 cerrada…», que abre el Acto III) y en el clímax («Goyita. Tira.»).
+**Regla de Teodoro**: nunca habla. Sus líneas salen **del fax**, impresas en mayúsculas con el prefijo «TEODORO (fax):» (en este documento se citan con la caja del código; en pantalla salen en mayúsculas). Sin papel en el fax, teclea, el fax pita y no sale nada. En voz alta solo habla por el teléfono rojo, y dos veces: al cerrar la página 7 («Benita. Página 7 cerrada…», que abre el Acto III) y en el clímax («Benita. Tira.»).
 > NOTA: [P14] La regla decía «una sola vez», pero el juego le da dos líneas por el teléfono rojo. Se corrige la regla, no las escenas. Ya estaba en el juego.
 
 **Regla de Aurora**: antes del café no habla; da golpecitos con el boli a su cartel y Bruno lo traduce.
@@ -1878,7 +1879,7 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **▸** ¿Por qué solo habla por fax? _(una vez)_
   **TEODORO (fax):** Lo que se dice se lo lleva el aire. Lo que se faxea, se archiva.
 - **▸** ¿Con quién habla por el teléfono rojo? _(una vez)_
-  **TEODORO (fax):** Con la Goyita. La rotativa. Vive en el polígono.
+  **TEODORO (fax):** Con la Benita. La rotativa. Vive en el polígono.
   **TEODORO (fax):** No me pide likes. Solo papel, tinta y que no la llame impresora.
 - **▸** ¿Qué le pasa con la web? _(una vez)_
   **TEODORO (fax):** En internet una errata se corrige, chaval. En papel se enmarca.
@@ -1923,12 +1924,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **Dar otra cosa:** **TEODORO (fax):** Eso no se faxea. No cabe. Lo he medido de lejos.
 - **Empujar:** ¿Empujar al jefe de cierre antes del cierre? ¿Y quién cierra? · **Tirar:** Tirarle de los tirantes sería el último gesto de mi carrera. · **Coger:** No. Teodoro no sale de aquí. Yo no voy a inaugurar la costumbre.
 - **Murmullo de Teodoro:** **TEODORO:** AL OTRO LADO DEL LATÓN PUBLICAN SIN CERRAR. YO CIERRO SIN PUBLICAR.
-- **El fax escupe solo (con papel):** **FAX:** CUERPO 9. INTERLINEADO 10. CORAZÓN 12. · **FAX:** GOYITA, ¿ME OYES? TÚ AGUANTA.
+- **El fax escupe solo (con papel):** **FAX:** CUERPO 9. INTERLINEADO 10. CORAZÓN 12. · **FAX:** BENITA, ¿ME OYES? TÚ AGUANTA.
 
 **El fax**
 - **Mirar (sin papel):** Un fax de 1992: «SIN PAPEL». Pegatina: «Mantenimiento: Sistemas. Ticket 0.441».
 > NOTA: [P11] La pegatina se queda como decorado (Eutimio la cita al dar el manual), pero ya no es un paso: mirarla no desbloquea nada.
-- **Mirar (con papel):** Tiene papel. Teodoro lo mira como quien mira a un hijo que vuelve. // Tres teclas de marcación rápida: 1 GOYITA, 2 ADMINISTRACIÓN, 3 CONTROLLING.
+- **Mirar (con papel):** Tiene papel. Teodoro lo mira como quien mira a un hijo que vuelve. // Tres teclas de marcación rápida: 1 BENITA, 2 ADMINISTRACIÓN, 3 CONTROLLING.
 - **Usar las copias rechazadas** → el fax vomita la tarde (Acto II). **Usar la pieza** → las tres teclas (Acto II).
 - **Usar la ficha:** La ficha no se faxea. Se sella. · **Usar café:** Teodoro me mira. El fax me mira. Los dos han visto cosas peores. · **Usar el manual:** Página 9: respuesta automática. La guardo para cuando conteste él. · **Usar el fax de F.P.:** Devolverle a un fax su propio fax es de mala educación. · **Usar la fotocopia:** ¿Faxear una fuente? Mañana sale en otro periódico. · **Usar el boli muerto:** Un boli muerto en un fax. Ni con eso se queja. · **Usar el táper:** Eso no se faxea, y vacío todavía menos.
 - **Usar:** Pulso un botón. Me contesta «SIN PAPEL» con más énfasis. / *(con papel)* Tres teclas. Sin nada que enviar, cualquiera de ellas es una grosería.
@@ -2917,7 +2918,7 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 **TEODORO (fax):** 18:42. Respuesta a «¿hola?»: no. *(si lo intentó una vez)*
 **TEODORO (fax):** 18:55. Respuesta a «¿me oye?»: sí. Por desgracia. *(dos veces)*
 **TEODORO (fax):** 19:10. Respuesta a todo lo demás: ver respuestas anteriores. *(tres veces)*
-**TEODORO (fax):** 19:12. Goyita, ¿me oyes? Tú aguanta.
+**TEODORO (fax):** 19:12. Benita, ¿me oyes? Tú aguanta.
 **AURORA:** Lleva toda la tarde contestándote; nadie le había dado papel.
 *El último pliego sale torcido, con borde perforado.*
 **BRUNO:** Y esto no es de Teodoro. «F.P.» Atascado desde las seis.
@@ -3034,12 +3035,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 2. **Dar la ficha a Teodoro** con las tres casillas y la pieza recortada → **escena 7.3a** → **ACTO III**.
 
 ##### Las tres teclas del fax (Usar la pieza con el fax)
-*Menú: «1: GOYITA», «2: ADMINISTRACIÓN», «3: CONTROLLING», «Mejor no.»* *(Sin papel:* **BRUNO:** Sin papel, este fax no traga ni una coma. *· Ya recortada:* **BRUNO:** Ya está recortada. Si la vuelvo a enviar, Begoña recorta el recorte.*)*
+*Menú: «1: BENITA», «2: ADMINISTRACIÓN», «3: CONTROLLING», «Mejor no.»* *(Sin papel:* **BRUNO:** Sin papel, este fax no traga ni una coma. *· Ya recortada:* **BRUNO:** Ya está recortada. Si la vuelvo a enviar, Begoña recorta el recorte.*)*
 
-- **1: GOYITA** *(la primera vez Teodoro le da una palmada en la mano antes de que toque la tecla)*
-  **TEODORO (fax):** La Goyita no tira borradores.
+- **1: BENITA** *(la primera vez Teodoro le da una palmada en la mano antes de que toque la tecla)*
+  **TEODORO (fax):** La Benita no tira borradores.
   **TEODORO (fax):** Y a ella no le marca nadie más que yo.
-  **BRUNO:** Perdón, Goyita.
+  **BRUNO:** Perdón, Benita.
   *(Otra vez:)* **TEODORO (fax):** Otra vez. Te mido la mano. No cabe.
 - **3: CONTROLLING** *(el fax traga la pieza; suena el móvil de Bruno: Evaristo)*
   **EVARISTO (móvil):** Una cosita. He recibido su pieza. Treinta y una líneas.
@@ -3081,7 +3082,7 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 > NOTA: [P11] Sin la L3 («Begoña me manda el triplicado»), lo de que Evaristo lee el triplicado no se cuenta en ningún sitio: queda solo la tecla 3.
 **TEODORO (fax):** Y Controlling la ha leído entera. Ese hombre lee.
 *Teodoro descuelga el teléfono rojo. Por primera vez se le oye la voz: ronca, bajita.*
-**TEODORO:** Goyita. Página 7 cerrada. Esta noche firma un chaval.
+**TEODORO:** Benita. Página 7 cerrada. Esta noche firma un chaval.
 *Cuelga. Aurora se quita las gafas. Se las vuelve a poner.*
 **AURORA:** Ha hablado. En voz alta. Delante de mí.
 *Entra Íñigo por la puerta de latón, con el portátil bajo el brazo. Mira la ficha sellada; luego, a Bruno.*
@@ -3719,7 +3720,7 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 **BEGOÑA:** Con ticket.
 *Inserto en una esquina: la Redacción de papel, Teodoro al teléfono rojo. Aurora, de pie a su lado.*
 **AURORA:** Tira, Teodoro.
-**TEODORO (por el teléfono rojo):** Goyita. Tira.
+**TEODORO (por el teléfono rojo):** Benita. Tira.
 > NOTA: [P11] [P12] [P14] El clímax no crece: sale una línea neta. Begoña baja a cuatro líneas (fuera el taxi, el recorte a 35,52, el sello, «al lado del ministro» y la de Brais con el atún: era la cuarta vez que se oía el 26 %, cuando Evaristo ya había ganado), y con eso caben las dos líneas del walkie de Pilar (de E2), que cierran su noche, y «Tira, Teodoro.» (de S2): la primera vez en la noche que Aurora le pide algo a Teodoro, y por su nombre (no la primera vez que se hablan: el fax de las 18:01 ya es «Respuesta a Aurora»), que hace falta porque Aurora ya no toca su fax en el camino principal. Todo esto va antes del fundido a blanco: la cadena final no se toca. Arte: Aurora entra en el inserto del teléfono rojo.
 *Retumba la rotativa. Tiemblan los botellines.*
 **BRAIS:** ¿Eso que suena es el papel?
@@ -3832,7 +3833,7 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **▸** ¿Y usted cómo se encuentra? De salud, digo.
   **Respuesta por defecto:** Estupendamente. La plaza no se hereda.
   **MARIPAZ:** Estupendamente. La plaza no se hereda.
-  **TEODORO (fax):** MÁS SANO QUE LA GOYITA. Y LA GOYITA TIRA.
+  **TEODORO (fax):** MÁS SANO QUE LA BENITA. Y LA BENITA TIRA.
   **GERVASIO:** Hoy me lo han preguntado tres veces. ¿Estoy mal?
   **ÍÑIGO:** Yo no tengo plaza. Tengo chófer. Es escalable.
 - **▸** ¿Y cuáles son los siguientes pasos? _(solo en el D4)_
@@ -4043,7 +4044,7 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 
 #### La hora
 <!-- content/pistas.js · horaMovil -->
-*Los relojes del edificio están parados en las 20:59 (es un chiste recurrente: el de Teodoro, la hoja de reservas, la etiqueta del titulador). La hora del móvil avanza por hitos:* 18:30 (inicio) → 18:41 (torno) → 18:48 (silla) → 18:55 (Gertrudis) → desde 19:07 (Acto II; sube unos minutos con cada casilla, el CMS y el recorte, hasta 20:17) → 20:22 (Acto III) → 20:31 (Brais encontrado) → 20:44 (Brais libre) → 20:53 (acta) → 20:59 (clímax) → 21:00 (el empujón: «Goyita. Tira.»).
+*Los relojes del edificio están parados en las 20:59 (es un chiste recurrente: el de Teodoro, la hoja de reservas, la etiqueta del titulador). La hora del móvil avanza por hitos:* 18:30 (inicio) → 18:41 (torno) → 18:48 (silla) → 18:55 (Gertrudis) → desde 19:07 (Acto II; sube unos minutos con cada casilla, el CMS y el recorte, hasta 20:17) → 20:22 (Acto III) → 20:31 (Brais encontrado) → 20:44 (Brais libre) → 20:53 (acta) → 20:59 (clímax) → 21:00 (el empujón: «Benita. Tira.»).
 
 ### La abuela: las pistas
 <!-- content/game.js · pistas · content/pistas.js · OBJETIVOS, DONDE, SALUDOS, OTRA_VEZ, ABUELA_VIRAL, DESPEDIDA -->

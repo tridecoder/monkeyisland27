@@ -664,3 +664,26 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
 - La ayuda gris «Contesta con la réplica que la desmonte.» sale solo en el primer duelo de la partida (flag de motor
   `duel:ayuda`, que se pone con el primer acierto o al terminar ese duelo).
 - Colores de la ventana: `COL` y `PARES_CONTRASTE` de `engine/duel.js` (los comprueba `tools/contrast.mjs`).
+
+## Guion nuevo · tanda 1 (docs/GUION_PROPUESTA_LIMPIO.md: [P5], [P7], [P8], [P9], [P10], [P13] y sueltos de [P14]/[P15])
+
+> Prueba: `node tools/test-guion3-t1.mjs` (en `test-all`); capturas `tools/shots/guion3-t1-*.png`.
+
+- **El periódico se llama El Incontable** (web y rótulos: `elincontable.es`, `ELINCONTABLE.ES`). El nombre viejo no
+  queda en `content/`, `engine/`, `tools/`, `index.html` ni README; `text-audit` lo vigila. La única forma sin «in» que
+  se dice es el chiste del logo («queda «elcontable.es». Una gestoría.»). Letras del Vestíbulo: `logo()` de
+  `art/vestibulo.art.js` (el «in» cuelga torcido de un tornillo).
+- **Réplicas**: las nueve nuevas están en `content/duelo.js` (`pairs`) y en la escena donde se aprende cada una; las
+  voces de ataque, en el bloque de cada rival (`attackText`; Íñigo ya tiene las suyas en `escenas/climax.js`). Un
+  `hurtByPair` puede ser una función `(duel) => líneas | null` (la R07 de Íñigo solo tras el remate del acta).
+- **Aprender perdiendo** (`duelo.js pistas`, `engine/duel.js`): se entra a cualquier duelo; cada ataque sin su réplica
+  apunta en la libreta la nota de Bruno de `pistas.js DONDE` (flag `libreta_pistas`, un bit por pareja), con el aviso
+  «Pista apuntada en la libreta.» y un pósit sobre la pestaña LIBRETA mientras el menú está abierto; al perder, «Me
+  faltan réplicas. Están apuntadas en la libreta.»; «Mirar libreta» las enseña en gris; `learnReply` las borra. Si
+  cambia dónde se aprende una réplica, se cambia `DONDE` y vale para la abuela y para la libreta.
+- **Gervasio más rápido** (`aTiempo.rapido` de `pajarera.js`): tras un ataque escrito entero, dos tramos y pausas × 0,6;
+  el que Bruno le pisa vuelve a ir lento.
+- **Apagón**: 12 s la primera vez (Anselmo cruza); del segundo en adelante, 5 s a oscuras con el mismo interceptor y
+  luego la escalada de siempre (`cierreRepeticion` de `pecera.escenas.js`).
+- **Pop-up de papel**: `paginaComercial` (faldón, robapáginas, cuatro módulos, línea gris) y `paginaPopup` (el colchón
+  de cartulina troquelada que se levanta, `POPUP_MS`) en `art/sala_amazonas.art.js`; dos `api.detalle` seguidos.
