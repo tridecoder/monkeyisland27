@@ -485,7 +485,7 @@ graph TD
 <!-- objetos aro_borja (ecosistema), eventos_a_ecosistema; portatil_tadeo, actor tadeo_adjunto (correos RV:) -->
 - ~~**Borja** no está: se fue a las seis. Queda su **aro de luz con el móvil**, que publica solo lo que oye («Publicando: …. Emoji de fuego.»). En Eventos, se oye «descopear» (la segunda palabra posible para el kanban).~~
 - **Borja** no está: se fue a las seis. Queda su **aro de luz con el móvil**, que publica solo lo que oye («Publicando: …. Emoji de fuego.»), en Marketing y Comercial. Ya no sale en Eventos.
-> NOTA: [P14] Pendiente del dueño: el crédito de Marketing («Asignado a: el móvil de Borja. Lo publicó a las nueve.») se queda literal, como manda la regla del final, aunque sin la palabra del kanban el móvil ya no publica nada a las nueve.
+> NOTA: [P15] El crédito de Marketing del móvil de Borja se quita (decisión del dueño).
 > NOTA: [P12] Fuera la segunda palabra del kanban: el móvil de Borja deja de publicar en el préstamo del álbum. Tadeo no cambia de función: su «RV:» del Acto II pasa a ser el rider del ponente, reenviado a toda la empresa (sigue sin sprite y sin fundirse con nadie).
 - **Tadeo** (Negocio) no tiene sprite: su **portátil** reenvía todo («RV:», «Por si os sirve!!»), con un asistente que contesta «¡Excelente pregunta!»; sus «RV:» llegan al correo del móvil. Enseña R15 por la vía alternativa.
 - **Mejor línea**: **MÓVIL DE BORJA:** Publicando: [SILENCIO INCÓMODO]. Emoji de fuego. · **TADEO (portátil):** ¡Excelente silencio! ¿Quieres que te lo resuma en una tabla?
@@ -5258,7 +5258,8 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 **CRÉDITOS:** Audiencia // Asignado a: una lectora. Cuarenta y siete minutos.
 **CRÉDITOS:** Controlling // Asignado a: don Evaristo Salvedad. Leyó hasta el final.
 **CRÉDITOS:** Eventos // Asignado a: Pilar Escaleta. Empezamos en cinco minutos.
-**CRÉDITOS:** Marketing // Asignado a: el móvil de Borja. Lo publicó a las nueve.
+~~**CRÉDITOS:** Marketing // Asignado a: el móvil de Borja. Lo publicó a las nueve.~~
+> NOTA: [P15] El dueño quita este crédito: sin «descopear», el móvil de Borja ya no publica nada a las nueve. Es la única línea de los créditos que cambia.
 **CRÉDITOS:** Reenvíos // Asignado a: Tadeo Adjunto. La IA estaba de acuerdo.
 **CRÉDITOS:** Material // Asignado a: Custodia Precinto. Devuélvanle el boli.
 **CRÉDITOS:** Salas // Asignado a: Ramírez (viernes, 20:59, recurrente)
