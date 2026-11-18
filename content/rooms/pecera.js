@@ -258,8 +258,7 @@ export default buildRoom({
       },
       tirar: async (api) => {
         if (api.flag('cms_vivo')) { await api.say('Ya está fuera, y el CMS, dentro.'); return; }
-        if (api.flag('vio_ticket_3')) { await api.scene('pecera_cms_vivo'); return; }   // camino antiguo
-        await api.scene('pecera_apagon');                                                  // §4.2, la escalada
+        await api.scene('pecera_apagon');                                                  // §4.2, la escalada ([P11] fuera el ticket nº 3)
       },
       empujar: async (api) => api.say(api.flag('cms_vivo')
         ? 'Ni hablar. Nueve años esperando a que alguien la desenchufara.'
@@ -630,11 +629,15 @@ export default buildRoom({
     if (api.flag('lector_derribado') || api.flag('juego_terminado') || api.restoring) return;
     // como mucho una escena de entrada por visita, por este orden
     if (api.flag('torno_abierto') && !api.flag('inigo_presentado')) { await api.scene('presentacion_villano'); return; }
+    // [P11] Íñigo pasa a Bruno a «Prescindible»: antes que cualquier otra escena de entrada salvo la presentación
+    if (api.flag('casilla_firma') && !api.flag('acto_3_iniciado') && !api.flag('inigo_prescindible')) { await api.scene('pecera_inigo_prescindible'); return; }
     if (api.flag('acto_3_iniciado') && !api.flag('dos_ias_vista')) { await api.scene('pecera_dos_ias'); return; }
     if (api.flag('herminia_de_alta') && !api.flag('infografia_integrada')) { await api.scene('pecera_anexion'); return; }
     // E4 S5 · paso 40: el ganador de Discover (después de la anexión, para no romper XE4; §8.1)
     if (api.flag('acto_3_iniciado') && api.flag('pieza_escrita') && !api.flag('discover_ganador')) { await api.scene('pecera_opa_ganadora'); return; }
     if (api.flag('cms_vivo') && api.once('pecera_cms_entrada')) { await api.scene('pecera_cms_entrada'); return; }
+    // [P4] la pantalla parpadea: primera entrada del Acto II con el CMS colgado (una vez)
+    if (api.flag('acto_2_iniciado') && !api.flag('acto_3_iniciado') && !api.flag('cms_vivo') && api.once('pecera_parpadeo')) { await api.scene('pecera_parpadeo'); return; }
     if (api.flag('cafetera_viral') && api.once('pecera_viral')) { await api.scene('pecera_viral'); return; }
     if (api.flag('bruno_con_chaqueta')) { await api.scene('pecera_chaqueta'); return; }
     if (api.flag('bruno_con_banner')) await api.scene('pecera_banner');            // E2 §4.2.3 (una vez)

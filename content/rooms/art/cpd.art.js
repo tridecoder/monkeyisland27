@@ -436,6 +436,30 @@ function drawCaja(g) {
   kit.cantoVivo(g, x - 1, y - 14, 19, 15);
 }
 
+/** [P14] La máquina de bocadillos del sótano, junto al ascensor (decorado; la cita la llamada de los atunes de
+ *  Evaristo): roja, con el cristal de las espirales vacías y la última fila, la del atún, también vacía. 15×34. */
+export const MAQUINA = { x: 35, y: 64, w: 14, h: 30 };
+function drawMaquina(g) {
+  const { x, y, w, h } = MAQUINA;
+  shadowEllipse(g, x + w / 2, y + h, 9, 2, 0.7);
+  rect(g, x, y, w, h, '#8a2a24'); hline(g, x, y, w, '#c4483c'); vline(g, x, y, h, '#a8372f'); vline(g, x + w - 1, y, h, '#5a1a16');
+  rect(g, x + 1, y + 1, w - 2, 3, '#e8c860'); hline(g, x + 2, y + 2, w - 4, '#b03028');      // el rótulo, ilegible de lejos
+  // el cristal: cuatro filas de espirales vacías (solo el muelle, gris)
+  rect(g, x + 2, y + 6, 8, 18, '#142030'); frameRect(g, x + 1, y + 5, 10, 20, PAL.metal[2]);
+  for (let k = 0; k < 4; k++) {
+    const yy = y + 9 + k * 4;
+    hline(g, x + 2, yy + 1, 8, PAL.metal[3]);
+    for (let i = 0; i < 4; i++) px(g, x + 2 + i * 2, yy, PAL.metal[4]);
+  }
+  // la última fila, la del atún: su etiqueta azul y blanca, sin latas
+  hline(g, x + 2, y + 23, 8, '#f0e8d0'); px(g, x + 4, y + 23, '#3a6aa8'); px(g, x + 7, y + 23, '#3a6aa8');
+  ditherOverlay(g, x + 2, y + 6, 8, 18, '#9ad0ff', 0.1);
+  // monedero a la derecha; bandeja abajo
+  rect(g, x + 11, y + 7, 2, 7, PAL.metal[4]); px(g, x + 11, y + 16, '#ffd84a');
+  rect(g, x + 3, y + 26, 7, 2, '#2a0e0c');
+  kit.cantoVivo(g, x, y, w, h);
+}
+
 // ------------------------------------------------------------------ mesa de Paco (plano medio, tapa de la cintura abajo al sentado)
 const MESA = { x: 240, y: 84, w: 62 };
 function drawPacoDesk(g, view, t) {
@@ -712,6 +736,8 @@ const layout = {
     layer: 'sorted', zy: 103, prop: true, draw: (g, v, t) => drawPacoDesk(g, v, t),
   },
   cementerio_ratones: { rect: [299, 86, 19, 18], walkTo: [306, 112], face: 'up', cache: true, draw: (g) => drawCaja(g) },
+  // [P14] la máquina de bocadillos, junto al ascensor, delante de la persiana de evacuación (decorado con Mirar)
+  maquina_bocadillos: { rect: [MAQUINA.x - 1, MAQUINA.y - 1, MAQUINA.w + 2, MAQUINA.h + 1], walkTo: [44, 110], face: 'up', cache: true, draw: (g) => drawMaquina(g) },
   // [PC] E5: el regletero (paso 21), al pie de los armarios 24-25; Bruno se pone a su izquierda para no taparlo
   regleta_r3: { rect: [REG.x - 1, REG.y - 1, REG.w + 2, REG.h + 2], walkTo: [96, 108], face: 'right', priority: 2,
     sprites: { encendida: (g, v, t) => drawRegleta(g, v, t), apagada: (g, v, t) => drawRegleta(g, v, t), default: (g, v, t) => drawRegleta(g, v, t) } },

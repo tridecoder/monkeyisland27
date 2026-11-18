@@ -332,7 +332,7 @@ try {
   await verb('mirar', 'registro_tickets');
   ok(await logHas('Este registro lo empezó Eutimio en julio. El contador lleva la otra numeración.'), '[P14] registro de tickets: la primera línea nueva');
   await guardar('t1_acto3');                             // partida del Acto III (para la migración)
-  await jugarHasta(45, 42);
+  await jugarHasta(45, 43);
   await guardar('t1_antes_d3');
 
   // ====================================================================== [P8] D3 con ratón, a tiempo real
@@ -454,7 +454,7 @@ try {
   ok(!(await state()).duel && (await state()).room === 'sala_amazonas', 'perder otra vez no deja sin salida (sigue en la Sala)');
 
   // ====================================================================== [P7] D4 sin réplicas
-  step('[P7] D4 sin réplicas: se entra, se pierde, «Le vuelvo a hablar…» y el repaso; la puerta deja salir; Hablar con Íñigo lo reabre');
+  step('[P7] D4 sin réplicas: se entra, se pierde, el repaso; la puerta deja salir; Hablar con Íñigo lo reabre');
   await cargar('t1_antes_d3');
   await jugarHasta(46, 46);
   await G(() => { for (const k of ['rep_10', 'rep_12', 'rep_13', 'rep_05', 'rep_16', 'rep_01', 'rep_07', 'rep_15']) __game.setFlag(k, false); __game.clearLog(); });
@@ -462,7 +462,8 @@ try {
   await R.run(['verbo', 'usar', 'puerta_sala']);
   ok(await until(() => !!__game.state().duel, null, 20000), 'el clímax abre el D4 sin réplicas');
   await R.loseDuel();
-  ok(await logHas('Le vuelvo a hablar. Un consultor siempre tiene un hueco en la agenda.') && await logHas('Me faltan réplicas. Están apuntadas en la libreta.'), 'derrota del D4: «Le vuelvo a hablar…» y el repaso');
+  // [guion3 t2] en el D4 perdido sin réplicas no se oyen seguidas «Le vuelvo a hablar…» y «Me faltan réplicas…»: solo la segunda
+  ok(!(await logHas('Le vuelvo a hablar. Un consultor siempre tiene un hueco en la agenda.')) && await logHas('Me faltan réplicas. Están apuntadas en la libreta.'), 'derrota del D4 sin réplicas: el repaso (sin «Le vuelvo a hablar…» seguido)');
   ok(!(await logHas('Tengo que cotillear más')), 'sin la línea vieja «Tengo que cotillear más»');
   await clearLog();
   await R.run(['ir', 'pajarera']);
@@ -500,7 +501,7 @@ try {
 
   // ====================================================================== partidas del juego anterior
   step('Partidas guardadas del juego anterior (sin `libreta_pistas`) a mitad de cada acto: cargan y se sigue');
-  for (const [slot, sig, nom] of [['t1_acto1', 13, 'Acto I (tras el paso 12)'], ['t1_acto2', 26, 'Acto II (tras el paso 25)'], ['t1_acto3', 42, 'Acto III (tras el paso 41)']]) {
+  for (const [slot, sig, nom] of [['t1_acto1', 13, 'Acto I (tras el paso 12)'], ['t1_acto2', 26, 'Acto II (tras el paso 25)'], ['t1_acto3', 43, 'Acto III (tras el paso 41)']]) {
     await G(([s]) => {
       const k = __game.game.slotKey(s), d = JSON.parse(localStorage.getItem(k));
       delete d.state.flags.libreta_pistas;

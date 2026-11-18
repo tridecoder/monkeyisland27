@@ -19,6 +19,7 @@ import { PAL, rect, hline, glow, ditherOverlay, label } from '../../engine/draw.
 const I = 'inigo_sinergia', G = 'gervasio_acta', LM = 'lector_medio';
 const GRABACION = 'A mí lo que me interesa es la economía. Y ahorrar.';
 const acto3 = (api) => !!api.flag('acto_3_iniciado');
+const PRESCINDIBLE = 'Busco mi pósit para volver a «Ideal». No hay forma: ya he hecho algo.';   // [P11]
 const gv = (api, lines) => api.sayAs(G, lines);
 
 // ------------------------------------------------------------------ §8.3: el Titulator anuncia tus hazañas
@@ -28,7 +29,8 @@ const HAZANAS = [
   ['torno_abierto', 'torno_abierto', 'BECARIO SE PEGA A UN ORGANIGRAMA. EL ORGANIGRAMA, EN SHOCK'],
   ['chaqueta_en_lector', 'chaqueta_en_lector', 'UN BECARIO VISTE AL LECTOR MEDIO: LA CHAQUETA QUE LO CAMBIÓ TODO'],
   ['gertrudis_saludada', 'gertrudis_saludada', 'UN JOVEN DA LAS BUENAS NOCHES A UNA CAFETERA. LA CAFETERA, VIRAL'],
-  ['apagon_3', (api) => num(api, 'apagon_n') >= 3 && !api.flag('cms_vivo'), 'ALGUIEN DESENCHUFA UNA PANTALLA TRES VECES. LA PANTALLA, BLOQUEADA'],
+  // [P11] fuera el tercer tirón («BLOQUEADO»): el titular cuenta el primer apagón (la clave se queda)
+  ['apagon_3', (api) => num(api, 'apagon_n') >= 1 && !api.flag('cms_vivo'), 'ALGUIEN DESENCHUFA UNA PANTALLA. LA WEB PUBLICA A OSCURAS'],
   ['cms_vivo', 'cms_vivo', 'UN BECARIO APAGA LA REDACCIÓN DESDE EL SÓTANO. ARRIBA, NI SE ENTERAN'],
   ['reunion_terminada', 'reunion_terminada', 'UN BECARIO PREGUNTA POR LOS SIGUIENTES PASOS. HAY HERIDOS'],
   ['mercados_huido', 'mercados_huido', 'UN REDACTOR DE MERCADOS HUYE DEL VENDING. DEJA UN TÁPER Y UN VACÍO'],
@@ -315,16 +317,21 @@ export default buildRoom({
       usar: 'Me pego uno verde en el pecho: "Oportunidad". Nadie lo ve.',
       tirar: 'Si tiro de uno, cae la pared entera. Es una estructura muy apalancada.',
     } },
+    // [P11] desde la FIRMA (escena del pósit en la Redacción, o la línea de respaldo de la 7.3a), el pósit «VACANTE»
+    // está en «Prescindible» (lo dibuja el arte); las respuestas de Usar/Coger/Tirar de antes valen solo hasta entonces
     { id: 'matriz_2x2', name: 'matriz 2x2', handlers: {
       mirar: async (api) => {
-        if (api.flag('chaqueta_en_lector')) {
+        if (api.flag('casilla_firma')) {
+          await api.say(['Mi pósit ya no está en «Ideal». Está en «Prescindible», con toda la plantilla.',
+            ...(api.flag('chaqueta_en_lector') ? ['En «Ideal» solo queda el cartón con chaqueta.'] : [])]);
+        } else if (api.flag('chaqueta_en_lector')) {
           await api.say(['En «Ideal», dos pósits: «VACANTE» y «RAMÍREZ (LECTOR)».', 'El empleado perfecto es un becario. El segundo, un cartón con chaqueta.']);
         } else {
           await api.say(['Matriz 2x2: COSTE contra DISPONIBILIDAD. Toda la plantilla en "Prescindible".', 'En "Ideal" hay un solo pósit: "VACANTE". Soy el empleado perfecto. No existo.']);
         }
       },
-      usar: 'Me muevo de cuadrante con el dedo. El pósit vuelve solo a "Ideal".',
-      coger: 'Si me quito de "Ideal", la matriz se queda sin empleado perfecto.',
+      usar: async (api) => api.say(api.flag('casilla_firma') ? PRESCINDIBLE : 'Me muevo de cuadrante con el dedo. El pósit vuelve solo a "Ideal".'),
+      coger: async (api) => api.say(api.flag('casilla_firma') ? PRESCINDIBLE : 'Si me quito de "Ideal", la matriz se queda sin empleado perfecto.'),
       tirar: 'Tiro del pósit VACANTE. No sale. Lo ha pegado alguien con convicción.',
     } },
     { id: 'sofa', name: 'sofá', handlers: {

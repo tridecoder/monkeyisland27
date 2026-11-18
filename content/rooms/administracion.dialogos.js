@@ -13,6 +13,12 @@ import { llegaCorreoEvaristo, correoLlegado, prometerGracias } from '../lib/movi
 const BEGONA = 'begona_triplicado', EV = 'evaristo_salvedad';
 const sayBe = (api, t) => api.sayAs(BEGONA, t);
 const sayEv = (api, t) => api.sayAs(EV, t);
+/** [P11] Evaristo saca de la carpeta una hoja impresa: el correo (remate C del D4). Una partida vieja que ya lo tenga,
+ *  no lo recibe dos veces. */
+function darCorreo(api) {
+  if (!api.has('correo_evaristo') && !api.flag('duelo_inigo_ganado')) { api.give('correo_evaristo'); api.sfx('pickup'); }
+  api.setFlag('correo_evaristo_listo', true);
+}
 
 /** P11 · recorte() (Dar pieza_opa o «Necesito recortar ocho líneas.»): plan §5.8, el camino en persona. */
 export async function recorte(api) {
@@ -165,6 +171,9 @@ export default {
           api.sfx('machine');
           api.give('fotocopia_nota_direccion');
           await sayBe(api, 'Te la fotocopio, para que aprendas. Y la tuya, por triplicado.');
+          // [P11] el hallazgo de la opa, dentro de la escena: Bruno le da la vuelta (Begoña no mira reversos)
+          api.sfx('paper');
+          await api.say(['Por detrás, a boli: «OPA ROBLEDAL — jueves — NO PUBL.»', 'Es lo primero que leo hoy que no quieren que lea.']);
           // E2 fase B (7): tres sellos, una línea
           for (let i = 0; i < 3; i++) { sello(api); await api.wait(180); }
           await sayBe(api, 'Original. Duplicado. Triplicado.');
@@ -248,8 +257,13 @@ export default {
             'Y yo: «Una coma también lo era. Hasta que alguien la firmó».']);
           api.learnReply('rep_16');
           api.setFlag('evaristo_escuchado', true);
-          await sayEv(api, ['Pero ahora dudo de mi propia coma. Me falta una segunda opinión.',
-            'De alguien que sepa de comas de verdad.',
+          // [P11] entrega él mismo el correo (fuera «dudo de mi propia coma» y el recado a Aurora); el momento oportuno,
+          // en persona ([P14]: la frase que dispara el remate C del D4)
+          api.sfx('paper');
+          darCorreo(api);
+          await sayEv(api, 'Le dejo el correo programado. Lo envía usted, en el momento oportuno.');
+          await api.say('¿Y cuándo es el momento oportuno?');
+          await sayEv(api, ['Cuando alguien dé por firmados los cuarenta y ocho mil.',
             'Gracias por escucharme hasta el final. La gente suele colgar en la coma.']);
           return 'exit';
         },

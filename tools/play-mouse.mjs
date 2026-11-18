@@ -15,10 +15,10 @@
 //   node tools/play-mouse.mjs --lento            capturas de cada paso en tools/shots/raton-*.png
 //   node tools/play-mouse.mjs --solo=raton --hasta=28   la partida con ratón solo hasta ese paso (depuración)
 // ENMIENDA E5 §7.4: el submenú de atajos del ascensor (clic en la sala de llegada), el apagón jugable (paso 20: se espera
-// a que vuelva la luz), el regletero (21), el atasco con una vía a clic (29: Empujar a Fermín), el menú de columnas (46)
+// a que vuelva la luz), el regletero (21), el atasco (29; [guion3 t2] ya se resuelve solo), el menú de columnas (46)
 // y la señal tras el clímax (se espera la primera megafonía). Capturas de esos momentos, siempre: tools/shots/e5-raton-*.png.
 // ENMIENDA E6 §11.1: el paso 28 con clic en la tele y en sus dos opciones (sin pisar el Vending), el atasco anunciado
-// («¿Necesitan ayuda?») y Empujar a Fermín después; D2 (36) con la réplica larga (no cabe, no es fallo) y luego la corta;
+// («¿Necesitan ayuda?»; [guion3 t2] se resuelve solo); D2 (36) con la réplica larga (no cabe, no es fallo) y luego la corta;
 // D3 (46) con la frase a medias; el rotulador (42) cogido del cordel. Capturas: tools/shots/e6-raton-*.png.
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -392,29 +392,12 @@ try {
           await settle();
           ok(await G(() => __game.log.some(l => String(l.text).includes('Que te la apague Eutimio.'))), '20 cierre del apagón: «Ese cable baja a Sistemas. Que te la apague Eutimio.»');
         }
-        if (s.n === 28 && a[0] === 'opcion' && /siguientes pasos/.test(a[1])) {   // E5 §2.1 + E6 §2.2: el atasco anunciado
-          const at = await hastaQue(() => !!__game.getFlag('sala_amazonas_atasco') && !__game.game.busy, 60000);
+        if (s.n === 28 && a[0] === 'opcion' && /siguientes pasos/.test(a[1])) {   // E5 §2.1 + E6 §2.2; [guion3 t2] el atasco se resuelve solo
+          const at = await hastaQue(() => !!__game.getFlag('reunion_terminada') && !__game.game.busy, 90000);
           await wait(600); await page.mouse.move(5, 5); await wait(150); await page.screenshot({ path: path.join(here, 'shots', 'e6-raton-atasco.png') });
-          ok(at, '28 la tele: «Buenas noches, Gertrudis» → la pregunta en directo → estampida → atasco en la puerta, con el control devuelto');
+          ok(at && !(await G(() => !!__game.getFlag('sala_amazonas_atasco'))), '28 la tele: «Buenas noches, Gertrudis» → la pregunta en directo → estampida → el atasco se resuelve solo, con el control devuelto');
           ok(await G(() => __game.log.some(l => l.who === 'bruno' && l.text === '¿Necesitan ayuda?')), '28 atasco anunciado: Bruno «¿Necesitan ayuda?» (y nadie contesta)');
-          // los tres tiemblan encajados en la puerta: si el clic cae en el marco (Fermín se ha movido un píxel), otra vez
-          const hecho = () => G(() => __game.log.some(l => String(l.text).includes('Les doy un empujoncito.')));
-          let intentos = 0;
-          for (; intentos < 3 && !(await hecho()) && await G(() => !!__game.getFlag('sala_amazonas_atasco')); intentos++) {
-            // (Bruno cruza la Sala andando sin que el juego esté «ocupado»: hay que dejarle llegar; otro clic en el
-            // panel cancelaría el paseo y con él el verbo)
-            // el clic va al centro del grupo (cualquiera de los tres resuelve la vía empujar): Fermín solo, al borde de su
-            // caja, cae a veces en la puerta de detrás porque los tres tiemblan ±3 px y se turnan quién queda delante
-            await clickVerb('empujar');
-            const pt = await G(() => { const g = __game.game, cam = Math.round(g.camX), A = ['mercados_1', 'mercados_2', 'mercados_3'].map(id => g.actorBox(g.actors[id]));
-              const cx = A.reduce((s, b) => s + b.x + b.w / 2, 0) / 3 - cam, cy = A.reduce((s, b) => s + b.y + b.h * 0.45, 0) / 3;
-              for (let r = 0; r < 12; r++) for (let dx = -r; dx <= r; dx++) for (const dy of [-r, r]) { const t = g.pickAt(Math.round(cx + dx), Math.round(cy + dy)); if (t && /^mercados_/.test(t.id)) return [Math.round(cx + dx), Math.round(cy + dy)]; }
-              return null; });
-            if (!pt) fail('atasco: ningún píxel elige a los de Mercados');
-            await vclick(...pt);
-            await hastaQue(() => !__game.game.player.path.length && !__game.game.acting, 15000); await settle();
-          }
-          ok(await hecho(), `28 atasco: clic en Empujar + los tres de Mercados (en el centro del grupo) → «Les doy un empujoncito…» (vía empujar; ${intentos} clic${intentos === 1 ? '' : 's'})${await hecho() ? '' : ' — ' + await G(() => JSON.stringify({ log: __game.log.slice(-5).map(l => l.who + ': ' + l.text), p: [Math.round(__game.game.player.x), Math.round(__game.game.player.y)], verbo: __game.game.ui.verb, frase: __game.state().sentence }))}`);
+          ok(await G(() => __game.log.some(l => l.text === '¡Ese medio cruasán es mío! ¡Lo he cobrado dos veces!')), '28 atasco: sin clics; el anuncio de Maripaz los desencaja (y vuelve Jacinto por su cruasán)');
         }
       }
       await settle();

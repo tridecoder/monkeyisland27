@@ -196,21 +196,17 @@ async function anuncioAntesDeEntrar(api) {
   });
 }
 
-// ENMIENDA E5 §2.5.1 (PE) · el rotulador de objetivos: Coger el termómetro, desde `torno_abierto`, una vez (L
-// `ecosistema_rotulador_dado`). Con Maripaz en la planta (Actos I y III), lo regala; sin ella (Acto II antes de D1),
-// Bruno lo coge en silencio. Después, Coger termómetro → lo genérico. El rotulador no se gasta (lo usa PB en el kanban).
+// [P11] [P14] el rotulador de objetivos ya no se coge aquí: lo da Maripaz al perder el D1 (sala_amazonas.js). En el
+// Acto I cuelga de su cordel y Maripaz no lo suelta; desde el Acto II el cordel está vacío (se lo ha llevado a la
+// reunión). Tras el D1, Bruno ya lo lleva: Coger → lo genérico. (Partidas viejas que ya lo cogieron: igual.)
+const cordelVacio = (api) => !!(api.flag('acto_2_iniciado') || api.flag('ecosistema_rotulador_dado') || api.has('rotulador_rojo'));
 async function cogerTermometro(api) {
-  if (!api.flag('torno_abierto') || api.flag('ecosistema_rotulador_dado') || api.has('rotulador_rojo')) {
-    await api.defaultResponse(); return;
-  }
-  api.setFlag('ecosistema_rotulador_dado', true);
+  if (api.has('rotulador_rojo') || !api.flag('torno_abierto')) { await api.defaultResponse(); return; }
   if (maripazAqui(api)) {
     api.faceActor(MARIPAZ, 'bruno');
-    await sayM(api, '¿Mi rotulador de objetivos? Llévatelo. Lo que pintes, lo cobro como espacio.');
-  }
-  await api.anim('bruno', 'reach', 350);
-  api.give('rotulador_rojo');
-  api.sfx('pickup');
+    await sayM(api, 'Ese rotulador pinta objetivos. Cuando tengas uno, hablamos.');
+  } else if (cordelVacio(api)) await api.say('Solo queda el cordel, cortado. El rotulador se lo ha llevado Maripaz.');
+  else await api.defaultResponse();
 }
 
 const LINEA_CORDEL = 'El rotulador cuelga al lado, de un cordel, como el boli de un banco.';
@@ -226,7 +222,7 @@ export default buildRoom({
   flags: {
     ecosistema_portatil_cerrado: 'bool · P4 · Cerrar portátil de Tadeo (Acto III) · P4 (Mirar portátil, impresora)',
     ecosistema_pufs_n: 'int · P4 · ecosistema · +1 por Usar pufs · P4',
-    ecosistema_rotulador_dado: 'bool · PE · E5 §2.5.1: Coger termometro_ventas da rotulador_rojo (una vez)',
+    ecosistema_rotulador_dado: 'bool · PE · E5 (juego anterior): el termómetro dio el rotulador',
   },
 
   objects: [
@@ -282,14 +278,20 @@ export default buildRoom({
     { id: 'termometro_ventas', name: 'termómetro de ventas', handlers: {
       // E6 §2.9.1: antes de coger el rotulador, la segunda línea lo señala (cuelga a la vista, con su propio punto de clic)
       mirar: async (api) => api.say(['Un termómetro pintado a rotulador: «OBJETIVO Q3». Rojo hasta el 97 %.',
-        api.flag('ecosistema_rotulador_dado') ? 'El 3 % que falta se lo lleva el gong de al lado.' : LINEA_CORDEL]),
-      usar: async (api) => { await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Así lo pinto yo los viernes. Pero con más pulso.', 'Rojo hasta el 98 %. Nadie lo nota.'); },   // E5 C52
-      coger: cogerTermometro,                                                              // E5 §2.5.1
+        cordelVacio(api) ? 'El cordel, vacío. El 3 % que falta se lo lleva el gong de al lado.' : LINEA_CORDEL]),
+      // [P14] «Usar» pide el rotulador (tras el D1); antes, como «Coger»
+      usar: async (api) => {
+        if (!api.has('rotulador_rojo')) { await cogerTermometro(api); return; }
+        await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Así lo pinto yo los viernes. Pero con más pulso.', 'Rojo hasta el 98 %. Nadie lo nota.');   // E5 C52
+      },
+      'usar:rotulador_rojo': async (api) => { await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Así lo pinto yo los viernes. Pero con más pulso.', 'Rojo hasta el 98 %. Nadie lo nota.'); },
+      coger: cogerTermometro,
       empujar: 'Si lo empujo, sube la temperatura. No las ventas.',
       hablar: async (api) => { await api.say('¿Cuándo llegas al cien?'); await mp(api, 'Cuando la noticia ocupe una línea. Vamos por dos.', 'No contesta. Le falta el 3 %. A mí, el contrato.'); },
     } },
     // E6 §2.9.1 (rev. 2): el rotulador colgado del cordel, con su propio punto de clic; desaparece al cogerlo
-    { id: 'rotulador_cordel', name: 'rotulador', when: '!ecosistema_rotulador_dado', handlers: {
+    // [P14] desde el Acto II, el cordel vacío (lo pinta el arte del termómetro): el rotulador ya no está
+    { id: 'rotulador_cordel', name: 'rotulador', when: ['!ecosistema_rotulador_dado', '!acto_2_iniciado', '!has:rotulador_rojo'], handlers: {
       mirar: LINEA_CORDEL,
       coger: cogerTermometro,
       usar: cogerTermometro,

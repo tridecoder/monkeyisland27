@@ -299,13 +299,18 @@ try {
     await T.until(() => !!__game.currentDialogOptions(), null, 8000);
     ok(await G(() => __game.getFlag('nota_gasto_presentada')) && !(await T.logHas('Don Evaristo le espera')), 'Begoña, con Evaristo ya escuchado: no le manda a Controlling');
     await G(() => { if (__game.game.choice) __game.game.choice.resolve(-1); }); await G(() => __game.waitIdle());
-    // L5 «¿Lleva mi correo?» / «En el bolsillo.»: no sin el correo
-    await G(() => { for (const [k, v] of Object.entries({ acto_3_iniciado: true, ruben_encontrado: true, ruben_libre: true, pieza_recortada: true })) __game.setFlag(k, v); Object.assign(__game.game.state.once, { 'once:evaristo_L1': true, 'once:evaristo_L2': true, 'once:evaristo_L3': true, 'once:evaristo_L4': true }); __game.setFlag('evaristo_llamadas', 4); __game.takeItem('correo_evaristo'); __game.clearLog(); });
+    // [P11] fuera la L5 («¿Lleva mi correo?»: el momento oportuno lo explica Evaristo al dar el correo) y la L3: ni sin el
+    // correo ni con él
+    await G(() => { for (const [k, v] of Object.entries({ acto_3_iniciado: true, ruben_encontrado: true, ruben_libre: true, pieza_recortada: true })) __game.setFlag(k, v); Object.assign(__game.game.state.once, { 'once:evaristo_L1': true, 'once:evaristo_L2': true }); __game.setFlag('evaristo_llamadas', 2); __game.takeItem('correo_evaristo'); __game.clearLog(); });
     await G(() => __game.gotoRoom('office')); await G(() => __game.waitIdle());
-    ok(!(await T.logHas('¿Lleva mi correo?')) && await T.flag('evaristo_llamadas') === 4, 'L5 sin el correo de Evaristo en el bolsillo: no suena');
+    ok(!(await T.logHas('¿Lleva mi correo?')) && !(await T.logHas('Begoña me manda el triplicado')) && await T.flag('evaristo_llamadas') === 2, '[P11] Brais libre, sin el correo: ni L5 ni L3');
     await G(() => { __game.giveItem('correo_evaristo'); __game.clearLog(); });
     await G(() => __game.gotoRoom('administracion', 'ecosistema')); await G(() => __game.waitIdle());
-    ok(await T.logHas('¿Lleva mi correo?') && await T.logHas('En el bolsillo.'), 'con el correo, la L5 suena («En el bolsillo.» es verdad)');
+    ok(!(await T.logHas('¿Lleva mi correo?')) && await T.flag('evaristo_llamadas') === 2, '[P11] con el correo, tampoco: la L5 ya no existe');
+    // [P11] la L4 (los atunes): solo tras «Dos IAs» y antes de encontrar a Brais (con Brais encontrado, se pierde)
+    await G(() => { __game.setFlag('dos_ias_vista', true); __game.clearLog(); });
+    await G(() => __game.gotoRoom('office')); await G(() => __game.waitIdle());
+    ok(!(await T.logHas('veinticuatro atunes')), '[P11] la L4 con Brais ya encontrado: no suena (ya no sirve de pista)');
     // Mirar el móvil: «Ninguno leído» solo si es verdad
     await G(() => { __game.setFlag('tadeo_rv_n', 2); __game.setFlag('movil_leidos', 0); __game.clearLog(); });
     await G(() => __game.doVerb('mirar', 'movil')); await G(() => __game.waitIdle());
@@ -317,11 +322,34 @@ try {
     await G(() => { __game.setFlag('pecera_disc_partidas', 0); __game.setFlag('opa_posit', 0); __game.setFlag('fax_con_papel', true); __game.setFlag('pieza_escrita', true); });
     await G(() => __game.gotoRoom('catacumba', 'pecera')); await G(() => __game.waitIdle());
     let o = await opsDe('aurora_galerada');
-    ok(o.includes('Teodoro dice que en la reunión van a apagar la rotativa.') && !o.some(x => /Íñigo dice/.test(x)), 'Aurora, Acto III: «Teodoro dice que…» (lo dijo el fax; Íñigo no lo dijo nunca)');
+    ok(o.includes('Íñigo dice que en la reunión van a apagar la rotativa.') && !o.some(x => /Teodoro dice/.test(x)), '[P11] Aurora, Acto III: «Íñigo dice que…» (lo dijo Íñigo en persona, en la 7.3a)');
     ok(!o.some(x => x.startsWith('Yoli quiere sacar mi opa')), 'Aurora, sin haber abierto el titulador: no está «Yoli quiere sacar mi opa con «los expertos coinciden».»');
     await G(() => __game.setFlag('pecera_disc_partidas', 1));
     o = await opsDe('aurora_galerada');
     ok(o.some(x => x.startsWith('Yoli quiere sacar mi opa')), `tras abrir el titulador de Yoli, sí (${JSON.stringify(o)})`);
+    // [P11] [P14] la ficha: la nota al margen del CMS y el HUECO «Si la web publica.», solo después de oír a Maripaz
+    await G(() => { for (const [k, v] of Object.entries({ acto_3_iniciado: false, cms_vivo: false, maripaz_pide_web: false, casilla_hueco: false })) __game.setFlag(k, v); });
+    let F = await ficha();
+    ok(!F.some(t => /CMS en coma|Si la web publica/.test(t)), '[P14] ficha con el CMS caído, sin haber oído a Maripaz: ni la nota del CMS ni «Si la web publica.»');
+    await G(() => __game.setFlag('maripaz_pide_web', true));
+    F = await ficha();
+    ok(F.includes('Al margen, a lápiz: «CMS en coma. Sin web, Maripaz no suelta la página».') && F.includes('HUECO: Siestatón se va a la web. Si la web publica.'), '[P11] tras oírla: la nota y el HUECO nuevo');
+    await G(() => __game.setFlag('cms_vivo', true));
+    F = await ficha();
+    ok(!F.some(t => /CMS en coma|Si la web publica/.test(t)), '[P11] con el CMS vivo, ninguna de las dos');
+    // [P11] la matriz de Íñigo: «Prescindible» solo desde la FIRMA
+    await G(() => { __game.setFlag('casilla_firma', false); __game.setFlag('chaqueta_en_lector', false); });
+    await G(() => __game.gotoRoom('pajarera', 'pecera')); await G(() => __game.waitIdle());
+    await G(() => { __game.clearLog(); return __game.doVerb('mirar', 'matriz_2x2'); });
+    ok(await T.logHas('En "Ideal" hay un solo pósit: "VACANTE".') && !(await T.logHas('Prescindible», con toda')), '[P11] matriz sin la FIRMA: «VACANTE» en «Ideal»');
+    await G(() => { __game.setFlag('casilla_firma', true); __game.clearLog(); return __game.doVerb('mirar', 'matriz_2x2'); });
+    ok(await T.logHas('Mi pósit ya no está en «Ideal». Está en «Prescindible», con toda la plantilla.'), '[P11] con la FIRMA: en «Prescindible»');
+    // [P11] el manual en la R-3: «El fax de Teodoro.» solo si Bruno aún no lo tiene
+    await G(() => { for (const [k, v] of Object.entries({ cms_vivo: false, paco_dio_manual: true })) __game.setFlag(k, v); __game.giveItem('manual_fax'); });
+    await G(() => __game.gotoRoom('cpd', 'ascensor')); await G(() => __game.waitIdle());
+    await G(() => { __game.clearLog(); __game.game.setObjState('regleta_r3', { state: 'encendida' }); return __game.doVerb('tirar', 'regleta_r3'); });
+    await G(() => __game.chooseText('R-3')); await G(() => __game.waitIdle());
+    ok(await T.flag('cms_vivo') && !(await T.logHas('El fax de Teodoro.')) && (await G(() => __game.state().inventory.filter(i => i === 'manual_fax').length)) === 1, '[P11] R-3 con el manual ya en el bolsillo: Eutimio no lo da otra vez');
     await T.ctx.close();
     // Acto I (partida libre): la nota de gasto antes del café. Begoña no le manda a ver a un Evaristo sin nada que
     // contar, y el saludo de Evaristo no promete una «cosita» que en el Acto I no existe
@@ -488,10 +516,10 @@ try {
     await T.until(() => !!__game.currentDialogOptions(), null, 8000);
     ok((await T.opciones()).includes('¿Para qué me ha llamado?'), 'y Evaristo sigue hablando: «¿Para qué me ha llamado?»');
     await G(() => { if (__game.game.choice) __game.game.choice.resolve(-1); }); await G(() => __game.waitIdle());
-    // (c) Acto III con la L3 oída: ni L2 tardía ni nada raro; la L4 sigue en su sitio
-    r = await cargar(estado({ ...ACTO3, ruben_encontrado: true, evaristo_llamadas: 2 }, 'cpd', { ...L1, 'once:evaristo_L3': true }));
+    // (c) Acto III con la L3 (ya retirada) oída: ni L2 tardía ni nada raro; la L4 ([guion3 t2]: los atunes, antes de Brais) en su sitio
+    r = await cargar(estado({ ...ACTO3, dos_ias_vista: true, ruben_encontrado: false, evaristo_llamadas: 2 }, 'cpd', { ...L1, 'once:evaristo_L3': true }));
     await G(() => __game.gotoRoom('office')); await G(() => __game.waitIdle());
-    ok(!(await T.logHas('¿Puede pasarse por mi despacho?')) && await T.logHas('Se llama Brais.'), 'Acto III con la L3 oída: sin L2 tardía; suena la L4');
+    ok(!(await T.logHas('¿Puede pasarse por mi despacho?')) && await T.logHas('...El armario 27.'), 'Acto III con la L3 oída: sin L2 tardía; suena la L4');
     // (d) de antes de E2 (contador con la L2 vieja): la L2 cuenta como oída y convocado por ella
     r = await cargar(estado({ ...ACTO2, evaristo_llamadas: 2 }, 'catacumba', {}));
     ok(r.once['once:evaristo_L1'] && r.once['once:evaristo_L2'] && r.flags.evaristo_convoco === 'llamada', 'de antes de E2 (L2 vieja en el contador): L2 oída, convocado por la llamada');

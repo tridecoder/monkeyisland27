@@ -296,6 +296,7 @@ try {
   await verb('mirar', 'orden_del_dia');                   // E5 §2.1: el punto 3 (sala_amazonas_orden_visto)
   await verb('hablar', 'gervasio_acta');
   ok(await logHas('Mientras, le vendo el punto tres a Mercados.') === 1, 'onStart de la reunión: Maripaz vende el punto tres');
+  ok(await logHas('Siestatón se va a la web. Si la web publicara.') === 1 && await flag('maripaz_pide_web') === true, '[P14] con el CMS caído, Maripaz avisa: «Siestatón se va a la web. Si la web publicara.»');
   await choose('¿Quién tiene reservada la sala?');
   ok(await logHas('puede volver en cualquier momento') === 1, 'L24');
   // E5 §2.1: la pregunta a Gervasio ya no estampa: «sin turno»; la reenvía Gertrudis (aquí, por estado) y la tele estampa
@@ -343,8 +344,17 @@ try {
   await choose('Luego vuelvo.');
 
   // ================================================================ D1
-  step('D1 en la Sala: tres derrotas (pop-up con cuenta atrás) y victoria con el adhesivo (§4.3, §4.2.3)');
+  step('D1 en la Sala: [P11] con la web caída, no hay duelo; con el CMS vivo, tres derrotas (pop-up con cuenta atrás) y victoria con el adhesivo y el rotulador (§4.3, §4.2.3)');
   await setFlags({ rep_08: true, rep_04: true, rep_11: true });
+  {
+    // [P11] el CMS es condición del HUECO: con la web caída, Maripaz se niega (no hay duelo)
+    await G(() => { __game.game.state.flags.maripaz_popup_n = 3; __game.clearLog(); });
+    await G(() => __game.skipText(true)); await verb('hablar', 'maripaz_remitido');
+    await choose('Siestatón no ha confirmado la página 7.');
+    ok(!(await state()).duel && await logHas('Aunque la web no publica desde las cuatro.') === 1 && await logHas('Arréglala y te lo pongo por escrito.') === 1, '[P11] con la web caída: «Aunque la web no publica desde las cuatro.» y sin duelo');
+    await G(() => { __game.game.state.flags.maripaz_popup_n = 2; __game.setFlag('sala_amazonas_maripaz_exnovio', false); });
+  }
+  await setFlags({ cms_vivo: true });
   for (let n = 1; n <= 3; n++) {
     await G(() => __game.clearLog());
     if (n === 1) {
@@ -533,8 +543,10 @@ try {
   await G(() => { const g = __game.game; if (g.__speakOrig) { g.speak = g.__speakOrig; delete g.__speakOrig; } });
   const cel = probe.filter(p => p.who === 'celestino' && p.tag === 'ENTRADA 1');   // (luego, el epílogo: otra escena)
   ok(cel.length === 2 && cel.every(p => p.tele === 'entrada_1' && p.lector.caido && p.lector.visible), 'el empujón se ve: Lector caído a la vista, Celestino por la tele');
-  ok(await logHas('Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.') === 1 && await logHas('treinta y cinco euros con cincuenta y dos') === 1, 'Begoña: la factura, con coma (§5.6)');
-  ok(await logHas('Es lo que me como en atún.') === 1 && await logHas('Con ticket.') === 1, 'Brais y Begoña: «¿Con táper?» «Con ticket.»');
+  // [P11] Begoña cierra el clímax en cuatro líneas (fuera el taxi, el recorte a 35,52, el sello, el ministro y el atún de Brais)
+  ok(await logHas('Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.') === 1 && await logHas('treinta y cinco euros con cincuenta y dos') === 0 && await logHas('¿Un taxi?') === 0, '[P11] Begoña: la factura, con coma, sin el recorte');
+  ok(await logHas('Es lo que me como en atún.') === 0 && await logHas('¿Con táper?') === 1 && await logHas('Con ticket.') === 1, 'Brais y Begoña: «¿Con táper?» «Con ticket.»');
+  ok(await logHas('Tira, Teodoro.') === 1 && await logHas('Benita. Tira.') === 1, '[P11] «Tira, Teodoro.» y «Benita. Tira.»');
   ok(await logHas('Algo importante se nos acaba de escapar') === 0 && await logHas('Quedan ciento cincuenta y dos') === 0, 'fuera la frase críptica y la coletilla');
   ok((await flag('lector_derribado')) === true && (await flag('juego_terminado')) === true, 'empujón → final');
 

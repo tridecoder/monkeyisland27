@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // PRUEBA DE BLOQUEOS («puertas ocultas»): lo que un jugador que va a su aire se encuentra cuando le falta algo.
 // Sale con 1 si algo falla. Capturas en tools/shots/bloqueos-*.png. Cuatro partes:
-//   1. requisitos  Para cada paso del recorrido (walk-data.mjs, 49 pasos), el estado justo antes del paso; se quita UNO
+//   1. requisitos  Para cada paso del recorrido (walk-data.mjs, 45 pasos), el estado justo antes del paso; se quita UNO
 //                  a uno cada requisito (cada flag que pusieron los pasos anteriores y cada objeto ganado) y se repite la
 //                  acción. Si el paso deja de salir, el juego tiene que haber contestado algo: ni silencio, ni la respuesta
 //                  genérica (content/game.js `DEFAULTS`), ni una opción de diálogo que no está sin que nada lo diga. Las
@@ -14,7 +14,7 @@
 //   3. dueño       Los tres casos del dueño, con ratón: la reunión (la pregunta siempre está; cada eslabón responde), la
 //                  frase de Anselmo (en su árbol; en la escena, el eco) y el boli muerto (cada «no» dice qué falta;
 //                  pistas del opcional).
-//   4. antiguas    Partidas guardadas de antes de E5-E7 (`migrarPartida`): cargan y siguen.
+//   4. antiguas    Partidas guardadas de antes de E5-E7 y del guion anterior a [P11] (`migrarPartida`): cargan y siguen.
 //   node tools/test-bloqueos.mjs [--solo=requisitos,pistas,duenio,antiguas] [--paso=27,28]
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -49,14 +49,10 @@ const norm = s => String(s).toLowerCase().replace(/[«»"“”'’]/g, '').repl
 // ---------------------------------------------------------------- 1. excepciones justificadas (paso:requisito → motivo)
 const EXCEPCIONES = {
   '17:acto_2_iniciado': 'estado imposible (el paso 17 va tras el café); antes del café el árbol es A_SIN_CAFE y cada opción contesta con el golpecito',
-  '22:vio_pegatina_fax': 'el número del ticket no se puede decir sin verlo; «¿Sabes algo del fax…?» contesta «Sin número de ticket… Ese fax también [lleva mi pegatina]»',
-  '22:cms_vivo': 'con el CMS caído Eutimio no atiende y lo dice al hablarle («No atiendo. Tengo 312 tickets…»); objetivo `cms`',
-  '23:cms_vivo': 'ídem: «No atiendo…» (el cotilleo del consultor, con el CMS vivo)',
+  // ([P11] fuera 22: «Ticket 0.441» ya no es un paso; y 23 ya no pide el CMS: Eutimio atiende siempre)
   '30:has:sobre_azucar': 'sin justificante, Begoña lo pide («¿Y el justificante?») y está «Lo busco y vuelvo.»; pista `nota` (el azúcar)',
   '31:acto_2_iniciado': 'estado imposible (Evaristo, en el Acto II)',
-  '35:acto_2_iniciado': 'estado imposible (la coma, tras el café); antes del café el árbol es A_SIN_CAFE',
   '43:ruben_encontrado': 'Eventos no se toca: antes de encontrar a Brais el álbum no tiene motivo y Pilar lo dice al cogerlo («Pídemelo con un motivo»)',
-  '35:evaristo_escuchado': 'sin escuchar a Evaristo, Bruno no sabe de la coma: no puede preguntarlo; objetivo `coma`',
   '45:rep_13': 'la columna se escribe con una frase oída (Brais o Eventos): sin ella, al primer borrón Anselmo dice «Tráeme algo que no sea ni hecho ni muerto…» y la pista `columna` manda a Brais',
   '46:acto_3_iniciado': 'estado imposible (Gervasio en la puerta, Acto III)',
 };
@@ -67,9 +63,11 @@ const EXCEPCIONES = {
 const ESPERADO = {};
 const pon = (o, ...ns) => ns.forEach(n => { ESPERADO[n] = o; });
 pon('torno', 2, 3, 4, 5, 6, 7); pon('silla', 8, 9, 10); pon('correo', 11, 12, 13); pon('cafe', 14); pon('aurora', 15, 16);
-pon('nota', 17, 18, 19); pon('cms', 20, 21); pon('reunion', 22, 23, 24, 25, 26, 27); pon('turno', 28); pon('hueco', 29);
-pon('nota', 30); pon('coma', 31); pon('papel_fax', 32); pon('fuente', 33, 34); pon('bendicion', 35); pon('firma', 36);
-pon('pieza', 37); pon('recorte', 38); pon('cierre', 39); pon('armario', 40); pon('album', 41, 42, 43); pon('baja', 44);
+// [P11] el CMS es la condición del HUECO: su objetivo cuenta desde que Maripaz lo dice (en el recorrido canónico, la
+// R-3 va antes que la Sala: Maripaz no llega a decirlo y la abuela manda a la reunión). Fuera los pasos 19, 22, 35 y 42.
+pon('nota', 17, 18); pon('reunion', 20, 21, 23, 24, 25, 26, 27); pon('turno', 28); pon('hueco', 29);
+pon('nota', 30); pon('coma', 31); pon('papel_fax', 32); pon('fuente', 33, 34); pon('firma', 36);
+pon('pieza', 37); pon('recorte', 38); pon('cierre', 39); pon('armario', 40); pon('album', 41, 43); pon('baja', 44);
 pon('columna', 45); pon('acta', 46); pon('inigo', 47, 48);
 
 // ---------------------------------------------------------------- utilidades de página
@@ -254,11 +252,17 @@ try {
       ['turno, sin turno', { ...A2, sala_becario_sin_turno: true }, [], [], 'sala_amazonas', 'turno', null],
       ['turno, en el Vending', { ...A2, sala_becario_sin_turno: true }, [], [], 'office', 'turno', null],
       ['turno, con la pregunta de Gertrudis', { ...A2, sala_becario_sin_turno: true, gertrudis_pregunta: true }, [], [], 'sala_amazonas', 'turno', 'gertrudis_pregunta'],
-      ['turno, con el atasco', { ...A2, sala_becario_sin_turno: true, gertrudis_pregunta: true, sala_amazonas_atasco: true }, [], [], 'sala_amazonas', 'turno', 'sala_amazonas_atasco'],
-      ['firma, sin el manual', { ...A2, nota_gasto_presentada: true, fax_con_papel: true, evaristo_escuchado: true, coma_bendecida: true, casilla_fuente: true }, [], ['manual_fax'], 'catacumba', 'firma', '!has:manual_fax'],
-      ['firma, con el manual', { ...A2, nota_gasto_presentada: true, fax_con_papel: true, evaristo_escuchado: true, coma_bendecida: true, casilla_fuente: true }, ['manual_fax'], [], 'catacumba', 'firma', null],
+      // [P11] fuera «turno, con el atasco» (ya no es jugable) y «columna sin rotulador» (llega con el D1)
+      // [P11] el CMS, condición del HUECO: antes de oír a Maripaz, la reunión; tras su negativa, el CMS (también en la Sala)
+      ['CMS caído, sin haber oído a Maripaz', { ...A2, cms_vivo: false }, [], [], 'pecera', 'reunion', null],
+      ['CMS caído, tras el aviso de Maripaz (Redacción)', { ...A2, cms_vivo: false, maripaz_pide_web: true }, [], [], 'pecera', 'cms', null],
+      ['CMS caído, tras la negativa de Maripaz (Sala)', { ...A2, cms_vivo: false, maripaz_pide_web: true, sala_becario_sin_turno: true, reunion_terminada: true }, [], [], 'sala_amazonas', 'cms', null],
+      ['CMS caído, en Sistemas', { ...A2, cms_vivo: false, maripaz_pide_web: true }, [], [], 'cpd', 'cms', null],
+      ['hueco, con la web', { ...A2, sala_becario_sin_turno: true, reunion_terminada: true, maripaz_pide_web: true }, [], [], 'sala_amazonas', 'hueco', null],
+      ['firma, sin el manual', { ...A2, nota_gasto_presentada: true, fax_con_papel: true, evaristo_escuchado: true, casilla_fuente: true }, [], ['manual_fax'], 'catacumba', 'firma', '!has:manual_fax'],
+      ['firma, sin el manual y con el CMS caído', { ...A2, cms_vivo: false, nota_gasto_presentada: true, fax_con_papel: true, evaristo_escuchado: true, casilla_fuente: true }, [], ['manual_fax'], 'catacumba', 'firma', '!has:manual_fax'],
+      ['firma, con el manual', { ...A2, nota_gasto_presentada: true, fax_con_papel: true, evaristo_escuchado: true, casilla_fuente: true }, ['manual_fax'], [], 'catacumba', 'firma', null],
       ['columna, sin la frase', { ...A3, album_validado: true }, [], ['rotulador_rojo'], 'pecera', 'columna', '!rep_13 !oyo_descopear'],
-      ['columna, con la frase y sin rotulador', { ...A3, album_validado: true, rep_13: true }, [], ['rotulador_rojo'], 'pecera', 'columna', '!has:rotulador_rojo'],
       ['columna, con «descopear» y rotulador', { ...A3, album_validado: true, oyo_descopear: true }, ['rotulador_rojo'], [], 'pecera', 'columna', '!rep_13'],
       ['columna, con todo', { ...A3, album_validado: true, rep_13: true }, ['rotulador_rojo'], [], 'pecera', 'columna', null],
       ['boli, sin la regla (en foco)', { ...A2, 'obj:foco': 'boli', 'obj:foco_n': 99 }, [], [], 'catacumba', 'boli', '!custodia_regla'],
@@ -435,7 +439,8 @@ try {
       await T.raton('usar', 'ordenador_bruno');
       ok(await T.until(() => __game.getFlag('herminia_midio') === true, null, 60000), 'paso 37: Herminia mide la pieza');
       await T.pasar(60000);
-      ok(await T.logCount(FRASE) === 0 && await T.logHas('Ya te lo dije. Lo que cuenta es lo de dentro.') && await T.logHas('El prompt de Herminia lo escribí yo. En esta mesa.'), 'en la escena, el eco (no la frase otra vez) y Leoncio');
+      // [P11] la escena se recorta: si ya la oyó, ni la frase ni el eco («lo de dentro» no se repite); «A un metro…», siempre
+      ok(await T.logCount(FRASE) === 0 && !(await T.logHas('Lo que cuenta es lo de dentro.')) && await T.logHas('A un metro de mi cinta. Fuera.'), 'en la escena, ni la frase otra vez ni el eco; «A un metro de mi cinta. Fuera.»');
       await T.ctx.close();
       // sin haberla oído en el árbol, la escena la dice entera; luego el árbol, el eco
       const T2 = await abrir({ ...ACTO2, casilla_fuente: true }, 'pecera', 'ascensor');
@@ -523,7 +528,8 @@ try {
     ok(F.sala_becario_sin_turno === true && F.pecera_prompt_oido === true, 'gertrudis_pregunta sin «sin turno» → sin turno; herminia_midio → la frase ya oída');
     await G(() => __game.doVerb('tirar', 'enchufe_pantalla'));
     let L = await G(() => __game.log.map(l => String(l.text)));
-    ok(L.length > 0 && !L.every(t => GENERICAS.has(t)), `apagon_n 3 sin CMS: Tirar del enchufe contesta («${L.slice(-1)[0]}»)`);
+    // [P11] del tercer tirón en adelante, solo el gesto (Yoli enchufa sin levantar la vista): sin texto, y la luz vuelve
+    ok(!L.some(t => GENERICAS.has(t)) && await G(() => __game.getFlag('apagon_n') === 4 && !__game.getFlag('pecera_oscuras') && !__game.getFlag('cms_vivo')), `apagon_n 3 sin CMS: Tirar del enchufe, el gesto (apagón 4, sin la genérica)`);
     await G(() => { __game.clearLog(); return __game.doVerb('hablar', 'anselmo_monolito'); });
     await G(() => __game.chooseText('¿Y tú no usas IA?'));
     L = await G(() => __game.log.map(l => String(l.text)));
@@ -532,6 +538,42 @@ try {
     // (d) con el atasco guardado a medias (de una versión que dejaba guardar): se resuelve al entrar
     F = await cargar(estado({ ...A2, sala_becario_sin_turno: true, gertrudis_pregunta: true, sala_amazonas_atasco: true }, 'sala_amazonas', []));
     ok(F.reunion_terminada === true && !F.sala_amazonas_atasco, 'atasco guardado → resuelto al cargar');
+    // ---- [P11] guion nuevo, tanda 2: partidas del juego anterior a mitad de cada bloque que cambia
+    const inv = () => G(() => __game.state().inventory);
+    // (estas se hablan con PNJ fijos (Eutimio, Aurora): la ranura lleva las colocaciones de una partida nueva, como una de verdad)
+    const ACT0 = await G(async () => { await __game.newGame(); __game.game.syncState(); const a = JSON.parse(JSON.stringify(__game.game.state.actors)); delete a.bruno; return a; });
+    const estadoT2 = (flags, room, inv) => ({ ...estado(flags, room, inv), actors: ACT0 });
+    // (e) el CMS arreglado por el camino viejo del ticket nº 3 (sin la R-3) y sin el manual (la pegatina sin pedir)
+    F = await cargar(estadoT2({ ...A2, vio_ticket_3: true, vio_pegatina_fax: true }, 'cpd', []));
+    ok((await inv()).includes('manual_fax') && F.paco_dio_manual === true && await G(() => __game.game.getObjState('regleta_r3').state === 'apagada'),
+      '[P11] CMS por el ticket nº 3 y sin manual → recibe el manual; la R-3, apagada (no se repite la escena)');
+    await G(() => { __game.clearLog(); return __game.doVerb('hablar', 'paco_ticket'); });
+    o = await G(() => __game.currentDialogOptions() || []);
+    ok(!o.some(x => /fax|0\.441/.test(x)) && o.includes('¿Algún cotilleo del consultor?'), '[P11] y Eutimio, sin las opciones del fax');
+    await escape(createRunner(T.page));
+    // (f) con el manual por la vía vieja («Ticket 0.441», opciones gastadas en el árbol P1): un solo manual; el árbol sigue
+    F = await cargar({ ...estado({ ...A2, vio_pegatina_fax: true, paco_dio_manual: true, rep_12: true }, 'cpd', ['manual_fax']), dialogs: { 'paco.P1.fax441': true, 'paco.P1.consultor': true } });
+    ok((await inv()).filter(i => i === 'manual_fax').length === 1 && await G(() => !!__game.game.state.dialogs['paco.P.consultor']), '[P11] manual por la vía vieja: uno solo; las opciones gastadas se conservan');
+    // (g) Evaristo escuchado y la coma con Aurora a medias (sin el correo, que era ella quien lo imprimía)
+    F = await cargar(estadoT2({ ...A2, nota_gasto_presentada: true, evaristo_escuchado: true, rep_16: true, evaristo_convoco: 'llamada' }, 'catacumba', ['copias_rechazadas', 'fotocopia_nota_direccion', 'ficha_pagina_7']));
+    ok((await inv()).includes('correo_evaristo') && F.correo_evaristo_listo === true && !F.coma_bendecida, '[P11] la coma a medias → recibe el correo (la coma con Aurora queda opcional)');
+    await G(() => __game.doVerb('hablar', 'aurora_galerada'));
+    o = await G(() => __game.currentDialogOptions() || []);
+    ok(o.includes('¿Está bien la coma de don Evaristo?') && !o.some(x => x.startsWith('Don Evaristo pregunta')), '[P11] y la opción nueva, aunque el fax no tenga papel');
+    await escape(createRunner(T.page));
+    // (h) el D1 ganado sin el rotulador (se cogía del termómetro): llega con la carga
+    F = await cargar(estado({ ...A2, sala_becario_sin_turno: true, reunion_terminada: true, duelo_maripaz_ganado: true, casilla_hueco: true, acto_3_iniciado: true }, 'pecera', []));
+    ok((await inv()).includes('rotulador_rojo'), '[P11] D1 ganado sin el rotulador → lo recibe (el kanban del Acto III no se queda sin él)');
+    // (i) con el rotulador del termómetro en el Acto I: carga y no hay otro
+    F = await cargar(estado({ intro_vista: true, torno_abierto: true, inigo_presentado: true, ecosistema_rotulador_dado: true }, 'ecosistema', ['rotulador_rojo']));
+    await G(() => { __game.clearLog(); return __game.doVerb('coger', 'termometro_ventas'); });
+    ok((await inv()).filter(i => i === 'rotulador_rojo').length === 1 && !(await G(() => __game.objects().some(o => o.id === 'rotulador_cordel' && o.visible))), '[P11] rotulador cogido del termómetro: sigue uno; el cordel, vacío');
+    // (j) la L3 pendiente (pieza recortada) y la L5 (Brais libre, con el correo): no suenan
+    F = await cargar({ ...estado({ ...A2, nota_gasto_presentada: true, evaristo_escuchado: true, evaristo_llamadas: 2, pieza_escrita: true, pieza_recortada: true, correo_evaristo_listo: true }, 'catacumba', ['correo_evaristo']), once: { 'once:evaristo_L1': true, 'once:evaristo_L2': true } });
+    await G(() => __game.gotoRoom('pecera', 'catacumba'));
+    await G(() => __game.gotoRoom('pajarera', 'pecera'));
+    L = await G(() => __game.log.map(l => String(l.text)));
+    ok(!L.some(t => t.includes('Begoña me manda el triplicado')) && !L.some(t => t.includes('¿Lleva mi correo?')), '[P11] L3 y L5 pendientes de una partida vieja: no suenan');
     await T.ctx.close();
   }
 } catch (e) {

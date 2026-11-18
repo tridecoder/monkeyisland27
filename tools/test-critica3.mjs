@@ -327,7 +327,11 @@ try {
   }
   await goto('pecera');
   let d = await brunoDice();
-  must(d.includes(M.cms), `N2: Acto II en la Redacción, sin CMS: «${M.cms}» (dice ${JSON.stringify(d)})`);
+  // [P11] el CMS cuelga del HUECO: sin haber oído a Maripaz, la meta del acto es la reunión; tras oírla, el CMS
+  must(d.includes(M.reunion), `N2: Acto II en la Redacción, sin CMS ni Maripaz oída: «${M.reunion}» (dice ${JSON.stringify(d)})`);
+  await setFlags({ maripaz_pide_web: true });
+  d = await brunoDice();
+  must(d.includes(M.cms), `N2: Acto II en la Redacción, sin CMS y con Maripaz oída: «${M.cms}» (dice ${JSON.stringify(d)})`);
   ok('N2: Acto II con R11 sin aprender: «Mirar a Bruno» ya no dice «Tengo silla…», dice la meta del acto');
   await setFlags({ acto_3_iniciado: true });           // CMS, coma y R11 siguen pendientes
   for (const sala of ['pecera', 'vestibulo', 'administracion', 'cpd']) {
@@ -339,7 +343,8 @@ try {
   await setFlags({ acto_3_iniciado: false });
 
   // ------------------------------------------------------------ N1 la abuela dice dónde está cada réplica que falta
-  await setFlags({ reunion_terminada: true, rep_08: false, rep_04: true, rep_14: true, rep_11: false });
+  // [P11] sin web Maripaz no acepta el D1: estas pistas presuponen el CMS arreglado
+  await setFlags({ reunion_terminada: true, cms_vivo: true, rep_08: false, rep_04: true, rep_14: true, rep_11: false });
   let [, L2, L3] = await tresLlamadas('sala_amazonas');
   const d08 = await DONDE('rep_08'), d11 = await DONDE('rep_11');
   must(L2.includes('A: ' + d08[0]), `N1: nivel 2 (D1) sin la primera réplica que falta (R08): ${JSON.stringify(L2)}`);

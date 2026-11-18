@@ -337,7 +337,8 @@ try {
   await raton('usar', 'ordenador_bruno');
   await idle();
   await G(() => __game.skipSpeech());
-  ok(await flag('herminia_midio') && await logCount(FRASE) === 1 && await logHas('Ya te lo dije. Lo que cuenta es lo de dentro.'), 'paso 38 (Usar el ordenador): el eco, sin repetir la frase');
+  // [P11] «Herminia mide la pieza» se recorta: si la frase ya se oyó, ni la frase otra vez ni el eco; «A un metro…», siempre
+  ok(await flag('herminia_midio') && await logCount(FRASE) === 1 && !(await logHas('Lo que cuenta es lo de dentro.')) && await logHas('A un metro de mi cinta. Fuera.'), 'paso 38 (Usar el ordenador): sin repetir la frase ni el eco ([P11]); «A un metro de mi cinta. Fuera.»');
   await G(() => { delete __game.game.state.once['once:dialog:anselmo'] ; });
   await G(() => __game.newGame()); await idle();
   ok(true, '(nueva partida para el eco)');

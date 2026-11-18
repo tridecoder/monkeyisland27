@@ -687,3 +687,36 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
   luego la escalada de siempre (`cierreRepeticion` de `pecera.escenas.js`).
 - **Pop-up de papel**: `paginaComercial` (faldón, robapáginas, cuatro módulos, línea gris) y `paginaPopup` (el colchón
   de cartulina troquelada que se levanta, `POPUP_MS`) en `art/sala_amazonas.art.js`; dos `api.detalle` seguidos.
+
+## Guion nuevo · tanda 2 (docs/GUION_PROPUESTA_LIMPIO.md: [P11] sin Eventos, [P4], [P6] y sueltos de [P14])
+
+> Prueba: `node tools/test-guion3-t2.mjs` (en `test-all`); capturas `tools/shots/guion3-t2-*.png`. Orden alternativo
+> nuevo: `node tools/walkthrough.mjs --alt2` (Administración antes de la reunión, la firma la última).
+
+- **El CMS es condición del HUECO**, no un recado de Sistemas. Con la web caída Maripaz no juega el D1
+  (`sala_amazonas.js`: «Aunque la web no publica desde las cuatro.» / «Arréglala y te lo pongo por escrito.»; la primera
+  vez, antes, lo del exnovio) y deja `maripaz_pide_web`. El objetivo `cms` de `pistas.js` solo cuenta desde ese flag;
+  antes, la abuela manda a la reunión. La ficha del pase (`items.js FICHA`) lleva entonces la nota al margen.
+- **Sistemas siempre atiende**: un solo árbol `P` de Eutimio en `cpd.js` (fuera el «No atiendo» y el árbol de
+  «Ticket 0.441»); la R12 sale con el CMS caído. **El manual del fax** lo da Eutimio al apagar la R-3 («Tengo un
+  hueco…» → «El fax de Teodoro.» → `darManual`), también si se salta la escena. Fuera la vía del ticket nº 3 y los
+  tirones 3/4 con texto (el tercero es solo el gesto de Yoli).
+- **El correo de Evaristo** lo da él tras «Siga» (`administracion.dialogos.js`, `darCorreo`); la coma con Aurora es
+  opcional (escena `catacumba_coma`, solo `coma_bendecida`; ya no da el correo). La tecla 3 del móvil no lo da.
+- **Llamadas de Evaristo**: `LLAMADAS` de `game.js` = L1, L2, L4. L4 (los atunes; «...El armario 27.») al empezar el
+  Acto III es el único aviso del armario 27. Fuera L3, L5 y el «RV x5» de Tadeo.
+- **Íñigo y «Prescindible»**: al entrar en la Redacción con la FIRMA marcada (Acto II) pega el pósit en la matriz
+  (`pecera.escenas.js inigoPrescindible`, flag `inigo_prescindible`); la matriz de los Despachos lo dibuja
+  (`drawMatrizRamirez`). Si no se ha visto, la amenaza en persona de la Redacción de papel (`catacumba.js
+  inigoAmenaza`, al cerrar la página) dice la línea de respaldo. La tarjeta de becario en el D4: «…en «Prescindible»».
+- **Rotulador**: lo da Maripaz al ganar el D1; desde el Acto II el termómetro de Ecosistema tiene el cordel vacío
+  (`drawCordelVacio`). **Atasco**: se resuelve solo tras «¿Necesitan ayuda?» (`resolverAtasco`); fuera las vías,
+  el temporizador y el faldón comercial.
+- **Escenas nuevas**: parpadeo de PUBLICADO/GUARDANDO (`pecera_parpadeo`, Acto II con el CMS caído), el hallazgo de la
+  opa con Begoña (detrás de la fotocopia), Brais con la opción del titular y el táper al despedirse, Herminia mide
+  corto, el clímax con «Tira, Teodoro.» (Aurora en el inserto), Hidrovoltia la primera vez del Vestíbulo en el Acto II,
+  la máquina de bocadillos de Sistemas.
+- **Partidas viejas** (`migrarPartida`): `evaristo_escuchado` → correo; CMS vivo sin manual → manual; HUECO ganado sin
+  rotulador → rotulador; llaves de diálogo `paco.P0.*`/`paco.P1.*` → `paco.P.*`; RV de Tadeo > 2 → 2.
+- **Pendiente de la tanda 3** ([P12] Eventos): el álbum lo sigue prestando Pilar, el kanban «descopeado» sigue, y no
+  están el brindis de Íñigo ni la trituradora de Brais.

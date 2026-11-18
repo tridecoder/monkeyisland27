@@ -19,7 +19,7 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   silla: 'Necesito sentarme. Seis años de pie: tengo rodillas de becario senior.',
   correo: 'Tengo silla. Ya puedo mirar mi ordenador como un adulto.',
   cafe: 'La correctora no habla antes del café. Necesito un café que no sea para mí.',
-  cms: 'Con el CMS caído, en Sistemas no atienden a nadie.',   // E5 C71
+  cms: 'Sin web, Maripaz no pasa a Siestatón. Y la web no publica desde las cuatro.',   // [P11] el CMS, condición del HUECO
   hff: 'Hueco, fuente y firma. Lo pone la ficha.',
   nota: 'Teodoro no habla sin papel. Y en esta casa no queda un folio sin sellar.',   // E7 F1 (N6)
   cierre: 'Lo tengo todo. Solo falta que Teodoro diga «cabe».',
@@ -34,7 +34,7 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   turno: 'En esa reunión solo pregunta quien sale en la tele. Yo no salgo en nada.',
   columna: 'Anselmo ya cree que Brais existe. Lo que no hay es columna para que se vaya.',
   coma: 'Evaristo me llama y Begoña me manda a verle. Algo le quita el sueño.',   // integración: en el paso 28 solo ha sonado la L1
-  bendicion: 'Evaristo duda de su propia coma. Necesita a alguien que sepa de comas.',
+  // [P11] fuera `bendicion`: Evaristo ya no duda de su coma (el correo lo da él; la escena de Aurora es opcional)
   // [bloqueos] metas propias donde antes se repetía «Hueco, fuente y firma» (no decía qué toca ahora)
   reunion: 'La página 7 se decide en esa reunión. Y esa reunión no se acaba nunca.',
   hueco: 'Maripaz se ha quedado sentada en el planillo. La página 7 está debajo.',
@@ -75,7 +75,9 @@ export const OBJETIVOS = [
     'Los que corrigen siempre están cansados. Tu abuelo corregía la quiniela.',
     'A la señora del cartel no le hables: dale. Primero el café.',
     ['Dale el café a la que corrige. La del boli rojo.', 'Redacción de papel: Dar el café a Aurora.']] },
-  { id: 'cms', acto: 2, hecho: 'cms_vivo', activo: 'acto_2_iniciado', salas: ['pecera', 'cpd'], meta: M.cms, niveles: [
+  // [P11] el CMS es la condición del HUECO: cuenta desde que Maripaz lo dice (en la Sala, antes de la estampida o al
+  // negarse al D1); antes, la abuela manda a la reunión. Los tres niveles y la línea de Bruno no cambian.
+  { id: 'cms', acto: 2, hecho: 'cms_vivo', activo: ['acto_2_iniciado', 'maripaz_pide_web'], salas: ['pecera', 'cpd', 'sala_amazonas'], meta: M.cms, niveles: [
     'La tele de tu abuelo no iba si él la miraba. Apágale algo a alguien.',
     'Si te la vuelven a enchufar, apágala donde no lleguen. Sigue el cable.',                     // E5 §2.2
     ['El cable baja a los ordenadores. Apaga la regleta que no dice lo que es.', 'Sistemas: Tirar de la R-3 del regletero. La del pósit de Eutimio.']] },
@@ -95,11 +97,8 @@ export const OBJETIVOS = [
     'Si a ti no te dejan preguntar, que pregunte alguien que salga en la tele.',
     'Esa cafetera tan educada sale en todas las pantallas, hijo. Hasta en la mía.',
     ['A esa tele dale las buenas noches, como a la cafetera, y pregúntale.', 'Sala Amazonas: a la tele, «Buenas noches, Gertrudis». Y lo de los pasos.']],
+    // [P11] fuera la variante del atasco: ya no es jugable (se resuelve solo dentro de la escena de la estampida)
     sub: [
-      { si: 'sala_amazonas_atasco', meta: 'Los de Mercados, encajados en la puerta. Alguien tendrá que ayudarles.', niveles: [
-        'Esos señores no saben salir por una puerta. Échales una mano.',
-        'Los de la puerta están encajados, hijo. Un empujoncito con educación.',
-        ['Empújalos, o pregúntales cuándo es la próxima reunión.', 'Sala Amazonas: Empujar a los de Mercados, en la puerta.']] },
       { si: 'gertrudis_pregunta', meta: 'Gertrudis ya ha mandado la pregunta. Falta una pantalla que la sintonice.', niveles: [
         'La cafetera ya lo ha mandado. Ahora alguien tiene que sintonizarla.',
         'La cafetera sale en la primera tele que se encienda. Prueba la de la reunión.',
@@ -118,7 +117,7 @@ export const OBJETIVOS = [
   { id: 'coma', acto: [2, 3], hecho: 'evaristo_escuchado', activo: 'nota_gasto_presentada', salas: ['administracion', 'ecosistema'], meta: M.coma, niveles: [
     'A los mayores hay que dejarlos acabar, hijo. Lo bueno lo dicen al final.',
     'Ese señor que te llama tanto quiere contarte algo. No le metas prisa.',
-    ['Escúchale entero, hijo, aunque se te enfríe la cena.', 'Administración: escuchar a Evaristo. «¿De qué trata?» y «Siga».']] },
+    ['Escúchale entero, hijo, aunque se te enfríe la cena.', 'Administración: escuchar a Evaristo, «¿De qué trata?» y «Siga». Y su correo.']] },   // [P11]
   { id: 'papel_fax', acto: 2, hecho: 'fax_con_papel', activo: 'nota_gasto_presentada', salas: ['catacumba'], meta: M.papel, niveles: [
     'Las máquinas viejas, sin papel, no hablan. Dales papel. ¿Has cenado?',
     'Ese papel que te rechazaron tiene la espalda en blanco.',
@@ -127,20 +126,16 @@ export const OBJETIVOS = [
     'Lo que me cuenta una vecina no me lo creo hasta que me lo cuenta otra.',
     'Tienes un papel del fax y otro de la ventanilla: dos vecinas.',
     ['Llévale las dos vecinas a la que corrige.', 'Redacción de papel: Dar la fotocopia de la nota a Aurora.']] },
-  // E2 §10.3 · paso 32: Aurora bendice la coma y la manda por el fax (Redacción de papel)
-  { id: 'bendicion', acto: [2, 3], hecho: 'coma_bendecida', activo: ['evaristo_escuchado', 'fax_con_papel'], salas: ['catacumba'], meta: M.bendicion, niveles: [
-    'Si dudas de una coma, pregúntale a la que corrige.',
-    'La señora del boli rojo sabe de comas más que el cura.',
-    ['Pregúntale a la del boli por la coma de ese señor.', 'Redacción de papel: a Aurora, lo de la coma de Evaristo.']] },
+  // [P11] fuera el objetivo `bendicion`: el correo lo da Evaristo; la coma con Aurora es opcional y sin pista
   { id: 'firma', acto: 2, hecho: 'casilla_firma', activo: 'fax_con_papel', salas: ['catacumba'], meta: M.firma, niveles: [
     'Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor.',
     'Si el del fax se pone terco, que le conteste su propia máquina.',
     ['Contéstale mejor que él, y al final, lo de su máquina.', 'Redacción de papel: a Teodoro, «Quiero firmar». Remate: el manual.']], duelo: 'teodoro',
-    // [bloqueos] sin el manual, el nivel 2 y el 3 dicen dónde está (antes, solo un extra del nivel 3)
+    // [bloqueos] sin el manual, el nivel 2 y el 3 dicen dónde está · [P11] [P15] lo da Eutimio al apagar la R-3
     sub: [{ si: '!has:manual_fax', niveles: [
       'Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor.',
-      'El de los ordenadores guarda el manual de esa máquina. Pídeselo con su número.',
-      ['Mira el número que lleva el fax y díselo al de los ordenadores.', 'Fax: Mirar la pegatina. Sistemas: a Eutimio, «Ticket 0.441».']] }] },
+      'El de los cables guarda el manual de esa máquina. Arréglale lo suyo.',
+      ['Apaga la regleta que no dice lo que es, y el de los cables te da el manual.', 'Sistemas: el manual lo tiene Eutimio. Me lo da con su hueco, al apagar la R-3.']] }] },
   { id: 'pieza', acto: 2, hecho: 'pieza_escrita', activo: 'casilla_fuente', salas: ['pecera'], meta: M.pieza, niveles: [
     '¿Y has escrito ya? Siéntate en tu silla y escribe.',
     'Lo de escribir, en tu mesa. Que te ha costado la silla.',
@@ -169,7 +164,8 @@ export const OBJETIVOS = [
     'Las fotos, enséñaselas al que lleva la lista. Que vea que el chico existe.',
     'El del tablero no se cree nada sin pruebas. Ya tienes pruebas.',
     ['Enséñale las fotos al del tablero.', 'Redacción: Dar el álbum a Anselmo.']] },
-  // [bloqueos] `columna` por sub-estados: falta la frase (Brais o Eventos), falta el rotulador, o solo escribirla
+  // [bloqueos] `columna` por sub-estados: falta la frase (Brais o Eventos), o solo escribirla. [P11] El rotulador llega
+  // siempre con el D1 (antes del Acto III): fuera la variante «sin el rotulador».
   { id: 'columna', acto: 3, hecho: 'ruben_libre', activo: 'album_validado', salas: ['pecera', 'ecosistema'], meta: M.columna, niveles: [
     'Ya tienes con qué y qué escribir. Al tablero, hijo.',
     'Escribe en el tablero la frase fina del chico, y mueve tú el papelito.',
@@ -179,10 +175,6 @@ export const OBJETIVOS = [
         'Para que alguien se vaya sin que parezca que lo echan, hay palabras finas.',
         'El chico del armario escribía discursos finos. Pregúntale por ellos.',
         ['Pregúntale al chico por los discursos de ese señor del traje.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».']] },
-      { si: '!has:rotulador_rojo', meta: 'Ya sé qué columna escribir. Me falta un rotulador que no sea de Anselmo.', niveles: [
-        'En esa pizarra se escribe con rotulador, hijo, y no con el de ese señor.',
-        'La de los anuncios pinta sus objetivos a rotulador. Lo tiene colgado.',
-        ['Coge el rotulador que cuelga junto a los objetivos de ventas.', 'Marketing y Comercial: Coger el rotulador del termómetro de ventas.']] },
       { si: '!rep_13', niveles: [
         'Ya tienes con qué y qué escribir. Al tablero, hijo.',
         'Escribe en el tablero esa palabra rara que oíste en las fiestas.',
@@ -242,7 +234,7 @@ export const DONDE = {
   rep_09: ['Pregúntale al del tablero cómo se lleva con la chica de los números.', 'Redacción: a Anselmo, «¿Qué tal con Yoli?».'],
   rep_10: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
   rep_11: ['Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar.', 'Redacción: mi ordenador, sentado. Ramírez pregunta si he podido verlo.'],
-  rep_12: ['El de los cables sabe cosas del señor del traje. Pregúntale.', 'Sistemas, con el CMS vivo: a Eutimio, «¿Algún cotilleo del consultor?».'],
+  rep_12: ['El de los cables sabe cosas del señor del traje. Pregúntale.', 'Sistemas: a Eutimio, «¿Algún cotilleo del consultor?».'],   // [P11]
   rep_13: ['El chico del armario escribía los discursos. Pregúntale.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».'],
   rep_14: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
   rep_15: ['Pregúntale al chico del armario por los correos de ese Tadeo.', 'Sistemas: a Brais, «¿Te llegaban correos de Tadeo?».'],

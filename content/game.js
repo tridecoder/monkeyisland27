@@ -94,12 +94,12 @@ async function pistas(api) {
 }
 
 // ------------------------------------------------------------------ ADENDA §2 + ENMIENDA E2 §5.7: avisos al entrar en sala
-// Llamadas de Evaristo (E2: L1, L3, L4 y L5; [coherencia] vuelve la L2, la que le convoca) — contador `evaristo_llamadas`.
+// Llamadas de Evaristo (L1, L2 y L4; [P11] fuera la L3 y la L5) — contador `evaristo_llamadas`.
 // Mecánica única: el MOTOR llama a `afterEnter` (abajo) tras el `onEnter` de CADA sala; los autores de sala NO tienen
 // que hacer nada. No salta si la entrada ya ha lanzado una escena / diálogo / duelo / cinemática, ni al cargar partida,
 // ni en `sala_amazonas` con `acto_3_iniciado`, ni tras el final. Como mucho UN aviso por entrada (también si alguien
 // invoca `api.scene('avisos')` a mano). Las llamadas salen en orden y esperan a su condición; una llamada cuya
-// condición ya no se puede cumplir (`salta`) se da por perdida (L4 si Brais ya está libre; L5 dentro del clímax).
+// condición ya no se puede cumplir (`salta`) se da por perdida (L2 si ya le ha escuchado; L4 si ya ha encontrado a Brais).
 // E2 §7.4 (paso 13): los «RV:» de Tadeo YA NO SON AVISOS: llegan solos al correo del móvil (content/lib/movil.js) al
 // entrar en una sala con su condición (`tadeo_rv_n` cuenta los llegados), sin globo ni «¡ding!».
 // [coherencia] Los correos de Evaristo que quedan por llegar («Una cosita» 2 y 3, «Agradecimiento») llegan aquí, uno por
@@ -137,20 +137,14 @@ export const LLAMADAS = [
   llamada('L2', ['acto_2_iniciado', (api) => api.room !== 'administracion'], [
     ['E', 'Una cosita. ¿Puede pasarse por mi despacho? Es un segundo.'], ['B', '¿Ahora?'], ['E', 'Cuando pueda. Pero ahora.'],
     ['E', 'Planta 2, al fondo de Administración.']], 'evaristo_escuchado', (api) => api.setFlag('evaristo_convoco', 'llamada')),
-  llamada('L3', 'pieza_recortada', [
-    ['E', 'Una cosita. Begoña me manda el triplicado de su recorte.'],
-    ['E', 'Ella recorta sin leer. Yo leo sin recortar.'],
-    ['E', 'Veintitrés líneas. Ni una coma fuera de sitio.']]),
-  // E6 §2.5: la L4 suena DESPUÉS de abrir el armario (antes de liberar a Brais); Bruno ya no explica (§2.6 B3)
-  llamada('L4', ['ruben_encontrado', '!ruben_libre'], [
+  // [P11] fuera la L3 (tras el recorte) y la L5 (el momento oportuno lo explica Evaristo al dar el correo).
+  // [P11] la L4 se adelanta al principio del Acto III: suena en la primera entrada en sala tras «Dos IAs», antes de
+  // encontrar a Brais, y es el único aviso del armario 27 (se pierde si Bruno ya lo ha encontrado).
+  llamada('L4', ['dos_ias_vista', '!ruben_encontrado'], [
     ['E', 'Una cosita. La máquina de la planta -1 vende veinticuatro atunes al mes.'],
     ['E', 'En Sistemas no come atún nadie. Lo he cruzado con las nóminas.'],
     ['E', 'Alguien come ahí abajo y no cobra.'],
-    ['B', 'Se llama Brais.']], 'ruben_libre'),
-  // [coherencia] «¿Lleva mi correo?» / «En el bolsillo.»: solo si Bruno lo lleva (el Acto III no exige la coma)
-  llamada('L5', ['ruben_libre', 'has:correo_evaristo', '!climax_entrada'], [
-    ['E', 'Una cosita. Me dicen que va a la Sala. ¿Lleva mi correo?'], ['B', 'En el bolsillo.'],
-    ['E', 'Envíelo en el momento oportuno. Usted lo notará. Era solo eso.']], 'climax_entrada'),
+    ['B', '...El armario 27.']], 'ruben_encontrado'),
 ];
 const oida = (api, L) => !!(api.game.state.once && api.game.state.once['once:evaristo_' + L.id]);
 /** La siguiente llamada pendiente (en orden; las que ya no pueden sonar se saltan) o null. El contador manda: con
@@ -232,8 +226,10 @@ function migrarPartida(st) {
     if (!('evaristo_correos' in fl)) fl.evaristo_correos = '';
   }
   // E2 §5.3: con la coma cerrada por la vía antigua (LC o E_ENVIO), el correo impreso que ahora es objeto
+  // [P11] el correo lo da Evaristo al escucharle entero: una partida vieja que le escuchó y no llegó a la coma con Aurora
+  // (la escena era la que imprimía el correo) recibe el correo ahora; la coma con Aurora queda como opcional
+  if (fl.evaristo_escuchado && !fl.correo_evaristo_listo) fl.correo_evaristo_listo = true;
   if (fl.correo_evaristo_listo && !fl.duelo_inigo_ganado && !inv.includes('correo_evaristo')) inv.push('correo_evaristo');
-  if (fl.correo_evaristo_listo) fl.coma_bendecida = true;
   // E2 §5.3 (P3): la coma solo está bendecida si el correo salió por el fax; una bendición suelta de la vía antigua
   // (Aurora sin escuchar a Evaristo) se deshace para que el paso 32 se pueda jugar
   if (fl.coma_bendecida && !fl.correo_evaristo_listo) fl.coma_bendecida = false;
@@ -261,6 +257,18 @@ function migrarPartida(st) {
   if (fl['obj:foco'] && fl.custodia_ablandada) { delete fl['obj:foco']; delete fl['obj:foco_n']; }
   // [P7] partidas de antes de «aprender perdiendo»: libreta sin pistas (se apuntan en el próximo duelo)
   if (!('libreta_pistas' in fl)) fl.libreta_pistas = 0;
+  // [P11] guion nuevo, tanda 2 (partidas del juego anterior):
+  // · el manual del fax lo da Eutimio al apagar la R-3. Quien ya tenga el CMS vivo sin el manual (la vía vieja pedía la
+  //   pegatina y «Ticket 0.441»; o arregló el CMS por el ticket nº 3, sin la R-3) lo recibe
+  if (fl.cms_vivo && !fl.paco_dio_manual && !inv.includes('manual_fax')) { inv.push('manual_fax'); fl.paco_dio_manual = true; }
+  // · el rotulador lo da Maripaz al perder el D1: quien ya ganó el D1 sin cogerlo del termómetro lo recibe
+  if (fl.casilla_hueco && !fl.ruben_libre && !inv.includes('rotulador_rojo')) inv.push('rotulador_rojo');
+  // · Maripaz ya no tiene que decir lo de la web si el CMS va; si la partida vieja ya tiene el hueco, tampoco
+  if (!('maripaz_pide_web' in fl)) fl.maripaz_pide_web = false;
+  // · fuera el «RV x5» de Tadeo del Acto III (la L4 de Evaristo ocupa su sitio): como mucho dos «RV:»
+  if (Number(fl.tadeo_rv_n) > 2) fl.tadeo_rv_n = 2;
+  // · Eutimio tiene un solo árbol (antes P0 con el CMS caído y P1 con el CMS vivo): las opciones ya gastadas se conservan
+  if (st.dialogs) for (const k of Object.keys(st.dialogs)) { const m = /^paco\.P[01]\.(.+)$/.exec(k); if (m) st.dialogs['paco.P.' + m[1]] = true; }
   for (const k of FLAGS_RETIRADOS) delete fl[k];
   if (st.actors) for (const id of ['nerea_backlog', 'borja_engagement']) delete st.actors[id];   // E2 §2.6 y §3: ya no existen
   return st;

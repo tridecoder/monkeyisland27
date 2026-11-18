@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // PRUEBA DEL PAQUETE I1 DE LA ENMIENDA E6 (comunes; docs/guion2/ENMIENDA_E6.md §10 I1). No depende del texto de las salas:
-//   §2.5 L4: suena DESPUÉS de abrir el armario (`ruben_encontrado`, sin `ruben_libre`), con «Se llama Brais.»; no suena
-//        antes (solo `acto_3_iniciado`) ni con Brais ya libre. Guardar/cargar con la L4 pendiente.
+//   §2.5 L4 ([P11]): suena al abrir el Acto III, tras «Dos IAs» y ANTES de encontrar a Brais, con «...El armario 27.»;
+//        no suena antes de «Dos IAs» ni con Brais ya encontrado. Guardar/cargar con la L4 pendiente.
 //   §6.4 «Hablar con Bruno» = «Mirar a Bruno» (la meta), también sin meta (la de reserva).
 //   §6.5 Valentín: variante `casco_fuera` (sin cascos en la cabeza; el auricular en la mano) y vuelta a la normal. Captura.
 //   §5.1 `hurtByPair.teodoro`: «...CABE.» en la R09, no en la R02.
@@ -35,10 +35,10 @@ const duelo = (await import('../content/duelo.js')).default;
 const { SIN_DESTINO } = await import('../content/lib/directorio.js');
 const actors = (await import('../content/actors.js')).default;
 const obj = (id) => pistas.OBJETIVOS.find(o => o.id === id);
-// [bloqueos] `columna` va por sub-estados: sin rotulador, el nivel 1 habla del rotulador y el 2 dice dónde está
-const sinRot = obj('columna').sub.find(s => s.si === '!has:rotulador_rojo');
-ok(sinRot && /rotulador/.test(sinRot.niveles[0]), 'abuela, `columna` sin rotulador, nivel 1: habla del rotulador');
-ok(sinRot && sinRot.niveles[1] === 'La de los anuncios pinta sus objetivos a rotulador. Lo tiene colgado.', '`columna` sin rotulador, nivel 2 (E361; bloqueos: colgado, no «pídeselo»)');
+// [P11] el rotulador llega con el D1 (antes del Acto III): fuera el sub-estado «sin rotulador» de `columna`; la pista
+// principal sigue hablando del rotulador (el de Maripaz) y del tablero
+ok(!obj('columna').sub.some(s => s.si === '!has:rotulador_rojo'), '[P11] `columna` sin la variante «sin rotulador» (llega con el D1)');
+ok(/rotulador/i.test(obj('columna').niveles[2][0]) && obj('columna').niveles[2][1] === 'Redacción: Usar el rotulador con el kanban. «SALIDA EN VALOR».', '`columna`, nivel 3: el rotulador, al tablero');
 ok(obj('turno').niveles[2][0] === 'A esa tele dale las buenas noches, como a la cafetera, y pregúntale.'
   && obj('turno').niveles[2][1] === 'Sala Amazonas: a la tele, «Buenas noches, Gertrudis». Y lo de los pasos.', '`turno` nivel 3: la tele (E362, E363; E7 P-turno3; bloqueos: con sitio)');
 ok(SIN_DESTINO === 'Un punto rojo: «ESTÁ AQUÍ». Gracias. Me hacía falta.', 'SIN_DESTINO (E344; E7: vuelve el original)');
@@ -65,33 +65,35 @@ async function open(flags, room) {
   return { ctx, page, G };
 }
 const log = (G) => G(() => __game.log.filter(l => l.who !== 'aviso').map(l => l.who + ': ' + l.text));
-// L1, L2 ([coherencia]: vuelve) y L3 ya oídas: la siguiente pendiente es la L4
-const OIDAS = async (G) => G(() => { const o = __game.game.state.once || (__game.game.state.once = {}); o['once:evaristo_L1'] = true; o['once:evaristo_L2'] = true; o['once:evaristo_L3'] = true; __game.setFlag('evaristo_llamadas', 3); });
+// L1 y L2 ([coherencia]: vuelve) ya oídas; [P11] sin L3: la siguiente pendiente es la L4
+const OIDAS = async (G) => G(() => { const o = __game.game.state.once || (__game.game.state.once = {}); o['once:evaristo_L1'] = true; o['once:evaristo_L2'] = true; __game.setFlag('evaristo_llamadas', 2); });
 const ACTO3 = { intro_vista: true, torno_abierto: true, inigo_presentado: true, acto_2_iniciado: true, acto_3_iniciado: true, pieza_recortada: true, pagina_cerrada: true };
 
 try {
-  console.log('§2.5 L4');
+  // [P11] la L4 se adelanta: suena al empezar el Acto III, en la primera entrada en sala tras «Dos IAs» y ANTES de
+  // encontrar a Brais (Bruno contesta «...El armario 27.»); con Brais ya encontrado, se pierde
+  console.log('§2.5 [P11] L4');
   {
     const { ctx, G } = await open(ACTO3, 'cpd');
     await OIDAS(G);
     await G(() => __game.gotoRoom('ecosistema')); await G(() => __game.waitIdle());
     let L = await log(G);
-    ok(!L.some(l => /atunes/.test(l)), 'con el Acto III y sin abrir el armario, la L4 no suena');
-    await G(() => __game.setFlag('ruben_encontrado', true));
+    ok(!L.some(l => /atunes/.test(l)), 'con el Acto III y sin «Dos IAs», la L4 no suena');
+    await G(() => __game.setFlag('dos_ias_vista', true));
     await G(() => __game.save('i1'));
     await G(() => __game.load('i1'));
     await G(() => __game.gotoRoom('administracion')); await G(() => __game.waitIdle());
     L = await log(G);
-    ok(L.includes('evaristo_salvedad: Una cosita. La máquina de la planta -1 vende veinticuatro atunes al mes.'), 'tras abrir el armario (y cargar), la L4 suena al cambiar de sala');
-    ok(L.includes('evaristo_salvedad: Alguien come ahí abajo y no cobra.') && L.includes('bruno: Se llama Brais.'), 'L4: «…no cobra.» y Bruno «Se llama Brais.»');
+    ok(L.includes('evaristo_salvedad: Una cosita. La máquina de la planta -1 vende veinticuatro atunes al mes.'), 'tras «Dos IAs» (y cargar), la L4 suena al cambiar de sala');
+    ok(L.includes('evaristo_salvedad: Alguien come ahí abajo y no cobra.') && L.includes('bruno: ...El armario 27.') && !L.includes('bruno: Se llama Brais.'), 'L4: «…no cobra.» y Bruno «...El armario 27.» (aún no sabe el nombre)');
     ok(!L.some(l => /Eso es un becario|Era solo eso/.test(l)), 'L4 sin «Eso es un becario» ni «Era solo eso»');
     await ctx.close();
   }
   {
-    const { ctx, G } = await open({ ...ACTO3, ruben_encontrado: true, ruben_libre: true }, 'cpd');
+    const { ctx, G } = await open({ ...ACTO3, dos_ias_vista: true, ruben_encontrado: true }, 'cpd');
     await OIDAS(G);
     await G(() => __game.gotoRoom('ecosistema')); await G(() => __game.waitIdle());
-    ok(!(await log(G)).some(l => /atunes/.test(l)), 'con Brais ya libre, la L4 se pierde (salta)');
+    ok(!(await log(G)).some(l => /atunes/.test(l)), 'con Brais ya encontrado, la L4 se pierde (salta)');
     await ctx.close();
   }
 

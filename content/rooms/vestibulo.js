@@ -33,13 +33,14 @@ const IBEX = {
   1: ['¡Ibersideral entra por la banda! ¡Sube un 0,2! ¡Qué técnica!',
     '¡Las eléctricas tocan, tocan, tocan... y nada! ¡Plano!',
     '¡Banco Robledal se duerme en el área! ¡Así no, hombre, así no!'],
+  // [P11] la de Hidrovoltia sale aparte, la primera vez del Acto II (siembra la opa: `HIDROVOLTIA`); las demás rotan
   2: ['¡Penalti a las eléctricas! ¡Eso no era! ¡Árbitro, que mire el supervisor!',
-    '¡Hidrovoltia calienta en la banda! ¡Algo trama el míster!',
     'Cierre plano. Empate a cero. Y el árbitro sin añadir descuento.',
     '¡Me han puesto un narrador automático! ¡Narra sin bufanda! ¡Fuera de juego!'],
   3: ['¡Prórroga! ¡El mercado americano mete presión! ¡Aguanta, Ibex, aguanta!',
     '¡El Robledal pide la hora! ¡No quiere que acabe el partido!'],
 };
+const HIDROVOLTIA = '¡Hidrovoltia calienta en la banda! ¡Algo trama el míster!';
 const ibexLine = (api, n) => { const l = IBEX[acto(api)]; return l[(Math.max(1, n) - 1) % l.length]; };
 
 // adenda 8bis.1: el cuadro de llaves rota 1…5 (la 5, solo en el Acto III) y después entre la 2 y la última
@@ -485,6 +486,8 @@ export default buildRoom({
     if (!api.restoring) api.inc('vestibulo_entradas_n');                       // E2 §7.4 pasos 3-4 (saludos de Celestino)
     if (!api.flag('intro_vista') || enEpilogo(api) || api.restoring) return;   // intro, epílogo y cargar partida: nada aquí
     // §4.7: si hay un hito sin narrar, Celestino lo retransmite; si no, una línea del Ibex (rotan dentro de cada acto)
+    // [P11] la primera vez que Bruno entra en el Vestíbulo en el Acto II, siempre la de Hidrovoltia (antes que la rotación)
+    if (acto(api) === 2 && api.once('vestibulo_hidrovoltia')) { await api.sayAs(C, HIDROVOLTIA); return; }
     if (await narrarHito(api)) return;
     const n = api.inc('celestino_ibex_n');
     await api.sayAs(C, ibexLine(api, n));

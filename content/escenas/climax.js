@@ -8,7 +8,7 @@
 // por el teléfono de conferencias (CONTROLLING) y desmonta los 48.000 € (`heroeDeLaComa`). Tras el empujón, la factura
 // de Begoña, con coma. Fuera la frase críptica de la coma (`correoQueSeEscapa`) y las coletillas de §7.2; `onWin` de
 // Íñigo en una línea (fase B (14)). El Lector Medio sigue sin presidir: de pie junto a la pantalla, y su empujón, igual.
-import { SFX, sello, fundidoBlanco } from './planta_noble.js';
+import { SFX, fundidoBlanco } from './planta_noble.js';
 import artAdmin from '../rooms/art/administracion.art.js';
 import artSala, { LECTOR_AT, detalleAtrezo } from '../rooms/art/sala_amazonas.art.js';
 import { getFrame } from '../../engine/sprites.js';
@@ -130,13 +130,23 @@ export const duelInigo = {
   },
   onLose: async (api) => {
     // «el duelo vuelve a empezar: Íñigo regresa a la diapositiva 247» (se reintenta Hablando con él, regla 6.2.6)
-    // §7.7: Íñigo despega el pósit de Bruno de «Ideal» y lo pega en «Prescindible»
+    // ([P11] fuera el gesto del pósit: Bruno ya está en «Prescindible» desde la FIRMA)
     await api.anim(INIGO, 'reach', 400);
     await sayI(api, 'Siguiente.');
-    // [P7] siempre; si faltan réplicas, el motor añade «Me faltan réplicas. Están apuntadas en la libreta.»
-    await api.say('Le vuelvo a hablar. Un consultor siempre tiene un hueco en la agenda.');
+    // [P7] si faltan réplicas, el motor dice «Me faltan réplicas. Están apuntadas en la libreta.» y, para que no se oigan
+    // seguidas, Bruno no dice esta; si no faltan, sí
+    if (!faltanApuntadas(api)) await api.say('Le vuelvo a hablar. Un consultor siempre tiene un hueco en la agenda.');
   },
 };
+
+/** [P7] ¿Le falta a Bruno alguna réplica del D4 con su pista apuntada en la libreta? (la misma cuenta que hace el
+ *  motor, engine/duel.js, para decir `pistas.repaso` tras la derrota) */
+function faltanApuntadas(api) {
+  const D = api.game.content.duels, PL = D.pistas;
+  if (!PL || !PL.repaso) return false;
+  const orden = (D.pairs || []).map(p => p.id), bits = Number(api.flag(PL.flag)) || 0;
+  return DECK_D4.some(id => { const p = (D.pairs || []).find(x => x.id === id); const b = orden.indexOf(id); return p && !api.flag(p.flag) && b >= 0 && (bits & (1 << b)); });
+}
 
 async function abrirDuelo(api) {
   await api.duel('inigo');
@@ -252,21 +262,16 @@ export async function climaxEmpujon(api) {
     await api.wait(500);
     await api.sayFrom('proyector', 'EL VIAJE CONTINÚA');
     await sayI(api, '...Ahora no.');
-    // Begoña y la factura (Rubén se la ha bajado del armario)
+    // Begoña y la factura (Brais se la ha subido del armario). [P11] cuatro líneas: fuera el taxi, el recorte a 35,52,
+    // el sello, «al lado del ministro» y la de Brais con el atún (el 26 % por cuarta vez, con Evaristo ya ganador)
     api.sfx('door');
     api.placeActor(BEGONA, 'sala_amazonas', PUERTA[0], PUERTA[1], 'right');
     api.show(BEGONA);
     await entraPorDelante(api, BEGONA, SITIO_BEGONA);
     api.faceActor(BEGONA, INIGO);
-    // E2 §5.6: la factura, con coma (48 × 0,74 = 35,52)
-    await sayBe(api, ['Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.', 'Concepto: «IA». ¿Qué es una IA? ¿Un taxi?']);
-    await sayBe(api, 'Recorte estándar del 26 %: treinta y cinco euros con cincuenta y dos.');
-    sello(api);
-    await sayBe(api, 'Y rechazada igual. Al lado del ministro.');
+    await sayBe(api, ['Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.', 'Con lo que nos deben hay para un contrato.']);
     if (!enSala(api, RUBEN)) { api.placeActor(RUBEN, 'sala_amazonas', SITIO_RUBEN[0], SITIO_RUBEN[1], 'up'); api.show(RUBEN); }
     api.faceActor(RUBEN, BEGONA);
-    await sayR(api, 'Cuarenta y ocho euros al mes... Es lo que me como en atún.');
-    await sayBe(api, 'Con lo que nos deben hay para un contrato.');
     await sayR(api, '¿Con táper?');
     await sayBe(api, 'Con ticket.');
     // «Benita. Tira.» (por los altavoces, la voz de Teodoro por el teléfono rojo): un inserto en la esquina enseña
@@ -275,9 +280,13 @@ export async function climaxEmpujon(api) {
     api.game.hud = insertoTeodoro(api.game); api.game.hudTop = 0;
     try {
       await api.wait(700);
+      // [P11] [P14] Aurora, de pie al lado de Teodoro: la primera vez en la noche que le pide algo, y por su nombre
+      INS.habla = 'aurora_galerada';
+      await api.sayAs('aurora_galerada', 'Tira, Teodoro.', { at: [INSERTO.x + (INSERTO.w >> 1), INSERTO.y + INSERTO.h + 16] });
+      INS.habla = 'teodoro_cuerpodoce';
       await api.sayAs('teodoro_cuerpodoce', 'Benita. Tira.', { at: [INSERTO.x + (INSERTO.w >> 1), INSERTO.y + INSERTO.h + 16] });
       await api.wait(300);
-    } finally { api.game.hud = null; }
+    } finally { api.game.hud = null; INS.habla = null; }
     api.sfx(SFX.rotativa); api.shake(1800, 1);
     api.sfx(SFX.botellines);
     await api.wait(1400);
@@ -303,6 +312,7 @@ export async function climaxEmpujon(api) {
 
 // ---------------------------------------------------------------- inserto: Teodoro al teléfono rojo, en la Catacumba
 const INSERTO = { x: 6, y: 6, w: 92, h: 60 };
+const INS = { habla: null };                                       // [P11] quién habla en el inserto (anima su boca)
 function insertoTeodoro(game) {
   const t0 = game.time;
   return (g) => {
@@ -323,12 +333,21 @@ function insertoTeodoro(game) {
     const bx = x + 14, by = y + 44;
     rect(g, bx, by, 18, 6, PAL.red[3]); hline(g, bx, by, 18, PAL.red[5]); hline(g, bx, by + 5, 18, PAL.red[1]);
     rect(g, bx + 1, by - 2, 2, 2, PAL.red[2]); rect(g, bx + 15, by - 2, 2, 2, PAL.red[2]);
+    // [P11] Aurora, de pie a la izquierda de Teodoro (detrás del teléfono), mirándole
+    const au = game.actors.aurora_galerada;
+    if (au) {
+      const sp = game.spriteOf(au);
+      const habla = INS.habla === 'aurora_galerada';
+      const { canvas } = getFrame(sp, habla ? 'talk' : 'idle', 'right', habla ? Math.floor(game.time / 160) % 3 : 0);
+      const ax = x + 40, ay = y + h + 10;
+      g.drawImage(canvas, Math.round(ax - (sp.ox + 1)), Math.round(ay - (sp.oy + 1)));
+    }
     // Teodoro (sprite del juego, a escala 1), hablando
     const a = game.actors.teodoro_cuerpodoce;
     if (a) {
       const sp = game.spriteOf(a);
       const fr = Math.floor(game.time / 160) % 3;
-      const { canvas } = getFrame(sp, 'talk', 'down', fr);
+      const { canvas } = getFrame(sp, INS.habla === 'aurora_galerada' ? 'idle' : 'talk', 'down', INS.habla === 'aurora_galerada' ? 0 : fr);
       const tx = x + 62, ty = y + h + 6;                             // pies (fuera del inserto: plano medio)
       g.drawImage(canvas, Math.round(tx - (sp.ox + 1)), Math.round(ty - (sp.oy + 1)));
       const top = ty - (sp.oy - (sp.headY || 0));

@@ -40,6 +40,8 @@ export const ADENDA_FLAGS = [
   'sala_becario_sin_turno', 'gertrudis_pregunta', 'vio_pegatina_fax', 'album_validado', 'columna_kanban',
   // ENMIENDA E7 (I1)
   'oyo_papel_begona',
+  // [P11] guion nuevo, tanda 2
+  'maripaz_pide_web', 'inigo_prescindible',
   // [coherencia] la L2 vuelve y los correos de Evaristo llegan de verdad (str a '')
   'evaristo_convoco', 'evaristo_correos',
   // [P7] aprender perdiendo: pistas de la libreta (int, bits de las réplicas)
@@ -59,7 +61,9 @@ export default {
   chaqueta_en_lector: 'bool · B · pajarera · P04b · B (sprite y Mirar del Lector Medio), D (Lector Medio en la Sala), A (poscréditos); actors.js (variante del Lector Medio)',
   silla_libre: 'bool · B · pajarera · P04b · B (ordenador_bruno, silla_ramirez), pistas',
   vio_ticket_3: 'bool · A · cpd · Mirar registro_tickets · B (enchufe_pantalla), pistas',
-  cms_vivo: 'bool · B · pecera · P05b · A (Paco, contador), B (Yoli, Anselmo, pantalla), pistas',
+  cms_vivo: 'bool · cpd · R-3 del regletero · A (Paco, contador), B (Yoli, Anselmo, pantalla), D (Maripaz: [P11] condición del D1), pistas',
+  inigo_prescindible: 'bool · [P11] pecera (escena del pósit, Acto II, primera entrada con la FIRMA) o catacumba (7.3a, línea de respaldo) · Bruno ya ha visto a Íñigo pasarle a «Prescindible» · catacumba (7.3a)',
+  maripaz_pide_web: 'bool · [P11] sala_amazonas · Maripaz dice que sin web no pasa a Siestatón (antes de la estampida o al negarse al D1) · pistas (cms), items.js (ficha)',
   gertrudis_saludada: 'bool · C · office · primer «Buenas noches» · C, pistas, B (titular)',
   chisme_indice: 'int · C · office · +1 por saludo · C',
   aurora_conto_pasos: 'bool · C · catacumba · P03 · D (opción «siguientes pasos» de Gervasio), pistas',

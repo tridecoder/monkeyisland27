@@ -6,8 +6,7 @@
 //   1 regletero: Mirar → plano detalle con las cinco etiquetas; R-1, R-2, R-4 desenchufan un segundo, no ponen `cms_vivo`
 //     y suben `cpd_regleta_mal_n`; R-5 no se tira (ni sube); «Mejor no.» nada; R-3 → `cms_vivo`, sin «¡ESTAMOS CIEGOS!»
 //     por la rejilla ni «Ya me han abierto otro ticket»; antes del apagón (apagon_n = 0) también vale
-//   2 ticket 0.441: sin pegatina, Eutimio dice que no dos veces (dos líneas distintas) y no da el manual; con la pegatina,
-//     «Ticket 0.441» → manual y sus dos líneas; sin el CMS, la opción no está
+//   2 [P11] Eutimio atiende siempre (R12 con el CMS caído); el manual lo da en la R-3; fuera la pegatina y «Ticket 0.441»
 //   3 armario 27: Acto II, Tirar papel ×2 → las dos líneas, sin `ruben_encontrado`; Acto III: al entrar, estado `corre` y
 //     la línea una vez (otra entrada, no); Mirar papel y Tirar armario con el texto nuevo; Tirar papel → `revelacion_ruben`
 //   4 guardar/cargar a mitad: tras un fallo del regletero, cargar devuelve el contador y la regleta encendida; en el III,
@@ -187,6 +186,9 @@ try {
   let s = await st();
   ok(s.flags.cms_vivo && (await ost('regleta_r3')) === 'apagada', 'R-3 → cms_vivo y la regleta apagada');
   ok(await logHas('CORO: ¡Ha sido Diseño!') && await logHas('Trescientos dieciocho tickets nuevos') && await logHas('Tengo un hueco. Uno.'), 'R-3: el coro por la rejilla, los +318 y Eutimio que se gira');
+  // [P11] el hueco tiene consecuencia: el manual del fax (las dos líneas de la vieja opción «Ticket 0.441»)
+  ok(s.inventory.includes('manual_fax') && s.flags.paco_dio_manual && await logHas('El fax de Teodoro.') && await logHas('0.441. De 1999. Estado: lo respetamos.')
+    && await logHas('Toma el manual. Página 9: la respuesta automática. Mi mejor empleada.'), '[P11] R-3: Eutimio da el manual («El fax de Teodoro.» y las dos líneas de D13)');
   // [E6 §2.1] a propósito: sin apagón previo (apagon_n = 0), la R-3 enseña el corte «MIENTRAS, EN LA REDACCIÓN» con las
   // dos líneas de Yoli (antes: «sin la megafonía de Yoli»). Lo de D10-D12 sigue fuera. El corte en sí: test-e6-pc.mjs.
   ok(await logCount('¡Estamos ciegos!') === 1 && !(await logHas('Ya me han abierto otro ticket')) && !(await logHas('No sé qué apaga esto')), 'R-3 sin apagón previo: Yoli una vez (corte E6), sin «Ya me han abierto…» ni «No sé qué apaga esto…» (D10-D12)');
@@ -204,38 +206,22 @@ try {
   await verbOn('cerrar', 'regleta_r3');
   ok(await logHas('Ya está cerrado. Cinco bridas lo dicen.'), 'Cerrar (C43)');
 
-  // ================================================================ 2 · el ticket 0.441
-  console.log('\n§2.3 Eutimio y el ticket 0.441');
+  // ================================================================ 2 · [P11] Sistemas atiende siempre; fuera el «Ticket 0.441»
+  console.log('\n§2.3 [P11] Eutimio atiende con el CMS caído; el manual, en la R-3 (fuera la pegatina y «Ticket 0.441»)');
   await fresh({ ...ACTO2 });
   await verbOn('hablar', 'paco_ticket');
   let o = await options();
-  ok(!o.some(x => /fax/i.test(x)), `sin el CMS (nodo P0), ninguna opción del fax: ${JSON.stringify(o)}`);
+  ok(!(await logHas('No atiendo')) && await logHas('Tengo 312 tickets que dicen «el CMS no va».'), 'con el CMS caído: sin «No atiendo»');
+  ok(!o.some(x => /fax|0\.441/i.test(x)) && o.includes('¿Algún cotilleo del consultor?') && o.includes('¿Y por qué no va?'), `el árbol entero, sin opciones del fax: ${JSON.stringify(o)}`);
+  await chooseOption('¿Algún cotilleo del consultor?');
+  ok(await flag('rep_12'), 'R12 con el CMS caído');
   await closeMenu();
-  await G(() => { __game.setFlag('cms_vivo', true); __game.setFlag('cpd_cms_sumado', true); __game.setFlag('cpd_paco_cms_dicho', true); });
+  await G(() => { __game.setFlag('cms_vivo', true); __game.setFlag('cpd_cms_sumado', true); __game.setFlag('cpd_paco_cms_dicho', true); __game.setFlag('vio_pegatina_fax', true); });
   await verbOn('hablar', 'paco_ticket');
   o = await options();
-  ok(o.includes('¿Sabes algo del fax de la Redacción de papel?') && !o.some(x => x.startsWith('Ticket 0.441')), 'con el CMS y sin pegatina: la pregunta vaga, no la del número');
-  await chooseOption('¿Sabes algo del fax');
-  ok(await logHas('¿Qué fax? Sin número de ticket, para mí no hay fax.'), '1.ª negativa');
-  await chooseOption('¿Sabes algo del fax');
-  ok(await logHas('Todo lo que mantengo lleva mi pegatina. Ese fax también.'), '2.ª negativa (empuja: «pegatina»)');
-  await chooseOption('¿Sabes algo del fax');
-  ok(await logCount('Todo lo que mantengo lleva mi pegatina') === 2, '3.ª: repite la segunda');
+  ok(!o.some(x => /fax|0\.441/i.test(x)), 'con el CMS y la pegatina vista: tampoco (mirarla ya no abre nada)');
   s = await st();
-  ok(!s.inventory.includes('manual_fax') && !s.flags.paco_dio_manual && s.flags.cpd_paco_fax_n === 3, 'sin pegatina no hay manual');
-  await closeMenu();
-  await G(() => __game.setFlag('vio_pegatina_fax', true));          // Mirar fax en la Redacción de papel (paquete PD)
-  await G(() => __game.clearLog());
-  await verbOn('hablar', 'paco_ticket');
-  o = await options();
-  ok(o.includes('Ticket 0.441. El fax de Teodoro.') && !o.includes('¿Sabes algo del fax de la Redacción de papel?'), 'con la pegatina: «Ticket 0.441. El fax de Teodoro.» en lugar de la vaga');
-  await chooseOption('Ticket 0.441');
-  s = await st();
-  ok(s.inventory.includes('manual_fax') && s.flags.paco_dio_manual, 'manual_fax y paco_dio_manual');
-  ok(await logHas('0.441. De 1999. Estado: lo respetamos.') && await logHas('Toma el manual. Página 9: la respuesta automática. Mi mejor empleada.'), 'las dos líneas de Eutimio (D13)');
-  ok(!(await logHas('Lo único de esta casa')) && !(await logHas('Posando')), 'fuera «Lo único de esta casa…» y «Posando» de Eutimio');
-  o = await options();
-  ok(!o.some(x => /fax/i.test(x)), 'con el manual dado, no vuelve ninguna opción del fax');
+  ok(!s.inventory.includes('manual_fax') && !s.flags.paco_dio_manual, 'el manual no sale del árbol');
   await closeMenu();
 
   // ================================================================ 3 · el armario 27

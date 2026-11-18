@@ -114,7 +114,7 @@ export default {
     },
     inigo: {
       movil: 'Grábame. Lo subimos como caso de éxito. Tú sales en «aprendizajes».',
-      tarjeta_becario: 'Sin foto no estás en mi matriz. Ah, sí: en «Ideal».',
+      tarjeta_becario: 'Sin foto no estás en mi matriz. Ah, sí: en «Prescindible».',   // [P11] desde la FIRMA
       libreta_replicas: 'Bonito cuaderno. Low-cost.',
       manual_fax: '¿Un manual? Nosotros lo resumimos en una diapositiva. La 247.',
       boli_muerto: '¿Un boli? Yo firmo con el dedo. En la tableta.',            // adenda 7.5

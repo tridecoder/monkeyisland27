@@ -113,11 +113,12 @@ try {
   ok(await until(() => !!__game.game.apagon && __game.game.speeches.some(s => /Estamos ciegos/.test(s.text)), null, 20000), 'a oscuras, Yoli: «¡Estamos ciegos!…» (en pantalla)');
   await page.mouse.move(5, 5); await sleep(300); await shot('registro-ciegos');
   await G(() => __game.skipText(true)); await idle(); await seguir();
+  // [P11] fuera el camino del ticket nº 3: con el registro leído es el apagón de siempre (Yoli ciega, la pieza que entra a
+  // oscuras y la pista de Anselmo); ni «A HECHO (PERO NO)» ni el CMS desde arriba
   const iC = await logIdx('¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?'), iP = await logIdx('...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!'),
-    iT = await logIdx('...Entonces existe. A HECHO (PERO NO).'), iD = await logIdx('¡Ha sido Diseño!');
-  const yl = await logDe('yoli_tendencias');
-  ok(iC >= 0 && iC < iT && iT < iP && iP < iD && yl.length === 2, `orden: Yoli ciega → «…A HECHO (PERO NO).» → «…Ha entrado una pieza…» → coro (${[iC, iT, iP, iD].join(' < ')}; Yoli ×${yl.length})`);
-  ok(await flag('cms_vivo') === true && !(await G(() => !!__game.game.apagon)) && !(await logHas('Con número.')), 'cms_vivo, luz; E123 sin «Con número.»');
+    iT = await logIdx('...Entonces existe. A HECHO (PERO NO).'), iE = await logIdx('Que te la apague Eutimio.');
+  ok(iC >= 0 && iC < iP && iP < iE && iT < 0, `[P11] orden: Yoli ciega → «…Ha entrado una pieza…» → «Que te la apague Eutimio.»; sin «A HECHO (PERO NO)» (${[iC, iP, iE, iT].join(' · ')})`);
+  ok(await flag('cms_vivo') === false && await flag('apagon_n') === 1 && !(await G(() => !!__game.game.apagon)), '[P11] sin cms_vivo, apagón 1 y luz');
 
   // ====================================================================== 2. dos IAs
   console.log('\n§2.5.1 «Dos IAs» sin la conclusión de Bruno');
@@ -228,7 +229,8 @@ try {
   const fr = await G(() => __game.log.map(l => String(l.text)));
   const i1 = fr.indexOf(FRASE), i2 = fr.indexOf('Eso lo hace nuestro.');
   ok(await flag('herminia_midio') && await logCount(FRASE) === 1 && await logCount('Eso lo hace nuestro.') === 1 && i2 === i1 + 1, 'paso 37: la frase entera, una vez, seguida');
-  ok(await logHas('Encintar, no: aislar el componente.') && await logHas('Ya te la ha leído. Yo no, ¿eh? Yo ya no leo. Superviso.'), 'E124 (E7) y E125 en la misma escena');
+  // [P11] «Herminia mide la pieza» se recorta: fuera E124 («Encintar…») y E125 («Ya te la ha leído…»); «A un metro…» queda
+  ok(!(await logHas('Encintar, no: aislar el componente.')) && !(await logHas('Ya te la ha leído.')) && await logHas('A un metro de mi cinta. Fuera.'), '[P11] escena corta: sin E124 ni E125; «A un metro de mi cinta. Fuera.»');
 } catch (e) {
   failures++;
   console.log('  ✗ EXCEPCIÓN: ' + (e && e.stack || e));

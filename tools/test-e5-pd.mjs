@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // PRUEBA DEL PAQUETE PD DE LA ENMIENDA E5 (Papel y Despachos: docs/guion2/ENMIENDA_E5.md §10, fila PD).
-//   · §2.3 la pegatina del fax: Mirar fax con RATÓN REAL (verbo y objeto con clic) → la línea fundida y `vio_pegatina_fax`;
-//     con papel, el flag sin línea; guardar/cargar a mitad; Mirar otra vez (no se rompe);
+//   · §2.3 la pegatina del fax: Mirar fax con RATÓN REAL (verbo y objeto con clic) → la línea fundida; [P11] es decorado
+//     (ya no pone `vio_pegatina_fax`); guardar/cargar a mitad; Mirar otra vez (no se rompe);
 //   · §2.8 N6: `aurora_tadeo` solo con un «RV:» leído (`rvLeido`): con RV sin leer, el programador de ambiente lo intenta
 //     muchas veces y Aurora calla; leer el RV1 en el Papel (móvil, menú real) → Aurora lo dice en ese momento, una vez;
 //     leído fuera y luego en el Papel → ya es elegible; antes del café, nunca;
@@ -120,7 +120,7 @@ try {
   await settle();
   ok(await logHas('Un fax de 1992: «SIN PAPEL». Pegatina: «Mantenimiento: Sistemas. Ticket 0.441».'), 'D20/C34: «Un fax de 1992: «SIN PAPEL». Pegatina: «Mantenimiento: Sistemas. Ticket 0.441».»');
   ok(!(await logHas('Y sin ganas.')), 'la línea vieja («Y sin ganas.») ya no sale');
-  ok(await flag('vio_pegatina_fax') === true, 'Mirar fax pone vio_pegatina_fax (G)');
+  ok(!(await flag('vio_pegatina_fax')), '[P11] la pegatina es decorado: Mirar el fax ya no pone vio_pegatina_fax (no abre nada)');
   ok((await logTexts()).filter(l => l.startsWith('-: ') || l.startsWith('bruno')).length >= 1, 'una sola línea de Bruno en el Mirar');
   // captura ampliada del fax: la pegatina se ve
   const box = await G(() => { const g = __game.game, cam = Math.round(g.camX); const a = __game.virtualToClient(103 - cam - 6, 77 - 8), b = __game.virtualToClient(103 - cam + 32, 77 + 26); return { x: a.x, y: a.y, width: b.x - a.x, height: b.y - a.y }; });
@@ -133,20 +133,18 @@ try {
   }).catch(() => null);
   ok(!pix || (pix[0] > 200 && pix[1] > 200 && pix[2] > 190), `la pegatina se pinta (píxel del frontal ${JSON.stringify(pix)}: blanco roto)`);
 
-  // guardar a mitad y cargar: el flag se conserva; Mirar otra vez no rompe nada
+  // guardar a mitad y cargar; Mirar otra vez no rompe nada
   await G(() => __game.save(7));
-  await G(() => __game.setFlag('vio_pegatina_fax', false));
   await G(() => __game.load(7));
-  ok(await flag('vio_pegatina_fax') === true, 'guardar/cargar: vio_pegatina_fax se conserva');
   await clearLog();
   await verb('mirar', 'fax');
-  ok(await logCount('Ticket 0.441') === 1 && await flag('vio_pegatina_fax') === true, 'Mirar fax otra vez: la misma línea, el flag sigue');
+  ok(await logCount('Ticket 0.441') === 1, 'guardar/cargar y Mirar fax otra vez: la misma línea');
 
   // con papel: las dos de hoy y el flag sin línea
   await partida('catacumba', { acto_2_iniciado: true, fax_con_papel: true });
   await verb('mirar', 'fax');
   ok(await logHas('Tiene papel. Teodoro lo mira') && !(await logHas('Ticket 0.441')), 'con papel: las dos líneas de hoy, sin la de la pegatina');
-  ok(await flag('vio_pegatina_fax') === true, 'con papel: vio_pegatina_fax puesto sin línea');
+  ok(!(await flag('vio_pegatina_fax')), '[P11] con papel: tampoco pone el flag');
   await shot('fax-con-papel');
 
   // ================================================================ §2.8 · N6 (rvLeido)
@@ -253,11 +251,18 @@ try {
   G(() => __game.doVerb('hablar', 'aurora_galerada'));
   await page.waitForFunction(() => !!__game.game.choice);
   ok(await logHas('Llevas un anuncio en la espalda. En esta planta, no.') && await flag('bruno_con_banner') === false, 'M04 (y el adhesivo, fuera)');
-  await G(() => __game.chooseText('Don Evaristo pregunta si su coma'));
+  // [P11] la coma es opcional y la pregunta la hace Bruno con el correo en el bolsillo (lo dio Evaristo); M03 («el momento
+  // oportuno») pasa a Evaristo, en Administración
+  ok(!(await G(() => (__game.currentDialogOptions() || []).some(o => o.includes('coma')))), '[P11] sin el correo, no está la opción de la coma');
+  await G(() => __game.chooseText('Nada, Aurora')); await idle();
+  await G(() => { __game.giveItem('correo_evaristo'); __game.setFlag('correo_evaristo_listo', true); });
+  G(() => __game.doVerb('hablar', 'aurora_galerada'));
+  await page.waitForFunction(() => !!__game.game.choice);
+  await G(() => __game.chooseText('¿Está bien la coma de don Evaristo?'));
   await page.waitForFunction(() => !!__game.game.choice);
   ok(await logHas('¿Evaristo? ¿El de las comas? Siéntate. Bueno, no hay silla.'), 'M02');
-  ok(await logHas('Cuando alguien diga que una coma es un detalle sin importancia.') && !(await logHas('importancia, criatura')), 'M03');
-  ok(await flag('coma_bendecida') && await G(() => __game.state().inventory.includes('correo_evaristo')), 'la coma sigue bendecida (correo_evaristo)');
+  ok(await logHas('«La coma está bien. A.G.»') && !(await logHas('Envíelo')) && !(await logHas('detalle sin importancia')), '[P11] «La coma está bien. A.G.» (fuera «Envíelo» y el momento oportuno)');
+  ok(await flag('coma_bendecida') && (await G(() => __game.state().inventory.filter(i => i === 'correo_evaristo').length)) === 1, 'la coma bendecida; el correo, el de Evaristo (no imprime otro)');
   await G(() => __game.chooseText('Nada, Aurora')); await idle();
   // E4: corregirPosit y COINCIDO intactos
   await G(() => { __game.setFlag('opa_posit', 1); __game.setFlag('pieza_escrita', true); __game.giveItem('pieza_opa'); });
@@ -278,7 +283,8 @@ try {
   await G(() => { __game.setFlag('casilla_hueco', true); __game.setFlag('pieza_recortada', true); __game.giveItem('pieza_opa'); });
   await clearLog();
   await G(() => __game.scene('acto_3a')); await idle();
-  ok(await logHas('TEODORO (fax): LA REUNIÓN DE DIRECCIÓN APAGA LA ROTATIVA A LAS NUEVE.') && !(await logHas('CHAVAL. LA REUNIÓN')), 'M08: sin «Chaval.» delante');
+  // [P11] la amenaza la trae Íñigo en persona; Teodoro contesta por fax con su línea de siempre
+  ok(await logHas('A las nueve, la Reunión de Dirección apaga la rotativa.') && !(await logHas('TEODORO (fax): LA REUNIÓN DE DIRECCIÓN APAGA')) && !(await logHas('CHAVAL. LA REUNIÓN')), '[P11] M08: la amenaza, de Íñigo en persona');
   ok(await logHas('SI NO HAY ROTATIVA, NO HAY FIRMA.') && await flag('acto_3_iniciado'), '7.3a sigue entera (Acto III iniciado)');
   await G(() => __game.skipText(false));
 

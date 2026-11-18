@@ -47,7 +47,7 @@ const layout = {
   // Comercial
   rollup_comercial: { rect: [244, 32, 20, 64], walkTo: [254, 112], face: 'up', cache: true,
     sprites: { desplegado: (g) => drawRollup(g, false), enrollado: (g) => drawRollup(g, true), default: (g) => drawRollup(g, false) } },
-  termometro_ventas: { rect: [267, 30, 22, 34], walkTo: [270, 112], face: 'up' },
+  termometro_ventas: { rect: [267, 30, 22, 34], walkTo: [270, 112], face: 'up', draw: drawCordelVacio },   // [P14] desde el Acto II, el cordel vacío
   // E6 §2.9.1: el rotulador colgado del cordel (I2: 3×9 px en x 283-285, y 70-78, a la derecha del tubo; Bruno, parado a su izquierda (walkTo 270), no lo tapa), pinchado en la parte baja del papelógrafo; rect = dibujo
   // crecido para el mínimo de la auditoría (12×10) y pegado bajo el rect del termómetro (que se acorta) para no solaparse
   rotulador_cordel: { rect: [277, 64, 12, 16], walkTo: [270, 112], face: 'up', priority: 1, draw: drawRotuladorCordel },
@@ -421,6 +421,15 @@ function drawRotuladorCordel(g) {
   rect(g, x - 1, 70, 3, 2, PAL.ink[1]); px(g, x + 1, 70, PAL.ink[3]);         // la capucha (con su brillo)
   rect(g, x - 1, 72, 3, 7, '#e03022'); vline(g, x - 1, 72, 7, '#ff7a5a');    // el cuerpo, rojo (3×9 en total)
   hline(g, x - 1, 75, 3, '#fff4e0');                                          // la etiqueta blanca del cuerpo
+}
+/** [P14] Desde el Acto II (o con el rotulador ya en el bolsillo), el cordel cuelga vacío: Maripaz se ha llevado el
+ *  rotulador a la reunión (lo da al perder el D1). La chincheta y 7 px de cordel, con el extremo deshilachado. */
+function drawCordelVacio(g, view) {
+  if (!(view.flag('acto_2_iniciado') || view.flag('ecosistema_rotulador_dado') || (view.has && view.has('rotulador_rojo')))) return;
+  const x = 284;
+  px(g, x, 63, PAL.metal[5]); px(g, x + 1, 63, PAL.metal[3]);                 // la chincheta
+  vline(g, x, 64, 7, PAL.wood[5]);                                            // el cordel, vacío
+  px(g, x - 1, 71, PAL.wood[4]); px(g, x + 1, 71, PAL.wood[4]);               // cortado: el extremo, deshilachado
 }
 /** El lema enmarcado de Comercial, ENTERO en 4 líneas 3×5 (antes «TODO ES…»). */
 function drawLema(g) {

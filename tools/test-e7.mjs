@@ -109,7 +109,9 @@ try {
     const malas = [];
     // [bloqueos] filas de pistas.js que la ronda de bloqueos rehace a propósito (el nivel 3 de Bruno dice sitio y verbo)
     const SUSTITUIDAS = new Set(['P-nota3b', 'P-turno3', 'P-acta3b',
-      'E183', 'X10']);   // [guion3 t1] [P10] «Por eso lleva pop-up.» y [P13] el murmullo de Yoli del nombre nuevo
+      'E183', 'X10',     // [guion3 t1] [P10] «Por eso lleva pop-up.» y [P13] el murmullo de Yoli del nombre nuevo
+      'E124', 'N7', 'N9']);   // [guion3 t2] [P11] Herminia mide, corta (fuera «Ya te la ha leído…»); el CMS, condición del HUECO:
+                              // la meta y la nota al margen nuevas (comprobadas abajo, en el nudo, y en test-guion3-t2)
     for (const r of filas) {
       if (SUSTITUIDAS.has(r.id)) continue;
       const L = lit(src(r.fichero));
@@ -133,7 +135,11 @@ try {
     let O = await objetivo(G, 'catacumba');
     ok(O.actual === 'nota' && O.meta === 'Teodoro no habla sin papel. Y en esta casa no queda un folio sin sellar.', `delante del fax: objetivo «nota» y meta N6 («${O.meta}»)`);
     O = await objetivo(G, 'pecera');
-    ok(O.actual === 'cms' && O.meta === 'Con el CMS caído, en Sistemas no atienden a nadie.', `en la Redacción sigue el CMS, con N7 («${O.meta}»)`);
+    // [P11] el CMS cuelga del HUECO: sin haber oído a Maripaz, en la Redacción manda la reunión; tras oírla, el CMS
+    ok(O.actual === 'reunion' && O.meta === 'La página 7 se decide en esa reunión. Y esa reunión no se acaba nunca.', `[P11] en la Redacción, sin haber oído a Maripaz: la reunión («${O.meta}»)`);
+    await G(() => __game.setFlag('maripaz_pide_web', true));
+    O = await objetivo(G, 'pecera');
+    ok(O.actual === 'cms' && O.meta === 'Sin web, Maripaz no pasa a Siestatón. Y la web no publica desde las cuatro.', `[P11] tras oír a Maripaz: el CMS, con la meta nueva («${O.meta}»)`);
     await G(() => { __game.skipText(true); __game.clearLog(); });
     await G(() => __game.doVerb('mirar', 'bruno')); await idle();
     ok(await logIs('Teodoro no habla sin papel. Y en esta casa no queda un folio sin sellar.') && !(await logHas('CMS')), 'Mirar a Bruno delante del fax: el papel (N6), ni una palabra del CMS');
@@ -159,8 +165,8 @@ try {
     await G(() => __game.clearLog());
     await G(() => __game.doVerb('mirar', 'ficha_pagina_7')); await idle();
     const F = await G(() => __game.log.filter(l => l.who === 'bruno').map(l => l.text));
-    ok(F.includes('FIRMA: el fax no tiene papel. El papel, en esta casa, sale de Begoña.') && F.includes('Al margen, a lápiz: «CMS en coma. Sistemas no atiende a nadie».') && !F.includes('FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.'),
-      `ficha: N11 y el margen N9 (${F.slice(-2).join(' / ')})`);
+    ok(F.includes('FIRMA: el fax no tiene papel. El papel, en esta casa, sale de Begoña.') && F.includes('Al margen, a lápiz: «CMS en coma. Sin web, Maripaz no suelta la página».') && !F.includes('FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.'),
+      `ficha: N11 y el margen ([P14] el de Maripaz, ya oída) (${F.slice(-2).join(' / ')})`);
     await G(() => __game.skipText(false));
     G(() => __game.doVerb('mirar', 'ficha_pagina_7'));
     await until(() => __game.game.speeches.some(s => /^FIRMA: el fax no tiene papel/.test(s.text)), null, 20000);
@@ -516,7 +522,7 @@ try {
       await R.check(s.esp);
       porPaso[s.n] = await G((k) => __game.log.slice(k).map(l => ({ who: l.who, text: String(l.text), room: l.room })), k0);
     }
-    ok(Object.keys(porPaso).length === STEPS.length && STEPS.length === 49, `los ${Object.keys(porPaso).length} pasos, cada uno con su resultado (hasta juego_terminado)`);
+    ok(Object.keys(porPaso).length === STEPS.length && STEPS.length === 45, `los ${Object.keys(porPaso).length} pasos ([P11]: 45), cada uno con su resultado (hasta juego_terminado)`);
     const dichas = Object.values(porPaso).flat().filter(l => l.who !== 'aviso' && l.who !== 'tarjeta');
     const ms = (t) => Math.max(1100, 900 + t.length * 55);
     const lineas = dichas.length, chars = dichas.reduce((a, l) => a + l.text.length, 0), min = dichas.reduce((a, l) => a + ms(l.text), 0) / 60000;

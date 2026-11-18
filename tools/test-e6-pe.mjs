@@ -2,10 +2,8 @@
 // PRUEBA DEL PAQUETE PE DE LA ENMIENDA E6 (Planta 2; docs/guion2/ENMIENDA_E6.md §2.9.1, B9, §4.1), con ratón real.
 // Capturas en tools/shots/e6-pe-*.png. Cubre:
 //   §2.9.1 el rotulador se VE colgando de un cordel junto al termómetro (hotspot `rotulador_cordel`):
-//     · se ve desde el Acto I (con y sin Maripaz) y desaparece del dibujo al cogerlo (píxeles distintos);
-//     · cogerlo por el cordel (clic) y por el termómetro (clic): uno solo, sin duplicar, con la línea de Maripaz si está;
-//     · Mirar el termómetro: la 2.ª línea habla del cordel hasta cogerlo, y después, la de hoy; Mirar el cordel; Usar el cordel;
-//     · sin `torno_abierto`, el cordel no da nada; guardar/cargar antes y después.
+//     · [P11] [P14] en el Acto I cuelga y Maripaz no lo suelta; desde el Acto II, el cordel vacío (otro dibujo); con el
+//       rotulador del D1, Coger es lo genérico y Usar pinta; sin `torno_abierto`, nada; guardar/cargar.
 //   B9 (E326): «Le he mirado el reloj y se ha dado cuenta.» ya no se dice. E307: «Teodoro es el dueño…» ya no se dice.
 //   Textos nuevos de §4.1 de Marketing y Comercial y de Administración (muestra).
 //   node tools/test-e6-pe.mjs
@@ -34,7 +32,7 @@ const ACTO2 = { ...ACTO1, acto_2_iniciado: true, chaqueta_cogida: true, chaqueta
 const ACTO3 = { ...ACTO2, duelo_maripaz_ganado: true, casilla_hueco: true, acto_3_iniciado: true, pagina_cerrada: true,
   casilla_fuente: true, casilla_firma: true };
 
-const MARIPAZ_ROT = '¿Mi rotulador de objetivos? Llévatelo. Lo que pintes, lo cobro como espacio.';
+const MARIPAZ_ROT = 'Ese rotulador pinta objetivos. Cuando tengas uno, hablamos.';   // [P11] antes del D1, no lo suelta
 const CORDEL = 'bruno: El rotulador cuelga al lado, de un cordel, como el boli de un banco.';
 const GONG = 'bruno: El 3 % que falta se lo lleva el gong de al lado.';
 
@@ -70,9 +68,13 @@ async function clicVerbo(page, G, verbo, id) {
   await page.mouse.click(c.x, c.y);
 }
 /** recorte en bruto (PNG) de la zona del termómetro, para comparar el dibujo antes/después */
+let brunoZona = null;
 async function zonaTermometro(page, G) {
+  // (Bruno, donde estaba en la primera captura: al coger se acerca y su cabeza tapa el cordel; la cámara le sigue)
+  brunoZona = await G((p) => { const g = __game.game, b = g.actors.bruno; if (!b) return p; if (p) { b.x = p.x; b.y = p.y; g.camX = p.cam; } return { x: b.x, y: b.y, cam: g.camX }; }, brunoZona);
+  await sleep(250);
   const a = await G(() => __game.virtualToClient(262, 56)), b = await G(() => __game.virtualToClient(294, 84));
-  return (await page.screenshot({ clip: { x: a.x, y: a.y, width: b.x - a.x, height: b.y - a.y } })).toString('base64');
+  const buf = await page.screenshot({ clip: { x: a.x, y: a.y, width: b.x - a.x, height: b.y - a.y } }); return buf.toString('base64');
 }
 /** Coge el rotulador con el ratón por `via` (id del hotspot) con el verbo `verbo`. */
 async function coger(page, G, via, verbo = 'coger') {
@@ -81,86 +83,61 @@ async function coger(page, G, via, verbo = 'coger') {
 }
 
 try {
-  // ================================================================ por el cordel (Acto I, con Maripaz)
-  console.log('§2.9.1 Acto I: el rotulador se ve colgado y se coge por el cordel');
+  // ================================================================ [P11] [P14] el cordel: con rotulador (Acto I), vacío (Acto II)
+  // El rotulador ya no se coge aquí: lo da Maripaz al ganar el D1 (test-guion3-t2). Maripaz no lo suelta antes.
+  console.log('§2.9.1 Acto I: el rotulador se ve colgado; Maripaz no lo suelta');
+  let conRotulador = null;
   {
     const { ctx, page, G } = await open(ACTO1);
     ok(await visible(G, 'rotulador_cordel'), 'el punto de clic `rotulador_cordel` existe y está visible (rotulador a la vista)');
     ok(await G(() => __game.objects().find(o => o.id === 'rotulador_cordel').name === 'rotulador'), 'se llama «rotulador»');
-    const antes = await zonaTermometro(page, G);
+    conRotulador = await zonaTermometro(page, G);
     await shot(page, 'cordel-colgado');
-    await G(() => __game.save(2));
-    // Mirar el termómetro: segunda línea del cordel
     await G(() => __game.clearLog()); await G(() => __game.doVerb('mirar', 'termometro_ventas'));
     let L = await log(G);
     ok(L.includes('bruno: Un termómetro pintado a rotulador: «OBJETIVO Q3». Rojo hasta el 97 %.') && L.includes(CORDEL) && !L.includes(GONG),
-      'Mirar el termómetro (sin coger): 1.ª línea de hoy y 2.ª «El rotulador cuelga al lado, de un cordel…»');
+      'Mirar el termómetro: 1.ª línea de hoy y 2.ª «El rotulador cuelga al lado, de un cordel…»');
     await G(() => __game.skipSpeech()); await idle(G);
     await G(() => __game.clearLog()); await clicVerbo(page, G, 'mirar', 'rotulador_cordel');
     await until(G, (t) => __game.log.some(l => l.text === t), 'El rotulador cuelga al lado, de un cordel, como el boli de un banco.', 6000); await idle(G);
     ok((await log(G)).includes(CORDEL), 'Mirar el rotulador (ratón): la línea del cordel');
-    // Coger por el cordel (ratón)
     await G(() => __game.clearLog());
     await clicVerbo(page, G, 'coger', 'rotulador_cordel');
     const hablo = await until(G, (t) => __game.state().speaking.some(s => s.text === t), MARIPAZ_ROT);
-    if (hablo) { await sleep(300); await shot(page, 'maripaz-regala'); }
+    if (hablo) { await sleep(300); await shot(page, 'maripaz-no-lo-suelta'); }
     await sleep(200); await G(() => __game.skipSpeech()); await idle(G);
-    L = await log(G); let I = await inv(G);
-    ok(L.includes('maripaz_remitido: ' + MARIPAZ_ROT), 'Coger el rotulador por el cordel: Maripaz «¿Mi rotulador de objetivos? Llévatelo…»');
-    ok(cuenta(I, 'rotulador_rojo') === 1 && await flag(G, 'ecosistema_rotulador_dado') === true, 'rotulador_rojo en el inventario y flag puesto');
-    ok(!(await visible(G, 'rotulador_cordel')), 'el punto de clic del cordel desaparece');
-    await sleep(300);
-    const despues = await zonaTermometro(page, G);
-    ok(antes !== despues, 'el dibujo cambia: el rotulador ya no cuelga');
-    await shot(page, 'cordel-vacio');
-    // no se duplica
-    await G(() => __game.clearLog());
-    await clicVerbo(page, G, 'coger', 'termometro_ventas'); await sleep(300); await G(() => __game.skipSpeech()); await idle(G);
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 1 && !(await log(G)).some(l => l.includes('rotulador de objetivos')), 'Coger el termómetro después: no se duplica (lo genérico)');
-    await G(() => __game.clearLog()); await G(() => __game.doVerb('mirar', 'termometro_ventas'));
     L = await log(G);
-    ok(L.includes(GONG) && !L.includes(CORDEL), 'Mirar el termómetro con el rotulador cogido: «El 3 % que falta se lo lleva el gong de al lado.»');
-    // guardar/cargar: la partida de antes vuelve a tener el rotulador colgado; la de después, no
-    await G(() => __game.save(3));
-    await G(() => __game.load(2)); await sleep(400);
-    ok(await visible(G, 'rotulador_cordel') && cuenta(await inv(G), 'rotulador_rojo') === 0, 'cargar la partida de antes: el rotulador vuelve a colgar y no está en el inventario');
-    ok(await zonaTermometro(page, G) === antes, 'cargar la partida de antes: el dibujo vuelve a mostrarlo');
-    await G(() => __game.load(3)); await sleep(400);
-    ok(!(await visible(G, 'rotulador_cordel')) && cuenta(await inv(G), 'rotulador_rojo') === 1 && await flag(G, 'ecosistema_rotulador_dado') === true,
-      'cargar la partida de después: sin rotulador colgado, uno en el inventario y el flag puesto');
-    ok(await zonaTermometro(page, G) !== antes, 'cargar la partida de después: el dibujo ya no muestra el rotulador');
-    await ctx.close();
-  }
-
-  // ================================================================ por el termómetro, y Usar el cordel
-  console.log('\n§2.9.1 por el termómetro: el rotulador sale del dibujo');
-  {
-    const { ctx, page, G } = await open(ACTO1);
-    const antes = await zonaTermometro(page, G);
-    await coger(page, G, 'termometro_ventas');
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 1 && !(await visible(G, 'rotulador_cordel')), 'Coger el termómetro: un rotulador y el cordel vacío');
-    ok(await zonaTermometro(page, G) !== antes, 'el dibujo cambia también por esta vía');
+    ok(L.includes('maripaz_remitido: ' + MARIPAZ_ROT) && cuenta(await inv(G), 'rotulador_rojo') === 0, 'Coger el rotulador por el cordel: Maripaz «Ese rotulador pinta objetivos…» (no lo da)');
+    ok(await visible(G, 'rotulador_cordel') && await zonaTermometro(page, G) === conRotulador, 'el rotulador sigue colgado');
     await G(() => __game.clearLog());
-    await coger(page, G, 'rotulador_cordel');
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 1, 'el cordel ya no está: un solo rotulador');
+    await coger(page, G, 'termometro_ventas', 'usar');
+    ok((await log(G)).includes('maripaz_remitido: ' + MARIPAZ_ROT), 'Usar el termómetro sin rotulador: como Coger');
     await ctx.close();
   }
-  console.log('\n§2.9.1 Usar el cordel (Acto III, con Maripaz)');
-  {
-    const { ctx, page, G } = await open(ACTO3);
-    ok(await visible(G, 'rotulador_cordel'), 'Acto III: el rotulador cuelga');
-    await coger(page, G, 'rotulador_cordel', 'usar');
-    const L = await log(G);
-    ok(L.includes('maripaz_remitido: ' + MARIPAZ_ROT) && cuenta(await inv(G), 'rotulador_rojo') === 1, 'Usar el cordel = Coger: Maripaz lo regala y un rotulador');
-    await G(() => __game.save(4)); await G(() => __game.load(4)); await sleep(300);
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 1 && !(await visible(G, 'rotulador_cordel')), 'guardar/cargar: un rotulador y el cordel vacío');
-    await ctx.close();
-  }
-  console.log('\n§2.9.1 Acto II sin Maripaz: en silencio');
+  console.log('\n§2.9.1 [P14] Acto II, antes del D1: el cordel vacío (Maripaz se lo ha llevado a la reunión)');
   {
     const { ctx, page, G } = await open({ ...ACTO2 });
-    await coger(page, G, 'rotulador_cordel');
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 1 && (await log(G)).length === 0, 'Coger por el cordel sin Maripaz: sin líneas y con el rotulador');
+    ok(!(await visible(G, 'rotulador_cordel')), 'sin el rotulador en el cordel');
+    ok(await zonaTermometro(page, G) !== conRotulador, 'el dibujo: el cordel, sin el rotulador');
+    await shot(page, 'cordel-vacio');
+    await G(() => __game.clearLog());
+    await coger(page, G, 'termometro_ventas');
+    ok((await log(G)).includes('bruno: Solo queda el cordel, cortado. El rotulador se lo ha llevado Maripaz.') && cuenta(await inv(G), 'rotulador_rojo') === 0, 'Coger: «Solo queda el cordel, cortado…»');
+    await G(() => __game.clearLog()); await G(() => __game.doVerb('mirar', 'termometro_ventas'));
+    ok((await log(G)).includes('bruno: El cordel, vacío. El 3 % que falta se lo lleva el gong de al lado.'), 'Mirar: «El cordel, vacío. El 3 %…»');
+    await G(() => __game.save(3)); await G(() => __game.load(3)); await sleep(300);
+    ok(!(await visible(G, 'rotulador_cordel')) && await zonaTermometro(page, G) !== conRotulador, 'guardar/cargar: el cordel sigue vacío');
+    await ctx.close();
+  }
+  console.log('\n§2.9.1 Acto III, con el rotulador del D1');
+  {
+    const { ctx, page, G } = await open(ACTO3);
+    await G(() => { __game.giveItem('rotulador_rojo'); __game.clearLog(); });
+    ok(!(await visible(G, 'rotulador_cordel')), 'Acto III: el cordel, vacío');
+    await coger(page, G, 'termometro_ventas');
+    ok(cuenta(await inv(G), 'rotulador_rojo') === 1 && !(await log(G)).some(l => l.includes('rotulador')), 'Coger: lo genérico (no se duplica)');
+    await G(() => __game.clearLog()); await G(() => __game.doVerb('usar', 'termometro_ventas'));
+    ok((await log(G)).includes('bruno: Le pinto un poquito más de rojo.'), 'Usar: lo pinta');
     await ctx.close();
   }
   console.log('\n§2.9.1 sin torno_abierto (forzado): el cordel no da nada');
@@ -168,7 +145,7 @@ try {
     const { ctx, page, G } = await open(ACTO1);
     await G(() => __game.setFlag('torno_abierto', false));
     await coger(page, G, 'rotulador_cordel');
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 0 && !(await flag(G, 'ecosistema_rotulador_dado')), 'sin torno_abierto no hay rotulador');
+    ok(cuenta(await inv(G), 'rotulador_rojo') === 0, 'sin torno_abierto no hay rotulador');
     await ctx.close();
   }
 

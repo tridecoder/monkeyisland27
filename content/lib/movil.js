@@ -19,7 +19,7 @@ import { decir } from '../../engine/efectos.js';
 export const RV_TADEO = [   // plan §5.16: tres, sin siglas
   ['inigo_presentado', 'RV: Cómo hacer que la web cargue en la mitad de tiempo (40 págs.)!!', ''],
   ['acto_2_iniciado', 'RV: RV: RV: La IA dice que la web va más rápida sin lo más grande!!', ''],
-  ['acto_3_iniciado', 'RV x5: Reflexión sobre armarios: "AYÚDAME ESTOY EN EL ARMARIO 27"', 'Lo ha visto toda la empresa. Y nadie lo ha leído.'],
+  // [P11] fuera el «RV x5» del Acto III (era un aviso más del armario 27; su sitio lo ocupa la L4 de Evaristo)
 ];
 
 /** [coherencia] Los correos de don Evaristo: cada uno que el juego anuncia con un aviso LLEGA a la bandeja en ese

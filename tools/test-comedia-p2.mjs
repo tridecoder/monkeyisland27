@@ -233,17 +233,19 @@ async function principal() {
   for (let i = 0; i < 4; i++) await T.verb('tirar', 'enchufe_pantalla');
   await T.expectFlags({ apagon_n: 4, cms_vivo: false }, '4.2 apagones');
   await T.musts(['¡Estamos ciegos! ¿Hay alguien leyendo?', 'Ese enchufe está en mis sistemas.', 'Si no veo la gráfica, no sé si estoy contenta.',
-    'Tercera vez. Te paso a BLOQUEADO.', 'Eso huele a Eutimio.', 'Sin número, a su enchufe.', 'Que te la apague Eutimio.'], '4.2 (E5 D06, D07)');
+    'Que te la apague Eutimio.'], '4.2 (E5 D06, D07)');
   must(!(await T.logHas('Y mira la brida.')), '4.2: E5 D07 fuera «Y mira la brida.»');
+  // [P11] fuera los tirones 3.º y 4.º (repetían lo del cable): del tercero en adelante, solo el gesto de Yoli
+  for (const t of ['Tercera vez. Te paso a BLOQUEADO.', 'Eso huele a Eutimio.', 'Sin número, a su enchufe.']) must(!(await T.logHas(t)), `[P11] 4.2: sigue «${t}»`);
   lg = await T.log();
-  must(lg.filter(l => l.who === 'anselmo_monolito').length === 5, `4.2: las veces 3 y 4 no son de Anselmo (${lg.filter(l => l.who === 'anselmo_monolito').length} líneas; E5: 5, sin «Y mira la brida.»)`);
+  must(lg.filter(l => l.who === 'anselmo_monolito').length === 2, `4.2: Anselmo habla solo en el primero (${lg.filter(l => l.who === 'anselmo_monolito').length} líneas; [P11]: 2)`);
   must(!(await G(() => !!__game.game.apagon)), '4.2: la sala se queda a oscuras');
   for (const [id, x] of [['anselmo_monolito', 1082], ['yoli_tendencias', 719]]) {
     const a = await T.actor(id);
     must(a.room === 'pecera' && Math.abs(a.x - x) < 3, `4.2: ${id} no vuelve a su sitio (${JSON.stringify(a)})`);
   }
   await sinNemesio('apagón');
-  ok('4.2 apagón ×4: Anselmo (veces 1, 3 y 4) y Yoli; todos vuelven a su sitio');
+  ok('4.2 apagón ×4: Anselmo (vez 1) y Yoli; [P11] la 3.ª y la 4.ª, solo el gesto; todos vuelven a su sitio');
 
   // ------------------------------------------------------------ Yoli sin CMS (B4) y camino antiguo del enchufe
   await T.clearLog();
@@ -251,14 +253,17 @@ async function principal() {
   must(!(await R.state()).dialog, 'Yoli sin cms_vivo abre menú');
   await T.musts(['becario con silla... ¿Con silla? Ahora no. Se cae el CMS.', 'Vuelve con un titular con número. El siete convierte.'], 'B4');
   must(!(await T.logHas('Teodoro vive en la Redacción de papel')) && !(await T.logHas('nuevo dueño de El Incontable')), 'Yoli sigue con rumores');
+  // [P11] fuera el camino alternativo del ticket nº 3: con el registro leído, el enchufe da el apagón de siempre
   await T.setFlag('vio_ticket_3');
   await T.clearLog();
   await T.verb('tirar', 'enchufe_pantalla');
-  await T.expectFlags({ cms_vivo: true }, '4.2 camino antiguo');
-  await T.musts(['¿Tiene número?', '...Entonces existe. A HECHO (PERO NO).'], 'camino antiguo');
+  await T.expectFlags({ cms_vivo: false, apagon_n: 5 }, '[P11] sin camino del ticket nº 3');
+  must(!(await T.logHas('A HECHO (PERO NO)')) && !(await T.logHas('¿Tiene número?')), '[P11] sigue el camino del ticket nº 3');
+  await T.setFlag('cms_vivo');                                              // (el CMS, desde la R-3 de Sistemas)
   await T.verb('mirar', 'enchufe_pantalla'); await T.verb('mirar', 'pantalla_metricas');
-  await T.musts(['la excepción de Anselmo: «SALVO TICKET Nº 3».', 'Apagada. Y la web publica. Nadie se atreve a decirlo en voz alta.'], 'enchufe / L8');
-  ok('B4 (Yoli con silla), sin rumores; camino antiguo con Anselmo; L8');
+  await T.musts(['Apagada. Y la web publica. Nadie se atreve a decirlo en voz alta.'], 'L8');
+  must(!(await T.logHas('SALVO TICKET')), '[P11] la excepción de Anselmo no está (no hay camino del ticket nº 3)');
+  ok('B4 (Yoli con silla), sin rumores; [P11] sin el camino del ticket nº 3; L8');
   await T.setFlag('cafetera_viral');
   await R.travel('office'); await T.clearLog(); await R.travel('pecera'); await T.idle();
   must(await T.logHas('Creo que esto es estar tranquila.'), 'primera entrada con cms_vivo');
@@ -300,12 +305,13 @@ async function principal() {
   await T.verb('usar', 'ordenador_bruno');
   await T.expectFlags({ pieza_escrita: true, herminia_midio: true }, 'paso 34');
   await T.expectInv(['pieza_opa'], [], 'paso 34');
-  await T.musts([HERMINIA + 'tu pieza · 31 líneas · hueco de la página 7: 23 · sobra: 26 %', 'Ya te la ha leído. Yo no, ¿eh? Yo ya no leo. Superviso.',
+  // [P11] «Herminia mide la pieza», en 7 líneas: la medición, «Quitar…», la frase de Anselmo (si no se oyó) y la salida
+  await T.musts([HERMINIA + 'tu pieza · 31 líneas · hueco de la página 7: 23 · sobra: 26 %',
     '¿Y quién quita un 26 %?', 'Ella no. Ella mide. Quitar siempre es de otro departamento.',
-    HERMINIA + 'infografía de la opa · hecha en 0,4 s · publicar: bloqueado', 'Cuatro décimas. Yo tardaba una semana. Bien hecha, eso sí.',
-    'Hecha con una IA de fuera. No entra en ninguna pieza.', 'Encintar, no: aislar el componente.', '¿Y vosotros no usáis IA de fuera?',
-    'El modelo es de fuera. El prompt es de dentro.', 'Eso lo hace nuestro.', 'El prompt de Herminia lo escribí yo. En esta mesa.',
+    '¿Y vosotros no usáis IA de fuera?', 'El modelo es de fuera. El prompt es de dentro.', 'Eso lo hace nuestro.',
     'A un metro de mi cinta. Fuera.', 'Uno era yo, comprobando.'], 'paso 34 (E4 S4: la prueba A/B de Yoli)');
+  for (const t of ['Ya te la ha leído.', 'infografía de la opa', 'Cuatro décimas.', 'Hecha con una IA de fuera.', 'Encintar, no: aislar el componente.', 'El prompt de Herminia lo escribí yo.'])
+    must(!(await T.logHas(t)), `[P11] paso 34: sigue «${t}»`);
   lg = await T.log();
   must(lg.filter(l => l.text.startsWith(HERMINIA)).length <= 3, 'paso 34: más de tres salidas de Herminia');
   must(!lg.some(l => /Diseño/.test(l.text) || ['valentin_reticula', 'coro_desarrollo'].includes(l.who)), 'paso 34: Diseño o el coro en la escena');
@@ -333,7 +339,7 @@ async function principal() {
   await T.expectFlags({ dos_ias_vista: true, anselmo_dijo_regla: true }, 'momento 8');
   await T.musts(['Última vuelta. Integración: en la próxima versión.', 'Envuelta. Parece un regalo. De nadie.',
     'Antes de que la envolviera le pedí un gráfico del Titulator.',
-    HERMINIA + 'titulares por hora · picos: 14:00 y 14:30 · pausas de 5 min: 11', HERMINIA + 'origen: Sistemas, armario 27 · consumo: atún',
+    HERMINIA + 'titulares por hora · picos: 14:00 y 14:30 · pausas de 5 min: 11', HERMINIA + 'consumo: atún',
     'Una IA que come a las dos y va once veces al baño.', 'Tiene alta de usuario interno. Lo que tiene alta es de la casa.'], 'momento 8');
   must(!(await T.logHas('Eso es un compañero.')), 'E6 §2.5 B2: fuera «Eso no es un modelo. Eso es un compañero.»');
   lg = await T.log();

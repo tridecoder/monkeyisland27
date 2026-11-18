@@ -7,9 +7,8 @@
 //   Gervasio, sin árbol; la vía del Vending entera (pregunta en el Vending → Hablar tele → escena sin árbol); guardar con
 //   la pregunta hecha (sin estampida) y cargar → Usar tele → escena; guardar tras «Nada. Gracias» y cargar → el árbol;
 //   Esc en la escena (atasco abierto, control devuelto, sin guardar); el paso 28 del recorrido de 49 en modo rápido.
-//   §2.2 el atasco se anuncia: plano de la puerta, los tres se giran hacia Bruno, «¿Necesitan ayuda?», control devuelto;
-//   Mirar a Fermín/Rogelio/Jacinto → N2 (y sin atasco, su Mirar de siempre); 19 s quieto, sigue; 21 s, anuncio;
-//   las otras vías con clic (Ir puerta = empujar, clic derecho sobre uno = hablar, Coger cruasanes).
+//   §2.2 el atasco se anuncia: plano de la puerta, los tres se giran hacia Bruno, «¿Necesitan ayuda?»; [P11] y se
+//   resuelve solo (escena: el anuncio de Maripaz y el cruasán de Jacinto; fuera las vías, el reloj de 20 s y N2).
 //   node tools/test-e6-pa.mjs            (≈ 3 min; usa tiempo real para el reloj del atasco)
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -95,16 +94,16 @@ async function clicOpcion({ page, G }, txt) {
   await sleep(120);
   return true;
 }
+// [P11] el atasco ya no es jugable: escena automática con el anuncio de Maripaz y el medio cruasán de Jacinto
 const viaLines = {
-  empujar: 'Les doy un empujoncito.', cruasan: '¡Ese medio cruasán es mío!', hablar: '¿Y la próxima reunión, cuándo es?',
-  anuncio: '¡Un momento! ¡Antes de salir, un anuncio',
+  empujar: 'Les doy un empujoncito.', hablar: '¿Y la próxima reunión, cuándo es?', anuncio: '¡Un momento! ¡Antes de salir, un anuncio',
 };
 async function comprobarVia(T, via) {
   const { G } = T;
   await rapido(G, true);
   await until(G, () => __game.getFlag('reunion_terminada') && !__game.state().busy, null, 60000);
   const n = {}; for (const [k, t] of Object.entries(viaLines)) n[k] = await logCount(G, t);
-  ok(n[via] === 1 && Object.entries(n).every(([k, c]) => k === via || c === 0), `vía ${via}: una sola línea de vía ${JSON.stringify(n)}`);
+  ok(n[via] === 1 && Object.entries(n).every(([k, c]) => k === via || c === 0) && await logCount(G, '¡Ese medio cruasán es mío!') === 1, `vía ${via}: el anuncio y el cruasán de Jacinto, sin otras vías ${JSON.stringify(n)}`);
   const st = await G(() => { const s = __game.state(); return { rt: s.flags.reunion_terminada, at: s.flags.sala_amazonas_atasco, room: s.room,
     merc: ['mercados_1', 'mercados_2', 'mercados_3'].filter(id => s.actors[id] && s.actors[id].room === 'sala_amazonas'), noSave: __game.game.noSave }; });
   ok(st.rt && !st.at && !st.merc.length && !st.noSave && st.room === 'sala_amazonas', `vía ${via}: reunión terminada, atasco cerrado, se puede guardar, Bruno en la Sala ${JSON.stringify(st)}`);
@@ -135,7 +134,8 @@ async function porLaTele(T, { capturas = false } = {}) {
   const enLinea = await G(() => { const g = __game.game, b = g.actors[g.G.player]; return { cut: g.cutscene,
     caras: ['mercados_1', 'mercados_2', 'mercados_3'].map(id => [g.actors[id].dir, Math.sign(b.x - g.actors[id].x)]), cam: g.camTarget, fol: g.camFollow }; });
   ok(enLinea.cut > 0 && enLinea.caras.every(([d, s]) => d === (s < 0 ? 'left' : 'right')), `«¿Necesitan ayuda?» dentro de la cinemática, con los tres girados hacia Bruno ${JSON.stringify(enLinea)}`);
-  await saltando(G, "__game.getFlag('sala_amazonas_atasco') && !__game.state().busy");
+  // [P11] el atasco se resuelve solo (escena): el control vuelve con la reunión ya terminada
+  await saltando(G, "__game.getFlag('reunion_terminada') && !__game.state().busy && !__game.game.cutscene");
   const sts = await G(() => { const g = __game.game; clearInterval(g.__teleT); return g.__teleSt; });
   ok(!sts.slice(sts.indexOf('gertrudis')).includes('buscando'), `la escena, sintonizada: sin «BUSCANDO SEÑAL» tras el saludo (${sts.join(' → ')})`);
 }
@@ -148,28 +148,13 @@ try {
     const { page, G } = T;
     await porLaTele(T, { capturas: true });
     const s = await G(() => ({ room: __game.state().room, busy: __game.state().busy, ns: __game.game.noSave, rt: __game.getFlag('reunion_terminada'),
-      gp: __game.getFlag('gertrudis_pregunta'), fol: __game.game.camFollow,
+      at: __game.getFlag('sala_amazonas_atasco'), gp: __game.getFlag('gertrudis_pregunta'), fol: __game.game.camFollow,
       merc: ['mercados_1', 'mercados_2', 'mercados_3'].map(id => __game.game.actors[id].room) }));
-    ok(s.room === 'sala_amazonas' && !s.busy && s.ns && !s.rt && s.gp && s.merc.every(r => r === 'sala_amazonas'), `atasco abierto, control devuelto, sin guardar, ningún cambio de sala ${JSON.stringify(s)}`);
+    ok(s.room === 'sala_amazonas' && !s.busy && !s.ns && s.rt && !s.at && s.gp && s.merc.every(r => r !== 'sala_amazonas'), `[P11] el control vuelve con el atasco ya resuelto (escena), se puede guardar ${JSON.stringify(s)}`);
     ok(await logHas(G, '¿Necesitan ayuda?') && await logIdx(G, '¿Necesitan ayuda?') > await logIdx(G, '¡Tengo doble prioridad!'), '«¿Necesitan ayuda?» tras las tres líneas del atasco');
+    ok(await logIdx(G, viaLines.anuncio) > await logIdx(G, '¿Necesitan ayuda?'), '[P11] y justo después, el anuncio de Maripaz (sin esperar)');
     ok(await logCount(G, 'LA MANDO A LA PRÓXIMA PANTALLA') === 0, 'no ha hecho falta el Vending');
     ok(!!s.fol, 'la cámara vuelve a seguir a Bruno');
-    // Mirar a cualquiera → N2 (clic)
-    await rapido(G, true);
-    await G(() => __game.clearLog());
-    await clic(T, 'mirar', 'mercados_3'); await idle(G);
-    await G(() => __game.doVerb('mirar', 'mercados_1'));
-    ok(await logCount(G, 'Los tres de Mercados, encajados en el marco, sin ceder un palmo.') === 2 && await flag(G, 'sala_amazonas_atasco'), 'Mirar a Jacinto (clic) y a Fermín → N2; no resuelve');
-    await rapido(G, false);
-    await G(() => __game.clearLog());
-    // reloj de 20 s quieto, con el ratón moviéndose (no cuenta)
-    const t0 = Date.now();
-    let k = 0;
-    while (Date.now() - t0 < 19000) { await page.mouse.move(300 + (k++ % 20) * 10, 420); await sleep(100); }
-    ok(await flag(G, 'sala_amazonas_atasco') && !(await logHas(G, viaLines.anuncio)), `a los 19 s quieto, el atasco sigue (${Date.now() - t0} ms)`);
-    await shot(page, 'atasco-19s');
-    ok(await until(G, () => __game.log.some(l => String(l.text).includes('anuncio de cinco segundos')), null, 4000), `a los ~21 s, Maripaz anuncia (${Date.now() - t0} ms)`);
-    ok((Date.now() - t0) >= 19500 && (Date.now() - t0) < 23500, `anuncio en la ventana 19,5-23,5 s (${Date.now() - t0} ms)`);
     await comprobarVia(T, 'anuncio');
     // tras la estampida: Hablar tele = lo de siempre (sin árbol) y Mirar a Mercados ya no aplica (se han ido)
     await G(() => __game.clearLog());
@@ -178,22 +163,7 @@ try {
     await T.ctx.close();
   }
 
-  console.log('\n§2.2 las otras vías con clic tras el anuncio (Usar puerta, clic derecho sobre uno, Coger cruasanes)');
-  for (const via of ['empujar', 'hablar', 'cruasan']) {
-    const T = await open();
-    const { G } = T;
-    await porLaTele(T);
-    await G(() => __game.clearLog());
-    if (via === 'empujar') {
-      // Usar la puerta: clic en el dintel (abajo la tapan los tres encajados)
-      const vp = await G(() => __game.verbPos('usar')); await T.page.mouse.click(vp.x, vp.y); await sleep(80);
-      const c = await G(() => __game.roomPointToClient(20, 34)); await T.page.mouse.click(c.x, c.y); await sleep(120);
-    }
-    else if (via === 'hablar') await clic(T, null, 'mercados_2', 'right');
-    else await clic(T, 'coger', 'minicruasanes');
-    await comprobarVia(T, via);
-    await T.ctx.close();
-  }
+  // [P11] fuera las otras vías del atasco (Usar puerta, hablar, Coger cruasanes): ya no es jugable
 
   // ================================================================ §2.3 salidas, repeticiones y orden
   console.log('\n§2.3 «Nada.» en TV0 y «Nada. Gracias, Gertrudis.» en TV1: la tele vuelve a normal y se repite');
@@ -259,13 +229,11 @@ try {
     await rapido(G, false);
     await G(() => { const g = __game.game; g.__sawChoice = false; g.__sawBusca = false; g.__t = setInterval(() => { if (g.choice) g.__sawChoice = true; if (g.getObjState('tele_amazonas').state === 'buscando') g.__sawBusca = true; }, 20); });
     await clic(T, 'hablar', 'tele_amazonas');
-    await saltando(G, "__game.getFlag('sala_amazonas_atasco') && !__game.state().busy");
+    await saltando(G, "__game.getFlag('reunion_terminada') && !__game.state().busy && !__game.game.cutscene");
     const s = await G(() => { const g = __game.game; clearInterval(g.__t); return { ch: g.__sawChoice, bus: g.__sawBusca }; });
     ok(!s.ch && s.bus && await logHas(G, 'PREGUNTA DEL PÚBLICO') && !(await logHas(G, 'BUENAS NOCHES, SALA AMAZONAS.')), `Hablar tele: escena directa, con «BUSCANDO SEÑAL», sin árbol ni N3 ${JSON.stringify(s)}`);
     ok(await logHas(G, '¿Necesitan ayuda?'), 'por el Vending también se anuncia el atasco');
-    await G(() => __game.clearLog());
-    await clic(T, 'empujar', 'mercados_1');
-    await comprobarVia(T, 'empujar');
+    await comprobarVia(T, 'anuncio');
     await T.ctx.close();
   }
 
@@ -281,16 +249,13 @@ try {
     ok(await flag(G, 'gertrudis_pregunta') && !(await flag(G, 'reunion_terminada')), 'cargada: la pregunta hecha y la reunión en marcha');
     await rapido(G, false);
     await clic(T, 'usar', 'tele_amazonas');
-    await saltando(G, "__game.getFlag('sala_amazonas_atasco') && !__game.state().busy");
-    ok(await logHas(G, 'PREGUNTA DEL PÚBLICO') && await logHas(G, '¿Necesitan ayuda?') && await flag(G, 'sala_amazonas_atasco'), 'Usar tele → escena y atasco');
-    await G(() => __game.clearLog());
-    await rapido(G, true);
-    await G(() => __game.doVerb('hablar', 'mercados_3'));
-    await comprobarVia(T, 'hablar');
+    await saltando(G, "__game.getFlag('reunion_terminada') && !__game.state().busy && !__game.game.cutscene");
+    ok(await logHas(G, 'PREGUNTA DEL PÚBLICO') && await logHas(G, '¿Necesitan ayuda?'), 'Usar tele → escena y atasco');
+    await comprobarVia(T, 'anuncio');
     await T.ctx.close();
   }
 
-  console.log('\n§2.3 Esc durante la escena sintonizada: atasco abierto, control devuelto, sin guardar');
+  console.log('\n§2.3 [P11] Esc durante la escena sintonizada: el atasco (escena) se resuelve igual');
   {
     const T = await open();
     const { page, G } = T;
@@ -302,14 +267,11 @@ try {
     await until(G, () => __game.game.cutscene > 0, null, 5000);
     await sleep(500);
     await page.keyboard.press('Escape');
-    await until(G, () => !__game.state().busy, null, 30000);
+    await saltando(G, "__game.getFlag('reunion_terminada') && !__game.state().busy && !__game.game.cutscene");
     const s = await G(() => ({ at: __game.getFlag('sala_amazonas_atasco'), rt: __game.getFlag('reunion_terminada'), ns: __game.game.noSave,
       cut: __game.game.cutscene, fol: !!__game.game.camFollow, menu: !!__game.game.menu,
       merc: ['mercados_1', 'mercados_2', 'mercados_3'].filter(id => __game.game.actors[id].room === 'sala_amazonas').length }));
-    ok(s.at && !s.rt && s.ns && s.merc === 3 && !s.cut && s.fol && !s.menu, `Esc: atasco abierto, cinemática cerrada, cámara con Bruno, sin guardar ${JSON.stringify(s)}`);
-    await G(() => __game.clearLog());
-    await clic(T, 'empujar', 'mercados_2');
-    await comprobarVia(T, 'empujar');
+    ok(!s.at && s.rt && !s.ns && s.merc === 0 && !s.cut && s.fol && !s.menu, `Esc: reunión terminada, cinemática cerrada, cámara con Bruno, se puede guardar ${JSON.stringify(s)}`);
     await T.ctx.close();
   }
 

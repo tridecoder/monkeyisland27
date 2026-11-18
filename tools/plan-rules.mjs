@@ -179,7 +179,10 @@ export const TOPES_E2 = [
 export const REPETIBLES_E2 = ['¿Cómo va el Ibex?', '¿Cuántas sillas hay?', '¿Y de qué va el evento?', 'Buenas noches, Gertrudis.',
   'Buenas noches otra vez.', '¿Me da un café sin saludar?', '¿Ha enviado ya el correo?', '¿Qué tal ahora con Anselmo?', '¿Qué noticia puedo traer?',
   // [bloqueos] la pregunta a Gervasio está siempre (antes la escondía un `if`); repetida, Gervasio vuelve a señalar la tele
-  'Bueno... ¿y cuáles son los siguientes pasos?'];
+  'Bueno... ¿y cuáles son los siguientes pasos?',
+  // [P11] Eutimio tiene un solo árbol (atiende siempre): su menú principal ya es el que tenía estas dos, repetibles en el
+  // guion (antes vivían en los subnodos P0/P1, que esta regla no miraba)
+  '¿Escuchas por la rejilla?', '¿Se ha caído el wifi?'];
 const normOp = (t) => String(t).toLowerCase().replace(/[¿?¡!.,«»"“”]/g, '').replace(/\s+/g, ' ').trim();
 
 /** Topes de E2 «en todo el juego» sobre las cadenas literales de content/ (sin arte, flags ni plantilla). */

@@ -159,8 +159,8 @@ export default {
             reply: ['Invadir, no. Desplegar capacidad.', 'Mi quesito suma 130 %. Desarrollo siempre da de más.'] },
           { text: 'He arreglado el CMS.', once: true, if: 'cms_vivo',
             do: async (api) => {
-              const arriba = api.getState('enchufe_pantalla') === 'con_ticket';
-              await talk(api, [[A, '¿Desde dónde?'], ['B', arriba ? 'Desde aquí. Un enchufe con número.' : 'Desde Sistemas. Una regleta.'],
+              // ([P11] fuera la variante del ticket nº 3: el CMS solo vuelve desde Sistemas)
+              await talk(api, [[A, '¿Desde dónde?'], ['B', 'Desde Sistemas. Una regleta.'],
                 [A, 'Solución de terceros. Funciona, pero no es mía.']]);
             } },
           { text: 'Necesito la baja de Brais.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!album_validado', '!posit_descopeado'],
@@ -320,7 +320,8 @@ async function salida(api, via) {
       await api.wait(400);
       api.give('ticket_n1');
       api.sfx('pickup');
-      await api.say(['«Ticket nº 1: Alta becario Brais. CERRADO.»', '«No subo. Nunca subo. Eutimio.»']);
+      await api.say(['«Ticket nº 1: Alta becario Brais. CERRADO.»', '«No subo. Nunca subo. Eutimio.»',
+        'Baja como Titulator. Alta como becario.']);                // [P14]
       // (Tin. Sale Rubén del ascensor. Va derecho a la ventana; con el táper en la mano si se lo dieron, §2.5.5.)
       api.sfx('beep');
       api.setFlag('ruben_libre', true);
