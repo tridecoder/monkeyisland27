@@ -34,7 +34,8 @@ const base = `http://localhost:${server.address().port}/`;
 const browser = await chromium.launch();
 let failures = 0, checks = 0;
 const ok = (c, m) => { checks++; if (c) console.log('  ✓ ' + m); else { failures++; console.log('  ✗ ' + m); } };
-const step = (t) => console.log('\n' + t);
+const T0 = Date.now();
+const step = (t) => console.log(`\n[${Math.round((Date.now() - T0) / 1000)} s] ` + t);
 const consoleErrors = [];
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -136,6 +137,11 @@ try {
     for (const d of ['content', 'engine', 'tools']) walk(path.join(root, d));
     for (const f of ['index.html', 'README.md', 'manifest.webmanifest']) mira(path.join(root, f));
     ok(!malos.length, `sin el nombre viejo del periódico (${malos.slice(0, 6).join(', ') || 'ninguno'})`);
+    // [P16] la rotativa se llama la Benita (los ids técnicos, como `teclaGoyita`, no cambian)
+    const viejaRot = [];
+    const miraRot = (d) => { for (const f of fs.readdirSync(d)) { const p = path.join(d, f); if (f === 'shots') continue; if (fs.statSync(p).isDirectory()) miraRot(p); else if (/\.m?js$/.test(f)) fs.readFileSync(p, 'utf8').split('\n').forEach((l, i) => { if (/\bG[o]yita\b|\bG[O]YITA\b/.test(l)) viejaRot.push(`${path.relative(root, p)}:${i + 1}`); }); } };
+    for (const d of ['content', 'engine', 'tools']) miraRot(path.join(root, d));
+    ok(!viejaRot.length, `[P16] la rotativa, «Benita» en todo el juego (${viejaRot.join(', ') || 'sin el nombre viejo'})`);
     const art = fs.readFileSync(path.join(root, 'content/rooms/art/vestibulo.art.js'), 'utf8');
     ok(/text: 'elincontable\.es'/.test(art) && /\['i', xi, 1\], \['n', xn, 2\]/.test(art), 'letras del Vestíbulo: «elincontable.es» con el «in» descolgado');
     const tit = fs.readFileSync(path.join(root, 'content/rooms/pecera.titulador.js'), 'utf8');
@@ -440,9 +446,11 @@ try {
   await clearLog();
   await R.run(['ir', 'pajarera']);
   ok((await state()).room === 'pajarera' && await logHas('Vuelvo enseguida. La 247 no se va a mover.'), 'la puerta deja salir a cotillear');
-  await R.run(['ir', 'sala_amazonas']);
-  await R.run(['verbo', 'hablar', 'inigo_sinergia']);
-  ok(await until(() => !!__game.state().duel, null, 20000), 'Hablar con Íñigo vuelve a abrir el D4');
+  await G(() => { __game.doVerb('usar', 'puerta_sala'); });          // (sin esperar: volver a entrar reabre el duelo)
+  ok(await until(() => !!__game.state().duel, null, 30000), 'al volver a la Sala, el D4 se reabre');
+  await R.loseDuel();
+  await G(() => { __game.doVerb('hablar', 'inigo_sinergia'); });
+  ok(await until(() => !!__game.state().duel, null, 30000), 'Hablar con Íñigo vuelve a abrir el D4');
   await R.loseDuel();
 
   // ====================================================================== [P5] el apagón de 5 s
