@@ -13,6 +13,7 @@
 > - **[P10] Formatos publicitarios por soporte:** en el papel, solo formatos de papel (faldón, robapáginas, módulo, anuncio por palabras); banners, pop-ups y vídeo, solo en web, correo y pantallas. Para la página 7, Maripaz propone un pop-up de cartulina, como los libros desplegables.
 > - **[P11] Historia más simple y cosida (tandas 1 y 2 del informe del juez):** Evaristo entrega él mismo su correo (la coma con Aurora pasa a opcional); el CMS es condición del HUECO y Sistemas atiende siempre; Eutimio da el manual al apagar la R-3; el rotulador llega al ganar a Maripaz; el atasco de la puerta es automático; fuera el ticket nº 3, los tirones 3.º y 4.º, el faldón, la L3 y la L5; Herminia mide en 4–6 líneas y Begoña cierra el clímax en cuatro; Brais es F.P. (Bruno le debe la noticia); Íñigo mueve el pósit de Bruno al ganar la FIRMA y trae en persona la amenaza al cerrar la página 7.
 > - **[P12] Eventos, integrada:** Íñigo es el ponente de Pilar (brindis del Plan Cero Papel a las 21:05) y su rider pide cero papel: el álbum va a la trituradora a las 21:04. Falta la silla 112, que Íñigo se llevó en julio y es la de Brais en el armario 27: decírselo a Pilar salva el álbum. Fuera la segunda palabra del kanban y el micropuzle de la silla 113; las croquetas se quedan todas.
+> - **[P17] Titulares:** el primer titular del Titulator pasa a «EL IBEX NO SE MUEVE. LOS EXPERTOS PIDEN QUE NADIE SE ACERQUE», y el minijuego gana un titular fijo: «El Ibex seguirá plano todo el fin de semana, avisan los expertos».
 > - **[P16] La rotativa cambia de nombre:** «la Goyita» pasa a ser «la Benita» en todo el guion (cambio global, sin tachados; los ids técnicos no cambian).
 > - **[P13] El periódico se llama «El Incontable»** (en la web, elincontable.es): cambio global de nombre y cinco chistes nuevos donde el nombre era el chiste.
 > - **[P14] Pasada de coherencia (segunda vuelta del juez y lector 2):** la silla 112 se deduce (la opción sale tras mirar la silla o preguntarle a Brais, y hay que elegir dónde está); Pilar distingue acreditar de asistir; el rotulador sale del termómetro con Maripaz; respaldo del pósit «Prescindible»; un solo aviso del armario 27 al abrir el Acto III; la impresora de los Despachos; sin cena de Navidad para Brais, que sale a por atún pero no se puede ir; plantas, Gervasio, Gertrudis, Íñigo y Evaristo, el momento oportuno, el sello de la ficha, la regla de Teodoro, el registro de tickets y referencias cruzadas.
@@ -821,7 +822,8 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 
 *Plano detalle: el portátil de Íñigo. El Titulator escupe el titular línea a línea.*
 
-**TITULATOR (en boca de Íñigo):** EL IBEX ABRE PLANO. PLANO. ¿POR QUÉ NADIE HABLA DE ESTO?
+**TITULATOR (en boca de Íñigo):** EL IBEX NO SE MUEVE. LOS EXPERTOS PIDEN QUE NADIE SE ACERQUE
+> NOTA: [P17] Titular nuevo, elegido por el dueño (a las 18:30 la bolsa ya ha cerrado: el Ibex no «abre»).
 **ÍÑIGO:** Trescientos titulares esta tarde. Sin CMS. Sin silla. Sin convenio.
 
 *Encuadre de Infografía. Leoncio, sin levantarse, señala su portátil con el lápiz.*
@@ -4436,6 +4438,8 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 #### Titulares especiales (sustituyen al molde)
 - hogar · persianas · prisa · **TITULAR:** Cada cuánto hay que lavar las persianas, según los analistas
 - confirmado · mejillones · probe · **TITULAR:** Confirmado: los mejillones de lata cotizan en el contenedor amarillo
+- expertos · ibex · prisa · **TITULAR:** El Ibex seguirá plano todo el fin de semana, avisan los expertos
+> NOTA: [P17] Especial nuevo del minijuego, elegido por el dueño: la combinación «Los expertos coinciden» + «el Ibex 35» + «antes de que sea tarde» da este titular fijo en vez del molde. Se añade a `especiales` en docs/guion2/e4/piezas.json y se regeneran los datos con tools/gen-titulador.mjs.
 - nutricionista · mejillones · truco · **TITULAR:** Los mejillones de lata, el nuevo valor refugio, según una nutricionista
 - nutricionista · mejillones · corte · **TITULAR:** Una nutricionista avisa: los mejillones de lata cotizan más que...
 - nutricionista · mejillones · obvio · **TITULAR:** Qué le pasa a tu hipoteca si comes mejillones de lata todos los días
