@@ -1,26 +1,26 @@
-// SALA `eventos` — LA SALA POLIVALENTE (Eventos, planta 2). LÓGICA. Dueño: P4 (sala PROTEGIDA: E2 solo quita las dos
-// fechas de §8; el resto, intacto). Adenda §13 (Pilar Escaleta) y
-// §13.4-13.6 (sala propia de Eventos, encargo de dirección). El arte y la geometría están en ./art/eventos.art.js; el
-// árbol de Pilar en ./eventos.dialogos.js.
+// SALA `eventos` — LA SALA POLIVALENTE (Eventos, planta 2). LÓGICA. Adenda §13 (Pilar Escaleta) y §13.4-13.6 (sala
+// propia de Eventos). El arte y la geometría están en ./art/eventos.art.js; el árbol de Pilar en ./eventos.dialogos.js.
 //
 // Se entra (y se sale) por la puerta del Ecosistema (`ecosistema_a_eventos` ↔ `eventos_a_ecosistema`); el ascensor
 // sigue llegando al Ecosistema. Lo que era de Eventos en el Ecosistema vive aquí con sus mismos ids y líneas:
 // `photocall`, `aro_luz`, `cajas_lanyards`, `gong`, `album_eventos_hotspot`, Pilar y el ¡FLASH! de entrada.
-// Gags nuevos (adenda §13.5): la cuenta atrás clavada en 00:05:00 (por actos; paga en los créditos), las sillas
-// (112 → 113 → crisis de Pilar → micro-puzle opcional: devolver la silla de Comercial → croqueta), la lista de
-// acreditados cada vez más absurda (por actos), el evento del que nadie sabe el tema (Pilar, atril, pancarta).
+// [P12] guion nuevo, tanda 3 (docs/GUION_PROPUESTA_LIMPIO.md, «Eventos / Sala Polivalente», con [P14]): esta noche hay
+// evento. Íñigo es el ponente (brindis del Plan Cero Papel, 21:05); desde el Acto II su rider deja la sala sin papel
+// (pancarta tapada, la silla del ponente y la lista de acreditados sin folio), trae una trituradora y un pulsador rojo
+// que «no está conectado a nada»; en el Acto III el álbum de los descartes espera en la boca de la trituradora (21:04).
+// Las sillas: ciento doce en el plano, ciento once en la sala; la 112 (la cruz vacía de la última fila) está en el
+// armario 27, debajo de Brais. Fuera la silla 113 de Comercial y su micropuzle (su croqueta, ahora, premia la 112).
 import { buildRoom } from '../lib/room.js';
 import art from './art/eventos.art.js';
-import dialogos from './eventos.dialogos.js';
-import { flash, gong, SFX, rota } from '../escenas/planta_noble.js';
+import dialogos, { acto, presentado, encontrada, entradaActo3 } from './eventos.dialogos.js';
+import { flash, gong, rota } from '../escenas/planta_noble.js';
 
 const MARIPAZ = 'maripaz_remitido', PILAR = 'pilar_escaleta';
 const sayP = (api, t) => api.sayAs(PILAR, t);
 const sayM = (api, t) => api.sayAs(MARIPAZ, t);
-const acto = (api) => (api.flag('acto_3_iniciado') ? 3 : api.flag('acto_2_iniciado') ? 2 : 1);
-const crisis = (f) => (f('ecosistema_sillas_n') || 0) >= 1 && !f('eventos_silla_devuelta');
-// [coherencia] (excepción del dueño: solo el número) con la crisis abierta, son 113 en lo que diga o piense cualquiera
-const sillas = (api) => (crisis((k) => api.flag(k)) ? 'ciento trece' : 'ciento doce');
+// [P12] el recuento, al día: ciento once en la sala hasta encontrar la 112; ciento doce después
+const sillas = (api) => (encontrada(api) ? 'ciento doce' : 'ciento once');
+const Sillas = (api) => (encontrada(api) ? 'Ciento doce' : 'Ciento once');
 
 // ¡GONG! (adenda §13.3): es de Eventos. Maripaz no está en la sala, pero el dinero tiene buen oído: contesta desde
 // Comercial, al otro lado de la puerta (su voz llega arriba, sin globo sobre nadie).
@@ -42,48 +42,46 @@ async function golpeGong(api) {
 const ENTRADAS = ['¡Acreditado! Empezamos en cinco minutos.', '¡Foto de entrada hecha! Cinco minutos y empezamos.',
   'Uno más. Ya sois tres. Eso es un evento. ¡Acreditación!', '¡Flash! Para el álbum. Y para el seguro.'];
 
-// Lista de acreditados (Mirar mesa_acreditaciones): crece por actos y se lee en orden.
-const LISTA = [
-  [1, '«Cola de la máquina de café: doce personas y una máquina».'],
-  [1, '«El ascensor. Tres veces. Con acompañante: el hilo musical».'],
-  [1, '«Gertrudis, máquina de café. Acceso total. Ya lo tenía».'],
-  [2, '«La impresora de la tercera. Con su bandeja 2». La bandeja no consta.'],
-  [2, '«Piel de plátano, plaza 7. Asistencia: por confirmar».'],
-  [3, '«Titulator 3000: DENEGADA. Motivo: trae su propio atún».'],
-  [3, '«El chico del táper. Acreditado. Sale en todas las fotos».'],
+// [P12] [P14] La lista de acreditados (Mirar mesa_acreditaciones). Acto I: la lista pegada con cinta (gana el ponente
+// confirmado desde la presentación). Desde el Acto II, por el rider, no hay papel: Pilar se la sabe. Tras el álbum, un
+// folio nuevo, el único papel de la sala. Cada entrada: [quién, líneas]; P = Pilar, B = Bruno.
+const LISTA_I = [
+  '«Cola de la máquina de café: doce personas y una máquina».',
+  '«El ascensor. Tres veces. Con acompañante: el hilo musical».',
+  '«Gertrudis, máquina de café. Acceso total. Ya lo tenía».',
 ];
+const PONENTE = '«Ponente: Íñigo Sinergia. Confirmado». Subrayado tres veces.';
+const SIN_LISTA = ['No hay lista. Era papel. Pilar se la sabe.', 'Queda un trozo de cinta con mi nombre: «Bruno. Hasta el canapé».'];
+const TITULATOR = '«Titulator 3000: DENEGADA. Motivo: trae su propio atún».';
 async function mirarLista(api) {
-  const disp = LISTA.filter(([a]) => a <= acto(api));
-  const n = api.inc('eventos_lista_n'), max = api.flag('eventos_lista_max') || 0;
-  let i = (n - 1) % disp.length;
-  if (max < disp.length) { i = max; api.setFlag('eventos_lista_max', max + 1); }   // lo nuevo de cada acto, primero
-  if (n === 1) await api.say('La mesa de acreditaciones. Hay una lista pegada con cinta.');
-  await api.say(disp[i][1]);
-  if (i === LISTA.length - 1) await api.say('Al final, a boli: «Bruno. Acceso: hasta el canapé». Subrayado.');
+  const n = api.inc('eventos_lista_n'), a = acto(api);
+  if (a === 1) {
+    const L = presentado(api) ? [...LISTA_I, PONENTE] : LISTA_I;
+    const i = (n - 1) % L.length;
+    if (n === 1) await api.say('La mesa de acreditaciones. Hay una lista pegada con cinta.');
+    await api.say(L[i]);
+    if (i === L.length - 1) await api.say('Al final, a boli: «Bruno. Acceso: hasta el canapé». Subrayado.');
+    return;
+  }
+  if (a === 2) { await api.say(SIN_LISTA); return; }
+  const R = encontrada(api)
+    ? [['B', ['Un folio nuevo, a boli: «Brais. Silla 112».', 'Es el único papel de la sala. Y la letra más grande.']], ['B', TITULATOR]]
+    : [['B', SIN_LISTA], ['P', 'El extra: sin acreditar. No se sienta. Sale en todas las fotos.'], ['B', TITULATOR]];
+  const [who, t] = R[(n - 1) % R.length];
+  if (who === 'P') await sayP(api, t); else await api.say(t);
 }
 
-// La silla 113 (micro-puzle opcional, no toca el grafo principal): mirarla descubre la pegatina de Comercial;
-// devolverla (Usar / Coger / Empujar, ya sabiendo de quién es) cierra la crisis de Pilar y trae la croqueta.
-async function devolverSilla(api) {
-  const habiaCrisis = crisis((k) => api.flag(k));
-  await api.say('Es de Comercial. Se la devuelvo a Maripaz, que es de donde ha venido.');
-  api.sfx(SFX.sillas);
-  api.setFlag('eventos_silla_devuelta', true);
-  await api.wait(400);
-  // [coherencia] el alivio, solo si había crisis (si Pilar aún no había contado la de más, solo cuenta)
-  await sayP(api, habiaCrisis ? ['Ciento diez, ciento once... ciento doce.', '¡CIENTO DOCE! ¡Vuelvo a ser persona!'] : 'Ciento diez, ciento once... ciento doce.');
-  await sayP(api, 'Bruno, eso merece algo. Toma: una croqueta antes de las 21:05.');
-  await api.say('Está fría.');
-  await sayP(api, 'Es una crisis de reputación. Pero es nuestra.');
-  api.setFlag('eventos_croqueta', true);
-}
-async function tocarSilla(api) {
-  if (api.flag('eventos_silla_mirada')) { await devolverSilla(api); return; }
-  await api.say('La pongo recta en su cruz.');
-  await sayP(api, 'Ciento doce... ciento trece. ¡No es la postura, es la silla!');
-  if (!(api.flag('ecosistema_sillas_n') || 0)) api.setFlag('ecosistema_sillas_n', 1);   // [coherencia] ya la ha contado: crisis
-}
+// El álbum de los descartes: en la mesa en los Actos I-II; en el Acto III, en la boca de la trituradora hasta que
+// Pilar lo salva. Dos hotspots (dos sitios) con las mismas respuestas salvo «Coger».
+const ALBUM = {
+  mirar: async (api) => api.say(['El álbum de Eventos: los descartes. En todas sale alguien comiendo.',
+    'Al fondo, siempre, un chico pálido con un táper. Pilar lo llama «el extra».']),
+  abrir: 'Lo abro por la barbacoa de julio. Al fondo, el chico pálido. Con táper.',
+  usar: 'Paso páginas. Photocall, canapé, chico pálido. Photocall, canapé, chico.',
+};
 
+// La trituradora (desde el Acto II) y el pulsador rojo del brindis (desde el Acto II, junto al atril)
+const NO_TRITURO = 'No. Esto es lo único de papel que me ha salido bien.';
 export default buildRoom({
   id: 'eventos',
   name: 'Eventos',
@@ -91,9 +89,8 @@ export default buildRoom({
   flags: {
     eventos_tema_n: 'int · D · eventos · +1 por «¿Y de qué va el evento?» (escala)',
     eventos_lista_n: 'int · D · eventos · +1 por Mirar mesa_acreditaciones (rota la lista)',
-    eventos_lista_max: 'int · D · eventos · entradas de la lista ya leídas (las nuevas de cada acto salen antes)',
-    eventos_silla_mirada: 'bool · D · eventos · Mirar silla_torcida (descubre la pegatina de Comercial)',
     eventos_reloj_n: 'int · D · eventos · +1 por Mirar cuenta_atras',
+    eventos_rider_oido: 'bool · [P12] · eventos · «¿Qué ha pedido el ponente?» (abre «¿Y sin papel…?»)',
   },
 
   objects: [
@@ -107,7 +104,11 @@ export default buildRoom({
     } },
     // ---- de Eventos, traídos del Ecosistema con sus ids y líneas intactas (adenda §13.3)
     { id: 'photocall', name: 'photocall', handlers: {
-      mirar: 'Treinta logos y un hueco en medio: «Espacio premium para tu cara».',
+      mirar: async (api) => {
+        // [P12] un «Mirar» nuevo en el Acto II: cruza Eventos con la exclusiva sin decir nada de Íñigo
+        if (acto(api) === 2) await api.say(['Treinta logos. Hidrovoltia, pegada al logo del Banco Robledal.', 'Pilar dice que lo pidieron ellos. Por escrito, y pagaron el suplemento.']);
+        else await api.say('Treinta logos y un hueco en medio: «Espacio premium para tu cara».');
+      },
       usar: async (api) => {
         await api.say('Me pongo en el hueco.');
         await flash(api);
@@ -121,7 +122,6 @@ export default buildRoom({
         await flash(api);
         await sayP(api, '«Pellizco», acreditado. Con foto. Acceso: hasta el canapé.');
       },
-      // nuevo (§13.5)
       'usar:album_eventos': async (api) => {
         await api.say('Pongo el álbum en el hueco. Al fondo de la foto, el chico del táper.');
         await flash(api);
@@ -135,17 +135,15 @@ export default buildRoom({
       cerrar: 'Ya está apagado. Solo se enciende cuando hay alguien importante. Nunca.',
       abrir: 'Es un aro. No tiene por dónde. Por eso le cabe todo el mundo.',
     } },
-    { id: 'album_eventos_hotspot', name: 'álbum de Eventos', when: '!oyo_descopear', handlers: {
-      mirar: async (api) => {
-        await api.say(['El álbum de Eventos. En todas las fotos sale al fondo un chico pálido.',
-          'Siempre yendo al baño. Con un táper. Pilar lo llama «el extra».']);
-      },
-      coger: async (api) => {
-        if (api.flag('ruben_encontrado')) await api.say('Mejor se lo pido a Pilar. Lo tiene acreditado. Con foto.');
-        else await sayP(api, '¡Eh! Ese álbum está acreditado. Pídemelo con un motivo.');
-      },
-      abrir: 'Lo abro por la cena de Navidad. Al fondo, el chico pálido. Con táper.',
-      usar: 'Paso páginas. Photocall, canapé, chico pálido. Photocall, canapé, chico.',
+    // [P12] el álbum, en la mesa de acreditaciones (Actos I-II)
+    { id: 'album_eventos_hotspot', name: 'álbum de Eventos', when: '!acto_3_iniciado', handlers: {
+      ...ALBUM,
+      coger: async (api) => { await sayP(api, '¡Eh! Ese álbum está acreditado. Pídemelo con un motivo.'); },
+    } },
+    // [P12] … y en el Acto III, en la boca de la trituradora, hasta que Pilar lo salva
+    { id: 'album_trituradora', name: 'álbum de Eventos', when: ['acto_3_iniciado', '!eventos_album_dado'], handlers: {
+      ...ALBUM,
+      coger: async (api) => { await sayP(api, '¡Quieto! Ese álbum tiene hora: 21:04.'); },
     } },
     { id: 'cajas_lanyards', name: 'cajas de lanyards', handlers: {
       mirar: 'Lanyards de Eventos. Para acreditar dos veces a la ONU.',
@@ -177,7 +175,7 @@ export default buildRoom({
         if (a === 1) await api.say(n === 1 ? ['Una cuenta atrás: 00:05:00. No se mueve.', 'Todos los relojes de la casa marcan las 20:59. Este, cinco minutos.']
           : 'Sigue en 00:05:00. Pilar dice que así nadie llega tarde. Funciona: nadie llega.');
         else if (a === 2) await api.say(['00:05:00. Juraría que he visto un 04:59.', 'Pilar le ha dado un golpe con la escaleta. Ha vuelto a 05:00.']);
-        else await api.say(['00:05:00. Mientras el edificio arde, aquí siempre faltan cinco minutos.', 'Es lo más estable de la casa. El CLS de Tadeo lo envidia.']);
+        else await api.say(['00:05:00. Pilar tiene el dedo encima del botón.', 'A las 21:00 piensa soltarlo.']);   // [P12]
       },
       usar: 'Busco el botón de empezar. Solo hay uno, y pone «+5 MIN».',
       coger: 'Está pegada con cinta americana. A la pared y al tiempo.',
@@ -185,11 +183,15 @@ export default buildRoom({
       hablar: async (api) => { await api.say('«¿Cuánto falta?».'); await sayP(api, '¡Cinco minutos! ...Perdona, creía que me hablabas a mí.'); },
       'usar:movil': 'Le hago una foto. En el móvil también pone 00:05:00. Se contagia.',
     } },
+    // [P12] la pancarta, con dos estados: el Acto I (antes y después de que Íñigo anuncie el brindis) y los Actos II-III
     { id: 'pancarta_evento', name: 'pancarta', handlers: {
-      mirar: async (api) => api.say(['Una pancarta: «BIENVENIDOS A». El nombre, tapado con cinta americana.',
-        'Debajo de la cinta, otra cinta. Es cinta hasta el fondo.']),
-      tirar: 'Despego una esquina. Debajo pone «POR CONFIRMAR». La vuelvo a pegar.',
-      usar: 'Despego una esquina. Debajo pone «POR CONFIRMAR». La vuelvo a pegar.',
+      mirar: async (api) => {
+        if (acto(api) >= 2) await api.say(['«BIENVENIDOS A». El resto, tapado con cinta otra vez.', 'La pancarta era de papel. El ponente, no.']);
+        else if (presentado(api)) await api.say(['«BIENVENIDOS A LA PRESENTACIÓN DEL PLAN CERO PAPEL».', 'Pilar le ha quitado la cinta por primera vez. La pancarta parece asustada.']);
+        else await api.say(['Una pancarta: «BIENVENIDOS A». El nombre, tapado con cinta americana.', 'Debajo de la cinta, otra cinta. Es cinta hasta el fondo.']);
+      },
+      tirar: async (api) => api.say(acto(api) >= 2 ? 'Despego una esquina. Debajo pone «CERO PAPEL». En papel. La vuelvo a pegar.' : 'Despego una esquina. Debajo pone «POR CONFIRMAR». La vuelvo a pegar.'),
+      usar: async (api) => api.say(acto(api) >= 2 ? 'Despego una esquina. Debajo pone «CERO PAPEL». En papel. La vuelvo a pegar.' : 'Despego una esquina. Debajo pone «POR CONFIRMAR». La vuelvo a pegar.'),
       coger: 'La pancarta se queda. Es lo único confirmado del evento: «BIENVENIDOS».',
       hablar: '«Bienvenidos a...». Ni la pancarta lo sabe. Pero lo dice con ilusión.',
     } },
@@ -203,51 +205,54 @@ export default buildRoom({
       'usar:ficha_pagina_7': async (api) => api.say(`Leo la ficha desde el atril: tres casillas. Ovación de ${sillas(api)} sillas.`),
       'usar:libreta_replicas': 'Ensayo réplicas en el atril. El eco me las devuelve mejoradas.',
     } },
+    // [P12] desde el Acto II, junto al atril: el «apagado simbólico» del brindis (no está conectado a nada)
+    { id: 'pulsador_rojo', name: 'pulsador rojo', when: 'acto_2_iniciado', handlers: {
+      mirar: 'Un pulsador rojo, gordo, en un pedestal. Pone «APAGADO».',
+      usar: async (api) => { await sayP(api, 'El botón no sale de su cruz. Lo pulsa el ponente.'); },
+      coger: async (api) => { await sayP(api, 'El botón no sale de su cruz. Lo pulsa el ponente.'); },
+    } },
     { id: 'sillas_evento', name: 'sillas', handlers: {
       mirar: async (api) => {
-        if (api.flag('eventos_silla_devuelta')) { await api.say(['Todas en su cruz. Ciento doce, según el plano.', 'Pilar respira en mayúsculas.']); return; }
+        if (encontrada(api)) { await api.say(['Ciento doce, según Pilar. Ciento once aquí y una en el sótano.', 'La cruz vacía tiene ahora un pósit: «112 · OCUPADA (ARMARIO 27)».']); return; }
         const a = acto(api);
-        if (a === 1) await api.say(['Filas de sillas, cada una en su cruz de cinta. Cuento cincuenta y seis.', `Pilar dice que son ${sillas(api)}. Las otras están «en el plano».`]);
-        else if (a === 2) await api.say(['Las sillas. Una sobresale por la derecha.', 'Pilar la mira de reojo cada cinco minutos.']);
-        else await api.say(`${sillas(api) === 'ciento trece' ? 'Ciento trece' : 'Ciento doce'} sillas para un evento sin tema. La ocupación media es Pilar.`);
+        if (a === 3) await api.say(['Ciento once sillas para un ponente que quiere el evento de pie.', 'La ocupación media es Pilar.']);
+        else if (a === 1 && api.once('eventos_sillas_contadas')) await api.say(['Filas de sillas, cada una en su cruz de cinta. Cuento ciento once.', 'Pilar dice que son ciento doce. La otra está «en el plano».']);
+        else await api.say(['En la última fila, una cruz de cinta sin silla.', 'Pilar la mira de reojo cada cinco minutos.']);
       },
       usar: async (api) => { await api.say('Me siento un momento en la última fila.'); await sayP(api, '¡Público! ¡Ya tenemos uno! Cuatro minutos y medio.'); await api.say('Me levanto. Vuelven a ser cinco.'); },
       coger: 'Si me llevo una, Pilar tendrá que contar hacia atrás. Y eso es el reloj.',
       empujar: 'No. Cada silla está en su cruz. Si muevo una, Pilar lo nota en el walkie.',
-      hablar: async (api) => api.say(`«¿Hay alguien?». ${sillas(api) === 'ciento trece' ? 'Ciento trece' : 'Ciento doce'} sillas en silencio. El mejor público de la casa.`),
+      hablar: async (api) => api.say(`«¿Hay alguien?». ${Sillas(api)} sillas en silencio. El mejor público de la casa.`),
       'dar:*': 'Si dejo algo en una silla, Pilar lo acredita como asistente.',
     } },
+    // [P12] la cruz vacía de la última fila: el sitio de la 112 (sustituye a la silla torcida de Comercial)
+    { id: 'cruz_112', name: 'cruz vacía', handlers: {
+      mirar: async (api) => api.say(['Una cruz de cinta sin silla. Al lado, a boli: «112».',
+        encontrada(api) ? 'La cruz vacía tiene ahora un pósit: «112 · OCUPADA (ARMARIO 27)».' : 'Es el sitio de alguien que no está.']),
+      usar: async (api) => { await api.say('Me pongo en la cruz.'); await sayP(api, '¡Tú no eres la 112! Tú eres de pie.'); },
+      hablar: '«¿Hay alguien?». La cruz no contesta. Lleva meses sin nadie que la pise.',
+      coger: 'No. Si despego la cruz, Pilar pierde la cuenta. Y la esperanza.',
+      tirar: 'No. Si despego la cruz, Pilar pierde la cuenta. Y la esperanza.',
+    } },
+    // [P12] la silla del ponente sigue la noche de Pilar: «por confirmar» → confirmado → sin folio (era papel)
     { id: 'silla_reservado', name: 'silla con «RESERVADO»', handlers: {
-      mirar: async (api) => api.say(['Un folio en una silla: «RESERVADO». Debajo, más pequeño: «Ponente».',
-        '«Por confirmar». La silla lleva años confirmando que no viene nadie.']),
+      mirar: async (api) => {
+        if (acto(api) >= 2) await api.say(['La silla del ponente, sin folio: era papel.', 'El ponente hablará de pie. La silla espera igual.']);
+        else if (presentado(api)) await api.say(['Un folio en una silla: «RESERVADO · Ponente: CONFIRMADO».', '«Confirmado» está escrito encima de «por confirmar». Apretando.']);
+        else await api.say(['Un folio en una silla: «RESERVADO». Debajo, más pequeño: «Ponente».', '«Por confirmar». La silla lleva años confirmando que no viene nadie.']);
+      },
       usar: 'No me siento. Si me siento, me toca hablar. Y no sé de qué va.',
-      coger: async (api) => { await sayP(api, '¡Esa no! Es la del ponente. El día que venga, que la encuentre.'); },
+      coger: async (api) => { await sayP(api, '¡Esa no! Es la del ponente. Hoy viene. Que la encuentre.'); },
       hablar: 'Le pregunto al ponente si viene. El folio ni se mueve. Eso es un «ya veremos».',
       'usar:chaqueta_ramirez': 'La chaqueta de Ramírez reserva sillas sola. Pero esta ya está pillada.',
-    } },
-    { id: 'silla_torcida', name: 'silla torcida', when: '!eventos_silla_devuelta', handlers: {
-      mirar: async (api) => {
-        if (!api.flag('eventos_silla_mirada')) {
-          api.setFlag('eventos_silla_mirada', true);
-          await api.say(['Una silla torcida, fuera de su cruz de cinta. Saca una pata al pasillo.',
-            'Debajo del asiento, una pegatina: «PROPIEDAD DE COMERCIAL. NO TOCAR, CARIÑO».']);
-          if (crisis((k) => api.flag(k))) await api.say('La silla ciento trece. Tiene dueña.');
-        } else await api.say('La silla de Comercial. Maripaz se la trajo para oír el gong sentada.');
-      },
-      usar: tocarSilla,
-      empujar: tocarSilla,
-      coger: async (api) => {
-        if (api.flag('eventos_silla_mirada')) await devolverSilla(api);
-        else await api.say('Antes miro de quién es. Aquí todo tiene dueño. Y acreditación.');
-      },
-      hablar: '«¿De quién eres?». La silla no contesta. Tiene contrato de confidencialidad.',
     } },
     { id: 'mesa_sonido', name: 'mesa de sonido', color: '#cfd8c8', murmurColor: '#cfd8c8',
       murmurs: ['WALKIE: Catering a Eventos: croquetas en posición. Cambio.', 'WALKIE: ¿Empezamos? ...Cambio. No. Cambio.',
         'WALKIE: Foco tres, deja de parpadear. Cambio. Foco tres no contesta.'],
       handlers: {
+        // [P12] desde el Acto II, el cuarto walkie lo lleva el ponente (siembra el walkie del clímax)
         mirar: async (api) => api.say(['La mesa de sonido. Doce faders y un pósit: «NO TOCAR. YA ESTÁ A 5 MIN».',
-          'Al lado, el cargador. Cuatro walkies cargando. Uno dice «cambio» solo.']),
+          acto(api) >= 2 ? 'Tres walkies cargando. El cuarto lo lleva el ponente.' : 'Al lado, el cargador. Cuatro walkies cargando. Uno dice «cambio» solo.']),
         usar: 'Subo un fader. Suena una freidora. Es el canal del catering.',
         tirar: 'Tiro de un cable. Se apaga el foco tres. Lo enchufo: sigue parpadeando.',
         hablar: async (api) => { await api.say('Cojo un walkie: «¿Hola?».'); await api.sayFrom('mesa_sonido', 'WALKIE: Cinco minutos. Cambio.'); },
@@ -261,6 +266,23 @@ export default buildRoom({
       coger: 'La mesa es de Eventos. Lo pone el mantel. Lo pone todo.',
       empujar: 'No se mueve. Está pegada al suelo con cinta. Es su marca.',
       'usar:tarjeta_becario': async (api) => { await api.say('Dejo mi tarjeta en la mesa.'); await sayP(api, '«Pellizco», otra vez. Te hago la segunda. Por si pierdes la primera.'); },
+    } },
+    // [P12] la trituradora del rider (desde el Acto II), con pegatina de Optimal Brains
+    { id: 'trituradora', name: 'trituradora', when: 'acto_2_iniciado', handlers: {
+      mirar: async (api) => {
+        if (encontrada(api)) await api.say('Apagada. Pilar le ha puesto su cruz de cinta. Ya consta, como mueble.');
+        else if (acto(api) === 3) await api.say(['La trituradora, zumbando. Encima, el álbum de Eventos.', 'Pilar la ha puesto en la escaleta: 21:04.']);
+        else await api.say(['Una trituradora nueva. Pegatina: «OPTIMAL BRAINS · CERO PAPEL».', 'Viene con un manual de cuarenta páginas. En papel.']);
+      },
+      usar: async (api) => { await sayP(api, '¡Quieto! A las 21:04. Ni un minuto antes.'); },
+      'usar:tarjeta_becario': 'Si tritura mi tarjeta, vuelvo a no constar. Ya he estado ahí.',
+      'usar:fotocopia_nota_direccion': 'Ni hablar. Gervasio todavía tiene que reconocer esa comida.',
+      'usar:correo_evaristo': 'Lo guardo. Evaristo dijo «en el momento oportuno». Aún no ha llegado.',
+      'usar:manual_fax': NO_TRITURO,
+      'usar:libreta_replicas': NO_TRITURO,
+      hablar: 'Zumba. Está esperando a las 21:04 como Pilar a las 21:05.',
+      empujar: async (api) => { await sayP(api, 'Esa no se mueve. La ha traído el ponente. Con su manual.'); },
+      coger: async (api) => { await sayP(api, 'Esa no se mueve. La ha traído el ponente. Con su manual.'); },
     } },
     { id: 'catering_croquetas', name: 'catering', handlers: {
       mirar: async (api) => {
@@ -291,25 +313,28 @@ export default buildRoom({
 
   actors: [
     { id: PILAR,
-      // §13.2 (seis murmullos de siempre) + §13.5 (nuevos, según la crisis de la silla 113)
+      // [P12] de doce murmullos a ocho: fuera los que contaban sillas de más o repetían otro chiste; ninguno de croquetas
       murmurs: (view) => [
         'Cinco minutos. Siempre cinco minutos. Es mi zona horaria.',
-        ...(crisis((k) => view.flag(k)) ? [] : ['Ciento diez, ciento once, ciento doce... ¿Quién se ha sentado?']),   // [coherencia] con 113, no
-        'Cinta en el suelo, cinta en el cable, cinta en el alma.', 'Tres en el ascensor. Eso ya es un evento. Sin acreditar.',
-        'Si no hay croquetas, no es un evento. Es una reunión.', 'Aquí Eventos, cambio. Sí, a cinco minutos. Cambio y corto.',
-        'Foco tres, me parpadeas. No, cambio, foco tres. Tú.', 'Ponente: por confirmar. Croquetas: confirmadísimas.',
+        'Si no hay croquetas, no es un evento. Es una reunión.',
+        'Cinta en el suelo, cinta en el cable, cinta en el alma.',
+        'Aquí Eventos, cambio. Sí, a cinco minutos. Cambio y corto.',
         'Si alguien dice «empezamos ya», que me lo pase por escrito.',
-        ...(crisis((k) => view.flag(k)) ? ['Ciento trece. Que alguien me diga que es una errata.', 'Una silla de más. Un asistente fantasma. Sin acreditar.'] : []),
-        ...(view.flag('eventos_silla_devuelta') ? ['Ciento doce. Qué paz. Hasta el walkie suena más bajito.'] : []),
+        view.flag('inigo_presentado') ? 'Ponente: confirmado. Croquetas: confirmadísimas.' : 'Ponente: por confirmar. Croquetas: confirmadísimas.',
+        view.flag('eventos_album_dado') ? 'Ciento doce. Qué paz. Hasta el walkie suena más bajito.' : 'Ciento once. Y la 112, de proyecto.',
       ],
       handlers: {
-        mirar: async (api) => api.say(['Pilar Escaleta, de Eventos. Cascos, walkie, escaleta y seis acreditaciones.',
-          'En la muñeca, un rollo de cinta americana. Por si hay que acreditar algo.']),
+        mirar: async (api) => api.say(acto(api) >= 2 ? ['Pilar Escaleta. Cascos, walkie y ninguna escaleta: era papel.', 'La lleva en la cabeza. Al minuto.']
+          : ['Pilar Escaleta, de Eventos. Cascos, walkie, escaleta y seis acreditaciones.', 'En la muñeca, un rollo de cinta americana. Por si hay que acreditar algo.']),
         hablar: async (api) => api.dialog('pilar'),
         'dar:cafe': async (api) => { await sayP(api, 'Café sin catering es un café. Con catering, una pausa. Apuntado.'); },
         'dar:tarjeta_becario': async (api) => { await sayP(api, '«Pellizco». Te la repito bien: «Bruno. Acceso: hasta el canapé».'); },
         'dar:ficha_pagina_7': async (api) => { await sayP(api, '¿Una ficha con tres casillas? ¡Eso es una escaleta! Me encanta.'); },
-        'dar:album_eventos': async (api) => { await sayP(api, 'Quédatelo hasta que acabes. Lo tengo apuntado: «Bruno, álbum, 19:40».'); },
+        'dar:album_eventos': async (api) => { await sayP(api, 'Quédatelo hasta que acabes. Lo tengo apuntado: «Bruno, álbum, 20:40».'); },
+        'dar:correo_evaristo': async (api) => { await sayP(api, 'Un correo impreso. No me lo enseñes, que el rider dice cero papel.'); },
+        'dar:acta_reunion': async (api) => { await sayP(api, '«Pedir más café». Eso lo tenía yo en la escaleta. 20:58.'); },
+        'dar:ticket_n1': async (api) => { await sayP(api, '«Alta becario Brais». ¿Ves? Ya consta en dos sitios.'); },
+        'dar:taper_huerfano': async (api) => { await sayP(api, 'El extra siempre llevaba uno. Nunca llegaba al catering.'); },
         'usar:movil': async (api) => { await sayP(api, '¡Sin fotos sin acreditación! ...Bueno, una. Salgo mejor de perfil.'); },
         'dar:*': async (api) => { await sayP(api, 'Gracias. Lo acredito y lo pongo en la mesa de bienvenida.'); },
         empujar: 'No. Está contando sillas. Si la empujo, empieza otra vez.',
@@ -327,7 +352,17 @@ export default buildRoom({
     // ¡FLASH! al entrar (cada vez): el photocall de Eventos dispara y Pilar acredita al que llega. Cargar partida no es entrar.
     if (api.restoring) return;
     await flash(api);
-    await sayP(api, ENTRADAS[(api.inc('ecosistema_entradas_n') - 1) % ENTRADAS.length]);
+    const a = acto(api);
+    if (a === 3 && !api.flag('eventos_acto3_entrada') && !encontrada(api)) {
+      // [P12] primera entrada del Acto III (camino principal): la trituradora zumba, el álbum en la boca; Pilar cuenta
+      api.faceActor(PILAR, 'cruz_112');
+      await entradaActo3(api);
+      api.faceActor(PILAR, api.player);
+    } else if (a === 2 && api.once('eventos_acto2_entrada')) {
+      // [P12] primera entrada del Acto II (opcional): Pilar despega la pancarta de papel y la tapa con cinta, sin mirar
+      api.sfx('beep');
+      await sayP(api, '¿Sin turno de preguntas? ...Recibido. Desenchufo el micro de sala. Cambio.');
+    } else await sayP(api, ENTRADAS[(api.inc('ecosistema_entradas_n') - 1) % ENTRADAS.length]);
     if (api.once('eventos_primera_vez')) {
       await api.say(['La Sala Polivalente. Vale para todo.', 'Sobre todo, para estar a punto de empezar.']);
     }

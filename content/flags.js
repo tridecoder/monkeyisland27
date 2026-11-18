@@ -46,6 +46,8 @@ export const ADENDA_FLAGS = [
   'evaristo_convoco', 'evaristo_correos',
   // [P7] aprender perdiendo: pistas de la libreta (int, bits de las réplicas)
   'libreta_pistas',
+  // [P12] guion nuevo, tanda 3 (Eventos): la silla 112 y el álbum de la trituradora
+  'eventos_falta_112', 'eventos_acto3_entrada', 'silla_112_vista', 'pilar_nego_album', 'eventos_album_dado',
 ];
 
 export default {
@@ -91,7 +93,6 @@ export default {
   vio_armario_27: 'bool · B · pajarera · 3.ª Mirar a pantalla_titulator · B (Íñigo I4), pistas',
   titulator_mirar_n: 'int · B · pajarera · +1 por Mirar pantalla_titulator · B',
   ruben_encontrado: 'bool · A · cpd · P13 · A, D (Pilar de Eventos; album_eventos_hotspot), B (Anselmo [6] y [8]), pistas',
-  oyo_descopear: 'bool · P4 · eventos · Pilar «¿Me prestas el álbum?» (el móvil de Borja dice «descopear», E2 §3.5) · P2 (opción «¿Y si... lo descopeamos?» de Anselmo, AN_ALBUM)',
   posit_descopeado: 'bool · B · pecera · P14b · B (Mirar kanban)',
   ruben_libre: 'bool · A · cpd · P14c · B (Rubén en la Pecera, puerta_sala), A (armario vacío), D (escena 7.4), pistas; actors.js (murmullos)',
   duelo_gervasio_ganado: 'bool · C · office · fin D3 · C',
@@ -131,10 +132,15 @@ export default {
   // ---------------------------------------------------------------- EVENTOS: la Sala Polivalente (`eventos`, adenda §13)
   // Los tres contadores conservan su nombre de cuando Pilar vivía en el Ecosistema (ids intactos por encargo de dirección).
   ecosistema_entradas_n: 'int · D · eventos · +1 por entrada en la Sala Polivalente (rota la frase de Pilar con el ¡FLASH!) · D',
-  ecosistema_sillas_n: 'int · D · eventos · +1 por «¿Cuántas sillas hay?» (Pilar) · D (crisis de la silla 113, murmullos)',
+  ecosistema_sillas_n: 'int · D · eventos · +1 por «¿Cuántas sillas hay?» (Pilar) · D ([P12] la 1.ª dice «Falta la 112»)',
   ecosistema_gong_n: 'int · D · eventos · +1 por Usar/Empujar gong · D',
-  eventos_silla_devuelta: 'bool · D · eventos · devolver silla_torcida a Comercial (micro-puzle opcional) · D (Pilar, Maripaz en ecosistema, arte)',
-  eventos_croqueta: 'bool · D · eventos · Pilar regala la croqueta (premio del micro-puzle) · D (catering, Pilar)',
+  eventos_croqueta: 'bool · D · eventos · Pilar regala la croqueta ([P12] al abrir su árbol tras dar el álbum) · D (catering, Pilar)',
+  // [P12] guion nuevo, tanda 3: la silla 112 y el álbum de la trituradora (fuera la silla 113 y «descopear»)
+  eventos_falta_112: 'bool · [P12] · eventos · Pilar dice que falta la 112 (1.ª «¿Cuántas sillas hay?» o la entrada del Acto III) · pajarera (Íñigo, «¿Se llevó usted una silla de Eventos?»)',
+  eventos_acto3_entrada: 'bool · [P12] · eventos · primera entrada del Acto III («La 112, sin aparecer», la trituradora) · pistas (álbum → silla de Pilar)',
+  silla_112_vista: 'bool · [P12] [P14] · cpd · Mirar silla_armario o a Brais «¿De dónde es esa silla?» · eventos (abre «Creo que sé dónde está tu 112.»), pistas',
+  pilar_nego_album: 'bool · [P12] · eventos · Pilar, «¿Me prestas el álbum?»: «Hoy no» (la trituradora, 21:04) · eventos (la repetición), pistas',
+  eventos_album_dado: 'bool · [P12] · eventos · Pilar da el álbum («…Entonces se sentó.», la 112 encontrada) · eventos (recuento, croqueta, arte), cpd, pistas',
 
   // ---------------------------------------------------------------- ascensor con botonera (content/lib/ascensor.js)
   ascensor_viajes_n: 'int · común (lib/ascensor.js) · +1 por viaje en ascensor · rotación de las frases del ascensor',
