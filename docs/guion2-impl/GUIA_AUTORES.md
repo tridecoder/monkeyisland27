@@ -720,3 +720,31 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
   rotulador → rotulador; llaves de diálogo `paco.P0.*`/`paco.P1.*` → `paco.P.*`; RV de Tadeo > 2 → 2.
 - **Pendiente de la tanda 3** ([P12] Eventos): el álbum lo sigue prestando Pilar, el kanban «descopeado» sigue, y no
   están el brindis de Íñigo ni la trituradora de Brais.
+
+## Guion nuevo · tanda 3 (docs/GUION_PROPUESTA_LIMPIO.md: [P12] Eventos, con lo que corrigen [P14] y [P15])
+
+> Prueba: `node tools/test-guion3-t3.mjs` (en `test-all`); capturas `tools/shots/guion3-t3-*.png`. El paso 42 de
+> `walk-data.mjs` es ahora «Mirar la silla del armario» y el 43, la 112 de Pilar (46 pasos: Acto III, 10).
+
+- **La noche de Pilar** (`eventos.js`, `eventos.dialogos.js`): Íñigo es su ponente (la presentación dice el brindis de
+  las 21:05; llega el correo «CONFIRMADO», `lib/movil.js`, bit 11 de `movil_leidos`). Por actos: la pancarta (tapada →
+  «PLAN CERO PAPEL» → tapada otra vez), la silla del ponente, la lista de la mesa (desde el Acto II no hay papel; tras el
+  álbum, el folio «Brais. Silla 112»), la mesa de sonido, la cuenta atrás. Desde el Acto II: el rider («RV:» de Tadeo,
+  la entrada con el walkie, «¿Qué ha pedido el ponente?» → «¿Y sin papel…?» y «¿Sabes que el plan…?», que necesita el
+  `pulsador_rojo`), la `trituradora` y el ambiente de la puerta en Marketing (`ecosistema.js`, `pilar_rider`).
+- **Las sillas**: ciento doce en el plano, ciento once en la sala; la 112 es la cruz vacía (`cruz_112`) y está en el
+  armario 27 (`silla_armario` en `cpd.js`, dibujada en el nido y en el primer plano de Brais). `eventos_falta_112` (Pilar
+  lo ha dicho; abre la opción de Íñigo «¿Se llevó usted una silla de Eventos?»). Fuera la silla 113 y su micropuzle.
+- **El álbum (Acto III)**: en la primera entrada del acto (`entradaActo3`, `eventos_acto3_entrada`) Pilar cuenta la 112
+  y el álbum espera en la trituradora (`album_trituradora`). «¿Me prestas el álbum?» es la negativa (`pilar_nego_album`).
+  «Creo que sé dónde está tu 112.» sale con `silla_112_vista` (mirar la silla del armario o «¿De dónde es esa silla?» a
+  Brais) y pide elegir el sitio (nodo `PE112`: dos sitios equivocados cierran la conversación); con el armario 27, el
+  álbum (`eventos_album_dado`) y, la siguiente vez que se habla con Pilar, la croqueta.
+- **Pistas**: «El álbum» manda a subir a Eventos; desde la entrada (o la negativa), «La silla de Pilar» (`silla_pilar`,
+  con su variante tras la silla vista). Se adelantan de [P15] porque sin ellas la pista mandaba a la negativa.
+- **Kanban**: una sola columna buena, SALIDA EN VALOR (fuera la otra palabra, el móvil de Borja en Eventos y
+  `oyo_descopear`; `posit_descopeado` se queda como id técnico). **Clímax**: Íñigo lleva el walkie (variante `walkie` del
+  muñeco en el Acto III) y Pilar dice sus dos líneas antes de Begoña.
+- **Partidas viejas** (`migrarPartida`, las que no tienen `eventos_falta_112`): el álbum ya prestado cuenta como salvado
+  (la 112, encontrada); el recuento vuelve a empezar; la columna «descopeado» pasa a «salida»; las opciones de una vez de
+  Pilar que se guardaban por posición pasan a guardarse por id; fuera `oyo_descopear` y `eventos_silla_devuelta`.

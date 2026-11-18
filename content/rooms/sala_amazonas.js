@@ -538,7 +538,7 @@ export default buildRoom({
       handlers: {
         mirar: async (api) => {
           if (api.flag('lector_derribado')) await api.say('Íñigo se busca en su matriz. Se ha encontrado. No le gusta el cuadrante.');
-          else await api.say('Íñigo, de pie, con el portátil. Para él, la 247 avanza.');
+          else await api.say('Íñigo, de pie, con el portátil y un walkie de Eventos. Para él, la 247 avanza.');   // [P12]
         },
         hablar: async (api) => {
           if (api.flag('lector_derribado')) { await sayI(api, '«Prescindible. Caro.» Lo pone mi propia matriz.'); return; }

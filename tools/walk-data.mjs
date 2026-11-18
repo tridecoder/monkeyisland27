@@ -1,8 +1,9 @@
-// Datos del walkthrough del guion nuevo, tanda 2 ([P11]: 45 pasos; los números son los de la ENMIENDA E6 §7, con huecos).
-// Fuera, respecto a E6 (49): 19 (Mirar el fax: la pegatina; el manual lo da Eutimio en la R-3, paso 21), 22 («Ticket
-// 0.441»), 35 (la coma con Aurora: el correo lo da Evaristo, paso 31) y 42 (el rotulador del termómetro: lo da Maripaz al
-// perder el D1, paso 29). El atasco de la puerta (28) se resuelve solo. Acto I 16 · Acto II 20 · Acto III 9 (la tanda 3,
-// Eventos, añade la silla del armario: 10).
+// Datos del walkthrough del guion nuevo, tandas 2 y 3 ([P11] [P12]: 46 pasos; los números son los de la ENMIENDA E6 §7,
+// con huecos). Fuera, respecto a E6 (49): 19 (Mirar el fax: la pegatina; el manual lo da Eutimio en la R-3, paso 21), 22
+// («Ticket 0.441») y 35 (la coma con Aurora: el correo lo da Evaristo, paso 31). El 42 era el rotulador del termómetro (lo
+// da Maripaz al perder el D1, paso 29); [P12] [P14] ahora es mirar la silla del armario 27 (la 112 de Eventos), y el 43
+// es la 112 de Pilar en vez del préstamo del álbum. El atasco de la puerta (28) se resuelve solo. Acto I 16 · Acto II 20 ·
+// Acto III 10.
 // Antes: E6 §7 (49 pasos): E5 + 28 (tele en la Sala, antes 28-29), 36 (D2 de tres asaltos) y 46 (D3 con la R03 en segundo
 // lugar).
 // Compartido por walkthrough.mjs, extras.mjs, fuzz.mjs, play-mouse.mjs, test-e5/test-e6 y text-audit.mjs. Acciones y `esp`:
@@ -53,7 +54,8 @@ export const STEPS = [
   { n: 39, sala: 'catacumba', txt: 'Dar ficha a teodoro → 7.3a (E5 40)', acc: [['dar', 'ficha_pagina_7', 'teodoro_cuerpodoce'], ['cerrar']], esp: {flags: ['pagina_cerrada', 'acto_3_iniciado'], notiene: ['ficha_pagina_7', 'pieza_opa']} },
   { n: 40, sala: 'cpd', txt: 'Redacción (momento 8) → Sistemas ([P11] la L4 de los atunes al entrar) → tirar papel_continuo → 7.3 (E5 41)', acc: [['ir', 'pecera'], ['ir', 'cpd'], ['verbo', 'tirar', 'papel_continuo']], esp: {flags: ['dos_ias_vista', 'anselmo_dijo_regla', 'ruben_encontrado']} },
   { n: 41, sala: 'cpd', txt: 'Hablar ruben → discursos (E5 42)', acc: [['verbo', 'hablar', 'ruben'], ['opcion', '¿Escribiste tú los discursos de Íñigo?'], ['cerrar']], esp: {flags: ['rep_13']} },
-  { n: 43, sala: 'eventos', txt: 'Pilar → álbum (E5 44)', acc: [['ir', 'eventos'], ['verbo', 'hablar', 'pilar_escaleta'], ['opcion', '¿Me prestas el álbum?'], ['cerrar']], esp: {tiene: ['album_eventos'], flags: ['oyo_descopear']} },
+  { n: 42, sala: 'cpd', txt: '[P12] [P14] Mirar silla_armario → «EVENTOS · 112» (abre la opción de Pilar)', acc: [['ir', 'cpd'], ['verbo', 'mirar', 'silla_armario']], esp: {flags: ['silla_112_vista']} },
+  { n: 43, sala: 'eventos', txt: '[P12] Eventos (al entrar: la trituradora, «La 112, sin aparecer») → Pilar: «Creo que sé dónde está tu 112.» → el armario 27 → álbum (E5 44)', acc: [['ir', 'eventos'], ['verbo', 'hablar', 'pilar_escaleta'], ['opcion', 'Creo que sé dónde está tu 112.'], ['opcion', 'En el armario 27, en Sistemas.'], ['cerrar']], esp: {tiene: ['album_eventos'], flags: ['eventos_acto3_entrada', 'eventos_album_dado']} },
   { n: 44, sala: 'pecera', txt: '[E5] Álbum a Anselmo → «Las fotos me valen» (E4 S5 salta al entrar) (E5 45)', acc: [['ir', 'pecera'], ['dar', 'album_eventos', 'anselmo_monolito'], ['cerrar']], esp: {flags: {album_validado: true, discover_ganador: '*'}, notiene: ['album_eventos']} },
   { n: 45, sala: 'pecera', txt: '[E5] Rotulador + kanban → SALIDA EN VALOR (Bruno mueve el pósit) (E5 46) [E7 F6: dos tiempos]', acc: [['ir', 'pecera'], ['usar', 'rotulador_rojo', 'kanban'], ['opcion', 'SALIDA EN VALOR']], esp: {tiene: ['ticket_n1', 'rotulador_rojo'], flags: {posit_descopeado: true, ruben_libre: true, columna_kanban: 'salida'}} },
   { n: 46, sala: 'pajarera', txt: '[E6] Gervasio en la puerta → D3: R07 y la frase a medias (R03) (E5 47) [E7: Gervasio escribe a trozos; en modo rápido, entera]', acc: [['ir', 'pajarera'], ['verbo', 'hablar', 'gervasio_acta'], ['opcion', 'Necesito el acta de la última reunión.'], ['duelo', ['R07', 'R03', {objeto: 'fotocopia_nota_direccion'}]], ['cerrar']], esp: {flags: ['duelo_gervasio_ganado', 'sala_abierta'], tiene: ['acta_reunion'], notiene: ['fotocopia_nota_direccion']} },
@@ -67,8 +69,9 @@ export const STEPS = [
 // (XE6-3). ALT2: la reunión antes que el apagón (Maripaz se niega con la web caída y vuelve tras la R-3) y la FIRMA como
 // último requisito (la escena del pósit no sale: la línea de respaldo de Íñigo en la 7.3a; ver test-guion3-t2).
 const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
-const sin = (l) => l.filter(n => ![19, 22, 35, 42].includes(n));
+const sin = (l) => l.filter(n => ![19, 22, 35].includes(n));
 // ALT2 ([P11]): Administración antes que la reunión; la reunión con la web caída (Maripaz no juega el D1 hasta la R-3);
 // el apagón y la R-3 después de la estampida; la FIRMA como último requisito (D2 tras el recorte).
 export const ALT2 = sin([...range(1, 18), 30, 31, 26, 27, 28, 20, 21, 23, 24, 25, 29, 32, 33, 34, 37, 38, 36, 39, ...range(40, 49)]);
-export const ALT = sin([...range(1, 23), 30, 31, 24, 25, 26, 27, 28, 29, 32, 36, 33, 34, 35, ...range(37, 41), 46, 43, 44, 42, 45, 47, 48, 49]);
+// [P12] en el III, el acta antes que la silla del armario y el álbum (antes, el rotulador iba aquí entre 44 y 45)
+export const ALT = sin([...range(1, 23), 30, 31, 24, 25, 26, 27, 28, 29, 32, 36, 33, 34, 35, ...range(37, 41), 46, 42, 43, 44, 45, 47, 48, 49]);

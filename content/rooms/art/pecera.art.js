@@ -842,11 +842,11 @@ function drawKanban(g, view) {
     postit(g, px0, py0, colores[(i + k) % 5], { w: 13, h: 8 });
   }
   // ENMIENDA E5 §2.5.6: la columna nueva, a rotulador rojo y con peor letra que la de Anselmo, en una tira de pizarra
-  // añadida debajo del tablero («SALIDA EN VALOR» o «DESCOPEADO» según `columna_kanban`; en micro, «patrocina:
+  // añadida debajo del tablero («SALIDA EN VALOR»; en micro, «patrocina:
   // Comercial»), con el pósit de Rubén dentro. Estados de escena `mal_0..2`: la columna equivocada, antes de la manga.
   const desc = !!view.flag('posit_descopeado');
   const MAL = { mal_0: 'DESPEDIDOS', mal_1: 'HECHO (DE VERDAD)', mal_2: 'FIRMAR EN PAPEL' };
-  const nueva = MAL[view.state] || (desc ? (view.flag('columna_kanban') === 'descopeado' ? 'DESCOPEADO' : 'SALIDA EN VALOR') : null);
+  const nueva = MAL[view.state] || (desc ? 'SALIDA EN VALOR' : null);                // [P12] la única columna buena
   const ly = y + h + 2, lh = 17;                                                 // la tira: y 84-100
   if (nueva) {
     rect(g, x - 2, ly - 1, w + 4, lh + 2, PAL.metal[4]); frameRect(g, x - 2, ly - 1, w + 4, lh + 2, PAL.metal[2]);

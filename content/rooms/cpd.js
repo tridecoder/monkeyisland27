@@ -95,7 +95,9 @@ async function revelacionRuben(api) {
     await api.say(['...Eres mi fuente.', 'Sal de ahí. Vámonos.']);
     await api.sayAs(R, ['Mi baja está en un pósit del tablero de Anselmo, en POR HACER.',
       'Y Anselmo no mueve un pósit sin pruebas de que existo.',
-      'Nadie me ha hecho nunca una foto. Solo salgo de fondo, en las de Eventos.']);   // [P14]
+      'Nadie me ha hecho nunca una foto. Solo salgo de fondo, en las de Eventos.',     // [P14]
+      // [P12] [P14] el «ve a por la foto» pasa a «ve a salvarla»: Íñigo imprime sus órdenes del rider en los Despachos
+      'Esta tarde Íñigo ha impreso aquí: «Álbum de Eventos: trituradora, 21:04».']);
     // [P6] la petición del táper sale de la escena: está en el árbol («¿Y el táper?») y, si no, al despedirse
   });
   api.setFlag('ruben_encontrado', true);
@@ -344,6 +346,12 @@ const rubenDialog = {
           } },
         { id: 'fuera', text: '¿Qué es lo primero que vas a hacer fuera?', once: true,
           reply: 'Comer algo que no sea atún. Y que nadie me lo titule.' },
+        // [P12] [P14] la silla del armario es la 112 de Eventos: preguntarlo (o mirarla) abre la opción de Pilar
+        { id: 'silla', text: '¿De dónde es esa silla?', once: true,
+          do: async (api) => {
+            await api.sayAs(R, 'Me la trajo Íñigo. Dijo que en la última fila no se sentaba nadie.');
+            api.setFlag('silla_112_vista', true);
+          } },
         { id: 'taper', text: '¿Y el táper?', if: '!taper_dado',
           do: async (api) => {
             api.setFlag('cpd_taper_pedido', true);
@@ -454,6 +462,14 @@ export default buildRoom({
         else await api.say('Le hablo al armario. Me contesta «ñiiic». Es más de lo que hace Teodoro.');
       },
       'dar:taper_huerfano': async (api) => { if (rubenAqui(api)) await darTaper(api); else await api.say('Al armario no. Esto es para alguien que coma.'); },
+    } },
+    // [P12] [P14] la silla plegable del nido de Brais: la 112 de Eventos (camino principal: mirarla o preguntarle a Brais)
+    { id: 'silla_armario', name: 'silla plegable', when: ['ruben_encontrado', '!ruben_libre'], handlers: {
+      mirar: async (api) => {
+        await api.say(['Una silla plegable con una cruz de cinta pegada a las patas.', 'Debajo del asiento: «EVENTOS · 112 · NO SACAR DE SU CRUZ».']);
+        api.setFlag('silla_112_vista', true);
+      },
+      coger: rub('Es mi silla. Bueno. Es la única cosa que tengo con número.'),
     } },
     // estados del arte (cpd.art.js): 'asoma' (la tira serpentea por el suelo) · 'tensa' (al tirar) · 'recogida' (tras la
     // revelación) · E5 'corre' (Acto III sin Rubén: sale a chorro y se amontona)

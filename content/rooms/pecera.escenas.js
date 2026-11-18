@@ -153,6 +153,7 @@ async function presentacionVillano(api) {
     api.faceActor(L, 'down');
     api.faceActor(I, 'down');
     await talk(api, [[I, 'A las nueve, la Reunión de Dirección aprueba el Plan Cero Papel.'],
+      [I, 'Y a las nueve y cinco, brindis en Eventos. Con croquetas.'],          // [P12] siembra la noche de Pilar
       ['B', '¿Sin papel? Pero si mañana firmo yo en papel.']]);
     api.faceActor(I, api.player);
     await api.wait(500);

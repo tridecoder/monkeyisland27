@@ -514,7 +514,7 @@ try {
   await clearLog();
   await verb('hablar', 'ruben'); await G(() => __game.chooseText('Ahora vuelvo.')); await idle();
   ok(!(await logHas('Salir, salgo')) && !(await logHas('¿Me traes un táper')), 'la segunda vez, solo «No me voy. No puedo.»');
-  await jugar([41, 43, 44, 45]);
+  await jugar([41, 42, 43, 44, 45]);                      // ([P12] el 42 es la silla del armario)
   ok(await logHas('Baja como Titulator. Alta como becario.'), '[P14] el ticket nº 1: «Baja como Titulator. Alta como becario.»');
   await jugar([46]);
   await guardar('t2_d4');                                // (antes de entrar a la Sala: el paso 47 abre el D4)

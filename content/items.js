@@ -373,7 +373,9 @@ export default {
   },
   album_eventos: {
     name: 'álbum de Eventos', icon: icons.album_eventos,
-    handlers: { mirar: say(['En todas las fotos, al fondo, Brais. Cena de Navidad, presentación, photocall.', 'Siempre yendo al baño, siempre en una esquina de la foto.']) },
+    // [P12] [P14] los descartes (foto con comida no se publica); fuera la cena de Navidad: Brais entró en julio
+    handlers: { mirar: say(['Los descartes de Eventos: en todas sale alguien comiendo. Al fondo, Brais.', 'Barbacoa de julio, presentación, photocall.',
+      'Siempre de pie, yendo al baño, en una esquina de la foto.']) },
   },
   ticket_n1: {
     name: 'ticket nº 1', icon: icons.ticket_n1,

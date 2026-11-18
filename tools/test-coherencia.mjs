@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // PRUEBA DE COHERENCIA: el juego no da por hecho lo que no ha pasado, y lo que anuncia, pasa. Sale con 1 si algo falla.
 // Nace de tres avisos del dueño jugando (Evaristo «¿Para qué me ha llamado?» sin llamada y su correo que no llegaba;
-// las sillas de Pilar, 112 y 113 a la vez; Gervasio, que no disolvía la reunión por mucho que se le insistiera).
+// las sillas de Pilar ([P12]: ciento once y la 112 que falta); Gervasio, que no disolvía la reunión por mucho que se le insistiera).
 // Capturas en tools/shots/coherencia-*.png y tools/shots/gervasio-insiste-*.png. Partes:
 //   1. evaristo   sin convocar (no hay «¿Para qué me ha llamado?»; entrada «¿Qué quería decirme?» y se llega a
 //                 evaristo_escuchado), convocado por la llamada L2 y convocado por Begoña (sí existe), con ratón.
@@ -10,7 +10,7 @@
 //                 «Correo nuevo de X: «A».» que sale en una partida deja ESE correo en la bandeja en ese instante, sin
 //                 leer, y el contador sube; se leen con ratón y Bruno comenta; la lista de llamadas cuadra.
 //   3. presupone  cada presuposición encontrada en la auditoría, con su caso «sin que haya pasado» (y el de «sí»).
-//   4. sillas     Pilar: antes de contar, 112; con la crisis abierta, 113 en todo; devuelta la silla, 112.
+//   4. sillas     Pilar ([P12]): ciento once en todo (falta la 112); con la 112 encontrada, ciento doce en todo.
 //   5. gervasio   insistir tres veces con «¿y cuáles son los siguientes pasos?» termina la reunión (ratón real),
 //                 también tras guardar/cargar entre insistencias y con la vía del Vending a medias; Acto I no cuenta.
 //   6. antiguas   partidas guardadas sin la L2 (sin `evaristo_convoco`): ni llamada fuera de lugar ni Evaristo mudo.
@@ -370,59 +370,42 @@ try {
   }
 
   // ====================================================================== 4. las sillas de Pilar
+  // [P12] (guion nuevo, tanda 3) fuera la silla 113: Pilar tiene ciento doce en el plano y cuenta ciento once en la sala
+  // (falta la 112); con la 112 encontrada (en el armario 27), ciento doce en todo. Nunca «ciento trece».
   if (toca('sillas')) {
-    console.log('\n4 · Pilar: 112 → 113 (crisis) → 112');
+    console.log('\n4 · Pilar: ciento once (falta la 112) → la 112, encontrada → ciento doce, en todo');
     const T = await abrir(ACTO2, 'eventos', 'ecosistema');
     const G = T.G;
     const dice = async (fn) => { await G(() => __game.clearLog()); await fn(); await T.pasar(); return G(() => __game.log.map(l => l.text)); };
-    const n113 = (L) => L.filter(t => /ciento trece|Ciento trece/.test(t));
-    const n112 = (L) => L.filter(t => /ciento doce|Ciento doce/.test(t) && !/trece/i.test(t));
-    // antes de la primera cuenta: 112 en todo
+    const n113 = (L) => L.filter(t => /ciento trece/i.test(t));
+    const n112 = (L) => L.filter(t => /ciento doce/i.test(t));
+    const murm = () => G(() => { const a = __game.game.content.rooms.eventos.actors.find(a => a.id === 'pilar_escaleta'); return a.murmurs({ flag: (k) => __game.getFlag(k) }); });
     let L = await dice(async () => { await T.raton('hablar', 'sillas_evento'); });
-    ok(n112(L).length && !n113(L).length, `antes de contar, Hablar con las sillas: 112 (${L.join(' | ')})`);
-    await T.raton('hablar', 'pilar_escaleta'); await T.pasar();
-    ok(!(await T.opciones()).includes('¿Estás bien, Pilar?'), 'antes de contar: no hay crisis («¿Estás bien, Pilar?» no está)');
-    L = await dice(async () => { await T.clicOpcion('Me voy.'); });
-    ok(L.includes('¡Hasta ahora! Te guardo la silla ciento doce.'), '«Me voy.» antes de contar: «la silla ciento doce» (la 113 aún no existe)');
-    // la primera cuenta: le sale una de más
+    ok(L.some(t => t.includes('Ciento once sillas en silencio')) && !n112(L).length, `antes de encontrar la 112, Hablar con las sillas: ciento once (${L.join(' | ')})`);
     await T.raton('hablar', 'pilar_escaleta'); await T.pasar();
     L = await dice(async () => { await T.clicOpcion('¿Cuántas sillas hay?'); });
-    ok(L.includes('Ciento doce. ...Ciento once, ciento doce... ciento trece. ¿Quién ha traído una?'), '1.ª cuenta: cuenta y le sale una de más');
+    ok(L.includes('Falta la 112. Se la llevó un señor de traje en julio. «Para un proyecto».'), '1.ª cuenta: ciento once; falta la 112');
     L = await dice(async () => { await T.clicOpcion('¿Cuántas sillas hay?'); });
-    ok(L.includes('Ciento trece. Las cuento cada cinco minutos. Por si se van.'), 'con la crisis abierta, la 2.ª cuenta: ciento trece');
-    L = await dice(async () => { await T.clicOpcion('¿Estás bien, Pilar?'); });
-    ok(L.some(t => t.startsWith('Ciento trece, Bruno.')), '«¿Estás bien, Pilar?»: ciento trece (coinciden)');
-    await T.shot('sillas-113');
+    ok(L.includes('Ciento once. Las cuento cada cinco minutos. Por si vuelve.'), '2.ª cuenta: ciento once');
     L = await dice(async () => { await T.clicOpcion('Me voy.'); });
+    ok(L.includes('¡Hasta ahora! Te guardo la silla ciento once.'), '«Me voy.»: la silla ciento once');
+    ok((await murm()).includes('Ciento once. Y la 112, de proyecto.') && !(await murm()).some(t => /Ciento doce/.test(t)), 'los murmullos: «Ciento once. Y la 112, de proyecto.»');
+    // la 112, encontrada (Acto III, tras la silla del armario)
+    await G(() => { for (const k of ['acto_3_iniciado', 'pagina_cerrada', 'ruben_encontrado', 'silla_112_vista']) __game.setFlag(k, true); __game.game.applyPresence(); __game.game.repaint(); });
+    await T.raton('hablar', 'pilar_escaleta'); await T.pasar();
+    await T.clicOpcion('Creo que sé dónde está tu 112.'); await T.pasar();
+    L = await dice(async () => { await T.clicOpcion('En el armario 27, en Sistemas.'); });
+    ok(await T.flag('eventos_album_dado') === true && L.includes('¡CIENTO DOCE! ¡Vuelvo a ser persona!'), 'la 112 en el armario 27: «¡CIENTO DOCE! ¡Vuelvo a ser persona!»');
     await T.pasar();
-    L = await dice(async () => { await T.raton('hablar', 'sillas_evento'); });
-    ok(n113(L).length && !n112(L).length, `con la crisis, Hablar con las sillas: 113 (${L.join(' | ')})`);
-    L = await dice(async () => { await G(() => __game.doVerb('mirar', 'sillas_evento')); });
-    ok(!n112(L).length, `con la crisis, Mirar las sillas: nada de «ciento doce» (${L.join(' | ')})`);
-    const murm = await G(() => { const a = __game.game.content.rooms.eventos.actors.find(a => a.id === 'pilar_escaleta'); return a.murmurs({ flag: (k) => __game.getFlag(k) }); });
-    ok(!murm.some(t => /ciento doce/i.test(t) && !/trece/i.test(t)) && murm.some(t => /Ciento trece/.test(t)), 'con la crisis, los murmullos de Pilar no cuentan 112');
-    // devolver la silla: 112 otra vez
-    await T.raton('mirar', 'silla_torcida'); await T.pasar();
-    L = await dice(async () => { await T.raton('coger', 'silla_torcida'); });
-    ok(await T.flag('eventos_silla_devuelta') === true && L.includes('¡CIENTO DOCE! ¡Vuelvo a ser persona!'), 'devolver la silla: «¡CIENTO DOCE! ¡Vuelvo a ser persona!»');
-    await T.pasar();
+    L = await dice(async () => { await G(() => __game.doVerb('hablar', 'sillas_evento')); await G(() => __game.doVerb('mirar', 'sillas_evento')); await G(() => __game.doVerb('usar', 'mesa_sonido', 'movil')); });
+    ok(L.some(t => t.includes('Ciento doce sillas en silencio')) && L.some(t => t.startsWith('Ciento doce, según Pilar.')) && L.some(t => t.includes('Lo oyen ciento doce sillas.')) && !n113(L).length,
+      `con la 112: ciento doce en las sillas y en la mesa de sonido (${L.join(' | ')})`);
     await T.raton('hablar', 'pilar_escaleta'); await T.pasar();
     L = await dice(async () => { await T.clicOpcion('¿Cuántas sillas hay?'); });
-    ok(L.includes('Ciento doce. Las cuento cada cinco minutos. Por si se van.') && !(await T.opciones()).includes('¿Estás bien, Pilar?'), 'devuelta: ciento doce y sin crisis');
-    L = await dice(async () => { await T.clicOpcion('Me voy.'); });
-    ok(!L.some(t => /ciento trece/.test(t)), '«Me voy.» tras devolverla: nunca «ciento trece» (la despedida ya oída se calla)');
+    ok(L.includes('Ciento doce. Una está en el sótano, pero cuenta.'), 'Pilar: «Ciento doce. Una está en el sótano, pero cuenta.»');
+    await T.clicOpcion('Me voy.'); await T.pasar();
+    ok((await murm()).includes('Ciento doce. Qué paz. Hasta el walkie suena más bajito.') && !(await murm()).includes('Ciento once. Y la 112, de proyecto.'), 'los murmullos: «Ciento doce. Qué paz.»');
     await T.ctx.close();
-    // la silla devuelta antes de que Pilar la cuente: sin «Vuelvo a ser persona» y la 1.ª cuenta ya da 112
-    const T2 = await abrir(ACTO2, 'eventos', 'ecosistema');
-    await T2.raton('mirar', 'silla_torcida'); await T2.pasar();
-    await T2.G(() => __game.clearLog());
-    await T2.raton('coger', 'silla_torcida'); await T2.pasar();
-    ok(!(await T2.logHas('Vuelvo a ser persona')) && await T2.logHas('Ciento diez, ciento once... ciento doce.'), 'devuelta sin crisis: Pilar cuenta 112, sin alivio de una crisis que no hubo');
-    await T2.raton('hablar', 'pilar_escaleta'); await T2.pasar();
-    await T2.G(() => __game.clearLog());
-    await T2.clicOpcion('¿Cuántas sillas hay?'); await T2.pasar();
-    ok(await T2.logHas('Ciento doce. Las cuento cada cinco minutos.') && !(await T2.logHas('trece')), 'y la cuenta ya da 112 (no 113)');
-    await T2.ctx.close();
   }
 
   // ====================================================================== 5. Gervasio: insistir también resuelve

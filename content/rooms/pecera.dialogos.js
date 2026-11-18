@@ -178,7 +178,7 @@ export default {
         onEnter: async (api) => {
           await api.sayAs(A, '¿De dónde vienen estas fotos? De Eventos. De fuera.');
           await api.anim(A, 'reach', 600);                  // (pasa hojas; se detiene)
-          await api.sayAs(A, ['Cena de Navidad. Al fondo, un chico pálido con un táper.',
+          await api.sayAs(A, ['Barbacoa de julio. Al fondo, un chico pálido con un táper.',   // [P12] [P14] Brais entró en julio
             'Photocall. Al fondo, el mismo. Yendo al baño. Es de la casa: sale en todas.',
             'Pero darle de baja es despedir. Y despedir no es una columna de mi tablero.']);
           // (Se queda el álbum. Grapa una foto al pósit de Rubén: el tablero la pinta con album_validado.)
@@ -232,14 +232,13 @@ const MAL = ['Eso es «muerto» con corbata.', '«De verdad» no es un estado.',
 /** El menú (texto de pantalla). Bruno ya está delante del tablero. */
 export async function columnas(api) {
   const ops = [['DESPEDIDOS', 0], ['HECHO (DE VERDAD)', 1], ['FIRMAR EN PAPEL', 2]];
-  if (api.flag('rep_13')) ops.push(['SALIDA EN VALOR', 3]);
-  if (api.flag('oyo_descopear')) ops.push(['DESCOPEADO', 4]);
+  if (api.flag('rep_13')) ops.push(['SALIDA EN VALOR', 3]);       // [P12] la única columna buena (fuera la otra palabra)
   ops.push(['Mejor no.', -1]);
   api.face('up');
   const i = await api.choose(ops.map(o => o[0]), { escape: ops.length - 1 });
   const via = i >= 0 && ops[i] ? ops[i][1] : -1;
   if (via < 0) return;
-  if (via >= 3) { await salida(api, via); return; }
+  if (via === 3) { await salida(api); return; }
   await columnaMal(api, via);
 }
 /** Anselmo vuelve a su mesa sin bloquear (el jugador ya puede probar otra columna). */
@@ -272,7 +271,7 @@ async function columnaMal(api, via) {
       api.faceActor(A, api.player);
       await api.sayAs(A, MAL[via]);
       // [bloqueos] a la primera (antes, a la tercera): sin la frase fina, la pista va ya con el primer borrón
-      if (api.inc('pecera_columna_mal_n') === 1 && !api.flag('rep_13') && !api.flag('oyo_descopear')) {
+      if (api.inc('pecera_columna_mal_n') === 1 && !api.flag('rep_13')) {
         await api.sayAs(A, 'Tráeme algo que no sea ni hecho ni muerto. Eso no existe.');
       }
     });
@@ -284,14 +283,14 @@ async function columnaMal(api, via) {
 }
 
 // ------------------------------------------------------------------ E2 §2.6.4 + E5 §2.5.5 · paso 46: la salida en valor
-async function salida(api, via) {
+async function salida(api) {
   try {
     await api.cutscene(async (api) => {
       // (Bruno escribe la columna nueva a rotulador; coge el pósit de Rubén y lo cambia de columna.)
       api.face('up');
       await api.anim(api.player, 'reach', 700);
       api.sfx('paper');
-      api.setFlag('columna_kanban', via === 3 ? 'salida' : 'descopeado');
+      api.setFlag('columna_kanban', 'salida');
       api.repaint();
       await api.wait(250);
       await api.anim(api.player, 'reach', 700);
@@ -309,10 +308,8 @@ async function salida(api, via) {
       api.faceActor(A, api.player);
       await api.wait(400);
       await api.sayAs(A, '¿Con qué has escrito eso? ...Rotulador de Comercial. De fuera.');
-      if (via === 3) {
-        await api.sayAs(A, ['Salida en valor. Ni hecho ni muerto, pero sale.',
-          'La frase la escribió Brais. Brais tenía alta. ...Entonces es de la casa.']);
-      } else await api.sayAs(A, 'Descopear. Quitar sin que se note. Eso es infraestructura.');
+      await api.sayAs(A, ['Salida en valor. Ni hecho ni muerto, pero sale.',
+        'La frase la escribió Brais. Brais tenía alta. ...Entonces es de la casa.']);
       api.setState('coro_desarrollo', null);
       await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Eutimio.']);
       // (Tin. El ascensor se abre. Vacío. En el suelo, un papel.)
@@ -364,7 +361,7 @@ async function salida(api, via) {
     });
   } finally {
     // por si se salta la escena: el estado final no depende de la cinemática
-    if (!api.flag('columna_kanban')) api.setFlag('columna_kanban', via === 3 ? 'salida' : 'descopeado');
+    if (!api.flag('columna_kanban')) api.setFlag('columna_kanban', 'salida');
     api.setFlag('posit_descopeado', true);
     if (api.getState('coro_desarrollo')) api.setState('coro_desarrollo', null);
     if (api.has('album_eventos')) api.take('album_eventos');

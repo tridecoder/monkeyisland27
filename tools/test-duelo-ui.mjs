@@ -38,7 +38,7 @@ const ACTO2 = { intro_vista: true, torno_abierto: true, inigo_presentado: true, 
   aurora_conto_pasos: true, sala_amazonas_orden_visto: true, sala_becario_sin_turno: true, reunion_terminada: true, maripaz_popup_n: 3,
   cms_vivo: true };   // [guion3 t2] sin web, Maripaz no juega el D1
 const ACTO3 = { ...ACTO2, casilla_hueco: true, duelo_maripaz_ganado: true, acto_3_iniciado: true, pagina_cerrada: true, ruben_encontrado: true,
-  oyo_descopear: true, ruben_libre: true, sala_abierta: true, duelo_gervasio_ganado: true, evaristo_escuchado: true, coma_bendecida: true,
+  ruben_libre: true, sala_abierta: true, duelo_gervasio_ganado: true, evaristo_escuchado: true, coma_bendecida: true,
   correo_evaristo_listo: true };
 const REPS = Object.fromEntries(['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16'].map(n => ['rep_' + n, true]));
 

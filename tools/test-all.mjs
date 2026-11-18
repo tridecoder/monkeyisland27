@@ -72,12 +72,13 @@ if (salas) {
   add('bloqueos', 'test-bloqueos.mjs', [], 2400);
   add('guion3-t1', 'test-guion3-t1.mjs', [], 1500);   // guion nuevo, tanda 1: El Incontable, réplicas nuevas, papel/web y pop-up de cartulina, aprender perdiendo, Gervasio, apagón
   add('guion3-t2', 'test-guion3-t2.mjs', [], 1800);   // guion nuevo, tanda 2: la historia (CMS como condición del HUECO, manual en la R-3, correo de Evaristo, opa, pósit, amenaza, L4, atasco, clímax)
+  add('guion3-t3', 'test-guion3-t3.mjs', [], 1800);   // guion nuevo, tanda 3: Eventos (la 112, la trituradora, el álbum, el rider, el brindis, el walkie; fuera «descopear»)
   add('coherencia', 'test-coherencia.mjs', [], 1200);  // lo que el juego da por hecho, pasa (Evaristo y su L2, correos que llegan, presuposiciones, sillas, Gervasio que insiste, partidas sin L2)     // puertas ocultas: cada paso sin cada requisito, pistas por sub-estado, los tres casos del dueño, partidas antiguas
 }
 const solo = args.solo ? String(args.solo).split(',') : null;
 const plan = solo ? T.filter(t => solo.some(s => t.name.startsWith(s) || t.file.startsWith(s))) : T;
 // las largas primero (mejor reparto en paralelo)
-const WEIGHT = { 'guion3-t1': 4, 'guion3-t2': 4, e6: 7, e5: 6, bloqueos: 6, e7: 5, fuzz: 5, 'play-mouse': 4, smoke: 4, e4: 3, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
+const WEIGHT = { 'guion3-t1': 4, 'guion3-t2': 4, 'guion3-t3': 3, e6: 7, e5: 6, bloqueos: 6, e7: 5, fuzz: 5, 'play-mouse': 4, smoke: 4, e4: 3, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
 plan.sort((a, b) => (WEIGHT[b.name.split(' ')[0]] || 1) - (WEIGHT[a.name.split(' ')[0]] || 1));
 if (args.lista) { for (const t of plan) console.log(`${t.name.padEnd(22)} node tools/${t.file} ${t.args.join(' ')}`); process.exit(0); }
 

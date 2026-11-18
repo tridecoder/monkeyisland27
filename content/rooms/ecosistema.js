@@ -106,9 +106,11 @@ async function hablarAro(api) {
 const aroObjeto = {
   id: 'aro_borja', name: 'aro de luz de Borja', color: '#4FD8E8', murmurColor: '#4FD8E8',
   // §3.2: la cola de ambiente de la sala (uno por visita; el motor no los dice encima de nadie)
-  murmurs: ['Publicando: Viernes noche y aquí seguimos. Emoji de fuego.',
+  // [P12] en el Acto III entra en la rotación el evento de Pilar: lo único que le queda a Borja de Eventos
+  murmurs: (view) => ['Publicando: Viernes noche y aquí seguimos. Emoji de fuego.',
     'Publicando: ¿Sabías que [DATO]? Comenta abajo. Emoji de ojos.',
-    'Publicando: Orgulloso de mi equipo: [AÑADIR EQUIPO]. Emoji de fuego.'],
+    'Publicando: Orgulloso de mi equipo: [AÑADIR EQUIPO]. Emoji de fuego.',
+    ...(view.flag('acto_3_iniciado') ? ['Publicando: Bienvenidos a [EVENTO]. Emoji de croqueta.'] : [])],
   handlers: {
     mirar: mirarAro,
     hablar: hablarAro,
@@ -420,7 +422,11 @@ export default buildRoom({
   defaults: {},
   // §4.4: tras D1, Maripaz llama a Siestatón desde su mesa (una vez, cuando el motor encuentre hueco)
   ambient: [{ id: 'maripaz_siestaton', if: 'casilla_hueco', voces: { M: 'maripaz_remitido' },
-    discusiones: [[['M', '¿Siestatón? Os paso a la web. Con un vídeo que se pone solo.']]] }],
+    discusiones: [[['M', '¿Siestatón? Os paso a la web. Con un vídeo que se pone solo.']]] },
+  // [P12] Acto II: por la puerta de Eventos, Pilar recibe el rider del ponente por el walkie (rota)
+  { id: 'pilar_rider', if: ['acto_2_iniciado', '!acto_3_iniciado'], orden: 'rotar',
+    voces: { P: { from: 'ecosistema_a_eventos', color: '#A8F07A', prefijo: 'PILAR: ' } },
+    discusiones: [[['P', '¿De pie? ...Recibido. Ciento once sillas de pie. Cambio.']], [['P', 'Cero papel. Recibido. Me lo aprendo. Cambio.']]] }],
 
   async onEnter(api) {
     // el roll-up enrollado no dura: al volver a la planta, Maripaz ya lo ha desplegado (también al cargar)
@@ -432,9 +438,6 @@ export default buildRoom({
     }
     // §4.2.4: el anuncio antes de entrar, una vez, la primera vez que Maripaz está en la planta
     if (maripazAqui(api) && !api.flag('ecosistema_interstitial')) { await anuncioAntesDeEntrar(api); return; }
-    // §4.4: la silla 113 (pago del micropuzle de Pilar), una vez, con Maripaz delante
-    if (api.flag('eventos_silla_devuelta') && maripazAqui(api) && api.once('ecosistema_silla_113')) {
-      await sayM(api, 'Me has devuelto la silla. Ya le he puesto un anuncio en el respaldo.');
-    }
+    // ([P12] fuera la silla 113: se va con el micropuzle de Eventos)
   },
 }, art);

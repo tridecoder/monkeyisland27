@@ -158,7 +158,7 @@ try {
   await verA('anselmo_monolito'); await page.mouse.move(5, 5); await sleep(200); await shot('kanban-n11');
   await G(() => __game.skipText(true)); await idle(); await seguir();
   // la columna
-  await G(() => { __game.giveItem('rotulador_rojo'); __game.setFlag('rep_13', true); __game.setFlag('oyo_descopear', true); __game.clearLog(); });
+  await G(() => { __game.giveItem('rotulador_rojo'); __game.setFlag('rep_13', true); __game.clearLog(); });
   await raton('usar', 'kanban', 'rotulador_rojo', false);
   await until(() => !!__game.currentDialogOptions());
   await clicOpcion('SALIDA EN VALOR'); await idle(); await seguir();

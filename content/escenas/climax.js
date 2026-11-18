@@ -262,6 +262,14 @@ export async function climaxEmpujon(api) {
     await api.wait(500);
     await api.sayFrom('proyector', 'EL VIAJE CONTINÚA');
     await sayI(api, '...Ahora no.');
+    // [P12] [P14] en el cinturón de Íñigo chisporrotea el walkie de Eventos: Pilar cierra su noche (Íñigo no contesta)
+    const ini = api.game.actors[INIGO];
+    const walkie = ini ? { at: [ini.x, ini.y - 56] } : {};
+    api.sfx('beep');
+    await api.sayAs('pilar_escaleta', 'Ponente, aquí Eventos. Croquetas en posición. ¿Subes? Cambio.', walkie);
+    api.faceActor(INIGO, 'down');                                  // Íñigo mira el walkie. No contesta.
+    await api.wait(1100);
+    await api.sayAs('pilar_escaleta', 'Recibido. Empezamos sin ponente. Cambio y corto.', walkie);
     // Begoña y la factura (Brais se la ha subido del armario). [P11] cuatro líneas: fuera el taxi, el recorte a 35,52,
     // el sello, «al lado del ministro» y la de Brais con el atún (el 26 % por cuarta vez, con Evaristo ya ganador)
     api.sfx('door');

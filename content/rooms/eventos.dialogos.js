@@ -29,7 +29,9 @@ export async function entradaActo3(api) {
   await sayP(api, '...ciento diez, ciento once. La 112, sin aparecer.');
   api.sfx('beep');
   await sayP(api, 'Ponente, aquí Eventos. Sala lista. Trituradora lista. Cambio.');
-  await api.sayAs(INIGO, 'Siguiente.');
+  // contesta Íñigo por el walkie de Pilar (no está en la sala): el globo sale del walkie, con su color
+  const p = api.game.actors[PILAR];
+  await api.sayAs(INIGO, 'Siguiente.', p && p.room === 'eventos' ? { at: [p.x + 10, p.y - 40] } : {});
   await sayP(api, '21:04, trituradora. 21:05, brindis. Lo tengo todo.');
 }
 

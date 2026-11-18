@@ -47,6 +47,18 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
 
 // [bloqueos] niveles 1-3: el 1 sugiere, el 2 dice quién o dónde, el 3 (Bruno al colgar) dice sitio, objeto y verbo.
 // `sub`: sub-estados (engine/objetivos.js `variante`): el primero que se cumple sustituye niveles / meta / extra / previa.
+// [P12] el álbum ya conseguido (en la mano, en manos de Anselmo o el pósit ya fuera del tablero)
+const tieneAlbum = (api) => api.has('album_eventos') || !!api.flag('eventos_album_dado') || !!api.flag('album_validado') || !!api.flag('posit_descopeado');
+const NEGATIVA = 'Pilar no suelta el álbum: quien no se sienta no asiste. Y le falta una silla.';
+const SILLA_PILAR = [
+  'La que cuenta las sillas sabe siempre quién falta, hijo.',
+  'Esa silla que le falta, ¿no la has visto tú en algún sitio?',
+  ['Mira bien en qué se sienta el chico del armario, hijo.', 'Sistemas: Mirar la silla del armario 27. O preguntarle a Brais de dónde es.']];
+const SILLA_PILAR_VISTA = [
+  'La que cuenta las sillas sabe siempre quién falta, hijo.',
+  'Esa silla que le falta la has visto tú, hijo. Con alguien encima.',
+  ['Dile a la de las fiestas dónde está su silla. Y quién se sienta.', 'Eventos: a Pilar, «Creo que sé dónde está tu 112». En el armario 27.']];
+
 export const OBJETIVOS = [
   { id: 'torno', acto: 1, hecho: 'torno_abierto', salas: ['vestibulo'], meta: M.torno, niveles: [
     'En el pueblo, el que no sale en la foto no existe. Ponte en la foto.',
@@ -154,11 +166,23 @@ export const OBJETIVOS = [
     'Si de un armario sale papel, es que alguien escribe dentro, hijo.',
     'Antes tiraban desde dentro. Ahora el de dentro está muy liado escribiendo.',                 // E5 §2.4
     ['Tira con ganas del papel del armario, hijo.', 'Sistemas: tirar del papel continuo del 27.']] },
-  { id: 'album', acto: 3, hecho: (api) => api.has('album_eventos') || !!api.flag('album_validado') || !!api.flag('posit_descopeado'),   // E5: el álbum se lo queda Anselmo
+  // [P12] [P15] «El álbum»: desde que aparece Brais hasta la primera entrada en Eventos del Acto III (o la negativa de
+  // Pilar). Su nivel 3 ya no manda a pedir el álbum (eso solo lleva a la negativa): manda a subir a Eventos.
+  { id: 'album', acto: 3, hecho: (api) => tieneAlbum(api) || !!api.flag('eventos_acto3_entrada') || !!api.flag('pilar_nego_album'),
     activo: 'ruben_encontrado', salas: ['eventos', 'cpd'], meta: M.baja, niveles: [
     'Para que dejen irse a alguien, hay que demostrar que estuvo.',
     'Las fotos de las fiestas las guarda la que las organiza.',
-    ['Pídele las fotos a la de las fiestas.', 'Eventos: a Pilar, «¿Me prestas el álbum?». Brais sale al fondo.']] },
+    ['Sube a ver a la de las fiestas, hijo, y escúchala. Algo le falta.', 'Eventos: ver a Pilar antes de las 21:04. El álbum está en su trituradora.']] },
+  // [P12] [P14] [P15] «La silla de Pilar» (aprobado en [P15]; aquí porque sin él el álbum quedaba sin orientación): desde
+  // que Pilar cuenta al entrar que le falta la 112 (o desde su negativa) hasta tener el álbum. Sin mirar la silla del
+  // armario (ni preguntarle a Brais), la abuela manda a la silla; con eso, a Pilar.
+  { id: 'silla_pilar', acto: 3, hecho: tieneAlbum, activo: (api) => !!api.flag('ruben_encontrado') && (!!api.flag('eventos_acto3_entrada') || !!api.flag('pilar_nego_album')),
+    salas: ['eventos', 'cpd'], meta: 'El álbum va a la trituradora a las 21:04. Y a Pilar le falta una silla.', niveles: SILLA_PILAR,
+    sub: [
+      { si: ['silla_112_vista', 'pilar_nego_album'], meta: NEGATIVA, niveles: SILLA_PILAR_VISTA },
+      { si: 'silla_112_vista', niveles: SILLA_PILAR_VISTA },
+      { si: 'pilar_nego_album', meta: NEGATIVA },
+    ] },
   // ENMIENDA E5 §2.5: `baja` = enseñar el álbum (album_validado); `columna` = escribir la columna con el rotulador
   { id: 'baja', acto: 3, hecho: 'album_validado', activo: (api) => api.has('album_eventos'), salas: ['pecera'], meta: M.baja, niveles: [
     'Las fotos, enséñaselas al que lleva la lista. Que vea que el chico existe.',
@@ -171,14 +195,11 @@ export const OBJETIVOS = [
     'Escribe en el tablero la frase fina del chico, y mueve tú el papelito.',
     ['El rotulador, al tablero del que no se cree nada.', 'Redacción: Usar el rotulador con el kanban. «SALIDA EN VALOR».']],
     sub: [
-      { si: ['!rep_13', '!oyo_descopear'], meta: 'Para sacar a Brais del tablero hace falta una columna que no diga «despedido».', niveles: [
+      // [P12] solo cambia la condición: ya no existe la otra palabra
+      { si: '!rep_13', meta: 'Para sacar a Brais del tablero hace falta una columna que no diga «despedido».', niveles: [
         'Para que alguien se vaya sin que parezca que lo echan, hay palabras finas.',
         'El chico del armario escribía discursos finos. Pregúntale por ellos.',
         ['Pregúntale al chico por los discursos de ese señor del traje.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».']] },
-      { si: '!rep_13', niveles: [
-        'Ya tienes con qué y qué escribir. Al tablero, hijo.',
-        'Escribe en el tablero esa palabra rara que oíste en las fiestas.',
-        ['El rotulador, al tablero del que no se cree nada.', 'Redacción: Usar el rotulador con el kanban. «DESCOPEADO».']] },
     ] },
   { id: 'acta', acto: 3, hecho: 'sala_abierta', activo: 'acto_3_iniciado', salas: ['pajarera'], meta: M.acta, niveles: [
     'En una reunión manda el que escribe el acta. Que la escriba otro.',

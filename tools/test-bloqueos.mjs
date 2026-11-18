@@ -52,8 +52,10 @@ const EXCEPCIONES = {
   // ([P11] fuera 22: «Ticket 0.441» ya no es un paso; y 23 ya no pide el CMS: Eutimio atiende siempre)
   '30:has:sobre_azucar': 'sin justificante, Begoña lo pide («¿Y el justificante?») y está «Lo busco y vuelvo.»; pista `nota` (el azúcar)',
   '31:acto_2_iniciado': 'estado imposible (Evaristo, en el Acto II)',
-  '43:ruben_encontrado': 'Eventos no se toca: antes de encontrar a Brais el álbum no tiene motivo y Pilar lo dice al cogerlo («Pídemelo con un motivo»)',
-  '45:rep_13': 'la columna se escribe con una frase oída (Brais o Eventos): sin ella, al primer borrón Anselmo dice «Tráeme algo que no sea ni hecho ni muerto…» y la pista `columna` manda a Brais',
+  // [P12] [P14] la silla del armario y la 112 de Pilar
+  '43:acto_3_iniciado': 'estado imposible (la 112 de Pilar es del Acto III)',
+  '43:silla_112_vista': 'sin mirar la silla del armario (ni preguntarle a Brais) no sale «Creo que sé dónde está tu 112.»: Pilar cuenta al entrar que le falta la 112, «¿Me prestas el álbum?» lleva a la negativa y la pista `silla_pilar` manda a la silla',
+  '45:rep_13': 'la columna se escribe con la frase de Brais: sin ella, al primer borrón Anselmo dice «Tráeme algo que no sea ni hecho ni muerto…» y la pista `columna` manda a Brais',
   '46:acto_3_iniciado': 'estado imposible (Gervasio en la puerta, Acto III)',
 };
 // pasos que esperan una opción de diálogo de un árbol que solo existe con el requisito: se miran como «opción ausente»
@@ -67,7 +69,7 @@ pon('torno', 2, 3, 4, 5, 6, 7); pon('silla', 8, 9, 10); pon('correo', 11, 12, 13
 // R-3 va antes que la Sala: Maripaz no llega a decirlo y la abuela manda a la reunión). Fuera los pasos 19, 22, 35 y 42.
 pon('nota', 17, 18); pon('reunion', 20, 21, 23, 24, 25, 26, 27); pon('turno', 28); pon('hueco', 29);
 pon('nota', 30); pon('coma', 31); pon('papel_fax', 32); pon('fuente', 33, 34); pon('firma', 36);
-pon('pieza', 37); pon('recorte', 38); pon('cierre', 39); pon('armario', 40); pon('album', 41, 43); pon('baja', 44);
+pon('pieza', 37); pon('recorte', 38); pon('cierre', 39); pon('armario', 40); pon('album', 41, 42, 43); pon('baja', 44);
 pon('columna', 45); pon('acta', 46); pon('inigo', 47, 48);
 
 // ---------------------------------------------------------------- utilidades de página
@@ -262,8 +264,15 @@ try {
       ['firma, sin el manual', { ...A2, nota_gasto_presentada: true, fax_con_papel: true, evaristo_escuchado: true, casilla_fuente: true }, [], ['manual_fax'], 'catacumba', 'firma', '!has:manual_fax'],
       ['firma, sin el manual y con el CMS caído', { ...A2, cms_vivo: false, nota_gasto_presentada: true, fax_con_papel: true, evaristo_escuchado: true, casilla_fuente: true }, [], ['manual_fax'], 'catacumba', 'firma', '!has:manual_fax'],
       ['firma, con el manual', { ...A2, nota_gasto_presentada: true, fax_con_papel: true, evaristo_escuchado: true, casilla_fuente: true }, ['manual_fax'], [], 'catacumba', 'firma', null],
-      ['columna, sin la frase', { ...A3, album_validado: true }, [], ['rotulador_rojo'], 'pecera', 'columna', '!rep_13 !oyo_descopear'],
-      ['columna, con «descopear» y rotulador', { ...A3, album_validado: true, oyo_descopear: true }, ['rotulador_rojo'], [], 'pecera', 'columna', '!rep_13'],
+      // [P12] fuera la otra palabra: sin la frase de Brais, una sola variante (con o sin rotulador)
+      ['columna, sin la frase', { ...A3, album_validado: true }, [], ['rotulador_rojo'], 'pecera', 'columna', '!rep_13'],
+      ['columna, sin la frase y con rotulador', { ...A3, album_validado: true }, ['rotulador_rojo'], [], 'pecera', 'columna', '!rep_13'],
+      // [P12] [P15] el álbum: antes de subir a Eventos, «El álbum»; desde la entrada (o la negativa), la silla de Pilar
+      ['álbum, Brais encontrado', { ...A3 }, [], [], 'cpd', 'album', null],
+      ['silla de Pilar, oída la 112 al entrar', { ...A3, eventos_acto3_entrada: true }, [], [], 'eventos', 'silla_pilar', null],
+      ['silla de Pilar, tras la negativa', { ...A3, pilar_nego_album: true }, [], [], 'eventos', 'silla_pilar', 'pilar_nego_album'],
+      ['silla de Pilar, con la silla vista', { ...A3, eventos_acto3_entrada: true, silla_112_vista: true }, [], [], 'cpd', 'silla_pilar', 'silla_112_vista'],
+      ['silla de Pilar, con la silla vista y la negativa', { ...A3, pilar_nego_album: true, silla_112_vista: true }, [], [], 'eventos', 'silla_pilar', 'silla_112_vista pilar_nego_album'],
       ['columna, con todo', { ...A3, album_validado: true, rep_13: true }, ['rotulador_rojo'], [], 'pecera', 'columna', null],
       ['boli, sin la regla (en foco)', { ...A2, 'obj:foco': 'boli', 'obj:foco_n': 99 }, [], [], 'catacumba', 'boli', '!custodia_regla'],
       ['boli, con la regla', { ...A2, custodia_regla: true, 'obj:foco': 'boli', 'obj:foco_n': 99 }, [], [], 'pecera', 'boli', null],

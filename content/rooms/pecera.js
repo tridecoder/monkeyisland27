@@ -13,7 +13,7 @@
 //  - frontera_carrocero: solo recta; con `infografia_integrada`, marca de pegamento (E1.3.4).
 //  - pantalla_anselmo: DENEGADO · REVOCADO con `ruben_libre` (cambia sola en la salida en valor, E2 §2.6.4) · OK con integrada.
 //  - mesa_guardia (E2 §2.6.5): la mesa vacía donde estaba Nemesio, con la silla vacía y sus pósits de guardia.
-//  - kanban: columna SALIDA EN VALOR con `posit_descopeado`. silla_ramirez / ordenador_bruno: `silla_libre`.
+//  - kanban: columna SALIDA EN VALOR con `posit_descopeado` (id técnico: el pósit ya ha salido). silla_ramirez / ordenador_bruno: `silla_libre`.
 import { buildRoom } from '../lib/room.js';
 import art from './art/pecera.art.js';
 import dialogos, { anselmoCtx, anselmoEnSuSitio, columnas } from './pecera.dialogos.js';
@@ -457,8 +457,7 @@ export default buildRoom({
       mirar: async (api) => {
         const lines = ['Columnas: POR HACER, EN CURSO, BLOQUEADO, HECHO y HECHO (PERO NO).'];
         if (api.flag('posit_descopeado')) {
-          lines.push(api.flag('columna_kanban') === 'descopeado' ? 'Y una nueva, a rotulador: DESCOPEADO. Dentro, el pósit de Brais.'
-            : 'Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Brais.');
+          lines.push('Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Brais.');   // [P12] fuera la otra palabra
         } else if (api.flag('acto_3_iniciado')) lines.push('En POR HACER, amarillo de puro viejo: "Baja becario Brais".');
         await api.say(lines);
       },

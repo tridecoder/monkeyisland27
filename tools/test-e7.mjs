@@ -431,7 +431,7 @@ try {
   if (toca('f6')) {
     console.log('\n§2.4 · F6: la escena de Anselmo tras el kanban, en dos tiempos');
     const III = { ...ACTO2, cms_vivo: true, acto_3_iniciado: true, ruben_encontrado: true, dos_ias_vista: true, anselmo_dijo_regla: true, herminia_midio: true,
-      pieza_escrita: true, discover_ganador: 'opa', album_validado: true, rep_13: true, oyo_descopear: true };
+      pieza_escrita: true, discover_ganador: 'opa', album_validado: true, rep_13: true };
     const T = await open(III, 'pecera', ['rotulador_rojo']);
     const { page, G, until, clicOpcion, raton, logIdx, logHas, shot } = T;
     await raton('usar', 'kanban', 'rotulador_rojo');
@@ -522,7 +522,7 @@ try {
       await R.check(s.esp);
       porPaso[s.n] = await G((k) => __game.log.slice(k).map(l => ({ who: l.who, text: String(l.text), room: l.room })), k0);
     }
-    ok(Object.keys(porPaso).length === STEPS.length && STEPS.length === 45, `los ${Object.keys(porPaso).length} pasos ([P11]: 45), cada uno con su resultado (hasta juego_terminado)`);
+    ok(Object.keys(porPaso).length === STEPS.length && STEPS.length === 46, `los ${Object.keys(porPaso).length} pasos ([P11] [P12]: 46), cada uno con su resultado (hasta juego_terminado)`);
     const dichas = Object.values(porPaso).flat().filter(l => l.who !== 'aviso' && l.who !== 'tarjeta');
     const ms = (t) => Math.max(1100, 900 + t.length * 55);
     const lineas = dichas.length, chars = dichas.reduce((a, l) => a + l.text.length, 0), min = dichas.reduce((a, l) => a + ms(l.text), 0) / 60000;

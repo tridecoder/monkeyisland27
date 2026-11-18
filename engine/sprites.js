@@ -95,6 +95,7 @@ export function paperDoll(p = {}) {
     headset: null, earpiece: null, backpack: null, pocketItem: null, pocketKind: 'pen', prop: null, propColor: null,
     badges: 1, emblem: null, keys: null, epaulettes: null, scarfStripe: null, crumbs: null, dots: null, untucked: false,
     tieDots: null, loupe: null,       // tieDots: little marks on the tie (Evaristo's commas); loupe: magnifier on a cord
+    beltRadio: null,                  // [P12] walkie en el cinturón (color del cuerpo)
     backSign: null, backSignBorder: '#c83030',   // [E2 §4.2.3] adhesivo «SU ANUNCIO AQUÍ» en la espalda (7×5, borde rojo)
     ...p,
   };
@@ -431,6 +432,12 @@ export function paperDoll(p = {}) {
     if (P.untucked && !jacket && !skirt) { R(cx - (ww >> 1), waist, ww, 2, body[1]); R(cx + (ww >> 1) - 2, waist, 2, 2, body[0]); D(cx - 2, waist + 1, body[0]); }
     else if (!skirt) { R(cx - (ww >> 1), waist, ww, 1, shade(P.pants, -0.45)); if (!back) D(cx, waist, '#c8a040'); }
     if (P.keys && !back) { R(cx + 3, waist + 1, 2, 2, P.keys); D(cx + 4, waist + 3, shade(P.keys, -0.3)); D(cx + 2, waist + 2, shade(P.keys, 0.3)); }
+    // [P12] un walkie colgado del cinturón (Íñigo en el clímax): cuerpo 3×4 con canto claro, antena y piloto rojo
+    if (P.beltRadio && !back) {
+      const bx = cx + (ww >> 1) - 1;
+      R(bx, waist - 1, 3, 4, P.beltRadio); R(bx, waist - 1, 1, 4, shade(P.beltRadio, 0.55));
+      D(bx + 2, waist - 3, P.beltRadio); D(bx + 2, waist - 2, P.beltRadio); D(bx + 1, waist, '#e04030');
+    }
     // arms
     const armLen = torsoLen + 1;
     const swingA = [0, 1, 0, -1][walkF] || 0;
@@ -534,6 +541,11 @@ export function paperDoll(p = {}) {
     if (P.scarf) R(L + 1, top - 1, sideW, 2, P.scarf);
     if (P.badge) { R(L + sideW - 1, top + 6, 2, 3, '#f4f0e0'); }
     if (!skirt) R(L, waist, sideW, 1, shade(P.pants, -0.45));
+    // [P12] el walkie del cinturón, a la espalda (asoma por detrás de la cadera)
+    if (P.beltRadio) {
+      R(L - 1, waist - 1, 3, 4, P.beltRadio); R(L - 1, waist - 1, 1, 4, shade(P.beltRadio, 0.55));
+      D(L, waist - 3, P.beltRadio); D(L, waist - 2, P.beltRadio); D(L + 1, waist, '#e04030');
+    }
     // arm (near) with swing
     const swing = anim === 'walk' ? [-3, 0, 3, 0][walkF] : 0;
     const armLen = torsoLen + 1;

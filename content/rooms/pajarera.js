@@ -432,7 +432,7 @@ export default buildRoom({
       empujar: 'Lo empujo. Se deja. Me da las gracias por el feedback.',
     },
       murmurs: ['Esto en verde. Esto en rosa. Esto en azul, que es excusa.', 'Diapositiva 248: «El viaje continúa».',
-        '¿Y esto el Lector Medio lo entiende? Perfecto: asiente.'] },
+        '¿Y esto el Lector Medio lo entiende? Perfecto: asiente.', 'A las nueve y cinco, croquetas. Si nadie pregunta.'] },   // [P12]
     // Gervasio: Acto II en su mesa (tras la reunión); Acto III en la puerta de la Sala hasta el duelo D3 (§5.10)
     { id: G, when: (api) => (api.flag('acto_3_iniciado') ? !api.flag('duelo_gervasio_ganado') : !!api.flag('reunion_terminada')),
       pos: (view) => (view.flag('acto_3_iniciado') ? 'puerta' : 'mesa'),
@@ -481,6 +481,11 @@ export default buildRoom({
             { text: '¿Y si en la Reunión de Dirección dicen que no?', once: true, reply: 'El Lector Medio nunca dice que no. Lleva tres semanas asintiendo.' },
             { text: '¿Y el de Controlling?', once: true,
               reply: ['Me llama por las comas de las facturas. Le tengo en azul.', 'Excusas. Pero muy bien puntuadas.'] },
+            // [P12] Eventos: el brindis de las 21:05 y la silla 112 (tras oír a Pilar que le falta)
+            { text: '¿Y el brindis de Eventos?', once: true, if: 'inigo_presentado',
+              reply: 'Lanzamiento interno. De pie: las sillas generan jerarquía.' },
+            { text: '¿Se llevó usted una silla de Eventos?', once: true, if: 'eventos_falta_112',
+              reply: 'Reasigné un activo infrautilizado. En la última fila no se sienta nadie.' },
             { text: 'Me voy.', exit: true, reply: 'Perfecto. Eso libera sinergias.' },
           ],
         },

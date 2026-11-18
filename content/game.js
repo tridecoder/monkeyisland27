@@ -199,7 +199,8 @@ const afterEnter = (api) => avisos(api);
 const FLAGS_RETIRADOS = ['leoncio_acepta_alta', 'bandeja_diseno_abierta', 'rumor_atun_n', 'rumor_plaza_n', 'gertrudis_error_indice',
   'evaristo_lc',                                          // E2 §5.3: la LC ya no existe
   'rumor_firma_n', 'planta_oyo',                          // E2 fase B (1): el rumor A desaparece
-  'pecera_nemesio_saludo'];                               // E2 §10.2: sin lector (Nemesio ya no existe; `evaristo_convoco` vuelve con la L2)
+  'pecera_nemesio_saludo',                                // E2 §10.2: sin lector (Nemesio ya no existe; `evaristo_convoco` vuelve con la L2)
+  'oyo_descopear', 'eventos_silla_devuelta'];             // [P12] fuera la otra palabra del kanban y la silla 113
 function migrarPartida(st) {
   const inv = Array.isArray(st.inventory) ? st.inventory : (st.inventory = []);
   const fl = st.flags || (st.flags = {});
@@ -240,7 +241,7 @@ function migrarPartida(st) {
     si('torno_abierto', 'pecera'); si('chaqueta_en_lector', 'pajarera'); si('gertrudis_saludada', 'office');
     si('acto_2_iniciado', 'catacumba', 'office'); si('vio_ticket_3', 'cpd'); si('cms_vivo', 'cpd');
     si('reunion_terminada', 'pajarera', 'sala_amazonas'); si('nota_gasto_presentada', 'ecosistema', 'administracion');
-    si('evaristo_escuchado', 'ecosistema', 'administracion'); si('oyo_descopear', 'ecosistema', 'eventos');
+    si('evaristo_escuchado', 'ecosistema', 'administracion'); si('oyo_descopear', 'ecosistema', 'eventos');   // (flag retirado; ver [P12] abajo)
     si('ruben_encontrado', 'cpd');
     st.visitadas = [...v].filter(Boolean);
   }
@@ -269,6 +270,26 @@ function migrarPartida(st) {
   if (Number(fl.tadeo_rv_n) > 2) fl.tadeo_rv_n = 2;
   // · Eutimio tiene un solo árbol (antes P0 con el CMS caído y P1 con el CMS vivo): las opciones ya gastadas se conservan
   if (st.dialogs) for (const k of Object.keys(st.dialogs)) { const m = /^paco\.P[01]\.(.+)$/.exec(k); if (m) st.dialogs['paco.P.' + m[1]] = true; }
+  // [P12] guion nuevo, tanda 3 (Eventos), partidas del juego anterior (las que no tienen `eventos_falta_112`):
+  if (!('eventos_falta_112' in fl)) {
+    // · el álbum ya prestado por la vía vieja (en la mano, validado o con Brais ya fuera): cuenta como salvado de la
+    //   trituradora (la 112, encontrada; la croqueta, si no la dio la silla 113, en la próxima conversación con Pilar)
+    const album = inv.includes('album_eventos') || !!fl.album_validado || !!fl.posit_descopeado;
+    fl.eventos_album_dado = album && !!fl.ruben_encontrado;
+    fl.eventos_acto3_entrada = fl.eventos_album_dado;
+    fl.silla_112_vista = fl.eventos_album_dado;
+    fl.pilar_nego_album = false;
+    fl.eventos_falta_112 = fl.eventos_album_dado;
+    // · el recuento viejo (ciento doce, ciento trece) no vale: la próxima vez Pilar cuenta ciento once y dice que falta la 112
+    if (!fl.eventos_album_dado) fl.ecosistema_sillas_n = 0;
+  }
+  // · el kanban: una sola columna (SALIDA EN VALOR); la que se escribió con la otra palabra pasa a ser esta
+  if (fl.columna_kanban === 'descopeado') fl.columna_kanban = 'salida';
+  // · el árbol de Pilar: las opciones de una vez que se guardaban por posición pasan a guardarse por id
+  if (st.dialogs) {
+    const PE = { 0: 'empezados', 1: 'photocall', 3: 'acreditarse', 4: 'catering', 6: 'cinta' };   // (el orden de antes)
+    for (const [i, id] of Object.entries(PE)) if (st.dialogs['pilar.PE0.' + i]) { st.dialogs['pilar.PE0.' + id] = true; delete st.dialogs['pilar.PE0.' + i]; }
+  }
   for (const k of FLAGS_RETIRADOS) delete fl[k];
   if (st.actors) for (const id of ['nerea_backlog', 'borja_engagement']) delete st.actors[id];   // E2 §2.6 y §3: ya no existen
   return st;
@@ -416,7 +437,7 @@ export default {
   pantallas: {
     herminia_portatil: { prefijo: 'HERMINIA (IA) › ', color: '#FF8C3C' },   // §2.2: «HERMINIA (IA) › …» (texto tras el prefijo ≤ 64)
     aro_borja: { color: '#4FD8E8' },                                        // §3.1: sin prefijo; el texto empieza por «Publicando:»
-    eventos_a_ecosistema: { color: '#4FD8E8' },                             // §3.5: el móvil de Borja oído desde Eventos
+    // ([P12] fuera `eventos_a_ecosistema`: el móvil de Borja ya no se oye desde Eventos)
     pantalla_comercial: { color: '#FF8A60' },                               // §4.4: el vídeo que se pone solo
   },
   afterEnter,           // motor: tras el onEnter de cada sala (avisos de la adenda §2)

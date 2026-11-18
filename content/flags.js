@@ -93,7 +93,7 @@ export default {
   vio_armario_27: 'bool · B · pajarera · 3.ª Mirar a pantalla_titulator · B (Íñigo I4), pistas',
   titulator_mirar_n: 'int · B · pajarera · +1 por Mirar pantalla_titulator · B',
   ruben_encontrado: 'bool · A · cpd · P13 · A, D (Pilar de Eventos; album_eventos_hotspot), B (Anselmo [6] y [8]), pistas',
-  posit_descopeado: 'bool · B · pecera · P14b · B (Mirar kanban)',
+  posit_descopeado: 'bool · B · pecera · P14b (id técnico: el pósit de Brais ya está en SALIDA EN VALOR) · B (Mirar kanban)',
   ruben_libre: 'bool · A · cpd · P14c · B (Rubén en la Pecera, puerta_sala), A (armario vacío), D (escena 7.4), pistas; actors.js (murmullos)',
   duelo_gervasio_ganado: 'bool · C · office · fin D3 · C',
   sala_abierta: 'bool · C · office · fin D3 · B (puerta_sala), pistas',
@@ -147,7 +147,7 @@ export default {
   ascensor_negativas_n: 'int · común (lib/ascensor.js) · +1 por planta denegada · rotación de las negativas',
 
   // ---------------------------------------------------------------- el móvil de Bruno (content/lib/movil.js)
-  movil_leidos: 'int · común (lib/movil.js) · bits de los correos leídos en el móvil (0-2 RV: de Tadeo, 3-6 Evaristo, 8-10 fijos) · el menú del móvil',
+  movil_leidos: 'int · común (lib/movil.js) · bits de los correos leídos en el móvil (0-2 RV: de Tadeo, 3-6 Evaristo, 8-10 fijos, 11 «CONFIRMADO» de Pilar) · el menú del móvil',
   // [coherencia] quién ha convocado a Bruno a Controlling y los correos de Evaristo que han llegado de verdad
   evaristo_convoco: "str · común (game.js L2; administracion Begoña) · '' | 'llamada' (L2) | 'begona' (B_EJEMPLAR, sin L2) · administracion («¿Para qué me ha llamado?»), ficha",
   evaristo_correos: "str · común (lib/movil.js) · correos de Evaristo llegados, en orden: '1@k,2@k,3@k,G@k' (k = RV: de Tadeo ya llegados); 'g' = el de agradecimiento, prometido · bandeja del móvil",
@@ -186,7 +186,7 @@ export default {
   gertrudis_pregunta: 'bool · PA · office · Gertrudis «¿Y cuáles son los siguientes pasos?» (§2.1.4) · PA (sala_amazonas: tele → sala_tele_gertrudis), pistas (turno)',
   vio_pegatina_fax: 'bool · PD · catacumba · Mirar fax (pegatina «Ticket 0.441», §2.3.1) · PC (cpd: opción fax441 de Paco), pistas (firma)',
   album_validado: 'bool · PB · pecera · Dar álbum a Anselmo (AN_ALBUM_INTRO, §2.5.3) · PB (kanban, columnas, arte), pistas (baja, columna)',
-  columna_kanban: "str · PB · pecera · salida(api, via): 'salida' | 'descopeado' ('' sin columna, §2.5.5) · PB (arte del kanban, Mirar kanban)",
+  columna_kanban: "str · PB · pecera · salida(api): 'salida' ('' sin columna, §2.5.5; [P12] la otra palabra ya no existe) · PB (arte del kanban, Mirar kanban)",
   // ---------------------------------------------------------------- ENMIENDA E7 (I1)
   oyo_papel_begona: 'bool · E7 · catacumba (Aurora, «¿De dónde saco papel…?») o administracion (Begoña, «¿Me da unos folios?») · items.js (ficha: FIRMA)',
   // también prefijos reservados del motor: obj:<objetivo> (api.objetivo.marcar), obj:hora, ambient:<sala>.<id>

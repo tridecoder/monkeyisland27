@@ -18,7 +18,8 @@ import { decir } from '../../engine/efectos.js';
  *  (content/game.js cuenta los llegados en `tadeo_rv_n`). E2 §7.2: RV1 y RV2 sin comentario de Bruno. */
 export const RV_TADEO = [   // plan §5.16: tres, sin siglas
   ['inigo_presentado', 'RV: Cómo hacer que la web cargue en la mitad de tiempo (40 págs.)!!', ''],
-  ['acto_2_iniciado', 'RV: RV: RV: La IA dice que la web va más rápida sin lo más grande!!', ''],
+  // [P12] el «RV:» del Acto II es el rider del ponente: Tadeo lo reenvía a toda la empresa sin leerlo
+  ['acto_2_iniciado', 'RV: RV: Rider del ponente: agua con gas, cero papel, sin preguntas!!', 'Lo ha reenviado a toda la empresa. Nadie ha preguntado.'],
   // [P11] fuera el «RV x5» del Acto III (era un aviso más del armario 27; su sitio lo ocupa la L4 de Evaristo)
 ];
 
@@ -67,6 +68,10 @@ export function correoPendienteEvaristo(api) {
   return false;
 }
 
+/** [P12] El «CONFIRMADO» de Pilar: llega tras la presentación del villano, sin aviso, encima de los fijos. */
+const CONFIRMADO = { bit: 11, de: 'Eventos', who: 'pilar_escaleta', fecha: 'hoy', asunto: 'CONFIRMADO',
+  cuerpo: ['Presentación del Plan Cero Papel. 21:05. Sala Polivalente.', 'Ponente: confirmado. Croquetas: confirmadísimas.'],
+  bruno: '«Ponente: confirmado». Es la primera vez que lo leo.' };
 /** Correos fijos (siempre en la bandeja, al fondo): bit de leído, remitente, quién «habla» el texto, fecha, asunto, cuerpo. */
 const FIJOS = [
   { bit: 8, de: 'Eventos', who: 'pilar_escaleta', fecha: '3 mar.', asunto: '¡Empezamos en 5 minutos!',
@@ -99,7 +104,7 @@ export function bandeja(api) {
     cron.push({ bit: i, de: 'Tadeo Adjunto', who: 'tadeo_adjunto', fecha: 'hoy', asunto: asunto.replace(/^((RV: )+|RV x\d: )/, ''), completo: asunto, cuerpo: [asunto], bruno });
     cron.push(...evaristo(i + 1));
   }
-  return cron.reverse().concat(FIJOS);
+  return cron.reverse().concat(api.flag('inigo_presentado') ? [CONFIRMADO] : [], FIJOS);
 }
 const sinLeer = (api) => bandeja(api).filter(c => !leido(api, c.bit)).length;
 const corto = (t, n = 34) => (t.length > n ? t.slice(0, n - 1).trimEnd() + '…' : t);

@@ -2,7 +2,7 @@
 // Test del paquete P4 (ENMIENDA E2, docs/guion2/ENMIENDA_E2.md §11 P4): Sala Amazonas (reunión, estampida con el anuncio
 // de Maripaz, pop-up de la X menguante, página 7 según Comercial, D1 y el adhesivo «SU ANUNCIO AQUÍ»), Marketing y
 // Comercial (sin Borja: su aro de luz con el móvil que publica solo; el anuncio antes de entrar; el monitor de Comercial;
-// el árbol y los verbos de Maripaz; el portátil de Tadeo con seis reenvíos), Eventos («¡Ese móvil!», `once` de §7.6) y
+// el árbol y los verbos de Maripaz; el portátil de Tadeo con seis reenvíos), Eventos ([P12] la negativa del álbum, `once`) y
 // clímax (D4 con R16 y el tercer remate: Evaristo llama por el teléfono de conferencias; la factura con coma).
 //   node tools/test-comedia-p4.mjs            (modo rápido; comprueba también los planos detalle sin modo rápido)
 //   node tools/test-comedia-p4.mjs --shots    además guarda capturas en tools/shots/e2-p4-*.png (y e3-*.png)
@@ -105,7 +105,7 @@ async function enterClimax() {
 const D4_REPS = { rep_10: true, rep_12: true, rep_13: true, rep_05: true, rep_16: true, rep_01: true, rep_07: true, rep_15: true };
 const ACTO3 = { torno_abierto: true, inigo_presentado: true, chaqueta_en_lector: true, silla_libre: true, acto_2_iniciado: true,
   aurora_conto_pasos: true, reunion_terminada: true, casilla_hueco: true, duelo_maripaz_ganado: true, acto_3_iniciado: true,
-  pagina_cerrada: true, ruben_encontrado: true, oyo_descopear: true, ruben_libre: true, sala_abierta: true, duelo_gervasio_ganado: true,
+  pagina_cerrada: true, ruben_encontrado: true, ruben_libre: true, sala_abierta: true, duelo_gervasio_ganado: true,
   evaristo_escuchado: true, coma_bendecida: true, correo_evaristo_listo: true };
 
 try {
@@ -244,12 +244,11 @@ try {
   await setFlags({ ruben_encontrado: false });
   await shot('marketing');
 
-  step('Silla 113 (§4.4) y Acto II antes de D1');
-  await setFlags({ eventos_silla_devuelta: true });
+  step('[P12] Fuera la silla 113; Acto II antes de D1');
   await G(() => __game.gotoRoom('pecera'));
   await G(() => __game.clearLog());
   await G(() => __game.gotoRoom('ecosistema'));
-  ok(await logHas('Ya le he puesto un anuncio en el respaldo.') === 1, 'la silla 113, pagada');
+  ok(await logHas('Ya le he puesto un anuncio en el respaldo.') === 0, '[P12] la silla 113 se va con su micropuzle: Maripaz ya no la menciona');
   await setFlags({ acto_2_iniciado: true });
   await G(() => __game.gotoRoom('administracion'));
   await G(() => __game.gotoRoom('ecosistema'));
@@ -444,7 +443,7 @@ try {
   await G(() => __game.takeItem ? __game.takeItem('pieza_opa') : null);
 
   // ================================================================ EVENTOS
-  step('Eventos (protegida): «¡Ese móvil!» y `once` de §7.6');
+  step('Eventos: [P12] la negativa del álbum y `once` de §7.6');
   await G(() => __game.gotoRoom('eventos'));
   ok((await inRoom('borja_engagement')) !== 'eventos', 'Borja no entra en Eventos');
   await setFlags({ ruben_encontrado: true, acto_3_iniciado: true });
@@ -454,13 +453,14 @@ try {
   await choose('¿Hay catering?');
   const o = await opts();
   ok(!o.includes('¿Para qué es el photocall?') && !o.includes('¿Hay catering?'), 'photocall y catering, `once`');
-  if (args.shots) await shotDuring('eventos-movil', async () => { await choose('¿Me prestas el álbum?'); }, 'Hemos descopeado la ética del trimestre', 400);
+  // [P12] el álbum ya no se presta: va a la trituradora (y el móvil de Borja ya no publica nada desde Marketing)
+  if (args.shots) await shotDuring('eventos-negativa', async () => { await choose('¿Me prestas el álbum?'); }, 'Quien no se sienta no asiste.', 400);
   else await choose('¿Me prestas el álbum?');
   await G(() => __game.waitIdle());
-  ok(await logWho('Hemos descopeado la ética del trimestre') === 'eventos_a_ecosistema', 'el móvil de Borja, oído por la puerta');
-  ok(await logHas('¡Ese móvil! Sin acreditación, de la puerta no se pasa.') === 1 && await logHas('Pero esto lo contamos. En vertical.') === 1, '«¡Ese móvil!» (C7)');
-  ok(await logHas('Me lo apunto') === 0 && await logHas('O sea, quitado del plan') === 0, 'fuera las dos coletillas');
-  ok((await flag('oyo_descopear')) === true && (await state()).inventory.includes('album_eventos'), 'paso 37/39 igual (oyo_descopear, álbum)');
+  ok(await logWho('Hoy no. El ponente lo quiere en la trituradora. A las 21:04.') === 'pilar_escaleta' && await logHas('Quien no se sienta no asiste. Y lo que no asiste, se tritura.') === 1,
+    '[P12] «¿Me prestas el álbum?»: la negativa (la trituradora, «quien no se sienta no asiste»)');
+  ok(await logHas('Publicando:') === 0 && await logHas('¡Ese móvil!') === 0, '[P12] fuera el móvil de Borja en Eventos');
+  ok((await flag('pilar_nego_album')) === true && !(await state()).inventory.includes('album_eventos'), '[P12] sin álbum (se salva con la silla 112)');
   await R.closeDialog().catch(() => {});
 
   // ================================================================ CLÍMAX

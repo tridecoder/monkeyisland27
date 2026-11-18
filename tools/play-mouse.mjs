@@ -19,7 +19,7 @@
 // y la señal tras el clímax (se espera la primera megafonía). Capturas de esos momentos, siempre: tools/shots/e5-raton-*.png.
 // ENMIENDA E6 §11.1: el paso 28 con clic en la tele y en sus dos opciones (sin pisar el Vending), el atasco anunciado
 // («¿Necesitan ayuda?»; [guion3 t2] se resuelve solo); D2 (36) con la réplica larga (no cabe, no es fallo) y luego la corta;
-// D3 (46) con la frase a medias; el rotulador (42) cogido del cordel. Capturas: tools/shots/e6-raton-*.png.
+// D3 (46) con la frase a medias; [P12] la silla del armario (42), con captura. Capturas: tools/shots/e6-raton-*.png.
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -363,15 +363,14 @@ try {
         ok(pn === 3 && anuncios.x.join() === '3,1' && anuncios.cuentas.length === 1 && anuncios.bloqueoRespetado === 1,
           `pop-up de Maripaz ×3 con el ratón: clic en la «×» de 3 px y de 1 px; la 3.ª, sin «×»: un clic durante «Podrá cerrar en 3» no la cierra, y al acabar sí (popup_n=${pn}, X=${anuncios.x}, cuentas=${anuncios.cuentas.length}, bloqueo ${anuncios.bloqueoRespetado}/${anuncios.bloqueoRoto})`);
       }
-      // E6 §11.1: el rotulador, cogido de su cordel (hotspot propio, `rotulador_cordel`) en vez de por el termómetro; antes,
-      // captura de la pared de Comercial a tamaño de juego (¿se distingue el rotulador colgado?)
-      const acc = s.n === 42 ? [['ir', 'ecosistema'], ['verbo', 'coger', 'rotulador_cordel']]
-        : s.n === 36 ? s.acc.map(a => (a[0] === 'duelo' ? ['duelo', ['R06', 'R02', 'R09:larga', 'R09', { objeto: 'manual_fax' }]] : a))
+      // [P12] el paso 42 es ahora la silla del armario 27 (el rotulador llega con el D1): antes, captura a tamaño de juego
+      // (¿se distingue la silla plegable en el nido de Brais?)
+      const acc = s.n === 36 ? s.acc.map(a => (a[0] === 'duelo' ? ['duelo', ['R06', 'R02', 'R09:larga', 'R09', { objeto: 'manual_fax' }]] : a))
           : s.acc;
       for (const a of acc) {
         if (s.n === 42 && a[0] === 'verbo') {
-          await settle(); await pointFor('rotulador_cordel'); await page.mouse.move(2, 2); await wait(300);
-          await page.screenshot({ path: path.join(here, 'shots', 'e6-raton-rotulador-colgado.png') });
+          await settle(); await pointFor('silla_armario'); await page.mouse.move(2, 2); await wait(300);
+          await page.screenshot({ path: path.join(here, 'shots', 'guion3-t3-raton-silla-armario.png') });
         }
         if (s.n === 28 && a[0] === 'verbo') {             // E6 §2.3: sin pisar el Vending en todo el Acto II tras el 14
           ok(!(await G(() => __game.log.some(l => String(l.text).includes('E-53')))), '28 la pregunta llega por la tele: el Vending no se ha pisado (sin E-53)');

@@ -355,6 +355,9 @@ export default {
       skin: '#e8b890', hair: '#1a1410', hairStyle: 'parted', shirt: '#f4f6fa', jacket: '#1c2a52', pants: '#1c2a52',
       shoes: '#ffffff', prop: 'postits', build: 'slim', height: 1.05,
     },
+    // [P12] en el clímax (Acto III) lleva un walkie de Eventos en el cinturón: siembra el inserto de Pilar
+    variants: { walkie: { doll: { beltRadio: '#26262e' } } },
+    variant: (v) => (v.flag('acto_3_iniciado') ? 'walkie' : null),
     murmurs: [],   // E6 §4.3: viven en pajarera.js (y la Sala declara los suyos)
   },
   ruben: {

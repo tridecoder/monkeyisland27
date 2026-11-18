@@ -332,7 +332,7 @@ try {
   await verb('mirar', 'registro_tickets');
   ok(await logHas('Este registro lo empezó Eutimio en julio. El contador lleva la otra numeración.'), '[P14] registro de tickets: la primera línea nueva');
   await guardar('t1_acto3');                             // partida del Acto III (para la migración)
-  await jugarHasta(45, 43);
+  await jugarHasta(45, 42);                              // [P12] desde la silla del armario (paso 42)
   await guardar('t1_antes_d3');
 
   // ====================================================================== [P8] D3 con ratón, a tiempo real
@@ -501,7 +501,7 @@ try {
 
   // ====================================================================== partidas del juego anterior
   step('Partidas guardadas del juego anterior (sin `libreta_pistas`) a mitad de cada acto: cargan y se sigue');
-  for (const [slot, sig, nom] of [['t1_acto1', 13, 'Acto I (tras el paso 12)'], ['t1_acto2', 26, 'Acto II (tras el paso 25)'], ['t1_acto3', 43, 'Acto III (tras el paso 41)']]) {
+  for (const [slot, sig, nom] of [['t1_acto1', 13, 'Acto I (tras el paso 12)'], ['t1_acto2', 26, 'Acto II (tras el paso 25)'], ['t1_acto3', 42, 'Acto III (tras el paso 41)']]) {
     await G(([s]) => {
       const k = __game.game.slotKey(s), d = JSON.parse(localStorage.getItem(k));
       delete d.state.flags.libreta_pistas;
