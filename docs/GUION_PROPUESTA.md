@@ -828,7 +828,7 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   ~~**BRUNO:** Respuesta: «Espera sentado. Si encuentras silla».~~
   **BRUNO:** Con silla, el correo se ve. Ramírez, en 2019: «¿Has podido verlo?».
   **BRUNO:** En borradores, mi respuesta: «Poder, he podido».
-  **BRUNO:** Nunca la mandé. Él tampoco ha vuelto. La apunto.
+  **BRUNO:** Nunca la mandé. La apunto.
   **BRUNO:** Y una autorrespuesta de Brais: «Estoy fuera de la oficina desde julio».
   **BRUNO:** «Bueno, fuera no. Dentro. Muy dentro».
 - ~~**Mirar (después):** Bandeja de entrada. Ramírez sigue a la espera de mis comentarios. // Y Brais sigue fuera de la oficina. Bueno, dentro. Muy dentro.~~
@@ -1792,7 +1792,9 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **TEODORO (fax):** Le mando faxes. Me contesta con un quesito. Nos entendemos.
 - **▸** ¿Conoce a don Evaristo? _(una vez)_
   **TEODORO (fax):** Es de los nuestros. Él cuenta comas. Yo, líneas.
-  **TEODORO (fax):** Una vez me devolvió un fax corregido. Lo tengo enmarcado.
+  ~~**TEODORO (fax):** Una vez me devolvió un fax corregido. Lo tengo enmarcado.~~
+  **TEODORO (fax):** Una vez me devolvió un fax corregido. Tenía razón.
+  > NOTA: [P9] El fax enmarcado es ahora el de «Este sí»; el de Evaristo deja de estar enmarcado para que no se confundan.
 - **▸** Me voy. _(salida)_
   **TEODORO (fax):** Cierra al salir. El reloj no se toca: las 20:59 caben.
 
@@ -1839,7 +1841,6 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - ~~**Coger:** No hace falta. La réplica ya me la sé. El marco, que se quede. · **Abrir:** Si abro el marco, se escapa la réplica. · **Usar:** Ya lo he contrastado: está enmarcado.~~
   **BRUNO:** Un fax enmarcado: «¿Te ha llegado mi fax?».
   **BRUNO:** Debajo, a mano: «Este sí».
-  **BRUNO:** Dos palabras. Por eso lo enmarcó.
 - **Coger:** No hace falta. La réplica ya me la sé. El marco, que se quede. · **Abrir:** Si abro el marco, se escapa la réplica. · **Usar:** No hace falta reenviarlo. Ese ya llegó: está enmarcado.
 > NOTA: [P9] R06: cambian ataque y réplica (la alternativa de reserva de la segunda vuelta). Cambia el texto del fax, la línea de Bruno al leerlo y el «Usar» del marco, que con el ataque viejo («contrastado») dejaba de tener sentido. «Coger» y «Abrir» no cambian. Paquete completado en la propuesta, no en las fuentes: que lo revise el dueño.
 
