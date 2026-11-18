@@ -4,7 +4,7 @@
 *Una aventura de cierre. elContable.es, viernes de 18:30 a 21:00.*
 
 > **PROPUESTA (sin aplicar al juego).** Es el guion vigente con cinco cambios marcados. Busca «NOTA: [P» para ir a cada uno.
-> - **[P4] Pista del enchufe:** la pantalla parpadea y Yoli lo dice en voz alta al entrar en la Redacción en el Acto II.
+> - **[P4] Pista del enchufe:** al entrar en la Redacción en el Acto II, la pantalla de métricas se apaga un segundo y, justo ese segundo, el CMS publica una pieza.
 > - **[P5] Apagón:** 12 segundos la primera vez; 5 en las repeticiones.
 > - **[P6] Brais en el armario:** la escena automática baja de 23 a 16 líneas; todo lo necesario para seguir sigue siendo automático.
 > - **[P7] Duelos:** se puede entrar sin todas las réplicas; cada ataque que no sabes contestar apunta en la libreta dónde se aprende.
@@ -1855,10 +1855,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 2. Bajar a **Sistemas** y apagar la **R-3** del regletero (ver *II.2*) → `cms_vivo`.
 
 ##### Escena nueva: la pantalla parpadea (pista del enchufe)
-> NOTA: [P4] Nueva. Salta sola la primera vez que Bruno entra en la Redacción en el Acto II con el CMS caído. Una sola vez. No resuelve nada: solo lleva la mirada a la pantalla de métricas y a su cable.
+> NOTA: [P4] Nueva. Salta sola la primera vez que Bruno entra en la Redacción en el Acto II con el CMS colgado. Una sola vez. El CMS está colgado desde el principio; lo que enseña la escena es que, el segundo en que la pantalla de métricas se apaga, funciona. No lo dice nadie: se ve.
 
-*La pantalla de métricas parpadea. En el monitor de Yoli: GUARDANDO…*
-**YOLI:** ¿Otra vez? Cada vez que parpadea esa pantalla, se me cuelga el CMS.
+*En el monitor de Yoli: GUARDANDO… La pantalla de métricas parpadea y se queda en negro un segundo. PLIN. En el monitor de Yoli: PUBLICADO.*
+**YOLI:** ¡Ha entrado una pieza!
+*La pantalla de métricas vuelve a encenderse. En el monitor de Yoli: GUARDANDO…*
+**YOLI:** ...Ya no va.
 
 ##### Escena: el primer apagón (jugable)
 *Bruno desenchufa. Negro. Solo se ven el monitor de Yoli y, al rato, la linterna del móvil de Anselmo.*
