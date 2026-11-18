@@ -48,7 +48,7 @@ function hazanaNueva(api) {
   if (nueva) api.setFlag('pajarera_titulares_vistos', [...vistos, nueva[0]]);
   return nueva;
 }
-// E6 §4.3: «EL IBEX ABRE PLANO…» se queda solo en la escena 7.2 (Redacción); fuera de los genéricos de Despachos
+// E6 §4.3 ([P17]: hoy «EL IBEX NO SE MUEVE…»): el primer titular se queda solo en la escena 7.2 (Redacción); fuera de los genéricos de Despachos
 const GENERICOS = [
   'UN EMPRESARIO SE HACE RICO CON ESTE SENCILLO TRUCO: HEREDAR',
   'LA PRIMA DE RIESGO SUBE TRES PUNTOS: ASÍ AFECTA A TU PERRO',

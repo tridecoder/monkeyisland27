@@ -171,7 +171,28 @@ try {
     '¡Contesta Mercados, a todos: «Me lo estás diciendo en un responder a todos»!', '¡Me llegó hasta a mí! ¡Y yo soy un mostrador!'])
     ok(await logHas(t), `Celestino R05: «${t}»`);
   ok(!(await logHas('wifi')), 'sin el wifi del chisme viejo');
-  await jugarHasta(10, 5);
+  await jugarHasta(7, 5);
+
+  step('[P17] Redacción: el primer titular del Titulator, en el portátil de Íñigo');
+  await G(() => { __game.skipSpeech(); __game.clearLog(); });
+  await rapido(false);
+  await G(() => { __game.doVerb('ir', 'torno'); });
+  ok(await until(() => { const d = __game.state().detalle; return !!d && d.titulo === 'EL PORTÁTIL DE ÍÑIGO'; }, null, 40000), 'plano detalle del portátil');
+  await until(() => __game.log.some(l => String(l.text).includes('EL IBEX NO SE MUEVE')), null, 20000);
+  await sleep(600);
+  await shot('portatil-titulator');
+  await rapido(true); await idle();
+  await R.check(STEPS.find(x => x.n === 8).esp);
+  ok(await logHas('EL IBEX NO SE MUEVE. LOS EXPERTOS PIDEN QUE NADIE SE ACERQUE') && !(await logHas('ABRE PLANO')), '«EL IBEX NO SE MUEVE. LOS EXPERTOS PIDEN QUE NADIE SE ACERQUE»');
+  {
+    const tz = await G(async () => { const T = await import('/content/rooms/pecera.titulador.js'); const F = await import('/engine/font.js');
+      const D = await import('/content/rooms/pecera.titulador.datos.js'); const P = D.default || D.P || D;
+      const k = 'expertos|ibex|prisa', t = T.titularK(k);
+      return { t, n: F.wrap(t, 190).length, secreto: JSON.stringify(P.secretos || {}).includes(k) }; });
+    ok(tz.t === 'El Ibex seguirá plano todo el fin de semana, avisan los expertos' && tz.n <= 3 && !tz.secreto,
+      `[P17] titulador: expertos | ibex | prisa → «${tz.t}» (${tz.n} líneas a 190 px; no es secreto)`);
+  }
+  await jugarHasta(10, 9);
 
   step('[P9] Despachos: el ordenador de Gervasio (R07) · Redacción: el ordenador de Bruno con el borrador (R11)');
   await clearLog();

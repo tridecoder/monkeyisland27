@@ -108,7 +108,8 @@ try {
     const src = (f) => fs.readFileSync(path.join(root, 'content', f), 'utf8');
     const malas = [];
     // [bloqueos] filas de pistas.js que la ronda de bloqueos rehace a propósito (el nivel 3 de Bruno dice sitio y verbo)
-    const SUSTITUIDAS = new Set(['P-nota3b', 'P-turno3', 'P-acta3b']);
+    const SUSTITUIDAS = new Set(['P-nota3b', 'P-turno3', 'P-acta3b',
+      'E183', 'X10']);   // [guion3 t1] [P10] «Por eso lleva pop-up.» y [P13] el murmullo de Yoli del nombre nuevo
     for (const r of filas) {
       if (SUSTITUIDAS.has(r.id)) continue;
       const L = lit(src(r.fichero));
@@ -524,7 +525,8 @@ try {
     console.log(`    frente a E6 (${E6.lineas} líneas · ${String(E6.min).replace('.', ',')} min): ${lineas - E6.lineas >= 0 ? '+' : ''}${lineas - E6.lineas} líneas · ${(min - E6.min >= 0 ? '+' : '') + (min - E6.min).toFixed(1).replace('.', ',')} min (§8 prevé −4 líneas y ≈ −5 s; el rediseño del duelo suma +3: el planteamiento del D1)`);
     fs.mkdirSync(path.join(shots, 'test-e7'), { recursive: true });
     fs.writeFileSync(path.join(shots, 'test-e7', 'camino-principal.tsv'), Object.entries(porPaso).flatMap(([n, X]) => X.filter(l => l.who !== 'aviso' && l.who !== 'tarjeta').map(l => `${n}\t${l.who}\t${l.text}`)).join('\n') + '\n');
-    ok(lineas <= E6.lineas + 6 && min <= E6.min + 1, `saldo de §8: ${lineas - E6.lineas >= 0 ? '+' : ''}${lineas - E6.lineas} líneas (≤ +6) y ${(min - E6.min).toFixed(1).replace('.', ',')} min (≤ +1)`);
+    // [guion3 t1]: +2 por el guion nuevo aprobado ([P9] R07 y R11 una línea más cada una; [P14] el registro no va en el camino)
+    ok(lineas <= E6.lineas + 8 && min <= E6.min + 1, `saldo de §8: ${lineas - E6.lineas >= 0 ? '+' : ''}${lineas - E6.lineas} líneas (≤ +8) y ${(min - E6.min).toFixed(1).replace('.', ',')} min (≤ +1)`);
     ok(porPaso[46].some(l => l.who === 'aviso' && l.text === 'El acta se necesitaba para... para... para ayer.'), '46 en modo rápido: la R03 entera, al registro como aviso');
     const F6 = ['Y en nuestros corazones, Brais está en HECHO.', 'Integró una IA que era un becario. Y rechaza una IA que es una IA.', '...Lo miro en la próxima versión.'];
     ok(!porPaso[45].some(l => F6.includes(l.text)) && porPaso[45].some(l => l.text === 'Nos hemos quedado sin IA de la casa.'), '45: F6 (fuera las tres; «Nos hemos quedado sin IA de la casa.» dentro)');
@@ -532,7 +534,7 @@ try {
     const per = rematePorPersonaje(Object.values(porPaso).flat());
     const top = per.filter(p => p.n >= REMATE_PERSONAJE_AVISO.minimo);
     console.log('    remate seco por personaje (camino, ≥ 20 líneas): ' + top.slice(0, 6).map(p => `${p.who} ${p.rem}/${p.n} (${(100 * p.pct).toFixed(1).replace('.', ',')} %)`).join(' · '));
-    ok(!per.some(p => p.pasa), `aviso por personaje (> 30 % con ≥ 20 líneas oídas): ${per.filter(p => p.pasa).map(p => p.who).join(', ') || 'nadie'}`);
+    ok(!per.some(p => p.pasa), `aviso por personaje (> 32 % con ≥ 20 líneas oídas): ${per.filter(p => p.pasa).map(p => p.who).join(', ') || 'nadie'}`);
     await R.stopDismisser?.();
     await ctx.close();
   }
@@ -549,7 +551,7 @@ try {
     ok(!!rem && parseFloat(rem[4].replace(',', '.')) <= 17.9, `remate seco ≤ 17,9 %: ${rem ? `${rem[2]}/${rem[3]} = ${rem[4]} %` : '(no se lee)'}`);
     const s26 = (o.match(/Remate seco por fichero de sala > 26 %[^:]*: (\d+)/) || [])[1];
     ok(s26 === '0', `ninguna sala por encima del 26 % (aviso: ${s26})`);
-    for (const [re, txt] of [[/(\d+) \/ 46\s+coletilla/, 'coletilla'], [/(\d+) \/ 12\s+«chaval»/, '«chaval»'], [/(\d+) \/ 35\s+año/, 'año'], [/(\d+) \/ 17\s+«táper»/, '«táper»']]) {
+    for (const [re, txt] of [[/(\d+) \/ 46\s+coletilla/, 'coletilla'], [/(\d+) \/ 12\s+«chaval»/, '«chaval»'], [/(\d+) \/ 36\s+año/, 'año'], [/(\d+) \/ 17\s+«táper»/, '«táper»']]) {
       const m = o.match(re); ok(!!m, `${txt}: ${m ? m[1] : '?'}`);
     }
   }

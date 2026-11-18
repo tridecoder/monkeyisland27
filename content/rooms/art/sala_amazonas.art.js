@@ -660,8 +660,8 @@ export function paginaComercial(g, r, t) {
   });
   // LA NOTICIA: una sola franja gris de 1 px, con su rótulo diminuto
   const ny = y + PAGINA_COMERCIAL.lineaY;
-  hline(g, lx + 24, ny, lw - 48, '#9a968c');
-  kit.micro(g, 'NOTICIA', lx + lw - 22, ny - 2, '#9a968c', { registrar: false });
+  hline(g, lx + 20, ny, lw - 52, '#9a968c');
+  kit.micro(g, 'NOTICIA', lx + lw - 29, ny - 2, '#9a968c', { registrar: false });
   // el faldón de Siestatón: de lado a lado, abajo
   const fy = y + 52, fh = h - 52 - 2;
   gradV(g, x + 2, fy, w - 4, fh, ['#1c2a58', '#2a3c78']);
@@ -689,7 +689,7 @@ export function paginaPopup(g, r, t) {
   // el pliegue del planillo, abierto: una arruga vertical en el centro de la página
   const fx = x + (w >> 1);
   vline(g, fx, y + 10, 88, '#c8bea4'); vline(g, fx + 1, y + 10, 88, '#fbf8ec');
-  const cx = x + 3 + Math.floor((w - 48) / 2);                    // centro de la línea gris
+  const cx = x + 23 + ((w - 100) >> 1);                          // centro de la línea gris (paginaComercial)
   const base = y + PAGINA_COMERCIAL.lineaY + 4;                    // sale del pliegue, justo bajo la línea
   const cw = 104, x0 = cx - (cw >> 1), x1 = x0 + cw;
   const fh = Math.max(1, Math.round(15 * e));                      // cara delantera del colchón (sube)

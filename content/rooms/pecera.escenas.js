@@ -34,7 +34,7 @@ const ENCHUFE = [622, 112], YOLI_EN = [719, 116], SPOT_YOLI = [[692, 68, 26, 10]
 
 /** PLANO DETALLE: el portátil plateado de Íñigo con el Titulator escupiendo el titular línea a línea. */
 function portatilTitulator(g, r, t) {
-  const LINES = ['EL IBEX ABRE PLANO.', 'PLANO.', '¿POR QUÉ NADIE', 'HABLA DE ESTO?'];
+  const LINES = ['EL IBEX NO SE MUEVE.', 'LOS EXPERTOS PIDEN', 'QUE NADIE SE', 'ACERQUE'];   // [P17]
   const { x, y, w, h } = r;
   rect(g, x, y, w, h, '#000');
   gradV(g, x, y, w, h - 10, [PAL.metal[6], PAL.metal[5], PAL.metal[4]]);
@@ -129,7 +129,7 @@ async function presentacionVillano(api) {
     api.sfx('computer');
     await api.detalle({ titulo: 'EL PORTÁTIL DE ÍÑIGO', x: 94, y: 6, w: 132, h: 76, draw: portatilTitulator }, async (api) => {
       await api.wait(500);
-      await api.sayAs(I, 'EL IBEX ABRE PLANO. PLANO. ¿POR QUÉ NADIE HABLA DE ESTO?', { color: TITULATOR, at: [160 + Math.round(api.game.camX), 108] });
+      await api.sayAs(I, 'EL IBEX NO SE MUEVE. LOS EXPERTOS PIDEN QUE NADIE SE ACERQUE', { color: TITULATOR, at: [160 + Math.round(api.game.camX), 108] });
     });
     await talk(api, [[I, 'Trescientos titulares esta tarde. Sin CMS. Sin silla. Sin convenio.']]);
     // (Encuadre de Infografía. Leoncio, sin levantarse, señala su portátil con el lápiz.)

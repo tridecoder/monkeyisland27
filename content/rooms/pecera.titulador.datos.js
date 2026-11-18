@@ -469,6 +469,7 @@ const PIEZAS = {
  ],
  "especiales": {
   "hogar|persianas|prisa": "Cada cuánto hay que lavar las persianas, según los analistas",
+  "expertos|ibex|prisa": "El Ibex seguirá plano todo el fin de semana, avisan los expertos",
   "confirmado|mejillones|probe": "Confirmado: los mejillones de lata cotizan en el contenedor amarillo",
   "nutricionista|mejillones|truco": "Los mejillones de lata, el nuevo valor refugio, según una nutricionista",
   "nutricionista|mejillones|corte": "Una nutricionista avisa: los mejillones de lata cotizan más que...",

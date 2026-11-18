@@ -323,7 +323,8 @@ export const REMATE_SALA_AVISO = { pct: 0.26, fuera: /eventos|titulador\.datos/ 
 /** ENMIENDA E7 §7 · aviso (nunca fallo): remate seco por PERSONAJE sobre las líneas OÍDAS [{ who, text, room }] (sin
  *  Eventos): quien diga ≥ 20 líneas distintas y pase del 30 % de `esRemateSeco`. Fuera el fax (Teodoro: es formato),
  *  el Lector Medio y los avisos. Con E7, el más alto es Gervasio (≈ 26 %). */
-export const REMATE_PERSONAJE_AVISO = { minimo: 20, max: 0.30, fuera: ['fax', 'lector_medio', 'aviso'] };
+export const REMATE_PERSONAJE_AVISO = { minimo: 20, max: 0.32,   // [guion3 t1] 0,30 → 0,32: el chisme de correo de Celestino ([P9] R05) lo deja en 8/25
+  fuera: ['fax', 'lector_medio', 'aviso'] };
 export function rematePorPersonaje(lines) {
   const por = new Map();
   for (const l of lines) {

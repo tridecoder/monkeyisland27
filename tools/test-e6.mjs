@@ -151,7 +151,8 @@ if (quiere('propias')) {
     // §9.1 preveía −2, pero contaba la L4 como ya oída en E5 (en el recorrido de E5 se perdía: +4 en este) y la grabación
     // de Gervasio del paso 10 (en modo rápido no salía: 0), y E-53 como una línea (eran tres, más el titular del viaje al
     // Vending: −5 con la ida y vuelta). Con este método el saldo real es +1 (553): lo que manda es el tope de §1, +6.
-    ok(lineas <= E5.lineas + 6, `camino principal: tope de §1 (+6 sobre las ${E5.lineas} de E5): ${lineas} (${lineas - E5.lineas >= 0 ? '+' : ''}${lineas - E5.lineas}; §9.1 preveía −2)`);
+    // [guion3 t1]: +2 por el guion nuevo aprobado ([P9]: R07 y R11, una línea más de Bruno cada una)
+    ok(lineas <= E5.lineas + 8, `camino principal: tope de §1 (+8 sobre las ${E5.lineas} de E5; +6 de E6 y +2 del guion nuevo): ${lineas} (${lineas - E5.lineas >= 0 ? '+' : ''}${lineas - E5.lineas}; §9.1 preveía −2)`);
     ok(!largas.length, `ninguna línea dicha en el camino pasa de 80 caracteres${largas.length ? ': ' + largas.map(l => `«${l.text}» (${l.text.length})`).join(' · ') : ''}`);
 
     // §11.2.10 · el menú de D1 con la etiqueta COMODÍN
