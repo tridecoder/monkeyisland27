@@ -3,12 +3,13 @@
 
 *Una aventura de cierre. elContable.es, viernes de 18:30 a 21:00.*
 
-> **PROPUESTA (sin aplicar al juego).** Es el guion vigente con cinco cambios marcados. Busca «NOTA: [P» para ir a cada uno.
+> **PROPUESTA (sin aplicar al juego).** Es el guion vigente con seis cambios marcados. Busca «NOTA: [P» para ir a cada uno.
 > - **[P4] Pista del enchufe:** al entrar en la Redacción en el Acto II, la pantalla de métricas se apaga un segundo y, justo ese segundo, el CMS publica una pieza.
 > - **[P5] Apagón:** 12 segundos la primera vez; 5 en las repeticiones.
 > - **[P6] Brais en el armario:** la escena automática baja de 23 a 16 líneas; todo lo necesario para seguir sigue siendo automático.
 > - **[P7] Duelos:** se puede entrar sin todas las réplicas; cada ataque que no sabes contestar apunta en la libreta dónde se aprende.
 > - **[P8] Gervasio:** tras el primer ataque escuchado entero, escribe más rápido.
+> - **[P9] Réplicas nuevas en los duelos:** 11 de 16 cambian; cuatro cambian también de ataque.
 
 ## Cómo usar este documento
 
@@ -586,9 +587,13 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **CELESTINO:** Pedir, no. Se saluda. Dale las buenas noches.
   **CELESTINO:** Nadie se las da. Yo sí. Por eso a mí me pone espuma.
 - **▸** ¿Algún cotilleo? _(una vez; enseña la réplica R05)_
-  **CELESTINO:** ¡Jugada de ascensor! Gervasio, al de Mercados: «Que esto no salga de aquí».
-  **CELESTINO:** ¡Y el de Mercados, de primeras: «Tranquilo: de aquí no sale ni el wifi»!
-  **CELESTINO:** ¡Tres años sin hablarse! ¡Y el wifi sigue sin salir!
+  ~~**CELESTINO:** ¡Jugada de ascensor! Gervasio, al de Mercados: «Que esto no salga de aquí».~~
+  ~~**CELESTINO:** ¡Y el de Mercados, de primeras: «Tranquilo: de aquí no sale ni el wifi»!~~
+  ~~**CELESTINO:** ¡Tres años sin hablarse! ¡Y el wifi sigue sin salir!~~
+  **CELESTINO:** ¡Jugada de correo! Gervasio, responder a todos: «Que esto no salga de aquí».
+  **CELESTINO:** ¡Contesta Mercados, a todos: «Me lo estás diciendo en un responder a todos»!
+  **CELESTINO:** ¡Me llegó hasta a mí! ¡Y yo soy un mostrador!
+  > NOTA: [P9] R05: réplica nueva. El chisme pasa de «jugada de ascensor» a «jugada de correo» y se reescribe entero (sin el wifi).
 - **▸** ¿Cómo va el Ibex? _(repetible)_
   *La primera vez:*
   **CELESTINO:** ¿El Ibex? ¿Me preguntas a mí por el Ibex?
@@ -819,11 +824,16 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **Mirar (sin silla):** Mi ordenador. De pie llego al teclado. A la pantalla, no.
 - **Usar (sin silla):** Sin silla no hay ordenador. Lo dice la ergonomía y lo dice Begoña.
 - **Mirar o Usar (con silla, la primera vez) — camino principal, réplica R11:**
-  **BRUNO:** Con silla, el correo se ve. Ramírez: «Quedo a la espera de tus comentarios».
-  **BRUNO:** Respuesta: «Espera sentado. Si encuentras silla».
+  ~~**BRUNO:** Con silla, el correo se ve. Ramírez: «Quedo a la espera de tus comentarios».~~
+  ~~**BRUNO:** Respuesta: «Espera sentado. Si encuentras silla».~~
+  **BRUNO:** Con silla, el correo se ve. Ramírez, en 2019: «¿Has podido verlo?».
+  **BRUNO:** En borradores, mi respuesta: «Poder, he podido».
+  **BRUNO:** Nunca la mandé. Él tampoco ha vuelto. La apunto.
   **BRUNO:** Y una autorrespuesta de Brais: «Estoy fuera de la oficina desde julio».
   **BRUNO:** «Bueno, fuera no. Dentro. Muy dentro».
-- **Mirar (después):** Bandeja de entrada. Ramírez sigue a la espera de mis comentarios. // Y Brais sigue fuera de la oficina. Bueno, dentro. Muy dentro.
+- ~~**Mirar (después):** Bandeja de entrada. Ramírez sigue a la espera de mis comentarios. // Y Brais sigue fuera de la oficina. Bueno, dentro. Muy dentro.~~
+- **Mirar (después):** Bandeja de entrada. Ramírez sigue preguntando si he podido. // Y Brais sigue fuera de la oficina. Bueno, dentro. Muy dentro.
+> NOTA: [P9] R11: cambian ataque y réplica. El correo de Ramírez pasa a ser «¿Has podido verlo?» y la respuesta, un borrador de Bruno que nunca mandó; la autorrespuesta de Brais no cambia. También cambia el primer globo del «Mirar (después)».
 - **Usar (sin fuentes):** Abro un documento en blanco. Me mira. Lo cierro: sin fuentes no hay pieza.
 - **Usar (con la casilla FUENTE hecha)** → Bruno escribe la pieza: ver *Acto II · Redacción · escribir la exclusiva*.
 - **Usar (ya escrita):** Ya está escrita. Si la toco más, le salen adjetivos.
@@ -863,8 +873,11 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 
 - **▸** ¿Algún hilo bueno esta noche? _(una vez; réplica R08)_
   **YOLI:** Maripaz me escribió «desde el más absoluto cariño».
-  **YOLI:** Le contesté: «Y yo te leo desde el más absoluto modo avión».
-  **YOLI:** Me ha puesto en copia a mi madre.
+  ~~**YOLI:** Le contesté: «Y yo te leo desde el más absoluto modo avión».~~
+  ~~**YOLI:** Me ha puesto en copia a mi madre.~~
+  **YOLI:** Le contesté: «Se nota. Has puesto a mi jefe en copia».
+  **YOLI:** Ahora ha puesto en copia a mi madre.
+  > NOTA: [P9] R08: réplica nueva; la tercera línea se ajusta a ella. La primera línea no cambia.
 - **▸** ¿Y tú cómo estás? Tú, no la audiencia. _(una vez)_
   **YOLI:** Yo...
   *Mira la gráfica.*
@@ -1016,10 +1029,15 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **ANSELMO:** Eso lo hace nuestro.
   *Si ya la oyó:* **ANSELMO:** Ya te lo he dicho. Lo escribí yo. En mayúsculas.
 - **▸** ¿Qué tal con Yoli? _(una vez; réplica R09)_
-  **ANSELMO:** Me dijo que mi dato de tráfico estaba «sacado de contexto».
-  **ANSELMO:** ¿El contexto? ¿De dónde viene? De la web. No entra.
-  **ANSELMO:** Le dije: «Tráeme el contexto. Le hago una pieza aparte».
-  **ANSELMO:** «El contexto, explicado». No hemos vuelto a comer juntos.
+  ~~**ANSELMO:** Me dijo que mi dato de tráfico estaba «sacado de contexto».~~
+  ~~**ANSELMO:** ¿El contexto? ¿De dónde viene? De la web. No entra.~~
+  ~~**ANSELMO:** Le dije: «Tráeme el contexto. Le hago una pieza aparte».~~
+  ~~**ANSELMO:** «El contexto, explicado». No hemos vuelto a comer juntos.~~
+  **ANSELMO:** Yoli dijo que mi dato de tráfico estaba «sacado de contexto».
+  **ANSELMO:** Le contesté: «Claro que lo saqué. El contexto no cabía en la pieza».
+  **ANSELMO:** Como no lo entendió, se lo resumí: «Lo saqué yo. No cabía».
+  **ANSELMO:** No hemos vuelto a comer juntos.
+  > NOTA: [P9] R09: réplica nueva. Se reescribe la rama entera; Bruno aprende aquí la versión larga y la corta (la que cabe en el fax del D2).
 - **▸** ¿Por qué invades la sección de Leoncio? _(desde el Acto II; una vez)_
   **ANSELMO:** Invadir, no. Desplegar capacidad.
   **ANSELMO:** Mi quesito suma 130 %. Desarrollo siempre da de más.
@@ -1396,7 +1414,10 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 **Ordenador de Gervasio** (réplica R07)
 - **Mirar / Usar** (sin Gervasio delante):
   **BRUNO:** Enviados. Gervasio a Teodoro: "Me consta que esto ya lo hablamos".
-  **BRUNO:** Teodoro, por fax escaneado: "A ti te consta. A mí me consta que hablabas tú".
+  ~~**BRUNO:** Teodoro, por fax escaneado: "A ti te consta. A mí me consta que hablabas tú".~~
+  **BRUNO:** Teodoro, por fax escaneado: "¿En qué acta consta?".
+  **BRUNO:** No hay respuesta. Gervasio no ha escrito un acta en su vida.
+  > NOTA: [P9] R07: réplica nueva (la respuesta de Teodoro) y una línea más de Bruno, que siembra el D3.
 - **Mirar (con Gervasio delante):** Con Gervasio delante, leerle el correo sería periodismo de investigación.
 - **Hablar:** Le hablo. Me contesta con una notificación: "Se verá". · **Cerrar:** No lo cierro. Una sesión abierta aquí es lo más parecido a un acta.
 
@@ -1462,8 +1483,11 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   *La primera vez — camino principal:*
   **GERTRUDIS:** NADIE ME SALUDABA DESDE 2019.
   *Muele. Pita. Cae un vaso: el café.*
-  **GERTRUDIS:** CHISME: EL DE BOLSA A YOLI: "ESTO LO NECESITABA PARA AYER".
-  **GERTRUDIS:** YOLI: "AYER NO PUEDO. TE MIRO HUECO PARA ANTEAYER".
+  ~~**GERTRUDIS:** CHISME: EL DE BOLSA A YOLI: "ESTO LO NECESITABA PARA AYER".~~
+  ~~**GERTRUDIS:** YOLI: "AYER NO PUEDO. TE MIRO HUECO PARA ANTEAYER".~~
+  **GERTRUDIS:** CHISME: GERVASIO A YOLI: "ESTO LO NECESITABA PARA... PARA... PARA AYER".
+  **GERTRUDIS:** YOLI: "AYER FUE CUANDO EMPEZASTE LA FRASE".
+  > NOTA: [P9] R03: réplica nueva. En el chisme ataca ahora Gervasio (antes «el de Bolsa»), a trozos, como en el D3; contesta Yoli.
   *Bruno saca la libreta y apunta (réplica R03).*
   **GERTRUDIS:** SALUDO RECIBIDO. COMPARTIENDO...
   **BRUNO:** ¿Compartiendo con quién?
@@ -1488,16 +1512,21 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **GERTRUDIS:** ¿OTRA? UN MOMENTO. ME PONGO DE PERFIL.
   *Pitido; el LCD parpadea; se enciende el piloto EN DIRECTO. Ráfaga de avisos: «GERTRUDIS está en directo», «¿Quién es el chico?», «Compartido 300 veces», «+2.000 te siguen»; el contador sube de 3.418 a 11.302.*
   **GERTRUDIS:** BUENAS NOCHES, PAÍS. ESTO NO LO SABE NADIE.
-  **GERTRUDIS:** CHISME: GERVASIO A ANSELMO: "ES QUE TÚ ERES EL QUE MEJOR ESCRIBE".
-  **GERTRUDIS:** ANSELMO: "Y TÚ EL QUE MEJOR DELEGA. POR ESO ME ESCRIBES A MÍ".
+  ~~**GERTRUDIS:** CHISME: GERVASIO A ANSELMO: "ES QUE TÚ ERES EL QUE MEJOR ESCRIBE".~~
+  ~~**GERTRUDIS:** ANSELMO: "Y TÚ EL QUE MEJOR DELEGA. POR ESO ME ESCRIBES A MÍ".~~
+  **GERTRUDIS:** CHISME: MARIPAZ A ANSELMO: "HAZLO TÚ, QUE TE VA A DAR MUCHA VISIBILIDAD".
+  **GERTRUDIS:** ANSELMO: "SI VALIERA ALGO, ME LA COBRARÍAS".
   *Bruno apunta (R04).*
   **GERTRUDIS:** CHISME: ÍÑIGO A EUTIMIO: "ESTAMOS ANALIZANDO TODAS LAS OPCIONES".
   **GERTRUDIS:** EUTIMIO: "O SEA, QUE NO SABÉIS QUÉ HACER, PERO EN TABLA DINÁMICA".
   **BRUNO:** Más despacio, que escribo a mano.
   **GERTRUDIS:** NO. ME HAS SALUDADO. AHORA ME AGUANTAS.
   *(R10)*
-  **GERTRUDIS:** CHISME: GERVASIO A MARIPAZ: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".
-  **GERTRUDIS:** MARIPAZ: "¿TE VA EN MARZO, CARIÑO? ES CUANDO ACABAN LAS RÁPIDAS".
+  ~~**GERTRUDIS:** CHISME: GERVASIO A MARIPAZ: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".~~
+  ~~**GERTRUDIS:** MARIPAZ: "¿TE VA EN MARZO, CARIÑO? ES CUANDO ACABAN LAS RÁPIDAS".~~
+  **GERTRUDIS:** CHISME: MARIPAZ A BEGOÑA: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".
+  **GERTRUDIS:** BEGOÑA: "VALE. TE BLOQUEO TODA LA TARDE".
+  > NOTA: [P9] R04 y R14: réplicas nuevas (y ataque nuevo en R04). En los dos chismes ataca ahora Maripaz: a Anselmo (antes Gervasio) en R04 y a Begoña en R14, que pasa a ser quien contesta (antes Gervasio atacaba y contestaba Maripaz). Se quita el «CARIÑO» del chisme de R14. El de R10 no cambia.
   *Bruno apunta (R14).*
   **GERTRUDIS:** FIN DE LA EMISIÓN. NO HAY MÁS CAFÉ. HAY FAMA.
   *Bruno se sacude la mano.*
@@ -1675,8 +1704,11 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **▸** ¿De dónde saco papel para el fax? _(mientras el fax no tenga papel; una vez)_
   **AURORA:** Papel, en esta casa, solo gasta Begoña. Lo devuelve por triplicado.
 - **▸** ¿Por qué no se hablan usted y Teodoro? _(una vez; réplica R02)_
-  **AURORA:** En 1996 me mandó un fax que empezaba «Con el debido respeto...».
-  **AURORA:** Le contesté dándole las gracias por avisarme. Antes de lo que venía.
+  ~~**AURORA:** En 1996 me mandó un fax que empezaba «Con el debido respeto...».~~
+  ~~**AURORA:** Le contesté dándole las gracias por avisarme. Antes de lo que venía.~~
+  **AURORA:** En 1996 me mandó un fax que empezaba «Corrígeme si me equivoco».
+  **AURORA:** Le contesté: «Con mucho gusto: te equivocas».
+  > NOTA: [P9] R02: cambian ataque y réplica. Cambian las dos primeras líneas de Aurora; la tercera se queda.
   **AURORA:** No me ha vuelto a dirigir la palabra. Han sido treinta años muy buenos.
 - **▸** ¿Usted ha cometido alguna errata? _(una vez)_
   *Pausa. Se quita las gafas.*
@@ -1801,10 +1833,15 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 
 **Fax enmarcado** (réplica R06)
 - **Mirar:**
-  **BRUNO:** Un fax enmarcado: «¿Esto lo has contrastado?».
-  **BRUNO:** Debajo, a mano: «Con dos fuentes y media.
-  **BRUNO:** La media dijo "yo no te he dicho nada"».
-- **Coger:** No hace falta. La réplica ya me la sé. El marco, que se quede. · **Abrir:** Si abro el marco, se escapa la réplica. · **Usar:** Ya lo he contrastado: está enmarcado.
+  ~~**BRUNO:** Un fax enmarcado: «¿Esto lo has contrastado?».~~
+  ~~**BRUNO:** Debajo, a mano: «Con dos fuentes y media.~~
+  ~~**BRUNO:** La media dijo "yo no te he dicho nada"».~~
+- ~~**Coger:** No hace falta. La réplica ya me la sé. El marco, que se quede. · **Abrir:** Si abro el marco, se escapa la réplica. · **Usar:** Ya lo he contrastado: está enmarcado.~~
+  **BRUNO:** Un fax enmarcado: «¿Te ha llegado mi fax?».
+  **BRUNO:** Debajo, a mano: «Este sí».
+  **BRUNO:** Dos palabras. Por eso lo enmarcó.
+- **Coger:** No hace falta. La réplica ya me la sé. El marco, que se quede. · **Abrir:** Si abro el marco, se escapa la réplica. · **Usar:** No hace falta reenviarlo. Ese ya llegó: está enmarcado.
+> NOTA: [P9] R06: cambian ataque y réplica (la alternativa de reserva de la segunda vuelta). Cambia el texto del fax, la línea de Bruno al leerlo y el «Usar» del marco, que con el ataque viejo («contrastado») dejaba de tener sentido. «Coger» y «Abrir» no cambian. Paquete completado en la propuesta, no en las fuentes: que lo revise el dueño.
 
 **Bolígrafos rojos** (micropuzle opcional del boli muerto)
 - **Mirar:** Bolígrafos rojos. Todos vivos menos uno, que yace. / *(ya cogido)* Bolígrafos rojos. Todos vivos. Al muerto lo llevo yo.
@@ -3016,7 +3053,9 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **BRAIS:** ...Esa es mía.
   **BRAIS:** Le escribí también la respuesta. Por si un día alguien se la decía.
   **BRUNO:** ¿Y cuál era?
-  **BRAIS:** «Claro. Y la carta de despido es una newsletter personalizada».
+  ~~**BRAIS:** «Claro. Y la carta de despido es una newsletter personalizada».~~
+  **BRAIS:** «¿A cuántos días por año?».
+  > NOTA: [P9] R13: réplica nueva; solo cambia la última línea. «Salida en valor» se sigue oyendo entera en la primera (la necesita el kanban).
 - **▸** UN BECARIO VIVE EN UN ARMARIO Y FACTURA COMO UN BANCO _(una vez; la opción ya es el titular)_
   > NOTA: [P6] Opción nueva con las líneas que salen de la escena. Bruno la dice en titular.
   **BRAIS:** Le falta un número.
@@ -3468,44 +3507,71 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **Ataque:** Como ya comenté en mi anterior correo, que parece que nadie ha leído...
   **Réplica:** Lo leímos todos. Por eso no contestó nadie.
 - **R02** — se aprende en: Redacción de papel: a Aurora, por qué no se habla con Teodoro. · la piden: D2
-  **Ataque:** Con el debido respeto...
-  **Réplica:** Gracias por avisar antes de faltármelo.
+  ~~**Ataque:** Con el debido respeto...~~
+  ~~**Réplica:** Gracias por avisar antes de faltármelo.~~
+  **Ataque:** Corrígeme si me equivoco.
+  **Réplica:** Con mucho gusto: te equivocas.
+  > NOTA: [P9] Cambian ataque y réplica. El sitio no cambia (Aurora).
 - **R03** — se aprende en: Vending: «Buenas noches, Gertrudis», el primer chisme. · la piden: D3
   **Ataque:** Esto lo necesitaba para ayer.
-  **Réplica:** Ayer no puedo. Te miro hueco para anteayer.
+  ~~**Réplica:** Ayer no puedo. Te miro hueco para anteayer.~~
+  **Réplica:** Ayer fue cuando empezaste la frase.
+  > NOTA: [P9] Cambia la réplica. En el chisme ataca Gervasio; en el D3 el ataque gana el trozo «// para ayer.».
 - **R04** — se aprende en: Vending: saludar otra vez a Gertrudis. Suelta todos los chismes. · la piden: D1
-  **Ataque:** Es que tú eres el que mejor escribe.
-  **Réplica:** Y tú el que mejor delega. Por eso me escribes a mí.
+  ~~**Ataque:** Es que tú eres el que mejor escribe.~~
+  ~~**Réplica:** Y tú el que mejor delega. Por eso me escribes a mí.~~
+  **Ataque:** Esto te va a dar mucha visibilidad.
+  **Réplica:** Si valiera algo, me la cobrarías.
+  > NOTA: [P9] Cambian ataque y réplica. En el chisme ataca Maripaz (antes Gervasio).
 - **R05** — se aprende en: Vestíbulo: a Celestino, «¿Algún cotilleo?». · la piden: D3, D4
   **Ataque:** Que esto no salga de aquí.
-  **Réplica:** Tranquilo: de aquí no sale ni el wifi.
+  ~~**Réplica:** Tranquilo: de aquí no sale ni el wifi.~~
+  **Réplica:** Me lo estás diciendo en un responder a todos.
+  > NOTA: [P9] Cambia la réplica. El chisme de Celestino pasa a ser un correo, no el ascensor.
 - **R06** — se aprende en: Redacción de papel: Mirar el fax enmarcado, sobre la mesa de Teodoro. · la piden: D2
-  **Ataque:** ¿Esto lo has contrastado?
-  **Réplica:** Con dos fuentes y media. La media dijo «yo no te he dicho nada».
+  ~~**Ataque:** ¿Esto lo has contrastado?~~
+  ~~**Réplica:** Con dos fuentes y media. La media dijo «yo no te he dicho nada».~~
+  **Ataque:** ¿Te ha llegado mi fax?
+  **Réplica:** Este sí.
+  > NOTA: [P9] Cambian ataque y réplica. El sitio no cambia (el fax enmarcado, que ahora dice esto).
 - **R07** — se aprende en: Despachos: Mirar el ordenador de Gervasio, los enviados. · la piden: D3, D4
   **Ataque:** Me consta que esto ya lo hablamos.
-  **Réplica:** A ti te consta. A mí me consta que hablabas tú.
+  ~~**Réplica:** A ti te consta. A mí me consta que hablabas tú.~~
+  **Réplica:** ¿En qué acta consta?
+  > NOTA: [P9] Cambia la réplica.
 - **R08** — se aprende en: Redacción, con el CMS vivo: a Yoli, «¿Algún hilo bueno esta noche?». · la piden: D1
   **Ataque:** Te escribo desde el más absoluto cariño.
-  **Réplica:** Y yo te leo desde el más absoluto modo avión.
+  ~~**Réplica:** Y yo te leo desde el más absoluto modo avión.~~
+  **Réplica:** Se nota. Has puesto a mi jefe en copia.
+  > NOTA: [P9] Cambia la réplica.
 - **R09** — se aprende en: Redacción: a Anselmo, «¿Qué tal con Yoli?». · la piden: D2
   **Ataque:** Ese dato está sacado de contexto.
-  **Réplica:** Tráeme el contexto. Le hago una pieza aparte: «El contexto, explicado».
+  ~~**Réplica:** Tráeme el contexto. Le hago una pieza aparte: «El contexto, explicado».~~
+  **Réplica:** Claro que lo saqué. El contexto no cabía en la pieza. · **Corta (la que cabe en el fax):** Lo saqué yo. No cabía.
+  > NOTA: [P9] Cambia la réplica, larga y corta (antes, corta: «Tráeme el contexto.»).
 - **R10** — se aprende en: Vending: saludar otra vez a Gertrudis. Suelta todos los chismes. · la piden: D4
   **Ataque:** Estamos analizando todas las opciones.
   **Réplica:** O sea, que no sabéis qué hacer, pero en tabla dinámica.
-- **R11** — se aprende en: Redacción: mi ordenador, sentado. Ramírez espera mis comentarios. · la piden: D1
-  **Ataque:** Quedo a la espera de tus comentarios.
-  **Réplica:** Espera sentado. Si encuentras silla.
+- ~~**R11** — se aprende en: Redacción: mi ordenador, sentado. Ramírez espera mis comentarios. · la piden: D1~~
+  ~~**Ataque:** Quedo a la espera de tus comentarios.~~
+  ~~**Réplica:** Espera sentado. Si encuentras silla.~~
+- **R11** — se aprende en: Redacción: mi ordenador, sentado. Ramírez pregunta si he podido verlo. · la piden: D1
+  **Ataque:** ¿Has podido verlo?
+  **Réplica:** Poder, he podido.
+  > NOTA: [P9] Cambian ataque y réplica, y el rótulo del sitio (el sitio es el mismo).
 - **R12** — se aprende en: Sistemas, con el CMS vivo: a Eutimio, «¿Algún cotilleo del consultor?». · la piden: D4
   **Ataque:** Hay que poner las luces largas.
   **Réplica:** Puestas. Ahora se ve perfectamente que no hay carretera.
 - **R13** — se aprende en: Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?». · la piden: D4
   **Ataque:** No es un despido: es una salida en valor.
-  **Réplica:** Claro. Y la carta de despido es una newsletter personalizada.
+  ~~**Réplica:** Claro. Y la carta de despido es una newsletter personalizada.~~
+  **Réplica:** ¿A cuántos días por año?
+  > NOTA: [P9] Cambia la réplica.
 - **R14** — se aprende en: Vending: saludar otra vez a Gertrudis. Suelta todos los chismes. · la piden: D1
   **Ataque:** Esto lo podemos ver en una reunión rápida.
-  **Réplica:** Perfecto. ¿Te va en marzo? Es cuando acaban las rápidas.
+  ~~**Réplica:** Perfecto. ¿Te va en marzo? Es cuando acaban las rápidas.~~
+  **Réplica:** Vale. Te bloqueo toda la tarde.
+  > NOTA: [P9] Cambia la réplica. En el chisme ataca Maripaz y contesta Begoña.
 - **R15** — se aprende en: Sistemas: a Brais, «¿Te llegaban correos de Tadeo?». · la piden: D4
   **Ataque:** Lo he consultado con la IA y está de acuerdo conmigo.
   **Réplica:** Lo sé. Me lo ha contado ella. Se llama Brais.
@@ -3566,12 +3632,20 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **+1 al acertar** (notificaciones en el móvil, en orden): Celestino, Yoli, Gertrudis
 - **Ataques, en su voz:**
   - R08 · **MARIPAZ:** Te escribo desde el cariño más absoluto. Con un banner en la firma.
-  - R04 · **MARIPAZ:** Hazlo tú, que escribes divinamente. Entre tus párrafos caben tres banners.
-  - R11 · **MARIPAZ:** Me quedo a la espera de tus comentarios. Mientras, te pongo un vídeo.
+  - ~~R04 · **MARIPAZ:** Hazlo tú, que escribes divinamente. Entre tus párrafos caben tres banners.~~
+  - ~~R11 · **MARIPAZ:** Me quedo a la espera de tus comentarios. Mientras, te pongo un vídeo.~~
+  - R04 · **MARIPAZ:** Hazlo tú, que te va a dar mucha visibilidad. Te pongo junto al banner.
+  - R11 · **MARIPAZ:** ¿Has podido ver mi correo? El vídeo dura veinte segundos. No se salta.
   - R14 · **MARIPAZ:** Si quieres lo vemos en una reunión rápida. Con pop-up de bienvenida.
+  > NOTA: [P9] Cambian las voces de R04 y R11, por los ataques nuevos. R08 y R14 no cambian.
 - **Acierto** (rota): **MARIPAZ:** Uy, eso tiene tarifa. · **MARIPAZ:** Bien dicho. Eso, al lado de un anuncio de tiritas.
-  - con R08: **MARIPAZ:** ¿Modo avión? Sin cobertura no me cargan los anuncios. Eso duele.
-  - con R11: **MARIPAZ:** ¿Sentado? Sentado se ven mejor los banners.
+  - ~~con R08: **MARIPAZ:** ¿Modo avión? Sin cobertura no me cargan los anuncios. Eso duele.~~
+  - ~~con R11: **MARIPAZ:** ¿Sentado? Sentado se ven mejor los banners.~~
+  - con R04: **MARIPAZ:** Tienes razón. Mañana sale con tarifa.
+  - con R08: **MARIPAZ:** Uy. Esa copia iba oculta.
+  - con R11: **MARIPAZ:** Pues te lo vuelvo a poner. Sin poder saltarlo.
+  - con R14: **MARIPAZ:** ¿Toda la tarde? Te la vendo por franjas.
+  > NOTA: [P9] Las reacciones de R08 y R11 se sustituyen (citaban las réplicas viejas); las de R04 y R14 son nuevas.
 - **Fallo** (rota): **MARIPAZ:** Eso no lo patrocina nadie. · **MARIPAZ:** Muy bonito. Pero sin anuncio no es contenido. *(o la respuesta del rival a la floja)*
 - **En copia**: 1.er fallo, Colchones Siestatón; luego Toda la planta, Toda la empresa.
 - **Derrota (rótulo):** **RÓTULO:** RESPUESTA AUTOMÁTICA DE COMERCIAL: «Cierre este anuncio para leer la respuesta».
@@ -3588,16 +3662,25 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **+1 al acertar** (notificaciones en el móvil, en orden): Begoña, Celestino, Yoli
 - **Entrada:** **TEODORO (fax):** ¿Tú? ¿El de la web? ¿En mi página? Contesta.
 - **Ataques, en su voz:**
-  - R06 · **TEODORO (fax):** ¿CONTRASTADO? FUENTES. NÚMERO.
-  - R02 · **TEODORO (fax):** CON TODO EL RESPETO QUE ME MERECE LA WEB. QUE ES POCO.
-  - R09 · **TEODORO (fax):** DATO SIN CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.
+  - ~~R06 · **TEODORO (fax):** ¿CONTRASTADO? FUENTES. NÚMERO.~~
+  - ~~R02 · **TEODORO (fax):** CON TODO EL RESPETO QUE ME MERECE LA WEB. QUE ES POCO.~~
+  - ~~R09 · **TEODORO (fax):** DATO SIN CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.~~
+  - R06 · **TEODORO (fax):** ¿TE HA LLEGADO MI FAX? CONFIRMA RECEPCIÓN.
+  - R02 · **TEODORO (fax):** CORRÍGEME SI ME EQUIVOCO: LA WEB NO ES UN PERIÓDICO.
+  - R09 · **TEODORO (fax):** DATO SACADO DE CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.
+  > NOTA: [P9] Cambian las tres voces: R06 y R02 por sus ataques nuevos; en R09, «SACADO» en vez de «SIN», para que la réplica lo recoja. La voz de R06 la ha completado la propuesta: que la revise el dueño.
 - **`cabe` R09**: en el menú salen la réplica larga y la corta; gana la corta y la larga no cabe en 38 caracteres.
-  **BRUNO (la corta):** Tráeme el contexto.
+  ~~**BRUNO (la corta):** Tráeme el contexto.~~
+  **BRUNO (la larga):** Claro que lo saqué. El contexto no cabía en la pieza.
+  **BRUNO (la corta):** Lo saqué yo. No cabía.
+  > NOTA: [P9] Textos nuevos de la larga (53 caracteres: no cabe) y la corta (22: cabe). La respuesta de Teodoro a la larga no cambia.
   **TEODORO (fax) (a la larga, la 1.ª vez):** NO CABE. REPITA EN TREINTA Y OCHO.
 - **Acierto** (rota): **TEODORO (fax):** Hum. Cabe. · **TEODORO (fax):** Eso, en mis tiempos, era una portada.
   - con R02: **TEODORO (fax):** ESO ME LO DIJO ELLA. EN 1996.
-  - con R06: **TEODORO (fax):** LA MEDIA FUENTE ERA YO. NO LO REPITAS.
+  - ~~con R06: **TEODORO (fax):** LA MEDIA FUENTE ERA YO. NO LO REPITAS.~~
+  - con R06: **TEODORO (fax):** ESE LO TENGO ENMARCADO.
   - con R09: **TEODORO (fax):** ...CABE.
+  > NOTA: [P9] La reacción con R06 citaba la «media fuente»; la nueva remite al fax enmarcado donde se aprende. La ha completado la propuesta: que la revise el dueño. Las de R02 y R09 se quedan.
 - **Fallo** (rota): **TEODORO (fax):** Treinta y ocho caracteres de nada. · **TEODORO (fax):** Respuesta a otro fax. Devuelto. *(o la respuesta del rival a la floja)*
 - **En copia**: 1.er fallo, Aurora; luego Toda la planta, Toda la empresa.
 - **Objeto equivocado en un remate**:
@@ -3620,17 +3703,24 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **Ataques, en su voz:**
   - R07 · **GERVASIO:** Esto ya se... se habló. Me consta. Lo hablamos.
   - R01 · **GERVASIO:** Ya se dijo en el otro correo. Ese que no se leyó...
-  - R03 · **GERVASIO:** El acta se necesitaba para... para...
+  - ~~R03 · **GERVASIO:** El acta se necesitaba para... para...~~
+  - R03 · **GERVASIO:** El acta se necesitaba para... para... para ayer.
   - R05 · **GERVASIO:** Lo del acta, entre tú y yo. Que no salga de esta puerta.
 - **A trozos (`aTiempo`):**
   - R07 · **GERVASIO:** Esto se necesitaba para... // para cuando... // me consta que ya lo hablamos.
-  - R03 · **GERVASIO:** El acta se necesitaba para... // para...
+  - ~~R03 · **GERVASIO:** El acta se necesitaba para... // para...~~
+  - R03 · **GERVASIO:** El acta se necesitaba para... // para... // para ayer.
+  > NOTA: [P9] R03 gana un tercer trozo, «// para ayer.», en la versión entera y en `aTiempo`: sin él la réplica nueva no tiene «ayer» que recoger, y esperar a que acabe la frase tiene premio.
   - R01 · **GERVASIO:** Ya se dijo en el otro correo... // ese que no se leyó...
   - R05 · **GERVASIO:** Lo del acta, entre tú y yo... // que no salga de esta puerta.
   - Si Bruno le pisa la frase (la primera vez): **GERVASIO:** Me has interrumpido. Se apunta.
 > NOTA: [P8] En cuanto Bruno deja acabar un ataque entero sin interrumpir, los siguientes llegan en dos tramos en vez de tres y con pausas un 40 % más cortas. El primero se queda lento: es donde se entiende el chiste. Si Bruno vuelve a pisarle, Gervasio recupera el ritmo lento en ese ataque.
 - **Acierto** (rota): **GERVASIO:** Eso habría que verlo. Se verá. · **GERVASIO:** Se toma nota. Por alguien.
   - con R07: **GERVASIO:** Me consta que... Bueno. Se constaba.
+  - con R03: **GERVASIO:** La frase se... se empezó en plazo.
+  - con R01 *(opcional)*: **GERVASIO:** Se leyó. Se... Se agradece.
+  - con R05 *(opcional)*: **GERVASIO:** ...Se ha... se ha enviado solo.
+  > NOTA: [P9] Reacción nueva con R03 (va con su réplica). Las de R01 y R05 son opcionales: si no se ponen, sale la rotación general.
 - **Fallo** (rota): **GERVASIO:** Eso se... Eso no venía a cuento. Se agradece. · **GERVASIO:** Se toma nota. La tomas tú. *(o la respuesta del rival a la floja)*
 - **En copia**: 1.er fallo, Sus tres móviles; luego Toda la planta, Toda la empresa.
 - **Objeto equivocado en un remate**:
@@ -3646,13 +3736,27 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **Asunto del hilo**: «Plan Cero Papel – Llamar a la rotativa para apagarla»; **en juego**: «¿Quién apaga la rotativa?»; **sello**: «APAGA: NADIE» si gana Bruno, «APAGA: VACANTE» si pierde.
 - **+1 al acertar** (notificaciones en el móvil, en orden): Yoli, Eutimio, Aurora, Begoña, Celestino
 - **Cameo** (tras el primer acierto, una vez por partida): notificación de Tadeo: «RV: Resumen IA: todos de acuerdo»!!
-- **Ataques**: los de la tabla, tal cual.
+- ~~**Ataques**: los de la tabla, tal cual.~~
+- **Ataques, en su voz:**
+  - R10 · **ÍÑIGO:** Estamos analizando todas las opciones. Con un framework propio. *(opcional)*
+  - R12 · **ÍÑIGO:** Hay que poner las luces largas, Vacante. Visión 2030. *(opcional)*
+  - R13 · **ÍÑIGO:** Vacante, no es un despido: es una salida en valor.
+  - R05 · **ÍÑIGO:** Esto, entre nosotros, es confidencial. Que no salga de esta sala.
+  - R16 · **ÍÑIGO:** Eso es un detalle sin importancia, Vacante. No escala. *(opcional)*
+  - R01 · **ÍÑIGO:** Como ya expuse en mi anterior deck, que parece que nadie ha leído... *(opcional)*
+  - R07 · **ÍÑIGO:** Me consta que esto ya lo alineamos en el último comité.
+  - R15 · **ÍÑIGO:** Lo he consultado con la IA y está de acuerdo conmigo. Al cien por cien. *(opcional)*
+  > NOTA: [P9] Íñigo pasa a tener voz propia. Van con sus réplicas nuevas R13, R05 y R07. Las de R10, R12, R16, R01 y R15 son opcionales: si no se ponen, esos ataques salen como en la tabla, y las réplicas valen igual. «Vacante» sale tres veces (R12, R13, R16); si sobra, se quita la de R16.
 - **Acierto** (rota): **ÍÑIGO:** Ese input no lo tenía en el framework. · **ÍÑIGO:** Interesante. Lo pongo en azul.
   - con R10: **ÍÑIGO:** Interesante. Lo pongo en azul.
   - con R12: **ÍÑIGO:** ...Eso es una visión muy pesimista de la carretera.
   - con R13: **ÍÑIGO:** Eso lo escribió alguien brillante. · **BRAIS:** Yo. Perdón.
   - con R15: **ÍÑIGO:** ...Brais, ¿tú le has contado algo? · **BRAIS:** TODO. Se me escapa todo.
   - con R16: **ÍÑIGO:** Esa coma no estaba en mi framework.
+  - con R01 *(opcional)*: **ÍÑIGO:** Leído y sin respuesta. En mi sector eso es engagement.
+  - con R05 *(opcional)*: **ÍÑIGO:** Eso es una filtración. Lo pongo en rojo.
+  - con R07 *(opcional)*: **ÍÑIGO:** El acta es un formato legacy.
+  > NOTA: [P9] Reacciones opcionales nuevas con R01, R05 y R07; la de R07 sale después del remate del acta. Las demás se quedan.
 - **Fallo** (rota): **ÍÑIGO:** Ese input no escala. · **ÍÑIGO:** Rosa. Emociones. Siguiente. *(o la respuesta del rival a la floja)*
 - **En copia**: 1.er fallo, Optimal Brains & Partners (en pantalla: Optimal → la planta → toda la empresa); luego Toda la planta, Toda la empresa.
 - **Objeto equivocado en un remate**:
@@ -3937,12 +4041,15 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - R03 · **ABUELA:** La cafetera esa cuenta chismes si la saludas, hijo. · **BRUNO:** Vending: «Buenas noches, Gertrudis», el primer chisme.
 - R04 · **ABUELA:** A esa cafetera salúdala otra vez, hijo, que le quedan chismes. · **BRUNO:** Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.
 - R05 · **ABUELA:** El del mostrador de abajo sabe lo que se dice en el ascensor. · **BRUNO:** Vestíbulo: a Celestino, «¿Algún cotilleo?».
+> NOTA: [P9] R05: el chisme de Celestino ya no es «de ascensor» sino un correo, así que la línea de la abuela deja de ser exacta (sigue mandando al sitio bueno). No se toca aquí: que decida el dueño.
 - R06 · **ABUELA:** Encima de la mesa del fax hay un papel con marco: léelo. · **BRUNO:** Redacción de papel: Mirar el fax enmarcado, sobre la mesa de Teodoro.
 - R07 · **ABUELA:** Al que manda en los Despachos, mírale el ordenador. · **BRUNO:** Despachos: Mirar el ordenador de Gervasio, los enviados.
 - R08 · **ABUELA:** La chica de los números tiene hilos buenos. Cuando le vaya el ordenador. · **BRUNO:** Redacción, con el CMS vivo: a Yoli, «¿Algún hilo bueno esta noche?».
 - R09 · **ABUELA:** Pregúntale al del tablero cómo se lleva con la chica de los números. · **BRUNO:** Redacción: a Anselmo, «¿Qué tal con Yoli?».
 - R10 · **ABUELA:** A esa cafetera salúdala otra vez, hijo, que le quedan chismes. · **BRUNO:** Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.
-- R11 · **ABUELA:** Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar. · **BRUNO:** Redacción: mi ordenador, sentado. Ramírez espera mis comentarios.
+- ~~R11 · **ABUELA:** Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar. · **BRUNO:** Redacción: mi ordenador, sentado. Ramírez espera mis comentarios.~~
+- R11 · **ABUELA:** Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar. · **BRUNO:** Redacción: mi ordenador, sentado. Ramírez pregunta si he podido verlo.
+> NOTA: [P9] R11: cambia solo la nota de Bruno (es también la pista de la libreta de [P7]). La de la abuela se queda.
 - R12 · **ABUELA:** El de los cables sabe cosas del señor del traje. Pregúntale. · **BRUNO:** Sistemas, con el CMS vivo: a Eutimio, «¿Algún cotilleo del consultor?».
 - R13 · **ABUELA:** El chico del armario escribía los discursos. Pregúntale. · **BRUNO:** Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».
 - R14 · **ABUELA:** A esa cafetera salúdala otra vez, hijo, que le quedan chismes. · **BRUNO:** Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.
