@@ -3,13 +3,14 @@
 
 *Una aventura de cierre. elContable.es, viernes de 18:30 a 21:00.*
 
-> **PROPUESTA (sin aplicar al juego).** Es el guion vigente con seis cambios marcados. Busca «NOTA: [P» para ir a cada uno.
+> **PROPUESTA (sin aplicar al juego).** Es el guion vigente con siete cambios marcados. Busca «NOTA: [P» para ir a cada uno.
 > - **[P4] Pista del enchufe:** al entrar en la Redacción en el Acto II, la pantalla de métricas se apaga un segundo y, justo ese segundo, el CMS publica una pieza.
 > - **[P5] Apagón:** 12 segundos la primera vez; 5 en las repeticiones.
 > - **[P6] Brais en el armario:** la escena automática baja de 23 a 16 líneas; todo lo necesario para seguir sigue siendo automático.
 > - **[P7] Duelos:** se puede entrar sin todas las réplicas; cada ataque que no sabes contestar apunta en la libreta dónde se aprende.
 > - **[P8] Gervasio:** tras el primer ataque escuchado entero, escribe más rápido.
 > - **[P9] Réplicas nuevas en los duelos:** 11 de 16 cambian; cuatro cambian también de ataque.
+> - **[P10] Formatos publicitarios por soporte:** en el papel, solo formatos de papel (faldón, robapáginas, módulo, anuncio por palabras); banners, pop-ups y vídeo, solo en web, correo y pantallas. Para la página 7, Maripaz propone un pop-up de cartulina, como los libros desplegables.
 
 ## Cómo usar este documento
 
@@ -333,7 +334,9 @@ graph TD
 ### Maripaz Remitido (Comercial)
 <!-- actor maripaz_remitido · sala_amazonas.js, ecosistema.js -->
 - **Dónde**: Marketing y Comercial (Acto I y desde que pierde el D1); Sala Amazonas, sentada en el planillo (Acto II).
-- **Qué quiere**: vender cada píxel: banners, pop-ups, interstitials, «se ve demasiado la noticia».
+- ~~**Qué quiere**: vender cada píxel: banners, pop-ups, interstitials, «se ve demasiado la noticia».~~
+- **Qué quiere**: vender cada píxel y cada columna: en la web, banners, pop-ups, interstitials; en el papel, faldones, robapáginas, módulos; «se ve demasiado la noticia».
+> NOTA: [P10] Ficha: separa los formatos de la web de los del papel.
 - **Cómo habla**: «cariño», cobra cada gesto como «interacción», toca un gong por cada venta.
 - **Función**: rival del D1 (el HUECO de la página 7); regala el rotulador de objetivos; pega el adhesivo «SU ANUNCIO AQUÍ».
 - **Mejor línea**: **MARIPAZ:** Para eso está la X. Cada mes la hago un poco más pequeña.
@@ -2300,10 +2303,14 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   *→ **Duelo D1** (ataques y réplicas en* Sistemas transversales · Duelos*).*
 - **▸** ¿Qué hace usted con el planillo? _(una vez)_
   **MARIPAZ:** Mi propuesta para la página 7. Mira.
-  *Plano detalle: «PÁGINA 7 · PROPUESTA DE COMERCIAL», todo anuncios y una línea gris.*
+  ~~*Plano detalle: «PÁGINA 7 · PROPUESTA DE COMERCIAL», todo anuncios y una línea gris.*~~
+  *Plano detalle: «PÁGINA 7 · PROPUESTA DE COMERCIAL»: faldón, robapáginas, cuatro módulos y una línea gris.*
   **MARIPAZ:** ¿Ves esa línea gris?
   **BRUNO:** ¿La noticia?
-  **MARIPAZ:** Se ve demasiado. Estoy en ello.
+  ~~**MARIPAZ:** Se ve demasiado. Estoy en ello.~~
+  **MARIPAZ:** Se ve demasiado. Por eso lleva pop-up.
+  *Abre el planillo por el pliegue: se levanta un colchón de cartulina troquelada, como en los libros desplegables, y tapa la línea gris.*
+  > NOTA: [P10] La propuesta de la página 7 es de papel: el plano detalle muestra formatos de prensa y el remate pasa a ser un pop-up físico, de cartulina (hace falta un segundo plano detalle: el colchón levantado sobre la línea gris). Es la siembra del «pop-up. De cartulina.» del epílogo, que no cambia.
 - **▸** ¿Y si la gente no quiere anuncios? _(una vez)_
   **MARIPAZ:** Para eso está la X. Cada mes la hago un poco más pequeña.
   **MARIPAZ:** Nadie se ha quejado. No la encuentran.
@@ -2320,7 +2327,9 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 **MARIPAZ:** ...Aurora no sella nada sin café. Has invitado a la correctora. *(si la ficha ya la selló Teodoro:)* ...Teodoro no sella nada que no quepa. Y tú has cabido.
 **MARIPAZ:** Vale. Llamo yo. Siestatón, a la web. Allí caben en todas partes.
 *Se levanta; debajo, el planillo: lo dobla y se lo da a Bruno, que lo mete en la ficha.*
-**MARIPAZ:** Hueco libre: veintitrés líneas. Impar, y sin un banner.
+~~**MARIPAZ:** Hueco libre: veintitrés líneas. Impar, y sin un banner.~~
+**MARIPAZ:** Hueco libre: veintitrés líneas. Impar, y sin faldón.
+> NOTA: [P10] El hueco es de la página 7, en papel: lo que se va es el faldón de Siestatón, no un banner.
 *Al pasar por detrás de Bruno, le pega en la mochila un adhesivo «SU ANUNCIO AQUÍ» (golpe de mazo).*
 **MARIPAZ:** Y esto, por las molestias. Tenías la espalda desaprovechada.
 *Si Bruno había perdido antes:* **MARIPAZ:** Y quitad el ronquido de la espera. Me lo ha chivado el becario.
@@ -2353,7 +2362,9 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **Dar la ficha:** **MARIPAZ:** Una ficha sin hueco. El hueco lo tengo yo, aquí debajo.
 - **Dar café:** **MARIPAZ:** ¿Café? Ya tengo. Y la taza lleva anuncio. Mira: Cafés Madrugón.
 - **Dar otra cosa:** **MARIPAZ:** Si no lleva logo, no lo cojo. Y si lo lleva, lo cobro.
-- **Murmullos:** **MARIPAZ:** Entre esta silla y aquella cabe un banner. Lo he medido. · **MARIPAZ:** Esta reunión, con un pop-up al principio, ya sería rentable.
+- ~~**Murmullos:** **MARIPAZ:** Entre esta silla y aquella cabe un banner. Lo he medido. · **MARIPAZ:** Esta reunión, con un pop-up al principio, ya sería rentable.~~
+- **Murmullos:** **MARIPAZ:** Entre esta silla y aquella cabe un roll-up. Lo he medido. · **MARIPAZ:** Esta reunión, con un pop-up al principio, ya sería rentable.
+> NOTA: [P10] Murmullo de la silla: entre dos sillas de verdad cabe un formato de verdad, el roll-up (el de Comercial). El del pop-up se queda: aplica la web a la reunión.
 
 **El planillo** (bajo Maripaz): **Mirar:** Asoma un borde del planillo. Página 7: «Colchones Siestatón». Encima, Maripaz. · **Coger:** **MARIPAZ:** Ese planillo tiene un hueco. Es mío hasta que alguien llame a Siestatón. · **Tirar:** Tiro un milímetro. Maripaz pesa más que el planillo. · **Usar:** Para usarlo tendría que levantarse Maripaz. Eso se negocia aparte. · **Empujar:** Lo empujo hacia dentro y Maripaz se acomoda encima.
 
@@ -2429,7 +2440,9 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **MARIPAZ:** Lo toco más fuerte. Que parezca.
 - **▸** ¿Usted se lee el periódico? _(una vez)_
   **MARIPAZ:** De la cabecera a las esquelas. Para vender un hueco hay que leer lo de al lado.
-  **MARIPAZ:** Lo más leído es la fe de erratas. Y ahí no me dejan poner ni un banner.
+  ~~**MARIPAZ:** Lo más leído es la fe de erratas. Y ahí no me dejan poner ni un banner.~~
+  **MARIPAZ:** Lo más leído es la fe de erratas. Y ahí no me dejan ni un anuncio por palabras.
+  > NOTA: [P10] Habla del periódico de papel («de la cabecera a las esquelas»): el formato más pequeño de la prensa en vez de un banner.
 - **▸** ¿Qué tal con Siestatón? _(tras el D1; una vez)_
   **MARIPAZ:** Encantados. En la web caben en todas partes. Hasta en la X de cerrar.
 - **▸** Me voy. _(salida)_
@@ -2444,10 +2457,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **Dar café:** **MARIPAZ:** ¿Café? Te lo patrocino: «Despertar, con Cafés Madrugón». El vaso ya es soporte.
 - **Dar la tarjeta:** **MARIPAZ:** ¿«Pellizco»? Eso no es un nombre, cariño. Es un formato publicitario.
 - **Dar la ficha:** **MARIPAZ:** Una ficha sin hueco. El hueco lo tengo yo. En la Sala Amazonas. / *(tras el D1)* **MARIPAZ:** Ya te he firmado. Firmar dos veces es un contrato de permanencia.
-- **Dar la pieza** *(la primera vez la lee entera, con el dedo; tres golpecitos donde iría un banner):*
+- ~~**Dar la pieza** *(la primera vez la lee entera, con el dedo; tres golpecitos donde iría un banner):*~~
+- **Dar la pieza** *(la primera vez la lee entera, con el dedo; tres golpecitos donde iría un módulo):*
   **MARIPAZ:** Línea nueve: «Hidrovoltia, a por el Robledal». Quita el sueño. Siestatón.
   **MARIPAZ:** Y la conclusión vale un faldón entero. Que no te la recorten.
   *(Después:)* **MARIPAZ:** ¿Toda esta noticia sin un anuncio en medio? Se ve demasiado. *(Recortada:)* **MARIPAZ:** Te han quitado la conclusión. Era mi hueco de cierre. Lo daba por vendido.
+  > NOTA: [P10] La pieza es para la página 7, en papel (luego habla de «un faldón entero»): los golpecitos marcan un módulo, no un banner.
 - **Dar el acta:** **MARIPAZ:** ¿El acta? Ya la he leído. «Pedir más café». Ahí cabe Cafés Madrugón.
 - **Dar el correo de Evaristo:** **MARIPAZ:** ¿Evaristo? Me revisa los contratos. Por él cobro lo pactado. Qué pena.
 - **Usar el móvil:** **MARIPAZ:** Si me fotografías, cobro por impresión.
