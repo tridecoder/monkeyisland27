@@ -68,6 +68,10 @@ const NOTAS_FUERA = [
   'Cambia la réplica, larga y corta (antes, corta',
   'Cambian ataque y réplica, y el rótulo del sitio',
   'Cambia la réplica. En el chisme ataca Maripaz y contesta Begoña.',
+  // [P15]: R06 vuelve a la de hoy; estas notas solo cuentan que se tacha lo de [P9]
+  'R06 vuelve a la de hoy: el texto del fax enmarcado',
+  'R06 vuelve a la de hoy, ataque y réplica.',
+  'Vuelve la reacción de hoy con R06; las de R02 y R09 no cambian.',
 ];
 
 const STRUCK_LINE = /^(\s*)(?:- |\d+\. |\| )?~~.*~~(?: \|)?\s*$/;       // línea tachada entera

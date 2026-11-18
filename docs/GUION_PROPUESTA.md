@@ -3,7 +3,7 @@
 
 *Una aventura de cierre. El Incontable, viernes de 18:30 a 21:00.*
 
-> **PROPUESTA (sin aplicar al juego).** Es el guion vigente con once cambios marcados. Busca «NOTA: [P» para ir a cada uno.
+> **PROPUESTA (sin aplicar al juego).** Es el guion vigente con doce cambios marcados. Busca «NOTA: [P» para ir a cada uno.
 > - **[P4] Pista del enchufe:** al entrar en la Redacción en el Acto II, la pantalla de métricas se apaga un segundo y, justo ese segundo, el CMS publica una pieza.
 > - **[P5] Apagón:** 12 segundos la primera vez; 5 en las repeticiones.
 > - **[P6] Brais en el armario:** la escena automática baja de 23 a 16 líneas; todo lo necesario para seguir sigue siendo automático.
@@ -15,6 +15,7 @@
 > - **[P12] Eventos, integrada:** Íñigo es el ponente de Pilar (brindis del Plan Cero Papel a las 21:05) y su rider pide cero papel: el álbum va a la trituradora a las 21:04. Falta la silla 112, que Íñigo se llevó en julio y es la de Brais en el armario 27: decírselo a Pilar salva el álbum. Fuera la segunda palabra del kanban y el micropuzle de la silla 113; las croquetas se quedan todas.
 > - **[P13] El periódico se llama «El Incontable»** (en la web, elincontable.es): cambio global de nombre y cinco chistes nuevos donde el nombre era el chiste.
 > - **[P14] Pasada de coherencia (segunda vuelta del juez y lector 2):** la silla 112 se deduce (la opción sale tras mirar la silla o preguntarle a Brais, y hay que elegir dónde está); Pilar distingue acreditar de asistir; el rotulador sale del termómetro con Maripaz; respaldo del pósit «Prescindible»; un solo aviso del armario 27 al abrir el Acto III; la impresora de los Despachos; sin cena de Navidad para Brais, que sale a por atún pero no se puede ir; plantas, Gervasio, Gertrudis, Íñigo y Evaristo, el momento oportuno, el sello de la ficha, la regla de Teodoro, el registro de tickets y referencias cruzadas.
+> - **[P15] Decisiones del dueño:** R06 y R14 vuelven a las réplicas de hoy (con lo que [P9] queda en 9 réplicas de 16, tres con ataque nuevo; el chisme de R14 conserva dos mejoras de [P9]); se queda el chiste de la gestoría; nuevos el «Mirar (después)» del logo y el murmullo de Yoli del nombre; aprobadas las pistas de la abuela que estaban pendientes (la silla de Pilar, el manual, el álbum y R05); como mucho seis opciones a la vez en cada árbol de diálogo; Gertrudis vuelve a «NADIE ME SALUDABA DESDE 2019.» y Celestino pasa a hablar en pasado.
 
 > NOTA: [P13] Cambio global: donde salía el nombre viejo del periódico (en sus dos formas, la web y la de «el …») pone ahora «El Incontable» (y «elincontable.es» en direcciones y rótulos web; «ELINCONTABLE.ES» en mayúsculas). Esos cambios de nombre no se tachan uno a uno. Solo se tachan, con su nota, las líneas en las que el nombre era el chiste o un rótulo a la vista (el logo del Vestíbulo, el ordenador de Bruno, Yoli, Begoña, la tarjeta del titulador y la pantalla de título): ahí se ve el nombre viejo. Al implementador: buscar el nombre viejo en `content/` y en el arte (letras del logo, portada del título, tarjeta del titulador, el correo de bienvenida y la dirección web de Discover).
 
@@ -492,9 +493,10 @@ graph TD
 ### Gertrudis (la cafetera)
 <!-- actor gertrudis (sprite de cafetera) · office.js -->
 - **Dónde**: Vending. También en la tele de la Sala Amazonas («la próxima pantalla que la sintonice») y en la esquina de los créditos.
-- ~~**Qué quiere**: que la saluden. Nadie lo hacía desde 2019.~~
-- **Qué quiere**: que la saluden. Nadie lo hacía desde 2019, salvo Celestino.
-> NOTA: [P14] Celestino dice que él sí la saluda («Por eso a mí me pone espuma»); la ficha y la línea de Gertrudis lo recogen (ver *I.4*). Ya estaba en el juego.
+- **Qué quiere**: que la saluden. Nadie lo hacía desde 2019.
+- ~~**Qué quiere**: que la saluden. Nadie lo hacía desde 2019, salvo Celestino.~~
+~~> NOTA: [P14] Celestino dice que él sí la saluda («Por eso a mí me pone espuma»); la ficha y la línea de Gertrudis lo recogen (ver *I.4*). Ya estaba en el juego.~~
+> NOTA: [P15] Vuelve la de hoy. Celestino la saludaba antes, y ya no (ver *I.4 · Árbol: Gertrudis*).
 - **Cómo habla**: LCD verde, en mayúsculas, con códigos de error (E-47…E-55); chismosa, «tengo wifi y rencor».
 - **Función**: da el café; enseña R03, R04, R10 y R14; se hace viral; hace la pregunta del público en la reunión.
 - **Mejor línea**: **GERTRUDIS:** CON TODO LO QUE TENGA PANTALLA. TENGO WIFI Y RENCOR.
@@ -772,7 +774,9 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **CELESTINO:** En el Vending. Gertrudis. La cafetera.
   **BRUNO:** ¿Y cómo se le pide?
   **CELESTINO:** Pedir, no. Se saluda. Dale las buenas noches.
-  **CELESTINO:** Nadie se las da. Yo sí. Por eso a mí me pone espuma.
+  ~~**CELESTINO:** Nadie se las da. Yo sí. Por eso a mí me pone espuma.~~
+  **CELESTINO:** Nadie se las da. Yo se las daba. Me ponía espuma.
+  > NOTA: [P15] En pasado, para no contradecir a Gertrudis («NADIE ME SALUDABA DESDE 2019.»). Sigue diciendo que a la cafetera hay que saludarla y que con eso da café.
 - **▸** ¿Algún cotilleo? _(una vez; enseña la réplica R05)_
   ~~**CELESTINO:** ¡Jugada de ascensor! Gervasio, al de Mercados: «Que esto no salga de aquí».~~
   ~~**CELESTINO:** ¡Y el de Mercados, de primeras: «Tranquilo: de aquí no sale ni el wifi»!~~
@@ -804,6 +808,15 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **CELESTINO:** ¿Tú eres el nuevo?
 - **▸** Nada, Celestino. _(salida)_
   **CELESTINO:** ¡Y el chaval se retira al vestuario sin marcar!
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes salían hasta ocho (Acto I, con el torno cerrado). No se quita ninguna:
+> - «¿Dónde hay café en esta casa?» sale desde que el torno se abre (antes no hace falta: primero hay que pasar).
+> - «¿Cómo va el Ibex?» sigue siempre; al preguntarlo la primera vez aparece, en un hueco, «¿Y usted no se aburre aquí?» → «¿Cómo se consigue una plaza de garaje?».
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Acto I, torno cerrado | torno · chicle · cotilleo (R05) · Ibex · (aburre/garaje) · Nada | 6 |
+> | Acto I, torno abierto | café · cotilleo · Ibex · aburre/garaje · Nada | 5 |
+> | Actos II-III | café · cotilleo · Ibex · aburre/garaje · narrador · Nada | 6 |
 
 **Otras respuestas de Celestino** (Dar / verbos):
 - **Mirar a Celestino:** Celestino, el conserje, con la bufanda del Ibex. // Un chicle que no descansa desde el 82. Y un paquete abierto en el mostrador.
@@ -897,6 +910,7 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **BRUNO:** Etiqueta: «SEGURIDAD — NO RETIRAR». El piloto sigue encendido.
   **CELESTINO:** Esa planta lo oye todo. Por eso es la que más dura.
 - **Empujar (2.ª):** **CELESTINO:** De ahí saco los cotilleos de ascensor.
+> NOTA: [P15] Se queda: sigue siendo verdad en general (el micro del ficus oye el Vestíbulo, que es donde para el ascensor). El cotilleo de R05 le llegó a Celestino por correo, y lo dice él («¡Me llegó hasta a mí!»).
 - **Empujar (después):** La dejo como estaba. No quiero que me oiga empujar.
 - **Coger:** No. Ha sobrevivido a tres ERE. No voy a ser yo el cuarto. · **Dar café:** No bebe. Por eso dura tanto. · **Dar otra cosa:** No acepta nada: ni regalos ni sugerencias. · **Tirar:** Si le tiro de una hoja, me la deja en la mano. Es de plástico, pero digna. · **Usar:** La riego con la mirada. No necesita más. Es de plástico.
 
@@ -913,9 +927,11 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - ~~**Mirar (después):** Un periódico económico que se llama el Contable. // Es lo más honesto que ha hecho nunca un periódico económico.~~
 - ~~**Coger:** Si me llevo la «e», se queda en «lContable». Suena a gestoría con prisas. · **Tirar:** Le falta un tornillo. Si tiro, le faltan dos. Y a mí, el trabajo. · **Empujar:** No llego. Y si llego, la «e» se cae con todo su tornillo. · **Hablar:** «Buenas noches, Contable». La «e» se mueve un poco. Lo tomo como un sí.~~
 - **Mirar (1.ª):** Letras de metal: «elincontable.es». Al «in» le falta un tornillo.
-- **Mirar (después):** Un periódico económico que se llama El Incontable. // Lo que pasa dentro tampoco se puede contar.
+- ~~**Mirar (después):** Un periódico económico que se llama El Incontable. // Lo que pasa dentro tampoco se puede contar.~~
+- **Mirar (después):** Un periódico económico que se llama El Incontable. // Es lo más honesto que ha hecho nunca un periódico económico.
 - **Coger:** Si me llevo el «in», queda «elcontable.es». Una gestoría. · **Tirar:** Le falta un tornillo. Si tiro, le faltan dos. Y a mí, el trabajo. · **Empujar:** No llego. Y si llego, el «in» se cae con todo su tornillo. · **Hablar:** «Buenas noches, Incontable». El «in» se mueve un poco. Lo tomo como un sí.
-> NOTA: [P13] Logo del Vestíbulo: el tornillo flojo pasa de la «e» al «in», que es lo que hace chiste ahora: sin él, el periódico se queda en gestoría. «Mirar (después)» cobra el doble sentido del nombre (las cifras que no se pueden contar y lo que no se puede contar de la casa). Arte: las letras del logo dicen «elincontable.es» y el «in» cuelga torcido. «Tirar» no cambia.
+~~> NOTA: [P13] Logo del Vestíbulo: el tornillo flojo pasa de la «e» al «in», que es lo que hace chiste ahora: sin él, el periódico se queda en gestoría. «Mirar (después)» cobra el doble sentido del nombre (las cifras que no se pueden contar y lo que no se puede contar de la casa). Arte: las letras del logo dicen «elincontable.es» y el «in» cuelga torcido. «Tirar» no cambia.~~
+> NOTA: [P13] [P15] Logo del Vestíbulo: el tornillo flojo pasa de la «e» al «in», que es lo que hace chiste ahora: sin él, el periódico se queda en gestoría (el chiste de «Coger» se queda: decisión del dueño). «Mirar (después)» recupera el remate de hoy, que con el nombre nuevo es todavía más verdad: un periódico económico que admite en la fachada que no sabe contar. Arte: las letras del logo dicen «elincontable.es» y el «in» cuelga torcido. «Tirar» no cambia.
 
 **Puerta de la calle**
 - **Mirar:** La calle. Ahí fuera hay gente que lee el periódico. Dicen.
@@ -1095,6 +1111,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **YOLI:** Si cierra el papel, ¿quién me va a odiar con criterio?
 - **▸** Me voy. _(salida)_
   **YOLI:** Y cuando escribas algo, avísame. Te lo coloco en Discover. Con expertos.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes, siete en el Acto III. «¿Cuántos me leen a mí?» aparece al agotar «¿Y tú cómo estás? Tú, no la audiencia.».
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Acto II (CMS vivo) | hilo (R08) · cómo estás → cuántos · titulares · titulador (con la pieza) · Me voy | 5 |
+> | Acto III | las de arriba + Íñigo va a cerrar el papel | 6 |
 
 **Otras respuestas de Yoli:**
 - **Mirar:** Yoli, audiencias. Le tiembla el párpado al ritmo de la gráfica.
@@ -1106,8 +1128,10 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **Dar la pieza** (la 1.ª vez, y luego abre el titulador): **YOLI:** ¿Sin número en el titular? ¿Sin "lo que nadie te cuenta"? Valiente.
 - **Dar el álbum:** **YOLI:** ¿Fotos de eventos? Eso no lo ve nadie. // Bueno. Uno. El del fondo.
 - ~~**Murmullos:** **YOLI:** Esto sube. Esto baja. Esto soy yo. · **YOLI:** Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario. · **YOLI:** «Los expertos coinciden»... Ya buscaré expertos. Primero, que coincidan. · **YOLI:** Ahí al lado imprimen lo que yo publiqué ayer.~~
-- **Murmullos:** **YOLI:** Esto sube. Esto baja. Esto soy yo. · **YOLI:** Busco "incontable" y salen sinónimos. Innumerable. Inenarrable. Nosotros, no. · **YOLI:** «Los expertos coinciden»... Ya buscaré expertos. Primero, que coincidan. · **YOLI:** Ahí al lado imprimen lo que yo publiqué ayer.
-> NOTA: [P13] Cambia el segundo murmullo: el buscador le da a Yoli los dos sentidos del nombre (lo que no se cuenta y lo que no se puede contar) y el periódico no sale. Los otros tres no cambian.
+- ~~**Murmullos:** **YOLI:** Esto sube. Esto baja. Esto soy yo. · **YOLI:** Busco "incontable" y salen sinónimos. Innumerable. Inenarrable. Nosotros, no. · **YOLI:** «Los expertos coinciden»... Ya buscaré expertos. Primero, que coincidan. · **YOLI:** Ahí al lado imprimen lo que yo publiqué ayer.~~
+- **Murmullos:** **YOLI:** Esto sube. Esto baja. Esto soy yo. · **YOLI:** "Incontable": cero búsquedas al mes. · **YOLI:** «Los expertos coinciden»... Ya buscaré expertos. Primero, que coincidan. · **YOLI:** Ahí al lado imprimen lo que yo publiqué ayer.
+~~> NOTA: [P13] Cambia el segundo murmullo: el buscador le da a Yoli los dos sentidos del nombre (lo que no se cuenta y lo que no se puede contar) y el periódico no sale. Los otros tres no cambian.~~
+> NOTA: [P13] [P15] Cambia el segundo murmullo: Yoli, que vive de contar a los que entran, mira cuánto se busca el nombre del periódico. Los otros tres no cambian.
 
 **Monitor de Yoli**
 - **Mirar (CMS caído):** El monitor de Yoli. El CMS dice «GUARDANDO BORRADOR» desde las cuatro. / *(CMS vivo)* El monitor de Yoli: «PUBLICADO». Y otra. Y otra. Ella no se fía.
@@ -1174,6 +1198,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **LEONCIO:** Me han absorbido en plataforma. Sigo aquí, supervisando desde Desarrollo.
 - **▸** Me voy. _(salida)_
   **LEONCIO:** Cuidado con la cinta. Se ha movido desde que has llegado.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes, hasta nueve en el Acto III. Se encadenan: «¿Qué es Herminia?» → «¿Y tu departamento?» → «¿Y si Herminia te sustituye a ti también?», y «¿Por qué no se publica lo que hace?» → «¿Y esos gráficos de Anselmo en tu sección?» (esta, desde el Acto II).
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Actos I-II | Herminia (cadena) · se publica (cadena) · gráfico · Me voy | 4 |
+> | Acto III | las de arriba + el Titulator era un becario + qué tal ahora (tras la anexión) | 6 |
 
 **Otras respuestas de Leoncio:**
 - **Mirar:** Leoncio, Infografía. Ya no dibuja: mira dibujar a su IA.
@@ -1262,6 +1292,13 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **ANSELMO:** ...En un armario de mis sistemas. Lo miro en la próxima versión.
 - **▸** Me voy. _(salida)_
   **ANSELMO:** Cierra la frontera al salir. No tiene puerta. Ciérrala igual.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes, hasta ocho en el Acto III. Se encadenan: «¿Por qué bloqueas a Herminia?» → «¿Por qué invades la sección de Leoncio?» (desde el Acto II), y «¿Qué tal con Yoli?» (R09, a la vista desde el principio) → «He arreglado el CMS.» (con el CMS vivo). «Necesito la baja de Brais.» y «Mira este álbum.» (camino principal) no coinciden nunca. «¿Y tú no usas IA?» (la frase de «El modelo es de fuera…») no cambia.
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Acto I | Herminia · IA · Yoli · Me voy | 4 |
+> | Acto II | Herminia o invades · IA · Yoli o CMS · Me voy | 4 |
+> | Acto III | las de arriba + baja (o álbum) + el Titulator era un becario | 6 |
 
 **Otras respuestas de Anselmo:**
 - **Mirar:** Anselmo, director de Desarrollo. Cinta en el cinto.
@@ -1445,6 +1482,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   - **▸** Ya está. → **CUSTODIA:** Siguiente.
 - **▸** Nada, perdone. _(salida)_
   **CUSTODIA:** Perdonado.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes, nueve (diez con el boli muerto). Se encadenan las cuatro maneras de pedirle algo: «Buenas noches.» → «Por favor. Es una emergencia.» → «Me manda Gervasio.» → «Begoña dice que hay que rellenar algo.»; y «¿Me da una libreta?» → «¿Por qué no se le ve la cara?». «¿Usted sabe dónde está todo?» y «¿Dónde está...?» ya no coincidían (antes y después de ablandarla).
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Siempre | boli · libreta (cadena) · buenas noches (cadena) · sabe dónde (o dónde está) · Nada | 5 |
+> | Con el boli muerto | las de arriba + le traigo un muerto | 6 |
 
 **Secretaría (objeto):**
 - **Mirar:** La Secretaría de Redacción. Bajo la persiana, dos manos. // Nadie le ha visto la cara. Se le oye la mirada.
@@ -1610,6 +1653,18 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   > NOTA: [P12] Dos opciones nuevas (de E2), opcionales: el brindis de las 21:05 y la silla 112. Es lo primero que Íñigo reconoce haber hecho, y es contra una silla.
 - **▸** Me voy. _(salida)_
   **ÍÑIGO:** Perfecto. Eso libera sinergias.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes salían hasta doce. No se quita ninguna: se encadenan por tema (cada flecha: la siguiente aparece al agotar la anterior, en el mismo hueco).
+> - **La matriz:** «¿Qué es esa matriz?» → «¿De qué color soy yo?» → «¿Me puede poner en otro cuadrante?…».
+> - **El Titulator:** «¿El Titulator escribe solo?» → «Usted no ha escrito un titular en su vida, ¿verdad?».
+> - **El armario 27:** «¿Qué es eso del armario 27?» (tras ver la súplica, como hoy).
+> - **El plan:** «¿Usted va a despedir a alguien esta noche?» → «¿Y si en la Reunión de Dirección dicen que no?» → «¿Y el de Controlling?».
+> - **Eventos:** «¿Y el brindis de Eventos?» → «¿Se llevó usted una silla de Eventos?» (esta, además, tras oír a Pilar lo de la 112).
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Actos I-II, sin la súplica del Titulator | matriz · Titulator · plan · Eventos · Me voy | 5 |
+> | Actos I-II, tras la súplica | las de arriba + armario 27 | 6 |
+> | Antes | las once a la vez + Me voy | 12 |
 
 **Otras respuestas de Íñigo:**
 - **Mirar:** Íñigo Sinergia. Traje de dos mil euros y zapatillas de trescientos.
@@ -1698,9 +1753,10 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 
 - **▸** Buenas noches, Gertrudis. _(repetible; cambia según el estado)_
   *La primera vez — camino principal:*
-  ~~**GERTRUDIS:** NADIE ME SALUDABA DESDE 2019.~~
-  **GERTRUDIS:** NADIE ME SALUDABA DESDE 2019. SALVO CELESTINO.
-  > NOTA: [P14] Celestino dice en el Vestíbulo «Nadie se las da. Yo sí. Por eso a mí me pone espuma.», y la rejilla oye a «alguien más» saludarla. Ya estaba en el juego.
+  **GERTRUDIS:** NADIE ME SALUDABA DESDE 2019.
+  ~~**GERTRUDIS:** NADIE ME SALUDABA DESDE 2019. SALVO CELESTINO.~~
+  ~~> NOTA: [P14] Celestino dice en el Vestíbulo «Nadie se las da. Yo sí. Por eso a mí me pone espuma.», y la rejilla oye a «alguien más» saludarla. Ya estaba en el juego.~~
+  > NOTA: [P15] Vuelve la línea de hoy, sin coletilla. Lo que cambia es la de Celestino, que ahora la saludaba antes (ver *I.1 · Árbol: Celestino*).
   *Muele. Pita. Cae un vaso: el café.*
   ~~**GERTRUDIS:** CHISME: EL DE BOLSA A YOLI: "ESTO LO NECESITABA PARA AYER".~~
   ~~**GERTRUDIS:** YOLI: "AYER NO PUEDO. TE MIRO HUECO PARA ANTEAYER".~~
@@ -1743,9 +1799,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   *(R10)*
   ~~**GERTRUDIS:** CHISME: GERVASIO A MARIPAZ: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".~~
   ~~**GERTRUDIS:** MARIPAZ: "¿TE VA EN MARZO, CARIÑO? ES CUANDO ACABAN LAS RÁPIDAS".~~
-  **GERTRUDIS:** CHISME: MARIPAZ A BEGOÑA: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".
-  **GERTRUDIS:** BEGOÑA: "VALE. TE BLOQUEO TODA LA TARDE".
-  > NOTA: [P9] R04 y R14: réplicas nuevas (y ataque nuevo en R04). En los dos chismes ataca ahora Maripaz: a Anselmo (antes Gervasio) en R04 y a Begoña en R14, que pasa a ser quien contesta (antes Gervasio atacaba y contestaba Maripaz). Se quita el «CARIÑO» del chisme de R14. El de R10 no cambia.
+  ~~**GERTRUDIS:** CHISME: MARIPAZ A BEGOÑA: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".~~
+  ~~**GERTRUDIS:** BEGOÑA: "VALE. TE BLOQUEO TODA LA TARDE".~~
+  **GERTRUDIS:** CHISME: GERVASIO A BEGOÑA: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".
+  **GERTRUDIS:** BEGOÑA: "¿TE VA EN MARZO? ES CUANDO ACABAN LAS RÁPIDAS".
+  ~~> NOTA: [P9] R04 y R14: réplicas nuevas (y ataque nuevo en R04). En los dos chismes ataca ahora Maripaz: a Anselmo (antes Gervasio) en R04 y a Begoña en R14, que pasa a ser quien contesta (antes Gervasio atacaba y contestaba Maripaz). Se quita el «CARIÑO» del chisme de R14. El de R10 no cambia.~~
+  > NOTA: [P9] [P15] R04: réplica y ataque nuevos; en el chisme ataca ahora Maripaz a Anselmo (antes Gervasio). R14 vuelve a la réplica de hoy, sin tocar una palabra, y a su chisme de hoy (ataca Gervasio) con dos cambios que eran de [P9] y caben sin reescribirla: fuera el apelativo de Maripaz, y contesta Begoña en vez de Maripaz, que si no perdería el D1 con su propia frase. El de R10 no cambia.
   *Bruno apunta (R14).*
   **GERTRUDIS:** FIN DE LA EMISIÓN. NO HAY MÁS CAFÉ. HAY FAMA.
   *Bruno se sacude la mano.*
@@ -1973,6 +2032,20 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **TEODORO (fax):** En que pide complemento.
 - **▸** Nada, Aurora. Gracias. _(salida)_
   **AURORA:** Lo has dicho bien. Me has descolocado.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes salían hasta once. No se quita ninguna; se reparten en cinco huecos (cada flecha: la siguiente aparece al agotar la anterior, en el mismo hueco):
+> - **La pieza** (camino principal): «¿Qué noticia puedo traer?» (repetible) mientras Bruno no lleva ninguna fuente → «Tengo una fuente.» o «Tengo dos fuentes.» (según lleve una o las dos; nunca salen juntas; y dárselas sigue sin pasar por el menú) → «¿Y ahora qué?» (FUENTE hecha y pieza sin escribir) → con la pieza escrita, vuelve «¿Qué noticia puedo traer?».
+> - **Teodoro:** «¿Por qué no se hablan usted y Teodoro?» (R02, a la vista desde el principio) → «¿Cómo convenzo a Teodoro?».
+> - **El fax:** «¿De dónde saco papel para el fax?» (sin papel) o «Yoli quiere sacar mi opa con…» (con papel, pieza y titulador). Sus condiciones ya no coinciden nunca.
+> - **El oficio:** «¿Usted ha cometido alguna errata?» → «¿Qué le parecen los verbos de abajo?» → «En la web eso lo arregla el corrector automático.» → «¿Ha oído cómo pregunta Custodia?» (esta, además, tras oír la regla del boli).
+> - **Recados:** «¿Está bien la coma de don Evaristo?» (con el correo). En el Acto III sale antes «Íñigo dice que en la reunión van a apagar la rotativa.» y, agotada esa, la de la coma.
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Acto II, sin fuentes | noticia · R02 · papel · oficio · (coma, con el correo) · Nada | 6 |
+> | Acto II, con una o dos fuentes | fuente · R02 o convenzo · papel u opa · oficio · coma · Nada | 6 |
+> | Acto II, FUENTE hecha | ¿Y ahora qué? · Teodoro · fax · oficio · coma · Nada | 6 |
+> | Acto III | noticia · Teodoro · opa · oficio · rotativa (luego coma) · Nada | 6 |
+> | Antes | hasta once a la vez (Acto II con una fuente, el correo y la regla del boli; Acto III) | 11 |
 
 **Otras respuestas de Aurora:**
 - **Mirar:** Aurora, correctora. Tiene un boli rojo clavado en el moño. Por si acaso.
@@ -2021,9 +2094,16 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **TEODORO (fax):** Es de los nuestros. Él cuenta comas. Yo, líneas.
   ~~**TEODORO (fax):** Una vez me devolvió un fax corregido. Lo tengo enmarcado.~~
   **TEODORO (fax):** Una vez me devolvió un fax corregido. Tenía razón.
-  > NOTA: [P9] El fax enmarcado es ahora el de «Este sí»; el de Evaristo deja de estar enmarcado para que no se confundan.
+  ~~> NOTA: [P9] El fax enmarcado es ahora el de «Este sí»; el de Evaristo deja de estar enmarcado para que no se confundan.~~
+  > NOTA: [P15] Se queda «Tenía razón.» aunque el fax enmarcado vuelve a ser el de hoy: ese es la respuesta de un redactor («dos fuentes y media», y la media era Teodoro), no un fax corregido por Controlling. Con «Lo tengo enmarcado», el jugador creería que el del marco es el de Evaristo.
 - **▸** Me voy. _(salida)_
   **TEODORO (fax):** Cierra al salir. El reloj no se toca: las 20:59 caben.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes, ocho. Se encadenan: «¿Por qué solo habla por fax?» → «¿Con quién habla por el teléfono rojo?», y «¿Conoce a Herminia, la de Infografía?» → «¿Conoce a don Evaristo?».
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Con papel en el fax | firmar (D2) · fax (cadena) · la web · Herminia (cadena) · Me voy | 5 |
+> | Tras la profecía del ventilador | las de arriba + la página perdida del Libro de Estilo | 6 |
 
 **Otras respuestas de Teodoro** (con papel; sin papel, el fax solo pita):
 - **Mirar:** Teodoro Cuerpodoce, jefe de cierre. // Tirantes, visera y veintinueve años sin ver la calle.
@@ -2064,14 +2144,15 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 
 **Fax enmarcado** (réplica R06)
 - **Mirar:**
-  ~~**BRUNO:** Un fax enmarcado: «¿Esto lo has contrastado?».~~
-  ~~**BRUNO:** Debajo, a mano: «Con dos fuentes y media.~~
-  ~~**BRUNO:** La media dijo "yo no te he dicho nada"».~~
-- ~~**Coger:** No hace falta. La réplica ya me la sé. El marco, que se quede. · **Abrir:** Si abro el marco, se escapa la réplica. · **Usar:** Ya lo he contrastado: está enmarcado.~~
-  **BRUNO:** Un fax enmarcado: «¿Te ha llegado mi fax?».
-  **BRUNO:** Debajo, a mano: «Este sí».
-- **Coger:** No hace falta. La réplica ya me la sé. El marco, que se quede. · **Abrir:** Si abro el marco, se escapa la réplica. · **Usar:** No hace falta reenviarlo. Ese ya llegó: está enmarcado.
-> NOTA: [P9] R06: cambian ataque y réplica (la alternativa de reserva de la segunda vuelta). Cambia el texto del fax, la línea de Bruno al leerlo y el «Usar» del marco, que con el ataque viejo («contrastado») dejaba de tener sentido. «Coger» y «Abrir» no cambian. Paquete completado en la propuesta, no en las fuentes: que lo revise el dueño.
+  **BRUNO:** Un fax enmarcado: «¿Esto lo has contrastado?».
+  **BRUNO:** Debajo, a mano: «Con dos fuentes y media.
+  **BRUNO:** La media dijo "yo no te he dicho nada"».
+- **Coger:** No hace falta. La réplica ya me la sé. El marco, que se quede. · **Abrir:** Si abro el marco, se escapa la réplica. · **Usar:** Ya lo he contrastado: está enmarcado.
+  ~~**BRUNO:** Un fax enmarcado: «¿Te ha llegado mi fax?».~~
+  ~~**BRUNO:** Debajo, a mano: «Este sí».~~
+- ~~**Coger:** No hace falta. La réplica ya me la sé. El marco, que se quede. · **Abrir:** Si abro el marco, se escapa la réplica. · **Usar:** No hace falta reenviarlo. Ese ya llegó: está enmarcado.~~
+~~> NOTA: [P9] R06: cambian ataque y réplica (la alternativa de reserva de la segunda vuelta). Cambia el texto del fax, la línea de Bruno al leerlo y el «Usar» del marco, que con el ataque viejo («contrastado») dejaba de tener sentido. «Coger» y «Abrir» no cambian. Paquete completado en la propuesta, no en las fuentes: que lo revise el dueño.~~
+> NOTA: [P15] R06 vuelve a la de hoy: el texto del fax enmarcado, la lectura de Bruno y el «Usar» del marco, literales del juego; fuera el paquete de [P9].
 
 **Bolígrafos rojos** (micropuzle opcional del boli muerto)
 - **Mirar:** Bolígrafos rojos. Todos vivos menos uno, que yace. / *(ya cogido)* Bolígrafos rojos. Todos vivos. Al muerto lo llevo yo.
@@ -2315,6 +2396,13 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **▸** ¿Se ha caído el wifi? _(repetible)_
   **EUTIMIO:** No, el wifi no se ha caído. Has dejado de merecerlo.
 - **▸** Me voy. _(salida, como arriba)_
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes, diez con el CMS caído. Se encadenan: «¿Tú eres el de Sistemas?» → «¿Me abres un ticket a mí? Para existir.» → «¿Cuándo fue la última vez que viste el sol?» → «¿Te escribe mucho Tadeo?»; y «¿Escuchas por la rejilla?» (pasa a una vez: dice siempre lo mismo) → «¿Se ha caído el wifi?» (repetible). R12 y «¿Qué hay en el armario 27?», siempre a la vista.
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | CMS caído | por qué no va · el de Sistemas (cadena) · armario 27 · R12 · rejilla (o wifi) · Me voy | 6 |
+> | CMS vivo, Acto II | el de Sistemas (cadena) · armario 27 · R12 · rejilla (o wifi) · Me voy | 5 |
+> | Acto III | las de arriba + el alta de Herminia (con su condición) | 6 |
 
 **Otras respuestas de Eutimio:**
 - **Mirar:** Eutimio Ticket. No le da la luz natural desde que había fax en cada mesa.
@@ -2454,6 +2542,11 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **GERVASIO:** Desayunando. La reserva se respeta: puede volver en cualquier momento.
 - **▸** Me voy. _(salida)_
   **GERVASIO:** Se toma nota. No la tomo yo, pero se toma.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes, siete. «¿Y si votamos si votamos?» aparece al agotar «¿Puedo presidir yo un rato?». Los siguientes pasos (camino principal), siempre a la vista.
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Siempre | qué se decide · página 7 · presidir → votamos · siguientes pasos · sala reservada · Me voy | 6 |
 
 **Otras respuestas de Gervasio en la Sala:**
 - **Mirar:** Gervasio preside. Lleva tanto en el punto 3 que ya lo tutea. / *(Acto III)* Gervasio, de pie junto a su sillón. Con un café que no le han servido.
@@ -2736,6 +2829,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **▸** Me voy. _(salida)_
   *¡Gong!*
   **MARIPAZ:** ¿Seguro que quieres salir? Era una pregunta patrocinada.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes, siete (ocho tras el D1). Se encadenan: «¿Me vende algo a mí?» → «¿Por qué tiene un gong?», y «La web va muy lenta.» → «Mi abuela dice que no encuentra las noticias.».
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Antes del D1 | qué vende · me vende → gong · web lenta → abuela · se lee el periódico · Me voy | 5 |
+> | Tras el D1 | las de arriba + qué tal con Siestatón | 6 |
 
 **Otras respuestas de Maripaz (Comercial):**
 - **Mirar:** Maripaz, Comercial. Lleva el mazo del gong como otros el bolso. // La funda del móvil lleva anuncio.
@@ -2950,6 +3049,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **BEGOÑA:** Rechazado. Si lo aprobara, tendría que justificar la caída.
 - **▸** Nada. Me iba. _(salida)_
   **BEGOÑA:** Salida sin trámite. La anoto como lo más eficiente del día.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes, ocho (Acto II, antes de la nota). Se encadenan: «Llevan siendo las 19:07 toda la tarde.» → «Vengo a ver la pared…», y «¿Le han pedido algo raro hoy?» → «¿Qué le parece Custodia, la de Secretaría?». La nota de gasto y el recorte (camino principal) no coinciden nunca: el recorte pide la pieza, que pide la fotocopia de la nota.
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Acto II, antes de la nota, fax sin papel | nota · folios · 19:07 → pared · con todo el respeto · algo raro → Custodia · Nada | 6 |
+> | Con la pieza sin recortar | recortar · 19:07 → pared · con todo el respeto · algo raro → Custodia · Nada | 5 |
 
 **Dar o Usar el sobre de azúcar con Begoña o la ventanilla** (atajo al impreso): **BEGOÑA:** ¿Un sobre de azúcar? Sin nota de gasto, esto es azúcar. *(y abre el formulario)*
 
@@ -3492,6 +3597,11 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **BRAIS:** ...Te espero. No me voy. No puedo.
   *La primera vez:* **BRAIS:** Salir, salgo: a por atún. Irme, no. Sin baja, no consta que me vaya.
   > NOTA: [P14] Brais no está encerrado (firma en la hoja del Vending, sale de fondo en las fotos de Eventos, compra el atún en la máquina del sótano): lo que no puede es irse, porque su baja es un pósit. Una palabra cambia («me muevo» → «me voy») y entra una línea, la primera vez (la idea es del lector 2). Ya estaba en el juego.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes, siete. «¿Qué es lo primero que vas a hacer fuera?» aparece al agotar la del titular («UN BECARIO VIVE EN UN ARMARIO…»). R13, R15 y la silla (camino principal), siempre a la vista.
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | En el armario | discursos (R13) · titular → lo primero · Tadeo (R15) · la silla · su encargo (hasta dárselo) · Ahora vuelvo | 6 |
 
 **Darle el táper** (opcional; también vale en la Redacción, con Brais ya libre):
 **BRAIS (en titular):** TÁPER DETECTADO. LO QUE HIZO ESTE BECARIO TE EMOCIONARÁ.
@@ -3683,6 +3793,23 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **PILAR:** ¡Hasta ahora! Te guardo la silla ciento once.
   *(Con la 112 encontrada:)* **PILAR:** ¡Hasta ahora! Te guardo la ciento once. La 112 está ocupada.
   > NOTA: [P12] Número de silla, al día con el recuento nuevo.
+> NOTA: [P15] **Seis opciones a la vez, como mucho** (contando la de salida). Antes salían hasta dieciséis (Acto III). No se quita ninguna y las croquetas se quedan todas en Eventos («¿Hay catering?», la croqueta al abrir tras el álbum y «Gracias por la croqueta.»). Se reparten así (cada flecha: la siguiente aparece al agotar la anterior, en el mismo hueco):
+> - **Siempre:** «¿Cuántas sillas hay?» (repetible; siembra la 112) y «Me voy.».
+> - **El evento:** antes de la presentación del villano, «¿Y de qué va el evento?»; desde la presentación, «¿Qué evento hay hoy?» y, en cuanto se ha preguntado, «¿Y de qué va el evento?» en su lugar (repetible y con su escala, como hoy). Fusión: las dos preguntan lo mismo y comparten hueco.
+> - **La sala:** «¿Para qué es el photocall?» → «¿Qué es esa cinta en la muñeca?» → «¿Por qué hay que acreditarse?» → «¿Puedes acreditar a mi abuela?».
+> - **Los cinco minutos:** «¿Cuántos eventos habéis empezado este año?» → «¿Por qué no baja la cuenta atrás?» → «¿Hay catering?».
+> - **El ponente** (desde el Acto II): «¿Qué ha pedido el ponente?» → «¿Y sin papel, cómo acreditas?» → «¿Sabes que el plan es apagar la rotativa?» → «¿Estás bien, Pilar?» (pasa de repetible a una vez: dice siempre lo mismo; sigue caducando al darle el álbum).
+> - **Acto III:** las tres cadenas comparten un solo hueco: sale la primera pendiente del ponente; si no queda, la de los cinco minutos; si no, la de la sala. Entran «¿Me prestas el álbum?» (tras encontrar a Brais, hasta tener el álbum), «Creo que sé dónde está tu 112.» (camino principal; nunca queda detrás de otra) y, tras la croqueta, «Gracias por la croqueta.».
+>
+> | Estado | Se ven | Máx. |
+> |---|---|---|
+> | Acto I, antes de la presentación | de qué va · sillas · sala · cinco minutos · Me voy | 5 |
+> | Acto I, desde la presentación | qué evento (o de qué va) · sillas · sala · cinco minutos · Me voy | 5 |
+> | Acto II | las de arriba + ponente | 6 |
+> | Acto III, antes de encontrar a Brais | evento · sillas · cadena compartida · Me voy | 4 |
+> | Acto III, tras encontrar a Brais y mirar la silla (o preguntarle) | evento · sillas · cadena · álbum · 112 · Me voy | 6 |
+> | Acto III, con el álbum | evento · sillas · cadena · gracias por la croqueta · Me voy | 5 |
+> | Antes | Acto I 11 (10 antes de la presentación) · Acto II 14 · Acto III 14–16 | 16 |
 
 **Otras respuestas de Pilar:**
 - ~~**Mirar:** Pilar Escaleta, de Eventos. Cascos, walkie, escaleta y seis acreditaciones. // En la muñeca, un rollo de cinta americana. Por si hay que acreditar algo.~~
@@ -4124,11 +4251,12 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **Réplica:** Me lo estás diciendo en un responder a todos.
   > NOTA: [P9] Cambia la réplica. El chisme de Celestino pasa a ser un correo, no el ascensor.
 - **R06** — se aprende en: Redacción de papel: Mirar el fax enmarcado, sobre la mesa de Teodoro. · la piden: D2
-  ~~**Ataque:** ¿Esto lo has contrastado?~~
-  ~~**Réplica:** Con dos fuentes y media. La media dijo «yo no te he dicho nada».~~
-  **Ataque:** ¿Te ha llegado mi fax?
-  **Réplica:** Este sí.
-  > NOTA: [P9] Cambian ataque y réplica. El sitio no cambia (el fax enmarcado, que ahora dice esto).
+  **Ataque:** ¿Esto lo has contrastado?
+  **Réplica:** Con dos fuentes y media. La media dijo «yo no te he dicho nada».
+  ~~**Ataque:** ¿Te ha llegado mi fax?~~
+  ~~**Réplica:** Este sí.~~
+  ~~> NOTA: [P9] Cambian ataque y réplica. El sitio no cambia (el fax enmarcado, que ahora dice esto).~~
+  > NOTA: [P15] R06 vuelve a la de hoy, ataque y réplica.
 - **R07** — se aprende en: Despachos: Mirar el ordenador de Gervasio, los enviados. · la piden: D3, D4
   **Ataque:** Me consta que esto ya lo hablamos.
   ~~**Réplica:** A ti te consta. A mí me consta que hablabas tú.~~
@@ -4166,9 +4294,10 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   > NOTA: [P9] Cambia la réplica.
 - **R14** — se aprende en: Vending: saludar otra vez a Gertrudis. Suelta todos los chismes. · la piden: D1
   **Ataque:** Esto lo podemos ver en una reunión rápida.
-  ~~**Réplica:** Perfecto. ¿Te va en marzo? Es cuando acaban las rápidas.~~
-  **Réplica:** Vale. Te bloqueo toda la tarde.
-  > NOTA: [P9] Cambia la réplica. En el chisme ataca Maripaz y contesta Begoña.
+  **Réplica:** Perfecto. ¿Te va en marzo? Es cuando acaban las rápidas.
+  ~~**Réplica:** Vale. Te bloqueo toda la tarde.~~
+  ~~> NOTA: [P9] Cambia la réplica. En el chisme ataca Maripaz y contesta Begoña.~~
+  > NOTA: [P15] Vuelve la réplica de hoy. En el chisme ataca Gervasio, como hoy, y contesta Begoña, sin el apelativo (las dos cosas, de [P9]).
 - **R15** — se aprende en: Sistemas: a Brais, «¿Te llegaban correos de Tadeo?». · la piden: D4
   **Ataque:** Lo he consultado con la IA y está de acuerdo conmigo.
   **Réplica:** Lo sé. Me lo ha contado ella. Se llama Brais.
@@ -4243,8 +4372,9 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   - con R04: **MARIPAZ:** Tienes razón. Mañana sale con tarifa.
   - con R08: **MARIPAZ:** Uy. Esa copia iba oculta.
   - con R11: **MARIPAZ:** Pues te lo vuelvo a poner. Sin poder saltarlo.
-  - con R14: **MARIPAZ:** ¿Toda la tarde? Te la vendo por franjas.
-  > NOTA: [P9] Las reacciones de R08 y R11 se sustituyen (citaban las réplicas viejas); las de R04 y R14 son nuevas.
+  - ~~con R14: **MARIPAZ:** ¿Toda la tarde? Te la vendo por franjas.~~
+  ~~> NOTA: [P9] Las reacciones de R08 y R11 se sustituyen (citaban las réplicas viejas); las de R04 y R14 son nuevas.~~
+  > NOTA: [P9] [P15] Las reacciones de R08 y R11 se sustituyen (citaban las réplicas viejas); la de R04 es nueva. Con R14 no hay reacción propia, como hoy: la que añadía [P9] citaba su réplica.
 - **Fallo** (rota): **MARIPAZ:** Eso no lo patrocina nadie. · **MARIPAZ:** Muy bonito. Pero sin anuncio no es contenido. *(o la respuesta del rival a la floja)*
 - **En copia**: 1.er fallo, Colchones Siestatón; luego Toda la planta, Toda la empresa.
 - **Derrota (rótulo):** **RÓTULO:** RESPUESTA AUTOMÁTICA DE COMERCIAL: «Cierre este anuncio para leer la respuesta».
@@ -4261,13 +4391,14 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **+1 al acertar** (notificaciones en el móvil, en orden): Begoña, Celestino, Yoli
 - **Entrada:** **TEODORO (fax):** ¿Tú? ¿El de la web? ¿En mi página? Contesta.
 - **Ataques, en su voz:**
-  - ~~R06 · **TEODORO (fax):** ¿CONTRASTADO? FUENTES. NÚMERO.~~
+  - R06 · **TEODORO (fax):** ¿CONTRASTADO? FUENTES. NÚMERO.
   - ~~R02 · **TEODORO (fax):** CON TODO EL RESPETO QUE ME MERECE LA WEB. QUE ES POCO.~~
   - ~~R09 · **TEODORO (fax):** DATO SIN CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.~~
-  - R06 · **TEODORO (fax):** ¿TE HA LLEGADO MI FAX? CONFIRMA RECEPCIÓN.
+  - ~~R06 · **TEODORO (fax):** ¿TE HA LLEGADO MI FAX? CONFIRMA RECEPCIÓN.~~
   - R02 · **TEODORO (fax):** CORRÍGEME SI ME EQUIVOCO: LA WEB NO ES UN PERIÓDICO.
   - R09 · **TEODORO (fax):** DATO SACADO DE CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.
-  > NOTA: [P9] Cambian las tres voces: R06 y R02 por sus ataques nuevos; en R09, «SACADO» en vez de «SIN», para que la réplica lo recoja. La voz de R06 la ha completado la propuesta: que la revise el dueño.
+  ~~> NOTA: [P9] Cambian las tres voces: R06 y R02 por sus ataques nuevos; en R09, «SACADO» en vez de «SIN», para que la réplica lo recoja. La voz de R06 la ha completado la propuesta: que la revise el dueño.~~
+  > NOTA: [P9] [P15] Cambian dos voces: la de R02, por su ataque nuevo, y la de R09, con «SACADO» en vez de «SIN», para que la réplica lo recoja. La de R06 se queda como hoy.
 - **`cabe` R09**: en el menú salen la réplica larga y la corta; gana la corta y la larga no cabe en 38 caracteres.
   ~~**BRUNO (la corta):** Tráeme el contexto.~~
   **BRUNO (la larga):** Claro que lo saqué. El contexto no cabía en la pieza.
@@ -4276,10 +4407,11 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
   **TEODORO (fax) (a la larga, la 1.ª vez):** NO CABE. REPITA EN TREINTA Y OCHO.
 - **Acierto** (rota): **TEODORO (fax):** Hum. Cabe. · **TEODORO (fax):** Eso, en mis tiempos, era una portada.
   - con R02: **TEODORO (fax):** ESO ME LO DIJO ELLA. EN 1996.
-  - ~~con R06: **TEODORO (fax):** LA MEDIA FUENTE ERA YO. NO LO REPITAS.~~
-  - con R06: **TEODORO (fax):** ESE LO TENGO ENMARCADO.
+  - con R06: **TEODORO (fax):** LA MEDIA FUENTE ERA YO. NO LO REPITAS.
+  - ~~con R06: **TEODORO (fax):** ESE LO TENGO ENMARCADO.~~
   - con R09: **TEODORO (fax):** ...CABE.
-  > NOTA: [P9] La reacción con R06 citaba la «media fuente»; la nueva remite al fax enmarcado donde se aprende. La ha completado la propuesta: que la revise el dueño. Las de R02 y R09 se quedan.
+  ~~> NOTA: [P9] La reacción con R06 citaba la «media fuente»; la nueva remite al fax enmarcado donde se aprende. La ha completado la propuesta: que la revise el dueño. Las de R02 y R09 se quedan.~~
+  > NOTA: [P15] Vuelve la reacción de hoy con R06; las de R02 y R09 no cambian.
 - **Fallo** (rota): **TEODORO (fax):** Treinta y ocho caracteres de nada. · **TEODORO (fax):** Respuesta a otro fax. Devuelto. *(o la respuesta del rival a la floja)*
 - **En copia**: 1.er fallo, Aurora; luego Toda la planta, Toda la empresa.
 - **Objeto equivocado en un remate**:
@@ -4579,8 +4711,10 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **ABUELA (3):** Contéstale mejor que él, y al final, lo de su máquina. · **BRUNO, al colgar:** Redacción de papel: a Teodoro, «Quiero firmar». Remate: el manual.
 - *Variante sin el manual del fax:*
   ~~**ABUELA (1):** Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor. · **ABUELA (2):** El de los ordenadores guarda el manual de esa máquina. Pídeselo con su número. · **ABUELA (3):** Mira el número que lleva el fax y díselo al de los ordenadores. · **BRUNO, al colgar:** Fax: Mirar la pegatina. Sistemas: a Eutimio, «Ticket 0.441».~~
-  **ABUELA (1):** Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor. · **BRUNO, al colgar:** Sistemas: el manual lo tiene Eutimio. Me lo da con su hueco, al apagar la R-3.
-  > NOTA: [P11] Sin la cadena de la pegatina, los niveles 2 y 3 de esta variante quedan falsos («Pídeselo con su número», «Mira el número que lleva el fax») y se tachan; se queda el 1, que sigue siendo verdad, y cambia lo que dice Bruno al colgar. Propuesta **pendiente de aprobar por el dueño**, por si se quieren conservar los tres niveles: **ABUELA (2):** «El de los ordenadores guarda el manual de esa máquina. Arréglale lo suyo.» · **ABUELA (3):** «Apaga lo del cable en los ordenadores, hijo, y el de abajo te da el manual.» Mientras no se apruebe, la variante da el nivel 1 y, a partir del segundo intento, la línea de Bruno.
+  ~~**ABUELA (1):** Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor. · **BRUNO, al colgar:** Sistemas: el manual lo tiene Eutimio. Me lo da con su hueco, al apagar la R-3.~~
+  **ABUELA (1):** Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor. · **ABUELA (2):** El de los cables guarda el manual de esa máquina. Arréglale lo suyo. · **ABUELA (3):** Apaga la regleta que no dice lo que es, y el de los cables te da el manual. · **BRUNO, al colgar:** Sistemas: el manual lo tiene Eutimio. Me lo da con su hueco, al apagar la R-3.
+  ~~> NOTA: [P11] Sin la cadena de la pegatina, los niveles 2 y 3 de esta variante quedan falsos («Pídeselo con su número», «Mira el número que lleva el fax») y se tachan; se queda el 1, que sigue siendo verdad, y cambia lo que dice Bruno al colgar. Propuesta **pendiente de aprobar por el dueño**, por si se quieren conservar los tres niveles: **ABUELA (2):** «El de los ordenadores guarda el manual de esa máquina. Arréglale lo suyo.» · **ABUELA (3):** «Apaga lo del cable en los ordenadores, hijo, y el de abajo te da el manual.» Mientras no se apruebe, la variante da el nivel 1 y, a partir del segundo intento, la línea de Bruno.~~
+  > NOTA: [P11] [P15] Sin la cadena de la pegatina, los niveles 2 y 3 de esta variante quedaban falsos («Pídeselo con su número», «Mira el número que lleva el fax») y se tachan. Aprobados los nuevos (eran la propuesta pendiente), ajustados a la voz de la abuela: Eutimio es «el de los cables», como en R12, y la regleta es «la que no dice lo que es», como en la pista del CMS.
 ##### Escribir la pieza
 <!-- pistas.js · OBJETIVOS pieza -->
 - **Meta (Mirar a Bruno):** Ya tengo fuente. Falta escribir la pieza, y tengo silla para hacerlo.
@@ -4611,11 +4745,22 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - **Meta (Mirar a Bruno):** A las nueve apagan la rotativa. Y Brais sigue de alta en un armario.
 - **ABUELA (1):** Para que dejen irse a alguien, hay que demostrar que estuvo.
 - **ABUELA (2):** Las fotos de las fiestas las guarda la que las organiza.
-- **ABUELA (3):** Pídele las fotos a la de las fiestas. · **BRUNO, al colgar:** Eventos: a Pilar, «¿Me prestas el álbum?». Brais sale al fondo.
-> NOTA: [P12] «El álbum» se queda literal y vale para antes de la negativa de Pilar (pedir el álbum es un paso que se puede dar). Tras la negativa hace falta un objetivo nuevo. **Pendiente de aprobar por el dueño** (las tres líneas de la abuela son de E2, en su voz y con su fórmula; la meta y la de Bruno no son de la abuela):
-> - **La silla de Pilar** (con la negativa oída y sin el álbum) · **Meta (Mirar a Bruno):** Pilar no suelta el álbum. Lo que no consta, se tritura. Y le falta una silla. · **ABUELA (1):** La que cuenta las sillas sabe siempre quién falta, hijo. · **ABUELA (2):** Esa silla que le falta, ¿no la has visto tú en algún sitio? · **ABUELA (3):** Dile a la de las fiestas dónde está su silla. Y quién se sienta. · **BRUNO, al colgar:** Eventos: a Pilar, «Tu silla 112 está en el armario 27».
-> - Si no se aprueba, la alternativa mínima: tras la negativa, «El álbum» da sus tres niveles como hoy y lo que cambia es lo que dice Bruno al colgar: «Eventos: a Pilar, "Tu silla 112 está en el armario 27".»
-> NOTA: [P14] Pendiente del dueño (no se toca aquí): las dos propuestas citan la opción vieja de Pilar. Si se aprueban, lo que dice Bruno al colgar debería ser «Eventos: a Pilar, "Creo que sé dónde está tu 112". En el armario 27.», y la meta, «Lo que no asiste, se tritura.» en vez de «Lo que no consta, se tritura.». Y el nivel 2 de la abuela («¿no la has visto tú en algún sitio?») ahora pide que Bruno haya mirado la silla o le haya preguntado a Brais.
+- ~~**ABUELA (3):** Pídele las fotos a la de las fiestas. · **BRUNO, al colgar:** Eventos: a Pilar, «¿Me prestas el álbum?». Brais sale al fondo.~~
+- **ABUELA (3):** Sube a ver a la de las fiestas, hijo, y escúchala. Algo le falta. · **BRUNO, al colgar:** Eventos: ver a Pilar antes de las 21:04. El álbum está en su trituradora.
+~~> NOTA: [P12] «El álbum» se queda literal y vale para antes de la negativa de Pilar (pedir el álbum es un paso que se puede dar). Tras la negativa hace falta un objetivo nuevo. **Pendiente de aprobar por el dueño** (las tres líneas de la abuela son de E2, en su voz y con su fórmula; la meta y la de Bruno no son de la abuela):~~
+~~> - **La silla de Pilar** (con la negativa oída y sin el álbum) · **Meta (Mirar a Bruno):** Pilar no suelta el álbum. Lo que no consta, se tritura. Y le falta una silla. · **ABUELA (1):** La que cuenta las sillas sabe siempre quién falta, hijo. · **ABUELA (2):** Esa silla que le falta, ¿no la has visto tú en algún sitio? · **ABUELA (3):** Dile a la de las fiestas dónde está su silla. Y quién se sienta. · **BRUNO, al colgar:** Eventos: a Pilar, «Tu silla 112 está en el armario 27».~~
+~~> - Si no se aprueba, la alternativa mínima: tras la negativa, «El álbum» da sus tres niveles como hoy y lo que cambia es lo que dice Bruno al colgar: «Eventos: a Pilar, "Tu silla 112 está en el armario 27".»~~
+~~> NOTA: [P14] Pendiente del dueño (no se toca aquí): las dos propuestas citan la opción vieja de Pilar. Si se aprueban, lo que dice Bruno al colgar debería ser «Eventos: a Pilar, "Creo que sé dónde está tu 112". En el armario 27.», y la meta, «Lo que no asiste, se tritura.» en vez de «Lo que no consta, se tritura.». Y el nivel 2 de la abuela («¿no la has visto tú en algún sitio?») ahora pide que Bruno haya mirado la silla o le haya preguntado a Brais.~~
+> NOTA: [P12] [P15] «El álbum» vale desde que Bruno encuentra a Brais hasta su primera entrada en Eventos del Acto III. Su nivel 3 ya no manda a pedir el álbum (eso solo lleva a la negativa de Pilar): manda a subir a Eventos, donde Pilar cuenta al entrar que le falta la 112. Desde esa entrada (o desde la negativa, si llega antes), la abuela pasa a «La silla de Pilar», abajo.
+##### La silla de Pilar
+- **Cuándo:** Acto III, desde que Pilar dice al entrar «La 112, sin aparecer» (o desde su negativa) hasta tener el álbum.
+- **Meta (Mirar a Bruno):** Pilar no suelta el álbum: quien no se sienta no asiste. Y le falta una silla. / *(sin la negativa oída)* El álbum va a la trituradora a las 21:04. Y a Pilar le falta una silla.
+- **ABUELA (1):** La que cuenta las sillas sabe siempre quién falta, hijo.
+- **ABUELA (2):** Esa silla que le falta, ¿no la has visto tú en algún sitio?
+- **ABUELA (3):** Mira bien en qué se sienta el chico del armario, hijo. · **BRUNO, al colgar:** Sistemas: Mirar la silla del armario 27. O preguntarle a Brais de dónde es.
+- *Variante tras mirar la silla del armario o preguntarle a Brais de dónde es (la opción de Pilar ya está abierta):*
+  **ABUELA (1):** La que cuenta las sillas sabe siempre quién falta, hijo. · **ABUELA (2):** Esa silla que le falta la has visto tú, hijo. Con alguien encima. · **ABUELA (3):** Dile a la de las fiestas dónde está su silla. Y quién se sienta. · **BRUNO, al colgar:** Eventos: a Pilar, «Creo que sé dónde está tu 112». En el armario 27.
+> NOTA: [P15] Objetivo nuevo, aprobado. Son las líneas propuestas en [P12] (las de la abuela, de E2), ajustadas a cómo quedó el puzle en [P14]: la opción de Pilar sale solo tras mirar la silla del armario o preguntarle a Brais por ella, así que hay dos variantes. Sin eso, la abuela manda a la silla; con eso, a Pilar. La meta usa la regla de Pilar tal como la dice ella («Quien no se sienta no asiste»), y Bruno, al colgar, dice la opción nueva y el sitio que hay que elegir.
 ##### Enseñar el álbum
 <!-- pistas.js · OBJETIVOS baja -->
 - **Meta (Mirar a Bruno):** A las nueve apagan la rotativa. Y Brais sigue de alta en un armario.
@@ -4673,9 +4818,11 @@ Cada vez que Bruno entra, Celestino dice una línea: si hay una **hazaña de Bru
 - R02 · **ABUELA:** La del boli rojo y el del fax no se hablan. Pregúntale por qué. · **BRUNO:** Redacción de papel: a Aurora, por qué no se habla con Teodoro.
 - R03 · **ABUELA:** La cafetera esa cuenta chismes si la saludas, hijo. · **BRUNO:** Vending: «Buenas noches, Gertrudis», el primer chisme.
 - R04 · **ABUELA:** A esa cafetera salúdala otra vez, hijo, que le quedan chismes. · **BRUNO:** Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.
-- R05 · **ABUELA:** El del mostrador de abajo sabe lo que se dice en el ascensor. · **BRUNO:** Vestíbulo: a Celestino, «¿Algún cotilleo?».
-> NOTA: [P9] R05: el chisme de Celestino ya no es «de ascensor» sino un correo, así que la línea de la abuela deja de ser exacta (sigue mandando al sitio bueno). No se toca aquí: que decida el dueño.
-> NOTA: [P11] Propuesta del juez (tanda 1) para R05, **pendiente de aprobar por el dueño**: **ABUELA:** «El del mostrador recibe todos los correos, hijo. Hasta los que no son para él.» (de J1). Va con el chisme nuevo («jugada de correo»). Si se aprueba, conviene mirar también la siembra del ficus («De ahí saco los cotilleos de ascensor», Celestino), que se queda colgada con la R05 nueva.
+- ~~R05 · **ABUELA:** El del mostrador de abajo sabe lo que se dice en el ascensor. · **BRUNO:** Vestíbulo: a Celestino, «¿Algún cotilleo?».~~
+- R05 · **ABUELA:** El del mostrador de abajo sabe lo que se dice en las cartas de todos. · **BRUNO:** Vestíbulo: a Celestino, «¿Algún cotilleo?».
+~~> NOTA: [P9] R05: el chisme de Celestino ya no es «de ascensor» sino un correo, así que la línea de la abuela deja de ser exacta (sigue mandando al sitio bueno). No se toca aquí: que decida el dueño.~~
+~~> NOTA: [P11] Propuesta del juez (tanda 1) para R05, **pendiente de aprobar por el dueño**: **ABUELA:** «El del mostrador recibe todos los correos, hijo. Hasta los que no son para él.» (de J1). Va con el chisme nuevo («jugada de correo»). Si se aprueba, conviene mirar también la siembra del ficus («De ahí saco los cotilleos de ascensor», Celestino), que se queda colgada con la R05 nueva.~~
+> NOTA: [P15] R05, aprobada con el cambio mínimo: «en el ascensor» pasa a «en las cartas de todos», porque el chisme de Celestino es ahora un correo a todos. La abuela llama «cartas» a los correos, como en R11. El ficus no cambia (ver *Vestíbulo · Ficus de plástico*).
 - R06 · **ABUELA:** Encima de la mesa del fax hay un papel con marco: léelo. · **BRUNO:** Redacción de papel: Mirar el fax enmarcado, sobre la mesa de Teodoro.
 - R07 · **ABUELA:** Al que manda en los Despachos, mírale el ordenador. · **BRUNO:** Despachos: Mirar el ordenador de Gervasio, los enviados.
 - R08 · **ABUELA:** La chica de los números tiene hilos buenos. Cuando le vaya el ordenador. · **BRUNO:** Redacción, con el CMS vivo: a Yoli, «¿Algún hilo bueno esta noche?».
