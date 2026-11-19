@@ -6,7 +6,7 @@
 //
 // ESTADOS QUE LEE EL ARTE (la lógica pone el flag o el estado ANTES de la línea que lo comenta):
 //  - pantalla_metricas: apagada con `cms_vivo`; estados de escena 'negra' (apagón), 'viral' y 'viral_baja' (§4.1).
-//  - enchufe_pantalla: estado 'con_ticket' (camino antiguo: «SALVO TICKET Nº 3»). monitor_yoli: 'publicado' | 'guardando'.
+//  - monitor_yoli: 'publicado' | 'guardando'. ([P15] tanda 4: fuera el estado 'con_ticket' del enchufe, del camino antiguo)
 //  - herminia_portatil (E1.8 + E2 §2.2): por flags `limpio` (sin inigo_presentado) → `cinta_1` → `cinta_2` (herminia_midio)
 //    → `paquete` (dos_ias_vista) → `anexionada` (infografia_integrada); en la 7.2 la escena pone `cinta_1` a mano; durante
 //    la anexión, estado explícito 'desenvuelta' / 'anexionada'. Pegatina «IA» junto a la de «INFOGRAFÍA» (no en paquete).
@@ -254,7 +254,6 @@ export default buildRoom({
     { id: 'enchufe_pantalla', name: 'enchufe', handlers: {
       mirar: async (api) => {
         await api.say(['Cinta: «NO DESENCHUFAR». Y una brida que baja por la pared.', 'Etiqueta de la brida: «R-3, SISTEMAS. EUTIMIO».']);
-        if (api.getState('enchufe_pantalla') === 'con_ticket') await api.say('Debajo, a rotulador, la excepción de Anselmo: «SALVO TICKET Nº 3».');
       },
       tirar: async (api) => {
         if (api.flag('cms_vivo')) { await api.say('Ya está fuera, y el CMS, dentro.'); return; }
@@ -465,12 +464,8 @@ export default buildRoom({
       empujar: 'Tiene ruedas. Lo empujo un palmo y Anselmo lo devuelve con la mirada.',
       tirar: 'Si tiro, se caen los pósits. Y Anselmo me pone en BLOQUEADO.',
       usar: async (api) => {
-        if (api.flag('album_validado') && !api.flag('posit_descopeado')) {
-          if (api.has('rotulador_rojo')) { await columnas(api); return; }
-          // E6 §2.9.2 (N11): lo dice Anselmo, sin levantarse (su lógica: de fuera / de dentro)
-          await api.sayAs(A, 'Mi rotulador no sale de Desarrollo. Que te lo preste alguien de fuera.');
-          return;
-        }
+        // [P15] tanda 4: el rotulador llega siempre con el D1 (antes del Acto III): fuera la línea de Anselmo sin él
+        if (api.flag('album_validado') && !api.flag('posit_descopeado')) { await columnas(api); return; }
         await api.say('Me escribo un pósit: "Firmar en papel". Lo pego en POR HACER.');
       },
       'usar:rotulador_rojo': rotuladorEnTablero,

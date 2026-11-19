@@ -6,7 +6,8 @@
 // Brais (`silla_112_vista`) y pide elegir el sitio; con el armario, «…Entonces se sentó.» y el álbum. Fuera el
 // préstamo del álbum («¿Me prestas el álbum?» es ahora la negativa), el móvil de Borja y su «otra palabra», y el
 // micropuzle de la silla 113 (su «¡CIENTO DOCE!» y su croqueta pasan a la 112). Las croquetas se quedan todas.
-// El tope de seis opciones a la vez ([P15]) es de la tanda 4: aquí las opciones salen con las condiciones de [P12].
+// [P15] Seis opciones a la vez, como mucho: las opciones se encadenan por tema (`CADENAS`, abajo); en el Acto III las
+// tres cadenas comparten un hueco. «Creo que sé dónde está tu 112.» nunca queda detrás de otra.
 const PILAR = 'pilar_escaleta', INIGO = 'inigo_sinergia';
 const sayP = (api, t) => api.sayAs(PILAR, t);
 
@@ -57,6 +58,27 @@ async function salvaElAlbum(api) {
 }
 
 const sillasN = (api) => api.flag('ecosistema_sillas_n') || 0;
+
+// [P15] seis opciones a la vez, como mucho. Cada cadena enseña su primera opción pendiente (la siguiente aparece al
+// agotar la anterior, en el mismo hueco); en el Acto III las tres comparten un hueco: la del ponente; si no queda, la de
+// los cinco minutos; si no, la de la sala.
+const CADENAS = [
+  ['rider', 'memoria', 'rotativa', 'crisis'],                     // el ponente (desde el Acto II)
+  ['empezados', 'reloj', 'catering'],                             // los cinco minutos
+  ['photocall', 'cinta', 'acreditarse', 'abuela'],                // la sala
+];
+const BASE = {
+  rider: (api) => acto(api) >= 2,
+  memoria: (api) => !!api.flag('eventos_rider_oido'),
+  rotativa: (api) => acto(api) >= 2,
+  crisis: (api) => acto(api) >= 2 && !encontrada(api),            // caduca al darle el álbum
+};
+const cabeza = (api, cadena) => cadena.find(id => !api.elegida('pilar.PE0.' + id) && (!BASE[id] || BASE[id](api))) || null;
+/** Condición de una opción encadenada: sale si es la pendiente de su cadena (en el Acto III, del hueco compartido). */
+const enCadena = (id) => (api) => {
+  if (acto(api) === 3) { for (const c of CADENAS) { const h = cabeza(api, c); if (h) return h === id; } return false; }
+  return cabeza(api, CADENAS.find(c => c.includes(id))) === id;
+};
 const NO_ESTA = 'Ahí ya la he buscado. Con el plano y con el walkie.';
 
 export default {
@@ -85,22 +107,21 @@ export default {
     nodes: {
       PE0: {
         options: [
-          { id: 'hoy', text: '¿Qué evento hay hoy?', once: true, if: 'inigo_presentado',
+          { id: 'hoy', text: '¿Qué evento hay hoy?', once: true, if: 'inigo_presentado',             // el evento: «¿Qué evento…?» → «¿Y de qué va…?»
             do: async (api) => {
               if (acto(api) === 3 && encontrada(api)) await sayP(api, 'El de las 21:05. Con ponente o sin él. Eso lo decidís abajo.');
               else await sayP(api, ['Presentación del Plan Cero Papel. A las 21:05. Ponente: confirmado.', 'Confirmado. Le he llamado tres veces para oírselo.']);
             } },
-          { id: 'empezados', text: '¿Cuántos eventos habéis empezado este año?', once: true,
+          { id: 'tema', text: '¿Y de qué va el evento?', if: (api) => !presentado(api) || api.elegida('pilar.PE0.hoy'),   // (escala)
             do: async (api) => {
-              await sayP(api, ['Ninguno. Pero siempre estamos a cinco minutos de empezar.', 'Así nunca llegamos tarde. Ni a lo que no hay.']);
-              api.faceActor(PILAR, 'cuenta_atras');
-              await api.wait(600);
-              await sayP(api, 'Hoy empiezo uno.');
-              api.faceActor(PILAR, api.player);
+              const n = api.inc('eventos_tema_n');
+              if (n === 1) await sayP(api, presentado(api) ? 'Del Plan Cero Papel. Con ponente, photocall y croquetas.'
+                : ['Es un encuentro. Con ponente, photocall y croquetas.', 'El tema lo trae el ponente. El ponente, por confirmar.']);
+              else if (n === 2) await sayP(api, presentado(api) ? ['De quitar el papel. Creo.', 'Me dijeron «ponente confirmado» y ya no oí más.']
+                : ['Es una jornada de... de... Mira, estamos a cinco minutos.', 'No me líes, que pierdo la cuenta.']);
+              else await sayP(api, 'Va de empezar. Cuando empiece, ya sabremos de qué iba.');
             } },
-          { id: 'photocall', text: '¿Para qué es el photocall?', once: true,
-            reply: ['Lo que no está en el photocall no ha ocurrido.', 'Lo que está, tampoco. Pero sale mejor iluminado.'] },
-          { text: '¿Cuántas sillas hay?',                                                  // (se queda; repetible)
+          { id: 'sillas', text: '¿Cuántas sillas hay?',                                    // (se queda; repetible)
             do: async (api) => {
               if (encontrada(api)) { await sayP(api, 'Ciento doce. Una está en el sótano, pero cuenta.'); return; }
               const n = api.inc('ecosistema_sillas_n');
@@ -109,25 +130,44 @@ export default {
                 api.setFlag('eventos_falta_112', true);
               } else await sayP(api, 'Ciento once. Las cuento cada cinco minutos. Por si vuelve.');
             } },
-          { id: 'acreditarse', text: '¿Por qué hay que acreditarse?', once: true,
+          { id: 'photocall', text: '¿Para qué es el photocall?', once: true, if: enCadena('photocall'),
+            reply: ['Lo que no está en el photocall no ha ocurrido.', 'Lo que está, tampoco. Pero sale mejor iluminado.'] },
+          { id: 'cinta', text: '¿Qué es esa cinta en la muñeca?', once: true, if: enCadena('cinta'),
+            reply: ['Cinta americana. Con ella acredito, señalizo y arreglo un atril.', 'Una vez sujeté un evento entero. Con dos tiras.'] },
+          { id: 'acreditarse', text: '¿Por qué hay que acreditarse?', once: true, if: enCadena('acreditarse'),
             reply: ['Tres personas juntas ya son un evento. Y un evento sin acreditar es un caos.', 'Ayer acredité a la cola de la máquina de café. Funcionó.'] },
-          { id: 'catering', text: '¿Hay catering?', once: true,                                                       // (se queda)
+          { id: 'abuela', text: '¿Puedes acreditar a mi abuela?', once: true, if: enCadena('abuela'),
+            reply: ['¿Por teléfono? Tú, ella y la compañía: tres. ¡Evento!', 'Acreditada: «Abuela de Bruno. Acceso: todo. Que se abrigue».'] },
+          { id: 'empezados', text: '¿Cuántos eventos habéis empezado este año?', once: true, if: enCadena('empezados'),
+            do: async (api) => {
+              await sayP(api, ['Ninguno. Pero siempre estamos a cinco minutos de empezar.', 'Así nunca llegamos tarde. Ni a lo que no hay.']);
+              api.faceActor(PILAR, 'cuenta_atras');
+              await api.wait(600);
+              await sayP(api, 'Hoy empiezo uno.');
+              api.faceActor(PILAR, api.player);
+            } },
+          { id: 'reloj', text: '¿Por qué no baja la cuenta atrás?', once: true, if: enCadena('reloj'),
+            do: async (api) => {
+              await sayP(api, ['La puse a cinco minutos el día que entré. Y ahí la dejé.', 'Si baja, hay que empezar. Y eso ya es otro presupuesto.']);
+              if (acto(api) < 3) await sayP(api, 'Esta noche hay presupuesto. Lo paga el ponente.');
+            } },
+          { id: 'catering', text: '¿Hay catering?', once: true, if: enCadena('catering'),   // (se queda)
             reply: ['Croquetas a las 21:05. Si el cierre se retrasa, se enfrían.', 'Una croqueta fría es una crisis de reputación.'] },
           // ---- [P12] el rider del ponente (desde el Acto II)
-          { id: 'rider', text: '¿Qué ha pedido el ponente?', once: true, if: 'acto_2_iniciado',
+          { id: 'rider', text: '¿Qué ha pedido el ponente?', once: true, if: enCadena('rider'),
             do: async (api) => {
               await sayP(api, 'Agua con gas. Cero papel en sala. Y sin turno de preguntas.');
               await api.say('¿Un evento sin preguntas?');
               await sayP(api, 'Lo piden todos. Él lo ha puesto por escrito.');
               api.setFlag('eventos_rider_oido', true);
             } },
-          { id: 'memoria', text: '¿Y sin papel, cómo acreditas?', once: true, if: 'eventos_rider_oido',
+          { id: 'memoria', text: '¿Y sin papel, cómo acreditas?', once: true, if: enCadena('memoria'),
             do: async (api) => {
               await sayP(api, 'De memoria. Me he aprendido la escaleta y las caras.');
               await api.say('¿La mía también?');
               await sayP(api, 'Bruno. Acceso: hasta el canapé.');
             } },
-          { id: 'rotativa', text: '¿Sabes que el plan es apagar la rotativa?', once: true, if: 'acto_2_iniciado',
+          { id: 'rotativa', text: '¿Sabes que el plan es apagar la rotativa?', once: true, if: enCadena('rotativa'),
             do: async (api) => {
               await sayP(api, 'Lo pone mi escaleta. 21:00, rotativa apagada. 21:01, aplauso espontáneo.');
               await api.say('¿Y te parece bien?');
@@ -137,6 +177,8 @@ export default {
               await sayP(api, 'Si te sirve de algo, el botón no está conectado a nada.');
               api.face(PILAR);
             } },
+          { id: 'crisis', text: '¿Estás bien, Pilar?', once: true, if: enCadena('crisis'),
+            reply: 'Tengo ponente, Bruno. Lo demás lo arreglo con cinta.' },
           // ---- [P12] [P14] el álbum (Acto III)
           { id: 'album', text: '¿Me prestas el álbum?', if: (api) => !!api.flag('ruben_encontrado') && !encontrada(api),   // se puede saltar
             do: async (api) => {
@@ -150,29 +192,9 @@ export default {
           { id: 'la112', text: 'Creo que sé dónde está tu 112.', goto: 'PE112',                      // camino principal
             if: (api) => acto(api) === 3 && !!api.flag('silla_112_vista') && !encontrada(api),
             do: async (api) => { await sayP(api, ['¿Mi 112? ¿La de la última fila?', '¿Dónde?']); } },
-          { id: 'cinta', text: '¿Qué es esa cinta en la muñeca?', once: true,
-            reply: ['Cinta americana. Con ella acredito, señalizo y arreglo un atril.', 'Una vez sujeté un evento entero. Con dos tiras.'] },
-          { id: 'tema', text: '¿Y de qué va el evento?',                                     // (se queda; escala)
-            do: async (api) => {
-              const n = api.inc('eventos_tema_n');
-              if (n === 1) await sayP(api, presentado(api) ? 'Del Plan Cero Papel. Con ponente, photocall y croquetas.'
-                : ['Es un encuentro. Con ponente, photocall y croquetas.', 'El tema lo trae el ponente. El ponente, por confirmar.']);
-              else if (n === 2) await sayP(api, presentado(api) ? ['De quitar el papel. Creo.', 'Me dijeron «ponente confirmado» y ya no oí más.']
-                : ['Es una jornada de... de... Mira, estamos a cinco minutos.', 'No me líes, que pierdo la cuenta.']);
-              else await sayP(api, 'Va de empezar. Cuando empiece, ya sabremos de qué iba.');
-            } },
-          { id: 'crisis', text: '¿Estás bien, Pilar?', once: true, if: (api) => acto(api) >= 2 && !encontrada(api),
-            reply: 'Tengo ponente, Bruno. Lo demás lo arreglo con cinta.' },
-          { id: 'reloj', text: '¿Por qué no baja la cuenta atrás?', once: true,
-            do: async (api) => {
-              await sayP(api, ['La puse a cinco minutos el día que entré. Y ahí la dejé.', 'Si baja, hay que empezar. Y eso ya es otro presupuesto.']);
-              if (acto(api) < 3) await sayP(api, 'Esta noche hay presupuesto. Lo paga el ponente.');
-            } },
-          { id: 'abuela', text: '¿Puedes acreditar a mi abuela?', once: true,
-            reply: ['¿Por teléfono? Tú, ella y la compañía: tres. ¡Evento!', 'Acreditada: «Abuela de Bruno. Acceso: todo. Que se abrigue».'] },
           { id: 'croqueta', text: 'Gracias por la croqueta.', once: true, if: 'eventos_croqueta',
             reply: ['No me las des. Te he apuntado como catering.', 'Y si alguien pregunta, a las 21:05 estaban todas.'] },
-          { text: 'Me voy.', exit: true,
+          { id: 'adios', text: 'Me voy.', exit: true,
             reply: (api) => (encontrada(api) ? '¡Hasta ahora! Te guardo la ciento once. La 112 está ocupada.' : '¡Hasta ahora! Te guardo la silla ciento once.') },
         ],
       },

@@ -207,10 +207,10 @@ try {
   await raton('dar', 'anselmo_monolito', 'album_eventos');
   ok(await flag('album_validado') === true && !(await G(() => __game.state().inventory.includes('album_eventos'))) && await logHas('Las fotos me valen. Pero yo no escribo columnas nuevas.'),
     'álbum a Anselmo → album_validado, el álbum se lo queda él, «Las fotos me valen…»');
-  await G(() => __game.takeItem('rotulador_rojo'));
-  await raton('usar', 'kanban');
-  ok(await logHas('Mi rotulador no sale de Desarrollo. Que te lo preste alguien de fuera.'), 'Usar el tablero sin rotulador → Anselmo «Mi rotulador no sale…» (E6 N11)');
-  await G(() => __game.giveItem('rotulador_rojo'));
+  // [guion3 t4] el rotulador llega siempre con el D1 (antes del Acto III): la línea de Anselmo sin él era inalcanzable y se
+  // ha quitado (E6 N11 queda sin caso). En su lugar: el código ya no la tiene
+  ok(!fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../content/rooms/pecera.js'), 'utf8').includes('Mi rotulador no sale de Desarrollo'),
+    '[P15] fuera la línea inalcanzable de Anselmo sin rotulador (el rotulador llega con el D1)');
   const MAL = [['DESPEDIDOS', 'Eso es «muerto» con corbata.'], ['HECHO (DE VERDAD)', '«De verdad» no es un estado.'], ['FIRMAR EN PAPEL', 'Eso es tuyo. Mi tablero no es tu diario.']];
   for (const [col, linea] of MAL) {
     if (col === 'DESPEDIDOS') await G(() => __game.skipText(false));            // a velocidad real, para la captura
@@ -253,11 +253,9 @@ try {
   ok(await flag('columna_kanban') === 'salida' && await flag('posit_descopeado') && await flag('ruben_libre'), 'guardar/cargar con la columna escrita: se conserva');
   // la otra vía, desde la partida guardada a mitad, y el otro orden (álbum antes que rotulador)
   await G(() => __game.load(3)); await sleep(200); await idle();
-  await G(() => { __game.takeItem('rotulador_rojo'); __game.clearLog(); });
+  await G(() => { __game.clearLog(); });
   ok(await flag('album_validado') === true && !(await flag('posit_descopeado')) && !(await flag('columna_kanban')), 'cargar a mitad: álbum validado, sin columna');
-  await raton('usar', 'kanban');
-  ok(await logHas('Mi rotulador no sale de Desarrollo.'), 'álbum antes que rotulador: Usar el tablero → Anselmo «Mi rotulador no sale…» (E6 N11)');
-  await G(() => __game.giveItem('rotulador_rojo'));                            // (el rotulador, de Comercial)
+  // ([guion3 t4] fuera «álbum antes que rotulador»: el rotulador llega siempre con el D1, antes del álbum)
   await raton('usar', 'posit_1998', 'rotulador_rojo', false);
   await until(() => !!__game.currentDialogOptions());
   ok(!(await opciones()).includes('SALIDA EN VALOR'), 'sin rep_13, no sale SALIDA EN VALOR');

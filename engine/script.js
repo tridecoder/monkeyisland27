@@ -271,6 +271,8 @@ export function makeApi(game, ctx = {}) {
     visitada: (room) => !!(game.state && Array.isArray(game.state.visitadas) && game.state.visitadas.includes(room)),
     visitadas: () => (game.state && Array.isArray(game.state.visitadas) ? [...game.state.visitadas] : []),
     once: (key) => { const k = 'once:' + key; if (game.state.once[k]) return false; game.state.once[k] = true; return true; },
+    /** [P15] ¿Ya se eligió la opción '<árbol>.<nodo>.<id>'? (engine/dialog.js `opcionElegida`; para encadenar opciones) */
+    elegida: (clave) => !!(game.state && game.state.dialogs && (game.state.dialogs[clave] || game.state.dialogs['elegida:' + clave])),
     cond: (c) => game.cond(c, api),
     getState: (id) => game.getObjState(id).state,
     setState: (id, value) => game.setObjState(id, { state: value }),

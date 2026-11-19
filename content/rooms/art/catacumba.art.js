@@ -36,10 +36,7 @@ const layout = {
       con_papel: (g, v, t) => drawFax(g, FAX.x, FAX.y, true, t),
       // [P3] plan §4.5: imprimiendo (la hoja sale 2 px cada 80 ms, y vuelve a empezar)
       imprimiendo: (g, v, t) => { drawFax(g, FAX.x, FAX.y, true, t); drawHojaSaliendo(g, FAX.x, FAX.y, t); },
-      // [P3] E2 §4.2.6: el faldón de Comercial (sale, cae por delante de la mesa y se arrastra por el suelo) y el fax
-      // tragándoselo al revés, despacio
-      faldon: (g, v, t) => { drawFax(g, FAX.x, FAX.y, true, t); drawFaldon(g, FAX.x, FAX.y, faldonLargo('faldon', t)); },
-      tragando: (g, v, t) => { drawFax(g, FAX.x, FAX.y, true, t); drawFaldon(g, FAX.x, FAX.y, faldonLargo('tragando', t)); },
+      // ([P11] tanda 4: fuera los estados del faldón de Comercial por fax, que ya no sale)
       default: (g, v, t) => drawFax(g, FAX.x, FAX.y, false, t),
     },
   },
@@ -145,47 +142,6 @@ function drawHojaSaliendo(g, x, y, t) {
   rect(g, x + 3, y + 14, 9, h, PAL.paper[7]); vline(g, x + 11, y + 14, h, PAL.paper[4]);
   for (let i = 3; i < h - 1; i += 3) hline(g, x + 4, y + 14 + i, 6 - (i % 4), PAL.ink[3]);
 }
-/** [P3] E2 §4.2.6 · largo del faldón según el tiempo desde que el fax entró en el estado (sale en ~2,6 s, se traga en ~2,4). */
-const FALDON_MAX = 104;
-const faldonReloj = { modo: null, t0: 0 };
-function faldonLargo(modo, t) {
-  t = t || 0;
-  if (faldonReloj.modo !== modo || t < faldonReloj.t0) { faldonReloj.modo = modo; faldonReloj.t0 = t; }
-  const e = t - faldonReloj.t0;
-  return modo === 'faldon' ? Math.min(FALDON_MAX, 4 + Math.floor(e / 25)) : Math.max(0, FALDON_MAX - Math.floor(e / 23));
-}
-/** [P3] E2 §4.2.6 · la hoja de Comercial: arriba, la noticia (renglones grises, 23); debajo, el faldón de Siestatón (40),
- *  naranja, con almohadas y «Zzz». Cuelga de la bandeja por delante de la mesa (21 px) y sigue por el suelo, a la derecha. */
-function drawFaldon(g, x, y, L) {
-  const x0 = x + 3, y0 = y + 14, w = 9, caida = 21;
-  const tinta = (k) => {                       // k = distancia desde el borde de salida (el principio de la página)
-    if (k < 26) return k % 3 === 1 ? PAL.ink[3] : null;                    // la noticia: renglones
-    if (k === 26) return PAL.red[4];                                       // el corte
-    const a = (k - 27) % 14;
-    return a < 2 ? PAL.paper[7] : a < 4 ? PAL.red[3] : a > 9 ? '#3a5aa8' : null;   // franjas y almohadas azules
-  };
-  const fondo = (k) => (k < 26 ? PAL.paper[7] : '#FF8A60');
-  // el tramo vertical: la hoja sale de la bandeja y cae por delante de la mesa
-  const v = Math.min(L, caida);
-  for (let i = 0; i < v; i++) {
-    const k = L - 1 - i;                       // lo que más ha salido es lo que está más abajo
-    hline(g, x0, y0 + i, w, fondo(k));
-    const c = tinta(k); if (c) hline(g, x0 + 1, y0 + i, k < 26 ? 6 - (k % 4 === 0 ? 2 : 0) : w - 2, c);
-    px(g, x0 + w - 1, y0 + i, PAL.paper[3]);
-  }
-  if (L <= caida) return;
-  // el tramo del suelo: la hoja se dobla y se arrastra hacia la derecha, con alguna onda
-  const n = L - caida, yF = y0 + caida;
-  shadowEllipse(g, x0 + w + (n >> 1), yF + 4, (n >> 1) + 4, 1.5, 0.45);
-  for (let j = 0; j < n; j++) {
-    const k = n - 1 - j, xx = x0 + j, dy = Math.round(Math.sin(j / 9) * 0.8);
-    vline(g, xx, yF + dy, 4, fondo(k));
-    const c = tinta(k); if (c) vline(g, xx, yF + dy + 1, 2, c);
-    px(g, xx, yF + dy + 3, PAL.paper[3]);
-  }
-  ditherOverlay(g, x0, y0, w, 3, PAL.shadow, 0.25);
-}
-
 /** [P3] La factura del fax: papelito con grapa, renglones y sello rojo. */
 function drawFactura(g, x, y) {
   dropShadow(g, x, y, 9, 11, 1, 1, 0.5);

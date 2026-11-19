@@ -748,3 +748,24 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
 - **Partidas viejas** (`migrarPartida`, las que no tienen `eventos_falta_112`): el álbum ya prestado cuenta como salvado
   (la 112, encontrada); el recuento vuelve a empezar; la columna «descopeado» pasa a «salida»; las opciones de una vez de
   Pilar que se guardaban por posición pasan a guardarse por id; fuera `oyo_descopear` y `eventos_silla_devuelta`.
+
+## Guion nuevo · tanda 4 (docs/GUION_PROPUESTA_LIMPIO.md: [P15] cierre y auditoría)
+
+> Prueba: `node tools/test-guion3-t4.mjs` (en `test-all`); capturas `tools/shots/guion3-t4-*.png`. Auditoría del juego
+> contra la copia limpia: `node tools/audit-guion3.mjs` (`--restos`: solo lo que el guion ha quitado).
+
+- **Seis opciones a la vez, como mucho** (contando la de salida). Motor: `tras` en las opciones (engine/dialog.js,
+  `opcionesVisibles`; CONTENT_SCHEMA §9) y `api.elegida(clave)`. Encadenados según las notas [P15] de la copia limpia:
+  Celestino (el café, con el torno abierto; «¿Y usted no se aburre…?» tras el Ibex → la plaza), Yoli, Leoncio, Anselmo,
+  Custodia, Íñigo, Aurora (cinco huecos), Teodoro, Eutimio («¿Escuchas por la rejilla?» pasa a una vez → el wifi),
+  Gervasio en la reunión, Maripaz, Begoña, Brais y Pilar (`CADENAS` de eventos.dialogos.js: en el Acto III las tres
+  cadenas comparten un hueco). La prueba recorre todos los árboles en cada estado de las tres rutas.
+- **walk-data**: el paso 3 (el café de Celestino) va detrás del torno (7): antes no sale la opción.
+- **Partidas viejas** (`migrarPartida`): las opciones de una vez de los árboles reordenados pasan de posición a id
+  (`OPCIONES_POR_POSICION`); el álbum ya prestado por la vía vieja no da por oída la 112 (`eventos_falta_112` y
+  `silla_112_vista` en falso); el fax y el enchufe pierden los estados del camino antiguo (el faldón, el ticket nº 3).
+- **Armario 27**: `armario_27_bajo` (el tercio de abajo, mismas respuestas) cuando no está la silla del nido delante;
+  «Ver objetos» une las cajas pegadas de un mismo nombre (engine/hotspots.js).
+- **Restos fuera**: la línea de Anselmo sin rotulador, el estado `con_ticket` del enchufe, los estados del faldón del fax,
+  la reacción R14 de Gervasio (sin uso), la meta `hff`; la súplica del Titulator rompe el titular de [P17].
+

@@ -277,9 +277,12 @@ function migrarPartida(st) {
     const album = inv.includes('album_eventos') || !!fl.album_validado || !!fl.posit_descopeado;
     fl.eventos_album_dado = album && !!fl.ruben_encontrado;
     fl.eventos_acto3_entrada = fl.eventos_album_dado;
-    fl.silla_112_vista = fl.eventos_album_dado;
+    // [P15] tanda 4: pero Bruno no ha oído a Pilar lo de la 112 ni ha mirado la silla del armario: ninguna línea suya
+    // lo da por sabido (Íñigo, «¿Se llevó usted una silla…?», no sale); el pósit de la cruz y el recuento de Pilar
+    // («Ciento doce. Una está en el sótano…») son de ella, y la silla del armario sigue diciendo «EVENTOS · 112»
+    fl.silla_112_vista = false;
     fl.pilar_nego_album = false;
-    fl.eventos_falta_112 = fl.eventos_album_dado;
+    fl.eventos_falta_112 = false;
     // · el recuento viejo (ciento doce, ciento trece) no vale: la próxima vez Pilar cuenta ciento once y dice que falta la 112
     if (!fl.eventos_album_dado) fl.ecosistema_sillas_n = 0;
   }
@@ -290,10 +293,37 @@ function migrarPartida(st) {
     const PE = { 0: 'empezados', 1: 'photocall', 3: 'acreditarse', 4: 'catering', 6: 'cinta' };   // (el orden de antes)
     for (const [i, id] of Object.entries(PE)) if (st.dialogs['pilar.PE0.' + i]) { st.dialogs['pilar.PE0.' + id] = true; delete st.dialogs['pilar.PE0.' + i]; }
   }
+  // [P11] tanda 4: el fax ya no tiene los estados del faldón de Comercial
+  const fax = st.objects && st.objects['catacumba.fax'];
+  if (fax && ['faldon', 'tragando'].includes(fax.state)) fax.state = 'con_papel';
+  // [P15] tanda 4: el enchufe de la Redacción ya no tiene el estado del camino antiguo (la excepción del ticket nº 3)
+  const enchufe = st.objects && st.objects['pecera.enchufe_pantalla'];
+  if (enchufe && enchufe.state === 'con_ticket') delete enchufe.state;
+  // [P15] guion nuevo, tanda 4: seis opciones a la vez, como mucho. Los árboles que se han reordenado (o encadenado)
+  // guardan ahora sus opciones de una vez por id; las partidas viejas las tienen por posición (el orden de antes).
+  if (st.dialogs) {
+    for (const [nodo, ids] of Object.entries(OPCIONES_POR_POSICION)) {
+      ids.forEach((id, i) => { const k = nodo + '.' + i; if (st.dialogs[k]) { st.dialogs[nodo + '.' + id] = true; delete st.dialogs[k]; } });
+    }
+  }
   for (const k of FLAGS_RETIRADOS) delete fl[k];
   if (st.actors) for (const id of ['nerea_backlog', 'borja_engagement']) delete st.actors[id];   // E2 §2.6 y §3: ya no existen
   return st;
 }
+
+/** [P15] El orden de antes de las opciones de los árboles que ahora van por id (posición → id), para `migrarPartida`. */
+const OPCIONES_POR_POSICION = {
+  'yoli.Y0': ['hilo', 'estas', 'cuantos', 'titulares', 'titulador', 'papel', 'adios'],
+  'leoncio.LQ0': ['herminia', 'departamento', 'publica', 'grafico', 'graficos', 'sustituye', 'titulator', 'ahora', 'adios'],
+  'anselmo.AN0': ['bloqueas', 'ia', 'yoli', 'invades', 'cms', 'baja', 'album', 'titulator', 'adios'],
+  'custodia.CU0': ['boli', 'libreta', 'buenas', 'emergencia', 'gervasio', 'begona', 'cara', 'sabe', 'donde', 'muerto', 'nada'],
+  'inigo.I0': ['matriz', 'color', 'titulator', 'armario', 'titular', 'cuadrante', 'despedir', 'reunion', 'controlling', 'brindis', 'silla', 'adios'],
+  'aurora.A_MENU': ['noticia', 'convenzo', 'papel', 'r02', 'errata', 'verbos', 'corrector', 'dos', 'una', 'ahora', 'custodia', 'rotativa', 'coma', 'opa', 'nada'],
+  'teodoro.T0': ['firmar', 'fax', 'rojo', 'web', 'pagina', 'herminia', 'evaristo', 'adios'],
+  'gervasio_reunion.GV_REUNION': ['decide', 'pagina', 'presidir', 'votamos', 'pasos', 'reservada', 'adios'],
+  'maripaz.M0': ['vende', 'mevende', 'lenta', 'abuela', 'gong', 'periodico', 'siestaton', 'adios'],
+  'begona.B0': ['nota', 'folios', 'hora', 'respeto', 'pared', 'recortar', 'custodia', 'raro', 'nada'],
+};
 
 // flags de la adenda: contadores a 0, booleanos a false (adenda 11.2)
 const startFlags = Object.fromEntries(ADENDA_FLAGS.map(k => [k, String(flags[k]).startsWith('int') ? 0 : String(flags[k]).startsWith('str') ? '' : false]));

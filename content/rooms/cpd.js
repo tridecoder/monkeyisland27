@@ -258,15 +258,20 @@ const pacoDialog = {
     // [P11] un solo árbol, con el CMS caído o vivo: Eutimio atiende siempre; las dos opciones del fax se van (el manual
     // lo da al apagar la R-3) y R12 ya no pide el CMS vivo. Los ids de las opciones (estado `once`) son los de antes.
     P: {
+      // [P15] seis opciones como mucho (`tras`: engine/dialog.js): «¿Tú eres el de Sistemas?» → «¿Me abres un ticket…?» →
+      // el sol → Tadeo; «¿Escuchas por la rejilla?» (una vez: dice siempre lo mismo) → el wifi (repetible). R12 y el
+      // armario 27, siempre a la vista.
       options: [
         { id: 'porque', text: '¿Y por qué no va?', once: true, if: '!cms_vivo', reply: 'Si lo supiera, tendría 311. Está todo en el registro. Nadie lo lee.' },
         { id: 'sistemas', text: '¿Tú eres el de Sistemas?', once: true,                    // E2 L37 / B10: la cifra del contador
           reply: (api) => `${miles(api.flag('paco_tickets'))}. Es tu número. Tiene más identidad que tú.` },
-        { id: 'armario', text: '¿Qué hay en el armario 27?', goto: 'P_27' },
-        { id: 'sol', text: '¿Cuándo fue la última vez que viste el sol?', once: true,
-          reply: ['Ticket 2.003: «luz natural». Estado: no prioritario. Me lo abrí yo.'] },   // E6 E247: fuera «En 2011…»
-        { id: 'existir', text: '¿Me abres un ticket a mí? Para existir.', once: true,
+        { id: 'existir', text: '¿Me abres un ticket a mí? Para existir.', once: true, tras: 'sistemas',
           reply: ['Ya tienes uno. El 31.207: «Becario sin alta definitiva».', 'Asignado a: nadie. Es el más estable que tengo.'] },
+        { id: 'sol', text: '¿Cuándo fue la última vez que viste el sol?', once: true, tras: 'existir',
+          reply: ['Ticket 2.003: «luz natural». Estado: no prioritario. Me lo abrí yo.'] },   // E6 E247: fuera «En 2011…»
+        { id: 'tadeo', text: '¿Te escribe mucho Tadeo?', once: true, tras: 'sol',
+          reply: ['Cada reenvío suyo es un ticket. Carpeta: «La IA dice (sin leer)».', 'Le contesta mi respuesta automática.'] },
+        { id: 'armario', text: '¿Qué hay en el armario 27?', goto: 'P_27' },
         { id: 'consultor', text: '¿Algún cotilleo del consultor?', once: true,
           reply: ['Íñigo me dijo que había que poner las luces largas.',
             'Le contesté: «Puestas. Ahora se ve perfectamente que no hay carretera.»', 'Me ha puesto en azul. Excusas.'],
@@ -276,11 +281,9 @@ const pacoDialog = {
           // E2 B10: el número del ticket es el siguiente del contador (y el contador sube)
           reply: (api) => `Ticket ${miles((api.flag('paco_tickets') || 0) + 1)}: «Alta becaria Herminia». ¿Persona o herramienta?`,
           do: async (api) => { api.inc('paco_tickets'); }, goto: 'P_ALTA' },
-        { id: 'tadeo', text: '¿Te escribe mucho Tadeo?', once: true,
-          reply: ['Cada reenvío suyo es un ticket. Carpeta: «La IA dice (sin leer)».', 'Le contesta mi respuesta automática.'] },
-        { id: 'rejilla', text: '¿Escuchas por la rejilla?',                                  // (se queda)
+        { id: 'rejilla', text: '¿Escuchas por la rejilla?', once: true,                      // [P15] una vez
           reply: ['No escucho. Oigo. Escuchar sería abrir un ticket.', 'Me entero de todo. No arreglo nada.'] },
-        { id: 'wifi', text: '¿Se ha caído el wifi?', reply: 'No, el wifi no se ha caído. Has dejado de merecerlo.' },   // (se queda)
+        { id: 'wifi', text: '¿Se ha caído el wifi?', tras: 'rejilla', reply: 'No, el wifi no se ha caído. Has dejado de merecerlo.' },   // (se queda)
         { id: 'adios', text: 'Me voy.', exit: true, reply: 'Cierra al salir. La puerta, no el servidor.' },   // E2 fase B (13)
       ],
     },
@@ -344,7 +347,7 @@ const rubenDialog = {
             await api.sayAs(R, 'Mejor.');
             await api.say('...Ya hablo como tú.');
           } },
-        { id: 'fuera', text: '¿Qué es lo primero que vas a hacer fuera?', once: true,
+        { id: 'fuera', text: '¿Qué es lo primero que vas a hacer fuera?', once: true, tras: 'titular',   // [P15] al agotar la del titular
           reply: 'Comer algo que no sea atún. Y que nadie me lo titule.' },
         // [P12] [P14] la silla del armario es la 112 de Eventos: preguntarlo (o mirarla) abre la opción de Pilar
         { id: 'silla', text: '¿De dónde es esa silla?', once: true,
@@ -406,6 +409,35 @@ async function usarRejilla(api) {
   await api.say(r);
 }
 
+/** Lo que responde el armario 27 (la caja de arriba y, sin la silla del nido delante, el tercio de abajo). */
+const ARMARIO_27 = {
+  mirar: async (api) => {
+    if (api.flag('ruben_libre')) await api.say('Armario 27. Vacío. Huele a atún y a becario.');
+    else if (api.flag('ruben_encontrado')) await api.say('Brais asoma la cabeza. Tiene más ojeras que el armario.');
+    else if (acto3(api)) await api.say(['Armario 27. Hace «ñiiic, ñiiic». Por debajo asoma papel continuo.', '...Y alguien teclea dentro. Rápido.']);
+    else await api.say('Armario 27. Hace «ñiiic, ñiiic». Por debajo asoma papel continuo.');
+  },
+  abrir: async (api) => {
+    if (api.flag('ruben_libre')) { await api.say('Vacío. Cables, envoltorios de atún y un «Gracias, Tadeo» pegado.'); return; }
+    if (api.flag('ruben_encontrado')) { await api.say('Ya está abierto. Por dentro. Brais lo prefiere entornado.'); return; }
+    await api.say('Pegatina: «PROPIEDAD DE OPTIMAL BRAINS. NO ABRIR: SE ENFRÍA EL MODELO».');
+    await api.sayAs(P, 'Lo alquiló el consultor. Sin ticket. Para mí, ese armario no existe.');
+  },
+  cerrar: async (api) => {
+    if (api.flag('ruben_encontrado') && !api.flag('ruben_libre')) await api.say('¿Cerrarlo con él dentro? Eso ya lo hizo un consultor. No seré el segundo.');
+    else await api.say('Está cerrado. Por fuera y por dentro.');
+  },
+  tirar: 'La puerta no cede. El papel de abajo es otra cosa.',
+  empujar: 'Ni se mueve. Pesa más de lo que debería pesar un armario de servidores.',
+  hablar: async (api) => {
+    if (api.flag('ruben_libre')) await api.say('Le hablo al armario vacío. Contesta el eco.');
+    else if (api.flag('ruben_encontrado')) await api.dialog('ruben');
+    else if (acto3(api)) await api.say('¿Hola? ...Alguien deja de teclear. Y vuelve a teclear más bajito.');
+    else await api.say('Le hablo al armario. Me contesta «ñiiic». Es más de lo que hace Teodoro.');
+  },
+  'dar:taper_huerfano': async (api) => { if (rubenAqui(api)) await darTaper(api); else await api.say('Al armario no. Esto es para alguien que coma.'); },
+};
+
 export default buildRoom({
   id: 'cpd',
   name: 'Sistemas',
@@ -436,33 +468,10 @@ export default buildRoom({
       coger: 'Pesan como un servidor. Porque son servidores.',
       tirar: 'Tiro de un cable. Eutimio carraspea a seis metros. Lo suelto.',
     } },
-    { id: 'armario_27', name: 'armario 27', state: 'cerrado', states: ['cerrado', 'entreabierto', 'abierto', 'vacio'], handlers: {
-      mirar: async (api) => {
-        if (api.flag('ruben_libre')) await api.say('Armario 27. Vacío. Huele a atún y a becario.');
-        else if (api.flag('ruben_encontrado')) await api.say('Brais asoma la cabeza. Tiene más ojeras que el armario.');
-        else if (acto3(api)) await api.say(['Armario 27. Hace «ñiiic, ñiiic». Por debajo asoma papel continuo.', '...Y alguien teclea dentro. Rápido.']);
-        else await api.say('Armario 27. Hace «ñiiic, ñiiic». Por debajo asoma papel continuo.');
-      },
-      abrir: async (api) => {
-        if (api.flag('ruben_libre')) { await api.say('Vacío. Cables, envoltorios de atún y un «Gracias, Tadeo» pegado.'); return; }
-        if (api.flag('ruben_encontrado')) { await api.say('Ya está abierto. Por dentro. Brais lo prefiere entornado.'); return; }
-        await api.say('Pegatina: «PROPIEDAD DE OPTIMAL BRAINS. NO ABRIR: SE ENFRÍA EL MODELO».');
-        await api.sayAs(P, 'Lo alquiló el consultor. Sin ticket. Para mí, ese armario no existe.');
-      },
-      cerrar: async (api) => {
-        if (api.flag('ruben_encontrado') && !api.flag('ruben_libre')) await api.say('¿Cerrarlo con él dentro? Eso ya lo hizo un consultor. No seré el segundo.');
-        else await api.say('Está cerrado. Por fuera y por dentro.');
-      },
-      tirar: 'La puerta no cede. El papel de abajo es otra cosa.',
-      empujar: 'Ni se mueve. Pesa más de lo que debería pesar un armario de servidores.',
-      hablar: async (api) => {
-        if (api.flag('ruben_libre')) await api.say('Le hablo al armario vacío. Contesta el eco.');
-        else if (api.flag('ruben_encontrado')) await api.dialog('ruben');
-        else if (acto3(api)) await api.say('¿Hola? ...Alguien deja de teclear. Y vuelve a teclear más bajito.');
-        else await api.say('Le hablo al armario. Me contesta «ñiiic». Es más de lo que hace Teodoro.');
-      },
-      'dar:taper_huerfano': async (api) => { if (rubenAqui(api)) await darTaper(api); else await api.say('Al armario no. Esto es para alguien que coma.'); },
-    } },
+    { id: 'armario_27', name: 'armario 27', state: 'cerrado', states: ['cerrado', 'entreabierto', 'abierto', 'vacio'], handlers: ARMARIO_27 },
+    // [P15] tanda 4: el tercio de abajo del armario (sin la silla del nido delante: cerrado o ya vacío) también es el
+    // armario 27; con Brais dentro, ahí está la silla plegable (`silla_armario`)
+    { id: 'armario_27_bajo', name: 'armario 27', when: (api) => !api.flag('ruben_encontrado') || !!api.flag('ruben_libre'), handlers: ARMARIO_27 },
     // [P12] [P14] la silla plegable del nido de Brais: la 112 de Eventos (camino principal: mirarla o preguntarle a Brais)
     { id: 'silla_armario', name: 'silla plegable', when: ['ruben_encontrado', '!ruben_libre'], handlers: {
       mirar: async (api) => {

@@ -165,13 +165,13 @@ try {
     'Es lo más honesto que ha hecho nunca un periódico económico.', 'Si me llevo el «in», queda «elcontable.es». Una gestoría.',
     '«Buenas noches, Incontable». El «in» se mueve un poco. Lo tomo como un sí.', 'No llego. Y si llego, el «in» se cae con todo su tornillo.'])
     ok(await logHas(t), `logo: «${t}»`);
-  await jugarHasta(4, 2);
-  ok(await logHas('Nadie se las da. Yo se las daba. Me ponía espuma.'), 'Celestino (café), en pasado');
+  await jugarHasta(2, 2); await jugarHasta(4, 4);      // [guion3 t4] el café (paso 3) sale con el torno abierto: tras el 7
   for (const t of ['¡Jugada de correo! Gervasio, responder a todos: «Que esto no salga de aquí».',
     '¡Contesta Mercados, a todos: «Me lo estás diciendo en un responder a todos»!', '¡Me llegó hasta a mí! ¡Y yo soy un mostrador!'])
     ok(await logHas(t), `Celestino R05: «${t}»`);
   ok(!(await logHas('wifi')), 'sin el wifi del chisme viejo');
-  await jugarHasta(7, 5);
+  await jugarHasta(7, 5); await jugarHasta(3, 3);
+  ok(await logHas('Nadie se las da. Yo se las daba. Me ponía espuma.'), 'Celestino (café), en pasado');
 
   step('[P17] Redacción: el primer titular del Titulator, en el portátil de Íñigo');
   await G(() => { __game.skipSpeech(); __game.clearLog(); });

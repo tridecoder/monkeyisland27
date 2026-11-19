@@ -795,6 +795,15 @@ Option order: player line (unless `silent`; `say` overrides the text) → `reply
 `once` is tracked per `dialogId.nodeId.(option.id || index)`. Bible «(se queda)» = no `once`; options that "disappear"
 = `once: true` or an `if`. **Use the bible's option text verbatim**: the walkthrough selects options by text.
 
+**Chained options ([P15], engine): at most six options at a time per tree** (counting the exit). `tras: 'id'` (or a list;
+`'NODE.id'` for another node of the same tree) shows the option only once the option with that `id` has been chosen; put
+it right after its predecessor in `options` so it appears in the slot the other one leaves. A non-`once` option with an `id`
+leaves `game.state.dialogs['elegida:<tree>.<node>.<id>']` when chosen (so a chain can follow a repeatable one);
+`api.elegida('<tree>.<node>.<id>')` reads it in an `if`. `opcionesVisibles` (engine/dialog.js) is what the player sees;
+`tools/test-guion3-t4.mjs` walks every tree in every state of the three routes and fails above six. Main-path options
+(and those that teach a reply) never go behind another. Reordering or adding ids to a node changes its `once` keys: list
+the old order in `OPCIONES_POR_POSICION` (content/game.js `migrarPartida`).
+
 **Farewells are heard once (ENMIENDA E2 §7.2, engine).** An option with `exit: true` is said in full (player line,
 `reply`, `lines` and whatever its `do` says) only the **first** time that option is chosen in that tree; afterwards the
 dialog closes silently: nothing is said, but `do` still runs (effects, sfx, flags) with its lines muted (`game.mudo`).

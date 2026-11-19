@@ -20,7 +20,6 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   correo: 'Tengo silla. Ya puedo mirar mi ordenador como un adulto.',
   cafe: 'La correctora no habla antes del café. Necesito un café que no sea para mí.',
   cms: 'Sin web, Maripaz no pasa a Siestatón. Y la web no publica desde las cuatro.',   // [P11] el CMS, condición del HUECO
-  hff: 'Hueco, fuente y firma. Lo pone la ficha.',
   nota: 'Teodoro no habla sin papel. Y en esta casa no queda un folio sin sellar.',   // E7 F1 (N6)
   cierre: 'Lo tengo todo. Solo falta que Teodoro diga «cabe».',
   acto3: 'A las nueve apagan la rotativa. Y alguien teclea en el armario 27.',
@@ -248,7 +247,7 @@ export const DONDE = {
   rep_02: ['La del boli rojo y el del fax no se hablan. Pregúntale por qué.', 'Redacción de papel: a Aurora, por qué no se habla con Teodoro.'],
   rep_03: ['La cafetera esa cuenta chismes si la saludas, hijo.', 'Vending: «Buenas noches, Gertrudis», el primer chisme.'],
   rep_04: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
-  rep_05: ['El del mostrador de abajo sabe lo que se dice en el ascensor.', 'Vestíbulo: a Celestino, «¿Algún cotilleo?».'],
+  rep_05: ['El del mostrador de abajo sabe lo que se dice en las cartas de todos.', 'Vestíbulo: a Celestino, «¿Algún cotilleo?».'],   // [P15]
   rep_06: ['Encima de la mesa del fax hay un papel con marco: léelo.', 'Redacción de papel: Mirar el fax enmarcado, sobre la mesa de Teodoro.'],
   rep_07: ['Al que manda en los Despachos, mírale el ordenador.', 'Despachos: Mirar el ordenador de Gervasio, los enviados.'],
   rep_08: ['La chica de los números tiene hilos buenos. Cuando le vaya el ordenador.', 'Redacción, con el CMS vivo: a Yoli, «¿Algún hilo bueno esta noche?».'],

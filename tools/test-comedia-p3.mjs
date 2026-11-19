@@ -221,6 +221,7 @@ try {
   await clearLog();
   await verb('hablar', 'aurora_galerada'); await choose('¿Usted ha cometido alguna errata?');
   ok(await logHas('Una. En 1989.'), 'Aurora [4·desc]: la errata de 1989');
+  await choose('¿Qué le parecen los verbos de abajo?');                 // [guion3 t4] [P15] errata → verbos → corrector
   await choose('En la web eso lo arregla el corrector automático.');
   ok(await logHas('para sufrir con método'), 'Aurora [6·NO]: el corrector automático');
   await choose('Nada, Aurora. Gracias.');
@@ -352,6 +353,7 @@ try {
   ok(await logHas('Te quedan ocho minutos'), 'onStart: las 19:07');
   await choose('Begoña, con todo el respeto, yo solo venía a preguntarle si...');
   ok(await logHas('¿Me ha recortado una pregunta?') && await logHas('No lo sabremos nunca'), '[3·desc]: el recorte del 26 % en directo');
+  await choose('Llevan siendo las 19:07 toda la tarde.');          // [guion3 t4] [P15] las 19:07 → la pared
   await choose('Vengo a ver la pared. Dicen que es un museo de facturas.');
   ok(await logHas('el ministro pagó') && !(await logHas('Dirección')), '[4·abs]: la pared, sin «Dirección»');
   await choose('Nada. Me iba.');

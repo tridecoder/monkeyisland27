@@ -64,7 +64,7 @@ const EXCEPCIONES = {
 // ---------------------------------------------------------------- 2. pistas: lo esperado en la sala de cada paso
 const ESPERADO = {};
 const pon = (o, ...ns) => ns.forEach(n => { ESPERADO[n] = o; });
-pon('torno', 2, 3, 4, 5, 6, 7); pon('silla', 8, 9, 10); pon('correo', 11, 12, 13); pon('cafe', 14); pon('aurora', 15, 16);
+pon('torno', 2, 4, 5, 6, 7); pon('silla', 3, 8, 9, 10);   // [guion3 t4] el 3 (el café de Celestino) va tras el torno pon('correo', 11, 12, 13); pon('cafe', 14); pon('aurora', 15, 16);
 // [P11] el CMS es la condición del HUECO: su objetivo cuenta desde que Maripaz lo dice (en el recorrido canónico, la
 // R-3 va antes que la Sala: Maripaz no llega a decirlo y la abuela manda a la reunión). Fuera los pasos 19, 22, 35 y 42.
 pon('nota', 17, 18); pon('reunion', 20, 21, 23, 24, 25, 26, 27); pon('turno', 28); pon('hueco', 29);

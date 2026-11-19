@@ -254,7 +254,7 @@ export default {
     },
     variants: { sin_bufanda: { doll: { scarf: null, scarfStripe: null } } },   // epílogo: se la ha dado a Bruno
     // E6 §4.3: fuera las copias que la sala ya declara en su `placement` (el motor usa la de la sala)
-    murmurs: ['Treinta años en este mostrador. El mostrador, cuarenta.', 'Chof, chof... Menta.'],
+    murmurs: [],   // [P15] t4: los suyos viven en el Vestíbulo (vestibulo.js); fuera dos de aquí que no recoge ningún guion
     // mastica chicle de menta sin parar: de vez en cuando, una pompa rosa (solo de frente)
     drawExtra(g, a, t, c) {
       if (a.dir !== 'down' || !c) return;

@@ -31,26 +31,28 @@ export const dialogoCustodia = {
   },
   nodes: {
     CU0: {
+      // [P15] seis opciones como mucho: «Buenas noches.» → «Por favor…» → «Me manda Gervasio.» → «Begoña dice…»; y
+      // «¿Me da una libreta?» → «¿Por qué no se le ve la cara?» (`tras`: engine/dialog.js)
       options: [
-        { text: '¿Me deja un boli?', goto: 'CU_PARAQUE' },
-        { text: '¿Me da una libreta?', once: true, goto: 'CU0',
+        { id: 'boli', text: '¿Me deja un boli?', goto: 'CU_PARAQUE' },
+        { id: 'libreta', text: '¿Me da una libreta?', once: true, goto: 'CU0',
           do: async (api) => {
             await cu(api, 'Ya tiene una.');
             await api.say('Está a medias.');
             await cu(api, 'Pues acábela. Las libretas a medias son de los que no acaban.');
           } },
-        { text: 'Buenas noches.', once: true, do: async (api) => { await cu(api, 'Las buenas noches, a la cafetera. A mí tráigame un motivo.'); } },
-        { text: 'Por favor. Es una emergencia.', once: true,
+        { id: 'cara', text: '¿Por qué no se le ve la cara?', once: true, tras: 'libreta', do: async (api) => { await cu(api, 'Porque la cara no es material. Siguiente.'); } },
+        { id: 'buenas', text: 'Buenas noches.', once: true, do: async (api) => { await cu(api, 'Las buenas noches, a la cafetera. A mí tráigame un motivo.'); } },
+        { id: 'emergencia', text: 'Por favor. Es una emergencia.', once: true, tras: 'buenas',
           do: async (api) => { await cu(api, ['Una emergencia es que se pare la rotativa.', 'Lo suyo es un capricho con prisa.']); } },
-        { text: 'Me manda Gervasio.', once: true, do: async (api) => { await cu(api, 'Gervasio no manda. Delega. Y a mí no se me delega.'); } },
-        { text: 'Begoña dice que hay que rellenar algo.', once: true,
+        { id: 'gervasio', text: 'Me manda Gervasio.', once: true, tras: 'emergencia', do: async (api) => { await cu(api, 'Gervasio no manda. Delega. Y a mí no se me delega.'); } },
+        { id: 'begona', text: 'Begoña dice que hay que rellenar algo.', once: true, tras: 'gervasio',
           do: async (api) => { await cu(api, 'Begoña tiene formularios. Yo tengo memoria.'); } },
-        { text: '¿Por qué no se le ve la cara?', once: true, do: async (api) => { await cu(api, 'Porque la cara no es material. Siguiente.'); } },
-        { text: '¿Usted sabe dónde está todo?', if: '!custodia_ablandada', goto: 'CU0',
+        { id: 'sabe', text: '¿Usted sabe dónde está todo?', if: '!custodia_ablandada', goto: 'CU0',
           do: async (api) => { await cu(api, 'Todo. Siguiente.'); } },
-        { text: '¿Dónde está...?', if: 'custodia_ablandada', goto: 'CU_DONDE' },
-        { text: 'Le traigo un muerto.', if: 'has:boli_muerto', goto: 'CU_CADAVER' },
-        { text: 'Nada, perdone.', exit: true, do: async (api) => { await cu(api, 'Perdonado.'); } },
+        { id: 'donde', text: '¿Dónde está...?', if: 'custodia_ablandada', goto: 'CU_DONDE' },
+        { id: 'muerto', text: 'Le traigo un muerto.', if: 'has:boli_muerto', goto: 'CU_CADAVER' },
+        { id: 'nada', text: 'Nada, perdone.', exit: true, do: async (api) => { await cu(api, 'Perdonado.'); } },
       ],
     },
     CU_PARAQUE: {

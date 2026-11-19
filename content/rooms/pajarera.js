@@ -81,7 +81,8 @@ function pantallaSuplica(g, r, t) {
   for (let yy = y; yy < y + h; yy += 2) hline(g, x, yy, w, roto ? '#1a0404' : '#041008');
   if (!roto) {
     const k = t / ROTURA_MS;
-    ['EL IBEX ABRE', 'PLANO. PLANO.', '¿POR QUÉ NADIE?'].forEach((l, i) => {
+    // [P17] el titular del Ibex que tiembla y se rompe es el de la presentación (tanda 4: antes, el viejo «EL IBEX ABRE…»)
+    ['EL IBEX NO SE MUEVE.', 'LOS EXPERTOS PIDEN', 'QUE NADIE SE ACERQUE'].forEach((l, i) => {
       const dx = Math.round(Math.sin(t / 37 + i * 2) * 10 * k * k);
       label(g, l, x + 10 + dx, y + 12 + i * 14, '#B6FF4D');
     });
@@ -452,21 +453,14 @@ export default buildRoom({
       onStart: async (api) => { await api.sayAs(I, 'Vacante. Mi cuadrante favorito.'); },
       nodes: {
         I0: {
+          // [P15] seis opciones como mucho, encadenadas por tema (`tras`: engine/dialog.js): la matriz → el color → otro
+          // cuadrante; el Titulator → el titular; el armario 27; el plan → la Reunión → Controlling; el brindis → la silla 112
           options: [
-            { text: '¿Qué es esa matriz?', once: true,
+            { id: 'matriz', text: '¿Qué es esa matriz?', once: true,
               do: async (api) => talk(api, [[I, 'Coste contra disponibilidad. Todo cabe: personas, emociones, el pádel.'], [I, 'Tú estás aquí. En «Ideal».'],
                 ['B', '¿Y qué hay que hacer para estar en «Ideal»?'], [I, 'Nada. Literalmente. Ese es el perfil.']]) },
-            { text: '¿De qué color soy yo?', once: true, reply: 'Rosa. Emociones. No te lo tomes como algo personal: es un pósit.' },
-            { text: '¿El Titulator escribe solo?', once: true,
-              do: async (api) => talk(api, [[I, 'Es generativo, autónomo y escala...'], ['B', '¿Y qué come?'], [I, 'Datos.'],
-                ['wait', 800], [I, 'Y algo de atún. Lo estamos optimizando.']]) },
-            { text: '¿Qué es eso del armario 27?', once: true, if: 'vio_armario_27',
-              do: async (api) => talk(api, [[I, 'Alucinaciones. Es normal en modelos tan avanzados.'], ['B', 'Ha escrito «ayúdame».'],
-                [I, 'Es un modelo muy empático. Le tenemos en un entorno de concentración.']]) },
-            { text: 'Usted no ha escrito un titular en su vida, ¿verdad?', once: true,
-              do: async (api) => talk(api, [[I, 'Yo no escribo, Vacante. Yo hago que las cosas estén escritas.'], ['B', 'Eso lo hace un becario.'],
-                ['wait', 1200], [I, 'Siguiente pregunta.']]) },
-            { text: '¿Me puede poner en otro cuadrante? Aunque sea "Caro".', once: true,
+            { id: 'color', text: '¿De qué color soy yo?', once: true, tras: 'matriz', reply: 'Rosa. Emociones. No te lo tomes como algo personal: es un pósit.' },
+            { id: 'cuadrante', text: '¿Me puede poner en otro cuadrante? Aunque sea "Caro".', once: true, tras: 'color',
               do: async (api) => {
                 await talk(api, [[I, '«Caro» es para quien tiene contrato. ¿Tienes contrato?'], ['B', 'Tengo seis convenios de prácticas.'],
                   [I, 'Entonces eres barato con antigüedad. Eso no tiene cuadrante.']]);
@@ -476,17 +470,26 @@ export default buildRoom({
                 await api.wait(1200);                       // L15: (Bruno mira el pósit, fuera de la matriz.)
                 await talk(api, [[I, 'Siguiente.']]);
               } },
-            { text: '¿Usted va a despedir a alguien esta noche?', once: true,
+            { id: 'titulator', text: '¿El Titulator escribe solo?', once: true,
+              do: async (api) => talk(api, [[I, 'Es generativo, autónomo y escala...'], ['B', '¿Y qué come?'], [I, 'Datos.'],
+                ['wait', 800], [I, 'Y algo de atún. Lo estamos optimizando.']]) },
+            { id: 'titular', text: 'Usted no ha escrito un titular en su vida, ¿verdad?', once: true, tras: 'titulator',
+              do: async (api) => talk(api, [[I, 'Yo no escribo, Vacante. Yo hago que las cosas estén escritas.'], ['B', 'Eso lo hace un becario.'],
+                ['wait', 1200], [I, 'Siguiente pregunta.']]) },
+            { id: 'armario', text: '¿Qué es eso del armario 27?', once: true, if: 'vio_armario_27',
+              do: async (api) => talk(api, [[I, 'Alucinaciones. Es normal en modelos tan avanzados.'], ['B', 'Ha escrito «ayúdame».'],
+                [I, 'Es un modelo muy empático. Le tenemos en un entorno de concentración.']]) },
+            { id: 'despedir', text: '¿Usted va a despedir a alguien esta noche?', once: true,
               reply: ['Yo no recorto personas, Vacante.', 'Recorto la distancia entre las personas y la puerta.'] },
-            { text: '¿Y si en la Reunión de Dirección dicen que no?', once: true, reply: 'El Lector Medio nunca dice que no. Lleva tres semanas asintiendo.' },
-            { text: '¿Y el de Controlling?', once: true,
+            { id: 'reunion', text: '¿Y si en la Reunión de Dirección dicen que no?', once: true, tras: 'despedir', reply: 'El Lector Medio nunca dice que no. Lleva tres semanas asintiendo.' },
+            { id: 'controlling', text: '¿Y el de Controlling?', once: true, tras: 'reunion',
               reply: ['Me llama por las comas de las facturas. Le tengo en azul.', 'Excusas. Pero muy bien puntuadas.'] },
             // [P12] Eventos: el brindis de las 21:05 y la silla 112 (tras oír a Pilar que le falta)
-            { text: '¿Y el brindis de Eventos?', once: true, if: 'inigo_presentado',
+            { id: 'brindis', text: '¿Y el brindis de Eventos?', once: true, if: 'inigo_presentado',
               reply: 'Lanzamiento interno. De pie: las sillas generan jerarquía.' },
-            { text: '¿Se llevó usted una silla de Eventos?', once: true, if: 'eventos_falta_112',
+            { id: 'silla', text: '¿Se llevó usted una silla de Eventos?', once: true, if: 'eventos_falta_112', tras: 'brindis',
               reply: 'Reasigné un activo infrautilizado. En la última fila no se sienta nadie.' },
-            { text: 'Me voy.', exit: true, reply: 'Perfecto. Eso libera sinergias.' },
+            { id: 'adios', text: 'Me voy.', exit: true, reply: 'Perfecto. Eso libera sinergias.' },
           ],
         },
       },

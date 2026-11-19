@@ -14,6 +14,7 @@
 //   (C) y cada PNJ con Hablar sigue visible (≥ 80 % de cabeza y torso) con Bruno de pie en su punto de conversación
 //   node tools/play-mouse.mjs --lento            capturas de cada paso en tools/shots/raton-*.png
 //   node tools/play-mouse.mjs --solo=raton --hasta=28   la partida con ratón solo hasta ese paso (depuración)
+//   node tools/play-mouse.mjs --solo=raton --alt   (o --alt2) la partida con ratón en el orden alternativo de walk-data
 // ENMIENDA E5 §7.4: el submenú de atajos del ascensor (clic en la sala de llegada), el apagón jugable (paso 20: se espera
 // a que vuelva la luz), el regletero (21), el atasco (29; [guion3 t2] ya se resuelve solo), el menú de columnas (46)
 // y la señal tras el clímax (se espera la primera megafonía). Capturas de esos momentos, siempre: tools/shots/e5-raton-*.png.
@@ -25,7 +26,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createServer } from './serve.mjs';
-import { STEPS } from './walk-data.mjs';
+import { STEPS, ALT, ALT2 } from './walk-data.mjs';
 import { createRunner, FAREWELLS, StepFail, fail } from './walk-lib.mjs';
 import { auditRoom } from './geo-audit.mjs';
 
@@ -155,6 +156,9 @@ async function settle(timeout = 240000) {   // el paso 44 (empujón, epílogo y 
 /** Un punto de pantalla (virtual) donde un clic elige exactamente este objetivo; mueve la cámara andando si hace falta. */
 async function pointFor(id) {
   for (let k = 0; k < 16; k++) {          // la Redacción mide 1270 px: hasta 4-5 tramos de pantalla andando
+    // [guion3 t4] la cámara quieta antes de apuntar (al entrar en una sala ancha sigue desplazándose un momento: en los
+    // órdenes --alt el clic caía donde ya no estaba la salida)
+    for (let q = 0, c0 = null; q < 40; q++) { const c = await G(() => Math.round(__game.game.camX)); if (c === c0) break; c0 = c; await wait(120); }
     const r = await G((id) => {
       const g = __game.game, cam = Math.round(g.camX);
       const objs = __game.objects();
@@ -356,8 +360,12 @@ try {
     ok(!(await inner()) && !(await G(() => __game.currentDialogOptions())) && (await state()).room === 'vestibulo', 'clic real en el ascensor antes de abrir el torno: no llega, no hay botonera');
     await clickTarget('vestibulo_a_redaccion'); await settle();
     ok(!(await inner()) && (await state()).room === 'vestibulo', 'clic real en la escalera de la Redacción antes de abrir el torno: no llega');
-    for (const s of STEPS.filter(s => s.n >= 2 && (!args.hasta || s.n <= Number(args.hasta)))) {
-      if (s.n === 29) {                  // E2 §4.2.1: el pop-up de la X menguante, tres veces antes de la D1 (sin modo rápido)
+    // [guion3 t4] --alt / --alt2: la misma partida con el ratón en los órdenes alternativos de walk-data (las
+    // comprobaciones atadas a un momento del orden canónico —el pop-up de Maripaz ×3, el Vending sin pisar— solo en él)
+    const ORDEN = args.alt2 ? ALT2 : args.alt ? ALT : STEPS.map(s => s.n);
+    const canon = !args.alt && !args.alt2;
+    for (const s of ORDEN.map(n => STEPS.find(s => s.n === n)).filter(s => s.n >= 2 && (!args.hasta || s.n <= Number(args.hasta)))) {
+      if (s.n === 29 && canon) {         // E2 §4.2.1: el pop-up de la X menguante, tres veces antes de la D1 (sin modo rápido)
         for (let k = 1; k <= 3; k++) { await verbOn('hablar', 'maripaz_remitido'); await closeDialogMouse(); }
         const pn = await G(() => __game.getFlag('maripaz_popup_n'));
         ok(pn === 3 && anuncios.x.join() === '3,1' && anuncios.cuentas.length === 1 && anuncios.bloqueoRespetado === 1,
@@ -372,7 +380,7 @@ try {
           await settle(); await pointFor('silla_armario'); await page.mouse.move(2, 2); await wait(300);
           await page.screenshot({ path: path.join(here, 'shots', 'guion3-t3-raton-silla-armario.png') });
         }
-        if (s.n === 28 && a[0] === 'verbo') {             // E6 §2.3: sin pisar el Vending en todo el Acto II tras el 14
+        if (s.n === 28 && a[0] === 'verbo' && canon) {    // E6 §2.3: sin pisar el Vending en todo el Acto II tras el 14
           ok(!(await G(() => __game.log.some(l => String(l.text).includes('E-53')))), '28 la pregunta llega por la tele: el Vending no se ha pisado (sin E-53)');
         }
         if (s.n === 21 && a[0] === 'opcion') {           // E5 §2.2: el regletero, con las cinco etiquetas a la vista
@@ -419,6 +427,11 @@ try {
         ok(await inner() && !!(await G(() => __game.currentDialogOptions())), 'torno abierto: clic real en el ascensor → Bruno cruza el carril y se abre la botonera');
         await chooseOption('Nada, me quedo en esta planta.');
       }
+      if (s.n === 12) {                  // [guion3 t4] seis opciones (Íñigo tras la súplica): la sexta, «Me voy.», con la flecha
+        await verbOn('hablar', 'inigo_sinergia');
+        await chooseOption('Me voy.');
+        await settle();
+      }
       if (s.n === 16) {                  // clic derecho sobre una salida = Ir a (y vuelta, con clics)
         await settle();
         const r0 = (await state()).room;
@@ -429,7 +442,7 @@ try {
       if (args.lento) await page.screenshot({ path: path.join(here, 'shots', `raton-${String(s.n).padStart(2, '0')}.png`) });
     }
     if (!args.hasta) {   // (con --hasta la partida no llega a Comercial ni al final)
-    ok(anuncios.bloqueoRoto === 0 && anuncios.cuentas.includes('ANUNCIO'), `anuncio de entrada en Marketing y Comercial (5 s) visto sin modo rápido: el clic no lo salta antes de tiempo (cuentas: ${anuncios.cuentas.join(', ')})`);
+    if (canon) ok(anuncios.bloqueoRoto === 0 && anuncios.cuentas.includes('ANUNCIO'), `anuncio de entrada en Marketing y Comercial (5 s) visto sin modo rápido: el clic no lo salta antes de tiempo (cuentas: ${anuncios.cuentas.join(', ')})`);
     ok(submenus > 0, `submenú de atajos del ascensor resuelto con clic en la sala de llegada (${submenus} veces)`);
     ok(maxOptLines > 5 && scrolledMenus > 0, `menús más largos que el panel se desplazan con sus flechas (máx. ${maxOptLines} líneas; ${scrolledMenus} elecciones tras desplazar)`);
     const fin = await G(() => { const L = __game.log; return { t: L.some(l => l.who === 'tarjeta'), a: L.some(l => String(l.text).includes('Abrígate tú.')), p: L.some(l => String(l.text).includes('¡Me ha contestado el periódico!')), st: __game.state() }; });

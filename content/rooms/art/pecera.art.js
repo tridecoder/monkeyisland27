@@ -598,10 +598,6 @@ function drawEnchufe(g, view) {
   if (pulled) line(g, tx + 2, ty + th - 2, tx + tw - 3, ty + 1, PAL.paper[2]);                // la cinta, arrancada en diagonal
   label(g, 'NO', tx + (tw >> 1), ty - 2, PAL.red[3], { align: 'center' });
   micro(g, 'DESENCHUFAR', tx + 2, ty + 8, PAL.red[2]);
-  if (view.state === 'con_ticket') {               // camino antiguo (§4.2): la excepción de Anselmo, en otra tira
-    rect(g, tx + 2, ty + th + 1, tw - 4, 7, PAL.paper[5]); hline(g, tx + 2, ty + th + 1, tw - 4, PAL.paper[7]);
-    micro(g, 'SALVO T.3', tx + (tw >> 1), ty + th + 2, PAL.blue[2], { align: 'center' });
-  }
   kit.cantoVivo(g, tx, ty, tw, th);
 }
 

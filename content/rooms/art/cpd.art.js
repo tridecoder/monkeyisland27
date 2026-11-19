@@ -744,6 +744,8 @@ const layout = {
   // [P12] el armario deja libre su cuarto de abajo a la izquierda (la silla plegable del nido; geo R2: solapes ≤ 30 %):
   // la caja llega hasta la pegatina y el dibujo sigue siendo el mismo
   armario_27: { rect: [170, 28, 32, 44], walkTo: [186, 110], face: 'up', priority: 1, draw: (g, v, t) => drawArmario27(g, v, t) },
+  // [P15] tanda 4: el tercio de abajo del armario 27 (la rendija del papel), clicable cuando no está la silla delante
+  armario_27_bajo: { rect: [170, 72, 32, 22], walkTo: [186, 110], face: 'up', priority: 1 },
   // [P12] la silla plegable del nido (la 112 de Eventos): la dibuja el armario abierto; aquí, solo su caja
   silla_armario: { rect: [171, 66, 13, 25], walkTo: [176, 110], face: 'up', priority: 3 },
   papel_continuo: {

@@ -61,10 +61,10 @@ export default {
     maripaz: { R04: 'Tienes razón. Mañana sale con tarifa.', R08: 'Uy. Esa copia iba oculta.', R11: 'Pues te lo vuelvo a poner. Sin poder saltarlo.' },
     // E6 §5.1: D2 a tres asaltos; el «...CABE.» pasa de la R02 a la R09 (la versión corta que cabe en 38: `cabe` de la sala)
     teodoro: { R02: 'ESO ME LO DIJO ELLA. EN 1996.', R06: 'LA MEDIA FUENTE ERA YO. NO LO REPITAS.', R09: '...CABE.' },
-    // E2 fase B (15): D3 pierde R14 (mazo ['R07', 'R01', 'R03', 'R05'], P2); la línea de R14 se queda sin uso hasta entonces
-    // [P9]: R03 nueva (va con su réplica); R01 y R05, las «opcionales» del guion (líneas extra)
+    // [P9]: R03 nueva (va con su réplica); R01 y R05, las «opcionales» del guion (líneas extra). [P15] tanda 4: fuera la
+    // de R14, sin uso desde que el D3 la perdió (mazo R07, R03, R01, R05) y que ningún guion recoge
     gervasio: { R07: 'Me consta que... Bueno. Se constaba.', R03: 'La frase se... se empezó en plazo.', R01: 'Se leyó. Se... Se agradece.',
-      R05: '...Se ha... se ha enviado solo.', R14: '¿Marzo? Marzo está muy bien. Se agradece. Pero no.' },
+      R05: '...Se ha... se ha enviado solo.' },
     inigo: {
       R10: 'Interesante. Lo pongo en azul.',
       R12: '...Eso es una visión muy pesimista de la carretera.',

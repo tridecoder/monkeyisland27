@@ -157,7 +157,10 @@ async function principal() {
   await T.verb('mirar', 'persiana'); await T.verb('mirar', 'puerta_sala'); await T.verb('cerrar', 'puerta_sala');
   await T.musts(['Persiana a media altura. Mitad transparencia', 'Debajo, a boli: "Y EN CURSO".', 'Tiene una cuña. Si la quito'], '§8 Despachos');
   await T.hablar('inigo_sinergia');
+  // [guion3 t4] [P15] encadenadas: la matriz → el color → otro cuadrante; el despido → la Reunión de Dirección
+  await T.opcion('¿Qué es esa matriz?'); await T.opcion('¿De qué color soy yo?');
   await T.opcion('¿Me puede poner en otro cuadrante? Aunque sea "Caro".');
+  await T.opcion('¿Usted va a despedir a alguien esta noche?');
   await T.opcion('¿Y si en la Reunión de Dirección dicen que no?');
   must(!(await T.opciones()).includes('¿Y si en la Reunión de Dirección dicen que no?'), '§7.6: la de la Reunión de Dirección no es once');
   await T.opcion('Me voy.');

@@ -600,21 +600,22 @@ export default buildRoom({
       },
       nodes: {
         GV_REUNION: {
+          // [P15] seis opciones como mucho: «¿Y si votamos si votamos?» aparece al agotar «¿Puedo presidir yo un rato?»
           options: [
-            { text: '¿Qué se decide aquí?', once: true,
+            { id: 'decide', text: '¿Qué se decide aquí?', once: true,
               do: async (api) => {
                 await sayG(api, 'Se decide... Se está decidiendo por quien corresponda.');
                 if (api.flag('chaqueta_en_lector')) await sayG(api, 'Y Ramírez, que ha vuelto. Asiente mucho.');
                 await api.say('¿Y qué dice el Lector Medio?');
                 await sayG(api, 'Aún no se le ha preguntado. Se le preguntará. En el punto cuatro.');
               } },
-            { text: '¿Me deja la página 7?', once: true,
+            { id: 'pagina', text: '¿Me deja la página 7?', once: true,
               do: async (api) => {
                 await sayG(api, 'La página 7 se... Eso habría que... Tú, que tienes la agenda limpia...');
                 await api.say('¿...que tengo la agenda limpia para qué?');
                 await sayG(api, 'Para eso. Muy bien visto. Se toma nota.');
               } },
-            { text: '¿Puedo presidir yo un rato?', once: true,
+            { id: 'presidir', text: '¿Puedo presidir yo un rato?', once: true,
               do: async (api) => {
                 api.pose(GERV, 'de_pie');
                 await sayG(api, 'Toma. Se preside sentado. Yo voy a por... a por una cosa.');
@@ -623,7 +624,7 @@ export default buildRoom({
                 api.pose(GERV, null);
                 await sayG(api, '...Ya decía yo que se ofrecía muy rápido.');
               } },
-            { text: '¿Y si votamos si votamos?', once: true,
+            { id: 'votamos', text: '¿Y si votamos si votamos?', once: true, tras: 'presidir',
               do: async (api) => {
                 if (aqui(api, 'mercados_1')) await sayMe(api, 1, 'Secundo.');
                 if (aqui(api, 'mercados_3')) await sayMe(api, 3, 'Secundo.');
@@ -632,7 +633,7 @@ export default buildRoom({
             // E5 §2.1.3: ya no termina la reunión: Gervasio le niega el turno al becario… y se lo da a «los conectados»
             // [bloqueos] la opción está siempre (antes pedía el café de Aurora y Mirar el orden del día, y sin eso no
             // salía): en el Acto I Gervasio dice qué falta (una página); repetida, vuelve a señalar a «los conectados»
-            { text: 'Bueno... ¿y cuáles son los siguientes pasos?',
+            { id: 'pasos', text: 'Bueno... ¿y cuáles son los siguientes pasos?',
               do: async (api) => {
                 if (!api.flag('aurora_conto_pasos') && !api.flag('acto_2_iniciado')) {
                   await sayG(api, 'Los siguientes pasos los pide quien trae página. ¿Tú traes página?');
@@ -672,10 +673,10 @@ export default buildRoom({
                 api.setFlag('sala_becario_sin_turno', true);
                 return 'exit';                                         // no gasta «Me voy.»
               } },
-            { text: '¿Quién tiene reservada la sala?', once: true,
+            { id: 'reservada', text: '¿Quién tiene reservada la sala?', once: true,
               reply: 'Ramírez. Los viernes a las 20:59.',
               lines: [['player', '¿Y dónde está Ramírez?'], [GERV, 'Desayunando. La reserva se respeta: puede volver en cualquier momento.']] },
-            { text: 'Me voy.', exit: true, reply: 'Se toma nota. No la tomo yo, pero se toma.' },
+            { id: 'adios', text: 'Me voy.', exit: true, reply: 'Se toma nota. No la tomo yo, pero se toma.' },
           ],
         },
       },

@@ -18,11 +18,11 @@
 export const STEPS = [
   { n: 1, sala: '—', txt: '(Intro automática, 7.1)', acc: [], esp: {flags: ['intro_vista'], sala: 'vestibulo'} },
   { n: 2, sala: 'vestibulo', txt: 'Hablar celestino → nervios', acc: [['verbo', 'hablar', 'celestino'], ['opcion', '¿Tiene algo para los nervios?'], ['cerrar']], esp: {tiene: ['chicle'], flags: ['celestino_dio_chicle']} },
-  { n: 3, sala: 'vestibulo', txt: 'Hablar celestino → café', acc: [['verbo', 'hablar', 'celestino'], ['opcion', '¿Dónde hay café en esta casa?'], ['cerrar']], esp: {flags: ['celestino_pista_gertrudis']} },
   { n: 4, sala: 'vestibulo', txt: 'Hablar celestino → cotilleo', acc: [['verbo', 'hablar', 'celestino'], ['opcion', '¿Algún cotilleo?'], ['cerrar']], esp: {flags: ['rep_05']} },
   { n: 5, sala: 'vestibulo', txt: 'Usar chicle con tarjeta_becario', acc: [['usar', 'chicle', 'tarjeta_becario']], esp: {flags: ['tarjeta_con_chicle'], notiene: ['chicle']} },
   { n: 6, sala: 'vestibulo', txt: 'Usar tarjeta_becario con organigrama', acc: [['usar', 'tarjeta_becario', 'organigrama']], esp: {flags: ['foto_en_organigrama']} },
   { n: 7, sala: 'vestibulo', txt: 'Usar tarjeta_becario con torno', acc: [['usar', 'tarjeta_becario', 'torno']], esp: {flags: ['torno_abierto']} },
+  { n: 3, sala: 'vestibulo', txt: '[P15] Hablar celestino → café (sale con el torno abierto: va tras el 7)', acc: [['verbo', 'hablar', 'celestino'], ['opcion', '¿Dónde hay café en esta casa?'], ['cerrar']], esp: {flags: ['celestino_pista_gertrudis']} },
   { n: 8, sala: 'pecera', txt: '(entrar) → escena 7.2', acc: [['ir', 'pecera']], esp: {flags: ['inigo_presentado']} },
   { n: 9, sala: 'pecera', txt: 'Coger chaqueta_ramirez_hotspot', acc: [['verbo', 'coger', 'chaqueta_ramirez_hotspot']], esp: {tiene: ['chaqueta_ramirez', 'sobre_azucar'], flags: ['chaqueta_cogida']} },
   { n: 10, sala: 'pajarera', txt: 'Usar chaqueta_ramirez con lector_medio', acc: [['ir', 'pajarera'], ['usar', 'chaqueta_ramirez', 'lector_medio']], esp: {flags: ['chaqueta_en_lector', 'silla_libre'], notiene: ['chaqueta_ramirez']} },
@@ -70,8 +70,10 @@ export const STEPS = [
 // último requisito (la escena del pósit no sale: la línea de respaldo de Íñigo en la 7.3a; ver test-guion3-t2).
 const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
 const sin = (l) => l.filter(n => ![19, 22, 35].includes(n));
+// [P15] el paso 3 (el café de Celestino) va tras el torno (7): antes de abrirlo, la opción no sale
+const ini = (b) => [1, 2, 4, 5, 6, 7, 3, ...range(8, b)];
 // ALT2 ([P11]): Administración antes que la reunión; la reunión con la web caída (Maripaz no juega el D1 hasta la R-3);
 // el apagón y la R-3 después de la estampida; la FIRMA como último requisito (D2 tras el recorte).
-export const ALT2 = sin([...range(1, 18), 30, 31, 26, 27, 28, 20, 21, 23, 24, 25, 29, 32, 33, 34, 37, 38, 36, 39, ...range(40, 49)]);
+export const ALT2 = sin([...ini(18), 30, 31, 26, 27, 28, 20, 21, 23, 24, 25, 29, 32, 33, 34, 37, 38, 36, 39, ...range(40, 49)]);
 // [P12] en el III, el acta antes que la silla del armario y el álbum (antes, el rotulador iba aquí entre 44 y 45)
-export const ALT = sin([...range(1, 23), 30, 31, 24, 25, 26, 27, 28, 29, 32, 36, 33, 34, 35, ...range(37, 41), 46, 42, 43, 44, 45, 47, 48, 49]);
+export const ALT = sin([...ini(23), 30, 31, 24, 25, 26, 27, 28, 29, 32, 36, 33, 34, 35, ...range(37, 41), 46, 42, 43, 44, 45, 47, 48, 49]);

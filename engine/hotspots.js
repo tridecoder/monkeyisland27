@@ -49,7 +49,15 @@ export function draw(game, g, cam) {
   const left = H.until - game.realTime;
   const fade = game.hsHold ? 1 : Math.max(0, Math.min(1, left / 300));
   // solo lo que está a la vista (en las salas anchas, la cámara enseña 320 px)
-  const T = targets(game).filter(t => t.box.x + t.box.w > cam && t.box.x < cam + 320);
+  const T = [];
+  // dos zonas pegadas de un mismo objeto (mismo nombre: p. ej. las dos cajas del armario 27 de Sistemas) se marcan
+  // como una sola caja con un solo rótulo
+  for (const t of targets(game).filter(t => t.box.x + t.box.w > cam && t.box.x < cam + 320)) {
+    const m = t.kind === 'obj' && T.find(u => u.kind === 'obj' && u.name === t.name && t.box.x <= u.box.x + u.box.w && u.box.x <= t.box.x + t.box.w && t.box.y <= u.box.y + u.box.h && u.box.y <= t.box.y + t.box.h);
+    if (!m) { T.push({ ...t, box: { ...t.box } }); continue; }
+    const x = Math.min(m.box.x, t.box.x), y = Math.min(m.box.y, t.box.y);
+    m.box = { x, y, w: Math.max(m.box.x + m.box.w, t.box.x + t.box.w) - x, h: Math.max(m.box.y + m.box.h, t.box.y + t.box.h) - y };
+  }
   g.save();
   g.globalAlpha = 0.35 * fade; g.fillStyle = '#05040a'; g.fillRect(cam, 0, 320, 144);
   g.globalAlpha = fade;

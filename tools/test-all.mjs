@@ -57,6 +57,7 @@ if (salas) {
   add('walkthrough --alt2', 'walkthrough.mjs', ['--alt2']);   // [P11] Administración antes que la reunión; FIRMA la última
   add('extras', 'extras.mjs');
   add('play-mouse', 'play-mouse.mjs', rapido ? ['--solo=geometria'] : [], 2400);   // la partida entera con ratón + conexiones + geometría
+  if (!rapido) { add('play-mouse --alt', 'play-mouse.mjs', ['--solo=raton', '--alt'], 2400); add('play-mouse --alt2', 'play-mouse.mjs', ['--solo=raton', '--alt2'], 2400); }   // [guion3 t4] la partida con ratón en los órdenes alternativos
   add('fuzz', 'fuzz.mjs', rapido ? ['--rapido'] : [], 2400);
   add('text-audit', 'text-audit.mjs', ['--plan', '--e2', '--e5', '--e6']);   // reglas del plan de comedia (§6.1, §12.2, topes §2.4), de E2 (§12.4, §7.6), de E5 (§8) y de E6 (§8) como FALLO
   add('contrast', 'contrast.mjs');
@@ -73,12 +74,13 @@ if (salas) {
   add('guion3-t1', 'test-guion3-t1.mjs', [], 1500);   // guion nuevo, tanda 1: El Incontable, réplicas nuevas, papel/web y pop-up de cartulina, aprender perdiendo, Gervasio, apagón
   add('guion3-t2', 'test-guion3-t2.mjs', [], 1800);   // guion nuevo, tanda 2: la historia (CMS como condición del HUECO, manual en la R-3, correo de Evaristo, opa, pósit, amenaza, L4, atasco, clímax)
   add('guion3-t3', 'test-guion3-t3.mjs', [], 1800);   // guion nuevo, tanda 3: Eventos (la 112, la trituradora, el álbum, el rider, el brindis, el walkie; fuera «descopear»)
+  add('guion3-t4', 'test-guion3-t4.mjs', [], 1800);   // guion nuevo, tanda 4: seis opciones como mucho (todas las rutas), pistas hacibles en cada estado, pistas nuevas, auditoría, partidas viejas, armario 27
   add('coherencia', 'test-coherencia.mjs', [], 1200);  // lo que el juego da por hecho, pasa (Evaristo y su L2, correos que llegan, presuposiciones, sillas, Gervasio que insiste, partidas sin L2)     // puertas ocultas: cada paso sin cada requisito, pistas por sub-estado, los tres casos del dueño, partidas antiguas
 }
 const solo = args.solo ? String(args.solo).split(',') : null;
 const plan = solo ? T.filter(t => solo.some(s => t.name.startsWith(s) || t.file.startsWith(s))) : T;
 // las largas primero (mejor reparto en paralelo)
-const WEIGHT = { 'guion3-t1': 4, 'guion3-t2': 4, 'guion3-t3': 3, e6: 7, e5: 6, bloqueos: 6, e7: 5, fuzz: 5, 'play-mouse': 4, smoke: 4, e4: 3, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
+const WEIGHT = { 'guion3-t1': 4, 'guion3-t2': 4, 'guion3-t3': 3, 'guion3-t4': 3, e6: 7, e5: 6, bloqueos: 6, e7: 5, fuzz: 5, 'play-mouse': 4, smoke: 4, e4: 3, motor: 2, fase0: 2, 'comedia-p1': 2, 'comedia-p2': 2, 'text-audit': 3 };
 plan.sort((a, b) => (WEIGHT[b.name.split(' ')[0]] || 1) - (WEIGHT[a.name.split(' ')[0]] || 1));
 if (args.lista) { for (const t of plan) console.log(`${t.name.padEnd(22)} node tools/${t.file} ${t.args.join(' ')}`); process.exit(0); }
 

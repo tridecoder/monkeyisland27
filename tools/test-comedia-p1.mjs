@@ -110,17 +110,18 @@ try {
   must(!(await logHas('¿Tú eres el nuevo?')), 'E2 C1: la 1.ª conversación repite «¿Tú eres el nuevo?» de la intro');
   must(!(await G(() => __game.log.some(l => l.who === 'celestino'))), 'E2 §7.4 pasos 3-4: saludo de Celestino nada más acabar la intro');
   must(!(await opts()).some(o => o.includes('narrador automático')), 'Celestino: [7] sale antes del Acto II');
-  for (const o of ['El torno no me deja pasar.', '¿Tiene algo para los nervios?', '¿Dónde hay café en esta casa?', '¿Algún cotilleo?',
+  // [guion3 t4] [P15] el café sale con el torno abierto (más abajo); «¿Y usted no se aburre…?», tras el Ibex
+  must(!(await opts()).some(o => o.includes('café')) && !(await opts()).some(o => o.includes('aburre')), '[P15] Celestino con el torno cerrado: sin el café ni «¿Y usted no se aburre…?»');
+  for (const o of ['El torno no me deja pasar.', '¿Tiene algo para los nervios?', '¿Algún cotilleo?',
     '¿Cómo va el Ibex?', '¿Y usted no se aburre aquí?', '¿Cómo se consigue una plaza de garaje?']) await opcion(o);
   must(!(await opts()).some(o => o.includes('nervios')), 'Celestino: la opción del chicle no desaparece');
   must(!(await opts()).some(o => o.includes('plaza de garaje')), 'E2 §7.6: «¿Cómo se consigue una plaza de garaje?» no es once');
   must((await opts()).some(o => o.includes('Ibex')), 'E2 §7.6: el Ibex debe seguir (rotativa)');
   await opcion('Nada, Celestino.');
   must(!(await opts()), 'Celestino: «Nada, Celestino.» no cierra');
-  await expectFlags({ celestino_dio_chicle: true, celestino_pista_gertrudis: true, rep_05: true }, 'Celestino');
+  await expectFlags({ celestino_dio_chicle: true, rep_05: true }, 'Celestino');
   await expectInv(['chicle'], [], 'Celestino');
   await expectLog(['¡Y nada! ¡No consta!', 'La web no tiene pared, chaval.', 'Desde el Mundial del 82.', '¡Algo trama el míster!',
-    'Se saluda. Dale las buenas noches.', 'Nadie se las da. Yo se las daba. Me ponía espuma.',
     '¡Jugada de correo! Gervasio, responder a todos: «Que esto no salga de aquí».', '«Me lo estás diciendo en un responder a todos»!',
     '¡Me llegó hasta a mí! ¡Y yo soy un mostrador!', '¿El Ibex? ¿Me preguntas a mí por el Ibex?',
     'Treinta años en este mostrador y eres el primero.', '¡Partidazo!', 'Pero se entrena mucho.', '¡Y el chaval se retira al vestuario sin marcar!'], 'Celestino §5.1 + E2 L1-L3');
@@ -151,6 +152,9 @@ try {
   await expectFlags({ torno_abierto: true }, 'torno');
   await expectLog(['BIENVENIDO, VACANTE.', '...Vacante. Bueno. Es un cargo.'], 'torno');
   await expectNoLog(['¡Vacante supera al torno!', 'Celestino, el Ibex.', 'El Ibex está plano'], 'E2 fase B (8): sin retransmisión del torno (ni L4)');
+  await clearLog(); await hablar('celestino'); await opcion('¿Dónde hay café en esta casa?'); await closeDialog();
+  await expectFlags({ celestino_pista_gertrudis: true }, 'Celestino, café ([P15] con el torno abierto)');
+  await expectLog(['Se saluda. Dale las buenas noches.', 'Nadie se las da. Yo se las daba. Me ponía espuma.'], 'Celestino, café (E2 L1)');
   await goto('pecera', 'vestibulo'); await clearLog(); await goto('vestibulo', 'pecera');
   must(!(await logHas('¡Vacante supera al torno!')), 'E2 fase B (8): el hito del torno se narra al volver');
   await verb('mirar', 'pantalla_ibex');
@@ -208,7 +212,8 @@ try {
   must(!(await opts()).some(o => o.includes('fax')), 'Eutimio ofrece el manual en el árbol');
   must((await opts()).includes('¿Algún cotilleo del consultor?'), '[P11] Eutimio sin CMS no ofrece R12');
   const nTk = await flag('paco_tickets');
-  for (const o of ['¿Y por qué no va?', '¿Tú eres el de Sistemas?', '¿Cuándo fue la última vez que viste el sol?', '¿Me abres un ticket a mí? Para existir.',
+  // [guion3 t4] [P15] encadenadas: el de Sistemas → el ticket para existir → el sol
+  for (const o of ['¿Y por qué no va?', '¿Tú eres el de Sistemas?', '¿Me abres un ticket a mí? Para existir.', '¿Cuándo fue la última vez que viste el sol?',
     '¿Qué hay en el armario 27?', '¿Escuchas por la rejilla?']) await opcion(o);
   await opcion('Me voy.');
   await expectLog(['Nadie lo lee.', `${miles(nTk)}. Es tu número. Tiene más identidad que tú.`, 

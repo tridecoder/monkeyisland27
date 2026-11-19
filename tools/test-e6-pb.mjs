@@ -143,20 +143,9 @@ try {
   const iF = await logIdx('Las fotos me valen. Pero yo no escribo columnas nuevas.');
   ok(await flag('album_validado') === true && iF >= 0 && iF === (await G(() => __game.log.length)) - 1 && await G(() => window.__clicks) >= 1,
     'álbum validado; tras «Las fotos me valen…», gesto sin línea (click del rotulador)');
-  await G(() => __game.save(5));
-  await raton('usar', 'kanban');
-  const nl = await logDe('anselmo_monolito');
-  ok(nl.at(-1) === 'Mi rotulador no sale de Desarrollo. Que te lo preste alguien de fuera.' && !(await logHas('pide rotulador')), 'Usar el tablero sin rotulador → habla Anselmo (N11), no Bruno');
-  await G(() => __game.load(5)); await sleep(200); await idle(); await seguir();
-  await G(() => __game.clearLog());
-  await raton('usar', 'kanban');
-  ok(await flag('album_validado') === true && (await logDe('anselmo_monolito')).at(-1) === 'Mi rotulador no sale de Desarrollo. Que te lo preste alguien de fuera.', 'guardar/cargar con el álbum validado: lo mismo');
-  await G(() => __game.skipText(false));
-  await G(() => __game.clearLog());
-  await raton('usar', 'kanban', null, false);
-  ok(await until(() => __game.game.speeches.some(s => /Mi rotulador no sale/.test(s.text)), null, 8000), 'N11 en pantalla');
-  await verA('anselmo_monolito'); await page.mouse.move(5, 5); await sleep(200); await shot('kanban-n11');
-  await G(() => __game.skipText(true)); await idle(); await seguir();
+  // [guion3 t4] N11 («Mi rotulador no sale de Desarrollo…») era inalcanzable: el rotulador llega siempre con el D1, antes del
+  // Acto III. Se ha quitado; en su lugar, que el código ya no la tiene
+  ok(!fs.readFileSync(path.join(root, 'content/rooms/pecera.js'), 'utf8').includes('Mi rotulador no sale de Desarrollo'), '[P15] fuera N11, la línea inalcanzable de Anselmo sin rotulador');
   // la columna
   await G(() => { __game.giveItem('rotulador_rojo'); __game.setFlag('rep_13', true); __game.clearLog(); });
   await raton('usar', 'kanban', 'rotulador_rojo', false);

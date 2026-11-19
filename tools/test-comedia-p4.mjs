@@ -197,8 +197,9 @@ try {
   await verb('hablar', 'maripaz_remitido');
   ok((await flag('rumor_teodoro_n')) === 2, 'rumor C: Maripaz lo sube de 1 a 2 (E6 E307: sin «Lo compró en el 97. Por fax.»)');
   ok(await logHas('«Agobio, con Tilas Calmín».') === 1, 'saludo (1.ª vez)');
+  // [guion3 t4] [P15] seis como mucho: «¿Me vende algo…?» → el gong; «La web va muy lenta.» → la abuela
   ok(JSON.stringify(await opts()) === JSON.stringify(['¿Qué vende Comercial?', '¿Me vende algo a mí?', 'La web va muy lenta.',
-    'Mi abuela dice que no encuentra las noticias.', '¿Por qué tiene un gong?', '¿Usted se lee el periódico?', 'Me voy.']), 'árbol M0 (§4.4; E3 B19)');
+    '¿Usted se lee el periódico?', 'Me voy.']), 'árbol M0 (§4.4; E3 B19; [P15])');
   // ENMIENDA E3 §4.3 B19: lee el periódico (nunca a Bruno) y el remate vuelve al eje
   await shot('e3-periodico-menu');
   if (args.shots) await shotDuring('e3-periodico', () => choose('¿Usted se lee el periódico?'), 'Para vender un hueco hay que leer lo de al lado.', 500);
@@ -449,8 +450,11 @@ try {
   await setFlags({ ruben_encontrado: true, acto_3_iniciado: true });
   await G(() => __game.clearLog());
   await verb('hablar', 'pilar_escaleta');
-  await choose('¿Para qué es el photocall?');
+  // [guion3 t4] [P15] en el Acto III las tres cadenas comparten un hueco: el ponente, luego los cinco minutos, luego la sala
+  for (const t of ['¿Qué ha pedido el ponente?', '¿Y sin papel, cómo acreditas?', '¿Sabes que el plan es apagar la rotativa?', '¿Estás bien, Pilar?',
+    '¿Cuántos eventos habéis empezado este año?', '¿Por qué no baja la cuenta atrás?']) await choose(t);
   await choose('¿Hay catering?');
+  await choose('¿Para qué es el photocall?');
   const o = await opts();
   ok(!o.includes('¿Para qué es el photocall?') && !o.includes('¿Hay catering?'), 'photocall y catering, `once`');
   // [P12] el álbum ya no se presta: va a la trituradora (y el móvil de Borja ya no publica nada desde Marketing)

@@ -176,7 +176,8 @@ const celestinoDialog = {
             await api.sayAs(C, '¡Y el chaval se lo guarda! ¡No lo mastica! ¡Algo trama el míster!');
             await api.say('Lo reservo para una ocasión importante. O para pegar algo.');
           }, setFlag: 'celestino_dio_chicle' },
-        { id: 'cafe', text: '¿Dónde hay café en esta casa?', once: true,
+        // [P15] seis opciones como mucho: el café, desde que el torno se abre (antes, primero hay que pasar)
+        { id: 'cafe', text: '¿Dónde hay café en esta casa?', once: true, if: 'torno_abierto',
           reply: 'En el Vending. Gertrudis. La cafetera.',
           lines: [['player', '¿Y cómo se le pide?'], [C, 'Pedir, no. Se saluda. Dale las buenas noches.'],
             [C, 'Nadie se las da. Yo se las daba. Me ponía espuma.']],                       // E2 L1
@@ -196,20 +197,21 @@ const celestinoDialog = {
             }
             await api.sayAs(C, ibexLine(api, api.inc('vestibulo_ibex_pregunta')));
           } },
-        { id: 'aburre', text: '¿Y usted no se aburre aquí?', once: true,
+        // [P15] al preguntar por el Ibex la primera vez sale, en un hueco, «¿Y usted no se aburre aquí?» → la plaza de garaje
+        { id: 'aburre', text: '¿Y usted no se aburre aquí?', once: true, if: (api) => api.elegida('celestino.C0.ibex') || !!api.game.state.once['once:vestibulo_ibex_primera'],
           reply: ['¿Aburrirme? Entra la de la limpieza. Sale la de la limpieza.', 'Entra un becario. Pregunta tonterías. ¡Partidazo!'] },
-        { id: 'jubilan', text: 'Si ponen el narrador automático, ¿le jubilan?', if: 'acto_2_iniciado', once: true,
-          do: async (api) => {
-            await api.wait(900);                                                   // deja de mascar
-            await api.sayAs(C, ['...', 'Ese aparato no sabe lo que es una prórroga.', 'Tú pregúntame por el Ibex de vez en cuando.']);
-            await api.say('Perdone. Lo he dicho en voz alta. Era para dentro.');
-          } },
-        { id: 'plaza', text: '¿Cómo se consigue una plaza de garaje?', once: true,            // adenda 8bis.1 · E2 §7.6: once
+        { id: 'plaza', text: '¿Cómo se consigue una plaza de garaje?', once: true, tras: 'aburre',   // adenda 8bis.1 · E2 §7.6: once
           do: async (api) => {                                                   // E5 C10: las comillas, con los dedos
             await api.anim(C, 'reach', 350);
             await api.sayAs(C, ['Dos maneras: jubilarse o un «accidente».', 'La segunda no ha funcionado nunca. Pero se entrena mucho.']);
             await api.say('¿Y una plaza de bici?');
             await api.sayAs(C, '¿Tú eres el nuevo?');
+          } },
+        { id: 'jubilan', text: 'Si ponen el narrador automático, ¿le jubilan?', if: 'acto_2_iniciado', once: true,
+          do: async (api) => {
+            await api.wait(900);                                                   // deja de mascar
+            await api.sayAs(C, ['...', 'Ese aparato no sabe lo que es una prórroga.', 'Tú pregúntame por el Ibex de vez en cuando.']);
+            await api.say('Perdone. Lo he dicho en voz alta. Era para dentro.');
           } },
         { id: 'nada', text: 'Nada, Celestino.', exit: true, reply: '¡Y el chaval se retira al vestuario sin marcar!' },
       ],

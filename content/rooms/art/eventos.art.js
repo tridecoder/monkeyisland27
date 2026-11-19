@@ -41,8 +41,8 @@ const RES_X = chairX(RES.r, RES.side, RES.i);
 // [P12] la 112 que falta: su cruz de cinta, vacía, en la fila de atrás (la más cercana), en la punta derecha
 const CRUZ = { r: 3, side: 1, i: PER_SIDE - 1 };
 const CRUZ_X = chairX(CRUZ.r, CRUZ.side, CRUZ.i), CRUZ_Y = ROWS[CRUZ.r].y;
-// [P12] la trituradora del rider (desde el Acto II), en el suelo, delante de la mesa de acreditaciones (la de Pilar)
-const TRIT = { x: 438, y: 108, w: 14, h: 17 };
+// [P12] la trituradora del rider (desde el Acto II), en el suelo, junto a la mesa de acreditaciones (la de Pilar)
+const TRIT = { x: 438, y: 108, w: 14, h: 17 };   // [P15] t4: más arriba, el álbum de la boca pisa la mesa (geo R2)
 
 const layout = {
   eventos_a_ecosistema: { rect: [2, 26, 34, 72], walkTo: [20, 116], face: 'left' },

@@ -328,6 +328,8 @@ try {
   ok(v2.chicle.endsWith('Ese chicle ya es tuyo. Aquí no se aceptan devoluciones.'), 'C09');
   ok(v2.asc.includes('Desde aquí se ve la moqueta. Algún día la piso.') && !v2.asc.includes('Con contrato'), 'C04');
   ok(!v2.saludo.includes('frente'), 'M18: Celestino ya no comenta la tarjeta en la frente');
+  // [guion3 t4] [P15] la plaza de garaje sale al agotar «¿Y usted no se aburre aquí?», que sale tras el Ibex
+  await chooseOption('¿Cómo va el Ibex?'); await chooseOption('¿Y usted no se aburre aquí?');
   await G(() => __game.skipText(false));
   await chooseOption('plaza de garaje');
   ok(await logHas('Dos maneras: jubilarse o un «accidente».') && !(await logHas('Con comillas')) && await logHas('¿Y una plaza de bici?'), 'C10: sin «Con comillas» (las hace con los dedos) y la plaza de bici detrás');

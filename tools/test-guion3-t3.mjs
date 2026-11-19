@@ -238,8 +238,11 @@ try {
   await raton('hablar', 'inigo_sinergia', null, false);
   await until(() => !!__game.currentDialogOptions(), null, 20000);
   op = fuera(await opciones());
-  ok(op.includes('¿Y el brindis de Eventos?') && op.includes('¿Se llevó usted una silla de Eventos?'), 'Íñigo: «¿Y el brindis de Eventos?» y, oída Pilar, «¿Se llevó usted una silla de Eventos?»');
+  // [guion3 t4] [P15] la de la silla sale al agotar la del brindis (y, como antes, tras oír a Pilar lo de la 112)
+  ok(op.includes('¿Y el brindis de Eventos?') && !op.includes('¿Se llevó usted una silla de Eventos?'), 'Íñigo: «¿Y el brindis de Eventos?» (la silla, detrás)');
   await clicOpcion('¿Y el brindis de Eventos?');
+  op = fuera(await opciones());
+  ok(op.includes('¿Se llevó usted una silla de Eventos?'), 'Íñigo: agotado el brindis y oída Pilar, «¿Se llevó usted una silla de Eventos?»');
   await clicOpcion('¿Se llevó usted una silla de Eventos?');
   ok(await logHas('Lanzamiento interno. De pie: las sillas generan jerarquía.') && await logHas('Reasigné un activo infrautilizado. En la última fila no se sienta nadie.'), 'Íñigo: «De pie: las sillas generan jerarquía.» / «Reasigné un activo infrautilizado.»');
   await salir();
@@ -269,8 +272,9 @@ try {
   await clearLog();
   op = await hablarPilar();
   ok(await logHas('Teodoro tiene acreditación vitalicia. Del 97. Plastificada a mano.'), 'al abrir, el rumor de Teodoro (una vez)');
-  ok(op.includes('¿Qué ha pedido el ponente?') && !op.includes('¿Y sin papel, cómo acreditas?') && op.includes('¿Sabes que el plan es apagar la rotativa?') && op.includes('¿Estás bien, Pilar?'),
-    'Pilar (Acto II): el ponente, la rotativa y «¿Estás bien?»; «¿Y sin papel…?» espera al rider');
+  // [guion3 t4] [P15] el ponente es una cadena: rider → «¿Y sin papel…?» → la rotativa → «¿Estás bien?»
+  ok(op.includes('¿Qué ha pedido el ponente?') && !op.includes('¿Y sin papel, cómo acreditas?') && !op.includes('¿Sabes que el plan es apagar la rotativa?') && !op.includes('¿Estás bien, Pilar?') && op.length <= 6,
+    'Pilar (Acto II): el ponente; «¿Y sin papel…?», la rotativa y «¿Estás bien?» esperan, en cadena');
   await clicOpcion('¿Qué ha pedido el ponente?');
   ok(await ordenLog('Agua con gas. Cero papel en sala. Y sin turno de preguntas.', '¿Un evento sin preguntas?', 'Lo piden todos. Él lo ha puesto por escrito.'), '«¿Qué ha pedido el ponente?»');
   await clicOpcion('¿Y sin papel, cómo acreditas?');
