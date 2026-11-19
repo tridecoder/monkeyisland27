@@ -38,7 +38,7 @@ export function paginaSiete(g, r) {
   rect(g, x, y, w, h, '#e8e0c8');
   for (let yy = y; yy < y + h; yy += 2) hline(g, x, yy, w, (yy & 2) ? '#e4dcc2' : '#ece4cc');            // papel con grano
   rect(g, x, y, w, 2, '#d8cfb0'); rect(g, x, y + h - 2, w, 2, '#d8cfb0');
-  drawText(g, 'elContable.es', x + 5, y + 2, '#141220', { outline: null, bold: true });
+  drawText(g, 'elincontable.es', x + 5, y + 2, '#141220', { outline: null, bold: true });
   drawText(g, 'SÁBADO · PÁGINA 7', x + w - 5, y + 3, '#5a4a38', { outline: null, align: 'right' });
   rect(g, x + 4, y + 15, w - 8, 2, '#141220'); hline(g, x + 4, y + 18, w - 8, '#141220');
   for (let c = 0; c < 2; c++) for (let ly = y + 21; ly < y + 33; ly += 2) hline(g, x + 5 + c * 36, ly, 31 - ((ly * 7 + c * 5) % 7), '#a89c80');
@@ -274,7 +274,6 @@ function creditos(api) {
     ...asig('Audiencia', 'Asignado a: una lectora. Cuarenta y siete minutos.'),
     ...asig('Controlling', 'Asignado a: don Evaristo Salvedad. Leyó hasta el final.'),          // E2 §5.8
     ...asig('Eventos', 'Asignado a: Pilar Escaleta. Empezamos en cinco minutos.'),
-    ...asig('Marketing', 'Asignado a: el móvil de Borja. Lo publicó a las nueve.'),              // E2 §3.3
     ...asig('Reenvíos', 'Asignado a: Tadeo Adjunto. La IA estaba de acuerdo.'),
     ...asig('Material', 'Asignado a: Custodia Precinto. Devuélvanle el boli.'),
     ...asig('Salas', 'Asignado a: Ramírez (viernes, 20:59, recurrente)'),

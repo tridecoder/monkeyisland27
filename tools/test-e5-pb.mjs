@@ -6,7 +6,7 @@
 //      y a los 12 s; cargar una partida guardada a mitad de la ventana → luz y Anselmo en su mesa; escalada n = 2.
 //   2. Columna del kanban (§2.5): rotulador antes del álbum (negativa), boli muerto, álbum a Anselmo (album_validado),
 //      Usar el tablero sin rotulador, tres columnas equivocadas (y «Tráeme algo…» a la tercera), SALIDA EN VALOR (con el
-//      táper en la mano de Brais) y DESCOPEADO; el otro orden (álbum antes que rotulador); guardar/cargar a mitad y al final.
+//      táper en la mano de Brais); el otro orden (álbum antes que rotulador; [P12] sin la otra palabra); guardar/cargar.
 //   3. Coro por acto (K01-K04), solo con Bruno cerca. 4. F4 `junto()` sin fundido (Bruno corre). 5. F9 Custodia.
 //   6. La frase de Anselmo («El modelo es de fuera. El prompt es de dentro.» / «Eso lo hace nuestro.») se oye una vez.
 //   node tools/test-e5-pb.mjs              (capturas en tools/shots/e5-pb-*.png)
@@ -207,16 +207,16 @@ try {
   await raton('dar', 'anselmo_monolito', 'album_eventos');
   ok(await flag('album_validado') === true && !(await G(() => __game.state().inventory.includes('album_eventos'))) && await logHas('Las fotos me valen. Pero yo no escribo columnas nuevas.'),
     'álbum a Anselmo → album_validado, el álbum se lo queda él, «Las fotos me valen…»');
-  await G(() => __game.takeItem('rotulador_rojo'));
-  await raton('usar', 'kanban');
-  ok(await logHas('Mi rotulador no sale de Desarrollo. Que te lo preste alguien de fuera.'), 'Usar el tablero sin rotulador → Anselmo «Mi rotulador no sale…» (E6 N11)');
-  await G(() => __game.giveItem('rotulador_rojo'));
+  // [guion3 t4] el rotulador llega siempre con el D1 (antes del Acto III): la línea de Anselmo sin él era inalcanzable y se
+  // ha quitado (E6 N11 queda sin caso). En su lugar: el código ya no la tiene
+  ok(!fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../content/rooms/pecera.js'), 'utf8').includes('Mi rotulador no sale de Desarrollo'),
+    '[P15] fuera la línea inalcanzable de Anselmo sin rotulador (el rotulador llega con el D1)');
   const MAL = [['DESPEDIDOS', 'Eso es «muerto» con corbata.'], ['HECHO (DE VERDAD)', '«De verdad» no es un estado.'], ['FIRMAR EN PAPEL', 'Eso es tuyo. Mi tablero no es tu diario.']];
   for (const [col, linea] of MAL) {
     if (col === 'DESPEDIDOS') await G(() => __game.skipText(false));            // a velocidad real, para la captura
     await raton('usar', 'kanban', 'rotulador_rojo', false);
     const o = await (async () => { await until(() => !!__game.currentDialogOptions()); return opciones(); })();
-    if (col === 'DESPEDIDOS') ok(JSON.stringify(o) === JSON.stringify(['DESPEDIDOS', 'HECHO (DE VERDAD)', 'FIRMAR EN PAPEL', 'Mejor no.']), `sin rep_13 ni oyo_descopear, tres columnas y «Mejor no.»: ${JSON.stringify(o)}`);
+    if (col === 'DESPEDIDOS') ok(JSON.stringify(o) === JSON.stringify(['DESPEDIDOS', 'HECHO (DE VERDAD)', 'FIRMAR EN PAPEL', 'Mejor no.']), `sin rep_13, tres columnas y «Mejor no.»: ${JSON.stringify(o)}`);
     await clicOpcion(col);
     if (col === 'DESPEDIDOS') { await until(() => { const k = __game.state().objects['pecera.kanban']; return k && k.state === 'mal_0' && !__game.game.player.path.length; }, null, 8000); await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-mal'); await G(() => __game.skipText(true)); }
     await idle(); await seguir();
@@ -228,10 +228,10 @@ try {
   ok(!(await flag('posit_descopeado')) && !(await opciones()), '«Mejor no.» no hace nada');
   // guardar a mitad (álbum validado, sin columna) y seguir
   await G(() => __game.save(3));
-  await G(() => { __game.setFlag('rep_13', true); __game.setFlag('oyo_descopear', true); __game.clearLog(); });
+  await G(() => { __game.setFlag('rep_13', true); __game.clearLog(); });
   await raton('usar', 'kanban', 'rotulador_rojo', false);
   await until(() => !!__game.currentDialogOptions());
-  ok((await opciones()).includes('SALIDA EN VALOR') && (await opciones()).includes('DESCOPEADO'), 'con rep_13 y oyo_descopear, salen SALIDA EN VALOR y DESCOPEADO');
+  ok((await opciones()).includes('SALIDA EN VALOR') && !(await opciones()).some(o => /DESCOPE/.test(o)), 'con rep_13 sale SALIDA EN VALOR ([P12] y ninguna otra palabra)');
   // (en modo rápido la escena pasa entera en un instante: se espía la mano de Brais con un setter)
   await G(() => { window.__taper = false; const r = __game.game.actors.ruben; let h = r.hold;
     Object.defineProperty(r, 'hold', { configurable: true, get: () => h, set: (v) => { h = v; if (v && v.item === 'taper_huerfano' && r.room === 'pecera') window.__taper = true; } }); });
@@ -253,21 +253,23 @@ try {
   ok(await flag('columna_kanban') === 'salida' && await flag('posit_descopeado') && await flag('ruben_libre'), 'guardar/cargar con la columna escrita: se conserva');
   // la otra vía, desde la partida guardada a mitad, y el otro orden (álbum antes que rotulador)
   await G(() => __game.load(3)); await sleep(200); await idle();
-  await G(() => { __game.takeItem('rotulador_rojo'); __game.setFlag('oyo_descopear', true); __game.clearLog(); });
+  await G(() => { __game.clearLog(); });
   ok(await flag('album_validado') === true && !(await flag('posit_descopeado')) && !(await flag('columna_kanban')), 'cargar a mitad: álbum validado, sin columna');
-  await raton('usar', 'kanban');
-  ok(await logHas('Mi rotulador no sale de Desarrollo.'), 'álbum antes que rotulador: Usar el tablero → Anselmo «Mi rotulador no sale…» (E6 N11)');
-  await G(() => __game.giveItem('rotulador_rojo'));                            // (el rotulador, de Comercial)
+  // ([guion3 t4] fuera «álbum antes que rotulador»: el rotulador llega siempre con el D1, antes del álbum)
   await raton('usar', 'posit_1998', 'rotulador_rojo', false);
   await until(() => !!__game.currentDialogOptions());
   ok(!(await opciones()).includes('SALIDA EN VALOR'), 'sin rep_13, no sale SALIDA EN VALOR');
-  await clicOpcion('DESCOPEADO'); await idle(); await seguir();
-  ok(await flag('columna_kanban') === 'descopeado' && await flag('posit_descopeado') && await logHas('Descopear. Quitar sin que se note. Eso es infraestructura.') && await logHas('Rotulador de Comercial. De fuera.'),
-    'rotulador con el pósit → DESCOPEADO: columna \'descopeado\' y su arranque');
+  // [P12] fuera la otra palabra: sin la frase de Brais no hay columna buena; con ella, SALIDA EN VALOR (por el pósit)
+  await clicOpcion('Mejor no.'); await idle(); await seguir();
+  await G(() => { __game.setFlag('rep_13', true); __game.clearLog(); });
+  await raton('usar', 'posit_1998', 'rotulador_rojo', false);
+  await until(() => !!__game.currentDialogOptions());
+  await clicOpcion('SALIDA EN VALOR'); await idle(); await seguir();
+  ok(await flag('columna_kanban') === 'salida' && await flag('posit_descopeado') && await logHas('Salida en valor. Ni hecho ni muerto, pero sale.') && await logHas('Rotulador de Comercial. De fuera.'),
+    'rotulador con el pósit (álbum antes que rotulador) → SALIDA EN VALOR y su arranque');
   await G(() => __game.clearLog());
   await raton('mirar', 'kanban');
-  ok(await logHas('Y una nueva, a rotulador: DESCOPEADO.'), 'Mirar el tablero → «…DESCOPEADO…»');
-  await G(() => { const p = __game.game.player; p.x = 896; p.y = 128; p.path = []; p.dir = 'right'; }); await verA('kanban'); await page.mouse.move(5, 5); await sleep(150); await shot('kanban-descopeado');
+  ok(await logHas('Y una nueva, a rotulador: SALIDA EN VALOR.') && !(await logHas('DESCOPE')), 'Mirar el tablero → «…SALIDA EN VALOR…»');
 
   // ====================================================================== 3. coro por acto, solo de cerca
   console.log('\n§5.1 el coro por acto (K01-K04), solo con Bruno cerca');
@@ -337,7 +339,8 @@ try {
   await raton('usar', 'ordenador_bruno');
   await idle();
   await G(() => __game.skipSpeech());
-  ok(await flag('herminia_midio') && await logCount(FRASE) === 1 && await logHas('Ya te lo dije. Lo que cuenta es lo de dentro.'), 'paso 38 (Usar el ordenador): el eco, sin repetir la frase');
+  // [P11] «Herminia mide la pieza» se recorta: si la frase ya se oyó, ni la frase otra vez ni el eco; «A un metro…», siempre
+  ok(await flag('herminia_midio') && await logCount(FRASE) === 1 && !(await logHas('Lo que cuenta es lo de dentro.')) && await logHas('A un metro de mi cinta. Fuera.'), 'paso 38 (Usar el ordenador): sin repetir la frase ni el eco ([P11]); «A un metro de mi cinta. Fuera.»');
   await G(() => { delete __game.game.state.once['once:dialog:anselmo'] ; });
   await G(() => __game.newGame()); await idle();
   ok(true, '(nueva partida para el eco)');

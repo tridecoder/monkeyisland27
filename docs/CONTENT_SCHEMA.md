@@ -795,6 +795,15 @@ Option order: player line (unless `silent`; `say` overrides the text) → `reply
 `once` is tracked per `dialogId.nodeId.(option.id || index)`. Bible «(se queda)» = no `once`; options that "disappear"
 = `once: true` or an `if`. **Use the bible's option text verbatim**: the walkthrough selects options by text.
 
+**Chained options ([P15], engine): at most six options at a time per tree** (counting the exit). `tras: 'id'` (or a list;
+`'NODE.id'` for another node of the same tree) shows the option only once the option with that `id` has been chosen; put
+it right after its predecessor in `options` so it appears in the slot the other one leaves. A non-`once` option with an `id`
+leaves `game.state.dialogs['elegida:<tree>.<node>.<id>']` when chosen (so a chain can follow a repeatable one);
+`api.elegida('<tree>.<node>.<id>')` reads it in an `if`. `opcionesVisibles` (engine/dialog.js) is what the player sees;
+`tools/test-guion3-t4.mjs` walks every tree in every state of the three routes and fails above six. Main-path options
+(and those that teach a reply) never go behind another. Reordering or adding ids to a node changes its `once` keys: list
+the old order in `OPCIONES_POR_POSICION` (content/game.js `migrarPartida`).
+
 **Farewells are heard once (ENMIENDA E2 §7.2, engine).** An option with `exit: true` is said in full (player line,
 `reply`, `lines` and whatever its `do` says) only the **first** time that option is chosen in that tree; afterwards the
 dialog closes silently: nothing is said, but `do` still runs (effects, sfx, flags) with its lines muted (`game.mudo`).
@@ -845,7 +854,14 @@ D3 in `pajarera`, `inigo` D4 in `sala_amazonas` — data in `content/escenas/cli
 - **Verdict:** when the duel ends (won or lost; not when retiring) the answer to the question is **stamped** on the
   window (sound of a stamp, 1,500 ms): green `veredicto.verbo + ': ' + veredicto.gana` («LLAMA: MARIPAZ») if Bruno wins,
   red `… + veredicto.pierde` («LLAMA: B. POLLEJO») if he loses (`duelInfo.veredicto` = the text). Then the window closes.
-- Fair warning before starting if Bruno knows fewer replies of the deck than needed (unchanged).
+- **[P7] Learning by losing** (guion nuevo, tanda 1): there is NO warning or block any more; any duel can be entered
+  whatever Bruno knows. `duelo.js pistas = { flag, aviso, repaso, de(pair) }`: every attack that arrives without its
+  reply learnt notes in the notebook where it is learnt (`de(pair)` = Bruno's note in `content/pistas.js DONDE[flag][1]`,
+  no new text): bit `1 << index of the pair in pairs` of the int flag `libreta_pistas`; the first time, the notice
+  «Pista apuntada en la libreta.»; while the menu is open the note shows in a sticky note pasted on the LIBRETA tab
+  (`duelInfo.pista`, `duelVista.pista`; notices move up above it). On defeat, after everything else, if a note of this
+  deck is still pending Bruno says `repaso` («Me faltan réplicas. Están apuntadas en la libreta.»). `api.learnReply`
+  clears the bit. «Mirar/Usar libreta» lists the pending notes in grey after the replies.
 - Win: the verdict, flag `duel:<id>:won`, `onWin`.
 - Finishers (remates): unchanged — replies greyed out, **[Usar objeto]** / **[Retirarse del hilo]**; wrong object =
   a line, not a miss.
@@ -894,7 +910,8 @@ duels: {
     recoger: async (api, result, ctl) => {}, // 'lost' / 'retired', right after the window closes: back to its place
     fromShort: undefined,                    // name in the header and the body (default: the actor's `name`)
     weakAnswers: {},                         // optional { 'Te lo miro y te digo.': 'own answer' } (else duelo.js answers[id])
-    hurtByPair: {},                          // optional { R13: [['inigo_sinergia', '...'], ['ruben', 'Yo. Perdón.']] }
+    hurtByPair: {},                          // optional { R13: [['inigo_sinergia', '...'], ['ruben', 'Yo. Perdón.']] }; a function
+                                             // (duel) => lines | null decides on the spot (`duel.remates` = finishers done)
     intro: ['Perfecto. Te lo pongo por escrito.'],       // before the window opens: strings (rival) or [who, line]
     hurt: ['Ese input no lo tenía en el framework.', 'Interesante. Lo pongo en azul.'],   // rotate in order
     taunt: ['Ese input no escala.', 'Rosa. Emociones. Siguiente.'],
@@ -946,6 +963,10 @@ aTiempo: {
   escribiendo: 'escribiendo',      // label in the title bar of the window, + 1-3 dots (every 400 ms of real time)
   interrumpe: 'Me has interrumpido. Se apunta.',   // 1st interruption of the duel; later ones use the `taunt` rotation
   sostener: 'movil',               // optional: item the rival holds while typing (api.sostener)
+  rapido: { tramos: 2, pausa: 0.6 }, // [P8] optional: once one attack has been typed to the end without interruption, the
+                                   // next ones come in `tramos` pieces (the last ones joined) with pauses × `pausa`; an
+                                   // attack Bruno interrupts starts again slow (all its pieces, full pauses) until he lets
+                                   // it finish. `duelInfo.rapido` / `duelInfo.tramos` for tests.
 }
 ```
 With `trozos[pid]`: the rival says the first piece in its balloon, the window body shows it, and the menu opens AT

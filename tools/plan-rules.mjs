@@ -21,7 +21,7 @@ export const VETADAS = [
   // reglas del dueño: Diseño (y Producto) e Infografía nunca en la misma línea
   [(t) => /Diseño|DISEÑO/.test(t) && /Infograf[ií]a|INFOGRAF[IÍ]A/.test(t), 'Diseño e Infografía en la misma línea'],
 ];
-/** El nombre del periódico real (el que NO es elContable) no aparece en NINGÚN fichero del repositorio: se busca sin
+/** El nombre del periódico real (el que NO es El Incontable) no aparece en NINGÚN fichero del repositorio: se busca sin
  *  escribirlo (el patrón va codificado para que este archivo tampoco lo contenga). */
 // Opcional y fuera del repositorio: MARCA_VETADA=<expresión> node tools/text-audit.mjs comprueba que no aparece en ningún fichero.
 export const MARCA_REAL = process.env.MARCA_VETADA ? new RegExp(process.env.MARCA_VETADA, 'i') : null;
@@ -179,7 +179,10 @@ export const TOPES_E2 = [
 export const REPETIBLES_E2 = ['¿Cómo va el Ibex?', '¿Cuántas sillas hay?', '¿Y de qué va el evento?', 'Buenas noches, Gertrudis.',
   'Buenas noches otra vez.', '¿Me da un café sin saludar?', '¿Ha enviado ya el correo?', '¿Qué tal ahora con Anselmo?', '¿Qué noticia puedo traer?',
   // [bloqueos] la pregunta a Gervasio está siempre (antes la escondía un `if`); repetida, Gervasio vuelve a señalar la tele
-  'Bueno... ¿y cuáles son los siguientes pasos?'];
+  'Bueno... ¿y cuáles son los siguientes pasos?',
+  // [P11] Eutimio tiene un solo árbol (atiende siempre): su menú principal ya es el que tenía estas dos, repetibles en el
+  // guion (antes vivían en los subnodos P0/P1, que esta regla no miraba)
+  '¿Escuchas por la rejilla?', '¿Se ha caído el wifi?'];
 const normOp = (t) => String(t).toLowerCase().replace(/[¿?¡!.,«»"“”]/g, '').replace(/\s+/g, ' ').trim();
 
 /** Topes de E2 «en todo el juego» sobre las cadenas literales de content/ (sin arte, flags ni plantilla). */
@@ -311,7 +314,7 @@ const FUERA_MUSICA = /[\\/]music\.js$/;
 export const TOPES_E6_JUEGO = [
   { test: esRemateSeco, pct: 0.179, fuera: FUERA_MUSICA, txt: 'remate seco (E6 §8, E7): ≤ 17,9 % de las cadenas' },  // 20,2 % → 14,4 % (E6) → 16,4 % (E7 §7: real + 1,5)
   { re: /t[áa]per/i, porCadena: true, max: 17, txt: '«táper» (E6 §8)' },                                             // 32 → 17
-  { re: /\b(?:19|20)\d\d\b/, porCadena: true, max: 35, fuera: FUERA_MUSICA, txt: 'año 19xx/20xx (E6 §8)' },         // 64 → 33
+  { re: /\b(?:19|20)\d\d\b/, porCadena: true, max: 36, fuera: FUERA_MUSICA, txt: 'año 19xx/20xx (E6 §8)' },         // 64 → 33; [P9] 36 (R11 «en 2019», Íñigo «Visión 2030»)
   { re: /Huele a 2019/, porCadena: true, max: 1, txt: '«Huele a 2019» (E6 §8)' },                                    // 3 → 1
   { re: /Diecinueve años/, porCadena: true, max: 4, txt: '«Diecinueve años» (E6 §8)' },                              // 9 → 4
   { re: /Lo que diga el Lector Medio/, porCadena: true, max: 5, txt: '«Lo que diga el Lector Medio» (E6 §8)' },      // 7 → 5
@@ -323,7 +326,8 @@ export const REMATE_SALA_AVISO = { pct: 0.26, fuera: /eventos|titulador\.datos/ 
 /** ENMIENDA E7 §7 · aviso (nunca fallo): remate seco por PERSONAJE sobre las líneas OÍDAS [{ who, text, room }] (sin
  *  Eventos): quien diga ≥ 20 líneas distintas y pase del 30 % de `esRemateSeco`. Fuera el fax (Teodoro: es formato),
  *  el Lector Medio y los avisos. Con E7, el más alto es Gervasio (≈ 26 %). */
-export const REMATE_PERSONAJE_AVISO = { minimo: 20, max: 0.30, fuera: ['fax', 'lector_medio', 'aviso'] };
+export const REMATE_PERSONAJE_AVISO = { minimo: 20, max: 0.32,   // [guion3 t1] 0,30 → 0,32: el chisme de correo de Celestino ([P9] R05) lo deja en 8/25
+  fuera: ['fax', 'lector_medio', 'aviso'] };
 export function rematePorPersonaje(lines) {
   const por = new Map();
   for (const l of lines) {

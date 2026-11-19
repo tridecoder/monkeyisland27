@@ -5,7 +5,7 @@
 //   · ninguna intervención de más de 80 caracteres (biblia §0);
 //   · ningún globo de más de 3 renglones a 210 px (se saldría por arriba / taparía la escena);
 //   · signos de apertura: cada «?» / «!» con su «¿» / «¡» en la misma frase;
-//   · nombres: elContable.es, Íñigo, Begoña, Brais, Ramírez... con sus tildes;
+//   · nombres: elincontable.es / El Incontable, Íñigo, Begoña, Brais, Ramírez... con sus tildes;
 //   · horas: lista de todas las horas que aparecen (18:30 → 21:00, relojes en 20:59, Begoña 19:00-19:15 / 19:07);
 //   · palabras prohibidas en lo que ve u oye el jugador (órdenes de dirección): «Pajarera» (es «Dirección») y «Office»
 //     (es «Vending»), en cualquier mayúscula: en las líneas dichas, los nombres de salas/objetos/PNJ, la botonera y TODAS
@@ -232,7 +232,7 @@ const texts = [...lines.keys()];
 const widths = await G(async (texts) => { const F = await import('/engine/font.js'); return texts.map(t => F.wrap(t, 210).length); }, texts);
 const long = [], tall = [], punct = [], names = [], times = new Map();
 const NAME_RULES = [[/\bInigo\b/, 'Íñigo'], [/\bÍnigo\b/, 'Íñigo'], [/\bBegona\b/, 'Begoña'], [/\bZacar[ií]as\b/, 'Brais (antes Zacarías)'], [/\bRub[eé]n\b/, 'Brais (antes Rubén)'], [/\bPaco\b/, 'Eutimio (antes Paco)'], [/\bRamirez\b/, 'Ramírez'], [/\bValentin\b/, 'Valentín'],
-  [/\bReticula\b/, 'Retícula'], [/\belcontable|\bEl ?Contable\.es|\bElContable/, 'elContable.es / «el Contable»'], [/\bCatacumbas\b/, 'Catacumba'], [/\bTeodor\b/, 'Teodoro']];
+  [/\bReticula\b/, 'Retícula'], [/\bel ?C[o]ntable|\b[Ee]l ?C[o]ntable\b|\bELCONT[A]BLE|\bEl ?incontable\.es|\bel Incontable\b/, 'elincontable.es / «El Incontable» ([P13]; «elcontable.es» solo en el chiste del logo)'], [/\bCatacumbas\b/, 'Catacumba'], [/\bTeodor\b/, 'Teodoro']];
 texts.forEach((t, i) => {
   const who = lines.get(t).who;
   if (who === 'tarjeta') return;     // la tarjeta FE DE ERRATAS (plan §9) es una pantalla fija, no un globo

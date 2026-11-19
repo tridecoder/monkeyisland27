@@ -2,7 +2,7 @@
 // Test del paquete P4 (ENMIENDA E2, docs/guion2/ENMIENDA_E2.md §11 P4): Sala Amazonas (reunión, estampida con el anuncio
 // de Maripaz, pop-up de la X menguante, página 7 según Comercial, D1 y el adhesivo «SU ANUNCIO AQUÍ»), Marketing y
 // Comercial (sin Borja: su aro de luz con el móvil que publica solo; el anuncio antes de entrar; el monitor de Comercial;
-// el árbol y los verbos de Maripaz; el portátil de Tadeo con seis reenvíos), Eventos («¡Ese móvil!», `once` de §7.6) y
+// el árbol y los verbos de Maripaz; el portátil de Tadeo con seis reenvíos), Eventos ([P12] la negativa del álbum, `once`) y
 // clímax (D4 con R16 y el tercer remate: Evaristo llama por el teléfono de conferencias; la factura con coma).
 //   node tools/test-comedia-p4.mjs            (modo rápido; comprueba también los planos detalle sin modo rápido)
 //   node tools/test-comedia-p4.mjs --shots    además guarda capturas en tools/shots/e2-p4-*.png (y e3-*.png)
@@ -105,7 +105,7 @@ async function enterClimax() {
 const D4_REPS = { rep_10: true, rep_12: true, rep_13: true, rep_05: true, rep_16: true, rep_01: true, rep_07: true, rep_15: true };
 const ACTO3 = { torno_abierto: true, inigo_presentado: true, chaqueta_en_lector: true, silla_libre: true, acto_2_iniciado: true,
   aurora_conto_pasos: true, reunion_terminada: true, casilla_hueco: true, duelo_maripaz_ganado: true, acto_3_iniciado: true,
-  pagina_cerrada: true, ruben_encontrado: true, oyo_descopear: true, ruben_libre: true, sala_abierta: true, duelo_gervasio_ganado: true,
+  pagina_cerrada: true, ruben_encontrado: true, ruben_libre: true, sala_abierta: true, duelo_gervasio_ganado: true,
   evaristo_escuchado: true, coma_bendecida: true, correo_evaristo_listo: true };
 
 try {
@@ -197,14 +197,15 @@ try {
   await verb('hablar', 'maripaz_remitido');
   ok((await flag('rumor_teodoro_n')) === 2, 'rumor C: Maripaz lo sube de 1 a 2 (E6 E307: sin «Lo compró en el 97. Por fax.»)');
   ok(await logHas('«Agobio, con Tilas Calmín».') === 1, 'saludo (1.ª vez)');
+  // [guion3 t4] [P15] seis como mucho: «¿Me vende algo…?» → el gong; «La web va muy lenta.» → la abuela
   ok(JSON.stringify(await opts()) === JSON.stringify(['¿Qué vende Comercial?', '¿Me vende algo a mí?', 'La web va muy lenta.',
-    'Mi abuela dice que no encuentra las noticias.', '¿Por qué tiene un gong?', '¿Usted se lee el periódico?', 'Me voy.']), 'árbol M0 (§4.4; E3 B19)');
+    '¿Usted se lee el periódico?', 'Me voy.']), 'árbol M0 (§4.4; E3 B19; [P15])');
   // ENMIENDA E3 §4.3 B19: lee el periódico (nunca a Bruno) y el remate vuelve al eje
   await shot('e3-periodico-menu');
   if (args.shots) await shotDuring('e3-periodico', () => choose('¿Usted se lee el periódico?'), 'Para vender un hueco hay que leer lo de al lado.', 500);
   else await choose('¿Usted se lee el periódico?');
   ok(await logWho('De la cabecera a las esquelas. Para vender un hueco hay que leer lo de al lado.') === 'maripaz_remitido'
-    && await logWho('Lo más leído es la fe de erratas. Y ahí no me dejan poner ni un banner.') === 'maripaz_remitido', 'E3 B19: «¿Usted se lee el periódico?»');
+    && await logWho('Lo más leído es la fe de erratas. Y ahí no me dejan ni un anuncio por palabras.') === 'maripaz_remitido', 'E3 B19: «¿Usted se lee el periódico?»');
   ok(!(await opts()).includes('¿Usted se lee el periódico?'), 'E3 B19: la opción es `once`');
   await choose('La web va muy lenta.');
   ok(await logHas('Eso te lo arreglo con un pop-up, cariño.') === 1 && await logHas('mientras lo cierras, no te das cuenta') === 1, '«Eso te lo arreglo con un pop-up»');
@@ -244,12 +245,11 @@ try {
   await setFlags({ ruben_encontrado: false });
   await shot('marketing');
 
-  step('Silla 113 (§4.4) y Acto II antes de D1');
-  await setFlags({ eventos_silla_devuelta: true });
+  step('[P12] Fuera la silla 113; Acto II antes de D1');
   await G(() => __game.gotoRoom('pecera'));
   await G(() => __game.clearLog());
   await G(() => __game.gotoRoom('ecosistema'));
-  ok(await logHas('Ya le he puesto un anuncio en el respaldo.') === 1, 'la silla 113, pagada');
+  ok(await logHas('Ya le he puesto un anuncio en el respaldo.') === 0, '[P12] la silla 113 se va con su micropuzle: Maripaz ya no la menciona');
   await setFlags({ acto_2_iniciado: true });
   await G(() => __game.gotoRoom('administracion'));
   await G(() => __game.gotoRoom('ecosistema'));
@@ -296,6 +296,7 @@ try {
   await verb('mirar', 'orden_del_dia');                   // E5 §2.1: el punto 3 (sala_amazonas_orden_visto)
   await verb('hablar', 'gervasio_acta');
   ok(await logHas('Mientras, le vendo el punto tres a Mercados.') === 1, 'onStart de la reunión: Maripaz vende el punto tres');
+  ok(await logHas('Siestatón se va a la web. Si la web publicara.') === 1 && await flag('maripaz_pide_web') === true, '[P14] con el CMS caído, Maripaz avisa: «Siestatón se va a la web. Si la web publicara.»');
   await choose('¿Quién tiene reservada la sala?');
   ok(await logHas('puede volver en cualquier momento') === 1, 'L24');
   // E5 §2.1: la pregunta a Gervasio ya no estampa: «sin turno»; la reenvía Gertrudis (aquí, por estado) y la tele estampa
@@ -329,7 +330,7 @@ try {
     const { d } = await duranteDetalle(() => choose('¿Qué hace usted con el planillo?'), { titulo: 'PÁGINA 7 · PROPUESTA DE COMERCIAL', texto: '¿La noticia?', esperaMs: 400, shotName: 'pagina7' });
     ok(!!d, 'plano detalle: PÁGINA 7 · PROPUESTA DE COMERCIAL');
   }
-  ok(await logHas('Se ve demasiado. Estoy en ello.') === 1, '«Se ve demasiado. Estoy en ello.» (E7 E183)');
+  ok(await logHas('Se ve demasiado. Por eso lleva pop-up.') === 1, '«Se ve demasiado. Por eso lleva pop-up.» ([P10])');
   await choose('¿Y si la gente no quiere anuncios?');
   ok(await logHas('No la encuentran.') === 1, '«No la encuentran.»');
   await choose('Luego vuelvo.');
@@ -343,8 +344,17 @@ try {
   await choose('Luego vuelvo.');
 
   // ================================================================ D1
-  step('D1 en la Sala: tres derrotas (pop-up con cuenta atrás) y victoria con el adhesivo (§4.3, §4.2.3)');
+  step('D1 en la Sala: [P11] con la web caída, no hay duelo; con el CMS vivo, tres derrotas (pop-up con cuenta atrás) y victoria con el adhesivo y el rotulador (§4.3, §4.2.3)');
   await setFlags({ rep_08: true, rep_04: true, rep_11: true });
+  {
+    // [P11] el CMS es condición del HUECO: con la web caída, Maripaz se niega (no hay duelo)
+    await G(() => { __game.game.state.flags.maripaz_popup_n = 3; __game.clearLog(); });
+    await G(() => __game.skipText(true)); await verb('hablar', 'maripaz_remitido');
+    await choose('Siestatón no ha confirmado la página 7.');
+    ok(!(await state()).duel && await logHas('Aunque la web no publica desde las cuatro.') === 1 && await logHas('Arréglala y te lo pongo por escrito.') === 1, '[P11] con la web caída: «Aunque la web no publica desde las cuatro.» y sin duelo');
+    await G(() => { __game.game.state.flags.maripaz_popup_n = 2; __game.setFlag('sala_amazonas_maripaz_exnovio', false); });
+  }
+  await setFlags({ cms_vivo: true });
   for (let n = 1; n <= 3; n++) {
     await G(() => __game.clearLog());
     if (n === 1) {
@@ -389,7 +399,7 @@ try {
   let st = await state();
   ok(st.flags.duelo_maripaz_ganado && st.flags.casilla_hueco && st.flags.bruno_con_banner, 'paso 26: duelo_maripaz_ganado, casilla_hueco, bruno_con_banner');
   ok(await logHas('¿Y quién me firma que esa página es noticia y no un hueco para anuncios?') === 1 && await logHas('Sellada por Aurora. Impar.') === 1, 'remate con la ficha');
-  ok(await logHas('Siestatón, a la web. Allí caben en todas partes.') === 1 && await logHas('Impar, y sin un banner.') === 1, 'victoria (§4.3)');
+  ok(await logHas('Siestatón, a la web. Allí caben en todas partes.') === 1 && await logHas('Impar, y sin faldón.') === 1, 'victoria (§4.3)');
   ok(await logHas('Tenías la espalda desaprovechada.') === 1 && await logHas('Y quitad el ronquido de la espera.') === 1, 'el adhesivo y el ronquido');
   ok(await logHas('Estamos a un metro.') === 0, 'la victoria tras las revanchas, sin el planteamiento');
   ok(await G(() => { const g = __game.game; return g.spriteOf(g.player) === g.player.variants.con_banner; }), 'Bruno lleva el adhesivo (variante con_banner)');
@@ -434,23 +444,27 @@ try {
   await G(() => __game.takeItem ? __game.takeItem('pieza_opa') : null);
 
   // ================================================================ EVENTOS
-  step('Eventos (protegida): «¡Ese móvil!» y `once` de §7.6');
+  step('Eventos: [P12] la negativa del álbum y `once` de §7.6');
   await G(() => __game.gotoRoom('eventos'));
   ok((await inRoom('borja_engagement')) !== 'eventos', 'Borja no entra en Eventos');
   await setFlags({ ruben_encontrado: true, acto_3_iniciado: true });
   await G(() => __game.clearLog());
   await verb('hablar', 'pilar_escaleta');
-  await choose('¿Para qué es el photocall?');
+  // [guion3 t4] [P15] en el Acto III las tres cadenas comparten un hueco: el ponente, luego los cinco minutos, luego la sala
+  for (const t of ['¿Qué ha pedido el ponente?', '¿Y sin papel, cómo acreditas?', '¿Sabes que el plan es apagar la rotativa?', '¿Estás bien, Pilar?',
+    '¿Cuántos eventos habéis empezado este año?', '¿Por qué no baja la cuenta atrás?']) await choose(t);
   await choose('¿Hay catering?');
+  await choose('¿Para qué es el photocall?');
   const o = await opts();
   ok(!o.includes('¿Para qué es el photocall?') && !o.includes('¿Hay catering?'), 'photocall y catering, `once`');
-  if (args.shots) await shotDuring('eventos-movil', async () => { await choose('¿Me prestas el álbum?'); }, 'Hemos descopeado la ética del trimestre', 400);
+  // [P12] el álbum ya no se presta: va a la trituradora (y el móvil de Borja ya no publica nada desde Marketing)
+  if (args.shots) await shotDuring('eventos-negativa', async () => { await choose('¿Me prestas el álbum?'); }, 'Quien no se sienta no asiste.', 400);
   else await choose('¿Me prestas el álbum?');
   await G(() => __game.waitIdle());
-  ok(await logWho('Hemos descopeado la ética del trimestre') === 'eventos_a_ecosistema', 'el móvil de Borja, oído por la puerta');
-  ok(await logHas('¡Ese móvil! Sin acreditación, de la puerta no se pasa.') === 1 && await logHas('Pero esto lo contamos. En vertical.') === 1, '«¡Ese móvil!» (C7)');
-  ok(await logHas('Me lo apunto') === 0 && await logHas('O sea, quitado del plan') === 0, 'fuera las dos coletillas');
-  ok((await flag('oyo_descopear')) === true && (await state()).inventory.includes('album_eventos'), 'paso 37/39 igual (oyo_descopear, álbum)');
+  ok(await logWho('Hoy no. El ponente lo quiere en la trituradora. A las 21:04.') === 'pilar_escaleta' && await logHas('Quien no se sienta no asiste. Y lo que no asiste, se tritura.') === 1,
+    '[P12] «¿Me prestas el álbum?»: la negativa (la trituradora, «quien no se sienta no asiste»)');
+  ok(await logHas('Publicando:') === 0 && await logHas('¡Ese móvil!') === 0, '[P12] fuera el móvil de Borja en Eventos');
+  ok((await flag('pilar_nego_album')) === true && !(await state()).inventory.includes('album_eventos'), '[P12] sin álbum (se salva con la silla 112)');
   await R.closeDialog().catch(() => {});
 
   // ================================================================ CLÍMAX
@@ -533,8 +547,10 @@ try {
   await G(() => { const g = __game.game; if (g.__speakOrig) { g.speak = g.__speakOrig; delete g.__speakOrig; } });
   const cel = probe.filter(p => p.who === 'celestino' && p.tag === 'ENTRADA 1');   // (luego, el epílogo: otra escena)
   ok(cel.length === 2 && cel.every(p => p.tele === 'entrada_1' && p.lector.caido && p.lector.visible), 'el empujón se ve: Lector caído a la vista, Celestino por la tele');
-  ok(await logHas('Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.') === 1 && await logHas('treinta y cinco euros con cincuenta y dos') === 1, 'Begoña: la factura, con coma (§5.6)');
-  ok(await logHas('Es lo que me como en atún.') === 1 && await logHas('Con ticket.') === 1, 'Brais y Begoña: «¿Con táper?» «Con ticket.»');
+  // [P11] Begoña cierra el clímax en cuatro líneas (fuera el taxi, el recorte a 35,52, el sello, el ministro y el atún de Brais)
+  ok(await logHas('Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.') === 1 && await logHas('treinta y cinco euros con cincuenta y dos') === 0 && await logHas('¿Un taxi?') === 0, '[P11] Begoña: la factura, con coma, sin el recorte');
+  ok(await logHas('Es lo que me como en atún.') === 0 && await logHas('¿Con táper?') === 1 && await logHas('Con ticket.') === 1, 'Brais y Begoña: «¿Con táper?» «Con ticket.»');
+  ok(await logHas('Tira, Teodoro.') === 1 && await logHas('Benita. Tira.') === 1, '[P11] «Tira, Teodoro.» y «Benita. Tira.»');
   ok(await logHas('Algo importante se nos acaba de escapar') === 0 && await logHas('Quedan ciento cincuenta y dos') === 0, 'fuera la frase críptica y la coletilla');
   ok((await flag('lector_derribado')) === true && (await flag('juego_terminado')) === true, 'empujón → final');
 

@@ -44,18 +44,18 @@ export default {
         api.faceActor(Y, 'up');
         await api.sayAs(Y, 'Ponle nombre. Venga. Ponle nombre a la borrasca.');
         api.faceActor(Y, api.player);
-        await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario elContable, cuánto cobra un becario.',
+        await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario incontable, cuánto cobra un becario.',
           'Perdona. Sin nombre no la pincha nadie. La borrasca, digo.']);
-      } else await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario elContable, cuánto cobra un becario.', 'Perdona, me sale solo.']);
+      } else await api.sayAs(Y, ['Hola Bruno, Bruno becario, becario incontable, cuánto cobra un becario.', 'Perdona, me sale solo.']);
     },
     nodes: {
       Y0: {
         options: [
-          { text: '¿Algún hilo bueno esta noche?', once: true,
-            reply: ['Maripaz me escribió «desde el más absoluto cariño».', 'Le contesté: «Y yo te leo desde el más absoluto modo avión».',
-              'Me ha puesto en copia a mi madre.'],
+          { id: 'hilo', text: '¿Algún hilo bueno esta noche?', once: true,
+            reply: ['Maripaz me escribió «desde el más absoluto cariño».', 'Le contesté: «Se nota. Has puesto a mi jefe en copia».',   // [P9] R08
+              'Ahora ha puesto en copia a mi madre.'],
             do: async (api) => { api.learnReply('rep_08'); } },
-          { text: '¿Y tú cómo estás? Tú, no la audiencia.', once: true,
+          { id: 'estas', text: '¿Y tú cómo estás? Tú, no la audiencia.', once: true,
             do: async (api) => {
               await api.sayAs(Y, 'Yo...');
               api.faceActor(Y, 'up');                         // (mira la gráfica)
@@ -63,17 +63,18 @@ export default {
               api.faceActor(Y, api.player);
               await api.sayAs(Y, ['...bien. Bajando, pero bien.', 'Nadie me lo había preguntado sin querer un dato.']);
             } },
-          { text: '¿Cuántos me leen a mí?', once: true,
+          // [P15] seis opciones como mucho: «¿Cuántos me leen a mí?» aparece al agotar «¿Y tú cómo estás?…»
+          { id: 'cuantos', text: '¿Cuántos me leen a mí?', once: true, tras: 'estas',
             reply: ['Tu última pieza: once segundos de media.', 'Menos una lectora: cuarenta y siete minutos, y comenta «abrígate» en todo.'] },
           // E4 §4.2 (O17-O20): Yoli se cree lo que publica
-          { text: '¿Tú te crees esos titulares?', once: true,
+          { id: 'titulares', text: '¿Tú te crees esos titulares?', once: true,
             do: async (api) => talk(api, [[Y, 'Bajo las persianas todas las tardes. Lo leí en un sitio fiable.'], ['B', '¿Cuál?'], [Y, 'El nuestro.']]) },
           // E4 §3bis.2 (O5): el titulador, repetible (tiene `if`, §7.6)
-          { text: '¿Me dejas tu titulador?', if: 'pieza_escrita', do: async (api) => { await titulador(api); return 'Y0'; } },
-          { text: 'Íñigo va a cerrar el papel.', once: true, if: 'acto_3_iniciado',
+          { id: 'titulador', text: '¿Me dejas tu titulador?', if: 'pieza_escrita', do: async (api) => { await titulador(api); return 'Y0'; } },
+          { id: 'papel', text: 'Íñigo va a cerrar el papel.', once: true, if: 'acto_3_iniciado',
             reply: 'Si cierra el papel, ¿quién me va a odiar con criterio?' },
           // E4 M3: la despedida (se oye una vez, la del paso 23) siembra la opa menguante
-          { text: 'Me voy.', exit: true, reply: 'Y cuando escribas algo, avísame. Te lo coloco en Discover. Con expertos.' },
+          { id: 'adios', text: 'Me voy.', exit: true, reply: 'Y cuando escribas algo, avísame. Te lo coloco en Discover. Con expertos.' },
         ],
       },
     },
@@ -90,33 +91,35 @@ export default {
     },
     nodes: {
       LQ0: {
+        // [P15] seis opciones como mucho: Herminia → departamento → «¿Y si te sustituye…?»; «¿Por qué no se publica…?» →
+        // los gráficos de Anselmo (desde el Acto II). `tras`: engine/dialog.js
         options: [
-          { text: '¿Qué es Herminia?', once: true,
+          { id: 'herminia', text: '¿Qué es Herminia?', once: true,
             reply: ['Mi IA. La hice yo, en tres fines de semana.', 'Hace sola las infografías de la casa. Papel, web y redes.',
               'Mejor que todo mi departamento. Me incluyo.', 'Me duele, pero me incluyo.'] },
-          { text: '¿Y tu departamento?', once: true,
+          { id: 'departamento', text: '¿Y tu departamento?', once: true, tras: 'herminia',
             reply: ['Ficharon y se fueron. Herminia no ficha.', 'Dejaron las chaquetas en las sillas, mirándola.',
               'Yo ya no dibujo. Superviso. Que es mirarla con orgullo.'] },
-          { text: '¿Por qué no se publica lo que hace?', once: true,
+          { id: 'sustituye', text: '¿Y si Herminia te sustituye a ti también?', once: true, tras: 'departamento',
+            reply: ['Ya lo ha hecho. En septiembre. No se lo he dicho a nadie.', 'Ni a ella. Es muy sensible a los datos.'] },
+          { id: 'publica', text: '¿Por qué no se publica lo que hace?', once: true,
             reply: ['Porque Anselmo no la integra. Dice que no ha pasado por Desarrollo.',
               'Le he mandado cuarenta y un pósits. Me los devuelve con un «NO».', 'En su tipografía, que es fea.'] },
-          { text: '¿Me hace un gráfico a mí?', once: true,
+          { id: 'graficos', text: '¿Y esos gráficos de Anselmo en tu sección?', once: true, if: 'acto_2_iniciado', tras: 'publica',
+            reply: ['Me los pone desde su pantalla.', 'Un quesito que suma 130 %. Yo los hacía de 100.',
+              'Herminia lo arreglaría en una décima. Pero está encintada.'] },
+          { id: 'grafico', text: '¿Me hace un gráfico a mí?', once: true,
             do: async (api) => {
               await api.anim(L, 'reach', 500);              // (gira el portátil hacia Bruno; con el paquete, por el hueco)
               await talk(api, [['H', 'Bruno · aportación a la planta: 0,3 % · tendencia: plana'],
                 [L, 'Plana no es mala. Plana es estable. Yo estoy plano desde que existe ella.']]);
               await api.anim(L, 'reach', 900);              // L14: (vuelve a girar el portátil hacia sí, despacio)
             } },
-          { text: '¿Y esos gráficos de Anselmo en tu sección?', once: true, if: 'acto_2_iniciado',
-            reply: ['Me los pone desde su pantalla.', 'Un quesito que suma 130 %. Yo los hacía de 100.',
-              'Herminia lo arreglaría en una décima. Pero está encintada.'] },
-          { text: '¿Y si Herminia te sustituye a ti también?', once: true,
-            reply: ['Ya lo ha hecho. En septiembre. No se lo he dicho a nadie.', 'Ni a ella. Es muy sensible a los datos.'] },
-          { text: 'El Titulator era un becario.', once: true, if: 'ruben_encontrado',
+          { id: 'titulator', text: 'El Titulator era un becario.', once: true, if: 'ruben_encontrado',
             reply: ['Lo sé. Ella lo dijo a las ocho y veinte. En barras.', 'Nadie mira las barras. Para eso existo yo.'] },
-          { text: '¿Qué tal ahora con Anselmo?', if: 'infografia_integrada',
+          { id: 'ahora', text: '¿Qué tal ahora con Anselmo?', if: 'infografia_integrada',
             reply: 'Me han absorbido en plataforma. Sigo aquí, supervisando desde Desarrollo.' },
-          { text: 'Me voy.', exit: true, reply: 'Cuidado con la cinta. Se ha movido desde que has llegado.' },
+          { id: 'adios', text: 'Me voy.', exit: true, reply: 'Cuidado con la cinta. Se ha movido desde que has llegado.' },
         ],
       },
     },
@@ -134,11 +137,15 @@ export default {
     },
     nodes: {
       AN0: {
+        // [P15] seis opciones como mucho: «¿Por qué bloqueas…?» → «¿Por qué invades…?» (Acto II); «¿Qué tal con Yoli?» (R09)
+        // → «He arreglado el CMS.». «¿Y tú no usas IA?» (la frase del modelo y el prompt), siempre a la vista.
         options: [
-          { text: '¿Por qué bloqueas a Herminia?', once: true,
+          { id: 'bloqueas', text: '¿Por qué bloqueas a Herminia?', once: true,
             do: async (api) => talk(api, [[A, '¿De dónde viene? De Infografía. Hecha con IA. Fuera de mis sistemas.'], ['B', '¿Y si funciona?'],
               [A, 'Peor. Si funciona, la gente se acostumbra.'], [A, 'Y si se rompe a las tres, ¿quién baja? Eutimio abre ticket. Bajo yo.']]) },
-          { text: '¿Y tú no usas IA?', once: true,
+          { id: 'invades', text: '¿Por qué invades la sección de Leoncio?', once: true, if: 'acto_2_iniciado', tras: 'bloqueas',
+            reply: ['Invadir, no. Desplegar capacidad.', 'Mi quesito suma 130 %. Desarrollo siempre da de más.'] },
+          { id: 'ia', text: '¿Y tú no usas IA?', once: true,
             do: async (api) => {
               await talk(api, [[A, 'Mucha. Para los demás departamentos.'], [A, 'Un corrector para Aurora. Notas de gasto generativas para Begoña.'],
                 ['B', '¿Y esa IA no es de fuera?']]);
@@ -150,26 +157,25 @@ export default {
                 api.setFlag('pecera_prompt_oido', true);
               }
             } },
-          { text: '¿Qué tal con Yoli?', once: true,                 // paso 24 (heredado de Nemesio): cita la réplica de R09
-            reply: ['Me dijo que mi dato de tráfico estaba «sacado de contexto».', '¿El contexto? ¿De dónde viene? De la web. No entra.',
-              'Le dije: «Tráeme el contexto. Le hago una pieza aparte».', '«El contexto, explicado». No hemos vuelto a comer juntos.'],
+          { id: 'yoli', text: '¿Qué tal con Yoli?', once: true,                 // paso 24 (heredado de Nemesio): cita la réplica de R09
+            // [P9] R09: la rama entera; Bruno aprende aquí la larga y la corta (la que cabe en el fax del D2)
+            reply: ['Yoli dijo que mi dato de tráfico estaba «sacado de contexto».', 'Le contesté: «Claro que lo saqué. El contexto no cabía en la pieza».',
+              'Como no lo entendió, se lo resumí: «Lo saqué yo. No cabía».', 'No hemos vuelto a comer juntos.'],
             do: async (api) => { api.learnReply('rep_09'); } },
-          { text: '¿Por qué invades la sección de Leoncio?', once: true, if: 'acto_2_iniciado',
-            reply: ['Invadir, no. Desplegar capacidad.', 'Mi quesito suma 130 %. Desarrollo siempre da de más.'] },
-          { text: 'He arreglado el CMS.', once: true, if: 'cms_vivo',
+          { id: 'cms', text: 'He arreglado el CMS.', once: true, if: 'cms_vivo', tras: 'yoli',
             do: async (api) => {
-              const arriba = api.getState('enchufe_pantalla') === 'con_ticket';
-              await talk(api, [[A, '¿Desde dónde?'], ['B', arriba ? 'Desde aquí. Un enchufe con número.' : 'Desde Sistemas. Una regleta.'],
+              // ([P11] fuera la variante del ticket nº 3: el CMS solo vuelve desde Sistemas)
+              await talk(api, [[A, '¿Desde dónde?'], ['B', 'Desde Sistemas. Una regleta.'],
                 [A, 'Solución de terceros. Funciona, pero no es mía.']]);
             } },
-          { text: 'Necesito la baja de Brais.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!album_validado', '!posit_descopeado'],
+          { id: 'baja', text: 'Necesito la baja de Brais.', once: true, if: ['ruben_encontrado', '!has:album_eventos', '!album_validado', '!posit_descopeado'],
             reply: ['¿Brais? «Baja becario Brais». En POR HACER. Letra de julio.', 'De mi tablero se sale de dos formas: hecho o muerto.',
               'Para darlo por hecho, pruebas de que existió. Fotos. Actas. Algo.', 'Y que no venga de fuera.'] },
-          { text: 'Mira este álbum.', if: 'has:album_eventos', goto: 'AN_ALBUM_INTRO' },
-          { text: 'El Titulator era un becario.', once: true, if: ['ruben_encontrado', '!ruben_libre'],
+          { id: 'album', text: 'Mira este álbum.', if: 'has:album_eventos', goto: 'AN_ALBUM_INTRO' },
+          { id: 'titulator', text: 'El Titulator era un becario.', once: true, if: ['ruben_encontrado', '!ruben_libre'],
             do: async (api) => talk(api, [[A, 'Tenía alta y estaba en mis sistemas.'], ['wait', 1500],
               [A, '...En un armario de mis sistemas. Lo miro en la próxima versión.']]) },
-          { text: 'Me voy.', exit: true, reply: 'Cierra la frontera al salir. No tiene puerta. Ciérrala igual.' },
+          { id: 'adios', text: 'Me voy.', exit: true, reply: 'Cierra la frontera al salir. No tiene puerta. Ciérrala igual.' },
         ],
       },
       // E2 §2.6.3 (también al Dar album_eventos) + E5 §2.5.3: las fotos valen; la columna, que la escriba otro.
@@ -177,7 +183,7 @@ export default {
         onEnter: async (api) => {
           await api.sayAs(A, '¿De dónde vienen estas fotos? De Eventos. De fuera.');
           await api.anim(A, 'reach', 600);                  // (pasa hojas; se detiene)
-          await api.sayAs(A, ['Cena de Navidad. Al fondo, un chico pálido con un táper.',
+          await api.sayAs(A, ['Barbacoa de julio. Al fondo, un chico pálido con un táper.',   // [P12] [P14] Brais entró en julio
             'Photocall. Al fondo, el mismo. Yendo al baño. Es de la casa: sale en todas.',
             'Pero darle de baja es despedir. Y despedir no es una columna de mi tablero.']);
           // (Se queda el álbum. Grapa una foto al pósit de Rubén: el tablero la pinta con album_validado.)
@@ -231,14 +237,13 @@ const MAL = ['Eso es «muerto» con corbata.', '«De verdad» no es un estado.',
 /** El menú (texto de pantalla). Bruno ya está delante del tablero. */
 export async function columnas(api) {
   const ops = [['DESPEDIDOS', 0], ['HECHO (DE VERDAD)', 1], ['FIRMAR EN PAPEL', 2]];
-  if (api.flag('rep_13')) ops.push(['SALIDA EN VALOR', 3]);
-  if (api.flag('oyo_descopear')) ops.push(['DESCOPEADO', 4]);
+  if (api.flag('rep_13')) ops.push(['SALIDA EN VALOR', 3]);       // [P12] la única columna buena (fuera la otra palabra)
   ops.push(['Mejor no.', -1]);
   api.face('up');
   const i = await api.choose(ops.map(o => o[0]), { escape: ops.length - 1 });
   const via = i >= 0 && ops[i] ? ops[i][1] : -1;
   if (via < 0) return;
-  if (via >= 3) { await salida(api, via); return; }
+  if (via === 3) { await salida(api); return; }
   await columnaMal(api, via);
 }
 /** Anselmo vuelve a su mesa sin bloquear (el jugador ya puede probar otra columna). */
@@ -271,7 +276,7 @@ async function columnaMal(api, via) {
       api.faceActor(A, api.player);
       await api.sayAs(A, MAL[via]);
       // [bloqueos] a la primera (antes, a la tercera): sin la frase fina, la pista va ya con el primer borrón
-      if (api.inc('pecera_columna_mal_n') === 1 && !api.flag('rep_13') && !api.flag('oyo_descopear')) {
+      if (api.inc('pecera_columna_mal_n') === 1 && !api.flag('rep_13')) {
         await api.sayAs(A, 'Tráeme algo que no sea ni hecho ni muerto. Eso no existe.');
       }
     });
@@ -283,14 +288,14 @@ async function columnaMal(api, via) {
 }
 
 // ------------------------------------------------------------------ E2 §2.6.4 + E5 §2.5.5 · paso 46: la salida en valor
-async function salida(api, via) {
+async function salida(api) {
   try {
     await api.cutscene(async (api) => {
       // (Bruno escribe la columna nueva a rotulador; coge el pósit de Rubén y lo cambia de columna.)
       api.face('up');
       await api.anim(api.player, 'reach', 700);
       api.sfx('paper');
-      api.setFlag('columna_kanban', via === 3 ? 'salida' : 'descopeado');
+      api.setFlag('columna_kanban', 'salida');
       api.repaint();
       await api.wait(250);
       await api.anim(api.player, 'reach', 700);
@@ -308,10 +313,8 @@ async function salida(api, via) {
       api.faceActor(A, api.player);
       await api.wait(400);
       await api.sayAs(A, '¿Con qué has escrito eso? ...Rotulador de Comercial. De fuera.');
-      if (via === 3) {
-        await api.sayAs(A, ['Salida en valor. Ni hecho ni muerto, pero sale.',
-          'La frase la escribió Brais. Brais tenía alta. ...Entonces es de la casa.']);
-      } else await api.sayAs(A, 'Descopear. Quitar sin que se note. Eso es infraestructura.');
+      await api.sayAs(A, ['Salida en valor. Ni hecho ni muerto, pero sale.',
+        'La frase la escribió Brais. Brais tenía alta. ...Entonces es de la casa.']);
       api.setState('coro_desarrollo', null);
       await api.sayAs(A, ['Columna nueva. La primera que no dice que no.', 'El tablero va conectado al registro de Eutimio.']);
       // (Tin. El ascensor se abre. Vacío. En el suelo, un papel.)
@@ -319,7 +322,8 @@ async function salida(api, via) {
       await api.wait(400);
       api.give('ticket_n1');
       api.sfx('pickup');
-      await api.say(['«Ticket nº 1: Alta becario Brais. CERRADO.»', '«No subo. Nunca subo. Eutimio.»']);
+      await api.say(['«Ticket nº 1: Alta becario Brais. CERRADO.»', '«No subo. Nunca subo. Eutimio.»',
+        'Baja como Titulator. Alta como becario.']);                // [P14]
       // (Tin. Sale Rubén del ascensor. Va derecho a la ventana; con el táper en la mano si se lo dieron, §2.5.5.)
       api.sfx('beep');
       api.setFlag('ruben_libre', true);
@@ -362,7 +366,7 @@ async function salida(api, via) {
     });
   } finally {
     // por si se salta la escena: el estado final no depende de la cinemática
-    if (!api.flag('columna_kanban')) api.setFlag('columna_kanban', via === 3 ? 'salida' : 'descopeado');
+    if (!api.flag('columna_kanban')) api.setFlag('columna_kanban', 'salida');
     api.setFlag('posit_descopeado', true);
     if (api.getState('coro_desarrollo')) api.setState('coro_desarrollo', null);
     if (api.has('album_eventos')) api.take('album_eventos');

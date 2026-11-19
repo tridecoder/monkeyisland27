@@ -312,9 +312,9 @@ try {
   await clearLog();
   await verb('usar', 'ordenador_bruno');
   must(await flag('rep_11') === true, 'N1: Usar el ordenador sentado no da rep_11');
-  must(await logCount('Respuesta: «Espera sentado. Si encuentras silla».') === 1, 'N1: Usar el ordenador no enseña el correo de Ramírez');
+  must(await logCount('En borradores, mi respuesta: «Poder, he podido».') === 1, 'N1: Usar el ordenador no enseña el correo de Ramírez');
   await verb('usar', 'ordenador_bruno'); await verb('mirar', 'ordenador_bruno');
-  must(await logCount('Respuesta: «Espera sentado. Si encuentras silla».') === 1, 'N1: el correo de Ramírez se repite (debe salir una sola vez)');
+  must(await logCount('En borradores, mi respuesta: «Poder, he podido».') === 1, 'N1: el correo de Ramírez se repite (debe salir una sola vez)');
   ok('N1: Usar el ordenador (sentado) da la réplica R11 como Mirar; una sola vez');
 
   // ------------------------------------------------------------ N2 Mirar a Bruno por acto (con objetivos viejos pendientes)
@@ -327,7 +327,11 @@ try {
   }
   await goto('pecera');
   let d = await brunoDice();
-  must(d.includes(M.cms), `N2: Acto II en la Redacción, sin CMS: «${M.cms}» (dice ${JSON.stringify(d)})`);
+  // [P11] el CMS cuelga del HUECO: sin haber oído a Maripaz, la meta del acto es la reunión; tras oírla, el CMS
+  must(d.includes(M.reunion), `N2: Acto II en la Redacción, sin CMS ni Maripaz oída: «${M.reunion}» (dice ${JSON.stringify(d)})`);
+  await setFlags({ maripaz_pide_web: true });
+  d = await brunoDice();
+  must(d.includes(M.cms), `N2: Acto II en la Redacción, sin CMS y con Maripaz oída: «${M.cms}» (dice ${JSON.stringify(d)})`);
   ok('N2: Acto II con R11 sin aprender: «Mirar a Bruno» ya no dice «Tengo silla…», dice la meta del acto');
   await setFlags({ acto_3_iniciado: true });           // CMS, coma y R11 siguen pendientes
   for (const sala of ['pecera', 'vestibulo', 'administracion', 'cpd']) {
@@ -339,7 +343,8 @@ try {
   await setFlags({ acto_3_iniciado: false });
 
   // ------------------------------------------------------------ N1 la abuela dice dónde está cada réplica que falta
-  await setFlags({ reunion_terminada: true, rep_08: false, rep_04: true, rep_14: true, rep_11: false });
+  // [P11] sin web Maripaz no acepta el D1: estas pistas presuponen el CMS arreglado
+  await setFlags({ reunion_terminada: true, cms_vivo: true, rep_08: false, rep_04: true, rep_14: true, rep_11: false });
   let [, L2, L3] = await tresLlamadas('sala_amazonas');
   const d08 = await DONDE('rep_08'), d11 = await DONDE('rep_11');
   must(L2.includes('A: ' + d08[0]), `N1: nivel 2 (D1) sin la primera réplica que falta (R08): ${JSON.stringify(L2)}`);
@@ -383,10 +388,10 @@ try {
 
   // ------------------------------------------------------------ N9 la libreta, comillas
   await G(() => __game.newGame()); await idle();
-  await setFlags({ rep_09: true, rep_01: true });
+  await setFlags({ rep_06: true, rep_01: true });
   await verb('usar', 'libreta_replicas');
   const lib = await G(() => __game.currentDialogOptions());
-  must(lib && lib.includes('«Tráeme el contexto. Le hago una pieza aparte: “El contexto, explicado”.»'), `N9: la libreta no cambia las comillas de dentro: ${JSON.stringify(lib)}`);
+  must(lib && lib.includes('«Con dos fuentes y media. La media dijo “yo no te he dicho nada”.»'), `N9: la libreta no cambia las comillas de dentro: ${JSON.stringify(lib)}`);
   must(lib.every(o => (o.match(/«/g) || []).length <= 1), `N9: comillas «» anidadas en la libreta: ${JSON.stringify(lib)}`);
   await chooseByText('[Cerrar la libreta]'); await idle();
   ok('N9: la libreta cita con «…» y lo de dentro con “…”');

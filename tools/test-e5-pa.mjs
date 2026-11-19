@@ -2,8 +2,8 @@
 // PRUEBA DEL PAQUETE PA DE LA ENMIENDA E5 (Sala Amazonas y Vending; docs/guion2/ENMIENDA_E5.md §2.1, §2.6, §5.2, §5.4),
 // con RATÓN REAL en los pasos clave. Capturas en tools/shots/e5-pa-*.png. Cubre:
 //   §2.1 la «pregunta del público»: orden del día → Gervasio («…y los conectados») → Gertrudis → Usar la tele →
-//   estampida y ATASCO JUGABLE; las cuatro vías (empujar, cruasán, hablar, anuncio a los 20 s quietos: E6), cada una en
-//   partida limpia; intentos fuera de orden; «Guardar» en gris con el atasco; cargar una partida con el atasco forzado;
+//   estampida y el ATASCO, que con [P11] es una escena automática (el anuncio de Maripaz y el cruasán de Jacinto; antes
+//   había cuatro vías jugables); intentos fuera de orden; Esc en la escena; cargar una partida con el atasco forzado;
 //   el Acto III (ni opción de Gertrudis ni tele especial); pistas de la tele («wifi y rencor», móvil «once mil»).
 //   §2.6 la señal tras D4: caras al cartón, crujido con `tamb3`, megafonía a los 10, 25 y 45 s de tiempo QUIETO (el ratón
 //   moviéndose no la impide; con un menú abierto no suena), Gervasio M34 y el empujón hasta el final.
@@ -106,26 +106,38 @@ async function cerrarDialogo(G) {
 async function hastaAtasco(T) {
   const { G } = T;
   await G(() => { __game.setFlag('sala_amazonas_orden_visto', true); __game.setFlag('sala_becario_sin_turno', true); __game.setFlag('gertrudis_pregunta', true); });
-  await rapido(G, false);                         // (en modo rápido, la escena resolvería por la vía del anuncio)
+  await rapido(G, false);
   await G(() => { __game.game.runScript(api => api.scene('sala_tele_gertrudis'), { label: 'test tele' }); });
-  await saltando(G, "__game.getFlag('sala_amazonas_atasco') && !__game.state().busy");
-  await G(() => { __game.skipSpeech(); __game.game.speeches.length = 0; });
+  return hastaFinAtasco(G);
 }
+/** [P11] El atasco es una escena automática: se salta el texto hasta que la reunión acaba y el control vuelve. Devuelve si
+ *  en algún momento el jugador tuvo el control con el atasco abierto (no debe). */
+async function hastaFinAtasco(G) {
+  let abierto = false;
+  const t0 = Date.now();
+  while (Date.now() - t0 < 90000) {
+    const st = await G(() => { if (__game.game.speeches.length) __game.skipSpeech(); return { at: !!__game.getFlag('sala_amazonas_atasco'), fin: !!__game.getFlag('reunion_terminada'), busy: __game.state().busy, cut: __game.game.cutscene > 0 }; });
+    if (st.at && !st.busy && !st.cut) abierto = true;
+    if (st.fin && !st.busy && !st.cut) break;
+    await sleep(80);
+  }
+  return abierto;
+}
+// [P11] el atasco ya no es jugable: una sola salida, la escena del anuncio de Maripaz (con el medio cruasán de Jacinto)
 const viaLines = {
-  empujar: 'Les doy un empujoncito.', cruasan: '¡Ese medio cruasán es mío!', hablar: '¿Y la próxima reunión, cuándo es?',
-  anuncio: '¡Un momento! ¡Antes de salir, un anuncio',
+  empujar: 'Les doy un empujoncito.', hablar: '¿Y la próxima reunión, cuándo es?', anuncio: '¡Un momento! ¡Antes de salir, un anuncio',
 };
 async function comprobarVia(T, via) {
   const { G } = T;
   await rapido(G, true);
   await until(G, () => __game.getFlag('reunion_terminada') && !__game.state().busy, null, 60000);
   const n = {}; for (const [k, t] of Object.entries(viaLines)) n[k] = await logCount(G, t);
-  ok(n[via] === 1 && Object.entries(n).every(([k, c]) => k === via || c === 0), `vía ${via}: una sola línea de vía en el registro ${JSON.stringify(n)}`);
+  ok(n[via] === 1 && Object.entries(n).every(([k, c]) => k === via || c === 0) && await logCount(G, '¡Ese medio cruasán es mío!') === 1, `vía ${via}: el anuncio (y el cruasán de Jacinto), sin las otras vías ${JSON.stringify(n)}`);
   const st = await G(() => { const s = __game.state(); return { rt: s.flags.reunion_terminada, est: s.flags.sala_amazonas_estampida, at: s.flags.sala_amazonas_atasco,
     merc: ['mercados_1', 'mercados_2', 'mercados_3'].filter(id => s.actors[id] && s.actors[id].room === 'sala_amazonas'), gerv: s.actors.gervasio_acta && s.actors.gervasio_acta.room,
     noSave: __game.game.noSave, tele: __game.game.getObjState('tele_amazonas').state, bot: __game.game.getObjState('botellines').state, reg: __game.game.salaAtasco }; });
   ok(st.rt && st.est && !st.at && !st.merc.length && st.gerv !== 'sala_amazonas' && !st.noSave, `vía ${via}: reunión terminada, Mercados y Gervasio fuera, atasco cerrado, se puede guardar ${JSON.stringify(st)}`);
-  ok(st.reg && st.reg.regreso === (via !== 'cruasan'), `vía ${via}: el regreso mudo a por el cruasán ${via === 'cruasan' ? 'no' : 'sí'} (${JSON.stringify(st.reg)})`);
+  ok(st.reg && st.reg.regreso === true, `vía ${via}: Jacinto vuelve a por el cruasán (${JSON.stringify(st.reg)})`);
   ok(await logHas(G, 'Se levanta la sesión. Lo hablamos.') && await logHas(G, '¿Usted no huye?'), `vía ${via}: «Se levanta la sesión» y Maripaz`);
   ok((st.tele || 'normal') === 'normal' && st.bot === 'tumbados', `vía ${via}: la tele vuelve a lo de siempre y los botellines quedan tumbados (${st.tele}, ${st.bot})`);
 }
@@ -200,31 +212,15 @@ try {
     await saltando(G, "__game.game.speeches.some(s => String(s.text).startsWith('CONVOCADA'))", 'PREGUNTA DEL');
     await sleep(700);
     await shot(page, 'tele-convocada');
-    await saltando(G, "__game.getFlag('sala_amazonas_atasco') && !__game.state().busy");
-    const s2 = await G(() => ({ busy: __game.state().busy, merc: ['mercados_1', 'mercados_2', 'mercados_3'].map(id => { const a = __game.game.actors[id]; return [Math.round(a.x), a.room]; }), ns: __game.game.noSave, rt: __game.getFlag('reunion_terminada') }));
+    // [P11] el atasco, escena automática: el control no vuelve con los tres encajados; Maripaz anuncia, plop, cruasán
+    await saltando(G, "__game.getFlag('sala_amazonas_atasco')");
+    await sleep(500);
+    await shot(page, 'atasco');
+    const abierto = await hastaFinAtasco(G);
     ok(await logHas(G, 'PREGUNTA DEL PÚBLICO: ¿Y CUÁLES SON LOS SIGUIENTES PASOS?') && await logHas(G, '¡Se ve! ¡Por fin se ve la pantalla!'), 'Rogelio «¡Se ve!» y Gertrudis por la tele');
     ok(await logHas(G, '¡Yo soy de Bolsa y de Mercados! ¡Tengo doble prioridad!'), 'las tres líneas del atasco');
-    ok(!s2.busy && s2.ns && !s2.rt && s2.merc.every(([x, r]) => r === 'sala_amazonas' && x < 40), `control devuelto con los tres encajados en la puerta y sin guardar ${JSON.stringify(s2)}`);
-    await sleep(600);
-    await page.mouse.move(400, 300);
-    await shot(page, 'atasco');
-    // (h) guardar: en gris
-    await page.keyboard.press('Escape');
-    await page.waitForFunction(() => __game.game.menu && __game.game.menu.layout);
-    const it = await G(() => { const i = __game.game.menu.layout.find(i => i.act === 'save'); return { en: i.enabled, c: __game.virtualToClient(i.x + 6, i.y + 5) }; });
-    await page.mouse.click(it.c.x, it.c.y);
-    ok(it.en === false && await G(() => __game.game.menu && __game.game.menu.page === 'main'), '«Guardar partida» en gris con el atasco abierto');
-    await page.keyboard.press('Escape');
-    await sleep(150);
-    await rapido(G, true);
-    // otra cosa durante el atasco: lo de siempre (y la tele repite la convocatoria)
-    await G(() => __game.doVerb('mirar', 'botellines'));
-    await G(() => __game.doVerb('usar', 'tele_amazonas'));
-    ok(await flag(G, 'sala_amazonas_atasco') && !(await flag(G, 'reunion_terminada')), 'Mirar / Usar la tele durante el atasco: no resuelve');
-    // vía empujar con clic: Empujar a Fermín
-    await G(() => __game.clearLog());
-    await clic(T, 'empujar', 'mercados_1');
-    await comprobarVia(T, 'empujar');
+    ok(!abierto, '[P11] el jugador no recupera el control con el atasco abierto: se resuelve solo');
+    await comprobarVia(T, 'anuncio');
     await sleep(300);
     await shot(page, 'tras-atasco');
     // tras la estampida, todo como hoy
@@ -236,42 +232,8 @@ try {
     await T.ctx.close();
   }
 
-  console.log('\n§2.1 (g) las otras tres vías, cada una en partida limpia (con ratón)');
-  for (const via of ['cruasan', 'hablar', 'anuncio']) {
-    const T = await open();
-    const { page, G } = T;
-    await hastaAtasco(T);
-    await G(() => __game.clearLog());
-    if (via === 'cruasan') await clic(T, 'coger', 'minicruasanes');
-    else if (via === 'hablar') await clic(T, 'hablar', 'mercados_2');
-    else {
-      // E6 §2.2.1 (cambio a propósito): 20 s de tiempo quieto (antes 10), con el ratón moviéndose sin parar (no cuenta)
-      const t0 = Date.now();
-      let k = 0;
-      while (!(await flag(G, 'reunion_terminada')) && Date.now() - t0 < 19000) { await page.mouse.move(300 + (k++ % 20) * 10, 420); await sleep(100); }
-      ok(!(await logHas(G, viaLines.anuncio)), 'antes de 20 s quietos, Maripaz no anuncia');
-      await until(G, () => __game.log.some(l => String(l.text).includes('anuncio de cinco segundos')), null, 8000);
-      ok((Date.now() - t0) >= 19500, `anuncio a los ~20 s (${Date.now() - t0} ms)`);
-    }
-    await comprobarVia(T, via);
-    if (via === 'cruasan') await shot(page, 'via-cruasan');
-    await T.ctx.close();
-  }
-
-  console.log('\n§2.1 vía hablar con Gervasio y con Maripaz (otras puertas de las vías)');
-  for (const [id, via] of [['gervasio_acta', 'hablar'], ['maripaz_remitido', 'anuncio'], ['sala_a_pajarera', 'empujar']]) {
-    const T = await open();
-    const { G } = T;
-    await hastaAtasco(T);
-    await G(() => __game.clearLog());
-    await rapido(G, true);
-    await G(([id]) => __game.doVerb(id === 'sala_a_pajarera' ? 'ir' : 'hablar', id), [id]);
-    await comprobarVia(T, via);
-    ok((await G(() => __game.state().room)) === 'sala_amazonas', `${id}: Bruno no sale de la Sala`);
-    await T.ctx.close();
-  }
-
-  console.log('\n§2.1 saltar la escena de la tele con Esc no resuelve el atasco');
+  // [P11] fuera las vías del atasco (empujar, cruasán, hablar, el anuncio a los 20 s): (g) y las «otras puertas» se van
+  console.log('\n§2.1 [P11] saltar la escena de la tele con Esc: el atasco se resuelve igual (es escena)');
   {
     const T = await open();
     const { page, G } = T;
@@ -281,14 +243,10 @@ try {
     await until(G, () => __game.game.cutscene > 0, null, 5000);
     await sleep(400);
     await page.keyboard.press('Escape');
-    await until(G, () => !__game.state().busy, null, 30000);
+    const abierto = await hastaFinAtasco(G);
     const s = await G(() => ({ at: __game.getFlag('sala_amazonas_atasco'), rt: __game.getFlag('reunion_terminada'), ns: __game.game.noSave,
       merc: ['mercados_1', 'mercados_2', 'mercados_3'].filter(id => __game.game.actors[id].room === 'sala_amazonas').length }));
-    ok(s.at && !s.rt && s.ns && s.merc === 3, `Esc en la escena: atasco abierto, control devuelto, sin guardar ${JSON.stringify(s)}`);
-    await G(() => __game.clearLog());
-    await rapido(G, true);
-    await G(() => __game.doVerb('empujar', 'mercados_3'));
-    await comprobarVia(T, 'empujar');
+    ok(!abierto && !s.at && s.rt && !s.ns && s.merc === 0, `Esc en la escena: la reunión termina igual, sin control con el atasco abierto, se puede guardar ${JSON.stringify(s)}`);
     await T.ctx.close();
   }
 

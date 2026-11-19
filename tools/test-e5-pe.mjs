@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // PRUEBA DEL PAQUETE PE DE LA ENMIENDA E5 (Planta 2: Marketing y Comercial + Administración; docs/guion2/ENMIENDA_E5.md
 // §2.5.1 y §10), con ratón real donde importa. Capturas en tools/shots/e5-pe-*.png. Cubre:
-//   §2.5.1 el rotulador de objetivos: Coger el termómetro con el ratón en el Acto I (Maripaz lo regala) y en el III; en el
-//   II antes de D1 (sin Maripaz) en silencio; no se duplica (la 2.ª vez, lo genérico); sin `torno_abierto`, nada;
-//   guardar/cargar (antes y después de cogerlo).
+//   §2.5.1 el rotulador de objetivos — [P11] [P14] ya no se coge del termómetro (lo da Maripaz al perder el D1): Acto I,
+//   Maripaz no lo suelta; Acto II, el cordel vacío; con el rotulador, Coger es lo genérico y Usar pinta; sin
+//   `torno_abierto`, nada; guardar/cargar con él.
 //   Decisión del dueño: el árbol de Begoña sin «¿Usted ha sido feliz alguna vez?» (y el resto del árbol, entero).
 //   Textos de PE: C45, C47-C52, M17; C53-C57, C81-C83, R2.
 //   E3 M1 («La lectora del inventario»: Dar la pieza a Maripaz) sigue funcionando.
@@ -33,7 +33,7 @@ const ACTO2 = { ...ACTO1, acto_2_iniciado: true, chaqueta_cogida: true, chaqueta
 const ACTO2_D1 = { ...ACTO2, duelo_maripaz_ganado: true, casilla_hueco: true };
 const ACTO3 = { ...ACTO2_D1, acto_3_iniciado: true, pagina_cerrada: true, casilla_fuente: true, casilla_firma: true };
 
-const MARIPAZ_ROT = '¿Mi rotulador de objetivos? Llévatelo. Lo que pintes, lo cobro como espacio.';
+const MARIPAZ_ROT = 'Ese rotulador pinta objetivos. Cuando tengas uno, hablamos.';   // [P11] antes del D1 no lo suelta
 
 async function open(flags, room = 'ecosistema') {
   const ctx = await browser.newContext({ viewport: { width: 960, height: 600 } });
@@ -79,16 +79,63 @@ async function cogerRotulador(page, G, foto) {
 const cuenta = (arr, x) => arr.filter(i => i === x).length;
 
 try {
-  // ================================================================ Acto I: Maripaz lo regala
-  console.log('§2.5.1 Acto I: Coger el termómetro con el ratón → Maripaz da el rotulador');
+  // ================================================================ [P11] [P14] el rotulador ya no se coge del termómetro
+  // Lo da Maripaz al perder el D1 (test-guion3-t2). Aquí: Acto I, Maripaz no lo suelta; Acto II, el cordel vacío; tras el
+  // D1, Bruno ya lo lleva y «Usar» pinta.
+  console.log('§2.5.1 [P11] Acto I: Coger el termómetro con el ratón → Maripaz no lo suelta');
   {
     const { ctx, page, G } = await open(ACTO1);
     ok(await G(() => __game.state().room === 'ecosistema'), 'en Marketing y Comercial, Acto I');
-    await G(() => __game.save(2));                                          // partida sin rotulador
-    await cogerRotulador(page, G, 'rotulador-acto1');
-    let L = await log(G), I = await inv(G);
-    ok(L.includes('maripaz_remitido: ' + MARIPAZ_ROT), 'Maripaz: «¿Mi rotulador de objetivos? Llévatelo…»');
-    ok(cuenta(I, 'rotulador_rojo') === 1 && await flag(G, 'ecosistema_rotulador_dado') === true, 'rotulador_rojo en el inventario y ecosistema_rotulador_dado');
+    ok(await G(() => __game.objects().some(o => o.id === 'rotulador_cordel' && o.visible)), 'el rotulador cuelga de su cordel');
+    await clicVerbo(page, G, 'coger', 'termometro_ventas');
+    const hablo = await until(G, (t) => __game.state().speaking.some(s => s.text === t), MARIPAZ_ROT);
+    if (hablo) { await sleep(400); await shot(page, 'rotulador-acto1'); }
+    await sleep(200); await idle(G);
+    let L = await log(G);
+    ok(L.includes('maripaz_remitido: ' + MARIPAZ_ROT) && cuenta(await inv(G), 'rotulador_rojo') === 0, 'Maripaz: «Ese rotulador pinta objetivos. Cuando tengas uno, hablamos.» (no lo da)');
+    await G(() => __game.clearLog()); await G(() => __game.doVerb('usar', 'termometro_ventas'));
+    ok((await log(G)).includes('maripaz_remitido: ' + MARIPAZ_ROT), '[P14] Usar, sin el rotulador: como Coger');
+    await G(() => __game.clearLog()); await G(() => __game.doVerb('coger', 'rotulador_cordel'));
+    ok(cuenta(await inv(G), 'rotulador_rojo') === 0, 'Coger el del cordel: tampoco');
+    // M17: sin la frente en el árbol de Maripaz
+    await G(() => { __game.setFlag('bruno_sellado_frente', true); __game.clearLog(); });
+    await G(() => __game.doVerb('hablar', 'maripaz_remitido'));
+    ok(!(await log(G)).some(l => /frente/.test(l)), 'M17: con la frente sellada, Maripaz ya no dice «Llevas RECHAZADO en la frente.»');
+    await G(() => __game.chooseText('Me voy.')); await idle(G);
+    await ctx.close();
+  }
+
+  console.log('\n§2.5.1 [P14] Acto II, antes del D1 (Maripaz en la Sala): el cordel, vacío');
+  {
+    const { ctx, page, G } = await open(ACTO2);
+    ok(await G(() => { const p = __game.game.actors.maripaz_remitido; return !(p && p.room === 'ecosistema'); }), 'Maripaz no está en la planta');
+    ok(!(await G(() => __game.objects().some(o => o.id === 'rotulador_cordel' && o.visible))), 'sin el rotulador en el cordel');
+    await clicVerbo(page, G, 'coger', 'termometro_ventas'); await sleep(200); await idle(G);
+    ok((await log(G)).includes('bruno: Solo queda el cordel, cortado. El rotulador se lo ha llevado Maripaz.') && cuenta(await inv(G), 'rotulador_rojo') === 0, '«Solo queda el cordel, cortado. El rotulador se lo ha llevado Maripaz.»');
+    await G(() => __game.clearLog()); await G(() => __game.doVerb('mirar', 'termometro_ventas'));
+    ok((await log(G)).includes('bruno: El cordel, vacío. El 3 % que falta se lo lleva el gong de al lado.'), 'Mirar: «El cordel, vacío…»');
+    await ctx.close();
+  }
+
+  console.log('\n§2.5.1 sin torno_abierto (forzado): lo genérico, sin rotulador');
+  {
+    const { ctx, page, G } = await open(ACTO1);
+    await G(() => __game.setFlag('torno_abierto', false));
+    await clicVerbo(page, G, 'coger', 'termometro_ventas'); await sleep(200); await idle(G);
+    ok(cuenta(await inv(G), 'rotulador_rojo') === 0, 'sin torno_abierto no hay rotulador');
+    await ctx.close();
+  }
+
+  // ================================================================ Acto III, con el rotulador del D1; textos de ecosistema; M1 de E3
+  console.log('\n§2.5.1 Acto III (con el rotulador del D1): Coger, lo genérico; Usar, pinta');
+  {
+    const { ctx, page, G } = await open(ACTO3);
+    await G(() => { __game.giveItem('rotulador_rojo'); __game.clearLog(); });
+    await clicVerbo(page, G, 'coger', 'termometro_ventas'); await sleep(200); await idle(G);
+    const L0 = await log(G);
+    ok(cuenta(await inv(G), 'rotulador_rojo') === 1 && !L0.some(l => l.includes('rotulador')) && L0.some(l => l.startsWith('bruno: ')), `Coger con el rotulador en el bolsillo: lo genérico, sin duplicarlo`);
+    await G(() => __game.clearLog()); await G(() => __game.doVerb('usar', 'termometro_ventas'));
+    ok((await log(G)).includes('bruno: Le pinto un poquito más de rojo.') && (await log(G)).includes('maripaz_remitido: Así lo pinto yo los viernes. Pero con más pulso.'), 'Usar el termómetro, con el rotulador: lo de hoy');
     // inventario: el icono a la vista (y su Mirar, de I1)
     await G(() => __game.clearLog());
     const vm = await G(() => __game.verbPos('mirar')); await page.mouse.click(vm.x, vm.y); await sleep(80);
@@ -97,62 +144,6 @@ try {
     await shot(page, 'inventario');
     await idle(G);
     ok((await log(G)).includes('bruno: Rotulador rojo de Comercial. Solo ha pintado objetivos.'), 'Mirar el rotulador (clic en el inventario) → su línea');
-    // no se duplica: la 2.ª vez, lo genérico
-    await G(() => __game.clearLog());
-    await cogerRotulador(page, G);
-    L = await log(G); I = await inv(G);
-    ok(cuenta(I, 'rotulador_rojo') === 1 && !L.some(l => l.includes('rotulador de objetivos')) && L.some(l => l.startsWith('bruno: ')),
-      `2.º Coger: no se duplica y suena lo genérico («${(L.find(l => l.startsWith('bruno: ')) || '').slice(7, 60)}…»)`);
-    // Usar el termómetro sigue como hoy (con Maripaz)
-    await G(() => __game.clearLog()); await G(() => __game.doVerb('usar', 'termometro_ventas'));
-    ok((await log(G)).includes('maripaz_remitido: Así lo pinto yo los viernes. Pero con más pulso.'), 'Usar el termómetro: lo de hoy');
-    // guardar con el rotulador / cargar sin él / cargar con él
-    await G(() => __game.save(3));
-    await G(() => __game.load(2));
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 0 && !(await flag(G, 'ecosistema_rotulador_dado')), 'cargar la partida de antes: sin rotulador ni flag');
-    await G(() => { __game.skipText(true); }); await cogerRotulador(page, G); await G(() => __game.skipText(false));
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 1, 'tras cargar, se puede volver a coger (una vez)');
-    await G(() => __game.load(3));
-    await G(() => __game.clearLog()); await cogerRotulador(page, G);
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 1 && await flag(G, 'ecosistema_rotulador_dado') === true && !(await log(G)).some(l => l.includes('rotulador de objetivos')),
-      'cargar la partida con el rotulador: lo conserva y no vuelve a darlo');
-    // C52 y C51 no aplican aquí (Maripaz está); M17: sin la frente en el árbol de Maripaz
-    await G(() => { __game.setFlag('bruno_sellado_frente', true); __game.clearLog(); });
-    await G(() => __game.doVerb('hablar', 'maripaz_remitido'));
-    ok(!(await log(G)).some(l => /frente/.test(l)), 'M17: con la frente sellada, Maripaz ya no dice «Llevas RECHAZADO en la frente.»');
-    await G(() => __game.chooseText('Me voy.')); await idle(G);
-    await ctx.close();
-  }
-
-  // ================================================================ Acto II antes de D1: Bruno lo coge en silencio
-  console.log('\n§2.5.1 Acto II (Maripaz en la Sala): Bruno lo coge sin decir nada');
-  {
-    const { ctx, page, G } = await open(ACTO2);
-    ok(await G(() => { const p = __game.game.actors.maripaz_remitido; return !(p && p.room === 'ecosistema'); }), 'Maripaz no está en la planta');
-    await cogerRotulador(page, G);
-    const L = await log(G);
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 1 && L.length === 0, `en silencio (${L.length} líneas) y con el rotulador`);
-    await G(() => __game.clearLog()); await G(() => __game.doVerb('usar', 'termometro_ventas'));
-    ok((await log(G)).includes('bruno: Rojo hasta el 98 %. Nadie lo nota.'), 'C52: «Rojo hasta el 98 %. Nadie lo nota.»');
-    await ctx.close();
-  }
-
-  // ================================================================ sin torno_abierto: nada
-  console.log('\n§2.5.1 sin torno_abierto (forzado): lo genérico, sin rotulador');
-  {
-    const { ctx, page, G } = await open(ACTO1);
-    await G(() => __game.setFlag('torno_abierto', false));
-    await cogerRotulador(page, G);
-    ok(cuenta(await inv(G), 'rotulador_rojo') === 0 && !(await flag(G, 'ecosistema_rotulador_dado')), 'sin torno_abierto no hay rotulador');
-    await ctx.close();
-  }
-
-  // ================================================================ Acto III: Maripaz lo regala; textos de ecosistema; M1 de E3
-  console.log('\n§2.5.1 Acto III: Coger el termómetro → Maripaz da el rotulador');
-  {
-    const { ctx, page, G } = await open(ACTO3);
-    await cogerRotulador(page, G, 'rotulador-acto3');
-    ok((await log(G)).includes('maripaz_remitido: ' + MARIPAZ_ROT) && cuenta(await inv(G), 'rotulador_rojo') === 1, 'Acto III: la línea de Maripaz y el rotulador');
     await G(() => __game.save(4)); await G(() => __game.load(4));
     ok(cuenta(await inv(G), 'rotulador_rojo') === 1, 'guardar/cargar en el III: un rotulador');
 

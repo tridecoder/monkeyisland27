@@ -1,7 +1,7 @@
 {
   "name": "FE DE ERRATAS",
   "short_name": "Fe de erratas",
-  "description": "Una aventura de cierre. Aventura gráfica point and click en el periódico elContable.es.",
+  "description": "Una aventura de cierre. Aventura gráfica point and click en el periódico El Incontable.",
   "lang": "es",
   "start_url": "./",
   "scope": "./",

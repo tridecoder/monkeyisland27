@@ -6,14 +6,14 @@
 //
 // ESTADOS QUE LEE EL ARTE (la lógica pone el flag o el estado ANTES de la línea que lo comenta):
 //  - pantalla_metricas: apagada con `cms_vivo`; estados de escena 'negra' (apagón), 'viral' y 'viral_baja' (§4.1).
-//  - enchufe_pantalla: estado 'con_ticket' (camino antiguo: «SALVO TICKET Nº 3»). monitor_yoli: 'publicado' | 'guardando'.
+//  - monitor_yoli: 'publicado' | 'guardando'. ([P15] tanda 4: fuera el estado 'con_ticket' del enchufe, del camino antiguo)
 //  - herminia_portatil (E1.8 + E2 §2.2): por flags `limpio` (sin inigo_presentado) → `cinta_1` → `cinta_2` (herminia_midio)
 //    → `paquete` (dos_ias_vista) → `anexionada` (infografia_integrada); en la 7.2 la escena pone `cinta_1` a mano; durante
 //    la anexión, estado explícito 'desenvuelta' / 'anexionada'. Pegatina «IA» junto a la de «INFOGRAFÍA» (no en paquete).
 //  - frontera_carrocero: solo recta; con `infografia_integrada`, marca de pegamento (E1.3.4).
 //  - pantalla_anselmo: DENEGADO · REVOCADO con `ruben_libre` (cambia sola en la salida en valor, E2 §2.6.4) · OK con integrada.
 //  - mesa_guardia (E2 §2.6.5): la mesa vacía donde estaba Nemesio, con la silla vacía y sus pósits de guardia.
-//  - kanban: columna SALIDA EN VALOR con `posit_descopeado`. silla_ramirez / ordenador_bruno: `silla_libre`.
+//  - kanban: columna SALIDA EN VALOR con `posit_descopeado` (id técnico: el pósit ya ha salido). silla_ramirez / ordenador_bruno: `silla_libre`.
 import { buildRoom } from '../lib/room.js';
 import art from './art/pecera.art.js';
 import dialogos, { anselmoCtx, anselmoEnSuSitio, columnas } from './pecera.dialogos.js';
@@ -49,8 +49,9 @@ const CORO_ACTO_3 = [[['D2', '¿Lo del Titulator ha sido Diseño?'], ['D3', 'No.
 // paso 13 (E2 §7.4): sentado, el correo se ve; la réplica R11 (contra Maripaz). Con Mirar o con Usar el ordenador
 // (crítica 3 · N1); una sola vez: con `rep_11` ya sabida, cada verbo dice lo suyo.
 async function leerCorreoRamirez(api) {
-  await api.say(['Con silla, el correo se ve. Ramírez: «Quedo a la espera de tus comentarios».',
-    'Respuesta: «Espera sentado. Si encuentras silla».']);
+  // [P9] R11: el correo de Ramírez pregunta; la respuesta es un borrador de Bruno que nunca mandó
+  await api.say(['Con silla, el correo se ve. Ramírez, en 2019: «¿Has podido verlo?».',
+    'En borradores, mi respuesta: «Poder, he podido».', 'Nunca la mandé. La apunto.']);
   api.learnReply('rep_11');
   await api.say(['Y una autorrespuesta de Brais: «Estoy fuera de la oficina desde julio».', '«Bueno, fuera no. Dentro. Muy dentro».']);
 }
@@ -253,12 +254,10 @@ export default buildRoom({
     { id: 'enchufe_pantalla', name: 'enchufe', handlers: {
       mirar: async (api) => {
         await api.say(['Cinta: «NO DESENCHUFAR». Y una brida que baja por la pared.', 'Etiqueta de la brida: «R-3, SISTEMAS. EUTIMIO».']);
-        if (api.getState('enchufe_pantalla') === 'con_ticket') await api.say('Debajo, a rotulador, la excepción de Anselmo: «SALVO TICKET Nº 3».');
       },
       tirar: async (api) => {
         if (api.flag('cms_vivo')) { await api.say('Ya está fuera, y el CMS, dentro.'); return; }
-        if (api.flag('vio_ticket_3')) { await api.scene('pecera_cms_vivo'); return; }   // camino antiguo
-        await api.scene('pecera_apagon');                                                  // §4.2, la escalada
+        await api.scene('pecera_apagon');                                                  // §4.2, la escalada ([P11] fuera el ticket nº 3)
       },
       empujar: async (api) => api.say(api.flag('cms_vivo')
         ? 'Ni hablar. Nueve años esperando a que alguien la desenchufara.'
@@ -323,7 +322,7 @@ export default buildRoom({
         if (!api.flag('rep_11')) {                                          // paso 13 (E2 §7.4)
           await leerCorreoRamirez(api);
         } else {
-          await api.say(['Bandeja de entrada. Ramírez sigue a la espera de mis comentarios.', 'Y Brais sigue fuera de la oficina. Bueno, dentro. Muy dentro.']);
+          await api.say(['Bandeja de entrada. Ramírez sigue preguntando si he podido.', 'Y Brais sigue fuera de la oficina. Bueno, dentro. Muy dentro.']);
         }
       },
       usar: async (api) => {
@@ -344,7 +343,7 @@ export default buildRoom({
       'usar:cafe': async (api) => api.say(['Tentador. Pero el teclado de al lado ya lo probó en 2017.', 'Sigue escribiendo en negrita.']),
       'usar:pieza_opa': 'Ya está escrita. Ahora le faltan hueco, fuente y firma.',
       hablar: 'Le susurro "papel". Se le acelera el ventilador. Le ha dado miedo.',
-      coger: 'Es del Contable. Lo pone una pegatina. Con mi nombre mal escrito.',
+      coger: 'Es de El Incontable. Lo pone una pegatina. Con mi nombre mal escrito.',
       cerrar: 'Lo cierro. Cuatro mil ciento doce piezas me miran desde el escritorio.',
     } },
     { id: 'silla_ramirez', name: 'silla de Ramírez', handlers: {
@@ -457,8 +456,7 @@ export default buildRoom({
       mirar: async (api) => {
         const lines = ['Columnas: POR HACER, EN CURSO, BLOQUEADO, HECHO y HECHO (PERO NO).'];
         if (api.flag('posit_descopeado')) {
-          lines.push(api.flag('columna_kanban') === 'descopeado' ? 'Y una nueva, a rotulador: DESCOPEADO. Dentro, el pósit de Brais.'
-            : 'Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Brais.');
+          lines.push('Y una nueva, a rotulador: SALIDA EN VALOR. Dentro, el pósit de Brais.');   // [P12] fuera la otra palabra
         } else if (api.flag('acto_3_iniciado')) lines.push('En POR HACER, amarillo de puro viejo: "Baja becario Brais".');
         await api.say(lines);
       },
@@ -466,12 +464,8 @@ export default buildRoom({
       empujar: 'Tiene ruedas. Lo empujo un palmo y Anselmo lo devuelve con la mirada.',
       tirar: 'Si tiro, se caen los pósits. Y Anselmo me pone en BLOQUEADO.',
       usar: async (api) => {
-        if (api.flag('album_validado') && !api.flag('posit_descopeado')) {
-          if (api.has('rotulador_rojo')) { await columnas(api); return; }
-          // E6 §2.9.2 (N11): lo dice Anselmo, sin levantarse (su lógica: de fuera / de dentro)
-          await api.sayAs(A, 'Mi rotulador no sale de Desarrollo. Que te lo preste alguien de fuera.');
-          return;
-        }
+        // [P15] tanda 4: el rotulador llega siempre con el D1 (antes del Acto III): fuera la línea de Anselmo sin él
+        if (api.flag('album_validado') && !api.flag('posit_descopeado')) { await columnas(api); return; }
         await api.say('Me escribo un pósit: "Firmar en papel". Lo pego en POR HACER.');
       },
       'usar:rotulador_rojo': rotuladorEnTablero,
@@ -527,7 +521,7 @@ export default buildRoom({
       },
       'dar:album_eventos': async (api) => api.sayAs(Y, ['¿Fotos de eventos? Eso no lo ve nadie.', 'Bueno. Uno. El del fondo.']),
     },
-      murmurs: ['Esto sube. Esto baja. Esto soy yo.', 'Busco "el Contable" y salen gestorías. Nos ganan. Tienen horario.',
+      murmurs: ['Esto sube. Esto baja. Esto soy yo.', '"Incontable": cero búsquedas al mes.',
         '«Los expertos coinciden»... Ya buscaré expertos. Primero, que coincidan.'] },   // L29 + E4 O21
     // (E2 §2.6: Nemesio, `nerea_backlog`, ya no está: su mesa es el hotspot `mesa_guardia` y lo suyo lo hace Anselmo.)
     { id: R, when: ['ruben_libre', '!lector_derribado'], handlers: {
@@ -629,11 +623,15 @@ export default buildRoom({
     if (api.flag('lector_derribado') || api.flag('juego_terminado') || api.restoring) return;
     // como mucho una escena de entrada por visita, por este orden
     if (api.flag('torno_abierto') && !api.flag('inigo_presentado')) { await api.scene('presentacion_villano'); return; }
+    // [P11] Íñigo pasa a Bruno a «Prescindible»: antes que cualquier otra escena de entrada salvo la presentación
+    if (api.flag('casilla_firma') && !api.flag('acto_3_iniciado') && !api.flag('inigo_prescindible')) { await api.scene('pecera_inigo_prescindible'); return; }
     if (api.flag('acto_3_iniciado') && !api.flag('dos_ias_vista')) { await api.scene('pecera_dos_ias'); return; }
     if (api.flag('herminia_de_alta') && !api.flag('infografia_integrada')) { await api.scene('pecera_anexion'); return; }
     // E4 S5 · paso 40: el ganador de Discover (después de la anexión, para no romper XE4; §8.1)
     if (api.flag('acto_3_iniciado') && api.flag('pieza_escrita') && !api.flag('discover_ganador')) { await api.scene('pecera_opa_ganadora'); return; }
     if (api.flag('cms_vivo') && api.once('pecera_cms_entrada')) { await api.scene('pecera_cms_entrada'); return; }
+    // [P4] la pantalla parpadea: primera entrada del Acto II con el CMS colgado (una vez)
+    if (api.flag('acto_2_iniciado') && !api.flag('acto_3_iniciado') && !api.flag('cms_vivo') && api.once('pecera_parpadeo')) { await api.scene('pecera_parpadeo'); return; }
     if (api.flag('cafetera_viral') && api.once('pecera_viral')) { await api.scene('pecera_viral'); return; }
     if (api.flag('bruno_con_chaqueta')) { await api.scene('pecera_chaqueta'); return; }
     if (api.flag('bruno_con_banner')) await api.scene('pecera_banner');            // E2 §4.2.3 (una vez)

@@ -12,9 +12,19 @@ import { menuMovil } from './lib/movil.js';
 async function abrirLibreta(api) {
   const D = api.game.content.duels;
   const learned = (D.pairs || []).filter(p => api.flag(p.flag));
+  // [P7] las pistas que han apuntado los duelos (dónde se aprende cada réplica que faltaba), en gris, al final
+  const pistas = pistasLibreta(api);
   await api.say(`Mi libreta de réplicas: ${learned.length} de ${N_REPLICAS}. En otra empresa esto sería un máster.`);
-  if (!learned.length) return;
-  await api.choose(learned.map(p => citar(p.reply)).concat(['[Cerrar la libreta]']), { escape: learned.length });
+  if (!learned.length && !pistas.length) return;
+  const opts = learned.map(p => citar(p.reply)).concat(pistas.map(t => ({ text: t, disabled: true })), ['[Cerrar la libreta]']);
+  await api.choose(opts, { escape: opts.length - 1 });
+}
+/** [P7] Textos de las pistas apuntadas en la libreta (réplicas aún no aprendidas), en el orden de las parejas. */
+export function pistasLibreta(api) {
+  const D = api.game.content.duels, PL = D.pistas;
+  if (!PL) return [];
+  const bits = Number(api.flag(PL.flag)) || 0;
+  return [...new Set((D.pairs || []).filter((p, i) => (bits & (1 << i)) && !api.flag(p.flag)).map(p => PL.de(p)).filter(Boolean))];
 }
 
 // ------------------------------------------------------------------ icon helpers
@@ -205,7 +215,8 @@ export const FICHA = {
   titulo: 'Ficha de la página 7. Hueco, fuente, firma.',
   hueco: ['HUECO: vendida a Siestatón, sin confirmar. Lo decide la Sala Amazonas.',          // E2 L34
     'HUECO: la reunión ha acabado. Maripaz no. Sigue sentada en el planillo.',
-    'HUECO, hecho: Siestatón, a la web. Veintitrés líneas abajo, mías.'],
+    'HUECO, hecho: Siestatón, a la web. Veintitrés líneas abajo, mías.',
+    'HUECO: Siestatón se va a la web. Si la web publica.'],                                  // [P11] Maripaz lo ha dicho; el CMS, caído
   fuente: ['FUENTE: dos fuentes, dice Aurora. Tengo cero.',
     'FUENTE: tengo una nota de gasto con un reverso. Me falta otra fuente.',
     'FUENTE, hecho: una anónima y otra con IVA.'],
@@ -213,14 +224,13 @@ export const FICHA = {
     'FIRMA: el fax ya habla. Ahora hay que ganárselo contestando.',
     'FIRMA, hecho: «Trece con espacios. Cabe.»'],
   firmaPapel: 'FIRMA: el fax no tiene papel. El papel, en esta casa, sale de Begoña.',   // E7 F1 (N11), con oyo_papel_begona
-  margen: 'Al margen, a lápiz: «CMS en coma. Sistemas no atiende a nadie».',
+  margen: 'Al margen, a lápiz: «CMS en coma. Sin web, Maripaz no suelta la página».',   // [P14] tras oír a Maripaz
   pieza: ['PIEZA: sin escribir. Primero las fuentes; luego, mi ordenador.',
     'PIEZA: treinta y una líneas. El hueco, veintitrés. Me sobran ocho.',                    // E2 L34
     'PIEZA: veintitrés líneas. Lista para Teodoro.',
     'PIEZA: treinta y una líneas. Sobra un 26 %, dice Herminia. ¿Quién recorta?'],      // E1.4.1 (herminia_midio)
   // E2 §10.4: notas a lápiz de la trama de la coma (Evaristo)
   evaristo: ['Al margen, a lápiz: «Evaristo me espera. Planta 2. Escucharle entero».',
-    'Al margen, a lápiz: «La coma de Evaristo, a Aurora».',
     'Al margen, a lápiz: «El correo, en el momento oportuno».',
     'Al margen, a lápiz: «Evaristo me ha llamado. Planta 2. Al fondo».'],   // [coherencia] tras la L2
 };
@@ -228,17 +238,19 @@ export const FICHA = {
 export function fichaViva(api) {
   const f = (k) => !!api.flag(k);
   const out = [FICHA.titulo];
-  out.push(FICHA.hueco[f('casilla_hueco') ? 2 : f('reunion_terminada') ? 1 : 0]);
+  // [P11] el CMS es la condición del HUECO: desde que Maripaz lo dice, con la web caída
+  const sinWeb = f('maripaz_pide_web') && !f('cms_vivo');
+  out.push(FICHA.hueco[f('casilla_hueco') ? 2 : sinWeb ? 3 : f('reunion_terminada') ? 1 : 0]);
   out.push(FICHA.fuente[f('casilla_fuente') ? 2 : (api.has('fotocopia_nota_direccion') || api.has('mensaje_fp')) ? 1 : 0]);
   out.push(f('casilla_firma') ? FICHA.firma[2] : f('fax_con_papel') ? FICHA.firma[1] : f('oyo_papel_begona') ? FICHA.firmaPapel : FICHA.firma[0]);
-  if (!f('cms_vivo')) out.push(FICHA.margen);
+  if (sinWeb) out.push(FICHA.margen);                 // [P14] solo después de oír a Maripaz
   if (f('casilla_fuente') || f('pieza_escrita')) out.push(FICHA.pieza[f('pieza_recortada') ? 2 : f('pieza_escrita') ? (f('herminia_midio') ? 3 : 1) : 0]);
   // E2 §10.4: la coma de Evaristo (una nota como mucho)
-  if (api.has('correo_evaristo') && !f('duelo_inigo_ganado')) out.push(FICHA.evaristo[2]);
-  else if (f('evaristo_escuchado') && !f('coma_bendecida')) out.push(FICHA.evaristo[1]);
+  // [P11] fuera «La coma de Evaristo, a Aurora» (escucharle entero ya da el correo)
+  if (api.has('correo_evaristo') && !f('duelo_inigo_ganado')) out.push(FICHA.evaristo[1]);
   // [coherencia] «me espera»: se lo dijo Begoña (con su consejo) sin que él llamara; «me ha llamado»: solo si sonó la L2
   else if (api.flag('evaristo_convoco') === 'begona' && !f('evaristo_escuchado')) out.push(FICHA.evaristo[0]);
-  else if (api.flag('evaristo_convoco') === 'llamada' && !f('evaristo_escuchado')) out.push(FICHA.evaristo[3]);
+  else if (api.flag('evaristo_convoco') === 'llamada' && !f('evaristo_escuchado')) out.push(FICHA.evaristo[2]);
   return out;
 }
 
@@ -339,7 +351,7 @@ export default {
     name: 'fax de F.P.', icon: icons.mensaje_fp,
     handlers: {
       mirar: async (api) => {
-        await api.say(['Fax de F.P.: «La opa de Hidrovoltia sobre Banco Robledal es verdad».', '«Falta la segunda fuente: mira las notas de gasto. — F.P.»',
+        await api.say(['Fax de F.P.: «La opa de Hidrovoltia sobre Banco Robledal es verdad».', '«La segunda fuente comió con ellos el jueves. — F.P.»',   // [P11]
           'Borde perforado. Esto no viene de un fax: viene de una matricial.']);
         api.setFlag('vio_borde_perforado', true);
       },
@@ -361,7 +373,9 @@ export default {
   },
   album_eventos: {
     name: 'álbum de Eventos', icon: icons.album_eventos,
-    handlers: { mirar: say(['En todas las fotos, al fondo, Brais. Cena de Navidad, presentación, photocall.', 'Siempre yendo al baño, siempre en una esquina de la foto.']) },
+    // [P12] [P14] los descartes (foto con comida no se publica); fuera la cena de Navidad: Brais entró en julio
+    handlers: { mirar: say(['Los descartes de Eventos: en todas sale alguien comiendo. Al fondo, Brais.', 'Barbacoa de julio, presentación, photocall.',
+      'Siempre de pie, yendo al baño, en una esquina de la foto.']) },
   },
   ticket_n1: {
     name: 'ticket nº 1', icon: icons.ticket_n1,
@@ -378,14 +392,19 @@ export default {
     handlers: { mirar: 'Un boli rojo sin tinta. Murió corrigiendo un «detrás mío».' },
     combine: { ficha_pagina_7: 'No escribe. Le guardo un minuto de silencio. ...Ya.' },     // adenda 4.8 (A)
   },
-  // E2 §5.3: el correo de Evaristo, impreso por el fax (lo da P3 en el paso 32, con `coma_bendecida` y
+  // [P11] el correo de Evaristo: lo da él mismo al escucharle entero («Siga.», administracion.dialogos.js, con
   // `correo_evaristo_listo`); es el TERCER REMATE del duelo final (P4, D4 `atScore: 5`). No se gasta antes.
   correo_evaristo: {
     name: 'correo de Evaristo', icon: icons.correo_evaristo,
     handlers: {
       mirar: say(['Asunto: «Una coma». Todos en copia. Envío: «en el momento oportuno».', 'La cláusula 12, subrayada dos veces.']),
       'dar:begona_triplicado': dice('begona_triplicado', 'Una copia de un correo. Esto ya es casi un triplicado.'),
-      'dar:aurora_galerada': dice('aurora_galerada', 'Ya lo he leído. Está perfecto. Guárdalo.'),
+      // [P11] la primera vez, la escena opcional de la coma (catacumba.js); después, la línea de siempre
+      'dar:aurora_galerada': async (api) => {
+        const p = api.actorPos('aurora_galerada');
+        if (p && p.room === api.room && api.flag('acto_2_iniciado') && !api.flag('coma_bendecida')) { await api.scene('catacumba_coma'); return; }
+        await dice('aurora_galerada', 'Ya lo he leído. Está perfecto. Guárdalo.')(api);
+      },
       'dar:inigo_sinergia': dice('inigo_sinergia', 'Eso, por escrito. Si no está en el hilo, no escala.'),
       'dar:*': GUARDO_CORREO,
       'usar:*': GUARDO_CORREO,

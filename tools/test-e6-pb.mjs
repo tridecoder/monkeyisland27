@@ -113,11 +113,12 @@ try {
   ok(await until(() => !!__game.game.apagon && __game.game.speeches.some(s => /Estamos ciegos/.test(s.text)), null, 20000), 'a oscuras, Yoli: «¡Estamos ciegos!…» (en pantalla)');
   await page.mouse.move(5, 5); await sleep(300); await shot('registro-ciegos');
   await G(() => __game.skipText(true)); await idle(); await seguir();
+  // [P11] fuera el camino del ticket nº 3: con el registro leído es el apagón de siempre (Yoli ciega, la pieza que entra a
+  // oscuras y la pista de Anselmo); ni «A HECHO (PERO NO)» ni el CMS desde arriba
   const iC = await logIdx('¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?'), iP = await logIdx('...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!'),
-    iT = await logIdx('...Entonces existe. A HECHO (PERO NO).'), iD = await logIdx('¡Ha sido Diseño!');
-  const yl = await logDe('yoli_tendencias');
-  ok(iC >= 0 && iC < iT && iT < iP && iP < iD && yl.length === 2, `orden: Yoli ciega → «…A HECHO (PERO NO).» → «…Ha entrado una pieza…» → coro (${[iC, iT, iP, iD].join(' < ')}; Yoli ×${yl.length})`);
-  ok(await flag('cms_vivo') === true && !(await G(() => !!__game.game.apagon)) && !(await logHas('Con número.')), 'cms_vivo, luz; E123 sin «Con número.»');
+    iT = await logIdx('...Entonces existe. A HECHO (PERO NO).'), iE = await logIdx('Que te la apague Eutimio.');
+  ok(iC >= 0 && iC < iP && iP < iE && iT < 0, `[P11] orden: Yoli ciega → «…Ha entrado una pieza…» → «Que te la apague Eutimio.»; sin «A HECHO (PERO NO)» (${[iC, iP, iE, iT].join(' · ')})`);
+  ok(await flag('cms_vivo') === false && await flag('apagon_n') === 1 && !(await G(() => !!__game.game.apagon)), '[P11] sin cms_vivo, apagón 1 y luz');
 
   // ====================================================================== 2. dos IAs
   console.log('\n§2.5.1 «Dos IAs» sin la conclusión de Bruno');
@@ -142,22 +143,11 @@ try {
   const iF = await logIdx('Las fotos me valen. Pero yo no escribo columnas nuevas.');
   ok(await flag('album_validado') === true && iF >= 0 && iF === (await G(() => __game.log.length)) - 1 && await G(() => window.__clicks) >= 1,
     'álbum validado; tras «Las fotos me valen…», gesto sin línea (click del rotulador)');
-  await G(() => __game.save(5));
-  await raton('usar', 'kanban');
-  const nl = await logDe('anselmo_monolito');
-  ok(nl.at(-1) === 'Mi rotulador no sale de Desarrollo. Que te lo preste alguien de fuera.' && !(await logHas('pide rotulador')), 'Usar el tablero sin rotulador → habla Anselmo (N11), no Bruno');
-  await G(() => __game.load(5)); await sleep(200); await idle(); await seguir();
-  await G(() => __game.clearLog());
-  await raton('usar', 'kanban');
-  ok(await flag('album_validado') === true && (await logDe('anselmo_monolito')).at(-1) === 'Mi rotulador no sale de Desarrollo. Que te lo preste alguien de fuera.', 'guardar/cargar con el álbum validado: lo mismo');
-  await G(() => __game.skipText(false));
-  await G(() => __game.clearLog());
-  await raton('usar', 'kanban', null, false);
-  ok(await until(() => __game.game.speeches.some(s => /Mi rotulador no sale/.test(s.text)), null, 8000), 'N11 en pantalla');
-  await verA('anselmo_monolito'); await page.mouse.move(5, 5); await sleep(200); await shot('kanban-n11');
-  await G(() => __game.skipText(true)); await idle(); await seguir();
+  // [guion3 t4] N11 («Mi rotulador no sale de Desarrollo…») era inalcanzable: el rotulador llega siempre con el D1, antes del
+  // Acto III. Se ha quitado; en su lugar, que el código ya no la tiene
+  ok(!fs.readFileSync(path.join(root, 'content/rooms/pecera.js'), 'utf8').includes('Mi rotulador no sale de Desarrollo'), '[P15] fuera N11, la línea inalcanzable de Anselmo sin rotulador');
   // la columna
-  await G(() => { __game.giveItem('rotulador_rojo'); __game.setFlag('rep_13', true); __game.setFlag('oyo_descopear', true); __game.clearLog(); });
+  await G(() => { __game.giveItem('rotulador_rojo'); __game.setFlag('rep_13', true); __game.clearLog(); });
   await raton('usar', 'kanban', 'rotulador_rojo', false);
   await until(() => !!__game.currentDialogOptions());
   await clicOpcion('SALIDA EN VALOR'); await idle(); await seguir();
@@ -228,7 +218,8 @@ try {
   const fr = await G(() => __game.log.map(l => String(l.text)));
   const i1 = fr.indexOf(FRASE), i2 = fr.indexOf('Eso lo hace nuestro.');
   ok(await flag('herminia_midio') && await logCount(FRASE) === 1 && await logCount('Eso lo hace nuestro.') === 1 && i2 === i1 + 1, 'paso 37: la frase entera, una vez, seguida');
-  ok(await logHas('Encintar, no: aislar el componente.') && await logHas('Ya te la ha leído. Yo no, ¿eh? Yo ya no leo. Superviso.'), 'E124 (E7) y E125 en la misma escena');
+  // [P11] «Herminia mide la pieza» se recorta: fuera E124 («Encintar…») y E125 («Ya te la ha leído…»); «A un metro…» queda
+  ok(!(await logHas('Encintar, no: aislar el componente.')) && !(await logHas('Ya te la ha leído.')) && await logHas('A un metro de mi cinta. Fuera.'), '[P11] escena corta: sin E124 ni E125; «A un metro de mi cinta. Fuera.»');
 } catch (e) {
   failures++;
   console.log('  ✗ EXCEPCIÓN: ' + (e && e.stack || e));

@@ -1,5 +1,5 @@
 // SALA `cpd` — ARTE Y GEOMETRÍA (REDISEÑO P1, docs/GUIA_REDISENO.md §3, §4, §10, §11).
-// Sótano −1 de elContable.es, en luz azul fría. De izquierda a derecha:
+// Sótano −1 de elincontable.es, en luz azul fría. De izquierda a derecha:
 //   NÚCLEO         (x 0-96)    terrazo; caja de escalera CERRADA («SOLO EVACUACIÓN», no hay escalera en la planta −1) y el
 //                              ascensor «−1» (kit.nucleo, FL = 94); placa «−1 SISTEMAS».
 //   PASILLO FRÍO   (x 96-226)  falso suelo técnico, armarios 24-27 con la luz azul; carro de consola exento en el plano medio,
@@ -261,6 +261,22 @@ function nidoRuben(g, x, y, w, h, libre, t) {
   for (let k = 0; k < 9; k++) px(g, x + 3 + ((k * 7) % 22), y + h - 4 + (k % 2), PAL.paper[5]);
   // pósit «Gracias, Tadeo» pegado por dentro
   rect(g, x + 20, y + 31, 7, 6, '#f0e050'); hline(g, x + 21, y + 33, 5, PAL.ink[3]); hline(g, x + 21, y + 35, 4, PAL.ink[3]);
+  sillaPlegable(g, x + 2, y + h - 4);
+}
+/** [P12] [P14] La silla 112 de Eventos: plegable, granate como las de la Sala Polivalente, con su cruz de cinta pegada a
+ *  las patas (la pista visible de la 112). (x, fy) = esquina izquierda de las patas, en el suelo del armario. */
+export function sillaPlegable(g, x, fy, k = 1) {
+  const S = (n) => Math.round(n * k);
+  const seat = fy - S(10), top = fy - S(24);
+  // patas en X (cromadas) y la cruz de cinta gris que las envuelve
+  line(g, x + S(1), seat, x + S(9), fy, PAL.metal[5]); line(g, x + S(9), seat, x + S(1), fy, PAL.metal[4]);
+  line(g, x, fy, x + S(10), fy, '#b8b8b2');
+  rect(g, x + S(2), fy - S(4), S(7), Math.max(1, S(2)), '#c8c8c0'); rect(g, x + S(4), fy - S(6), Math.max(1, S(2)), S(6), '#c8c8c0');
+  // asiento y respaldo
+  rect(g, x, seat - 1, S(11), Math.max(2, S(2)), PAL.red[1]); hline(g, x, seat - 1, S(11), PAL.red[3]);
+  vline(g, x + 1, top, seat - top, PAL.metal[4]); vline(g, x + S(9), top, seat - top, PAL.metal[3]);
+  rect(g, x + 1, top, S(9), S(7), PAL.red[2]); hline(g, x + 1, top, S(9), PAL.red[4]); hline(g, x + 2, top + 1, S(6), PAL.red[3]);
+  if (k >= 2) kit.micro(g, '112', x + 1 + S(4.5), top + S(2), PAL.paper[7], { align: 'center' });   // en el primer plano se lee
 }
 function drawArmario27(g, view, t) {
   const { x, w } = C27;
@@ -434,6 +450,30 @@ function drawCaja(g) {
   }
   line(g, x + 3, y - 18, x - 3, y - 13, PAL.paper[3], 1);
   kit.cantoVivo(g, x - 1, y - 14, 19, 15);
+}
+
+/** [P14] La máquina de bocadillos del sótano, junto al ascensor (decorado; la cita la llamada de los atunes de
+ *  Evaristo): roja, con el cristal de las espirales vacías y la última fila, la del atún, también vacía. 15×34. */
+export const MAQUINA = { x: 35, y: 64, w: 14, h: 30 };
+function drawMaquina(g) {
+  const { x, y, w, h } = MAQUINA;
+  shadowEllipse(g, x + w / 2, y + h, 9, 2, 0.7);
+  rect(g, x, y, w, h, '#8a2a24'); hline(g, x, y, w, '#c4483c'); vline(g, x, y, h, '#a8372f'); vline(g, x + w - 1, y, h, '#5a1a16');
+  rect(g, x + 1, y + 1, w - 2, 3, '#e8c860'); hline(g, x + 2, y + 2, w - 4, '#b03028');      // el rótulo, ilegible de lejos
+  // el cristal: cuatro filas de espirales vacías (solo el muelle, gris)
+  rect(g, x + 2, y + 6, 8, 18, '#142030'); frameRect(g, x + 1, y + 5, 10, 20, PAL.metal[2]);
+  for (let k = 0; k < 4; k++) {
+    const yy = y + 9 + k * 4;
+    hline(g, x + 2, yy + 1, 8, PAL.metal[3]);
+    for (let i = 0; i < 4; i++) px(g, x + 2 + i * 2, yy, PAL.metal[4]);
+  }
+  // la última fila, la del atún: su etiqueta azul y blanca, sin latas
+  hline(g, x + 2, y + 23, 8, '#f0e8d0'); px(g, x + 4, y + 23, '#3a6aa8'); px(g, x + 7, y + 23, '#3a6aa8');
+  ditherOverlay(g, x + 2, y + 6, 8, 18, '#9ad0ff', 0.1);
+  // monedero a la derecha; bandeja abajo
+  rect(g, x + 11, y + 7, 2, 7, PAL.metal[4]); px(g, x + 11, y + 16, '#ffd84a');
+  rect(g, x + 3, y + 26, 7, 2, '#2a0e0c');
+  kit.cantoVivo(g, x, y, w, h);
 }
 
 // ------------------------------------------------------------------ mesa de Paco (plano medio, tapa de la cintura abajo al sentado)
@@ -618,6 +658,8 @@ export function primerPlanoRuben(g, r, t) {
   // pósits y táperes en las baldas
   rect(g, x + w - 30, y + 33, 9, 5, PAL.teal[6]); hline(g, x + w - 30, y + 33, 9, PAL.teal[7]); rect(g, x + w - 19, y + 33, 9, 5, PAL.teal[5]);
   rect(g, x + w - 14, y + 42, 9, 8, '#f0e050'); hline(g, x + w - 13, y + 44, 7, PAL.ink[3]); hline(g, x + w - 13, y + 46, 5, PAL.ink[3]);
+  // [P12] [P14] la silla plegable de Eventos, con su cruz de cinta en las patas (la pista de la 112)
+  sillaPlegable(g, x + 4, y + h - 1, 2);
   // Rubén, de medio cuerpo: sudadera gris con capucha, cascos al cuello, ojeras y migas
   const cx = x + (w >> 1) - 6, top = y + 18;
   const skin = '#d4dcb4', skinS = '#aebc8c', hair = '#5a4a3a', hood = '#86888e', hoodS = '#5e6066', hoodL = '#a4a6ac';
@@ -699,7 +741,13 @@ export function planoRedaccionOscuras(g, r, t, c = {}) {
 const layout = {
   ascensor_cpd: { rect: N.ascensor.rect, walkTo: N.ascensor.walkTo, face: 'up' },            // núcleo del kit (FL = 94)
   armarios: { rect: [102, 28, 66, 46], walkTo: [128, 108], face: 'up', priority: -1 },   // [I2] hasta el regletero de E5 (sin solape, geo R2)
-  armario_27: { rect: [170, 28, 32, 66], walkTo: [186, 110], face: 'up', priority: 1, draw: (g, v, t) => drawArmario27(g, v, t) },
+  // [P12] el armario deja libre su cuarto de abajo a la izquierda (la silla plegable del nido; geo R2: solapes ≤ 30 %):
+  // la caja llega hasta la pegatina y el dibujo sigue siendo el mismo
+  armario_27: { rect: [170, 28, 32, 44], walkTo: [186, 110], face: 'up', priority: 1, draw: (g, v, t) => drawArmario27(g, v, t) },
+  // [P15] tanda 4: el tercio de abajo del armario 27 (la rendija del papel), clicable cuando no está la silla delante
+  armario_27_bajo: { rect: [170, 72, 32, 22], walkTo: [186, 110], face: 'up', priority: 1 },
+  // [P12] la silla plegable del nido (la 112 de Eventos): la dibuja el armario abierto; aquí, solo su caja
+  silla_armario: { rect: [171, 66, 13, 25], walkTo: [176, 110], face: 'up', priority: 3 },
   papel_continuo: {
     rect: [176, 94, 32, 38], walkTo: [190, 111], face: 'up', priority: 2,
     sprites: { asoma: (g, v, t) => drawPapel(g, v, t), tensa: (g, v, t) => drawPapel(g, v, t), recogida: (g, v, t) => drawPapel(g, v, t), corre: (g, v, t) => drawPapel(g, v, t), default: (g, v, t) => drawPapel(g, v, t) },
@@ -712,6 +760,8 @@ const layout = {
     layer: 'sorted', zy: 103, prop: true, draw: (g, v, t) => drawPacoDesk(g, v, t),
   },
   cementerio_ratones: { rect: [299, 86, 19, 18], walkTo: [306, 112], face: 'up', cache: true, draw: (g) => drawCaja(g) },
+  // [P14] la máquina de bocadillos, junto al ascensor, delante de la persiana de evacuación (decorado con Mirar)
+  maquina_bocadillos: { rect: [MAQUINA.x - 1, MAQUINA.y - 1, MAQUINA.w + 2, MAQUINA.h + 1], walkTo: [44, 110], face: 'up', cache: true, draw: (g) => drawMaquina(g) },
   // [PC] E5: el regletero (paso 21), al pie de los armarios 24-25; Bruno se pone a su izquierda para no taparlo
   regleta_r3: { rect: [REG.x - 1, REG.y - 1, REG.w + 2, REG.h + 2], walkTo: [96, 108], face: 'right', priority: 2,
     sprites: { encendida: (g, v, t) => drawRegleta(g, v, t), apagada: (g, v, t) => drawRegleta(g, v, t), default: (g, v, t) => drawRegleta(g, v, t) } },

@@ -151,7 +151,7 @@ async function regleteroElige(r) {
   for (let k = 0; k < 3; k++) {
     await verbOn('tirar', 'regleta_r3');
     await settle();
-    if (await G(() => !!__game.game.choice)) break;
+    if (await G(() => !!(__game.game.choice && __game.game.choice.layout))) break;
     await wait(300);
   }
   const pt = await G((want) => {
@@ -278,15 +278,12 @@ try {
   ok(await esperaCorte(), 'con el registro leído y sin apagón, el regletero corta a la Redacción');
   await settle();
   ok(await flag('cms_vivo') && await logCount(Y1) === 1, 'cms_vivo y Yoli una vez');
-  const pb = fs.readFileSync(path.resolve(here, '../content/rooms/pecera.escenas.js'), 'utf8');
-  const cmsVivoSrc = pb.slice(pb.indexOf('async function cmsVivo'), pb.indexOf('async function herminiaMide'));
-  if (cmsVivoSrc.includes('¡Estamos ciegos!') && cmsVivoSrc.includes('...Ha entrado una pieza.')) {
-    await fresh({ ...ACTO2, vio_ticket_3: true }, 'pecera');
-    await G(() => __game.skipText(true));
-    await G(async () => { await __game.doVerb('tirar', 'enchufe_pantalla'); await __game.waitIdle(); });
-    await G(() => __game.skipText(false));
-    ok(await flag('cms_vivo') && await logHas(Y1) && await logHas(Y2), 'camino antiguo de la Redacción (PB): Yoli dice sus dos líneas');
-  } else console.log('  · (aviso, no cuenta) camino antiguo de la Redacción (`cmsVivo`, paquete PB) aún sin las dos líneas de Yoli');
+  // [P11] fuera el camino alternativo del ticket nº 3: con el registro leído, el enchufe da el apagón de siempre
+  await fresh({ ...ACTO2, vio_ticket_3: true }, 'pecera');
+  await G(() => __game.skipText(true));
+  await G(async () => { await __game.doVerb('tirar', 'enchufe_pantalla'); await __game.waitIdle(); });
+  await G(() => __game.skipText(false));
+  ok(!(await flag('cms_vivo')) && (await flag('apagon_n')) === 1 && await logHas(Y1) && !(await logHas('SALVO TICKET')), '[P11] con el registro leído, Tirar del enchufe: el apagón (el CMS no vuelve desde arriba)');
 
   // ================================================================ 7 · armario 27 (B8)
   console.log('\n§2.6 B8 · el armario 27');
@@ -297,7 +294,8 @@ try {
   await G(() => __game.skipText(false));
   ok(await flag('ruben_encontrado') && await logHas('A mí, en bocadillos de atún. A Íñigo le pagan por mí 48.000 al mes.'), 'revelación: Brais dice lo de los 48.000');
   ok(!(await logHas('Con coma')) && !(await logHas('Eso es un compañero')), 'sin «Cuarenta y ocho mil. Con coma…» (B8) ni «…compañero» (B2)');
-  ok(await logHas('Mi baja está en un pósit del tablero de Anselmo, en POR HACER.') && await logHas('Nadie me ha hecho nunca una foto. Bueno, una. En Eventos. Al fondo.'), 'X11 aplicada; E244 (tumbada) se queda');
+  // [P14] la foto: «Solo salgo de fondo, en las de Eventos.» (antes «Bueno, una. En Eventos. Al fondo.», E244 tumbada)
+  ok(await logHas('Mi baja está en un pósit del tablero de Anselmo, en POR HACER.') && await logHas('Nadie me ha hecho nunca una foto. Solo salgo de fondo, en las de Eventos.'), 'X11 aplicada; [P14] la foto, en las de Eventos');
   await G(async () => { await __game.doVerb('hablar', 'ruben'); });
   await G(() => __game.chooseText('Ahora vuelvo'));
   await G(() => __game.waitIdle());
@@ -308,18 +306,21 @@ try {
   const leer = (f) => fs.readFileSync(path.resolve(here, '../content', f), 'utf8');
   // ENMIENDA E7 (tabla_e7.mjs) restaura o cambia algunas de estas filas: las que E7 sustituye ya no son de E6
   const E7 = new Set((await import('../docs/guion2/e7/tabla_e7.mjs')).filas.map(r => r.fichero + '|' + r.actual));
-  const filas = T.filter(r => /rooms\/(cpd|vestibulo)\.js$/.test(r[0]) && !E7.has(r[0] + '|' + r[2]));
+  // guion nuevo, tanda 2 ([P14]): E251 («No me muevo» → «No me voy») y E244 (la foto de Eventos) cambian otra vez
+  const G3 = new Set(['E251', 'E244']);
+  const filas = T.filter(r => /rooms\/(cpd|vestibulo)\.js$/.test(r[0]) && !E7.has(r[0] + '|' + r[2]) && !G3.has(r[4]));
   const deE7 = T.filter(r => /rooms\/(cpd|vestibulo)\.js$/.test(r[0])).length - filas.length;
   const q = (t) => "'" + t.replace(/'/g, "\\'") + "'";
   const malA = filas.filter(r => leer(r[0]).includes(q(r[1])));
   const malN = filas.filter(r => r[2] !== null && !leer(r[0]).includes(q(r[2])));
   ok(filas.length + deE7 === 43 && !malA.length, `${filas.length} filas (+ ${deE7} que cambia E7): ninguna «actual» queda${malA.length ? ': ' + malA.map(r => r[4]).join(', ') : ''}`);
   ok(!malN.length, `todas las «nuevas» están${malN.length ? ': faltan ' + malN.map(r => r[4]).join(', ') : ''}`);
-  const tumb = TUMBADAS.filter(r => /rooms\/(cpd|vestibulo)\.js$/.test(r[0]));
+  const tumb = TUMBADAS.filter(r => /rooms\/(cpd|vestibulo)\.js$/.test(r[0]) && !G3.has(r[4]));
   const malT = tumb.filter(r => !leer(r[0]).includes(q(r[1])));
   ok(!malT.length, `las ${tumb.length} tumbadas siguen con su original${malT.length ? ': ' + malT.map(r => r[4]).join(', ') : ''}`);
   const cpdSrc = leer('rooms/cpd.js');
-  ok((cpdSrc.match(/Me entero de todo\. No arreglo nada\.'/g) || []).length === 2, 'X3: las dos claves cambiadas');
+  // [P11] Eutimio tiene un solo árbol (antes P0 y P1): la clave cambiada está una vez
+  ok((cpdSrc.match(/Me entero de todo\. No arreglo nada\.'/g) || []).length === 1 && !cpdSrc.includes("'Me entero de todo.'"), 'X3: la clave cambiada (un solo árbol, [P11])');
   // E028: el torno sin foto
   await fresh({ ...ACTO2, torno_abierto: false }, 'vestibulo');
   await G(() => { __game.giveItem('tarjeta_becario'); });

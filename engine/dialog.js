@@ -2,7 +2,13 @@
 //
 // dialog = { actor: 'npcId', start: 'nodeId', onStart?, onEnd?, nodes: { nodeId: {
 //   onEnter?: async api => (nodeId|'exit'|void),
-//   options: [ { id?, text, say?, silent?, if?, once?, reply?, lines?, do?, goto?, exit?, siempre? } ] } } }
+//   options: [ { id?, text, say?, silent?, if?, once?, tras?, reply?, lines?, do?, goto?, exit?, siempre? } ] } } }
+//
+// OPCIONES ENCADENADAS ([P15] «seis opciones a la vez, como mucho»): `tras: 'id'` (o una lista) hace que la opción
+// solo salga cuando ya se ha elegido la opción con ese `id` del mismo nodo ('NODO.id' para otro nodo del árbol). Puesta
+// justo detrás en `options`, aparece en el mismo hueco que deja la anterior al agotarse. Una opción con `id` que no es
+// `once` deja al elegirse la marca `elegida:<árbol>.<nodo>.<id>` (para poder encadenar detrás de una repetible).
+// `opcionesVisibles` es lo que se ve en un nodo (lo usa también tools/test-guion3-t4.mjs para contar el tope).
 //
 // DESPEDIDAS UNA SOLA VEZ (ENMIENDA E2 §7.2): una opción `exit: true` se oye entera (la frase de Bruno, `reply`,
 // `lines` y lo que diga su `do`) solo la PRIMERA vez que se elige en ese árbol; las siguientes cierran el diálogo en
@@ -15,6 +21,29 @@
 export function findDialog(game, id) {
   const room = game.room && game.room.def;
   return (room && room.dialogs && room.dialogs[id]) || game.content.dialogs[id] || null;
+}
+
+/** ¿Se ha elegido ya la opción `clave` ('<árbol>.<nodo>.<id o índice>')? (`once` gastada o marca `elegida:`) */
+export function opcionElegida(game, clave) {
+  const d = (game.state && game.state.dialogs) || {};
+  return !!(d[clave] || d['elegida:' + clave]);
+}
+
+/** Las opciones que se ven ahora en el nodo `nodeId` del árbol `dId` (en orden): [{ o, i }]. */
+export function opcionesVisibles(game, api, dId, nodeId, node) {
+  const dialogs = (game.state && game.state.dialogs) || {};
+  const avail = [];
+  (node.options || []).forEach((o, i) => {
+    if (o.once && dialogs[`${dId}.${nodeId}.${o.id || i}`]) return;
+    if (o.tras) {
+      const tras = Array.isArray(o.tras) ? o.tras : [o.tras];
+      if (!tras.every(t => opcionElegida(game, `${dId}.${String(t).includes('.') ? t : nodeId + '.' + t}`))) return;
+    }
+    let ok = true;
+    try { ok = game.cond(o.if, api); } catch (e) { game.error('condición de opción falló', e); ok = false; }
+    if (ok) avail.push({ o, i });
+  });
+  return avail;
 }
 
 function txt(game, t, api) {
@@ -51,19 +80,13 @@ export async function runDialog(game, api, id, startNode) {
       if (r === 'exit') break;
       if (typeof r === 'string' && r !== nodeId) { nodeId = r; continue; }
     }
-    const all = node.options || [];
-    const avail = [];
-    all.forEach((o, i) => {
-      if (o.once && game.state.dialogs[usedKey(nodeId, o, i)]) return;
-      let ok = true;
-      try { ok = game.cond(o.if, api); } catch (e) { game.error('condición de opción falló', e); ok = false; }
-      if (ok) avail.push({ o, i });
-    });
+    const avail = opcionesVisibles(game, api, dId, nodeId, node);
     if (!avail.length) { if (node.fallback) { nodeId = node.fallback; continue; } break; }
     const idx = await game.choose(avail.map(a => txt(game, a.o.text, api)));
     if (idx < 0) break;
     const { o, i } = avail[idx];
     if (o.once) game.state.dialogs[usedKey(nodeId, o, i)] = true;
+    else if (o.id) game.state.dialogs['elegida:' + usedKey(nodeId, o, i)] = true;
     const despedida = !!o.exit && !o.siempre && !def.despedidasSiempre;
     const fKey = 'despedida_oida:' + dId + '.' + (o.id || (typeof o.text === 'string' ? o.text : nodeId + '.' + i));
     const callada = despedida && !!game.state.dialogs[fKey];

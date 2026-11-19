@@ -8,7 +8,7 @@
 // por el teléfono de conferencias (CONTROLLING) y desmonta los 48.000 € (`heroeDeLaComa`). Tras el empujón, la factura
 // de Begoña, con coma. Fuera la frase críptica de la coma (`correoQueSeEscapa`) y las coletillas de §7.2; `onWin` de
 // Íñigo en una línea (fase B (14)). El Lector Medio sigue sin presidir: de pie junto a la pantalla, y su empujón, igual.
-import { SFX, sello, fundidoBlanco } from './planta_noble.js';
+import { SFX, fundidoBlanco } from './planta_noble.js';
 import artAdmin from '../rooms/art/administracion.art.js';
 import artSala, { LECTOR_AT, detalleAtrezo } from '../rooms/art/sala_amazonas.art.js';
 import { getFrame } from '../../engine/sprites.js';
@@ -23,7 +23,7 @@ const sayR = (api, t) => api.sayAs(RUBEN, t);
 const sayBe = (api, t) => api.sayAs(BEGONA, t);
 
 // staging (coordenadas de la sala rediseñada, docs/GUIA_REDISENO.md §5; la puerta es la entrada `pajarera` del arte).
-// Mesa en el centro con la cabecera a la DERECHA (Gervasio, de pie junto a su sillón vacío en [304, 112]); el Lector
+// Mesa en el centro con la cabecera a la DERECHA (Gervasio, de vuelta del Vending [P14], de pie junto a su sillón vacío en [304, 112]); el Lector
 // Medio, a la IZQUIERDA de la pantalla ([100, 120]); Íñigo presenta bajo la pantalla ([222, 122]). El Lector cae hacia
 // la derecha, delante de la mesa (centro ≈ [137, 124]): nadie se pone delante del cartón caído ni de su pegatina.
 const PUERTA = [30, 118];
@@ -62,6 +62,18 @@ export const duelInigo = {
   enCopia: ['Optimal', 'la planta', 'toda la empresa'],
   sostener: 'movil',
   deck: DECK_D4,
+  // [P9] Íñigo, con voz propia: van con sus réplicas nuevas R13, R05 y R07; las de R10, R12, R16, R01 y R15 son las
+  // «opcionales» del guion (líneas extra). Las réplicas valen igual.
+  attackText: {
+    R10: 'Estamos analizando todas las opciones. Con un framework propio.',
+    R12: 'Hay que poner las luces largas, Vacante. Visión 2030.',
+    R13: 'Vacante, no es un despido: es una salida en valor.',
+    R05: 'Esto, entre nosotros, es confidencial. Que no salga de esta sala.',
+    R16: 'Eso es un detalle sin importancia, Vacante. No escala.',
+    R01: 'Como ya expuse en mi anterior deck, que parece que nadie ha leído...',
+    R07: 'Me consta que esto ya lo alineamos en el último comité.',
+    R15: 'Lo he consultado con la IA y está de acuerdo conmigo. Al cien por cien.',
+  },
   maxMisses: 3,
   intro: [],                          // la entrada la dice la escena (§7.4): «Perfecto. Te lo pongo por escrito.»
   hurt: ['Ese input no lo tenía en el framework.', 'Interesante. Lo pongo en azul.'],
@@ -118,13 +130,23 @@ export const duelInigo = {
   },
   onLose: async (api) => {
     // «el duelo vuelve a empezar: Íñigo regresa a la diapositiva 247» (se reintenta Hablando con él, regla 6.2.6)
-    // §7.7: Íñigo despega el pósit de Bruno de «Ideal» y lo pega en «Prescindible»
+    // ([P11] fuera el gesto del pósit: Bruno ya está en «Prescindible» desde la FIRMA)
     await api.anim(INIGO, 'reach', 400);
     await sayI(api, 'Siguiente.');
-    if (replicasD4(api) >= PUNTOS_D4) await api.say('Le vuelvo a hablar. Un consultor siempre tiene un hueco en la agenda.');
-    else await api.say('Me faltan réplicas. Tengo que cotillear más. La 247 no se va a mover.');
+    // [P7] si faltan réplicas, el motor dice «Me faltan réplicas. Están apuntadas en la libreta.» y, para que no se oigan
+    // seguidas, Bruno no dice esta; si no faltan, sí
+    if (!faltanApuntadas(api)) await api.say('Le vuelvo a hablar. Un consultor siempre tiene un hueco en la agenda.');
   },
 };
+
+/** [P7] ¿Le falta a Bruno alguna réplica del D4 con su pista apuntada en la libreta? (la misma cuenta que hace el
+ *  motor, engine/duel.js, para decir `pistas.repaso` tras la derrota) */
+function faltanApuntadas(api) {
+  const D = api.game.content.duels, PL = D.pistas;
+  if (!PL || !PL.repaso) return false;
+  const orden = (D.pairs || []).map(p => p.id), bits = Number(api.flag(PL.flag)) || 0;
+  return DECK_D4.some(id => { const p = (D.pairs || []).find(x => x.id === id); const b = orden.indexOf(id); return p && !api.flag(p.flag) && b >= 0 && (bits & (1 << b)); });
+}
 
 async function abrirDuelo(api) {
   await api.duel('inigo');
@@ -240,32 +262,39 @@ export async function climaxEmpujon(api) {
     await api.wait(500);
     await api.sayFrom('proyector', 'EL VIAJE CONTINÚA');
     await sayI(api, '...Ahora no.');
-    // Begoña y la factura (Rubén se la ha bajado del armario)
+    // [P12] [P14] en el cinturón de Íñigo chisporrotea el walkie de Eventos: Pilar cierra su noche (Íñigo no contesta)
+    const ini = api.game.actors[INIGO];
+    const walkie = ini ? { at: [ini.x, ini.y - 56] } : {};
+    api.sfx('beep');
+    await api.sayAs('pilar_escaleta', 'Ponente, aquí Eventos. Croquetas en posición. ¿Subes? Cambio.', walkie);
+    api.faceActor(INIGO, 'down');                                  // Íñigo mira el walkie. No contesta.
+    await api.wait(1100);
+    await api.sayAs('pilar_escaleta', 'Recibido. Empezamos sin ponente. Cambio y corto.', walkie);
+    // Begoña y la factura (Brais se la ha subido del armario). [P11] cuatro líneas: fuera el taxi, el recorte a 35,52,
+    // el sello, «al lado del ministro» y la de Brais con el atún (el 26 % por cuarta vez, con Evaristo ya ganador)
     api.sfx('door');
     api.placeActor(BEGONA, 'sala_amazonas', PUERTA[0], PUERTA[1], 'right');
     api.show(BEGONA);
     await entraPorDelante(api, BEGONA, SITIO_BEGONA);
     api.faceActor(BEGONA, INIGO);
-    // E2 §5.6: la factura, con coma (48 × 0,74 = 35,52)
-    await sayBe(api, ['Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.', 'Concepto: «IA». ¿Qué es una IA? ¿Un taxi?']);
-    await sayBe(api, 'Recorte estándar del 26 %: treinta y cinco euros con cincuenta y dos.');
-    sello(api);
-    await sayBe(api, 'Y rechazada igual. Al lado del ministro.');
+    await sayBe(api, ['Factura de Optimal Brains. Cuarenta y ocho euros. Con coma.', 'Con lo que nos deben hay para un contrato.']);
     if (!enSala(api, RUBEN)) { api.placeActor(RUBEN, 'sala_amazonas', SITIO_RUBEN[0], SITIO_RUBEN[1], 'up'); api.show(RUBEN); }
     api.faceActor(RUBEN, BEGONA);
-    await sayR(api, 'Cuarenta y ocho euros al mes... Es lo que me como en atún.');
-    await sayBe(api, 'Con lo que nos deben hay para un contrato.');
     await sayR(api, '¿Con táper?');
     await sayBe(api, 'Con ticket.');
-    // «Goyita. Tira.» (por los altavoces, la voz de Teodoro por el teléfono rojo): un inserto en la esquina enseña
+    // «Benita. Tira.» (por los altavoces, la voz de Teodoro por el teléfono rojo): un inserto en la esquina enseña
     // la Catacumba, con Teodoro al aparato, el auricular en la oreja y el cable rizado hasta el teléfono descolgado.
     api.sfx('phone');
     api.game.hud = insertoTeodoro(api.game); api.game.hudTop = 0;
     try {
       await api.wait(700);
-      await api.sayAs('teodoro_cuerpodoce', 'Goyita. Tira.', { at: [INSERTO.x + (INSERTO.w >> 1), INSERTO.y + INSERTO.h + 16] });
+      // [P11] [P14] Aurora, de pie al lado de Teodoro: la primera vez en la noche que le pide algo, y por su nombre
+      INS.habla = 'aurora_galerada';
+      await api.sayAs('aurora_galerada', 'Tira, Teodoro.', { at: [INSERTO.x + (INSERTO.w >> 1), INSERTO.y + INSERTO.h + 16] });
+      INS.habla = 'teodoro_cuerpodoce';
+      await api.sayAs('teodoro_cuerpodoce', 'Benita. Tira.', { at: [INSERTO.x + (INSERTO.w >> 1), INSERTO.y + INSERTO.h + 16] });
       await api.wait(300);
-    } finally { api.game.hud = null; }
+    } finally { api.game.hud = null; INS.habla = null; }
     api.sfx(SFX.rotativa); api.shake(1800, 1);
     api.sfx(SFX.botellines);
     await api.wait(1400);
@@ -291,6 +320,7 @@ export async function climaxEmpujon(api) {
 
 // ---------------------------------------------------------------- inserto: Teodoro al teléfono rojo, en la Catacumba
 const INSERTO = { x: 6, y: 6, w: 92, h: 60 };
+const INS = { habla: null };                                       // [P11] quién habla en el inserto (anima su boca)
 function insertoTeodoro(game) {
   const t0 = game.time;
   return (g) => {
@@ -307,16 +337,25 @@ function insertoTeodoro(game) {
     rect(g, x, y + 46, w, h - 46, PAL.wood[3]); hline(g, x, y + 46, w, PAL.wood[5]);
     // cartel «ROTATIVA» y el teléfono rojo descolgado
     rect(g, x + 5, y + 22, 38, 12, PAL.paper[6]); rect(g, x + 5, y + 22, 38, 2, PAL.red[3]);
-    label(g, 'GOYITA', x + 24, y + 22, PAL.red[2], { align: 'center' });
+    label(g, 'BENITA', x + 24, y + 22, PAL.red[2], { align: 'center' });
     const bx = x + 14, by = y + 44;
     rect(g, bx, by, 18, 6, PAL.red[3]); hline(g, bx, by, 18, PAL.red[5]); hline(g, bx, by + 5, 18, PAL.red[1]);
     rect(g, bx + 1, by - 2, 2, 2, PAL.red[2]); rect(g, bx + 15, by - 2, 2, 2, PAL.red[2]);
+    // [P11] Aurora, de pie a la izquierda de Teodoro (detrás del teléfono), mirándole
+    const au = game.actors.aurora_galerada;
+    if (au) {
+      const sp = game.spriteOf(au);
+      const habla = INS.habla === 'aurora_galerada';
+      const { canvas } = getFrame(sp, habla ? 'talk' : 'idle', 'right', habla ? Math.floor(game.time / 160) % 3 : 0);
+      const ax = x + 40, ay = y + h + 10;
+      g.drawImage(canvas, Math.round(ax - (sp.ox + 1)), Math.round(ay - (sp.oy + 1)));
+    }
     // Teodoro (sprite del juego, a escala 1), hablando
     const a = game.actors.teodoro_cuerpodoce;
     if (a) {
       const sp = game.spriteOf(a);
       const fr = Math.floor(game.time / 160) % 3;
-      const { canvas } = getFrame(sp, 'talk', 'down', fr);
+      const { canvas } = getFrame(sp, INS.habla === 'aurora_galerada' ? 'idle' : 'talk', 'down', INS.habla === 'aurora_galerada' ? 0 : fr);
       const tx = x + 62, ty = y + h + 6;                             // pies (fuera del inserto: plano medio)
       g.drawImage(canvas, Math.round(tx - (sp.ox + 1)), Math.round(ty - (sp.oy + 1)));
       const top = ty - (sp.oy - (sp.headY || 0));
@@ -343,7 +382,7 @@ async function heroeDeLaComa(api, duel) {
     api.sfx('phone');                                              // el teléfono de conferencias: CONTROLLING
     await api.wait(600);
     await evTel(api, 'Buenas noches. Una cosita. Muy pequeña.');
-    await sayI(api, '¿Quién es Evaristo?');
+    await sayI(api, '¿Evaristo? ¿Otra vez?');                         // [P14] Íñigo ya le conoce
     await sayG(api, 'El que llama. De mis tres móviles, uno es para no cogerle.');
     await evTel(api, 'Cláusula 12: punto de miles y coma decimal. «48,000» son 48 euros.');
     await sayI(api, '¡Es formato internacional! ¡Lo entiende todo el mundo!');

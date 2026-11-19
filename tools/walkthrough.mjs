@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-// Walkthrough automático del recorrido vigente (ENMIENDA E6 §7: 49 pasos; walk-data.mjs), con datos: cada paso = acciones + resultado
+// Walkthrough automático del recorrido vigente (guion nuevo, tanda 2: 45 pasos; walk-data.mjs), con datos: cada paso = acciones + resultado
 // esperado, hasta la tarjeta FE DE ERRATAS y los créditos (juego_terminado).
 //   node tools/walkthrough.mjs              orden de la tabla
 //   node tools/walkthrough.mjs --alt        orden alternativo (E6 §7.3): Begoña antes de la Sala, FIRMA antes de FUENTE, el acta
 //                                           de Gervasio antes del álbum (walk-data.mjs `ALT`)
+//   node tools/walkthrough.mjs --alt2       [P11] Administración antes que la reunión, la reunión con la web caída, y la FIRMA
+//                                           como último requisito (walk-data.mjs `ALT2`)
 //   node tools/walkthrough.mjs --hasta=20   se para (con éxito) tras el paso 20
 //   node tools/walkthrough.mjs --lento      sin modo rápido (ver el texto) y con capturas de cada sala
 // Mientras falten salas por implementar FALLARÁ en el primer paso pendiente: es lo esperado. Dice qué paso,
@@ -30,9 +32,9 @@ const { chromium } = createRequire(import.meta.url)('playwright');
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = Object.fromEntries(process.argv.slice(2).filter(a => a.startsWith('--')).map(a => { const [k, v] = a.slice(2).split('='); return [k, v ?? true]; }));
 
-import { STEPS, ALT } from './walk-data.mjs';
+import { STEPS, ALT, ALT2 } from './walk-data.mjs';
 import { createRunner, StepFail } from './walk-lib.mjs';
-const order = args.alt ? ALT.map(n => STEPS.find(s => s.n === n)) : STEPS;
+const order = args.alt2 ? ALT2.map(n => STEPS.find(s => s.n === n)) : args.alt ? ALT.map(n => STEPS.find(s => s.n === n)) : STEPS;
 const stopAt = args.hasta ? Number(args.hasta) : null;
 
 // ------------------------------------------------------------------ runner

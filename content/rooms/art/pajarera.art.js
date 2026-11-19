@@ -430,8 +430,16 @@ const layout = {
 function mesaDireccionObj(g) { mesaDireccion(g); }
 /** §4.3: con la chaqueta en el Lector Medio, un pósit BEIGE más en «Ideal»: «RAMÍREZ (LECTOR)» */
 function drawMatrizRamirez(g, view) {
-  if (!view.flag('chaqueta_en_lector')) return;
   const x = 92, y = 18;
+  // [P11] desde la FIRMA, Íñigo ha pasado el pósit VACANTE a «Prescindible»: en «Ideal» queda el hueco (papel limpio,
+  // con la marca del pegamento) y el rosa, torcido, encima de la plantilla
+  if (view.flag('casilla_firma')) {
+    rect(g, x + 5, y + 8, 25, 8, PAL.paper[7]);
+    hline(g, x + 7, y + 8, 21, PAL.paper[5]);
+    postit(g, x + 34, y + 25, POSTIT.p, { w: 22, h: 8, lines: false });
+    micro(g, 'VACANTE', x + 45, y + 27, PAL.red[2], { align: 'center' });
+  }
+  if (!view.flag('chaqueta_en_lector')) return;
   postit(g, x + 3, y + 15, '#d8c49a', { w: 28, h: 7, lines: false });
   micro(g, 'RAMÍREZ', x + 17, y + 16, PAL.wood[1], { align: 'center' });
 }

@@ -16,13 +16,15 @@
 //
 // Regla de Teodoro: NUNCA habla. Sus líneas salen del fax, EN MAYÚSCULAS (telegrama), con su color y el prefijo
 // «TEODORO (fax):» (api.sayFrom('fax', ...), helper `fax()`); sin `fax_con_papel` teclea, el fax pita y no sale nada.
-// Solo habla en voz alta una vez, al teléfono rojo, en la escena 7.3a (api.sayAs('teodoro_cuerpodoce', ...)).
+// En voz alta solo habla por el teléfono rojo, y dos veces ([P14]): al cerrar la página 7 («Benita. Página 7
+// cerrada…», escena 7.3a, que abre el Acto III) y en el clímax («Benita. Tira.»), con api.sayAs('teodoro_cuerpodoce', ...).
 // Estados del objeto `fax` para el arte: 'sin_papel' / 'con_papel' / 'imprimiendo' (el papel sale 2 px cada 80 ms);
-// E2 §4.2.6: 'faldon' (la hoja larguísima de Comercial) y 'tragando' (el fax se la come, despacio).
+// ([P11] tanda 4: fuera 'faldon' y 'tragando', los estados del faldón de Comercial por fax.)
 import { buildRoom } from '../lib/room.js';
 import art from './art/catacumba.art.js';
 
 const TEO = 'teodoro_cuerpodoce';
+const INIGO = 'inigo_sinergia';
 const AUR = 'aurora_galerada';
 const EV = 'evaristo_salvedad';
 const PREFIJO = 'TEODORO (fax): ';
@@ -149,20 +151,44 @@ async function escenaActo3a(api) {
     await api.wait(300);
     await api.anim(TEO, 'reach', 600);
     await fax(api, ['Veintitrés líneas. Hueco, fuente y firma.', 'Página 7 cerrada.']);
-    // E2 §5.7: Evaristo ya ha leído la pieza (tecla 3 del fax, o el triplicado de Begoña, llamada L3)
-    if (api.flag('catacumba_tecla3') || (api.game.state.once || {})['once:evaristo_L3']) await fax(api, 'Y Controlling la ha leído entera. Ese hombre lee.');
+    // E2 §5.7: Evaristo ya ha leído la pieza (tecla 3 del fax; [P11] sin la L3, el triplicado de Begoña ya no cuenta)
+    if (api.flag('catacumba_tecla3')) await fax(api, 'Y Controlling la ha leído entera. Ese hombre lee.');
     // (Descuelga el teléfono rojo. Por primera vez se le oye la voz: ronca, bajita.)
     await descolgar(api);
-    await api.sayAs(TEO, 'Goyita. Página 7 cerrada. Esta noche firma un chaval.');
+    await api.sayAs(TEO, 'Benita. Página 7 cerrada. Esta noche firma un chaval.');
     await colgar(api);
     // E2 L19: (Aurora se quita las gafas. Se las vuelve a poner.)
     await api.anim(AUR, 'reach', 450); await api.wait(500); await api.anim(AUR, 'reach', 450);
     await aurora(api, 'Ha hablado. En voz alta. Delante de mí.');
-    // E2 §7.3 / fase B (3): fuera la visita de Íñigo; lo que venía a decir lo dice el fax
-    await fax(api, ['La Reunión de Dirección apaga la rotativa a las nueve.', 'Si no hay rotativa, no hay firma.']);   // E5 M08
-    await aurora(api, 'Y con buena letra, criatura.');
+    // [P11] la amenaza la trae Íñigo en persona: entra por la puerta de latón, mira la ficha sellada y a Bruno
+    await inigoAmenaza(api);
     await api.narrate('ACTO III: CIERRE', { ms: 2600 });
   });
+  api.placeActor(INIGO, null);                         // (si se salta la escena: Íñigo ya va hacia la Sala)
+}
+/** [P11] El villano cierra el Acto II: «Es la última.» y la rotativa; si Bruno no vio la escena del pósit en la
+ *  Redacción ([P14], la FIRMA fue lo último), se lo dice él. Teodoro contesta por fax con su línea de siempre. */
+async function inigoAmenaza(api) {
+  const [dx, dy] = art.layout.catacumba_a_pecera.walkTo;
+  api.sfx('door');
+  api.placeActor(INIGO, 'catacumba', dx - 8, dy, 'right');
+  api.show(INIGO);
+  await api.walkActor(INIGO, dx + 12, dy + 12);
+  api.faceActor(INIGO, TEO);                           // mira la ficha sellada…
+  await api.wait(600);
+  api.faceActor(INIGO, api.player);                    // …y luego a Bruno
+  api.face(INIGO);
+  await api.sayAs(INIGO, ['Enhorabuena por tu página 7, Vacante. Es la última.', 'A las nueve, la Reunión de Dirección apaga la rotativa.']);
+  if (!api.flag('inigo_prescindible')) {
+    api.setFlag('inigo_prescindible', true);
+    await api.sayAs(INIGO, 'Y tú, a «Prescindible». Con el resto de la plantilla.');
+  }
+  // se va hacia la Sala Amazonas. El fax pita.
+  await api.walkActor(INIGO, dx - 8, dy);
+  api.sfx('door');
+  api.placeActor(INIGO, null);
+  api.sfx('beep');
+  await fax(api, 'Si no hay rotativa, no hay firma.');   // E5 M08
 }
 
 // ------------------------------------------------------------------ plan §4.5 · golpe A: el fax vomita la tarde (paso 28)
@@ -182,7 +208,7 @@ async function faxConPapel(api) {
   if (n >= 1) atrasadas.push('18:42. Respuesta a «¿hola?»: no.');
   if (n >= 2) atrasadas.push('18:55. Respuesta a «¿me oye?»: sí. Por desgracia.');
   if (n >= 3) atrasadas.push('19:10. Respuesta a todo lo demás: ver respuestas anteriores.');
-  atrasadas.push('19:12. Goyita, ¿me oyes? Tú aguanta.');
+  atrasadas.push('19:12. Benita, ¿me oyes? Tú aguanta.');
   for (const l of atrasadas) { api.sfx('paper'); await fax(api, l); }
   api.faceActor(TEO, 'right');
   await aurora(api, 'Lleva toda la tarde contestándote; nadie le había dado papel.');
@@ -203,8 +229,8 @@ async function teclaGoyita(api) {
     await api.anim(api.player, 'reach', 300);
     await api.anim(TEO, 'reach', 250);
     api.sfx('hit');
-    await fax(api, ['La Goyita no tira borradores.', 'Y a ella no le marca nadie más que yo.']);
-    await api.say('Perdón, Goyita.');
+    await fax(api, ['La Benita no tira borradores.', 'Y a ella no le marca nadie más que yo.']);
+    await api.say('Perdón, Benita.');
     api.inc('fax_tecla_n');
     return;
   }
@@ -256,31 +282,12 @@ async function teclaAdministracion(api) {
   await api.anim(TEO, 'reach', 500);
   api.sfx('hit');
   api.setFlag('catacumba_factura', true);
-  await faldonComercial(api);
-}
-/** E2 §4.2.6 · el faldón de Comercial, más largo que la pieza (una vez, tras la factura). Estados del fax `faldon`
- *  (la hoja larguísima sale, cae por delante de la mesa y se arrastra por el suelo) y `tragando` (el fax se la come). */
-async function faldonComercial(api) {
-  if (!api.once('catacumba_faldon')) return;
-  await api.wait(300);
-  api.sfx('beep');
-  await api.wait(500);
-  api.setState('fax', 'faldon');
-  for (let i = 0; i < 6; i++) { api.sfx('paper'); await api.wait(420); }
-  await api.face('left');
-  await api.say('Mi pieza, con faldón de Comercial: «¿La opa le quita el sueño? Siestatón».');
-  await fax(api, ['El anuncio mide cuarenta líneas. La noticia, veintitrés.', 'En mi página la noticia se ve. Devuelto.']);
-  // (Teodoro mete la hoja larga en el fax al revés. El fax la traga entera, despacio.)
-  await api.anim(TEO, 'reach', 500);
-  api.setState('fax', 'tragando');
-  api.sfx('machine');
-  await api.wait(2600);
-  api.setState('fax', 'con_papel');
+  // ([P11] fuera el faldón de Comercial: era el cuarto golpe seguido tras el recorte. La factura de 0,26 € se queda.)
 }
 async function usarPiezaConFax(api) {
   if (!api.flag('fax_con_papel')) { await api.say('Sin papel, este fax no traga ni una coma.'); return; }
   if (api.flag('pieza_recortada')) { await api.say('Ya está recortada. Si la vuelvo a enviar, Begoña recorta el recorte.'); return; }
-  const i = await api.choose(['1: GOYITA', '2: ADMINISTRACIÓN', '3: CONTROLLING', 'Mejor no.'], { escape: 3 });
+  const i = await api.choose(['1: BENITA', '2: ADMINISTRACIÓN', '3: CONTROLLING', 'Mejor no.'], { escape: 3 });
   if (i === 0) await teclaGoyita(api);
   else if (i === 1) await teclaAdministracion(api);
   else if (i === 2) await teclaControlling(api);
@@ -292,7 +299,9 @@ const unaFuente = (api) => !api.flag('casilla_fuente') && api.has('mensaje_fp') 
 const dosFuentes = (api) => !api.flag('casilla_fuente') && api.has('mensaje_fp') && api.has('fotocopia_nota_direccion');
 const UNA_FUENTE = ['Con una fuente se hace un rumor; con dos, una noticia.', 'Con tres, un libro, y no estamos para libros.'];
 
-/** E2 §5.3 · paso 32. (Teodoro y Aurora no se hablan desde 1996: que ella toque SU fax y él lo permita es el gag.) */
+/** [P11] La coma de Evaristo, con Aurora: OPCIONAL (el correo ya lo dio Evaristo) y sin condición de papel. Se queda el
+ *  gag: Aurora toca el fax de Teodoro (no se hablan desde 1996) y él no la para. Ya no imprime nada: Aurora solo le
+ *  manda a Evaristo su visto bueno. La abre la opción del árbol o Dar el correo a Aurora (una vez). */
 async function comaDeEvaristo(api) {
   await aurora(api, ['¿Evaristo? ¿El de las comas? Siéntate. Bueno, no hay silla.',
     'Punto de miles y coma decimal. Si su cláusula lo dice, manda la cláusula.',
@@ -304,22 +313,14 @@ async function comaDeEvaristo(api) {
   api.faceActor(TEO, 'right');
   await api.anim(AUR, 'reach', 600);
   api.sfx('click');
-  await aurora(api, '«La coma está bien. Envíelo. A.G.»');
+  await aurora(api, '«La coma está bien. A.G.»');
   await api.anim(AUR, 'reach', 300);
   api.sfx('beep');                                    // la tecla 3: CONTROLLING
   await api.wait(400);
   await api.anim(TEO, 'reach', 400);                  // la mano de Teodoro, en el aire. No baja.
-  await api.wait(900);                                // (Pitido. Diez segundos.)
-  api.sfx('beep');
-  await imprime(api, 3, 420);                         // (Una hoja con membrete de Controlling.)
+  await api.wait(900);
+  api.sfx('beep');                                    // pitido: enviado
   api.setFlag('coma_bendecida', true);
-  api.setFlag('correo_evaristo_listo', true);
-  api.give('correo_evaristo');
-  api.sfx('pickup');
-  await fax(api, 'De Controlling. Ni lo mido. Lo respeto.');
-  await api.say(['Su correo, impreso. «Asunto: Una coma. Envío: en el momento oportuno».',
-    '¿Y cuándo es el momento oportuno?']);
-  await aurora(api, 'Cuando alguien diga que una coma es un detalle sin importancia.');
   await api.walkActor(AUR, ax, ay);
   api.faceActor(AUR, adir || 'right');
 }
@@ -375,6 +376,7 @@ const dialogoAurora = {
         await api.say('Aurora, quiero firmar en papel. Mañana.');
         await aurora(api, ['Para firmar hacen falta tres cosas: hueco, fuente y firma.',
           'Toma la ficha de la página 7. Ahí lo tienes todo, en casillas.']);
+        api.sfx('hit');                                     // [P14] le pone su sello en la esquina y le da la ficha
         api.give('ficha_pagina_7');
         api.sfx('pickup');
         await aurora(api, ['La página está vendida a unos colchones. Eso se decide en la Sala Amazonas.',
@@ -404,58 +406,31 @@ const dialogoAurora = {
       },
     },
     A_MENU: {
+      // [P15] seis opciones como mucho, en cinco huecos (`tras`: engine/dialog.js): la pieza (noticia → una o dos
+      // fuentes → «¿Y ahora qué?» → noticia); Teodoro (R02 → convenzo); el fax (papel o la opa); el oficio (errata →
+      // verbos → corrector → Custodia); recados (Acto III: la rotativa → la coma).
       options: [
-        { text: '¿Qué noticia puedo traer?',
+        { id: 'noticia', text: '¿Qué noticia puedo traer?', if: (api) => !unaFuente(api) && !dosFuentes(api) && !(api.flag('casilla_fuente') && !api.flag('pieza_escrita')),
           do: async (api) => { await aurora(api, ['Una que no tenga nadie. Y que aguante hasta mañana.', 'Una exclusiva se guarda para el papel. La web la tiene a las 00:01.']); } },
-        { text: '¿Cómo convenzo a Teodoro?', once: true,
-          reply: 'Contestándole. Teodoro solo respeta al que le contesta mejor que él.' },
-        // E7 F1 (E1): de dónde sale el papel. Dice qué falta y dónde; no qué hacer
-        { text: '¿De dónde saco papel para el fax?', if: '!fax_con_papel', once: true,
-          reply: 'Papel, en esta casa, solo gasta Begoña. Lo devuelve por triplicado.', setFlag: 'oyo_papel_begona' },
-        { text: '¿Por qué no se hablan usted y Teodoro?', once: true,
+        { id: 'dos', text: 'Tengo dos fuentes.', if: dosFuentes, goto: 'A_FUENTE' },
+        { id: 'una', text: 'Tengo una fuente.', if: unaFuente, do: async (api) => { await aurora(api, UNA_FUENTE); } },
+        { id: 'ahora', text: '¿Y ahora qué?', if: ['casilla_fuente', '!pieza_escrita'],
+          do: async (api) => { await aurora(api, ['Ahora escríbela en tu ordenador, fuera del CMS, que ahí vive el Titulator.', 'Y sin adjetivos; si se te escapa uno, que sea el bueno.']); } },
+        { id: 'r02', text: '¿Por qué no se hablan usted y Teodoro?', once: true,
           do: async (api) => {
-            await aurora(api, ['En 1996 me mandó un fax que empezaba «Con el debido respeto...».',
-              'Le contesté dándole las gracias por avisarme. Antes de lo que venía.',
+            await aurora(api, ['En 1996 me mandó un fax que empezaba «Corrígeme si me equivoco».',   // [P9] R02
+              'Le contesté: «Con mucho gusto: te equivocas».',
               'No me ha vuelto a dirigir la palabra. Han sido treinta años muy buenos.']);
             api.learnReply('rep_02');
           } },
-        { text: '¿Usted ha cometido alguna errata?', once: true,
-          do: async (api) => {
-            await api.wait(1200);              // (Pausa. Se quita las gafas.)
-            await aurora(api, ['Una. En 1989. Una coma después de «sin embargo» que no puse.',
-              'Desde entonces la pongo siempre; sin embargo, no se me ha olvidado.']);
-            await api.say('¿Y qué pasó?');
-            await aurora(api, 'Nada. Eso es lo terrible, criatura: que no pasó nada y yo lo sé.');
-          } },
-        { text: '¿Qué le parecen los verbos de abajo?', once: true,
-          do: async (api) => { await aurora(api, 'Nueve verbos y ni un subjuntivo. Así no se cierra un periódico.'); } },
-        { text: 'En la web eso lo arregla el corrector automático.', once: true,
-          do: async (api) => {
-            // (Silencio. Deja el boli sobre la mesa, muy despacio.)
-            await api.wait(1000);
-            await aurora(api, 'Repítemelo, que creo que no te he oído, y prefiero no haberte oído.');
-            await api.say('Digo que en la web no hay correctora. Lo hago fatal yo solo.');
-            await aurora(api, 'Ya lo sé. Leo la web todas las noches, para sufrir con método.');
-          } },
-        { text: 'Tengo dos fuentes.', if: dosFuentes, goto: 'A_FUENTE' },
-        { text: 'Tengo una fuente.', if: unaFuente, do: async (api) => { await aurora(api, UNA_FUENTE); } },
-        { text: '¿Y ahora qué?', if: ['casilla_fuente', '!pieza_escrita'],
-          do: async (api) => { await aurora(api, ['Ahora escríbela en tu ordenador, fuera del CMS, que ahí vive el Titulator.', 'Y sin adjetivos; si se te escapa uno, que sea el bueno.']); } },
-        { text: '¿Ha oído cómo pregunta Custodia?', if: 'custodia_regla', once: true,
-          do: async (api) => { await aurora(api, ['Eso, criatura, es una sentencia.']); } },
-        // [coherencia] lo de la rotativa lo dice el fax al abrir el Acto III (E2 quitó la visita de Íñigo que lo decía)
-        { text: 'Teodoro dice que en la reunión van a apagar la rotativa.', if: 'acto_3_iniciado', once: true,
-          do: async (api) => { await aurora(api, ['Esa reunión no decide nada sin acta.', 'Y Gervasio no ha escrito un acta en su vida.']); } },
-        // E2 §5.3 · paso 32: Aurora bendice la coma y la manda por el fax de Teodoro (tecla 3)
-        // [bloqueos] la opción sale con Evaristo escuchado; sin papel en el fax, Aurora dice qué falta
-        { text: 'Don Evaristo pregunta si su coma está bien.', if: ['evaristo_escuchado', '!coma_bendecida'],
-          do: async (api) => {
-            if (!api.flag('fax_con_papel')) { await aurora(api, 'Su coma está bien. Pero se lo digo por fax, y ese fax no tiene papel.'); return; }
-            await comaDeEvaristo(api);
-          } },
+        { id: 'convenzo', text: '¿Cómo convenzo a Teodoro?', once: true, tras: 'r02',
+          reply: 'Contestándole. Teodoro solo respeta al que le contesta mejor que él.' },
+        // E7 F1 (E1): de dónde sale el papel. Dice qué falta y dónde; no qué hacer
+        { id: 'papel', text: '¿De dónde saco papel para el fax?', if: '!fax_con_papel', once: true,
+          reply: 'Papel, en esta casa, solo gasta Begoña. Lo devuelve por triplicado.', setFlag: 'oyo_papel_begona' },
         // ENMIENDA E4 S7 · contrapunto de papel 1: COINCIDO (Teodoro y Aurora, de acuerdo en gramática)
         // [coherencia] solo si Bruno ha abierto el titulador de Yoli (ahí está «Los expertos coinciden»; la demo no lo usa)
-        { text: 'Yoli quiere sacar mi opa con «los expertos coinciden».', once: true,
+        { id: 'opa', text: 'Yoli quiere sacar mi opa con «los expertos coinciden».', once: true,
           if: ['pieza_escrita', 'fax_con_papel', (api) => Number(api.flag('pecera_disc_partidas') || 0) >= 1 || !!api.flag('opa_posit')],
           do: async (api) => {
             await aurora(api, '¿Coinciden en qué? «Coincidir» pide complemento.');
@@ -465,7 +440,33 @@ const dialogoAurora = {
             await aurora(api, '...¿En qué?');
             await fax(api, 'En que pide complemento.');
           } },
-        { text: 'Nada, Aurora. Gracias.', exit: true, reply: 'Lo has dicho bien. Me has descolocado.' },
+        { id: 'errata', text: '¿Usted ha cometido alguna errata?', once: true,
+          do: async (api) => {
+            await api.wait(1200);              // (Pausa. Se quita las gafas.)
+            await aurora(api, ['Una. En 1989. Una coma después de «sin embargo» que no puse.',
+              'Desde entonces la pongo siempre; sin embargo, no se me ha olvidado.']);
+            await api.say('¿Y qué pasó?');
+            await aurora(api, 'Nada. Eso es lo terrible, criatura: que no pasó nada y yo lo sé.');
+          } },
+        { id: 'verbos', text: '¿Qué le parecen los verbos de abajo?', once: true, tras: 'errata',
+          do: async (api) => { await aurora(api, 'Nueve verbos y ni un subjuntivo. Así no se cierra un periódico.'); } },
+        { id: 'corrector', text: 'En la web eso lo arregla el corrector automático.', once: true, tras: 'verbos',
+          do: async (api) => {
+            // (Silencio. Deja el boli sobre la mesa, muy despacio.)
+            await api.wait(1000);
+            await aurora(api, 'Repítemelo, que creo que no te he oído, y prefiero no haberte oído.');
+            await api.say('Digo que en la web no hay correctora. Lo hago fatal yo solo.');
+            await aurora(api, 'Ya lo sé. Leo la web todas las noches, para sufrir con método.');
+          } },
+        { id: 'custodia', text: '¿Ha oído cómo pregunta Custodia?', if: 'custodia_regla', once: true, tras: 'corrector',
+          do: async (api) => { await aurora(api, ['Eso, criatura, es una sentencia.']); } },
+        // [P11] lo de la rotativa lo dice Íñigo en persona al cerrar la página 7 (escena 7.3a)
+        { id: 'rotativa', text: 'Íñigo dice que en la reunión van a apagar la rotativa.', if: 'acto_3_iniciado', once: true,
+          do: async (api) => { await aurora(api, ['Esa reunión no decide nada sin acta.', 'Y Gervasio no ha escrito un acta en su vida.']); } },
+        // [P11] opcional: con el correo de Evaristo, una vez (también al darle el correo); tenga o no papel el fax
+        { id: 'coma', text: '¿Está bien la coma de don Evaristo?', do: comaDeEvaristo,   // [P15] en el Acto III, tras la de la rotativa
+          if: ['has:correo_evaristo', '!coma_bendecida', (api) => !api.flag('acto_3_iniciado') || api.elegida('aurora.A_MENU.rotativa')] },
+        { id: 'nada', text: 'Nada, Aurora. Gracias.', exit: true, reply: 'Lo has dicho bien. Me has descolocado.' },
       ],
     },
   },
@@ -508,23 +509,24 @@ const dialogoTeodoro = {
   actor: TEO, start: 'T0',
   nodes: {
     T0: {
+      // [P15] seis opciones como mucho: el fax → el teléfono rojo; Herminia → don Evaristo (`tras`: engine/dialog.js)
       options: [
-        { text: 'Quiero firmar en tu página 7.', if: '!duelo_teodoro_ganado',
+        { id: 'firmar', text: 'Quiero firmar en tu página 7.', if: '!duelo_teodoro_ganado',
           do: async (api) => { await api.duel('teodoro'); return 'exit'; } },
-        { text: '¿Por qué solo habla por fax?', once: true,
+        { id: 'fax', text: '¿Por qué solo habla por fax?', once: true,
           do: async (api) => { await fax(api, 'Lo que se dice se lo lleva el aire. Lo que se faxea, se archiva.'); } },
-        { text: '¿Con quién habla por el teléfono rojo?', once: true,
-          do: async (api) => { await fax(api, ['Con la Goyita. La rotativa. Vive en el polígono.', 'No me pide likes. Solo papel, tinta y que no la llame impresora.']); } },
-        { text: '¿Qué le pasa con la web?', once: true,
+        { id: 'rojo', text: '¿Con quién habla por el teléfono rojo?', once: true, tras: 'fax',
+          do: async (api) => { await fax(api, ['Con la Benita. La rotativa. Vive en el polígono.', 'No me pide likes. Solo papel, tinta y que no la llame impresora.']); } },
+        { id: 'web', text: '¿Qué le pasa con la web?', once: true,
           do: async (api) => { await fax(api, ['En internet una errata se corrige, chaval. En papel se enmarca.', 'Si firma uno de la web, el papel se acaba.']); } },
-        { text: 'He encontrado una página perdida del Libro de Estilo.', if: 'profecia_leida', once: true,
+        { id: 'pagina', text: 'He encontrado una página perdida del Libro de Estilo.', if: 'profecia_leida', once: true,
           do: async (api) => { await fax(api, ['¿«Nota del autor: tengo sueño»? La escribí yo, una noche de cierre.', 'No se lo digas a Aurora.']); } },
         // [E1.8] se queda: casa con el paso 32 («Teodoro le manda faxes»)
-        { text: '¿Conoce a Herminia, la de Infografía?', once: true,
+        { id: 'herminia', text: '¿Conoce a Herminia, la de Infografía?', once: true,
           do: async (api) => { await fax(api, ['La máquina de Leoncio respeta el cuerpo 9. Lo he medido. Nueve.', 'Le mando faxes. Me contesta con un quesito. Nos entendemos.']); } },
-        { text: '¿Conoce a don Evaristo?', once: true,
-          do: async (api) => { await fax(api, ['Es de los nuestros. Él cuenta comas. Yo, líneas.', 'Una vez me devolvió un fax corregido. Lo tengo enmarcado.']); } },
-        { text: 'Me voy.', exit: true, do: async (api) => { await fax(api, 'Cierra al salir. El reloj no se toca: las 20:59 caben.'); } },
+        { id: 'evaristo', text: '¿Conoce a don Evaristo?', once: true, tras: 'herminia',
+          do: async (api) => { await fax(api, ['Es de los nuestros. Él cuenta comas. Yo, líneas.', 'Una vez me devolvió un fax corregido. Tenía razón.']); } },
+        { id: 'adios', text: 'Me voy.', exit: true, do: async (api) => { await fax(api, 'Cierra al salir. El reloj no se toca: las 20:59 caben.'); } },
       ],
     },
   },
@@ -610,12 +612,12 @@ const dueloTeodoro = {
   // plan §7.4: la paráfrasis de cada ataque, en telegrama
   attackText: {
     R06: '¿CONTRASTADO? FUENTES. NÚMERO.',
-    R02: 'CON TODO EL RESPETO QUE ME MERECE LA WEB. QUE ES POCO.',
-    R09: 'DATO SIN CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.',   // E6 §5.1 (N7)
+    R02: 'CORRÍGEME SI ME EQUIVOCO: LA WEB NO ES UN PERIÓDICO.',                       // [P9]
+    R09: 'DATO SACADO DE CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.',   // E6 §5.1 (N7); [P9] «SACADO»
   },
   // E6 §5.1 · el tercer asalto, que quepa: el menú trae la R09 entera (el fax la corta y Teodoro la devuelve; nunca es
   // fallo) y la versión corta de Bruno, que cabe en una línea de fax (N8). 1.ª larga: N9; 2.ª y siguientes: el taunt.
-  cabe: { R09: { max: 38, corta: 'Tráeme el contexto.', noCabe: 'NO CABE. REPITA EN TREINTA Y OCHO.' } },
+  cabe: { R09: { max: 38, corta: 'Lo saqué yo. No cabía.', noCabe: 'NO CABE. REPITA EN TREINTA Y OCHO.' } },
   intro: ['¿Tú? ¿El de la web? ¿En mi página? Contesta.'],
   hurt: ['Hum. Cabe.', 'Eso, en mis tiempos, era una portada.'],
   taunt: ['Treinta y ocho caracteres de nada.', 'Respuesta a otro fax. Devuelto.'],
@@ -655,7 +657,7 @@ export default buildRoom({
     catacumba_galeradas_n: 'int · catacumba · +1 por Mirar galeradas (la 2.ª, titular de los áridos, §8.3)',
     catacumba_desmentido_c: 'bool · catacumba · Teodoro ya desmintió el rumor C (adenda 8.3)',
     catacumba_reloj_n: 'int · catacumba · +1 por Empujar reloj_2147',
-    catacumba_tecla1: 'bool · P3 · catacumba · ya se probó la tecla 1 (GOYITA) del fax',
+    catacumba_tecla1: 'bool · P3 · catacumba · ya se probó la tecla 1 (BENITA) del fax',
     catacumba_tecla3: 'bool · P3 · catacumba · ya se probó la tecla 3 (CONTROLLING): Evaristo',
     catacumba_factura: 'bool · P3 · catacumba · factura del fax (0,26 €) · P3 (tablón, pared)',
   },
@@ -692,18 +694,17 @@ export default buildRoom({
       abrir: 'La cortina ya está entreabierta. Aquí solo se cierran páginas.',
       cerrar: 'Corro la cortina. Teodoro la vuelve a abrir sin dejar de mirar el fax.',
     } },
-    { id: 'fax', name: 'fax', color: '#D9CFA6', state: 'sin_papel', states: ['sin_papel', 'con_papel', 'imprimiendo', 'faldon', 'tragando'],
+    { id: 'fax', name: 'fax', color: '#D9CFA6', state: 'sin_papel', states: ['sin_papel', 'con_papel', 'imprimiendo'],
       // el fax «escupe solo» (murmullos de Teodoro) — solo si tiene papel
-      murmurs: (v) => (v.flag('fax_con_papel') ? ['CUERPO 9. INTERLINEADO 10. CORAZÓN 12.', 'GOYITA, ¿ME OYES? TÚ AGUANTA.'] : []),
+      murmurs: (v) => (v.flag('fax_con_papel') ? ['CUERPO 9. INTERLINEADO 10. CORAZÓN 12.', 'BENITA, ¿ME OYES? TÚ AGUANTA.'] : []),
       murmurColor: '#D9CFA6',
       handlers: {
         mirar: async (api) => {
           if (api.flag('fax_con_papel')) {
             await api.say(['Tiene papel. Teodoro lo mira como quien mira a un hijo que vuelve.',
-              'Tres teclas de marcación rápida: 1 GOYITA, 2 ADMINISTRACIÓN, 3 CONTROLLING.']);
+              'Tres teclas de marcación rápida: 1 BENITA, 2 ADMINISTRACIÓN, 3 CONTROLLING.']);
           } else await api.say('Un fax de 1992: «SIN PAPEL». Pegatina: «Mantenimiento: Sistemas. Ticket 0.441».');
-          // E5 §2.3 (D20/C34): la pegatina de Paco se ve en el mismo Mirar; con papel, el flag se pone sin línea
-          if (!api.flag('vio_pegatina_fax')) api.setFlag('vio_pegatina_fax', true);
+          // [P11] la pegatina se queda como decorado (Eutimio la cita al dar el manual en la R-3): mirarla no abre nada
         },
         // paso 28 · golpe A
         'usar:copias_rechazadas': faxConPapel,
@@ -884,7 +885,7 @@ export default buildRoom({
 
   dialogs: { aurora: dialogoAurora, teodoro: dialogoTeodoro },
   duels: { teodoro: dueloTeodoro },
-  scenes: { acto_3a: escenaActo3a, teodoro_derrota: derrotaTeodoro },
+  scenes: { acto_3a: escenaActo3a, teodoro_derrota: derrotaTeodoro, catacumba_coma: comaDeEvaristo },
   defaults: {},
   ambient: [
     // adenda 3.6: reacción de Aurora a los «!!» de Tadeo (con tadeo_rv_n ≥ 1 y acto_2_iniciado). Una sola vez.

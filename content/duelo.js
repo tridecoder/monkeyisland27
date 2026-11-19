@@ -6,25 +6,28 @@
 // Cada rival (mazo, asunto, líneas, remates) lo define el autor de SU sala en `duels: { <id>: {...} }`
 // de su archivo de lógica — ver docs/CONTENT_SCHEMA.md §10. Ids de duelo: maripaz, teodoro, gervasio, inigo.
 
+import { DONDE } from './pistas.js';
+
 // E6 §4.3: dos ramas de la misma floja (la de por defecto y la de Maripaz): una constante
 const SALUD = 'Estupendamente. La plaza no se hereda.';
 
 export default {
+  // [P9] (con [P15]): nueve réplicas nuevas (R02, R03, R04, R05, R07, R08, R09, R11, R13); ataque nuevo en R02, R04 y R11.
   // §6.3 — las 14 parejas (+ R15/R16 de la adenda 7.1). `flag` = cómo se aprende (api.learnReply('rep_XX')). El menú las muestra en este orden.
   pairs: [
     { id: 'R01', flag: 'rep_01', attack: 'Como ya comenté en mi anterior correo, que parece que nadie ha leído...', reply: 'Lo leímos todos. Por eso no contestó nadie.' },
-    { id: 'R02', flag: 'rep_02', attack: 'Con el debido respeto...', reply: 'Gracias por avisar antes de faltármelo.' },
-    { id: 'R03', flag: 'rep_03', attack: 'Esto lo necesitaba para ayer.', reply: 'Ayer no puedo. Te miro hueco para anteayer.' },
-    { id: 'R04', flag: 'rep_04', attack: 'Es que tú eres el que mejor escribe.', reply: 'Y tú el que mejor delega. Por eso me escribes a mí.' },
-    { id: 'R05', flag: 'rep_05', attack: 'Que esto no salga de aquí.', reply: 'Tranquilo: de aquí no sale ni el wifi.' },
+    { id: 'R02', flag: 'rep_02', attack: 'Corrígeme si me equivoco.', reply: 'Con mucho gusto: te equivocas.' },
+    { id: 'R03', flag: 'rep_03', attack: 'Esto lo necesitaba para ayer.', reply: 'Ayer fue cuando empezaste la frase.' },
+    { id: 'R04', flag: 'rep_04', attack: 'Esto te va a dar mucha visibilidad.', reply: 'Si valiera algo, me la cobrarías.' },
+    { id: 'R05', flag: 'rep_05', attack: 'Que esto no salga de aquí.', reply: 'Me lo estás diciendo en un responder a todos.' },
     { id: 'R06', flag: 'rep_06', attack: '¿Esto lo has contrastado?', reply: 'Con dos fuentes y media. La media dijo «yo no te he dicho nada».' },
-    { id: 'R07', flag: 'rep_07', attack: 'Me consta que esto ya lo hablamos.', reply: 'A ti te consta. A mí me consta que hablabas tú.' },
-    { id: 'R08', flag: 'rep_08', attack: 'Te escribo desde el más absoluto cariño.', reply: 'Y yo te leo desde el más absoluto modo avión.' },
-    { id: 'R09', flag: 'rep_09', attack: 'Ese dato está sacado de contexto.', reply: 'Tráeme el contexto. Le hago una pieza aparte: «El contexto, explicado».' },
+    { id: 'R07', flag: 'rep_07', attack: 'Me consta que esto ya lo hablamos.', reply: '¿En qué acta consta?' },
+    { id: 'R08', flag: 'rep_08', attack: 'Te escribo desde el más absoluto cariño.', reply: 'Se nota. Has puesto a mi jefe en copia.' },
+    { id: 'R09', flag: 'rep_09', attack: 'Ese dato está sacado de contexto.', reply: 'Claro que lo saqué. El contexto no cabía en la pieza.' },
     { id: 'R10', flag: 'rep_10', attack: 'Estamos analizando todas las opciones.', reply: 'O sea, que no sabéis qué hacer, pero en tabla dinámica.' },
-    { id: 'R11', flag: 'rep_11', attack: 'Quedo a la espera de tus comentarios.', reply: 'Espera sentado. Si encuentras silla.' },
+    { id: 'R11', flag: 'rep_11', attack: '¿Has podido verlo?', reply: 'Poder, he podido.' },
     { id: 'R12', flag: 'rep_12', attack: 'Hay que poner las luces largas.', reply: 'Puestas. Ahora se ve perfectamente que no hay carretera.' },
-    { id: 'R13', flag: 'rep_13', attack: 'No es un despido: es una salida en valor.', reply: 'Claro. Y la carta de despido es una newsletter personalizada.' },
+    { id: 'R13', flag: 'rep_13', attack: 'No es un despido: es una salida en valor.', reply: '¿A cuántos días por año?' },
     { id: 'R14', flag: 'rep_14', attack: 'Esto lo podemos ver en una reunión rápida.', reply: 'Perfecto. ¿Te va en marzo? Es cuando acaban las rápidas.' },
     // adenda 7.1: solo las usa D4 (Íñigo), al final del mazo
     { id: 'R15', flag: 'rep_15', attack: 'Lo he consultado con la IA y está de acuerdo conmigo.', reply: 'Lo sé. Me lo ha contado ella. Se llama Brais.' },
@@ -45,7 +48,7 @@ export default {
     { text: 'Eso lo ha hecho la IA.', answer: 'Pues que conteste ella.',
       answers: { maripaz: '¿La IA? ¿Y quién la patrocina?', teodoro: 'LA IA NO MIDE. NO CABE.', gervasio: 'Pues se le delega a la IA. ¿Tiene agenda?', inigo: 'La IA no se equivoca, Vacante. Se optimiza.' } },
     { text: '¿Y usted cómo se encuentra? De salud, digo.', answer: SALUD,
-      answers: { maripaz: SALUD, teodoro: 'MÁS SANO QUE LA GOYITA. Y LA GOYITA TIRA.', gervasio: 'Hoy me lo han preguntado tres veces. ¿Estoy mal?', inigo: 'Yo no tengo plaza. Tengo chófer. Es escalable.' } },
+      answers: { maripaz: SALUD, teodoro: 'MÁS SANO QUE LA BENITA. Y LA BENITA TIRA.', gervasio: 'Hoy me lo han preguntado tres veces. ¿Estoy mal?', inigo: 'Yo no tengo plaza. Tengo chófer. Es escalable.' } },
     { text: '¿Y cuáles son los siguientes pasos?', only: ['inigo'], answer: 'Me alegra que lo preguntes. Diapositiva 312.',
       answers: { inigo: ['Me alegra que lo preguntes. Diapositiva 312.', '«Siguientes pasos de los siguientes pasos».'] } },
   ],
@@ -54,17 +57,25 @@ export default {
   // sobre la rotación `hurt` del rival. Otro actor (Rubén en D4) solo habla si está en la sala.
   hurtByPair: {
     // E2 §4.3 (y C9: «Me lo apunto» es de Bruno, no de Maripaz)
-    maripaz: { R08: '¿Modo avión? Sin cobertura no me cargan los anuncios. Eso duele.', R11: '¿Sentado? Sentado se ven mejor los banners.' },
+    // [P9]: R08 y R11 citaban las réplicas viejas; R04, nueva. Con R14 no hay reacción propia ([P15]).
+    maripaz: { R04: 'Tienes razón. Mañana sale con tarifa.', R08: 'Uy. Esa copia iba oculta.', R11: 'Pues te lo vuelvo a poner. Sin poder saltarlo.' },
     // E6 §5.1: D2 a tres asaltos; el «...CABE.» pasa de la R02 a la R09 (la versión corta que cabe en 38: `cabe` de la sala)
     teodoro: { R02: 'ESO ME LO DIJO ELLA. EN 1996.', R06: 'LA MEDIA FUENTE ERA YO. NO LO REPITAS.', R09: '...CABE.' },
-    // E2 fase B (15): D3 pierde R14 (mazo ['R07', 'R01', 'R03', 'R05'], P2); la línea de R14 se queda sin uso hasta entonces
-    gervasio: { R07: 'Me consta que... Bueno. Se constaba.', R14: '¿Marzo? Marzo está muy bien. Se agradece. Pero no.' },
+    // [P9]: R03 nueva (va con su réplica); R01 y R05, las «opcionales» del guion (líneas extra). [P15] tanda 4: fuera la
+    // de R14, sin uso desde que el D3 la perdió (mazo R07, R03, R01, R05) y que ningún guion recoge
+    gervasio: { R07: 'Me consta que... Bueno. Se constaba.', R03: 'La frase se... se empezó en plazo.', R01: 'Se leyó. Se... Se agradece.',
+      R05: '...Se ha... se ha enviado solo.' },
     inigo: {
       R10: 'Interesante. Lo pongo en azul.',
       R12: '...Eso es una visión muy pesimista de la carretera.',
       R13: [['inigo_sinergia', 'Eso lo escribió alguien brillante.'], ['ruben', 'Yo. Perdón.']],
       R15: [['inigo_sinergia', '...Brais, ¿tú le has contado algo?'], ['ruben', 'TODO. Se me escapa todo.']],
       R16: 'Esa coma no estaba en mi framework.',
+      // [P9]: las «opcionales» del guion (líneas extra). La de R07, solo después del remate del acta (`remates` ≥ 2; si
+      // una revancha trae la R07 antes, sale la rotación general)
+      R01: 'Leído y sin respuesta. En mi sector eso es engagement.',
+      R05: 'Eso es una filtración. Lo pongo en rojo.',
+      R07: (duel) => (duel.remates >= 2 ? 'El acta es un formato legacy.' : null),
     },
   },
   // adenda 7.4: cameo decorativo (no suma ni resta): tras el PRIMER acierto de Bruno en ese duelo, una sola vez
@@ -103,7 +114,7 @@ export default {
     },
     inigo: {
       movil: 'Grábame. Lo subimos como caso de éxito. Tú sales en «aprendizajes».',
-      tarjeta_becario: 'Sin foto no estás en mi matriz. Ah, sí: en «Ideal».',
+      tarjeta_becario: 'Sin foto no estás en mi matriz. Ah, sí: en «Prescindible».',   // [P11] desde la FIRMA
       libreta_replicas: 'Bonito cuaderno. Low-cost.',
       manual_fax: '¿Un manual? Nosotros lo resumimos en una diapositiva. La 247.',
       boli_muerto: '¿Un boli? Yo firmo con el dedo. En la tableta.',            // adenda 7.5
@@ -127,7 +138,6 @@ export default {
     useObject: '[Usar objeto]',
     retire: '[Retirarse del hilo]',
     pickPrompt: 'Adjuntar al hilo:',
-    notReady: 'Aún no tengo con qué contestarle. Debería cotillear más.',
     defeatCc: 'Toda la empresa',
     defeatAssigned: 'Vacante',
     // Línea de derrota POR DEFECTO (rótulo del narrador). Cada rival pone la suya en su sala: `defeatLine` (plan §7.7).
@@ -139,6 +149,15 @@ export default {
     // crítica 3 · N7: lo que dice Bruno al retirarse (solo se puede en un remate: le falta el adjunto). Un rival puede
     // poner la suya con `retireLine` en su bloque `duels.<id>`.
     retireLine: 'Me salgo del hilo. Vuelvo cuando tenga algo que adjuntar.',
+  },
+
+  // [P7] aprender perdiendo: cada ataque recibido sin su réplica apunta en la libreta dónde se aprende (la nota de Bruno
+  // de content/pistas.js `DONDE`, sin texto nuevo). `flag` = bits de las parejas en el orden de `pairs` (R01 = bit 0).
+  pistas: {
+    flag: 'libreta_pistas',
+    aviso: 'Pista apuntada en la libreta.',
+    repaso: 'Me faltan réplicas. Están apuntadas en la libreta.',
+    de: (pair) => (DONDE[pair.flag] || [])[1] || null,
   },
 
   music: 'm_duelo',

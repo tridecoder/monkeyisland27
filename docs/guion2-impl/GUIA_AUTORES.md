@@ -664,3 +664,108 @@ Los documentos históricos (`docs/guion2/*.md`, `docs/informes/*`, `docs/GUION_B
 - La ayuda gris «Contesta con la réplica que la desmonte.» sale solo en el primer duelo de la partida (flag de motor
   `duel:ayuda`, que se pone con el primer acierto o al terminar ese duelo).
 - Colores de la ventana: `COL` y `PARES_CONTRASTE` de `engine/duel.js` (los comprueba `tools/contrast.mjs`).
+
+## Guion nuevo · tanda 1 (docs/GUION_PROPUESTA_LIMPIO.md: [P5], [P7], [P8], [P9], [P10], [P13] y sueltos de [P14]/[P15])
+
+> Prueba: `node tools/test-guion3-t1.mjs` (en `test-all`); capturas `tools/shots/guion3-t1-*.png`.
+
+- **El periódico se llama El Incontable** (web y rótulos: `elincontable.es`, `ELINCONTABLE.ES`). El nombre viejo no
+  queda en `content/`, `engine/`, `tools/`, `index.html` ni README; `text-audit` lo vigila. La única forma sin «in» que
+  se dice es el chiste del logo («queda «elcontable.es». Una gestoría.»). Letras del Vestíbulo: `logo()` de
+  `art/vestibulo.art.js` (el «in» cuelga torcido de un tornillo).
+- **Réplicas**: las nueve nuevas están en `content/duelo.js` (`pairs`) y en la escena donde se aprende cada una; las
+  voces de ataque, en el bloque de cada rival (`attackText`; Íñigo ya tiene las suyas en `escenas/climax.js`). Un
+  `hurtByPair` puede ser una función `(duel) => líneas | null` (la R07 de Íñigo solo tras el remate del acta).
+- **Aprender perdiendo** (`duelo.js pistas`, `engine/duel.js`): se entra a cualquier duelo; cada ataque sin su réplica
+  apunta en la libreta la nota de Bruno de `pistas.js DONDE` (flag `libreta_pistas`, un bit por pareja), con el aviso
+  «Pista apuntada en la libreta.» y un pósit sobre la pestaña LIBRETA mientras el menú está abierto; al perder, «Me
+  faltan réplicas. Están apuntadas en la libreta.»; «Mirar libreta» las enseña en gris; `learnReply` las borra. Si
+  cambia dónde se aprende una réplica, se cambia `DONDE` y vale para la abuela y para la libreta.
+- **Gervasio más rápido** (`aTiempo.rapido` de `pajarera.js`): tras un ataque escrito entero, dos tramos y pausas × 0,6;
+  el que Bruno le pisa vuelve a ir lento.
+- **Apagón**: 12 s la primera vez (Anselmo cruza); del segundo en adelante, 5 s a oscuras con el mismo interceptor y
+  luego la escalada de siempre (`cierreRepeticion` de `pecera.escenas.js`).
+- **Pop-up de papel**: `paginaComercial` (faldón, robapáginas, cuatro módulos, línea gris) y `paginaPopup` (el colchón
+  de cartulina troquelada que se levanta, `POPUP_MS`) en `art/sala_amazonas.art.js`; dos `api.detalle` seguidos.
+
+## Guion nuevo · tanda 2 (docs/GUION_PROPUESTA_LIMPIO.md: [P11] sin Eventos, [P4], [P6] y sueltos de [P14])
+
+> Prueba: `node tools/test-guion3-t2.mjs` (en `test-all`); capturas `tools/shots/guion3-t2-*.png`. Orden alternativo
+> nuevo: `node tools/walkthrough.mjs --alt2` (Administración antes de la reunión, la firma la última).
+
+- **El CMS es condición del HUECO**, no un recado de Sistemas. Con la web caída Maripaz no juega el D1
+  (`sala_amazonas.js`: «Aunque la web no publica desde las cuatro.» / «Arréglala y te lo pongo por escrito.»; la primera
+  vez, antes, lo del exnovio) y deja `maripaz_pide_web`. El objetivo `cms` de `pistas.js` solo cuenta desde ese flag;
+  antes, la abuela manda a la reunión. La ficha del pase (`items.js FICHA`) lleva entonces la nota al margen.
+- **Sistemas siempre atiende**: un solo árbol `P` de Eutimio en `cpd.js` (fuera el «No atiendo» y el árbol de
+  «Ticket 0.441»); la R12 sale con el CMS caído. **El manual del fax** lo da Eutimio al apagar la R-3 («Tengo un
+  hueco…» → «El fax de Teodoro.» → `darManual`), también si se salta la escena. Fuera la vía del ticket nº 3 y los
+  tirones 3/4 con texto (el tercero es solo el gesto de Yoli).
+- **El correo de Evaristo** lo da él tras «Siga» (`administracion.dialogos.js`, `darCorreo`); la coma con Aurora es
+  opcional (escena `catacumba_coma`, solo `coma_bendecida`; ya no da el correo). La tecla 3 del móvil no lo da.
+- **Llamadas de Evaristo**: `LLAMADAS` de `game.js` = L1, L2, L4. L4 (los atunes; «...El armario 27.») al empezar el
+  Acto III es el único aviso del armario 27. Fuera L3, L5 y el «RV x5» de Tadeo.
+- **Íñigo y «Prescindible»**: al entrar en la Redacción con la FIRMA marcada (Acto II) pega el pósit en la matriz
+  (`pecera.escenas.js inigoPrescindible`, flag `inigo_prescindible`); la matriz de los Despachos lo dibuja
+  (`drawMatrizRamirez`). Si no se ha visto, la amenaza en persona de la Redacción de papel (`catacumba.js
+  inigoAmenaza`, al cerrar la página) dice la línea de respaldo. La tarjeta de becario en el D4: «…en «Prescindible»».
+- **Rotulador**: lo da Maripaz al ganar el D1; desde el Acto II el termómetro de Ecosistema tiene el cordel vacío
+  (`drawCordelVacio`). **Atasco**: se resuelve solo tras «¿Necesitan ayuda?» (`resolverAtasco`); fuera las vías,
+  el temporizador y el faldón comercial.
+- **Escenas nuevas**: parpadeo de PUBLICADO/GUARDANDO (`pecera_parpadeo`, Acto II con el CMS caído), el hallazgo de la
+  opa con Begoña (detrás de la fotocopia), Brais con la opción del titular y el táper al despedirse, Herminia mide
+  corto, el clímax con «Tira, Teodoro.» (Aurora en el inserto), Hidrovoltia la primera vez del Vestíbulo en el Acto II,
+  la máquina de bocadillos de Sistemas.
+- **Partidas viejas** (`migrarPartida`): `evaristo_escuchado` → correo; CMS vivo sin manual → manual; HUECO ganado sin
+  rotulador → rotulador; llaves de diálogo `paco.P0.*`/`paco.P1.*` → `paco.P.*`; RV de Tadeo > 2 → 2.
+- **Pendiente de la tanda 3** ([P12] Eventos): el álbum lo sigue prestando Pilar, el kanban «descopeado» sigue, y no
+  están el brindis de Íñigo ni la trituradora de Brais.
+
+## Guion nuevo · tanda 3 (docs/GUION_PROPUESTA_LIMPIO.md: [P12] Eventos, con lo que corrigen [P14] y [P15])
+
+> Prueba: `node tools/test-guion3-t3.mjs` (en `test-all`); capturas `tools/shots/guion3-t3-*.png`. El paso 42 de
+> `walk-data.mjs` es ahora «Mirar la silla del armario» y el 43, la 112 de Pilar (46 pasos: Acto III, 10).
+
+- **La noche de Pilar** (`eventos.js`, `eventos.dialogos.js`): Íñigo es su ponente (la presentación dice el brindis de
+  las 21:05; llega el correo «CONFIRMADO», `lib/movil.js`, bit 11 de `movil_leidos`). Por actos: la pancarta (tapada →
+  «PLAN CERO PAPEL» → tapada otra vez), la silla del ponente, la lista de la mesa (desde el Acto II no hay papel; tras el
+  álbum, el folio «Brais. Silla 112»), la mesa de sonido, la cuenta atrás. Desde el Acto II: el rider («RV:» de Tadeo,
+  la entrada con el walkie, «¿Qué ha pedido el ponente?» → «¿Y sin papel…?» y «¿Sabes que el plan…?», que necesita el
+  `pulsador_rojo`), la `trituradora` y el ambiente de la puerta en Marketing (`ecosistema.js`, `pilar_rider`).
+- **Las sillas**: ciento doce en el plano, ciento once en la sala; la 112 es la cruz vacía (`cruz_112`) y está en el
+  armario 27 (`silla_armario` en `cpd.js`, dibujada en el nido y en el primer plano de Brais). `eventos_falta_112` (Pilar
+  lo ha dicho; abre la opción de Íñigo «¿Se llevó usted una silla de Eventos?»). Fuera la silla 113 y su micropuzle.
+- **El álbum (Acto III)**: en la primera entrada del acto (`entradaActo3`, `eventos_acto3_entrada`) Pilar cuenta la 112
+  y el álbum espera en la trituradora (`album_trituradora`). «¿Me prestas el álbum?» es la negativa (`pilar_nego_album`).
+  «Creo que sé dónde está tu 112.» sale con `silla_112_vista` (mirar la silla del armario o «¿De dónde es esa silla?» a
+  Brais) y pide elegir el sitio (nodo `PE112`: dos sitios equivocados cierran la conversación); con el armario 27, el
+  álbum (`eventos_album_dado`) y, la siguiente vez que se habla con Pilar, la croqueta.
+- **Pistas**: «El álbum» manda a subir a Eventos; desde la entrada (o la negativa), «La silla de Pilar» (`silla_pilar`,
+  con su variante tras la silla vista). Se adelantan de [P15] porque sin ellas la pista mandaba a la negativa.
+- **Kanban**: una sola columna buena, SALIDA EN VALOR (fuera la otra palabra, el móvil de Borja en Eventos y
+  `oyo_descopear`; `posit_descopeado` se queda como id técnico). **Clímax**: Íñigo lleva el walkie (variante `walkie` del
+  muñeco en el Acto III) y Pilar dice sus dos líneas antes de Begoña.
+- **Partidas viejas** (`migrarPartida`, las que no tienen `eventos_falta_112`): el álbum ya prestado cuenta como salvado
+  (la 112, encontrada); el recuento vuelve a empezar; la columna «descopeado» pasa a «salida»; las opciones de una vez de
+  Pilar que se guardaban por posición pasan a guardarse por id; fuera `oyo_descopear` y `eventos_silla_devuelta`.
+
+## Guion nuevo · tanda 4 (docs/GUION_PROPUESTA_LIMPIO.md: [P15] cierre y auditoría)
+
+> Prueba: `node tools/test-guion3-t4.mjs` (en `test-all`); capturas `tools/shots/guion3-t4-*.png`. Auditoría del juego
+> contra la copia limpia: `node tools/audit-guion3.mjs` (`--restos`: solo lo que el guion ha quitado).
+
+- **Seis opciones a la vez, como mucho** (contando la de salida). Motor: `tras` en las opciones (engine/dialog.js,
+  `opcionesVisibles`; CONTENT_SCHEMA §9) y `api.elegida(clave)`. Encadenados según las notas [P15] de la copia limpia:
+  Celestino (el café, con el torno abierto; «¿Y usted no se aburre…?» tras el Ibex → la plaza), Yoli, Leoncio, Anselmo,
+  Custodia, Íñigo, Aurora (cinco huecos), Teodoro, Eutimio («¿Escuchas por la rejilla?» pasa a una vez → el wifi),
+  Gervasio en la reunión, Maripaz, Begoña, Brais y Pilar (`CADENAS` de eventos.dialogos.js: en el Acto III las tres
+  cadenas comparten un hueco). La prueba recorre todos los árboles en cada estado de las tres rutas.
+- **walk-data**: el paso 3 (el café de Celestino) va detrás del torno (7): antes no sale la opción.
+- **Partidas viejas** (`migrarPartida`): las opciones de una vez de los árboles reordenados pasan de posición a id
+  (`OPCIONES_POR_POSICION`); el álbum ya prestado por la vía vieja no da por oída la 112 (`eventos_falta_112` y
+  `silla_112_vista` en falso); el fax y el enchufe pierden los estados del camino antiguo (el faldón, el ticket nº 3).
+- **Armario 27**: `armario_27_bajo` (el tercio de abajo, mismas respuestas) cuando no está la silla del nido delante;
+  «Ver objetos» une las cajas pegadas de un mismo nombre (engine/hotspots.js).
+- **Restos fuera**: la línea de Anselmo sin rotulador, el estado `con_ticket` del enchufe, los estados del faldón del fax,
+  la reacción R14 de Gervasio (sin uso), la meta `hff`; la súplica del Titulator rompe el titular de [P17].
+

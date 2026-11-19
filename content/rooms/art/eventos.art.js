@@ -2,9 +2,11 @@
 // 512×144 con scroll. De izquierda a derecha: doble puerta ENTORNADA al Ecosistema (la misma de ojos de buey que se ve desde Marketing; por la rendija, luz lila) · PHOTOCALL con su
 // truss, la pared de logos con el hueco «ESPACIO PREMIUM PARA TU CARA», alfombra roja, postes y cordón de terciopelo ·
 // aro de luz · flight cases · ESCENARIO (telón negro, pancarta «BIENVENIDOS A» con cinta, cuenta atrás clavada en
-// 00:05:00, gong, micro de pie y atril) con las FILAS DE SILLAS delante (las famosas 112, en perspectiva; una con el
-// folio «RESERVADO» y otra torcida, de Comercial, que saca de quicio a Pilar) · altavoces · mesa de sonido con el
-// cargador de walkies · mesa de acreditaciones (cajas de lanyards, el álbum) · catering con las croquetas bajo campana
+// 00:05:00, gong, micro de pie y atril; desde el Acto II, el pulsador rojo del brindis) con las FILAS DE SILLAS delante
+// (ciento once en perspectiva; una con el folio «RESERVADO»; [P12] en la punta de la fila de atrás, la cruz vacía de la
+// 112) · altavoces · mesa de sonido con el
+// cargador de walkies · [P12] la trituradora del rider (desde el Acto II) · mesa de acreditaciones (cajas de lanyards, el
+// álbum) · catering con las croquetas bajo campana
 // («21:05»). Arriba, de lado a lado, la barra de focos: conos de luz con trama, brillo de lente y dos focos que
 // parpadean (el tres del photocall y el del atril). Cruces de cinta americana por todo el suelo.
 // Paleta: ciruela oscuro y terciopelo negro, moqueta azul noche, oro de foco, rojo alfombra, cromo de truss.
@@ -36,6 +38,11 @@ function chairX(r, side, i) {
 }
 const RES = { r: 3, side: -1, i: 0 };                 // la silla del «RESERVADO»: primera fila, junto al pasillo
 const RES_X = chairX(RES.r, RES.side, RES.i);
+// [P12] la 112 que falta: su cruz de cinta, vacía, en la fila de atrás (la más cercana), en la punta derecha
+const CRUZ = { r: 3, side: 1, i: PER_SIDE - 1 };
+const CRUZ_X = chairX(CRUZ.r, CRUZ.side, CRUZ.i), CRUZ_Y = ROWS[CRUZ.r].y;
+// [P12] la trituradora del rider (desde el Acto II), en el suelo, junto a la mesa de acreditaciones (la de Pilar)
+const TRIT = { x: 438, y: 108, w: 14, h: 17 };   // [P15] t4: más arriba, el álbum de la boca pisa la mesa (geo R2)
 
 const layout = {
   eventos_a_ecosistema: { rect: [2, 26, 34, 72], walkTo: [20, 116], face: 'left' },
@@ -52,7 +59,14 @@ const layout = {
   // las filas de sillas: el bloque (hasta el respaldo de la primera fila); la del «RESERVADO» y la torcida tienen su caja
   sillas_evento: { poly: [[206, 92], [344, 92], [360, 118], [190, 118]], walkTo: [276, 136], face: 'up' },
   silla_reservado: { rect: [RES_X - 19, 114, 38, 17], walkTo: [RES_X, 136], face: 'up', priority: 1 },
-  silla_torcida: { rect: [367, 108, 20, 22], walkTo: [380, 137], face: 'up', priority: 1, draw: (g) => drawSillaTorcida(g) },
+  // [P12] la cruz vacía de la 112 (última fila, la más cercana, a la derecha); sustituye a la silla torcida de Comercial
+  cruz_112: { rect: [CRUZ_X - 8, 117, 16, 15], walkTo: [CRUZ_X + 2, 137], face: 'up', priority: 2 },
+  // [P12] desde el Acto II: el pulsador rojo del brindis (junto al atril) y la trituradora del rider (junto a la mesa)
+  pulsador_rojo: { rect: [310, 60, 13, 23], walkTo: [318, 136], face: 'up', priority: 2, draw: (g) => drawPulsador(g) },
+  trituradora: { rect: [TRIT.x - 1, TRIT.y - 1, TRIT.w + 2, TRIT.h + 1], walkTo: [TRIT.x - 8, 116], face: 'right', priority: 1,
+    layer: 'sorted', zy: TRIT.y + TRIT.h, draw: (g, v, t) => drawTrituradora(g, v, t) },
+  album_trituradora: { rect: [TRIT.x - 5, TRIT.y - 12, 25, 13], walkTo: [TRIT.x - 8, 116], face: 'right', priority: 3,
+    layer: 'sorted', zy: TRIT.y + TRIT.h + 1, draw: (g, v, t) => drawAlbumTriturando(g, t) },
   mesa_sonido: { rect: [386, 62, 40, 36], walkTo: [406, 108], face: 'up' },
   mesa_acreditaciones: { rect: [432, 76, 52, 22], walkTo: [456, 108], face: 'up' },
   cajas_lanyards: { rect: [436, 55, 22, 21], walkTo: [447, 108], face: 'up', priority: 1 },
@@ -326,18 +340,60 @@ function drawStage(g) {
   ditherOverlay(g, x0 - 2, FL - 3, x1 - x0 + 4, 3, PAL.shadow, 0.5);
 }
 
-function drawBanner(g) {
-  const x = 240, y = 38, w = 82, h = 15;
+/** La pancarta, con sus estados ([P12]): Acto I antes de la presentación, «BIENVENIDOS A» con el nombre tapado con
+ *  cinta; Acto I desde la presentación, sin cinta, con «PLAN CERO PAPEL» debajo; Actos II-III (el rider), «BIENVENIDOS A»
+ *  y todo lo demás tapado con cinta otra vez. */
+function drawBanner(g, view) {
+  const a2 = view && view.flag('acto_2_iniciado'), pres = view && view.flag('inigo_presentado');
+  const x = 240, y = 38, w = 82, h = pres || a2 ? 21 : 15;
   for (const ax of [x + 4, x + w - 5]) vline(g, ax, 34, 4, PAL.metal[4]);
   rect(g, x, y, w, h, PAL.paper[6]); frameRect(g, x, y, w, h, PAL.paper[3]);
   hline(g, x, y, w, PAL.white); hline(g, x, y + h - 1, w, PAL.paper[2]);
   for (let i = 0; i < w; i += 9) px(g, x + i, y + 1, PAL.paper[3]);                  // ojales
   cap(g, 'BIENVENIDOS A', x + 3, y + 5, PAL.red[2]);
-  // la cinta americana que tapa el nombre del evento (dos capas)
-  rect(g, x + 69, y + 2, 12, 11, TAPE); rect(g, x + 71, y + 4, 9, 8, '#9a9a96');
-  hline(g, x + 69, y + 2, 12, TAPE_HI); hline(g, x + 71, y + 4, 9, TAPE_HI);
-  for (let i = 0; i < 12; i += 3) px(g, x + 69 + i, y + 12, '#8a8a86');
+  const tape = (tx, ty, tw, th) => {
+    rect(g, tx, ty, tw, th, TAPE); rect(g, tx + 2, ty + 2, tw - 3, th - 3, '#9a9a96');
+    hline(g, tx, ty, tw, TAPE_HI); hline(g, tx + 2, ty + 2, tw - 3, TAPE_HI);
+    for (let i = 0; i < tw; i += 3) px(g, tx + i, ty + th - 1, '#8a8a86');
+  };
+  if (a2) { tape(x + 69, y + 2, 12, 11); tape(x + 3, y + 12, w - 6, 8); }          // el resto, tapado con cinta otra vez
+  else if (pres) kit.micro(g, 'PLAN CERO PAPEL', x + w / 2, y + 14, PAL.red[2], { align: 'center' });
+  else tape(x + 69, y + 2, 12, 11);                                                  // el nombre, tapado (dos capas)
   ditherOverlay(g, x + 2, y + h, w, 2, PAL.shadow, 0.5);
+}
+/** [P12] El pulsador rojo del brindis (desde el Acto II): pedestal negro junto al atril, con su cruz de cinta. */
+function drawPulsador(g) {
+  const x = 313, top = 66, fy = 82;
+  rect(g, x, top, 7, fy - top, PAL.metal[2]); vline(g, x, top, fy - top, PAL.metal[4]); vline(g, x + 6, top, fy - top, PAL.ink[1]);
+  rect(g, x - 1, top - 1, 9, 2, PAL.metal[4]); hline(g, x - 1, top - 1, 9, PAL.metal[6]);
+  ellipse(g, x + 3, top - 3, 3, 2, PAL.red[3]); hline(g, x + 2, top - 4, 2, PAL.red[6]); px(g, x + 1, top - 3, PAL.red[5]);
+  rect(g, x + 1, top + 4, 5, 3, PAL.paper[6]); hline(g, x + 2, top + 5, 3, PAL.red[2]);          // la etiqueta «APAGADO»
+  line(g, x - 2, fy - 1, x + 8, fy + 1, TAPE); line(g, x - 2, fy + 1, x + 8, fy - 1, TAPE);   // su cruz
+  glow(g, x + 3, top - 3, 6, 4, PAL.red[5], 0.3, 2);
+}
+/** [P12] La trituradora del rider: papelera negra con cabezal, pegatina de Optimal Brains y piloto (verde, zumbando con
+ *  el álbum en la boca; apagada, con su cruz de cinta, cuando Pilar lo salva). */
+function drawTrituradora(g, view, t) {
+  const { x, y, w, h } = TRIT;
+  const a3 = view.flag('acto_3_iniciado'), salvado = view.flag('eventos_album_dado');
+  const on = a3 && !salvado;
+  const dx = on && ((t || 0) % 120) < 60 ? 1 : 0;                                    // zumba
+  shadowEllipse(g, x + w / 2, y + h, w / 2 + 3, 2, 0.7);
+  // papelera gris metalizada (se lee contra el mantel negro), rejilla oscura
+  rect(g, x + dx, y + 4, w, h - 4, PAL.metal[3]); vline(g, x + dx, y + 4, h - 4, PAL.metal[5]); vline(g, x + w - 1 + dx, y + 4, h - 4, PAL.metal[1]);
+  for (let k = 0; k < 3; k++) hline(g, x + 2 + dx, y + 6 + k * 2, w - 4, PAL.metal[1]);
+  rect(g, x - 1 + dx, y, w + 2, 4, PAL.ink[2]); hline(g, x - 1 + dx, y, w + 2, PAL.metal[5]);       // cabezal
+  hline(g, x + 2 + dx, y + 1, w - 4, PAL.ink[0]);                                                     // la boca
+  rect(g, x + 2 + dx, y + h - 6, w - 4, 4, '#f0e050'); kit.micro(g, 'OB', x + w / 2 + dx, y + h - 6, PAL.ink[2], { align: 'center' });   // pegatina
+  rect(g, x + w - 3 + dx, y + 1, 2, 2, on ? PAL.crt[5] : PAL.red[1]);
+  if (on) glow(g, x + w - 2, y + 2, 4, 3, PAL.crt[5], 0.6, 2);
+  if (salvado) { line(g, x - 2, y + h - 1, x + w + 1, y + h + 1, TAPE_HI); line(g, x - 2, y + h + 1, x + w + 1, y + h - 1, TAPE_HI); }
+}
+/** [P12] El álbum de los descartes, en la boca de la trituradora (Acto III, hasta que Pilar lo salva): tiembla. */
+function drawAlbumTriturando(g, t) {
+  const { x, y } = TRIT;
+  const dy = ((t || 0) % 160) < 80 ? 0 : 1;
+  drawAlbum(g, x - 4, y - 11 + dy);
 }
 
 /** Dígito de siete segmentos (5×9). */
@@ -417,14 +473,27 @@ function chair(g, cx, fy, s, lit = 0, dim = 0) {
   vline(g, x + w - 1, top + 1, bh - 1, CHAIR[0]);
   hline(g, x, sy - 2, w, PAL.metal[3]);                                                // perfil cromado
 }
-function drawChairs(g) {
+/** [P12] La cruz vacía de la 112: cinta en el suelo, «112» a boli al lado y, con la 112 encontrada, un pósit encima. */
+function drawCruz112(g, view) {
+  const x = CRUZ_X, y = CRUZ_Y - 2;
+  // dos tiras de cinta (2 px de grueso) en aspa, del tamaño de una silla, y «112» a boli al lado
+  for (const d of [0, 1]) { line(g, x - 6, y - 2 + d, x + 6, y + 2 + d, d ? TAPE : TAPE_HI); line(g, x - 6, y + 2 + d, x + 6, y - 2 + d, d ? TAPE : TAPE_HI); }
+  kit.micro(g, '112', x + 8, y - 2, PAL.paper[6]);
+  if (view && view.flag('eventos_album_dado')) {                                   // «112 · OCUPADA (ARMARIO 27)»
+    rect(g, x - 4, y - 4, 8, 7, '#f0e050'); hline(g, x - 4, y - 4, 8, '#fff6a0');
+    hline(g, x - 3, y - 2, 6, PAL.ink[3]); hline(g, x - 3, y, 4, PAL.ink[3]);
+  }
+}
+function drawChairs(g, view) {
+  const sinFolio = !!(view && view.flag('acto_2_iniciado'));                         // [P12] desde el rider, sin folio: era papel
   for (let r = 0; r < ROWS.length; r++) {
     const { y, s } = ROWS[r];
     for (const side of [-1, 1]) for (let i = PER_SIDE - 1; i >= 0; i--) {
       const cx = chairX(r, side, i);
+      if (r === CRUZ.r && side === CRUZ.side && i === CRUZ.i) continue;            // [P12] la 112: no está
       const lit = Math.abs(cx - AISLE_X) < 40 && r < 2 ? 1 : 0;
       chair(g, cx, y, s, lit && r > 0, r === 0 ? 1 : 0);
-      if (r === RES.r && side === RES.side && i === RES.i) reservado(g, cx, y, s);
+      if (r === RES.r && side === RES.side && i === RES.i && !sinFolio) reservado(g, cx, y, s);
     }
   }
 }
@@ -438,25 +507,6 @@ function reservado(g, cx, fy, s) {
   rect(g, x + 3, y - 1, 6, 2, TAPE); rect(g, x + 30, y - 1, 6, 2, TAPE);
   kit.cantoVivo(g, x, y, 39, 9);
 }
-/** La silla 113: de Comercial, torcida, fuera de su cruz, sacando una pata al pasillo (hotspot `silla_torcida`). */
-function drawSillaTorcida(g) {
-  const cx = 377, fy = 128;
-  shadowEllipse(g, cx + 1, fy, 8, 2, 0.6);
-  // patas (girada unos 30°: se le ven las cuatro)
-  line(g, cx - 6, fy - 7, cx - 7, fy, PAL.metal[5]); line(g, cx + 5, fy - 8, cx + 7, fy - 1, PAL.metal[5]);
-  line(g, cx - 2, fy - 6, cx - 2, fy + 1, PAL.metal[3]); line(g, cx + 2, fy - 9, cx + 3, fy - 3, PAL.metal[3]);
-  // asiento en escorzo
-  poly(g, [[cx - 7, fy - 8], [cx + 1, fy - 6], [cx + 7, fy - 9], [cx - 1, fy - 11]], CHAIR[2]);
-  line(g, cx - 7, fy - 8, cx + 1, fy - 6, PAL.metal[4]); line(g, cx + 1, fy - 6, cx + 7, fy - 9, PAL.metal[3]);
-  // respaldo, de medio lado, con la funda naranja de Comercial
-  poly(g, [[cx - 1, fy - 22], [cx + 7, fy - 19], [cx + 7, fy - 9], [cx - 1, fy - 11]], CHAIR[1]);
-  poly(g, [[cx, fy - 21], [cx + 6, fy - 18], [cx + 6, fy - 10], [cx, fy - 12]], '#d0602e');
-  line(g, cx, fy - 21, cx + 6, fy - 18, PAL.dusk[6]); vline(g, cx - 1, fy - 22, 11, PAL.metal[4]);
-  rect(g, cx + 2, fy - 16, 3, 2, PAL.paper[7]); px(g, cx + 3, fy - 16, '#ff7a52');                       // pegatina
-  // su cruz de cinta, vacía, un palmo más allá
-  line(g, cx - 15, fy - 1, cx - 11, fy + 1, TAPE); line(g, cx - 15, fy + 1, cx - 11, fy - 1, TAPE);
-}
-
 function drawMixingDesk(g) {
   const x = 386, y = 74;
   shadowEllipse(g, x + 21, FL + 1, 24, 2, 0.7);
@@ -488,7 +538,7 @@ function drawMixingDesk(g) {
   ditherOverlay(g, x + 40, y + 10, 2, FL - y - 10, PAL.shadow, 0.5);
 }
 
-function drawAccreditation(g) {
+function drawAccreditation(g, view) {
   const x = 432, y = 76, w = 52;
   shadowEllipse(g, x + w / 2, FL + 1, 28, 2, 0.7);
   // mantel negro hasta el suelo, con el faldón impreso «ACREDITACIÓN» (ENTERO; antes «ACREDIT»)
@@ -496,8 +546,13 @@ function drawAccreditation(g) {
   fabric(g, x, y + 3, w, FL - y - 3, [PAL.ink[0], PAL.ink[1], PAL.ink[2]], { fold: 6 });
   rect(g, x + 1, y + 6, w - 2, 9, '#f2eef8'); hline(g, x + 1, y + 6, w - 2, PAL.dusk[3]); hline(g, x + 1, y + 14, w - 2, PAL.dusk[3]);
   kit.texto(g, 'ACREDITACIÓN', x + 1, y + 6, w - 2, 9, { color: PAL.dusk[2], id: 'mesa_acreditaciones' });
-  // la lista de acreditados, pegada con cinta al canto
-  rect(g, x + 2, y - 3, 7, 9, PAL.paper[7]); for (let i = 0; i < 3; i++) hline(g, x + 3, y - 1 + i * 2, 5, PAL.ink[3]);
+  // la lista de acreditados, pegada con cinta al canto. [P12] Desde el Acto II (el rider: cero papel) ya no está: queda
+  // la cinta; tras el álbum, un folio nuevo a boli («Brais. Silla 112»), el único papel de la sala
+  if (view && view.flag('eventos_album_dado')) {
+    rect(g, x + 2, y - 4, 8, 10, PAL.paper[7]); hline(g, x + 3, y - 2, 6, PAL.blue[3]); hline(g, x + 3, y, 5, PAL.blue[3]); hline(g, x + 3, y + 2, 6, PAL.blue[3]);
+  } else if (!(view && view.flag('acto_2_iniciado'))) {
+    rect(g, x + 2, y - 3, 7, 9, PAL.paper[7]); for (let i = 0; i < 3; i++) hline(g, x + 3, y - 1 + i * 2, 5, PAL.ink[3]);
+  }
   rect(g, x + 3, y - 4, 5, 1, TAPE);
   // las cajas de lanyards (cartón) con cintas de colores colgando
   for (const [bx, by, bw, bh] of [[438, 65, 18, 11], [440, 57, 14, 8]]) {
@@ -592,6 +647,7 @@ export default {
   room: 'eventos',
   width: W,
   rediseno: true,
+  dynamic: true,                                       // [P12] la pancarta, la lista y la cruz de la 112 cambian con la noche
   scale: { yFar: 100, far: 0.86, yNear: 142, near: 1.0 },
   // el bloque de sillas no se pisa: se rodea por la izquierda (photocall), por delante (pasillo de cinta) y por la derecha
   walkboxes: [{ id: 'suelo', poly: [[6, 102], [194, 102], [176, 131], [370, 131], [388, 102], [506, 102], [510, 142], [2, 142]] }],
@@ -609,7 +665,7 @@ export default {
     drawFlightCases(g);
     drawStage(g);
     drawStageLights(g);
-    drawBanner(g);
+    drawBanner(g, view);
     drawCountdown(g, '00:05:00');
     drawGong(g);
     drawLectern(g);
@@ -617,12 +673,13 @@ export default {
     drawLights(g);
     drawTapeMarks(g);
     drawMixingDesk(g);
-    drawAccreditation(g);
+    drawAccreditation(g, view);
     drawCatering(g, view);
     glow(g, 498, 68, 13, 8, WARM, 0.3, 4);                                          // las croquetas, bajo su foco
     drawRoomSign(g);
     drawHaze(g);
-    drawChairs(g);
+    drawChairs(g, view);
+    drawCruz112(g, view);
     vignette(g, W, 144, 0.5);
   },
   animate(g, view, t) {

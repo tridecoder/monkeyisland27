@@ -25,15 +25,17 @@ export default {
     },
     nodes: {
       M0: {
+        // [P15] seis opciones como mucho: «¿Me vende algo a mí?» → «¿Por qué tiene un gong?»; «La web va muy lenta.» →
+        // «Mi abuela dice…» (`tras`: engine/dialog.js)
         options: [
-          { text: '¿Qué vende Comercial?', once: true,
+          { id: 'vende', text: '¿Qué vende Comercial?', once: true,
             do: async (api) => {
               await sayM(api, ['Contenido que paga. Lo vuestro es contenido que no paga.',
                 'Branded content: una noticia que es un anuncio, pero no lo dice.']);
               await api.say('¿Eso no es engañar al lector?');
               await sayM(api, 'Es contarle una historia. De una marca. Que paga.');
             } },
-          { text: '¿Me vende algo a mí?', once: true,
+          { id: 'mevende', text: '¿Me vende algo a mí?', once: true,
             do: async (api) => {
               await sayM(api, 'Tengo tres paquetes. Básico, Premium y Gong.');
               await api.say('¿Qué lleva el Gong?');
@@ -41,27 +43,27 @@ export default {
               await api.wait(500);
               await sayM(api, 'Esto. Ya lo has consumido. Son doce euros.');
             } },
-          { text: 'La web va muy lenta.', once: true,
-            do: async (api) => {
-              await sayM(api, 'Eso te lo arreglo con un pop-up, cariño.');
-              await api.say('¿Un pop-up la hace más rápida?');
-              await sayM(api, 'No. Pero mientras lo cierras, no te das cuenta.');
-            } },
-          { text: 'Mi abuela dice que no encuentra las noticias.', once: true,
-            reply: ['Están ahí. Debajo del vídeo que se pone solo.', 'Que baje un poco. Y otro poco. Ahí, entre los colchones.'] },
-          { text: '¿Por qué tiene un gong?', once: true,
+          { id: 'gong', text: '¿Por qué tiene un gong?', once: true, tras: 'mevende',
             do: async (api) => {
               await sayM(api, 'Cada vez que vendo un banner, lo toco.');
               await api.say('¿Y cuando no vende ninguno?');
               await sayM(api, 'Lo toco más fuerte. Que parezca.');
             } },
+          { id: 'lenta', text: 'La web va muy lenta.', once: true,
+            do: async (api) => {
+              await sayM(api, 'Eso te lo arreglo con un pop-up, cariño.');
+              await api.say('¿Un pop-up la hace más rápida?');
+              await sayM(api, 'No. Pero mientras lo cierras, no te das cuenta.');
+            } },
+          { id: 'abuela', text: 'Mi abuela dice que no encuentra las noticias.', once: true, tras: 'lenta',
+            reply: ['Están ahí. Debajo del vídeo que se pone solo.', 'Que baje un poco. Y otro poco. Ahí, entre los colchones.'] },
           // ENMIENDA E3 §4.3 B19: el segundo registro (lee el periódico, nunca a Bruno); el remate vuelve al eje
-          { text: '¿Usted se lee el periódico?', once: true,
+          { id: 'periodico', text: '¿Usted se lee el periódico?', once: true,
             reply: ['De la cabecera a las esquelas. Para vender un hueco hay que leer lo de al lado.',
-              'Lo más leído es la fe de erratas. Y ahí no me dejan poner ni un banner.'] },
-          { text: '¿Qué tal con Siestatón?', if: 'duelo_maripaz_ganado', once: true,
+              'Lo más leído es la fe de erratas. Y ahí no me dejan ni un anuncio por palabras.'] },
+          { id: 'siestaton', text: '¿Qué tal con Siestatón?', if: 'duelo_maripaz_ganado', once: true,
             reply: 'Encantados. En la web caben en todas partes. Hasta en la X de cerrar.' },
-          { text: 'Me voy.', exit: true,
+          { id: 'adios', text: 'Me voy.', exit: true,
             do: async (api) => { gong(api); await sayM(api, '¿Seguro que quieres salir? Era una pregunta patrocinada.'); } },
         ],
       },

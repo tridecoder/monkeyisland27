@@ -11,7 +11,7 @@
 //   pe     tools/test-e6-pe.mjs     §11.2.9 el rotulador colgado del cordel (hotspot propio), B9
 //   pf     tools/test-e6-pf.mjs     §11.2.8 el titulador: la 5.ª espera, «LA CASA: 225.000», «· TÚ: n» y el fogonazo (≈ 10 min)
 // Propias (modo rápido, recorrido de walk-data.mjs, 49 pasos):
-//   §11.2.6  armario: en 40-41 ni «compañero», ni «Con coma», ni «atunes»; en el primer cambio de sala (42), «Se llama Brais.»
+//   §11.2.6  armario: en 40-41 ni «compañero» ni «Con coma»; [P11] la L4 («atunes»), en el 40 ANTES del armario («...El armario 27.»)
 //   §11.2.7  columna: sin «despide a la gente»; Brais «SEGUIREMOS INFORMANDO.»
 //   §7.1     28: la pregunta por la tele («BUENAS NOCHES, SALA AMAZONAS.», «¿Necesitan ayuda?»), sin pisar el Vending (E-53);
 //            36: «Tráeme el contexto.» y «...CABE.»; 46: «El acta se necesitaba para... para...»; la frase de Anselmo, una vez (37)
@@ -87,7 +87,7 @@ if (quiere('propias')) {
   const R = createRunner(page);
   const G = R.G;
   try {
-    console.log('\n§11.2.6-7, §7.1 y §9.1 · el recorrido de 49 pasos (modo rápido): lo que cambia y la medida del camino principal\n');
+    console.log('\n§11.2.6-7, §7.1 y §9.1 · el recorrido de 45 pasos (modo rápido): lo que cambia y la medida del camino principal\n');
     await page.goto(base);
     await page.evaluate(() => { try { localStorage.clear(); } catch (e) { /* ignore */ } });
     await page.reload();
@@ -116,18 +116,20 @@ if (quiere('propias')) {
       '28: «Buenas noches, Gertrudis.» → «BUENAS NOCHES, SALA AMAZONAS.» → la pregunta en directo → atasco con «¿Necesitan ayuda?»');
     ok(!pisaVending.length && !enCamino('E-53').length, `28: el Vending no se pisa en el Acto II tras el 14 (ni E-53)${pisaVending.length ? ': pasos ' + pisaVending.join(', ') : ''}`);
     // §5 · duelos
-    ok(tiene(36, 'DATO SIN CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.') && tiene(36, 'Tráeme el contexto.', 'bruno') && tiene(36, '...CABE.') && !tiene(36, 'NO CABE'),
-      '36: D2 de tres asaltos; el tercero, la R09 corta («Tráeme el contexto.» → «...CABE.»)');
-    ok(tiene(46, 'El acta se necesitaba para... para...') && tiene(46, 'Ayer no puedo. Te miro hueco para anteayer.', 'bruno'), '46: D3, la frase a medias y la R03 que la termina');
+    ok(tiene(36, 'DATO SACADO DE CONTEXTO. CONTESTA EN UNA LÍNEA: TREINTA Y OCHO CARACTERES.') && tiene(36, 'Lo saqué yo. No cabía.', 'bruno') && tiene(36, '...CABE.') && !tiene(36, 'NO CABE'),
+      '36: D2 de tres asaltos; el tercero, la R09 corta («Lo saqué yo. No cabía.» → «...CABE.»; [P9])');
+    ok(tiene(46, 'El acta se necesitaba para... para... para ayer.') && tiene(46, 'Ayer fue cuando empezaste la frase.', 'bruno'), '46: D3, la frase a medias y la R03 que la termina');
     // la frase de Anselmo, una vez y en el 37 (E6 cabecera)
     const f1 = enCamino('El modelo es de fuera. El prompt es de dentro.');
     ok(f1.length === 1 && f1[0][0] === 37 && f1[0][1] === 1, `«El modelo es de fuera. El prompt es de dentro.»: una vez, en el paso 37 (${JSON.stringify(f1)})`);
     // §11.2.6 · armario
-    const armario = [40, 41].flatMap(n => L(n)).filter(l => /compañero|Con coma|atunes/.test(l.text));
-    ok(!armario.length, `40-41: sin «compañero», «Con coma» ni «atunes»${armario.length ? ': ' + armario.map(l => l.text).join(' | ') : ''}`);
-    const brais = enCamino('Se llama Brais.');
-    ok(brais.length === 1 && brais[0][0] === 42 && tiene(42, 'Alguien come ahí abajo y no cobra.', 'evaristo_salvedad'),
-      `42: la L4 suena en el primer cambio de sala tras el armario y Bruno contesta «Se llama Brais.» (${JSON.stringify(brais)})`);
+    const armario = [40, 41].flatMap(n => L(n)).filter(l => /compañero|Con coma/.test(l.text));
+    ok(!armario.length, `40-41: sin «compañero» ni «Con coma»${armario.length ? ': ' + armario.map(l => l.text).join(' | ') : ''}`);
+    // [P11] la L4 se adelanta: suena al empezar el Acto III (40, la primera entrada tras «Dos IAs»), ANTES de abrir el
+    // armario, y Bruno contesta con el armario («...El armario 27.»), no con el nombre
+    const iAtun = L(40).findIndex(l => l.text.includes('Alguien come ahí abajo y no cobra.')), iRev = L(40).findIndex(l => l.text.includes('¡EH! ¡QUE ES MI BORRADOR!'));
+    ok(iAtun >= 0 && iRev > iAtun && tiene(40, '...El armario 27.', 'bruno') && !enCamino('Se llama Brais.').length,
+      `40: la L4 suena antes de abrir el armario y Bruno contesta «...El armario 27.» (${iAtun} < ${iRev}; sin «Se llama Brais.»)`);
     // §11.2.7 · columna
     ok(!enCamino('despide a la gente').length && !enCamino('Y la escribí yo').length && tiene(45, 'SEGUIREMOS INFORMANDO.', 'ruben'),
       '45: la columna acaba en Brais «SEGUIREMOS INFORMANDO.» (sin la explicación de Bruno)');
@@ -143,7 +145,7 @@ if (quiere('propias')) {
     // (el registro antepone «TEODORO (fax): » a los ataques del duelo, que se leen en la ventana del fax: no cuenta)
     const largas = dichas.filter(l => l.text.replace(/^[A-ZÁÉÍÓÚÑ ]+ \((?:fax|correo)\): /, '').length > 80);
     const E5 = { lineas: 552, chars: 26533, min: 32.6 };       // la última medida de E5 con este mismo método (test-e5, 50 pasos)
-    console.log(`    camino principal (49 pasos, modo rápido): ${lineas} líneas · ${chars.toLocaleString('es-ES')} caracteres · ${min.toFixed(1).replace('.', ',')} min de lectura · Bruno ${bruno} · remate seco ${secos} (${(100 * secos / lineas).toFixed(1).replace('.', ',')} %)`);
+    console.log(`    camino principal (45 pasos, modo rápido): ${lineas} líneas · ${chars.toLocaleString('es-ES')} caracteres · ${min.toFixed(1).replace('.', ',')} min de lectura · Bruno ${bruno} · remate seco ${secos} (${(100 * secos / lineas).toFixed(1).replace('.', ',')} %)`);
     console.log(`    frente a E5 (${E5.lineas} líneas · ${E5.chars.toLocaleString('es-ES')} caracteres · ${String(E5.min).replace('.', ',')} min): ${lineas - E5.lineas >= 0 ? '+' : ''}${lineas - E5.lineas} líneas · ${chars - E5.chars >= 0 ? '+' : ''}${(chars - E5.chars).toLocaleString('es-ES')} caracteres · ${(min - E5.min >= 0 ? '+' : '') + (min - E5.min).toFixed(1).replace('.', ',')} min (§9.1 prevé −2)`);
     const tramos = [[1, 18], [19, 23], [24, 29], [30, 39], [40, 45], [46, 49]].map(([a, b]) => `${a}-${b}: ${Object.entries(porPaso).filter(([n]) => n >= a && n <= b).reduce((x, [, X]) => x + X.filter(l => l.who !== 'aviso' && l.who !== 'tarjeta').length, 0)}`);
     console.log(`    por tramos de pasos: ${tramos.join(' · ')}`);
@@ -151,7 +153,8 @@ if (quiere('propias')) {
     // §9.1 preveía −2, pero contaba la L4 como ya oída en E5 (en el recorrido de E5 se perdía: +4 en este) y la grabación
     // de Gervasio del paso 10 (en modo rápido no salía: 0), y E-53 como una línea (eran tres, más el titular del viaje al
     // Vending: −5 con la ida y vuelta). Con este método el saldo real es +1 (553): lo que manda es el tope de §1, +6.
-    ok(lineas <= E5.lineas + 6, `camino principal: tope de §1 (+6 sobre las ${E5.lineas} de E5): ${lineas} (${lineas - E5.lineas >= 0 ? '+' : ''}${lineas - E5.lineas}; §9.1 preveía −2)`);
+    // [guion3 t1]: +2 por el guion nuevo aprobado ([P9]: R07 y R11, una línea más de Bruno cada una)
+    ok(lineas <= E5.lineas + 8, `camino principal: tope de §1 (+8 sobre las ${E5.lineas} de E5; +6 de E6 y +2 del guion nuevo): ${lineas} (${lineas - E5.lineas >= 0 ? '+' : ''}${lineas - E5.lineas}; §9.1 preveía −2)`);
     ok(!largas.length, `ninguna línea dicha en el camino pasa de 80 caracteres${largas.length ? ': ' + largas.map(l => `«${l.text}» (${l.text.length})`).join(' · ') : ''}`);
 
     // §11.2.10 · el menú de D1 con la etiqueta COMODÍN

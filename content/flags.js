@@ -40,8 +40,14 @@ export const ADENDA_FLAGS = [
   'sala_becario_sin_turno', 'gertrudis_pregunta', 'vio_pegatina_fax', 'album_validado', 'columna_kanban',
   // ENMIENDA E7 (I1)
   'oyo_papel_begona',
+  // [P11] guion nuevo, tanda 2
+  'maripaz_pide_web', 'inigo_prescindible',
   // [coherencia] la L2 vuelve y los correos de Evaristo llegan de verdad (str a '')
   'evaristo_convoco', 'evaristo_correos',
+  // [P7] aprender perdiendo: pistas de la libreta (int, bits de las réplicas)
+  'libreta_pistas',
+  // [P12] guion nuevo, tanda 3 (Eventos): la silla 112 y el álbum de la trituradora
+  'eventos_falta_112', 'eventos_acto3_entrada', 'silla_112_vista', 'pilar_nego_album', 'eventos_album_dado',
 ];
 
 export default {
@@ -57,7 +63,9 @@ export default {
   chaqueta_en_lector: 'bool · B · pajarera · P04b · B (sprite y Mirar del Lector Medio), D (Lector Medio en la Sala), A (poscréditos); actors.js (variante del Lector Medio)',
   silla_libre: 'bool · B · pajarera · P04b · B (ordenador_bruno, silla_ramirez), pistas',
   vio_ticket_3: 'bool · A · cpd · Mirar registro_tickets · B (enchufe_pantalla), pistas',
-  cms_vivo: 'bool · B · pecera · P05b · A (Paco, contador), B (Yoli, Anselmo, pantalla), pistas',
+  cms_vivo: 'bool · cpd · R-3 del regletero · A (Paco, contador), B (Yoli, Anselmo, pantalla), D (Maripaz: [P11] condición del D1), pistas',
+  inigo_prescindible: 'bool · [P11] pecera (escena del pósit, Acto II, primera entrada con la FIRMA) o catacumba (7.3a, línea de respaldo) · Bruno ya ha visto a Íñigo pasarle a «Prescindible» · catacumba (7.3a)',
+  maripaz_pide_web: 'bool · [P11] sala_amazonas · Maripaz dice que sin web no pasa a Siestatón (antes de la estampida o al negarse al D1) · pistas (cms), items.js (ficha)',
   gertrudis_saludada: 'bool · C · office · primer «Buenas noches» · C, pistas, B (titular)',
   chisme_indice: 'int · C · office · +1 por saludo · C',
   aurora_conto_pasos: 'bool · C · catacumba · P03 · D (opción «siguientes pasos» de Gervasio), pistas',
@@ -85,8 +93,7 @@ export default {
   vio_armario_27: 'bool · B · pajarera · 3.ª Mirar a pantalla_titulator · B (Íñigo I4), pistas',
   titulator_mirar_n: 'int · B · pajarera · +1 por Mirar pantalla_titulator · B',
   ruben_encontrado: 'bool · A · cpd · P13 · A, D (Pilar de Eventos; album_eventos_hotspot), B (Anselmo [6] y [8]), pistas',
-  oyo_descopear: 'bool · P4 · eventos · Pilar «¿Me prestas el álbum?» (el móvil de Borja dice «descopear», E2 §3.5) · P2 (opción «¿Y si... lo descopeamos?» de Anselmo, AN_ALBUM)',
-  posit_descopeado: 'bool · B · pecera · P14b · B (Mirar kanban)',
+  posit_descopeado: 'bool · B · pecera · P14b (id técnico: el pósit de Brais ya está en SALIDA EN VALOR) · B (Mirar kanban)',
   ruben_libre: 'bool · A · cpd · P14c · B (Rubén en la Pecera, puerta_sala), A (armario vacío), D (escena 7.4), pistas; actors.js (murmullos)',
   duelo_gervasio_ganado: 'bool · C · office · fin D3 · C',
   sala_abierta: 'bool · C · office · fin D3 · B (puerta_sala), pistas',
@@ -125,20 +132,26 @@ export default {
   // ---------------------------------------------------------------- EVENTOS: la Sala Polivalente (`eventos`, adenda §13)
   // Los tres contadores conservan su nombre de cuando Pilar vivía en el Ecosistema (ids intactos por encargo de dirección).
   ecosistema_entradas_n: 'int · D · eventos · +1 por entrada en la Sala Polivalente (rota la frase de Pilar con el ¡FLASH!) · D',
-  ecosistema_sillas_n: 'int · D · eventos · +1 por «¿Cuántas sillas hay?» (Pilar) · D (crisis de la silla 113, murmullos)',
+  ecosistema_sillas_n: 'int · D · eventos · +1 por «¿Cuántas sillas hay?» (Pilar) · D ([P12] la 1.ª dice «Falta la 112»)',
   ecosistema_gong_n: 'int · D · eventos · +1 por Usar/Empujar gong · D',
-  eventos_silla_devuelta: 'bool · D · eventos · devolver silla_torcida a Comercial (micro-puzle opcional) · D (Pilar, Maripaz en ecosistema, arte)',
-  eventos_croqueta: 'bool · D · eventos · Pilar regala la croqueta (premio del micro-puzle) · D (catering, Pilar)',
+  eventos_croqueta: 'bool · D · eventos · Pilar regala la croqueta ([P12] al abrir su árbol tras dar el álbum) · D (catering, Pilar)',
+  // [P12] guion nuevo, tanda 3: la silla 112 y el álbum de la trituradora (fuera la silla 113 y «descopear»)
+  eventos_falta_112: 'bool · [P12] · eventos · Pilar dice que falta la 112 (1.ª «¿Cuántas sillas hay?» o la entrada del Acto III) · pajarera (Íñigo, «¿Se llevó usted una silla de Eventos?»)',
+  eventos_acto3_entrada: 'bool · [P12] · eventos · primera entrada del Acto III («La 112, sin aparecer», la trituradora) · pistas (álbum → silla de Pilar)',
+  silla_112_vista: 'bool · [P12] [P14] · cpd · Mirar silla_armario o a Brais «¿De dónde es esa silla?» · eventos (abre «Creo que sé dónde está tu 112.»), pistas',
+  pilar_nego_album: 'bool · [P12] · eventos · Pilar, «¿Me prestas el álbum?»: «Hoy no» (la trituradora, 21:04) · eventos (la repetición), pistas',
+  eventos_album_dado: 'bool · [P12] · eventos · Pilar da el álbum («…Entonces se sentó.», la 112 encontrada) · eventos (recuento, croqueta, arte), cpd, pistas',
 
   // ---------------------------------------------------------------- ascensor con botonera (content/lib/ascensor.js)
   ascensor_viajes_n: 'int · común (lib/ascensor.js) · +1 por viaje en ascensor · rotación de las frases del ascensor',
   ascensor_negativas_n: 'int · común (lib/ascensor.js) · +1 por planta denegada · rotación de las negativas',
 
   // ---------------------------------------------------------------- el móvil de Bruno (content/lib/movil.js)
-  movil_leidos: 'int · común (lib/movil.js) · bits de los correos leídos en el móvil (0-2 RV: de Tadeo, 3-6 Evaristo, 8-10 fijos) · el menú del móvil',
+  movil_leidos: 'int · común (lib/movil.js) · bits de los correos leídos en el móvil (0-2 RV: de Tadeo, 3-6 Evaristo, 8-10 fijos, 11 «CONFIRMADO» de Pilar) · el menú del móvil',
   // [coherencia] quién ha convocado a Bruno a Controlling y los correos de Evaristo que han llegado de verdad
   evaristo_convoco: "str · común (game.js L2; administracion Begoña) · '' | 'llamada' (L2) | 'begona' (B_EJEMPLAR, sin L2) · administracion («¿Para qué me ha llamado?»), ficha",
   evaristo_correos: "str · común (lib/movil.js) · correos de Evaristo llegados, en orden: '1@k,2@k,3@k,G@k' (k = RV: de Tadeo ya llegados); 'g' = el de agradecimiento, prometido · bandeja del móvil",
+  libreta_pistas: 'int · común (engine/duel.js con content/duelo.js `pistas`) · [P7] bit de cada réplica (R01 = 1) cuyo ataque se recibió en un duelo sin saberla; se borra al aprenderla (api.learnReply) · libreta_replicas, duelo (pósit)',
 
   // ---------------------------------------------------------------- PLAN DE COMEDIA §3.4 (altas; las bajas, cuando las
   // salas dejen de usarlos). Los pone/lee cada paquete; el motor solo pone duel:<id>:* (no hace falta declararlos).
@@ -173,7 +186,7 @@ export default {
   gertrudis_pregunta: 'bool · PA · office · Gertrudis «¿Y cuáles son los siguientes pasos?» (§2.1.4) · PA (sala_amazonas: tele → sala_tele_gertrudis), pistas (turno)',
   vio_pegatina_fax: 'bool · PD · catacumba · Mirar fax (pegatina «Ticket 0.441», §2.3.1) · PC (cpd: opción fax441 de Paco), pistas (firma)',
   album_validado: 'bool · PB · pecera · Dar álbum a Anselmo (AN_ALBUM_INTRO, §2.5.3) · PB (kanban, columnas, arte), pistas (baja, columna)',
-  columna_kanban: "str · PB · pecera · salida(api, via): 'salida' | 'descopeado' ('' sin columna, §2.5.5) · PB (arte del kanban, Mirar kanban)",
+  columna_kanban: "str · PB · pecera · salida(api): 'salida' ('' sin columna, §2.5.5; [P12] la otra palabra ya no existe) · PB (arte del kanban, Mirar kanban)",
   // ---------------------------------------------------------------- ENMIENDA E7 (I1)
   oyo_papel_begona: 'bool · E7 · catacumba (Aurora, «¿De dónde saco papel…?») o administracion (Begoña, «¿Me da unos folios?») · items.js (ficha: FIRMA)',
   // también prefijos reservados del motor: obj:<objetivo> (api.objetivo.marcar), obj:hora, ambient:<sala>.<id>

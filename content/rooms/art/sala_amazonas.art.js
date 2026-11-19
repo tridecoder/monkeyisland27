@@ -300,7 +300,7 @@ function drawOrden(g, view, t) {
     if (!s248) {
       rect(g, x, y, w, h, '#eef2f4');
       rect(g, x, y, w, 10, PAL.blue[3]);
-      kit.micro(g, 'ELCONTABLE.ES', x + 3, y + 3, PAL.paper[7]);
+      kit.micro(g, 'ELINCONTABLE.ES', x + 3, y + 3, PAL.paper[7]);
       label(g, '247/400', x + w - 3, y - 1, PAL.gold[6], { align: 'right' });
       label(g, 'SINERGIAS', x + (w >> 1), y + 9, PAL.blue[3], { align: 'center' });
       kit.micro(g, 'EXPONENCIALES:', x + (w >> 1), y + 23, PAL.red[3], { align: 'center' });
@@ -312,7 +312,7 @@ function drawOrden(g, view, t) {
     }
     gradV(g, x, y, w, h, [PAL.night[2], PAL.night[3], PAL.dusk[3]]);
     rect(g, x, y, w, 10, PAL.gold[4]);
-    kit.micro(g, 'ELCONTABLE.ES', x + 3, y + 3, PAL.ink[1]);
+    kit.micro(g, 'ELINCONTABLE.ES', x + 3, y + 3, PAL.ink[1]);
     label(g, '248/400', x + w - 3, y - 1, PAL.red[2], { align: 'right' });
     poly(g, [[x + 48, y + h], [x + 72, y + h], [x + 61, y + 29], [x + 59, y + 29]], PAL.ink[2]);
     for (let k = 0; k < 3; k++) rect(g, x + 60, y + 31 + k * 3, 1, 2, PAL.gold[6]);
@@ -631,8 +631,10 @@ export function popupComercial(g, r, t) {
   kit.micro(g, 'NO, GRACIAS', x + (w >> 1), y + h - 6, '#dcd8cc', { align: 'center', registrar: false });
 }
 
-/** §4.2.2 · la página 7 según Comercial: todo anuncios; un banner entre cada dos «líneas» (que son más banners); un
- *  faldón de Siestatón que ocupa media página y, en el centro, UNA franja gris de 1 px con el rótulo «noticia». 200×100. */
+/** §4.2.2 + [P10] · la página 7 según Comercial, EN PAPEL: solo formatos de prensa. Un robapáginas de Cafés Madrugón a
+ *  la derecha, cuatro módulos arriba a la izquierda, el faldón de Siestatón abajo y, entre los módulos y el faldón, UNA
+ *  línea gris de 1 px con su rótulo diminuto («noticia»). Ni banners ni pop-ups de pantalla. 200×100. */
+export const PAGINA_COMERCIAL = { lineaY: 46 };          // la y (relativa) de la línea gris: el pop-up se levanta ahí
 export function paginaComercial(g, r, t) {
   const { x, y, w, h } = r;
   rect(g, x, y, w, h, '#f4efe0');
@@ -640,40 +642,28 @@ export function paginaComercial(g, r, t) {
   rect(g, x, y, w, 9, '#2a2430');
   kit.micro(g, 'ECONOMÍA', x + 4, y + 2, '#f4efe0', { registrar: false });
   kit.micro(g, '7', x + w - 7, y + 2, '#ffd040', { registrar: false });
-  // columna derecha: rascacielos de Cafés Madrugón (alto, estrecho)
-  const cx = x + w - 30;
-  rect(g, cx, y + 11, 28, 40, '#5a2e14'); frameRect(g, cx, y + 11, 28, 40, '#3a1a08');
-  kit.micro(g, 'CAFÉS', cx + 14, y + 14, '#ffd8a0', { align: 'center', registrar: false });
-  kit.micro(g, 'MADRU', cx + 14, y + 21, '#ffd8a0', { align: 'center', registrar: false });
-  kit.micro(g, 'GÓN', cx + 14, y + 27, '#ffd8a0', { align: 'center', registrar: false });
-  rect(g, cx + 9, y + 36, 10, 8, '#fbfaf2'); rect(g, cx + 19, y + 38, 2, 4, '#fbfaf2'); hline(g, cx + 10, y + 37, 8, '#7a4a24');
-  // fila de módulos arriba a la izquierda
-  const mods = [['ANUNCIO', '#3a7ac8'], ['ANUNCIO', '#2c9a4c'], ['TILAS', '#c83a8a']];
-  const mw = Math.floor((w - 36) / 3) - 2;
+  // el robapáginas: Cafés Madrugón, a la derecha, de la cabecera al faldón
+  const cx = x + w - 42, cw = 40, cy = y + 11, ch = 39;
+  rect(g, cx, cy, cw, ch, '#5a2e14'); frameRect(g, cx, cy, cw, ch, '#3a1a08');
+  kit.micro(g, 'CAFÉS', cx + (cw >> 1), cy + 4, '#ffd8a0', { align: 'center', registrar: false });
+  kit.micro(g, 'MADRUGÓN', cx + (cw >> 1), cy + 11, '#ffd8a0', { align: 'center', registrar: false });
+  const tz = cx + (cw >> 1) - 6;
+  rect(g, tz, cy + 22, 11, 9, '#fbfaf2'); rect(g, tz + 11, cy + 24, 2, 4, '#fbfaf2'); hline(g, tz + 1, cy + 23, 9, '#7a4a24');
+  for (let i = 0; i < 3; i++) px(g, tz + 3 + i * 2, cy + 19 - (i & 1), '#d8c8b0');                        // el humo
+  // cuatro módulos (dos filas de dos), uno de tiritas
+  const mods = [['ANUNCIO', '#3a7ac8'], ['TIRITAS', '#c83a8a'], ['ANUNCIO', '#2c9a4c'], ['ANUNCIO', '#d88a20']];
+  const lx = x + 3, lw = cx - 3 - lx, mw = Math.floor((lw - 2) / 2), mh = 15;
   mods.forEach(([txt, c], i) => {
-    const mx = x + 3 + i * (mw + 2);
-    rect(g, mx, y + 11, mw, 14, c); frameRect(g, mx, y + 11, mw, 14, shade(c, -0.3));
-    kit.micro(g, txt, mx + (mw >> 1), y + 16, '#ffffff', { align: 'center', registrar: false });
+    const mx = lx + (i % 2) * (mw + 2), my = y + 11 + Math.floor(i / 2) * (mh + 2);
+    rect(g, mx, my, mw, mh, c); frameRect(g, mx, my, mw, mh, shade(c, -0.3));
+    kit.micro(g, txt, mx + (mw >> 1), my + 5, '#ffffff', { align: 'center', registrar: false });
   });
-  // entre «línea» y «línea», un banner: tres tiras de colores (cada una con su BANNER), alternando
-  const bx = x + 3, bw = w - 36;
-  const tiras = ['#ffcc33', '#ff7a52', '#7ad0ff'];
-  for (let i = 0; i < 3; i++) {
-    const by = y + 27 + i * 6;
-    rect(g, bx, by, bw, 5, tiras[i]);
-    const on = ((Math.floor((t || 0) / 300) + i) % 3) === 0;
-    kit.micro(g, on ? 'BANNER!' : 'BANNER', bx + (bw >> 1), by, PAL.ink[1], { align: 'center', registrar: false });
-  }
-  // LA NOTICIA: una sola franja gris de 1 px, con su rótulo diminuto (y una flecha, por si acaso)
-  const ny = y + 47;
-  hline(g, bx + 30, ny, bw - 60, '#9a968c');
-  kit.micro(g, 'NOTICIA', bx + bw - 28, ny - 2, '#9a968c', { registrar: false });
-  line(g, bx + bw - 32, ny, bx + bw - 30, ny, '#9a968c');
-  // otro banner debajo de la noticia, que no respire
-  rect(g, bx, y + 50, bw, 5, '#ffcc33');
-  kit.micro(g, 'BANNER', bx + (bw >> 1), y + 50, PAL.ink[1], { align: 'center', registrar: false });
-  // el faldón de Siestatón: media página
-  const fy = y + 57, fh = h - 57 - 2;
+  // LA NOTICIA: una sola franja gris de 1 px, con su rótulo diminuto
+  const ny = y + PAGINA_COMERCIAL.lineaY;
+  hline(g, lx + 20, ny, lw - 52, '#9a968c');
+  kit.micro(g, 'NOTICIA', lx + lw - 29, ny - 2, '#9a968c', { registrar: false });
+  // el faldón de Siestatón: de lado a lado, abajo
+  const fy = y + 52, fh = h - 52 - 2;
   gradV(g, x + 2, fy, w - 4, fh, ['#1c2a58', '#2a3c78']);
   frameRect(g, x + 2, fy, w - 4, fh, '#0e1430');
   drawText(g, 'COLCHONES SIESTATÓN', x + 4 + ((w - 60) >> 1), fy + 4, '#ffffff', { align: 'center', outline: '#0e1430' });
@@ -685,6 +675,55 @@ export function paginaComercial(g, r, t) {
   rect(g, kx + 3, ky - 4, 12, 5, '#ffffff'); frameRect(g, kx + 3, ky - 4, 12, 5, '#9aa8c8');
   const z = Math.floor((t || 0) / 500) % 3;
   for (let i = 0; i <= z; i++) kit.micro(g, 'Z', kx + 20 + i * 6, ky - 8 - i * 4, '#ffffff', { registrar: false });
+}
+
+/** [P10] El pop-up DE PAPEL: Maripaz abre el planillo por el pliegue y se levanta un colchón de cartulina troquelada,
+ *  como en los libros desplegables, que tapa la línea gris. La misma página detrás (con el pliegue marcado), y el
+ *  colchón que sube en ~0,7 s sobre dos pestañas de cartulina en V. 200×100. */
+export const POPUP_MS = 700;
+export function paginaPopup(g, r, t) {
+  paginaComercial(g, r, t);
+  const { x, y, w } = r;
+  const k = Math.max(0, Math.min(1, (t || 0) / POPUP_MS));
+  const e = 1 - Math.pow(1 - k, 3);
+  // el pliegue del planillo, abierto: una arruga vertical en el centro de la página
+  const fx = x + (w >> 1);
+  vline(g, fx, y + 10, 88, '#c8bea4'); vline(g, fx + 1, y + 10, 88, '#fbf8ec');
+  const cx = x + 23 + ((w - 100) >> 1);                          // centro de la línea gris (paginaComercial)
+  const base = y + PAGINA_COMERCIAL.lineaY + 4;                    // sale del pliegue, justo bajo la línea
+  const cw = 104, x0 = cx - (cw >> 1), x1 = x0 + cw;
+  const fh = Math.max(1, Math.round(15 * e));                      // cara delantera del colchón (sube)
+  const td = Math.round(11 * e);                                   // fondo de la cara de arriba (perspectiva)
+  const ins = Math.round(9 * e);
+  const top = base - fh;
+  // sombra que proyecta en la página
+  g.save(); g.globalAlpha = 0.4 * e; poly(g, [[x0 + 2, base], [x1 + 2, base], [x1 + 10, base + 6], [x0 + 10, base + 6]], '#3a3020'); g.restore();
+  // las dos pestañas de cartulina en V que lo levantan (cartulina parda, por los lados)
+  if (fh > 3) {
+    for (const [sx, d] of [[x0 + 6, -1], [x1 - 7, 1]]) {
+      poly(g, [[sx, base + 1], [sx + d * 7, top + 2], [sx + d * 2, top + 2]], '#b8a27a');
+      line(g, sx, base + 1, sx + d * 7, top + 2, '#7a6440');
+    }
+  }
+  // la cara de arriba (lo que se ve del colchón tumbado), con su almohada
+  if (td > 1) {
+    poly(g, [[x0, top], [x1, top], [x1 - ins, top - td], [x0 + ins, top - td]], '#f4f6fe');
+    line(g, x0, top, x0 + ins, top - td, '#5a6890'); line(g, x1 - 1, top, x1 - ins - 1, top - td, '#5a6890');
+    hline(g, x0 + ins, top - td, cw - ins * 2, '#5a6890');
+    if (td >= 6) {
+      const px0 = x0 + ins + 4, py0 = top - td + 2;
+      rect(g, px0, py0, 22, Math.max(2, td - 4), '#ffffff'); frameRect(g, px0, py0, 22, Math.max(2, td - 4), '#9aa8c8');
+    }
+  }
+  // la cara delantera: cartulina blanca acolchada, con el borde troquelado (dientes) y la marca
+  rect(g, x0, top, cw, fh, '#dfe6f8');
+  frameRect(g, x0, top, cw, fh, '#5a6890');
+  for (let xx = x0 + 1; xx < x1 - 1; xx += 3) px(g, xx, top, '#ffffff');                   // los cortes del troquel
+  if (fh >= 8) {
+    for (let yy = top + 3; yy < base - 2; yy += 4) for (let xx = x0 + 4; xx < x1 - 3; xx += 6) px(g, xx, yy, '#a8b4d4');
+    kit.micro(g, 'SIESTATÓN', cx, top + Math.max(2, (fh >> 1) - 2), '#1c2a58', { align: 'center', registrar: false });
+  }
+  hline(g, x0, base - 1, cw, '#3a4870');                                                  // el pliegue de la base
 }
 
 /** La tableta de Maripaz en alto (estampida, §4.3): un anuncio con su «5 s». Para api.sostener(MARIPAZ, { draw }). */

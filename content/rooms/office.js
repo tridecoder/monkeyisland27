@@ -30,10 +30,12 @@ const SITIO_COLA = 'Si le empujo, pierde el sitio en la cola. Sería lo más cru
 // ------------------------------------------------------------------ Gertrudis (plan §4.1, §5.2)
 // los cuatro chismes con réplica (citan las réplicas NUEVAS de content/duelo.js: R03, R04, R14 reescritas; R10 igual)
 const CHISMES = [
-  ['CHISME: EL DE BOLSA A YOLI: "ESTO LO NECESITABA PARA AYER".', 'YOLI: "AYER NO PUEDO. TE MIRO HUECO PARA ANTEAYER".', 'rep_03'],
-  ['CHISME: GERVASIO A ANSELMO: "ES QUE TÚ ERES EL QUE MEJOR ESCRIBE".', 'ANSELMO: "Y TÚ EL QUE MEJOR DELEGA. POR ESO ME ESCRIBES A MÍ".', 'rep_04'],
+  // [P9] R03: ataca Gervasio, a trozos como en el D3; R04: ataque y réplica nuevos, ataca Maripaz
+  ['CHISME: GERVASIO A YOLI: "ESTO LO NECESITABA PARA... PARA... PARA AYER".', 'YOLI: "AYER FUE CUANDO EMPEZASTE LA FRASE".', 'rep_03'],
+  ['CHISME: MARIPAZ A ANSELMO: "HAZLO TÚ, QUE TE VA A DAR MUCHA VISIBILIDAD".', 'ANSELMO: "SI VALIERA ALGO, ME LA COBRARÍAS".', 'rep_04'],
   ['CHISME: ÍÑIGO A EUTIMIO: "ESTAMOS ANALIZANDO TODAS LAS OPCIONES".', 'EUTIMIO: "O SEA, QUE NO SABÉIS QUÉ HACER, PERO EN TABLA DINÁMICA".', 'rep_10'],
-  ['CHISME: GERVASIO A MARIPAZ: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".', 'MARIPAZ: "¿TE VA EN MARZO, CARIÑO? ES CUANDO ACABAN LAS RÁPIDAS".', 'rep_14'],
+  // [P15] R14: la réplica de siempre; contesta Begoña (Maripaz perdería el D1 con su propia frase), sin «cariño»
+  ['CHISME: GERVASIO A BEGOÑA: "ESTO LO VEMOS EN UNA REUNIÓN RÁPIDA".', 'BEGOÑA: "¿TE VA EN MARZO? ES CUANDO ACABAN LAS RÁPIDAS".', 'rep_14'],
 ];
 // chismes de relleno (rotan, saludos después del torrente); el del garaje (adenda 8bis), al final
 const RELLENO = [

@@ -1,8 +1,9 @@
 // SALA `pecera` (Redacción) — ESCENAS. Paquete P2 del plan de comedia. Importado desde ./pecera.js; las escenas son
 // globales: api.scene('<nombre>').
 //   presentacion_villano   escena 7.2 (E2 §2.3.1: Íñigo, el Titulator y la IA de Leoncio; sin Valentín ni coro)
-//   pecera_cms_vivo        camino antiguo del enchufe con el ticket nº 3 leído (§4.2)
-//   pecera_apagon          Tirar enchufe_pantalla sin vio_ticket_3: la escalada de tres apagones (§4.2 + E1.7); el
+//   pecera_parpadeo        [P4] la pantalla parpadea (pista del enchufe; primera entrada del Acto II con el CMS colgado)
+//   pecera_inigo_prescindible  [P11] Íñigo pasa a Bruno a «Prescindible» (primera entrada del Acto II con la FIRMA)
+//   pecera_apagon          Tirar enchufe_pantalla: la escalada de apagones (§4.2 + E1.7; [P11] fuera el ticket nº 3); el
 //                          primero, JUGABLE a oscuras (ENMIENDA E5 §2.2, §3.2: interceptor, ventana de 12 s, `apagonCierre`)
 //   pecera_herminia_mide   paso 34, «Herminia mide la pieza» (E2 §2.3.2: «El modelo es de fuera. El prompt es de dentro.»)
 //   pecera_dos_ias         momento 8, «Dos IAs» (E2 §2.3.3)
@@ -34,7 +35,7 @@ const ENCHUFE = [622, 112], YOLI_EN = [719, 116], SPOT_YOLI = [[692, 68, 26, 10]
 
 /** PLANO DETALLE: el portátil plateado de Íñigo con el Titulator escupiendo el titular línea a línea. */
 function portatilTitulator(g, r, t) {
-  const LINES = ['EL IBEX ABRE PLANO.', 'PLANO.', '¿POR QUÉ NADIE', 'HABLA DE ESTO?'];
+  const LINES = ['EL IBEX NO SE MUEVE.', 'LOS EXPERTOS PIDEN', 'QUE NADIE SE', 'ACERQUE'];   // [P17]
   const { x, y, w, h } = r;
   rect(g, x, y, w, h, '#000');
   gradV(g, x, y, w, h - 10, [PAL.metal[6], PAL.metal[5], PAL.metal[4]]);
@@ -129,7 +130,7 @@ async function presentacionVillano(api) {
     api.sfx('computer');
     await api.detalle({ titulo: 'EL PORTÁTIL DE ÍÑIGO', x: 94, y: 6, w: 132, h: 76, draw: portatilTitulator }, async (api) => {
       await api.wait(500);
-      await api.sayAs(I, 'EL IBEX ABRE PLANO. PLANO. ¿POR QUÉ NADIE HABLA DE ESTO?', { color: TITULATOR, at: [160 + Math.round(api.game.camX), 108] });
+      await api.sayAs(I, 'EL IBEX NO SE MUEVE. LOS EXPERTOS PIDEN QUE NADIE SE ACERQUE', { color: TITULATOR, at: [160 + Math.round(api.game.camX), 108] });
     });
     await talk(api, [[I, 'Trescientos titulares esta tarde. Sin CMS. Sin silla. Sin convenio.']]);
     // (Encuadre de Infografía. Leoncio, sin levantarse, señala su portátil con el lápiz.)
@@ -152,6 +153,7 @@ async function presentacionVillano(api) {
     api.faceActor(L, 'down');
     api.faceActor(I, 'down');
     await talk(api, [[I, 'A las nueve, la Reunión de Dirección aprueba el Plan Cero Papel.'],
+      [I, 'Y a las nueve y cinco, brindis en Eventos. Con croquetas.'],          // [P12] siembra la noche de Pilar
       ['B', '¿Sin papel? Pero si mañana firmo yo en papel.']]);
     api.faceActor(I, api.player);
     await api.wait(500);
@@ -207,16 +209,17 @@ async function luzVuelve(api) {
 // que le sigue), nombres a oscuras (`nameDark`) y los verbos por el interceptor del motor (`aOscuras`). Anselmo cruza de
 // su mesa al enchufe sin prisa (guion no bloqueante, `sinCongelar`); cada 2 s, PLIN y el monitor parpadea en PUBLICADO.
 // Se cierra con lo primero de: Anselmo llega · Bruno Usa el enchufe · 12 s (en modo rápido, 0) → `apagonCierre`.
-const VENTANA_MS = 12000, PLIN_MS = 2000;
+// [P5] 12 s la primera vez; del segundo apagón en adelante, 5 s (la escalada de siempre se dice al cerrar).
+const VENTANA_MS = 12000, VENTANA_REPE_MS = 5000, PLIN_MS = 2000;
 const ANSELMO_SIN_PRISA = 40;                 // px/s (54 de serie): de su mesa al enchufe, ≈ 11 s
 /** Estado de la ventana (de módulo: no se guarda; al cargar, `limpiarOscuras` desde el onEnter de la sala). */
-const V = { abierta: false, llego: false, v0: null, gen: -1 };
+const V = { abierta: false, llego: false, v0: null, gen: -1, n: 1 };
 const focos = () => [SPOT_YOLI[0], { actor: A, rx: 10, ry: 8 }];
 
 /** Verbos a oscuras (§2.2.2): todos pasan por aquí antes de andar; `true` = no sigue (Bruno no sale de la sala). */
 async function aOscuras(api, verbo, id, item) {
   if (!V.abierta) return false;
-  if (verbo === 'usar' && id === 'enchufe_pantalla' && !item) { await apagonCierre(api, 'bruno'); return true; }
+  if (verbo === 'usar' && id === 'enchufe_pantalla' && !item) { await (V.n > 1 ? cierreRepeticion(api, 'bruno') : apagonCierre(api, 'bruno')); return true; }
   if (verbo === 'hablar' && id === Y) { await api.sayAs(Y, '¡Chsss! Estoy contando. Diecisiete. Dieciocho.'); return true; }
   if ((verbo === 'hablar' || verbo === 'empujar') && id === A) { await api.sayAs(A, 'No me tapes la linterna. Voy a mi enchufe.'); return true; }
   if (verbo === 'coger' && id === 'taza_no') { await talk(api, [['D3', 'No.']]); return true; }
@@ -260,7 +263,7 @@ async function apagonJugable(api) {
   }
   api.setFlag('pecera_oscuras', true);
   api.sinGuardar(true);
-  V.abierta = true; V.llego = false; V.gen = api.game.gen;
+  V.abierta = true; V.llego = false; V.gen = api.game.gen; V.n = 1;
   api.cameraFollow();
   if (api.game.instant) { await apagonCierre(api, 'tiempo'); return; }   // modo rápido: ventana de 0 ms
   api.background(ventana);
@@ -272,12 +275,15 @@ const pausa = (api, ms) => (api.game.instant ? new Promise(r => setTimeout(r, ms
 /** La ventana (guion NO bloqueante): Anselmo cruza; PLIN cada 2 s; a los 12 s o al llegar él, `apagonCierre`. */
 async function ventana(api) {
   const g = api.game, gen = g.gen, t0 = g.time, a = g.actors[A];
-  if (a && V.v0 == null) { V.v0 = a.speed; a.speed = ANSELMO_SIN_PRISA; }
-  api.sinCongelar(A);
-  api.walkActor(A, ENCHUFE[0] + 16, ENCHUFE[1]).then((ok) => { if (ok !== false) V.llego = true; });
+  const repe = V.n > 1, ms = repe ? VENTANA_REPE_MS : VENTANA_MS;
+  if (!repe) {                                         // [P5] en las repeticiones Anselmo no cruza: se cierra a los 5 s
+    if (a && V.v0 == null) { V.v0 = a.speed; a.speed = ANSELMO_SIN_PRISA; }
+    api.sinCongelar(A);
+    api.walkActor(A, ENCHUFE[0] + 16, ENCHUFE[1]).then((ok) => { if (ok !== false) V.llego = true; });
+  }
   let plin = t0 + PLIN_MS;
   const sigue = () => V.abierta && g.gen === gen && g.room && g.room.def.id === 'pecera';
-  while (sigue() && !V.llego && g.time - t0 < VENTANA_MS) {
+  while (sigue() && !V.llego && g.time - t0 < ms) {
     if (g.time >= plin) {
       plin += PLIN_MS;
       api.sfx(PLIN);                                   // (y el monitor parpadea en PUBLICADO)
@@ -289,7 +295,7 @@ async function ventana(api) {
   if (!sigue()) return;
   while (g.busy && sigue()) await pausa(api, 50);        // si Bruno está hablando a oscuras, que acabe la frase
   if (!sigue()) return;
-  g.runScript((api2) => apagonCierre(api2, V.llego ? 'anselmo' : 'tiempo'), { label: 'pecera:apagonCierre' });
+  g.runScript((api2) => (repe ? cierreRepeticion(api2, 'tiempo') : apagonCierre(api2, V.llego ? 'anselmo' : 'tiempo')), { label: 'pecera:apagonCierre' });
 }
 
 /** Cierre de la ventana (§3.2): enchufa Anselmo (o ya enchufó Bruno); luz; «…Que te la apague Paco.». */
@@ -340,6 +346,9 @@ async function apagonCierre(api, via) {
 async function apagonEscena(api) {
   const n = api.inc('apagon_n');
   if (n === 1) { await apagonJugable(api); return; }
+  // [P5] del segundo apagón en adelante: Bruno tira, negro y (n = 2) «¡Otra!»; luego una ventana a oscuras de 5 s, como
+  // la primera (interceptor, nombres, PLIN), y al cerrarse la escalada de siempre (`cierreRepeticion`)
+  let dentro = false;
   try {
     await api.cutscene(async (api) => {
       await api.walkTo(ENCHUFE[0] - 16, ENCHUFE[1] + 4);
@@ -347,79 +356,134 @@ async function apagonEscena(api) {
       api.cameraTo(ENCHUFE[0] + 40);
       await api.anim(api.player, 'reach', 500);
       api.setState('pantalla_metricas', 'negra');
-      api.apagon({ ms: 0, spots: SPOT_YOLI });
+      api.apagon({ ms: 0, nombres: true, spots: SPOT_YOLI, interceptar: aOscuras });
       await api.wait(600);
       if (n === 2) {
         api.sfx(PLIN); api.setState('monitor_yoli', 'publicado');
         await api.sayAs(Y, '¡Otra! ¡Ha entrado otra!');
+      }
+    });
+    dentro = true;
+  } finally {
+    if (!dentro) { limpiarOscuras(api); api.setState('monitor_yoli', null); api.refreshActors(); }
+  }
+  api.setFlag('pecera_oscuras', true);
+  api.sinGuardar(true);
+  V.abierta = true; V.llego = false; V.gen = api.game.gen; V.n = n;
+  api.cameraFollow();
+  if (api.game.instant) { await cierreRepeticion(api, 'tiempo'); return; }   // modo rápido: ventana de 0 ms
+  api.background(ventana);
+}
+
+/** [P5] Cierre de la ventana de una repetición (5 s, o Bruno enchufa): la escalada de siempre según `V.n`. */
+async function cierreRepeticion(api, via) {
+  V.abierta = false;
+  const n = V.n;
+  try {
+    await api.cutscene(async (api) => {
+      if (via === 'bruno') {
+        await api.walkTo(ENCHUFE[0] - 16, ENCHUFE[1] + 4);
+        api.face('up');
+        await api.anim(api.player, 'reach', 500);     // (Bruno enchufa)
+      }
+      limpiarOscuras(api);
+      api.setState('pantalla_metricas', 'negra');
+      api.apagon({ ms: 0, spots: SPOT_YOLI });        // (sin ventana: lo que queda es escena)
+      if (n === 2) {
         // (Le tiembla el párpado. Se levanta y enchufa ella.)
-        await alEnchufe(api, Y);
+        if (via !== 'bruno') await alEnchufe(api, Y);
         await luzVuelve(api);
         api.setState('monitor_yoli', 'guardando');
         await talk(api, [[Y, 'Perdona. Si no veo la gráfica, no sé si estoy contenta.'], ['B', 'Pero estaba entrando todo.'],
           [Y, 'Ya. Pero si no lo veo entrar, no cuenta.']]);
-        await deVuelta(api, Y);
-      } else if (n === 3) {
-        // (Anselmo cruza su cinta, enchufa sin mirar y vuelve.)
-        await alEnchufe(api, A);
-        await luzVuelve(api);
-        await talk(api, [[A, 'Tercera vez. Te paso a BLOQUEADO.'], [A, 'Si quieres que se quede apagada, tráeme un motivo. ¿Tiene número?']]);
-        await deVuelta(api, A);
-        await api.say('Un motivo con número y un cable que baja. Eso huele a Eutimio.');
+        if (via !== 'bruno') await deVuelta(api, Y);
       } else {
-        await api.wait(500);
+        // [P11] del tercero en adelante, solo el gesto: Yoli enchufa sin levantar la vista (sin texto: el segundo
+        // tirón ya ha dicho lo que había que decir; fuera «Te paso a BLOQUEADO» y «Sin número, a su enchufe»)
+        if (via !== 'bruno') await alEnchufe(api, Y);
         await luzVuelve(api);
-        await api.sayAs(A, 'Sin número, a su enchufe.');
+        api.setState('monitor_yoli', 'guardando');
+        if (via !== 'bruno') await deVuelta(api, Y);
       }
     });
   } finally {
+    limpiarOscuras(api);
     if (api.game.apagon) await api.apagon(false);
     api.setState('pantalla_metricas', null);
+    api.setState('monitor_yoli', null);
+    api.cameraFollow();
     api.refreshActors();
   }
 }
 
-/** Camino antiguo: Tirar enchufe_pantalla con vio_ticket_3 (Anselmo escribe la excepción en la cinta, E2 §2.6.5). */
-async function cmsVivo(api) {
+// ([P11] fuera el camino alternativo del ticket nº 3: con la pista del parpadeo y el primer apagón era la tercera forma
+// de contar que la pantalla tumba el CMS. El registro de Sistemas sigue diciéndolo, como decorado.)
+
+// ================================================================== [P4] la pantalla parpadea (pista del enchufe)
+/** [P4] La primera vez que Bruno entra en la Redacción en el Acto II con el CMS colgado (una vez): el segundo en que la
+ *  pantalla de métricas se apaga, el CMS publica. No lo dice nadie: se ve. */
+async function parpadeo(api) {
   try {
     await api.cutscene(async (api) => {
-      await api.walkTo(ENCHUFE[0] - 16, ENCHUFE[1] + 4);
-      api.face('up');
-      api.cameraTo(ENCHUFE[0] + 40);
-      await api.anim(api.player, 'reach', 600);
-      api.setState('pantalla_metricas', 'negra');
-      api.apagon({ ms: 0, spots: SPOT_YOLI });
-      await api.wait(400);
-      // E6 §2.1.4: a oscuras, Yoli también se queda ciega por este camino (las dos líneas de siempre, 0 nuevas)
-      await api.sayAs(Y, '¡Estamos ciegos! ¿Hay alguien leyendo? ¿HAY ALGUIEN AHÍ FUERA?');
-      // (Clic. Negro. Anselmo ya se está levantando.)
-      await alEnchufe(api, A);
-      await talk(api, [['B', 'Ticket nº 3: «El CMS se cuelga con esta pantalla».'], [A, '¿Tiene número?'], ['B', 'El tres.'],
-        [A, '...Entonces existe. A HECHO (PERO NO).']]);
-      // (Corta cinta y pega bajo el letrero: «SALVO TICKET Nº 3».)
-      await api.anim(A, 'reach', 600);
-      api.sfx('paper');
-      api.setState('enchufe_pantalla', 'con_ticket');
-      api.setFlag('cms_vivo', true);
-      api.setState('monitor_yoli', 'publicado');
-      api.repaint();
-      api.sfx(PLIN);
-      await api.sayAs(Y, '...Ha entrado una pieza. ¡Ha entrado una pieza! ¡El CMS va!');
-      await api.apagon(false);
-      await talk(api, [['CORO', '¡Ha sido Diseño!'], ['B', 'He sido yo. Pero gracias.']]);
-      await deVuelta(api, A);
+      await encuadre(api, 676);                        // la pantalla de métricas y el monitor de Yoli, en plano
+      api.setState('monitor_yoli', 'guardando');      // (en el monitor de Yoli: GUARDANDO…)
+      await api.wait(900);
+      api.sfx('click');
+      api.setState('pantalla_metricas', 'negra');     // (la pantalla parpadea y se queda en negro un segundo)
+      await api.wait(450);
+      api.sfx(PLIN); api.setState('monitor_yoli', 'publicado');   // (PLIN. PUBLICADO.)
+      await api.sayAs(Y, '¡Ha entrado una pieza!');
+      api.sfx('click');
+      api.setState('pantalla_metricas', null);        // (la pantalla vuelve a encenderse)
+      api.setState('monitor_yoli', 'guardando');
+      await api.wait(500);
+      await api.sayAs(Y, '...Ya no va.');
     });
   } finally {
-    if (api.game.apagon) await api.apagon(false);
     api.setState('pantalla_metricas', null);
-    api.setState('enchufe_pantalla', 'con_ticket');
-    api.setFlag('cms_vivo', true);
-    api.refreshActors();
+    api.setState('monitor_yoli', null);
+    api.cameraFollow();
+  }
+}
+
+// ================================================================== [P11] Íñigo pasa a Bruno a «Prescindible»
+/** [P11] La primera vez que Íñigo hace algo contra Bruno: primera entrada en la Redacción en el Acto II con la FIRMA
+ *  hecha (una vez). Sale de los Despachos con el pósit rosa «VACANTE» y vuelve tras el cristal a pegarlo en
+ *  «Prescindible». Desde aquí, la matriz de los Despachos lo dibuja ahí (pajarera.js, `casilla_firma`). */
+async function inigoPrescindible(api) {
+  try {
+    await api.cutscene(async (api) => {
+      const door = art.layout.pecera_a_pajarera.walkTo || [196, 108];
+      const tx = door[0] + 110;
+      const p = api.actorPos(api.player);
+      if (!p || Math.abs(p.x - tx) > 30) await api.walkTo(tx, 122, { run: !p || Math.abs(p.x - tx) > 180 });
+      api.face('left');
+      api.cameraTo(door[0] + 60);
+      api.sfx('door');
+      api.placeActor(I, 'pecera', door[0], door[1], 'down');
+      api.show(I);
+      await api.walkActor(I, tx - 28, 122);
+      api.faceActor(I, api.player);
+      api.face(I);
+      await api.anim(I, 'reach', 400);                 // (el pósit rosa en la mano: «VACANTE»)
+      await api.sayAs(I, ['Una firma en papel. Ya haces cosas, Vacante.', 'Bienvenido a la plantilla.']);
+      // (vuelve tras el cristal de los Despachos y pega el pósit en «Prescindible»: se ve, no se oye)
+      await api.walkActor(I, door[0], door[1]);
+      api.sfx('door');
+      api.placeActor(I, null);
+      await api.wait(600);
+    });
+  } finally {
+    api.setFlag('inigo_prescindible', true);
+    api.placeActor(I, null);
+    api.cameraFollow();
   }
 }
 
 // ================================================================== E2 §2.3.2 · paso 34: Herminia mide la pieza
 async function herminiaMide(api) {
+  // [P11] de 14 líneas a 7 (4 si Bruno ya oyó la frase de Anselmo): la medición, «Quitar siempre es de otro
+  // departamento», la vuelta de cinta y la salida. La frase de Anselmo sigue aquí, la primera vez, y en su árbol.
   await api.cutscene(async (api) => {
     await encuadre(api, 800);
     // (Pitido. Entre la cinta, la pantalla de Herminia se enciende.)
@@ -427,25 +491,16 @@ async function herminiaMide(api) {
     await api.wait(300);
     await talk(api, [['H', 'tu pieza · 31 líneas · hueco de la página 7: 23 · sobra: 26 %']]);
     api.faceActor(L, api.player);
-    await talk(api, [[L, 'Ya te la ha leído. Yo no, ¿eh? Yo ya no leo. Superviso.'], ['B', '¿Y quién quita un 26 %?'],
-      [L, 'Ella no. Ella mide. Quitar siempre es de otro departamento.']]);
-    api.sfx('beep');                         // (Segundo pitido.)
-    await talk(api, [['H', 'infografía de la opa · hecha en 0,4 s · publicar: bloqueado'],
-      [L, 'Cuatro décimas. Yo tardaba una semana. Bien hecha, eso sí.']]);
+    await talk(api, [['B', '¿Y quién quita un 26 %?'], [L, 'Ella no. Ella mide. Quitar siempre es de otro departamento.']]);
     // (Anselmo cruza la cinta y llega a la mesa. Segunda vuelta de cinta. Rasss. Estado cinta_2.)
     await anselmoALaMesa(api);
     await api.anim(A, 'reach', 600);
     api.sfx('paper'); await api.wait(250); api.sfx('paper');
     api.setFlag('herminia_midio', true);
-    await talk(api, [[A, 'Hecha con una IA de fuera. No entra en ninguna pieza.'], [A, 'Encintar, no: aislar el componente.']]);
     api.faceActor(A, api.player);
-    // [bloqueos] si Bruno ya oyó la frase en el árbol de Anselmo, aquí solo el eco; si no, entera
-    if (api.flag('pecera_prompt_oido')) {
-      await talk(api, [['B', '¿Y lo vuestro no viene de fuera?'], [A, 'Ya te lo dije. Lo que cuenta es lo de dentro.'],
-        [L, 'El prompt de Herminia lo escribí yo. En esta mesa.']]);
-    } else {
-      await talk(api, [['B', '¿Y vosotros no usáis IA de fuera?'], [A, 'El modelo es de fuera. El prompt es de dentro.'], [A, 'Eso lo hace nuestro.'],
-        [L, 'El prompt de Herminia lo escribí yo. En esta mesa.']]);
+    // si Bruno no ha oído aún la frase de Anselmo (en su árbol), aquí, entera; si ya la oyó, nada más
+    if (!api.flag('pecera_prompt_oido')) {
+      await talk(api, [['B', '¿Y vosotros no usáis IA de fuera?'], [A, 'El modelo es de fuera. El prompt es de dentro.'], [A, 'Eso lo hace nuestro.']]);
       api.setFlag('pecera_prompt_oido', true);
     }
     api.faceActor(A, 'left');
@@ -474,7 +529,7 @@ async function dosIAs(api) {
     // (Por un hueco de la cinta, la pantalla.)
     api.sfx('beep');
     await talk(api, [['H', 'titulares por hora · picos: 14:00 y 14:30 · pausas de 5 min: 11'],
-      ['H', 'origen: Sistemas, armario 27 · consumo: atún'],
+      ['H', 'consumo: atún'],                // [P14] fuera «origen: Sistemas, armario 27»: lo dice la L4 de Evaristo
       [L, 'Una IA que come a las dos y va once veces al baño.']]);
     api.faceActor(A, 'left');                // (desde su mesa)
     await talk(api, [[A, 'Tiene alta de usuario interno. Lo que tiene alta es de la casa.']]);
@@ -730,7 +785,8 @@ export default {
   pecera_opa_ganadora: opaGanadora,
   pecera_banner: banner,
   presentacion_villano: presentacionVillano,
-  pecera_cms_vivo: cmsVivo,
+  pecera_parpadeo: parpadeo,
+  pecera_inigo_prescindible: inigoPrescindible,
   pecera_apagon: apagonEscena,
   pecera_herminia_mide: herminiaMide,
   pecera_dos_ias: dosIAs,

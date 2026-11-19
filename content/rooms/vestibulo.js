@@ -33,13 +33,14 @@ const IBEX = {
   1: ['¡Ibersideral entra por la banda! ¡Sube un 0,2! ¡Qué técnica!',
     '¡Las eléctricas tocan, tocan, tocan... y nada! ¡Plano!',
     '¡Banco Robledal se duerme en el área! ¡Así no, hombre, así no!'],
+  // [P11] la de Hidrovoltia sale aparte, la primera vez del Acto II (siembra la opa: `HIDROVOLTIA`); las demás rotan
   2: ['¡Penalti a las eléctricas! ¡Eso no era! ¡Árbitro, que mire el supervisor!',
-    '¡Hidrovoltia calienta en la banda! ¡Algo trama el míster!',
     'Cierre plano. Empate a cero. Y el árbitro sin añadir descuento.',
     '¡Me han puesto un narrador automático! ¡Narra sin bufanda! ¡Fuera de juego!'],
   3: ['¡Prórroga! ¡El mercado americano mete presión! ¡Aguanta, Ibex, aguanta!',
     '¡El Robledal pide la hora! ¡No quiere que acabe el partido!'],
 };
+const HIDROVOLTIA = '¡Hidrovoltia calienta en la banda! ¡Algo trama el míster!';
 const ibexLine = (api, n) => { const l = IBEX[acto(api)]; return l[(Math.max(1, n) - 1) % l.length]; };
 
 // adenda 8bis.1: el cuadro de llaves rota 1…5 (la 5, solo en el Acto III) y después entre la 2 y la última
@@ -175,15 +176,16 @@ const celestinoDialog = {
             await api.sayAs(C, '¡Y el chaval se lo guarda! ¡No lo mastica! ¡Algo trama el míster!');
             await api.say('Lo reservo para una ocasión importante. O para pegar algo.');
           }, setFlag: 'celestino_dio_chicle' },
-        { id: 'cafe', text: '¿Dónde hay café en esta casa?', once: true,
+        // [P15] seis opciones como mucho: el café, desde que el torno se abre (antes, primero hay que pasar)
+        { id: 'cafe', text: '¿Dónde hay café en esta casa?', once: true, if: 'torno_abierto',
           reply: 'En el Vending. Gertrudis. La cafetera.',
           lines: [['player', '¿Y cómo se le pide?'], [C, 'Pedir, no. Se saluda. Dale las buenas noches.'],
-            [C, 'Nadie se las da. Yo sí. Por eso a mí me pone espuma.']],                       // E2 L1
+            [C, 'Nadie se las da. Yo se las daba. Me ponía espuma.']],                       // E2 L1
           setFlag: 'celestino_pista_gertrudis' },
         { id: 'cotilleo', text: '¿Algún cotilleo?', once: true,                              // E2 L2 (A + E)
-          reply: ['¡Jugada de ascensor! Gervasio, al de Mercados: «Que esto no salga de aquí».',
-            '¡Y el de Mercados, de primeras: «Tranquilo: de aquí no sale ni el wifi»!',
-            '¡Tres años sin hablarse! ¡Y el wifi sigue sin salir!'],
+          reply: ['¡Jugada de correo! Gervasio, responder a todos: «Que esto no salga de aquí».',
+            '¡Contesta Mercados, a todos: «Me lo estás diciendo en un responder a todos»!',
+            '¡Me llegó hasta a mí! ¡Y yo soy un mostrador!'],
           do: async (api) => { api.learnReply('rep_05'); } },
         { id: 'ibex', text: '¿Cómo va el Ibex?',                                            // (rota, se queda)
           do: async (api) => {
@@ -195,20 +197,21 @@ const celestinoDialog = {
             }
             await api.sayAs(C, ibexLine(api, api.inc('vestibulo_ibex_pregunta')));
           } },
-        { id: 'aburre', text: '¿Y usted no se aburre aquí?', once: true,
+        // [P15] al preguntar por el Ibex la primera vez sale, en un hueco, «¿Y usted no se aburre aquí?» → la plaza de garaje
+        { id: 'aburre', text: '¿Y usted no se aburre aquí?', once: true, if: (api) => api.elegida('celestino.C0.ibex') || !!api.game.state.once['once:vestibulo_ibex_primera'],
           reply: ['¿Aburrirme? Entra la de la limpieza. Sale la de la limpieza.', 'Entra un becario. Pregunta tonterías. ¡Partidazo!'] },
-        { id: 'jubilan', text: 'Si ponen el narrador automático, ¿le jubilan?', if: 'acto_2_iniciado', once: true,
-          do: async (api) => {
-            await api.wait(900);                                                   // deja de mascar
-            await api.sayAs(C, ['...', 'Ese aparato no sabe lo que es una prórroga.', 'Tú pregúntame por el Ibex de vez en cuando.']);
-            await api.say('Perdone. Lo he dicho en voz alta. Era para dentro.');
-          } },
-        { id: 'plaza', text: '¿Cómo se consigue una plaza de garaje?', once: true,            // adenda 8bis.1 · E2 §7.6: once
+        { id: 'plaza', text: '¿Cómo se consigue una plaza de garaje?', once: true, tras: 'aburre',   // adenda 8bis.1 · E2 §7.6: once
           do: async (api) => {                                                   // E5 C10: las comillas, con los dedos
             await api.anim(C, 'reach', 350);
             await api.sayAs(C, ['Dos maneras: jubilarse o un «accidente».', 'La segunda no ha funcionado nunca. Pero se entrena mucho.']);
             await api.say('¿Y una plaza de bici?');
             await api.sayAs(C, '¿Tú eres el nuevo?');
+          } },
+        { id: 'jubilan', text: 'Si ponen el narrador automático, ¿le jubilan?', if: 'acto_2_iniciado', once: true,
+          do: async (api) => {
+            await api.wait(900);                                                   // deja de mascar
+            await api.sayAs(C, ['...', 'Ese aparato no sabe lo que es una prórroga.', 'Tú pregúntame por el Ibex de vez en cuando.']);
+            await api.say('Perdone. Lo he dicho en voz alta. Era para dentro.');
           } },
         { id: 'nada', text: 'Nada, Celestino.', exit: true, reply: '¡Y el chaval se retira al vestuario sin marcar!' },
       ],
@@ -278,14 +281,14 @@ export default buildRoom({
     } },
     { id: 'logo_pared', name: 'logo', handlers: {
       mirar: async (api) => {
-        if (!api.flag('vestibulo_logo_visto')) await api.say('Letras de metal: «elContable.es». A la «e» le falta un tornillo.');
-        else await api.say(['Un periódico económico que se llama el Contable.', 'Es lo más honesto que ha hecho nunca un periódico económico.']);
+        if (!api.flag('vestibulo_logo_visto')) await api.say('Letras de metal: «elincontable.es». Al «in» le falta un tornillo.');
+        else await api.say(['Un periódico económico que se llama El Incontable.', 'Es lo más honesto que ha hecho nunca un periódico económico.']);
         api.setFlag('vestibulo_logo_visto', true);
       },
-      coger: 'Si me llevo la «e», se queda en «lContable». Suena a gestoría con prisas.',
+      coger: 'Si me llevo el «in», queda «elcontable.es». Una gestoría.',
       tirar: 'Le falta un tornillo. Si tiro, le faltan dos. Y a mí, el trabajo.',
-      empujar: 'No llego. Y si llego, la «e» se cae con todo su tornillo.',
-      hablar: '«Buenas noches, Contable». La «e» se mueve un poco. Lo tomo como un sí.',
+      empujar: 'No llego. Y si llego, el «in» se cae con todo su tornillo.',
+      hablar: '«Buenas noches, Incontable». El «in» se mueve un poco. Lo tomo como un sí.',
     } },
     { id: 'torno', name: 'torno', color: LED, exit: { room: 'pecera', tipo: 'torno' }, handlers: {
       ir: async (api) => {
@@ -485,6 +488,8 @@ export default buildRoom({
     if (!api.restoring) api.inc('vestibulo_entradas_n');                       // E2 §7.4 pasos 3-4 (saludos de Celestino)
     if (!api.flag('intro_vista') || enEpilogo(api) || api.restoring) return;   // intro, epílogo y cargar partida: nada aquí
     // §4.7: si hay un hito sin narrar, Celestino lo retransmite; si no, una línea del Ibex (rotan dentro de cada acto)
+    // [P11] la primera vez que Bruno entra en el Vestíbulo en el Acto II, siempre la de Hidrovoltia (antes que la rotación)
+    if (acto(api) === 2 && api.once('vestibulo_hidrovoltia')) { await api.sayAs(C, HIDROVOLTIA); return; }
     if (await narrarHito(api)) return;
     const n = api.inc('celestino_ibex_n');
     await api.sayAs(C, ibexLine(api, n));

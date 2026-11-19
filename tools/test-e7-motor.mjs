@@ -37,7 +37,7 @@ const BASE = { intro_vista: true, torno_abierto: true, inigo_presentado: true, a
   gertrudis_saludada: true, cafetera_viral: true, cafetera_viral_vista: true, chaqueta_cogida: true, chaqueta_en_lector: true };
 const D3F = { ...BASE, acto_3_iniciado: true, rep_07: true, rep_03: true, rep_01: true, rep_05: true };
 const R07 = 'Esto se necesitaba para... para cuando... me consta que ya lo hablamos.';
-const R03 = 'El acta se necesitaba para... para...';
+const R03 = 'El acta se necesitaba para... para... para ayer.';   // [guion3 t1] [P9]
 
 async function open(room, flags, inv = [], ctxOpts = { viewport: { width: 960, height: 600 } }) {
   const ctx = await browser.newContext(ctxOpts);

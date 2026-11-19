@@ -598,10 +598,6 @@ function drawEnchufe(g, view) {
   if (pulled) line(g, tx + 2, ty + th - 2, tx + tw - 3, ty + 1, PAL.paper[2]);                // la cinta, arrancada en diagonal
   label(g, 'NO', tx + (tw >> 1), ty - 2, PAL.red[3], { align: 'center' });
   micro(g, 'DESENCHUFAR', tx + 2, ty + 8, PAL.red[2]);
-  if (view.state === 'con_ticket') {               // camino antiguo (§4.2): la excepción de Anselmo, en otra tira
-    rect(g, tx + 2, ty + th + 1, tw - 4, 7, PAL.paper[5]); hline(g, tx + 2, ty + th + 1, tw - 4, PAL.paper[7]);
-    micro(g, 'SALVO T.3', tx + (tw >> 1), ty + th + 2, PAL.blue[2], { align: 'center' });
-  }
   kit.cantoVivo(g, tx, ty, tw, th);
 }
 
@@ -842,11 +838,11 @@ function drawKanban(g, view) {
     postit(g, px0, py0, colores[(i + k) % 5], { w: 13, h: 8 });
   }
   // ENMIENDA E5 §2.5.6: la columna nueva, a rotulador rojo y con peor letra que la de Anselmo, en una tira de pizarra
-  // añadida debajo del tablero («SALIDA EN VALOR» o «DESCOPEADO» según `columna_kanban`; en micro, «patrocina:
+  // añadida debajo del tablero («SALIDA EN VALOR»; en micro, «patrocina:
   // Comercial»), con el pósit de Rubén dentro. Estados de escena `mal_0..2`: la columna equivocada, antes de la manga.
   const desc = !!view.flag('posit_descopeado');
   const MAL = { mal_0: 'DESPEDIDOS', mal_1: 'HECHO (DE VERDAD)', mal_2: 'FIRMAR EN PAPEL' };
-  const nueva = MAL[view.state] || (desc ? (view.flag('columna_kanban') === 'descopeado' ? 'DESCOPEADO' : 'SALIDA EN VALOR') : null);
+  const nueva = MAL[view.state] || (desc ? 'SALIDA EN VALOR' : null);                // [P12] la única columna buena
   const ly = y + h + 2, lh = 17;                                                 // la tira: y 84-100
   if (nueva) {
     rect(g, x - 2, ly - 1, w + 4, lh + 2, PAL.metal[4]); frameRect(g, x - 2, ly - 1, w + 4, lh + 2, PAL.metal[2]);

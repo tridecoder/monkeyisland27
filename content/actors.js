@@ -178,7 +178,7 @@ const lectorCaido = defineSprite({
   },
 });
 
-// ------------------------------------------------------------------ el teléfono rojo de Teodoro (7.3a y «Goyita. Tira.»)
+// ------------------------------------------------------------------ el teléfono rojo de Teodoro (7.3a y «Benita. Tira.»)
 /** Auricular rojo de baquelita, vertical, con la parte de oír arriba (x, y = esquina superior izquierda, 4x11). */
 export function auricularRojo(g, x, y) {
   rect(g, x, y, 4, 3, '#c83a3a'); hline(g, x, y, 4, '#f07060');          // oído
@@ -254,7 +254,7 @@ export default {
     },
     variants: { sin_bufanda: { doll: { scarf: null, scarfStripe: null } } },   // epílogo: se la ha dado a Bruno
     // E6 §4.3: fuera las copias que la sala ya declara en su `placement` (el motor usa la de la sala)
-    murmurs: ['Treinta años en este mostrador. El mostrador, cuarenta.', 'Chof, chof... Menta.'],
+    murmurs: [],   // [P15] t4: los suyos viven en el Vestíbulo (vestibulo.js); fuera dos de aquí que no recoge ningún guion
     // mastica chicle de menta sin parar: de vez en cuando, una pompa rosa (solo de frente)
     drawExtra(g, a, t, c) {
       if (a.dir !== 'down' || !c) return;
@@ -355,6 +355,9 @@ export default {
       skin: '#e8b890', hair: '#1a1410', hairStyle: 'parted', shirt: '#f4f6fa', jacket: '#1c2a52', pants: '#1c2a52',
       shoes: '#ffffff', prop: 'postits', build: 'slim', height: 1.05,
     },
+    // [P12] en el clímax (Acto III) lleva un walkie de Eventos en el cinturón: siembra el inserto de Pilar
+    variants: { walkie: { doll: { beltRadio: '#26262e' } } },
+    variant: (v) => (v.flag('acto_3_iniciado') ? 'walkie' : null),
     murmurs: [],   // E6 §4.3: viven en pajarera.js (y la Sala declara los suyos)
   },
   ruben: {

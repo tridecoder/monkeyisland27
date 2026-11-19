@@ -163,7 +163,8 @@ try {
     await G(() => __game.skipText(true)); await G(() => __game.waitIdle()); await G(() => __game.skipText(false));
   }
   // por sala y objetivo: en el Acto II, en Sistemas toca el CMS; en Administración, la nota de gasto
-  await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'silla_libre', 'rep_11', 'gertrudis_saludada', 'acto_2_iniciado']) __game.setFlag(f, true); __game.skipText(true); });
+  // ([guion3 t2] el CMS cuenta desde que Maripaz pide la web: `maripaz_pide_web`)
+  await G(() => { for (const f of ['torno_abierto', 'inigo_presentado', 'silla_libre', 'rep_11', 'gertrudis_saludada', 'acto_2_iniciado', 'maripaz_pide_web']) __game.setFlag(f, true); __game.skipText(true); });
   await G(() => __game.gotoRoom('cpd'));
   let Lc = await llamada();
   ok(Lc.includes('A: La tele de tu abuelo no iba si él la miraba. Apágale algo a alguien.'), 'en Sistemas, la pista del CMS (objetivo de la sala)');
@@ -177,7 +178,11 @@ try {
   await G(() => { __game.giveItem('ficha_pagina_7'); __game.setFlag('cms_vivo', false); __game.game.state.flags['obj:cms'] = false; });
   const ficha = () => G(async () => { __game.clearLog(); await __game.doVerb('mirar', 'ficha_pagina_7'); return __game.log.filter(l => l.who === 'bruno').map(l => l.text); });
   let F = await ficha();
-  ok(F[0] === 'Ficha de la página 7. Hueco, fuente, firma.' && F.includes('HUECO: vendida a Siestatón, sin confirmar. Lo decide la Sala Amazonas.') && F.includes('FUENTE: dos fuentes, dice Aurora. Tengo cero.') && F.includes('FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.') && F.includes('Al margen, a lápiz: «CMS en coma. Sistemas no atiende a nadie».'), 'ficha (estado inicial, margen E7 N9): casillas pendientes y la nota al margen');
+  ok(F[0] === 'Ficha de la página 7. Hueco, fuente, firma.' && F.includes('HUECO: Siestatón se va a la web. Si la web publica.') && F.includes('FUENTE: dos fuentes, dice Aurora. Tengo cero.') && F.includes('FIRMA: Teodoro solo habla por fax. Y el fax no tiene papel.') && F.includes('Al margen, a lápiz: «CMS en coma. Sin web, Maripaz no suelta la página».'), 'ficha (estado inicial, con Maripaz pidiendo la web): casillas pendientes y la nota al margen (guion3 t2)');
+  await G(() => __game.setFlag('maripaz_pide_web', false));
+  F = await ficha();
+  ok(!F.some(l => l.startsWith('Al margen')) && F.includes('HUECO: vendida a Siestatón, sin confirmar. Lo decide la Sala Amazonas.'), 'ficha: sin Maripaz pidiendo la web, el HUECO de siempre y sin nota al margen (guion3 t2)');
+  await G(() => __game.setFlag('maripaz_pide_web', true));
   const icon0 = await G(() => __game.game.content.items.ficha_pagina_7.iconKey(__game.game.viewFor()));
   await G(() => { for (const f of ['reunion_terminada', 'fax_con_papel', 'cms_vivo', 'casilla_fuente', 'pieza_escrita']) __game.setFlag(f, true); __game.giveItem('fotocopia_nota_direccion'); });
   F = await ficha();
@@ -440,9 +445,10 @@ try {
   F = await ficha();
   ok(F.includes('Al margen, a lápiz: «Evaristo me espera. Planta 2. Escucharle entero».'), 'ficha: nota a lápiz de Evaristo (sin escuchar; [coherencia] «me espera»: se lo dice Begoña)');
   await G(() => { __game.setFlag('evaristo_escuchado', true); __game.setFlag('fax_con_papel', true); __game.setFlag('casilla_fuente', true); });   // (va tras «fuente» en la lista)
-  ok(await G(() => __game.game.condApi().objetivo.actual('catacumba') === 'bendicion'), 'objetivo nuevo «bendicion» (paso 32) en la Redacción de papel');
+  // [guion3 t2] la coma con Aurora es opcional: sin objetivo «bendicion» ni nota en la ficha
+  ok(await G(() => __game.game.condApi().objetivo.actual('catacumba') !== 'bendicion' && !__game.game.G.objetivos.some(o => o.id === 'bendicion')), 'sin objetivo «bendicion» (la coma con Aurora es opcional)');
   F = await ficha();
-  ok(F.includes('Al margen, a lápiz: «La coma de Evaristo, a Aurora».'), 'ficha: «La coma de Evaristo, a Aurora»');
+  ok(!F.some(l => l.includes('La coma de Evaristo, a Aurora')), 'ficha: sin «La coma de Evaristo, a Aurora»');
   await G(() => { __game.setFlag('coma_bendecida', true); __game.setFlag('correo_evaristo_listo', true); __game.giveItem('correo_evaristo'); });
   F = await ficha();
   ok(F.includes('Al margen, a lápiz: «El correo, en el momento oportuno».'), 'ficha: «El correo, en el momento oportuno» (con el correo en el inventario)');
@@ -450,8 +456,8 @@ try {
   ok(await G(() => __game.log.some(l => l.text === 'Asunto: «Una coma». Todos en copia. Envío: «en el momento oportuno».')), 'objeto nuevo correo_evaristo: Mirar');
   // §10.2 migración de partidas guardadas (llamadas antiguas y la LC)
   const mig = await G(() => __game.game.G.migrarPartida({ flags: { evaristo_llamadas: 3, evaristo_lc: true, correo_evaristo_listo: true }, inventory: [], once: {} }));
-  ok(mig.once['once:evaristo_L1'] && !mig.once['once:evaristo_L3'] && mig.inventory.includes('correo_evaristo') && !('evaristo_lc' in mig.flags) && mig.flags.coma_bendecida,
-    `migración: L1 oída, L3 pendiente, el correo pasa a objeto y fuera evaristo_lc (${JSON.stringify(mig.once)})`);
+  ok(mig.once['once:evaristo_L1'] && mig.inventory.includes('correo_evaristo') && !('evaristo_lc' in mig.flags) && !mig.flags.coma_bendecida,
+    `migración: L1 oída, el correo pasa a objeto y fuera evaristo_lc; la coma con Aurora no se da por bendecida (guion3 t2) (${JSON.stringify(mig.once)})`);
   await G(() => { __game.skipText(false); });
 
   // ================================================================ iPhone horizontal: el duelo cabe

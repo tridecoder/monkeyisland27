@@ -13,6 +13,12 @@ import { llegaCorreoEvaristo, correoLlegado, prometerGracias } from '../lib/movi
 const BEGONA = 'begona_triplicado', EV = 'evaristo_salvedad';
 const sayBe = (api, t) => api.sayAs(BEGONA, t);
 const sayEv = (api, t) => api.sayAs(EV, t);
+/** [P11] Evaristo saca de la carpeta una hoja impresa: el correo (remate C del D4). Una partida vieja que ya lo tenga,
+ *  no lo recibe dos veces. */
+function darCorreo(api) {
+  if (!api.has('correo_evaristo') && !api.flag('duelo_inigo_ganado')) { api.give('correo_evaristo'); api.sfx('pickup'); }
+  api.setFlag('correo_evaristo_listo', true);
+}
 
 /** P11 · recorte() (Dar pieza_opa o «Necesito recortar ocho líneas.»): plan §5.8, el camino en persona. */
 export async function recorte(api) {
@@ -70,14 +76,19 @@ export default {
     },
     nodes: {
       B0: {
+        // [P15] seis opciones como mucho: las 19:07 → la pared; «¿Le han pedido algo raro hoy?» → Custodia (`tras`:
+        // engine/dialog.js). La nota de gasto y el recorte no coinciden nunca (el recorte pide la pieza).
         options: [
-          { text: 'Quiero presentar una nota de gasto.', if: '!nota_gasto_presentada', goto: 'B_NOTA' },
+          { id: 'nota', text: 'Quiero presentar una nota de gasto.', if: '!nota_gasto_presentada', goto: 'B_NOTA' },
           // E7 F1 (E2): el papel de esta casa sale rechazado (qué falta, no qué hacer)
-          { text: '¿Me da unos folios? Son para el fax de Teodoro.', if: ['acto_2_iniciado', '!nota_gasto_presentada', '!fax_con_papel'],
+          { id: 'folios', text: '¿Me da unos folios? Son para el fax de Teodoro.', if: ['acto_2_iniciado', '!nota_gasto_presentada', '!fax_con_papel'],
             once: true, reply: 'Folios no doy. De esta ventanilla solo sale papel rechazado.', setFlag: 'oyo_papel_begona' },
-          { text: 'Llevan siendo las 19:07 toda la tarde.', once: true, reply: 'Por eso sigo abierta. El horario se cumple.' },
+          { id: 'hora', text: 'Llevan siendo las 19:07 toda la tarde.', once: true, reply: 'Por eso sigo abierta. El horario se cumple.' },
+          { id: 'pared', text: 'Vengo a ver la pared. Dicen que es un museo de facturas.', once: true, tras: 'hora',
+            reply: ['Mi favorita: «Cena con el ministro». Motivo: «el ministro pagó».',
+              'Algún día enmarcaré una buena. Para que se vea la diferencia.'] },
           // plan §5.8 [3]: el recorte del 26 %, en directo, sobre una pregunta (siembra el paso 33)
-          { text: 'Begoña, con todo el respeto, yo solo venía a preguntarle si...', once: true,
+          { id: 'respeto', text: 'Begoña, con todo el respeto, yo solo venía a preguntarle si...', once: true,
             do: async (api) => {
               sello(api);                                    // (Begoña levanta un sello. Bruno se calla en seco.)
               await sayBe(api, 'Recortado. Lo que venía después era la conclusión. No la lee nadie.');
@@ -86,18 +97,15 @@ export default {
               await api.say('¿Y qué le iba a preguntar?');
               await sayBe(api, 'No lo sabremos nunca. Así es más limpio.');
             } },
-          { text: 'Vengo a ver la pared. Dicen que es un museo de facturas.', once: true,
-            reply: ['Mi favorita: «Cena con el ministro». Motivo: «el ministro pagó».',
-              'Algún día enmarcaré una buena. Para que se vea la diferencia.'] },
-          { text: 'Necesito recortar ocho líneas.', if: ['has:pieza_opa', '!pieza_recortada'],
+          { id: 'recortar', text: 'Necesito recortar ocho líneas.', if: ['has:pieza_opa', '!pieza_recortada'],
             do: async (api) => { await recorte(api); return 'exit'; } },
-          // adenda 4.7 y 8bis (antes de la despedida; se quedan)
-          { text: '¿Qué le parece Custodia, la de Secretaría?', once: true,
-            reply: ['¿Custodia? Temperamento, niño. Eso no hay quien lo selle.'] },
-          { text: '¿Le han pedido algo raro hoy?', once: true,
+          { id: 'raro', text: '¿Le han pedido algo raro hoy?', once: true,
             reply: ['Un yunque. Por nota de gasto. Concepto: «Sucesión, plaza 7».',
               'Rechazado. Si lo aprobara, tendría que justificar la caída.'] },
-          { text: 'Nada. Me iba.', exit: true, reply: 'Salida sin trámite. La anoto como lo más eficiente del día.' },
+          // adenda 4.7 y 8bis (antes de la despedida; se quedan)
+          { id: 'custodia', text: '¿Qué le parece Custodia, la de Secretaría?', once: true, tras: 'raro',
+            reply: ['¿Custodia? Temperamento, niño. Eso no hay quien lo selle.'] },
+          { id: 'nada', text: 'Nada. Me iba.', exit: true, reply: 'Salida sin trámite. La anoto como lo más eficiente del día.' },
         ],
       },
       B_NOTA: {
@@ -165,6 +173,9 @@ export default {
           api.sfx('machine');
           api.give('fotocopia_nota_direccion');
           await sayBe(api, 'Te la fotocopio, para que aprendas. Y la tuya, por triplicado.');
+          // [P11] el hallazgo de la opa, dentro de la escena: Bruno le da la vuelta (Begoña no mira reversos)
+          api.sfx('paper');
+          await api.say(['Por detrás, a boli: «OPA ROBLEDAL — jueves — NO PUBL.»', 'Es lo primero que leo hoy que no quieren que lea.']);
           // E2 fase B (7): tres sellos, una línea
           for (let i = 0; i < 3; i++) { sello(api); await api.wait(180); }
           await sayBe(api, 'Original. Duplicado. Triplicado.');
@@ -248,8 +259,13 @@ export default {
             'Y yo: «Una coma también lo era. Hasta que alguien la firmó».']);
           api.learnReply('rep_16');
           api.setFlag('evaristo_escuchado', true);
-          await sayEv(api, ['Pero ahora dudo de mi propia coma. Me falta una segunda opinión.',
-            'De alguien que sepa de comas de verdad.',
+          // [P11] entrega él mismo el correo (fuera «dudo de mi propia coma» y el recado a Aurora); el momento oportuno,
+          // en persona ([P14]: la frase que dispara el remate C del D4)
+          api.sfx('paper');
+          darCorreo(api);
+          await sayEv(api, 'Le dejo el correo programado. Lo envía usted, en el momento oportuno.');
+          await api.say('¿Y cuándo es el momento oportuno?');
+          await sayEv(api, ['Cuando alguien dé por firmados los cuarenta y ocho mil.',
             'Gracias por escucharme hasta el final. La gente suele colgar en la coma.']);
           return 'exit';
         },

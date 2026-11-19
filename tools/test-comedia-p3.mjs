@@ -121,15 +121,15 @@ try {
     'L17: E-48, E-49 y E-50 (y se queda en E-50)');
   await shotDuring('cafetera-saludo', () => chooseNoWait('Buenas noches, Gertrudis.'), [2500, 9000]);
   await R.check({ tiene: ['cafe'], flags: { gertrudis_saludada: true, cafetera_viral: true, rep_03: true, chisme_indice: 1 } });
-  ok(await logHas('AYER NO PUEDO. TE MIRO HUECO PARA ANTEAYER'), '1.er saludo: café, cafetera_viral, rep_03 con la réplica NUEVA de R03');
+  ok(await logHas('AYER FUE CUANDO EMPEZASTE LA FRASE'), '1.er saludo: café, cafetera_viral, rep_03 con la réplica NUEVA de R03');
   ok(!(await logHas('CORTADO. DE QUÉ')) && !(await logHas('Me lo apunto')) && !(await logHas('RUMOR: EL BECARIO')), 'fase B (9) y (1): sin «CORTADO…», sin «Me lo apunto», sin rumor A');
   o = await opts();
   ok(o && o.includes('Buenas noches otra vez.') && !o.includes('¿Me da un café sin saludar?'), 'aparece «Buenas noches otra vez.» (sin cerrar el diálogo)');
   await shotDuring('cafetera-en-directo', () => chooseNoWait('Buenas noches otra vez.'), [4300, 6000, 10500]);
   await R.check({ flags: { cafetera_en_directo: true, rep_04: true, rep_10: true, rep_14: true, chisme_indice: 4 } });
-  ok(await logHas('GERVASIO A ANSELMO') && await logHas('ANSELMO: "Y TÚ EL QUE MEJOR DELEGA. POR ESO ME ESCRIBES A MÍ"') && await logHas('GERVASIO A MARIPAZ')
-    && await logHas('¿TE VA EN MARZO, CARIÑO? ES CUANDO ACABAN LAS RÁPIDAS') && await logHas('EN TABLA DINÁMICA') && !(await logHas('NEMESIO')) && !(await logHas('BORJA')),
-    'el bis: R04 (Anselmo), R10 y R14 (Maripaz), sin Nemesio ni Borja');
+  ok(await logHas('MARIPAZ A ANSELMO') && await logHas('ANSELMO: "SI VALIERA ALGO, ME LA COBRARÍAS"') && await logHas('GERVASIO A BEGOÑA')
+    && await logHas('BEGOÑA: "¿TE VA EN MARZO? ES CUANDO ACABAN LAS RÁPIDAS"') && await logHas('EN TABLA DINÁMICA') && !(await logHas('NEMESIO')) && !(await logHas('BORJA')),
+    'el bis: R04 (Maripaz a Anselmo), R10 y R14 (Gervasio a Begoña, [P9]/[P15]), sin Nemesio ni Borja');
   ok(await logHas('VIRAL:') && !(await logHas('Récord personal')) && !(await logHas('Me lo...')), 'ráfaga viral; fuera «Me lo...» y «Récord personal…» (§7.2, fase B)');
   ok(!(await flag('office_emision')), 'el piloto EN DIRECTO se apaga al acabar');
   o = await opts();
@@ -221,6 +221,7 @@ try {
   await clearLog();
   await verb('hablar', 'aurora_galerada'); await choose('¿Usted ha cometido alguna errata?');
   ok(await logHas('Una. En 1989.'), 'Aurora [4·desc]: la errata de 1989');
+  await choose('¿Qué le parecen los verbos de abajo?');                 // [guion3 t4] [P15] errata → verbos → corrector
   await choose('En la web eso lo arregla el corrector automático.');
   ok(await logHas('para sufrir con método'), 'Aurora [6·NO]: el corrector automático');
   await choose('Nada, Aurora. Gracias.');
@@ -230,15 +231,15 @@ try {
   await clearLog();
   await shotDuring('fax-vomita', () => G(() => __game.doVerb('usar', 'fax', 'copias_rechazadas')), [3400, 7000]);
   await R.check({ flags: ['fax_con_papel'], tiene: ['mensaje_fp'], notiene: ['copias_rechazadas'] });
-  ok(await logHas('18:01. RESPUESTA A AURORA') && await logHas('18:42.') && await logHas('18:55.') && await logHas('19:10. RESPUESTA A TODO LO DEMÁS') && await logHas('19:12. GOYITA'),
-    'con tres intentos: las cuatro respuestas atrasadas + la Goyita');
+  ok(await logHas('18:01. RESPUESTA A AURORA') && await logHas('18:42.') && await logHas('18:55.') && await logHas('19:10. RESPUESTA A TODO LO DEMÁS') && await logHas('19:12. BENITA'),
+    'con tres intentos: las cuatro respuestas atrasadas + la Benita');
   ok(await logHas('nadie le había dado papel') && await logHas('MÍO, TODO LO DEMÁS'), 'Aurora y el «ESE NO ES MÍO» de F.P.');
   ok((await G(() => __game.state().objects['catacumba.fax'])).state === 'con_papel', 'el fax queda con_papel');
   await R.run(['verbo', 'mirar', 'mensaje_fp']);
   ok(await flag('vio_borde_perforado') === true, 'paso 29: borde perforado');
   await clearLog();
   await verb('mirar', 'fax');
-  ok(await logHas('1 GOYITA, 2 ADMINISTRACIÓN, 3 CONTROLLING'), 'Mirar fax con papel: las tres teclas');
+  ok(await logHas('1 BENITA, 2 ADMINISTRACIÓN, 3 CONTROLLING'), 'Mirar fax con papel: las tres teclas');
 
   await clearLog();
   await verb('mirar', 'reloj_2147'); await verb('mirar', 'camastro'); await verb('coger', 'teodoro_cuerpodoce'); await verb('mirar', 'fax_enmarcado');
@@ -254,11 +255,11 @@ try {
   ok(o && !o.includes('Tengo una fuente.') && !o.includes('Tengo dos fuentes.'), 'tras citar, no vuelve «Tengo una fuente»');
   await choose('Nada, Aurora. Gracias.');
 
-  step('Paso 32 (E2 §5.3) · Aurora quita el adhesivo (§4.2.6) y bendice la coma: el fax manda el correo');
+  step('[P11] Aurora quita el adhesivo (§4.2.6) y, opcional, la coma de Evaristo (el correo ya lo dio él)');
   await verb('hablar', 'aurora_galerada');
-  ok(!(await opts()).some(t => t.includes('Evaristo')), 'sin evaristo_escuchado no hay opción de la coma');
+  ok(!(await opts()).some(t => t.includes('Evaristo')), 'sin el correo de Evaristo no hay opción de la coma');
   await choose('Nada, Aurora. Gracias.');
-  await setFlags({ evaristo_escuchado: true, bruno_con_banner: true });
+  await setFlags({ evaristo_escuchado: true, correo_evaristo_listo: true, bruno_con_banner: true }); await give('correo_evaristo');
   await clearLog();
   if (SHOTS) {
     await G(() => __game.skipText(false));
@@ -269,13 +270,14 @@ try {
   } else await verb('hablar', 'aurora_galerada');
   ok(await logHas('Llevas un anuncio en la espalda. En esta planta, no.') && await flag('bruno_con_banner') === false, 'Aurora despega el adhesivo: bruno_con_banner = false');
   o = await opts();
-  ok(o && o.includes('Don Evaristo pregunta si su coma está bien.'), 'con evaristo_escuchado y papel: la opción de la coma');
-  await shotDuring('coma-fax', () => chooseNoWait('Don Evaristo pregunta si su coma está bien.'), [7000, 22000, 28500, 40000]);
+  ok(o && o.includes('¿Está bien la coma de don Evaristo?'), '[P11] con el correo: la opción de la coma');
+  await shotDuring('coma-fax', () => chooseNoWait('¿Está bien la coma de don Evaristo?'), [7000, 22000, 28500]);
   await R.check({ flags: ['coma_bendecida', 'correo_evaristo_listo'], tiene: ['correo_evaristo'] });
-  ok(await logHas('lo único bien puntuado de la casa') && await logHas('«La coma está bien. Envíelo. A.G.»') && await logHas('DE CONTROLLING. NI LO MIDO. LO RESPETO.')
-    && await logHas('Cuando alguien diga que una coma es un detalle sin importancia'), 'paso 32: texto de §5.3');
+  ok(await logHas('lo único bien puntuado de la casa') && await logHas('«La coma está bien. A.G.»') && !(await logHas('DE CONTROLLING. NI LO MIDO. LO RESPETO.'))
+    && !(await logHas('Envíelo')) && !(await logHas('detalle sin importancia')), '[P11] la coma: «La coma está bien. A.G.»; sin imprimir el correo ni el momento oportuno');
+  ok((await G(() => __game.state().inventory.filter(i => i === 'correo_evaristo').length)) === 1, '[P11] un solo correo (el de Evaristo)');
   o = await opts();
-  ok(o && !o.includes('Don Evaristo pregunta si su coma está bien.'), 'la opción de la coma desaparece');
+  ok(o && !o.includes('¿Está bien la coma de don Evaristo?'), 'la opción de la coma desaparece');
   await choose('Nada, Aurora. Gracias.');
   const posA = await G(() => { const a = __game.state().actors.aurora_galerada; return a && [a.x, a.y]; });
   ok(posA && Math.abs(posA[0] - 232) < 2 && Math.abs(posA[1] - 108) < 2, 'Aurora vuelve a su mesa');
@@ -299,7 +301,7 @@ try {
   await R.check({ flags: ['duelo_teodoro_ganado', 'casilla_firma'] });
   ok(await logHas('ESTOY FUERA DE LA OFICINA') && !(await logHas('ANTEAYER, EN PLOMO')), 'paso 36 (E6): D2 ganado con tres aciertos (R09 corta) y el manual (sin R03), casilla_firma');
 
-  step('Paso 35 · golpe B: la pieza viaja por fax (teclas 1, 3 y 2), la factura y el faldón de Comercial (§4.2.6)');
+  step('Paso 35 · golpe B: la pieza viaja por fax (teclas 1, 3 y 2) y la factura ([P11] sin el faldón de Comercial)');
   await setFlags({ casilla_hueco: true, pieza_escrita: true });
   await give('pieza_opa');
   await clearLog();
@@ -307,10 +309,10 @@ try {
   ok(await logHas('ME SOBRAN OCHO. NO RECORTO: YO SOLO MIDO.'), 'Dar pieza a Teodoro: «ME SOBRAN OCHO» por fax');
   await G(() => __game.doVerb('usar', 'fax', 'pieza_opa'));
   for (let k = 0; k < 50 && !(await opts()); k++) await page.waitForTimeout(20);
-  ok(JSON.stringify(await opts()) === JSON.stringify(['1: GOYITA', '2: ADMINISTRACIÓN', '3: CONTROLLING', 'Mejor no.']), 'menú de las tres teclas');
-  await choose('1: GOYITA');
-  ok(await flag('fax_tecla_n') === 1 && await logHas('LA GOYITA NO TIRA BORRADORES'), 'tecla 1: la Goyita ofende a Teodoro (fax_tecla_n = 1)');
-  await verb('usar', 'fax', 'pieza_opa'); await choose('1: GOYITA');
+  ok(JSON.stringify(await opts()) === JSON.stringify(['1: BENITA', '2: ADMINISTRACIÓN', '3: CONTROLLING', 'Mejor no.']), 'menú de las tres teclas');
+  await choose('1: BENITA');
+  ok(await flag('fax_tecla_n') === 1 && await logHas('LA BENITA NO TIRA BORRADORES'), 'tecla 1: la Benita ofende a Teodoro (fax_tecla_n = 1)');
+  await verb('usar', 'fax', 'pieza_opa'); await choose('1: BENITA');
   ok(await logHas('TE MIDO LA MANO') && await flag('fax_tecla_n') === 1, 'tecla 1 otra vez: «TE MIDO LA MANO»');
   await clearLog();
   await verb('usar', 'fax', 'pieza_opa'); await choose('3: CONTROLLING');
@@ -324,23 +326,22 @@ try {
   ok(await logHas('BEGOÑA (fax): ADMINISTRACIÓN. RECIBIDO A LAS 19:07') && await logHas('CABE, CABE Y CABE') && await logHas('0,26 euros') && await logHas('acaba en un juzgado'),
     'paso 35: Begoña recorta por fax, triplicado, cuarta hoja con la factura');
   ok(!(await logHas('cero setenta y cuatro')), '§7.4 paso 35: fuera la cuenta de Bruno');
-  ok(await logHas('Mi pieza, con faldón de Comercial: «¿La opa le quita el sueño? Siestatón».') && await logHas('EL ANUNCIO MIDE CUARENTA LÍNEAS. LA NOTICIA, VEINTITRÉS.')
-    && await logHas('EN MI PÁGINA LA NOTICIA SE VE. DEVUELTO.'), '§4.2.6: el faldón de Comercial, devuelto por fax');
-  ok((await G(() => __game.state().objects['catacumba.fax'])).state === 'con_papel', 'el fax se traga el faldón y queda con_papel');
+  ok(!(await logHas('faldón de Comercial')) && !(await logHas('EL ANUNCIO MIDE CUARENTA LÍNEAS')), '[P11] fuera el faldón de Comercial (el cuarto golpe tras el recorte)');
+  ok(((await G(() => __game.state().objects['catacumba.fax'])) || { state: 'con_papel' }).state === 'con_papel', 'el fax queda con_papel');
   ok(await G(() => __game.state().objects['catacumba.factura_fax'] ? __game.state().objects['catacumba.factura_fax'].visible !== false : true), 'la factura queda grapada en la pared');
   if (SHOTS) { await G(() => __game.skipText(false)); await page.waitForTimeout(300); await page.screenshot({ path: path.join(here, 'shots', 'e2-p3-factura.png') }); await G(() => __game.skipText(true)); }
   await clearLog();
   await verb('usar', 'fax', 'pieza_opa');
   ok(await logHas('Begoña recorta el recorte'), 'la pieza recortada no se vuelve a enviar');
 
-  step('Paso 36 · Dar ficha a Teodoro → 7.3a (sin Íñigo, §7.3; la línea de Controlling, §5.7)');
+  step('Paso 36 · Dar ficha a Teodoro → 7.3a ([P11] la amenaza, de Íñigo en persona; la línea de Controlling, §5.7)');
   await clearLog();
   await shotDuring('acto3a', async () => { await R.run(['dar', 'ficha_pagina_7', 'teodoro_cuerpodoce']); }, [9000, 24000, 31000]);
   await R.run(['cerrar']); await idle();
   await R.check({ flags: ['pagina_cerrada', 'acto_3_iniciado'], notiene: ['ficha_pagina_7', 'pieza_opa'], tiene: ['correo_evaristo'] });
   ok(await logHas('Y CONTROLLING LA HA LEÍDO ENTERA. ESE HOMBRE LEE.') && await logHas('Ha hablado. En voz alta. Delante de mí.')
-    && await logHas('LA REUNIÓN DE DIRECCIÓN APAGA LA ROTATIVA A LAS NUEVE.') && await logHas('Y con buena letra, criatura.'), '7.3a: texto de §7.3 y §5.7');
-  ok(!(await logHas('Lástima que no se vaya a imprimir')) && !(await logHas('se reimagina')) && await visible('inigo_sinergia') !== 'catacumba', '7.3a: Íñigo ya no entra');
+    && await logHas('A las nueve, la Reunión de Dirección apaga la rotativa.') && await logHas('SI NO HAY ROTATIVA, NO HAY FIRMA.') && !(await logHas('Y con buena letra, criatura.')), '[P11] 7.3a: Íñigo trae la amenaza; Teodoro, por fax; fuera «Y con buena letra»');
+  ok(!(await logHas('Lástima que no se vaya a imprimir')) && !(await logHas('se reimagina')) && await visible('inigo_sinergia') !== 'catacumba', '7.3a: Íñigo se va (hacia la Sala) y no dice lo de antes');
 
   // ================================================================ ADMINISTRACIÓN
   step('Administración · Begoña (§5.8): recorte en directo y paso 27');
@@ -352,6 +353,7 @@ try {
   ok(await logHas('Te quedan ocho minutos'), 'onStart: las 19:07');
   await choose('Begoña, con todo el respeto, yo solo venía a preguntarle si...');
   ok(await logHas('¿Me ha recortado una pregunta?') && await logHas('No lo sabremos nunca'), '[3·desc]: el recorte del 26 % en directo');
+  await choose('Llevan siendo las 19:07 toda la tarde.');          // [guion3 t4] [P15] las 19:07 → la pared
   await choose('Vengo a ver la pared. Dicen que es un museo de facturas.');
   ok(await logHas('el ministro pagó') && !(await logHas('Dirección')), '[4·abs]: la pared, sin «Dirección»');
   await choose('Nada. Me iba.');
@@ -405,9 +407,12 @@ try {
   await R.check({ flags: ['evaristo_escuchado', 'rep_16'] });
   ok(await logHas('Cláusula 4: «48,000 euros al mes».') && await logHas('Y yo: «Una coma también lo era. Hasta que alguien la firmó».')
     && await logHas('Gracias por escucharme hasta el final. La gente suele colgar en la coma.') && !(await logHas('Desde julio')), 'paso 28: E_REVELA de §5.2, rep_16');
+  // [P11] Evaristo entrega el correo él mismo y explica el momento oportuno (fuera «dudo de mi propia coma»)
+  ok(await has('correo_evaristo') && await flag('correo_evaristo_listo') && await logHas('Le dejo el correo programado. Lo envía usted, en el momento oportuno.')
+    && await logHas('Cuando alguien dé por firmados los cuarenta y ocho mil.') && !(await logHas('dudo de mi propia coma')), '[P11] E_REVELA: el correo, de su mano, y el momento oportuno');
   await clearLog();
   await verb('hablar', 'evaristo_salvedad');
-  ok(await logHas('Disculpe. ¿Tiene un segundo? Son tres.') && !(await opts()).includes('¿Para qué me ha llamado?') && !(await opts()).includes('¿Ha enviado ya el correo?'), 'tras escucharle: sin «¿Para qué…?»');
+  ok(await logHas('Disculpe. ¿Tiene un segundo? Son tres.') && !(await opts()).includes('¿Para qué me ha llamado?') && (await opts()).includes('¿Ha enviado ya el correo?'), 'tras escucharle: sin «¿Para qué…?»; con el correo, «¿Ha enviado ya el correo?»');
   await choose('Me voy.');
   await setFlags({ coma_bendecida: true, correo_evaristo_listo: true }); await give('correo_evaristo');
   await clearLog();

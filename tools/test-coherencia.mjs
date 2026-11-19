@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // PRUEBA DE COHERENCIA: el juego no da por hecho lo que no ha pasado, y lo que anuncia, pasa. Sale con 1 si algo falla.
 // Nace de tres avisos del dueño jugando (Evaristo «¿Para qué me ha llamado?» sin llamada y su correo que no llegaba;
-// las sillas de Pilar, 112 y 113 a la vez; Gervasio, que no disolvía la reunión por mucho que se le insistiera).
+// las sillas de Pilar ([P12]: ciento once y la 112 que falta); Gervasio, que no disolvía la reunión por mucho que se le insistiera).
 // Capturas en tools/shots/coherencia-*.png y tools/shots/gervasio-insiste-*.png. Partes:
 //   1. evaristo   sin convocar (no hay «¿Para qué me ha llamado?»; entrada «¿Qué quería decirme?» y se llega a
 //                 evaristo_escuchado), convocado por la llamada L2 y convocado por Begoña (sí existe), con ratón.
@@ -10,7 +10,7 @@
 //                 «Correo nuevo de X: «A».» que sale en una partida deja ESE correo en la bandeja en ese instante, sin
 //                 leer, y el contador sube; se leen con ratón y Bruno comenta; la lista de llamadas cuadra.
 //   3. presupone  cada presuposición encontrada en la auditoría, con su caso «sin que haya pasado» (y el de «sí»).
-//   4. sillas     Pilar: antes de contar, 112; con la crisis abierta, 113 en todo; devuelta la silla, 112.
+//   4. sillas     Pilar ([P12]): ciento once en todo (falta la 112); con la 112 encontrada, ciento doce en todo.
 //   5. gervasio   insistir tres veces con «¿y cuáles son los siguientes pasos?» termina la reunión (ratón real),
 //                 también tras guardar/cargar entre insistencias y con la vía del Vending a medias; Acto I no cuenta.
 //   6. antiguas   partidas guardadas sin la L2 (sin `evaristo_convoco`): ni llamada fuera de lugar ni Evaristo mudo.
@@ -299,13 +299,18 @@ try {
     await T.until(() => !!__game.currentDialogOptions(), null, 8000);
     ok(await G(() => __game.getFlag('nota_gasto_presentada')) && !(await T.logHas('Don Evaristo le espera')), 'Begoña, con Evaristo ya escuchado: no le manda a Controlling');
     await G(() => { if (__game.game.choice) __game.game.choice.resolve(-1); }); await G(() => __game.waitIdle());
-    // L5 «¿Lleva mi correo?» / «En el bolsillo.»: no sin el correo
-    await G(() => { for (const [k, v] of Object.entries({ acto_3_iniciado: true, ruben_encontrado: true, ruben_libre: true, pieza_recortada: true })) __game.setFlag(k, v); Object.assign(__game.game.state.once, { 'once:evaristo_L1': true, 'once:evaristo_L2': true, 'once:evaristo_L3': true, 'once:evaristo_L4': true }); __game.setFlag('evaristo_llamadas', 4); __game.takeItem('correo_evaristo'); __game.clearLog(); });
+    // [P11] fuera la L5 («¿Lleva mi correo?»: el momento oportuno lo explica Evaristo al dar el correo) y la L3: ni sin el
+    // correo ni con él
+    await G(() => { for (const [k, v] of Object.entries({ acto_3_iniciado: true, ruben_encontrado: true, ruben_libre: true, pieza_recortada: true })) __game.setFlag(k, v); Object.assign(__game.game.state.once, { 'once:evaristo_L1': true, 'once:evaristo_L2': true }); __game.setFlag('evaristo_llamadas', 2); __game.takeItem('correo_evaristo'); __game.clearLog(); });
     await G(() => __game.gotoRoom('office')); await G(() => __game.waitIdle());
-    ok(!(await T.logHas('¿Lleva mi correo?')) && await T.flag('evaristo_llamadas') === 4, 'L5 sin el correo de Evaristo en el bolsillo: no suena');
+    ok(!(await T.logHas('¿Lleva mi correo?')) && !(await T.logHas('Begoña me manda el triplicado')) && await T.flag('evaristo_llamadas') === 2, '[P11] Brais libre, sin el correo: ni L5 ni L3');
     await G(() => { __game.giveItem('correo_evaristo'); __game.clearLog(); });
     await G(() => __game.gotoRoom('administracion', 'ecosistema')); await G(() => __game.waitIdle());
-    ok(await T.logHas('¿Lleva mi correo?') && await T.logHas('En el bolsillo.'), 'con el correo, la L5 suena («En el bolsillo.» es verdad)');
+    ok(!(await T.logHas('¿Lleva mi correo?')) && await T.flag('evaristo_llamadas') === 2, '[P11] con el correo, tampoco: la L5 ya no existe');
+    // [P11] la L4 (los atunes): solo tras «Dos IAs» y antes de encontrar a Brais (con Brais encontrado, se pierde)
+    await G(() => { __game.setFlag('dos_ias_vista', true); __game.clearLog(); });
+    await G(() => __game.gotoRoom('office')); await G(() => __game.waitIdle());
+    ok(!(await T.logHas('veinticuatro atunes')), '[P11] la L4 con Brais ya encontrado: no suena (ya no sirve de pista)');
     // Mirar el móvil: «Ninguno leído» solo si es verdad
     await G(() => { __game.setFlag('tadeo_rv_n', 2); __game.setFlag('movil_leidos', 0); __game.clearLog(); });
     await G(() => __game.doVerb('mirar', 'movil')); await G(() => __game.waitIdle());
@@ -317,11 +322,34 @@ try {
     await G(() => { __game.setFlag('pecera_disc_partidas', 0); __game.setFlag('opa_posit', 0); __game.setFlag('fax_con_papel', true); __game.setFlag('pieza_escrita', true); });
     await G(() => __game.gotoRoom('catacumba', 'pecera')); await G(() => __game.waitIdle());
     let o = await opsDe('aurora_galerada');
-    ok(o.includes('Teodoro dice que en la reunión van a apagar la rotativa.') && !o.some(x => /Íñigo dice/.test(x)), 'Aurora, Acto III: «Teodoro dice que…» (lo dijo el fax; Íñigo no lo dijo nunca)');
+    ok(o.includes('Íñigo dice que en la reunión van a apagar la rotativa.') && !o.some(x => /Teodoro dice/.test(x)), '[P11] Aurora, Acto III: «Íñigo dice que…» (lo dijo Íñigo en persona, en la 7.3a)');
     ok(!o.some(x => x.startsWith('Yoli quiere sacar mi opa')), 'Aurora, sin haber abierto el titulador: no está «Yoli quiere sacar mi opa con «los expertos coinciden».»');
     await G(() => __game.setFlag('pecera_disc_partidas', 1));
     o = await opsDe('aurora_galerada');
     ok(o.some(x => x.startsWith('Yoli quiere sacar mi opa')), `tras abrir el titulador de Yoli, sí (${JSON.stringify(o)})`);
+    // [P11] [P14] la ficha: la nota al margen del CMS y el HUECO «Si la web publica.», solo después de oír a Maripaz
+    await G(() => { for (const [k, v] of Object.entries({ acto_3_iniciado: false, cms_vivo: false, maripaz_pide_web: false, casilla_hueco: false })) __game.setFlag(k, v); });
+    let F = await ficha();
+    ok(!F.some(t => /CMS en coma|Si la web publica/.test(t)), '[P14] ficha con el CMS caído, sin haber oído a Maripaz: ni la nota del CMS ni «Si la web publica.»');
+    await G(() => __game.setFlag('maripaz_pide_web', true));
+    F = await ficha();
+    ok(F.includes('Al margen, a lápiz: «CMS en coma. Sin web, Maripaz no suelta la página».') && F.includes('HUECO: Siestatón se va a la web. Si la web publica.'), '[P11] tras oírla: la nota y el HUECO nuevo');
+    await G(() => __game.setFlag('cms_vivo', true));
+    F = await ficha();
+    ok(!F.some(t => /CMS en coma|Si la web publica/.test(t)), '[P11] con el CMS vivo, ninguna de las dos');
+    // [P11] la matriz de Íñigo: «Prescindible» solo desde la FIRMA
+    await G(() => { __game.setFlag('casilla_firma', false); __game.setFlag('chaqueta_en_lector', false); });
+    await G(() => __game.gotoRoom('pajarera', 'pecera')); await G(() => __game.waitIdle());
+    await G(() => { __game.clearLog(); return __game.doVerb('mirar', 'matriz_2x2'); });
+    ok(await T.logHas('En "Ideal" hay un solo pósit: "VACANTE".') && !(await T.logHas('Prescindible», con toda')), '[P11] matriz sin la FIRMA: «VACANTE» en «Ideal»');
+    await G(() => { __game.setFlag('casilla_firma', true); __game.clearLog(); return __game.doVerb('mirar', 'matriz_2x2'); });
+    ok(await T.logHas('Mi pósit ya no está en «Ideal». Está en «Prescindible», con toda la plantilla.'), '[P11] con la FIRMA: en «Prescindible»');
+    // [P11] el manual en la R-3: «El fax de Teodoro.» solo si Bruno aún no lo tiene
+    await G(() => { for (const [k, v] of Object.entries({ cms_vivo: false, paco_dio_manual: true })) __game.setFlag(k, v); __game.giveItem('manual_fax'); });
+    await G(() => __game.gotoRoom('cpd', 'ascensor')); await G(() => __game.waitIdle());
+    await G(() => { __game.clearLog(); __game.game.setObjState('regleta_r3', { state: 'encendida' }); return __game.doVerb('tirar', 'regleta_r3'); });
+    await G(() => __game.chooseText('R-3')); await G(() => __game.waitIdle());
+    ok(await T.flag('cms_vivo') && !(await T.logHas('El fax de Teodoro.')) && (await G(() => __game.state().inventory.filter(i => i === 'manual_fax').length)) === 1, '[P11] R-3 con el manual ya en el bolsillo: Eutimio no lo da otra vez');
     await T.ctx.close();
     // Acto I (partida libre): la nota de gasto antes del café. Begoña no le manda a ver a un Evaristo sin nada que
     // contar, y el saludo de Evaristo no promete una «cosita» que en el Acto I no existe
@@ -342,59 +370,42 @@ try {
   }
 
   // ====================================================================== 4. las sillas de Pilar
+  // [P12] (guion nuevo, tanda 3) fuera la silla 113: Pilar tiene ciento doce en el plano y cuenta ciento once en la sala
+  // (falta la 112); con la 112 encontrada (en el armario 27), ciento doce en todo. Nunca «ciento trece».
   if (toca('sillas')) {
-    console.log('\n4 · Pilar: 112 → 113 (crisis) → 112');
+    console.log('\n4 · Pilar: ciento once (falta la 112) → la 112, encontrada → ciento doce, en todo');
     const T = await abrir(ACTO2, 'eventos', 'ecosistema');
     const G = T.G;
     const dice = async (fn) => { await G(() => __game.clearLog()); await fn(); await T.pasar(); return G(() => __game.log.map(l => l.text)); };
-    const n113 = (L) => L.filter(t => /ciento trece|Ciento trece/.test(t));
-    const n112 = (L) => L.filter(t => /ciento doce|Ciento doce/.test(t) && !/trece/i.test(t));
-    // antes de la primera cuenta: 112 en todo
+    const n113 = (L) => L.filter(t => /ciento trece/i.test(t));
+    const n112 = (L) => L.filter(t => /ciento doce/i.test(t));
+    const murm = () => G(() => { const a = __game.game.content.rooms.eventos.actors.find(a => a.id === 'pilar_escaleta'); return a.murmurs({ flag: (k) => __game.getFlag(k) }); });
     let L = await dice(async () => { await T.raton('hablar', 'sillas_evento'); });
-    ok(n112(L).length && !n113(L).length, `antes de contar, Hablar con las sillas: 112 (${L.join(' | ')})`);
-    await T.raton('hablar', 'pilar_escaleta'); await T.pasar();
-    ok(!(await T.opciones()).includes('¿Estás bien, Pilar?'), 'antes de contar: no hay crisis («¿Estás bien, Pilar?» no está)');
-    L = await dice(async () => { await T.clicOpcion('Me voy.'); });
-    ok(L.includes('¡Hasta ahora! Te guardo la silla ciento doce.'), '«Me voy.» antes de contar: «la silla ciento doce» (la 113 aún no existe)');
-    // la primera cuenta: le sale una de más
+    ok(L.some(t => t.includes('Ciento once sillas en silencio')) && !n112(L).length, `antes de encontrar la 112, Hablar con las sillas: ciento once (${L.join(' | ')})`);
     await T.raton('hablar', 'pilar_escaleta'); await T.pasar();
     L = await dice(async () => { await T.clicOpcion('¿Cuántas sillas hay?'); });
-    ok(L.includes('Ciento doce. ...Ciento once, ciento doce... ciento trece. ¿Quién ha traído una?'), '1.ª cuenta: cuenta y le sale una de más');
+    ok(L.includes('Falta la 112. Se la llevó un señor de traje en julio. «Para un proyecto».'), '1.ª cuenta: ciento once; falta la 112');
     L = await dice(async () => { await T.clicOpcion('¿Cuántas sillas hay?'); });
-    ok(L.includes('Ciento trece. Las cuento cada cinco minutos. Por si se van.'), 'con la crisis abierta, la 2.ª cuenta: ciento trece');
-    L = await dice(async () => { await T.clicOpcion('¿Estás bien, Pilar?'); });
-    ok(L.some(t => t.startsWith('Ciento trece, Bruno.')), '«¿Estás bien, Pilar?»: ciento trece (coinciden)');
-    await T.shot('sillas-113');
+    ok(L.includes('Ciento once. Las cuento cada cinco minutos. Por si vuelve.'), '2.ª cuenta: ciento once');
     L = await dice(async () => { await T.clicOpcion('Me voy.'); });
+    ok(L.includes('¡Hasta ahora! Te guardo la silla ciento once.'), '«Me voy.»: la silla ciento once');
+    ok((await murm()).includes('Ciento once. Y la 112, de proyecto.') && !(await murm()).some(t => /Ciento doce/.test(t)), 'los murmullos: «Ciento once. Y la 112, de proyecto.»');
+    // la 112, encontrada (Acto III, tras la silla del armario)
+    await G(() => { for (const k of ['acto_3_iniciado', 'pagina_cerrada', 'ruben_encontrado', 'silla_112_vista']) __game.setFlag(k, true); __game.game.applyPresence(); __game.game.repaint(); });
+    await T.raton('hablar', 'pilar_escaleta'); await T.pasar();
+    await T.clicOpcion('Creo que sé dónde está tu 112.'); await T.pasar();
+    L = await dice(async () => { await T.clicOpcion('En el armario 27, en Sistemas.'); });
+    ok(await T.flag('eventos_album_dado') === true && L.includes('¡CIENTO DOCE! ¡Vuelvo a ser persona!'), 'la 112 en el armario 27: «¡CIENTO DOCE! ¡Vuelvo a ser persona!»');
     await T.pasar();
-    L = await dice(async () => { await T.raton('hablar', 'sillas_evento'); });
-    ok(n113(L).length && !n112(L).length, `con la crisis, Hablar con las sillas: 113 (${L.join(' | ')})`);
-    L = await dice(async () => { await G(() => __game.doVerb('mirar', 'sillas_evento')); });
-    ok(!n112(L).length, `con la crisis, Mirar las sillas: nada de «ciento doce» (${L.join(' | ')})`);
-    const murm = await G(() => { const a = __game.game.content.rooms.eventos.actors.find(a => a.id === 'pilar_escaleta'); return a.murmurs({ flag: (k) => __game.getFlag(k) }); });
-    ok(!murm.some(t => /ciento doce/i.test(t) && !/trece/i.test(t)) && murm.some(t => /Ciento trece/.test(t)), 'con la crisis, los murmullos de Pilar no cuentan 112');
-    // devolver la silla: 112 otra vez
-    await T.raton('mirar', 'silla_torcida'); await T.pasar();
-    L = await dice(async () => { await T.raton('coger', 'silla_torcida'); });
-    ok(await T.flag('eventos_silla_devuelta') === true && L.includes('¡CIENTO DOCE! ¡Vuelvo a ser persona!'), 'devolver la silla: «¡CIENTO DOCE! ¡Vuelvo a ser persona!»');
-    await T.pasar();
+    L = await dice(async () => { await G(() => __game.doVerb('hablar', 'sillas_evento')); await G(() => __game.doVerb('mirar', 'sillas_evento')); await G(() => __game.doVerb('usar', 'mesa_sonido', 'movil')); });
+    ok(L.some(t => t.includes('Ciento doce sillas en silencio')) && L.some(t => t.startsWith('Ciento doce, según Pilar.')) && L.some(t => t.includes('Lo oyen ciento doce sillas.')) && !n113(L).length,
+      `con la 112: ciento doce en las sillas y en la mesa de sonido (${L.join(' | ')})`);
     await T.raton('hablar', 'pilar_escaleta'); await T.pasar();
     L = await dice(async () => { await T.clicOpcion('¿Cuántas sillas hay?'); });
-    ok(L.includes('Ciento doce. Las cuento cada cinco minutos. Por si se van.') && !(await T.opciones()).includes('¿Estás bien, Pilar?'), 'devuelta: ciento doce y sin crisis');
-    L = await dice(async () => { await T.clicOpcion('Me voy.'); });
-    ok(!L.some(t => /ciento trece/.test(t)), '«Me voy.» tras devolverla: nunca «ciento trece» (la despedida ya oída se calla)');
+    ok(L.includes('Ciento doce. Una está en el sótano, pero cuenta.'), 'Pilar: «Ciento doce. Una está en el sótano, pero cuenta.»');
+    await T.clicOpcion('Me voy.'); await T.pasar();
+    ok((await murm()).includes('Ciento doce. Qué paz. Hasta el walkie suena más bajito.') && !(await murm()).includes('Ciento once. Y la 112, de proyecto.'), 'los murmullos: «Ciento doce. Qué paz.»');
     await T.ctx.close();
-    // la silla devuelta antes de que Pilar la cuente: sin «Vuelvo a ser persona» y la 1.ª cuenta ya da 112
-    const T2 = await abrir(ACTO2, 'eventos', 'ecosistema');
-    await T2.raton('mirar', 'silla_torcida'); await T2.pasar();
-    await T2.G(() => __game.clearLog());
-    await T2.raton('coger', 'silla_torcida'); await T2.pasar();
-    ok(!(await T2.logHas('Vuelvo a ser persona')) && await T2.logHas('Ciento diez, ciento once... ciento doce.'), 'devuelta sin crisis: Pilar cuenta 112, sin alivio de una crisis que no hubo');
-    await T2.raton('hablar', 'pilar_escaleta'); await T2.pasar();
-    await T2.G(() => __game.clearLog());
-    await T2.clicOpcion('¿Cuántas sillas hay?'); await T2.pasar();
-    ok(await T2.logHas('Ciento doce. Las cuento cada cinco minutos.') && !(await T2.logHas('trece')), 'y la cuenta ya da 112 (no 113)');
-    await T2.ctx.close();
   }
 
   // ====================================================================== 5. Gervasio: insistir también resuelve
@@ -488,10 +499,10 @@ try {
     await T.until(() => !!__game.currentDialogOptions(), null, 8000);
     ok((await T.opciones()).includes('¿Para qué me ha llamado?'), 'y Evaristo sigue hablando: «¿Para qué me ha llamado?»');
     await G(() => { if (__game.game.choice) __game.game.choice.resolve(-1); }); await G(() => __game.waitIdle());
-    // (c) Acto III con la L3 oída: ni L2 tardía ni nada raro; la L4 sigue en su sitio
-    r = await cargar(estado({ ...ACTO3, ruben_encontrado: true, evaristo_llamadas: 2 }, 'cpd', { ...L1, 'once:evaristo_L3': true }));
+    // (c) Acto III con la L3 (ya retirada) oída: ni L2 tardía ni nada raro; la L4 ([guion3 t2]: los atunes, antes de Brais) en su sitio
+    r = await cargar(estado({ ...ACTO3, dos_ias_vista: true, ruben_encontrado: false, evaristo_llamadas: 2 }, 'cpd', { ...L1, 'once:evaristo_L3': true }));
     await G(() => __game.gotoRoom('office')); await G(() => __game.waitIdle());
-    ok(!(await T.logHas('¿Puede pasarse por mi despacho?')) && await T.logHas('Se llama Brais.'), 'Acto III con la L3 oída: sin L2 tardía; suena la L4');
+    ok(!(await T.logHas('¿Puede pasarse por mi despacho?')) && await T.logHas('...El armario 27.'), 'Acto III con la L3 oída: sin L2 tardía; suena la L4');
     // (d) de antes de E2 (contador con la L2 vieja): la L2 cuenta como oída y convocado por ella
     r = await cargar(estado({ ...ACTO2, evaristo_llamadas: 2 }, 'catacumba', {}));
     ok(r.once['once:evaristo_L1'] && r.once['once:evaristo_L2'] && r.flags.evaristo_convoco === 'llamada', 'de antes de E2 (L2 vieja en el contador): L2 oída, convocado por la llamada');

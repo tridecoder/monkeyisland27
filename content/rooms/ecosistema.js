@@ -106,9 +106,11 @@ async function hablarAro(api) {
 const aroObjeto = {
   id: 'aro_borja', name: 'aro de luz de Borja', color: '#4FD8E8', murmurColor: '#4FD8E8',
   // §3.2: la cola de ambiente de la sala (uno por visita; el motor no los dice encima de nadie)
-  murmurs: ['Publicando: Viernes noche y aquí seguimos. Emoji de fuego.',
+  // [P12] en el Acto III entra en la rotación el evento de Pilar: lo único que le queda a Borja de Eventos
+  murmurs: (view) => ['Publicando: Viernes noche y aquí seguimos. Emoji de fuego.',
     'Publicando: ¿Sabías que [DATO]? Comenta abajo. Emoji de ojos.',
-    'Publicando: Orgulloso de mi equipo: [AÑADIR EQUIPO]. Emoji de fuego.'],
+    'Publicando: Orgulloso de mi equipo: [AÑADIR EQUIPO]. Emoji de fuego.',
+    ...(view.flag('acto_3_iniciado') ? ['Publicando: Bienvenidos a [EVENTO]. Emoji de croqueta.'] : [])],
   handlers: {
     mirar: mirarAro,
     hablar: hablarAro,
@@ -196,21 +198,17 @@ async function anuncioAntesDeEntrar(api) {
   });
 }
 
-// ENMIENDA E5 §2.5.1 (PE) · el rotulador de objetivos: Coger el termómetro, desde `torno_abierto`, una vez (L
-// `ecosistema_rotulador_dado`). Con Maripaz en la planta (Actos I y III), lo regala; sin ella (Acto II antes de D1),
-// Bruno lo coge en silencio. Después, Coger termómetro → lo genérico. El rotulador no se gasta (lo usa PB en el kanban).
+// [P11] [P14] el rotulador de objetivos ya no se coge aquí: lo da Maripaz al perder el D1 (sala_amazonas.js). En el
+// Acto I cuelga de su cordel y Maripaz no lo suelta; desde el Acto II el cordel está vacío (se lo ha llevado a la
+// reunión). Tras el D1, Bruno ya lo lleva: Coger → lo genérico. (Partidas viejas que ya lo cogieron: igual.)
+const cordelVacio = (api) => !!(api.flag('acto_2_iniciado') || api.flag('ecosistema_rotulador_dado') || api.has('rotulador_rojo'));
 async function cogerTermometro(api) {
-  if (!api.flag('torno_abierto') || api.flag('ecosistema_rotulador_dado') || api.has('rotulador_rojo')) {
-    await api.defaultResponse(); return;
-  }
-  api.setFlag('ecosistema_rotulador_dado', true);
+  if (api.has('rotulador_rojo') || !api.flag('torno_abierto')) { await api.defaultResponse(); return; }
   if (maripazAqui(api)) {
     api.faceActor(MARIPAZ, 'bruno');
-    await sayM(api, '¿Mi rotulador de objetivos? Llévatelo. Lo que pintes, lo cobro como espacio.');
-  }
-  await api.anim('bruno', 'reach', 350);
-  api.give('rotulador_rojo');
-  api.sfx('pickup');
+    await sayM(api, 'Ese rotulador pinta objetivos. Cuando tengas uno, hablamos.');
+  } else if (cordelVacio(api)) await api.say('Solo queda el cordel, cortado. El rotulador se lo ha llevado Maripaz.');
+  else await api.defaultResponse();
 }
 
 const LINEA_CORDEL = 'El rotulador cuelga al lado, de un cordel, como el boli de un banco.';
@@ -226,7 +224,7 @@ export default buildRoom({
   flags: {
     ecosistema_portatil_cerrado: 'bool · P4 · Cerrar portátil de Tadeo (Acto III) · P4 (Mirar portátil, impresora)',
     ecosistema_pufs_n: 'int · P4 · ecosistema · +1 por Usar pufs · P4',
-    ecosistema_rotulador_dado: 'bool · PE · E5 §2.5.1: Coger termometro_ventas da rotulador_rojo (una vez)',
+    ecosistema_rotulador_dado: 'bool · PE · E5 (juego anterior): el termómetro dio el rotulador',
   },
 
   objects: [
@@ -282,14 +280,20 @@ export default buildRoom({
     { id: 'termometro_ventas', name: 'termómetro de ventas', handlers: {
       // E6 §2.9.1: antes de coger el rotulador, la segunda línea lo señala (cuelga a la vista, con su propio punto de clic)
       mirar: async (api) => api.say(['Un termómetro pintado a rotulador: «OBJETIVO Q3». Rojo hasta el 97 %.',
-        api.flag('ecosistema_rotulador_dado') ? 'El 3 % que falta se lo lleva el gong de al lado.' : LINEA_CORDEL]),
-      usar: async (api) => { await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Así lo pinto yo los viernes. Pero con más pulso.', 'Rojo hasta el 98 %. Nadie lo nota.'); },   // E5 C52
-      coger: cogerTermometro,                                                              // E5 §2.5.1
+        cordelVacio(api) ? 'El cordel, vacío. El 3 % que falta se lo lleva el gong de al lado.' : LINEA_CORDEL]),
+      // [P14] «Usar» pide el rotulador (tras el D1); antes, como «Coger»
+      usar: async (api) => {
+        if (!api.has('rotulador_rojo')) { await cogerTermometro(api); return; }
+        await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Así lo pinto yo los viernes. Pero con más pulso.', 'Rojo hasta el 98 %. Nadie lo nota.');   // E5 C52
+      },
+      'usar:rotulador_rojo': async (api) => { await api.say('Le pinto un poquito más de rojo.'); await mp(api, 'Así lo pinto yo los viernes. Pero con más pulso.', 'Rojo hasta el 98 %. Nadie lo nota.'); },
+      coger: cogerTermometro,
       empujar: 'Si lo empujo, sube la temperatura. No las ventas.',
       hablar: async (api) => { await api.say('¿Cuándo llegas al cien?'); await mp(api, 'Cuando la noticia ocupe una línea. Vamos por dos.', 'No contesta. Le falta el 3 %. A mí, el contrato.'); },
     } },
     // E6 §2.9.1 (rev. 2): el rotulador colgado del cordel, con su propio punto de clic; desaparece al cogerlo
-    { id: 'rotulador_cordel', name: 'rotulador', when: '!ecosistema_rotulador_dado', handlers: {
+    // [P14] desde el Acto II, el cordel vacío (lo pinta el arte del termómetro): el rotulador ya no está
+    { id: 'rotulador_cordel', name: 'rotulador', when: ['!ecosistema_rotulador_dado', '!acto_2_iniciado', '!has:rotulador_rojo'], handlers: {
       mirar: LINEA_CORDEL,
       coger: cogerTermometro,
       usar: cogerTermometro,
@@ -399,7 +403,7 @@ export default buildRoom({
           await api.cutscene(async (api) => {
             api.faceActor(MARIPAZ, 'bruno'); await api.anim(MARIPAZ, 'reach', 400); api.sfx('paper');   // la coge
             api.faceActor(MARIPAZ, 'down'); await api.wait(1400);                                        // la lee, con el dedo
-            for (let i = 0; i < 3; i++) { api.sfx('click'); await api.wait(350); }                       // tres golpecitos: ahí iría un banner
+            for (let i = 0; i < 3; i++) { api.sfx('click'); await api.wait(350); }                       // tres golpecitos: ahí iría un módulo ([P10])
             await api.wait(600); api.faceActor(MARIPAZ, 'bruno');
             await sayM(api, 'Línea nueve: «Hidrovoltia, a por el Robledal». Quita el sueño. Siestatón.');
             await sayM(api, 'Y la conclusión vale un faldón entero. Que no te la recorten.');
@@ -418,7 +422,11 @@ export default buildRoom({
   defaults: {},
   // §4.4: tras D1, Maripaz llama a Siestatón desde su mesa (una vez, cuando el motor encuentre hueco)
   ambient: [{ id: 'maripaz_siestaton', if: 'casilla_hueco', voces: { M: 'maripaz_remitido' },
-    discusiones: [[['M', '¿Siestatón? Os paso a la web. Con un vídeo que se pone solo.']]] }],
+    discusiones: [[['M', '¿Siestatón? Os paso a la web. Con un vídeo que se pone solo.']]] },
+  // [P12] Acto II: por la puerta de Eventos, Pilar recibe el rider del ponente por el walkie (rota)
+  { id: 'pilar_rider', if: ['acto_2_iniciado', '!acto_3_iniciado'], orden: 'rotar',
+    voces: { P: { from: 'ecosistema_a_eventos', color: '#A8F07A', prefijo: 'PILAR: ' } },
+    discusiones: [[['P', '¿De pie? ...Recibido. Ciento once sillas de pie. Cambio.']], [['P', 'Cero papel. Recibido. Me lo aprendo. Cambio.']]] }],
 
   async onEnter(api) {
     // el roll-up enrollado no dura: al volver a la planta, Maripaz ya lo ha desplegado (también al cargar)
@@ -430,9 +438,6 @@ export default buildRoom({
     }
     // §4.2.4: el anuncio antes de entrar, una vez, la primera vez que Maripaz está en la planta
     if (maripazAqui(api) && !api.flag('ecosistema_interstitial')) { await anuncioAntesDeEntrar(api); return; }
-    // §4.4: la silla 113 (pago del micropuzle de Pilar), una vez, con Maripaz delante
-    if (api.flag('eventos_silla_devuelta') && maripazAqui(api) && api.once('ecosistema_silla_113')) {
-      await sayM(api, 'Me has devuelto la silla. Ya le he puesto un anuncio en el respaldo.');
-    }
+    // ([P12] fuera la silla 113: se va con el micropuzle de Eventos)
   },
 }, art);

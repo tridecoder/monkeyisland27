@@ -19,8 +19,7 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   silla: 'Necesito sentarme. Seis años de pie: tengo rodillas de becario senior.',
   correo: 'Tengo silla. Ya puedo mirar mi ordenador como un adulto.',
   cafe: 'La correctora no habla antes del café. Necesito un café que no sea para mí.',
-  cms: 'Con el CMS caído, en Sistemas no atienden a nadie.',   // E5 C71
-  hff: 'Hueco, fuente y firma. Lo pone la ficha.',
+  cms: 'Sin web, Maripaz no pasa a Siestatón. Y la web no publica desde las cuatro.',   // [P11] el CMS, condición del HUECO
   nota: 'Teodoro no habla sin papel. Y en esta casa no queda un folio sin sellar.',   // E7 F1 (N6)
   cierre: 'Lo tengo todo. Solo falta que Teodoro diga «cabe».',
   acto3: 'A las nueve apagan la rotativa. Y alguien teclea en el armario 27.',
@@ -34,7 +33,7 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
   turno: 'En esa reunión solo pregunta quien sale en la tele. Yo no salgo en nada.',
   columna: 'Anselmo ya cree que Brais existe. Lo que no hay es columna para que se vaya.',
   coma: 'Evaristo me llama y Begoña me manda a verle. Algo le quita el sueño.',   // integración: en el paso 28 solo ha sonado la L1
-  bendicion: 'Evaristo duda de su propia coma. Necesita a alguien que sepa de comas.',
+  // [P11] fuera `bendicion`: Evaristo ya no duda de su coma (el correo lo da él; la escena de Aurora es opcional)
   // [bloqueos] metas propias donde antes se repetía «Hueco, fuente y firma» (no decía qué toca ahora)
   reunion: 'La página 7 se decide en esa reunión. Y esa reunión no se acaba nunca.',
   hueco: 'Maripaz se ha quedado sentada en el planillo. La página 7 está debajo.',
@@ -47,6 +46,18 @@ const M = {      // §8.2: la meta en la voz de Bruno (qué quiere ahora, nunca 
 
 // [bloqueos] niveles 1-3: el 1 sugiere, el 2 dice quién o dónde, el 3 (Bruno al colgar) dice sitio, objeto y verbo.
 // `sub`: sub-estados (engine/objetivos.js `variante`): el primero que se cumple sustituye niveles / meta / extra / previa.
+// [P12] el álbum ya conseguido (en la mano, en manos de Anselmo o el pósit ya fuera del tablero)
+const tieneAlbum = (api) => api.has('album_eventos') || !!api.flag('eventos_album_dado') || !!api.flag('album_validado') || !!api.flag('posit_descopeado');
+const NEGATIVA = 'Pilar no suelta el álbum: quien no se sienta no asiste. Y le falta una silla.';
+const SILLA_PILAR = [
+  'La que cuenta las sillas sabe siempre quién falta, hijo.',
+  'Esa silla que le falta, ¿no la has visto tú en algún sitio?',
+  ['Mira bien en qué se sienta el chico del armario, hijo.', 'Sistemas: Mirar la silla del armario 27. O preguntarle a Brais de dónde es.']];
+const SILLA_PILAR_VISTA = [
+  'La que cuenta las sillas sabe siempre quién falta, hijo.',
+  'Esa silla que le falta la has visto tú, hijo. Con alguien encima.',
+  ['Dile a la de las fiestas dónde está su silla. Y quién se sienta.', 'Eventos: a Pilar, «Creo que sé dónde está tu 112». En el armario 27.']];
+
 export const OBJETIVOS = [
   { id: 'torno', acto: 1, hecho: 'torno_abierto', salas: ['vestibulo'], meta: M.torno, niveles: [
     'En el pueblo, el que no sale en la foto no existe. Ponte en la foto.',
@@ -75,7 +86,9 @@ export const OBJETIVOS = [
     'Los que corrigen siempre están cansados. Tu abuelo corregía la quiniela.',
     'A la señora del cartel no le hables: dale. Primero el café.',
     ['Dale el café a la que corrige. La del boli rojo.', 'Redacción de papel: Dar el café a Aurora.']] },
-  { id: 'cms', acto: 2, hecho: 'cms_vivo', activo: 'acto_2_iniciado', salas: ['pecera', 'cpd'], meta: M.cms, niveles: [
+  // [P11] el CMS es la condición del HUECO: cuenta desde que Maripaz lo dice (en la Sala, antes de la estampida o al
+  // negarse al D1); antes, la abuela manda a la reunión. Los tres niveles y la línea de Bruno no cambian.
+  { id: 'cms', acto: 2, hecho: 'cms_vivo', activo: ['acto_2_iniciado', 'maripaz_pide_web'], salas: ['pecera', 'cpd', 'sala_amazonas'], meta: M.cms, niveles: [
     'La tele de tu abuelo no iba si él la miraba. Apágale algo a alguien.',
     'Si te la vuelven a enchufar, apágala donde no lleguen. Sigue el cable.',                     // E5 §2.2
     ['El cable baja a los ordenadores. Apaga la regleta que no dice lo que es.', 'Sistemas: Tirar de la R-3 del regletero. La del pósit de Eutimio.']] },
@@ -95,11 +108,8 @@ export const OBJETIVOS = [
     'Si a ti no te dejan preguntar, que pregunte alguien que salga en la tele.',
     'Esa cafetera tan educada sale en todas las pantallas, hijo. Hasta en la mía.',
     ['A esa tele dale las buenas noches, como a la cafetera, y pregúntale.', 'Sala Amazonas: a la tele, «Buenas noches, Gertrudis». Y lo de los pasos.']],
+    // [P11] fuera la variante del atasco: ya no es jugable (se resuelve solo dentro de la escena de la estampida)
     sub: [
-      { si: 'sala_amazonas_atasco', meta: 'Los de Mercados, encajados en la puerta. Alguien tendrá que ayudarles.', niveles: [
-        'Esos señores no saben salir por una puerta. Échales una mano.',
-        'Los de la puerta están encajados, hijo. Un empujoncito con educación.',
-        ['Empújalos, o pregúntales cuándo es la próxima reunión.', 'Sala Amazonas: Empujar a los de Mercados, en la puerta.']] },
       { si: 'gertrudis_pregunta', meta: 'Gertrudis ya ha mandado la pregunta. Falta una pantalla que la sintonice.', niveles: [
         'La cafetera ya lo ha mandado. Ahora alguien tiene que sintonizarla.',
         'La cafetera sale en la primera tele que se encienda. Prueba la de la reunión.',
@@ -118,7 +128,7 @@ export const OBJETIVOS = [
   { id: 'coma', acto: [2, 3], hecho: 'evaristo_escuchado', activo: 'nota_gasto_presentada', salas: ['administracion', 'ecosistema'], meta: M.coma, niveles: [
     'A los mayores hay que dejarlos acabar, hijo. Lo bueno lo dicen al final.',
     'Ese señor que te llama tanto quiere contarte algo. No le metas prisa.',
-    ['Escúchale entero, hijo, aunque se te enfríe la cena.', 'Administración: escuchar a Evaristo. «¿De qué trata?» y «Siga».']] },
+    ['Escúchale entero, hijo, aunque se te enfríe la cena.', 'Administración: escuchar a Evaristo, «¿De qué trata?» y «Siga». Y su correo.']] },   // [P11]
   { id: 'papel_fax', acto: 2, hecho: 'fax_con_papel', activo: 'nota_gasto_presentada', salas: ['catacumba'], meta: M.papel, niveles: [
     'Las máquinas viejas, sin papel, no hablan. Dales papel. ¿Has cenado?',
     'Ese papel que te rechazaron tiene la espalda en blanco.',
@@ -127,20 +137,16 @@ export const OBJETIVOS = [
     'Lo que me cuenta una vecina no me lo creo hasta que me lo cuenta otra.',
     'Tienes un papel del fax y otro de la ventanilla: dos vecinas.',
     ['Llévale las dos vecinas a la que corrige.', 'Redacción de papel: Dar la fotocopia de la nota a Aurora.']] },
-  // E2 §10.3 · paso 32: Aurora bendice la coma y la manda por el fax (Redacción de papel)
-  { id: 'bendicion', acto: [2, 3], hecho: 'coma_bendecida', activo: ['evaristo_escuchado', 'fax_con_papel'], salas: ['catacumba'], meta: M.bendicion, niveles: [
-    'Si dudas de una coma, pregúntale a la que corrige.',
-    'La señora del boli rojo sabe de comas más que el cura.',
-    ['Pregúntale a la del boli por la coma de ese señor.', 'Redacción de papel: a Aurora, lo de la coma de Evaristo.']] },
+  // [P11] fuera el objetivo `bendicion`: el correo lo da Evaristo; la coma con Aurora es opcional y sin pista
   { id: 'firma', acto: 2, hecho: 'casilla_firma', activo: 'fax_con_papel', salas: ['catacumba'], meta: M.firma, niveles: [
     'Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor.',
     'Si el del fax se pone terco, que le conteste su propia máquina.',
     ['Contéstale mejor que él, y al final, lo de su máquina.', 'Redacción de papel: a Teodoro, «Quiero firmar». Remate: el manual.']], duelo: 'teodoro',
-    // [bloqueos] sin el manual, el nivel 2 y el 3 dicen dónde está (antes, solo un extra del nivel 3)
+    // [bloqueos] sin el manual, el nivel 2 y el 3 dicen dónde está · [P11] [P15] lo da Eutimio al apagar la R-3
     sub: [{ si: '!has:manual_fax', niveles: [
       'Tu tío pone el contestador y se contesta solo. Hazle eso a ese señor.',
-      'El de los ordenadores guarda el manual de esa máquina. Pídeselo con su número.',
-      ['Mira el número que lleva el fax y díselo al de los ordenadores.', 'Fax: Mirar la pegatina. Sistemas: a Eutimio, «Ticket 0.441».']] }] },
+      'El de los cables guarda el manual de esa máquina. Arréglale lo suyo.',
+      ['Apaga la regleta que no dice lo que es, y el de los cables te da el manual.', 'Sistemas: el manual lo tiene Eutimio. Me lo da con su hueco, al apagar la R-3.']] }] },
   { id: 'pieza', acto: 2, hecho: 'pieza_escrita', activo: 'casilla_fuente', salas: ['pecera'], meta: M.pieza, niveles: [
     '¿Y has escrito ya? Siéntate en tu silla y escribe.',
     'Lo de escribir, en tu mesa. Que te ha costado la silla.',
@@ -159,34 +165,40 @@ export const OBJETIVOS = [
     'Si de un armario sale papel, es que alguien escribe dentro, hijo.',
     'Antes tiraban desde dentro. Ahora el de dentro está muy liado escribiendo.',                 // E5 §2.4
     ['Tira con ganas del papel del armario, hijo.', 'Sistemas: tirar del papel continuo del 27.']] },
-  { id: 'album', acto: 3, hecho: (api) => api.has('album_eventos') || !!api.flag('album_validado') || !!api.flag('posit_descopeado'),   // E5: el álbum se lo queda Anselmo
+  // [P12] [P15] «El álbum»: desde que aparece Brais hasta la primera entrada en Eventos del Acto III (o la negativa de
+  // Pilar). Su nivel 3 ya no manda a pedir el álbum (eso solo lleva a la negativa): manda a subir a Eventos.
+  { id: 'album', acto: 3, hecho: (api) => tieneAlbum(api) || !!api.flag('eventos_acto3_entrada') || !!api.flag('pilar_nego_album'),
     activo: 'ruben_encontrado', salas: ['eventos', 'cpd'], meta: M.baja, niveles: [
     'Para que dejen irse a alguien, hay que demostrar que estuvo.',
     'Las fotos de las fiestas las guarda la que las organiza.',
-    ['Pídele las fotos a la de las fiestas.', 'Eventos: a Pilar, «¿Me prestas el álbum?». Brais sale al fondo.']] },
+    ['Sube a ver a la de las fiestas, hijo, y escúchala. Algo le falta.', 'Eventos: ver a Pilar antes de las 21:04. El álbum está en su trituradora.']] },
+  // [P12] [P14] [P15] «La silla de Pilar» (aprobado en [P15]; aquí porque sin él el álbum quedaba sin orientación): desde
+  // que Pilar cuenta al entrar que le falta la 112 (o desde su negativa) hasta tener el álbum. Sin mirar la silla del
+  // armario (ni preguntarle a Brais), la abuela manda a la silla; con eso, a Pilar.
+  { id: 'silla_pilar', acto: 3, hecho: tieneAlbum, activo: (api) => !!api.flag('ruben_encontrado') && (!!api.flag('eventos_acto3_entrada') || !!api.flag('pilar_nego_album')),
+    salas: ['eventos', 'cpd'], meta: 'El álbum va a la trituradora a las 21:04. Y a Pilar le falta una silla.', niveles: SILLA_PILAR,
+    sub: [
+      { si: ['silla_112_vista', 'pilar_nego_album'], meta: NEGATIVA, niveles: SILLA_PILAR_VISTA },
+      { si: 'silla_112_vista', niveles: SILLA_PILAR_VISTA },
+      { si: 'pilar_nego_album', meta: NEGATIVA },
+    ] },
   // ENMIENDA E5 §2.5: `baja` = enseñar el álbum (album_validado); `columna` = escribir la columna con el rotulador
   { id: 'baja', acto: 3, hecho: 'album_validado', activo: (api) => api.has('album_eventos'), salas: ['pecera'], meta: M.baja, niveles: [
     'Las fotos, enséñaselas al que lleva la lista. Que vea que el chico existe.',
     'El del tablero no se cree nada sin pruebas. Ya tienes pruebas.',
     ['Enséñale las fotos al del tablero.', 'Redacción: Dar el álbum a Anselmo.']] },
-  // [bloqueos] `columna` por sub-estados: falta la frase (Brais o Eventos), falta el rotulador, o solo escribirla
+  // [bloqueos] `columna` por sub-estados: falta la frase (Brais o Eventos), o solo escribirla. [P11] El rotulador llega
+  // siempre con el D1 (antes del Acto III): fuera la variante «sin el rotulador».
   { id: 'columna', acto: 3, hecho: 'ruben_libre', activo: 'album_validado', salas: ['pecera', 'ecosistema'], meta: M.columna, niveles: [
     'Ya tienes con qué y qué escribir. Al tablero, hijo.',
     'Escribe en el tablero la frase fina del chico, y mueve tú el papelito.',
     ['El rotulador, al tablero del que no se cree nada.', 'Redacción: Usar el rotulador con el kanban. «SALIDA EN VALOR».']],
     sub: [
-      { si: ['!rep_13', '!oyo_descopear'], meta: 'Para sacar a Brais del tablero hace falta una columna que no diga «despedido».', niveles: [
+      // [P12] solo cambia la condición: ya no existe la otra palabra
+      { si: '!rep_13', meta: 'Para sacar a Brais del tablero hace falta una columna que no diga «despedido».', niveles: [
         'Para que alguien se vaya sin que parezca que lo echan, hay palabras finas.',
         'El chico del armario escribía discursos finos. Pregúntale por ellos.',
         ['Pregúntale al chico por los discursos de ese señor del traje.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».']] },
-      { si: '!has:rotulador_rojo', meta: 'Ya sé qué columna escribir. Me falta un rotulador que no sea de Anselmo.', niveles: [
-        'En esa pizarra se escribe con rotulador, hijo, y no con el de ese señor.',
-        'La de los anuncios pinta sus objetivos a rotulador. Lo tiene colgado.',
-        ['Coge el rotulador que cuelga junto a los objetivos de ventas.', 'Marketing y Comercial: Coger el rotulador del termómetro de ventas.']] },
-      { si: '!rep_13', niveles: [
-        'Ya tienes con qué y qué escribir. Al tablero, hijo.',
-        'Escribe en el tablero esa palabra rara que oíste en las fiestas.',
-        ['El rotulador, al tablero del que no se cree nada.', 'Redacción: Usar el rotulador con el kanban. «DESCOPEADO».']] },
     ] },
   { id: 'acta', acto: 3, hecho: 'sala_abierta', activo: 'acto_3_iniciado', salas: ['pajarera'], meta: M.acta, niveles: [
     'En una reunión manda el que escribe el acta. Que la escriba otro.',
@@ -227,21 +239,22 @@ export function actoActual(api) {
   return 1;
 }
 
-/** crítica 3 · N1: dónde se aprende cada réplica (flag → [abuela, nivel 2-3; Bruno al colgar, nivel 3: sitio y objeto]).
+/** [P7] La nota de Bruno (`[1]`) es también la pista que el duelo apunta en la libreta (content/duelo.js `pistas`).
+ *  crítica 3 · N1: dónde se aprende cada réplica (flag → [abuela, nivel 2-3; Bruno al colgar, nivel 3: sitio y objeto]).
  *  Si cambia dónde se aprende una réplica (content/flags.js, descripción de `rep_XX`), se cambia aquí. */
 export const DONDE = {
   rep_01: ['En el cuarto del café hay un corcho con cartas. Léelo, que es gratis.', 'Vending: Mirar el tablón. El hilo del yogur.'],
   rep_02: ['La del boli rojo y el del fax no se hablan. Pregúntale por qué.', 'Redacción de papel: a Aurora, por qué no se habla con Teodoro.'],
   rep_03: ['La cafetera esa cuenta chismes si la saludas, hijo.', 'Vending: «Buenas noches, Gertrudis», el primer chisme.'],
   rep_04: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
-  rep_05: ['El del mostrador de abajo sabe lo que se dice en el ascensor.', 'Vestíbulo: a Celestino, «¿Algún cotilleo?».'],
+  rep_05: ['El del mostrador de abajo sabe lo que se dice en las cartas de todos.', 'Vestíbulo: a Celestino, «¿Algún cotilleo?».'],   // [P15]
   rep_06: ['Encima de la mesa del fax hay un papel con marco: léelo.', 'Redacción de papel: Mirar el fax enmarcado, sobre la mesa de Teodoro.'],
   rep_07: ['Al que manda en los Despachos, mírale el ordenador.', 'Despachos: Mirar el ordenador de Gervasio, los enviados.'],
   rep_08: ['La chica de los números tiene hilos buenos. Cuando le vaya el ordenador.', 'Redacción, con el CMS vivo: a Yoli, «¿Algún hilo bueno esta noche?».'],
   rep_09: ['Pregúntale al del tablero cómo se lleva con la chica de los números.', 'Redacción: a Anselmo, «¿Qué tal con Yoli?».'],
   rep_10: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
-  rep_11: ['Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar.', 'Redacción: mi ordenador, sentado. Ramírez espera mis comentarios.'],
-  rep_12: ['El de los cables sabe cosas del señor del traje. Pregúntale.', 'Sistemas, con el CMS vivo: a Eutimio, «¿Algún cotilleo del consultor?».'],
+  rep_11: ['Mira tu ordenador, hijo, sentado. Tienes cartas sin contestar.', 'Redacción: mi ordenador, sentado. Ramírez pregunta si he podido verlo.'],
+  rep_12: ['El de los cables sabe cosas del señor del traje. Pregúntale.', 'Sistemas: a Eutimio, «¿Algún cotilleo del consultor?».'],   // [P11]
   rep_13: ['El chico del armario escribía los discursos. Pregúntale.', 'Sistemas: a Brais, «¿Escribiste tú los discursos de Íñigo?».'],
   rep_14: ['A esa cafetera salúdala otra vez, hijo, que le quedan chismes.', 'Vending: saludar otra vez a Gertrudis. Suelta todos los chismes.'],
   rep_15: ['Pregúntale al chico del armario por los correos de ese Tadeo.', 'Sistemas: a Brais, «¿Te llegaban correos de Tadeo?».'],
@@ -266,7 +279,7 @@ export const DESPEDIDA = 'Abrígate.';
 /** Hora de la historia (siempre creciente: el motor guarda la mayor). Los relojes del edificio siguen en 20:59. */
 export function horaMovil(api) {
   const f = (k) => !!api.flag(k);
-  if (f('lector_derribado') || f('juego_terminado')) return '21:00';            // «Goyita. Tira.»
+  if (f('lector_derribado') || f('juego_terminado')) return '21:00';            // «Benita. Tira.»
   if (f('sala_amazonas_climax_visto') || f('climax_entrada')) return '20:59';   // entrada en el clímax
   if (f('sala_abierta')) return '20:53';
   if (f('ruben_libre')) return '20:44';
